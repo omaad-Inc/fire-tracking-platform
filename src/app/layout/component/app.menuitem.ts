@@ -141,6 +141,12 @@ export class AppMenuitem {
             this.item.command({ originalEvent: event, item: this.item });
         }
 
+        // Si le parent a un routerLink, on navigue
+        if (this.item.routerLink) {
+            event.preventDefault(); // Empêche le comportement par défaut du lien
+            this.router.navigate(Array.isArray(this.item.routerLink) ? this.item.routerLink : [this.item.routerLink]);
+        }
+
         // toggle active state
         if (this.item.items) {
             this.active = !this.active;

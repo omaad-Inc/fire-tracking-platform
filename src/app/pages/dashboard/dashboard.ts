@@ -11,6 +11,7 @@ import { WorthProgress } from './components/worthprogresswidget';
     template: `
         <div class="grid grid-cols-12 gap-8">
             <app-stats-widget class="contents" />
+
             <div class="col-span-12 xl:col-span-6">
                 <app-savings-progress />
             </div>
