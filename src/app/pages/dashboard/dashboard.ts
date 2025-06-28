@@ -1,24 +1,32 @@
 import { Component } from '@angular/core';
-import { NotificationsWidget } from './components/notificationswidget';
 import { StatsWidget } from './components/statswidget';
-import { RecentSalesWidget } from './components/recentsaleswidget';
-import { BestSellingWidget } from './components/bestsellingwidget';
-import { RevenueStreamWidget } from './components/revenuestreamwidget';
+import { RecentTransactionsWidget } from './components/recenttransactionswidget';
+import { SavingsProgress } from './components/savingsprogresswidget';
+import { DebtsOverview } from './components/debtsoverviewwidget';
+import { WorthProgress } from './components/worthprogresswidget';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget],
+    imports: [StatsWidget, WorthProgress, SavingsProgress, DebtsOverview, RecentTransactionsWidget],
     template: `
         <div class="grid grid-cols-12 gap-8">
             <app-stats-widget class="contents" />
             <div class="col-span-12 xl:col-span-6">
-                <app-recent-sales-widget />
-                <app-best-selling-widget />
+                <app-savings-progress />
             </div>
             <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
+                <app-debts-overview />
             </div>
+            <div class="col-span-12 xl:col-span-7">
+                <app-worth-progress />
+            </div>
+
+            <div class="col-span-12 xl:col-span-5">
+               <app-recent-transactions-widget /> 
+            </div>
+            
+           
+            
         </div>
     `
 })

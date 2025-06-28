@@ -5,65 +5,76 @@ import { CommonModule } from '@angular/common';
     standalone: true,
     selector: 'app-stats-widget',
     imports: [CommonModule],
-    template: `<div class="col-span-12 lg:col-span-6 xl:col-span-3">
+    template: `
+        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Orders</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+                        <span class="block text-muted-color font-medium mb-4">Total Net Worth</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ netWorth | currency: 'USD' }}</div>
+                    </div>
+                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-wallet text-green-500 !text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-primary font-medium">+{{ netWorthChange }} </span>
+                <span class="text-muted-color">since last month</span>
+            </div>
+        </div>
+        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">Monthly Savings Rate</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ savingsRate }}%</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                        <i class="pi pi-chart-line text-blue-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">24 new </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-primary font-medium">{{ savingsAmount | currency: 'USD' }} </span>
+                <span class="text-muted-color">saved this month</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Revenue</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">$2.100</div>
+                        <span class="block text-muted-color font-medium mb-4">FIRE Progress</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ fireProgress }}%</div>
                     </div>
                     <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                        <i class="pi pi-flag text-orange-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">%52+ </span>
-                <span class="text-muted-color">since last week</span>
+                <span class="text-primary font-medium">FIRE Number: {{ fireNumber | currency: '€' }}</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Customers</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">28441</div>
-                    </div>
-                    <div class="flex items-center justify-center bg-cyan-100 dark:bg-cyan-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-users text-cyan-500 !text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-primary font-medium">520 </span>
-                <span class="text-muted-color">newly registered</span>
-            </div>
-        </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <span class="block text-muted-color font-medium mb-4">Comments</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152 Unread</div>
+                        <span class="block text-muted-color font-medium mb-4">Passive Income</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ passiveIncome | currency: 'USD' }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-comment text-purple-500 !text-xl"></i>
+                        <i class="pi pi-star text-purple-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">85 </span>
-                <span class="text-muted-color">responded</span>
+                <span class="text-primary font-medium">+{{ passiveIncomeChange | currency: 'USD' }} </span>
+                <span class="text-muted-color">this month</span>
             </div>
-        </div>`
+        </div>
+    `
 })
-export class StatsWidget {}
+export class StatsWidget {
+    netWorth = 45000; // Mock data
+    netWorthChange = 1200; // Mock data
+    savingsRate = 38; // Mock data (percentage)
+    savingsAmount = 1200; // Mock data
+    fireProgress = 15; // Mock data (percentage)
+    fireNumber = 300000; // Mock data (FIRE number target)
+    passiveIncome = 120; // Mock data
+    passiveIncomeChange = 20; // Mock data
+}
+
