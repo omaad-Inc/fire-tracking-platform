@@ -47,9 +47,28 @@ export class AppMenu {
             {
                 items: [
                     {
-                         label: 'Transaction', 
+                         label: 'Transactions', 
                          icon: 'pi pi-fw pi-receipt', 
                          routerLink: ['/pages/transaction']
+                    },
+                ]
+            },
+            {
+                items: [
+                    {
+                         label: 'Epargne', 
+                         icon: 'pi pi-fw pi-history', 
+                         routerLink: ['/pages/savings']
+                    },
+                ]
+            },
+            
+            {
+                items: [
+                    {
+                         label: 'Dettes', 
+                         icon: 'pi pi-fw pi-money-bill', 
+                         routerLink: ['/pages/debts']
                     },
                 ]
             },

@@ -18,7 +18,7 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { Product, ProductService } from '../service/product.service';
+import { ProductService } from '../../service/product.service';
 
 interface Column {
     field: string;
@@ -31,18 +31,17 @@ interface ExportColumn {
     dataKey: string;
 }
 
-interface TransactionRecord {
+interface SavingRecord {
     id?: string;
     date: string;
-    name: string;
-    type: 'Income' | 'Expense';
+    type: 'Deposit' | 'Withdrawal';
     amount: number;
-    account: string;
-    remarks?: string;
+    name: string;
+    note?: string;
 }
 
 @Component({
-    selector: 'app-transaction',
+    selector: 'app-savings-transactions',
     standalone: true,
     imports: [
         CommonModule,
@@ -82,7 +81,7 @@ interface TransactionRecord {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['date', 'name', 'type', 'amount', 'account', 'remarks']"
+            [globalFilterFields]="['date', 'type', 'amount', 'name', 'note']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedRecords"
             [rowHover]="true"
@@ -93,7 +92,7 @@ interface TransactionRecord {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Transaction Log</h5>
+                    <h5 class="m-0">Manage Savings</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -109,11 +108,10 @@ interface TransactionRecord {
                         Date
                         <p-sortIcon field="date" />
                     </th>
-                    <th style="min-width: 18rem">Name</th>
                     <th style="min-width: 10rem">Type</th>
                     <th style="min-width: 10rem">Amount</th>
-                    <th style="min-width: 12rem">Account</th>
-                    <th style="min-width: 20rem">Remarks</th>
+                    <th style="min-width: 16rem">Name</th>
+                    <th style="min-width: 20rem">Note</th>
                     <th style="min-width: 12rem"></th>
                 </tr>
             </ng-template>
@@ -124,14 +122,11 @@ interface TransactionRecord {
                     </td>
                     <td>{{ record.date }}</td>
                     <td>
-                        <div class="font-semibold text-surface-900 dark:text-surface-0">{{ record.name }}</div>
-                    </td>
-                    <td>
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td class="text-right">{{ record.amount | currency: 'USD' }}</td>
-                    <td>{{ record.account }}</td>
-                    <td>{{ record.remarks }}</td>
+                    <td>{{ record.amount | currency: 'EUR' }}</td>
+                    <td>{{ record.name }}</td>
+                    <td>{{ record.note }}</td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
                         <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteRecord(record)" />
@@ -140,7 +135,7 @@ interface TransactionRecord {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="transactionDialog" [style]="{ width: '450px' }" header="Transaction Details" [modal]="true">
+        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Saving Record Details" [modal]="true">
             <ng-template #content>
                 <div class="flex flex-col gap-6">
                     <div>
@@ -149,25 +144,21 @@ interface TransactionRecord {
                         <small class="text-red-500" *ngIf="submitted && !record.date">Date is required.</small>
                     </div>
                     <div>
-                        <label for="name" class="block font-bold mb-3">Name</label>
-                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required fluid />
-                        <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
-                    </div>
-                    <div>
                         <label for="type" class="block font-bold mb-3">Type</label>
                         <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" fluid />
                     </div>
                     <div>
                         <label for="amount" class="block font-bold mb-3">Amount</label>
-                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="USD" locale="en-US" fluid />
+                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" fluid />
                     </div>
                     <div>
-                        <label for="account" class="block font-bold mb-3">Account</label>
-                        <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" optionLabel="label" optionValue="value" placeholder="Select an Account" fluid />
+                        <label for="name" class="block font-bold mb-3">Name</label>
+                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required fluid />
+                        <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
                     </div>
                     <div>
-                        <label for="remarks" class="block font-bold mb-3">Remarks</label>
-                        <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" cols="20" fluid></textarea>
+                        <label for="note" class="block font-bold mb-3">Note</label>
+                        <textarea id="note" pTextarea [(ngModel)]="record.note" rows="3" cols="20" fluid></textarea>
                     </div>
                 </div>
             </ng-template>
@@ -182,25 +173,26 @@ interface TransactionRecord {
     `,
     providers: [MessageService, ProductService, ConfirmationService]
 })
-export class Transaction implements OnInit {
-    transactionDialog: boolean = false;
+export class SavingsTransactions implements OnInit {
+    productDialog: boolean = false;
 
-    records = signal<TransactionRecord[]>([]);
-    record!: TransactionRecord;
-    selectedRecords!: TransactionRecord[] | null;
+    records = signal<SavingRecord[]>([]);
+
+    record!: SavingRecord;
+
+    selectedRecords!: SavingRecord[] | null;
+
     submitted: boolean = false;
+
     types = [
-        { label: 'Income', value: 'Income' },
-        { label: 'Expense', value: 'Expense' }
+        { label: 'Deposit', value: 'Deposit' },
+        { label: 'Withdrawal', value: 'Withdrawal' }
     ];
-    accounts = [
-        { label: 'SG BANK', value: 'SG BANK' },
-        { label: 'Revolut', value: 'Revolut' },
-        { label: 'Trade Republic', value: 'Trade Republic' },
-        { label: 'N26', value: 'N26' }
-    ];
+
     @ViewChild('dt') dt!: Table;
+
     exportColumns!: ExportColumn[];
+
     cols!: Column[];
 
     constructor(
@@ -218,30 +210,31 @@ export class Transaction implements OnInit {
 
     loadDemoData() {
         this.records.set([
-            { id: '1', date: '2025-03-01', name: 'Investments', type: 'Income', amount: 900, account: 'Trade Republic', remarks: 'Crypto gains' },
-            { id: '2', date: '2025-03-01', name: 'Gifts', type: 'Expense', amount: 150, account: 'SG BANK', remarks: "Present for a friend's wedding" },
-            { id: '3', date: '2025-02-15', name: 'Education', type: 'Expense', amount: 200, account: 'Revolut', remarks: 'Subscription to an online course' },
-            { id: '4', date: '2025-02-10', name: 'Side Hustle', type: 'Income', amount: 700, account: 'N26', remarks: 'Etsy shop earnings' },
-            { id: '5', date: '2025-01-30', name: 'Home Maintenance', type: 'Expense', amount: 300, account: 'SG BANK', remarks: 'Fixing bathroom sink' },
-            { id: '6', date: '2025-01-20', name: 'Salary', type: 'Income', amount: 2500, account: 'SG BANK', remarks: 'Monthly salary' },
-            { id: '7', date: '2025-01-18', name: 'Groceries', type: 'Expense', amount: 120, account: 'Revolut', remarks: 'Supermarket' },
-            { id: '8', date: '2025-01-10', name: 'Freelance', type: 'Income', amount: 400, account: 'N26', remarks: 'Web project' },
-            { id: '9', date: '2025-01-05', name: 'Dining', type: 'Expense', amount: 60, account: 'SG BANK', remarks: 'Restaurant' },
-            { id: '10', date: '2024-12-25', name: 'Bonus', type: 'Income', amount: 500, account: 'SG BANK', remarks: 'Year-end bonus' },
-            { id: '11', date: '2024-12-20', name: 'Car Insurance', type: 'Expense', amount: 350, account: 'Revolut', remarks: 'Annual insurance payment' },
-            { id: '12', date: '2024-12-15', name: 'Interest', type: 'Income', amount: 45, account: 'Trade Republic', remarks: 'Savings account interest' },
-            { id: '13', date: '2024-12-10', name: 'Utilities', type: 'Expense', amount: 90, account: 'SG BANK', remarks: 'Electricity and water bill' },
-            { id: '14', date: '2024-12-05', name: 'Child Benefit', type: 'Income', amount: 200, account: 'N26', remarks: 'Government support' },
-            { id: '15', date: '2024-11-30', name: 'Medical', type: 'Expense', amount: 75, account: 'Revolut', remarks: 'Doctor visit' }
+            { id: '1', date: '2024-06-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' },
+            { id: '2', date: '2024-06-10', type: 'Withdrawal', amount: 100, name: 'Gift', note: 'Birthday present for friend' },
+            { id: '3', date: '2024-06-15', type: 'Deposit', amount: 200, name: 'Bonus', note: 'Performance bonus' },
+            { id: '4', date: '2024-06-20', type: 'Withdrawal', amount: 50, name: 'Emergency', note: 'Unexpected expense' },
+            { id: '5', date: '2024-07-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' },
+            { id: '6', date: '2024-07-12', type: 'Withdrawal', amount: 80, name: 'Groceries', note: 'Supermarket shopping' },
+            { id: '7', date: '2024-07-15', type: 'Deposit', amount: 150, name: 'Freelance', note: 'Side project payment' },
+            { id: '8', date: '2024-07-20', type: 'Withdrawal', amount: 60, name: 'Transport', note: 'Car repair' },
+            { id: '9', date: '2024-08-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' },
+            { id: '10', date: '2024-08-05', type: 'Withdrawal', amount: 120, name: 'Vacation', note: 'Trip to the beach' },
+            { id: '11', date: '2024-08-10', type: 'Deposit', amount: 100, name: 'Gift', note: 'Received from family' },
+            { id: '12', date: '2024-08-15', type: 'Withdrawal', amount: 40, name: 'Dining', note: 'Restaurant with friends' },
+            { id: '13', date: '2024-08-20', type: 'Deposit', amount: 300, name: 'Refund', note: 'Tax refund' },
+            { id: '14', date: '2024-08-25', type: 'Withdrawal', amount: 90, name: 'Shopping', note: 'New clothes' },
+            { id: '15', date: '2024-09-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' }
         ]);
+
         this.cols = [
             { field: 'date', header: 'Date' },
-            { field: 'name', header: 'Name' },
             { field: 'type', header: 'Type' },
             { field: 'amount', header: 'Amount' },
-            { field: 'account', header: 'Account' },
-            { field: 'remarks', header: 'Remarks' }
+            { field: 'name', header: 'Name' },
+            { field: 'note', header: 'Note' }
         ];
+
         this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
     }
 
@@ -250,14 +243,14 @@ export class Transaction implements OnInit {
     }
 
     openNew() {
-        this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+        this.record = { date: '', type: 'Deposit', amount: 0, name: '', note: '' };
         this.submitted = false;
-        this.transactionDialog = true;
+        this.productDialog = true;
     }
 
-    editRecord(record: TransactionRecord) {
+    editRecord(record: SavingRecord) {
         this.record = { ...record };
-        this.transactionDialog = true;
+        this.productDialog = true;
     }
 
     deleteSelectedRecords() {
@@ -279,18 +272,18 @@ export class Transaction implements OnInit {
     }
 
     hideDialog() {
-        this.transactionDialog = false;
+        this.productDialog = false;
         this.submitted = false;
     }
 
-    deleteRecord(record: TransactionRecord) {
+    deleteRecord(record: SavingRecord) {
         this.confirmationService.confirm({
             message: 'Are you sure you want to delete ' + record.name + '?',
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.records.set(this.records().filter((val) => val.id !== record.id));
-                this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+                this.record = { date: '', type: 'Deposit', amount: 0, name: '', note: '' };
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -344,16 +337,16 @@ export class Transaction implements OnInit {
                 });
                 this.records.set([..._records, this.record]);
             }
-            this.transactionDialog = false;
-            this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+            this.productDialog = false;
+            this.record = { date: '', type: 'Deposit', amount: 0, name: '', note: '' };
         }
     }
 
     getSeverityType(type: string) {
         switch (type) {
-            case 'Income':
+            case 'Deposit':
                 return 'success';
-            case 'Expense':
+            case 'Withdrawal':
                 return 'danger';
             default:
                 return 'info';
