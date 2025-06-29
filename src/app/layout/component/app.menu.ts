@@ -24,7 +24,12 @@ export class AppMenu {
                 items: [
                     {
                          label: 'Synthèse', 
-                         icon: 'pi pi-fw pi-objects-column', routerLink: ['/'] },
+                         icon: 'pi pi-fw pi-objects-column', routerLink: ['/'] 
+                    },
+                ]
+            },
+            {
+                items: [
                     {
                         label: 'Patrimoine',
                         icon: 'pi pi-fw pi-chart-bar',
@@ -35,14 +40,20 @@ export class AppMenu {
                             { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
                             { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/uikit/media'] },
                             { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/uikit/menu'] },
-                            { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/uikit/charts'] },
                         ]
                     },
                 ]
             },
             {
-                icon: 'pi pi-fw pi-briefcase',
-                routerLink: ['/pages'],
+                items: [
+                    {
+                         label: 'Transaction', 
+                         icon: 'pi pi-fw pi-receipt', 
+                         routerLink: ['/pages/transaction']
+                    },
+                ]
+            },
+            {
                 items: [
                     {
                         label: 'Landing',
@@ -69,11 +80,6 @@ export class AppMenu {
                                 routerLink: ['/auth/access']
                             }
                         ]
-                    },
-                    {
-                        label: 'Crud',
-                        icon: 'pi pi-fw pi-pencil',
-                        routerLink: ['/pages/crud']
                     },
                     {
                         label: 'Not Found',

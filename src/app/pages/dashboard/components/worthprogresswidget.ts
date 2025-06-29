@@ -5,8 +5,10 @@ import { ChartModule } from 'primeng/chart';
 @Component({
     selector: 'app-worth-progress',
     template: `
-        <div class="card !mb-8">
-            <div class="font-semibold text-xl mb-4">Patrimoine brut</div>
+        <div class="card !mb-8 h-full flex flex-col">
+            <div class="mb-4">
+            <div class="font-semibold text-xl">Patrimoine Brut</div>
+            </div>
             <p-chart type="line" [data]="data" [options]="options" class="h-[30rem]" />
         </div>
     `,
