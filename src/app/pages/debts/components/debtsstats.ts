@@ -18,7 +18,7 @@ import { CommonModule } from '@angular/common';
                     </div>
                 </div>
                 <span class="text-primary font-medium">-{{ totalDebtChange | currency: 'EUR' }} </span>
-                <span class="text-muted-color">variation ce mois</span>
+                <span class="text-muted-color ml-2">variation ce mois</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -33,7 +33,7 @@ import { CommonModule } from '@angular/common';
                     </div>
                 </div>
                 <span class="text-primary font-medium">+{{ paidAmountChange | currency: 'EUR' }} </span>
-                <span class="text-muted-color">payé ce mois</span>
+                <span class="text-muted-color ml-2">payé ce mois</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -48,7 +48,7 @@ import { CommonModule } from '@angular/common';
                     </div>
                 </div>
                 <span class="text-primary font-medium">+{{ receivablesChange | currency: 'EUR' }} </span>
-                <span class="text-muted-color">créances ce mois</span>
+                <span class="text-muted-color ml-2">créances ce mois</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -63,7 +63,7 @@ import { CommonModule } from '@angular/common';
                     </div>
                 </div>
                 <span class="text-primary font-medium">{{ nextPaymentDate }}</span>
-                <span class="text-muted-color">date prévue</span>
+                <span class="text-muted-color ml-2">date prévue</span>
             </div>
         </div>
     `

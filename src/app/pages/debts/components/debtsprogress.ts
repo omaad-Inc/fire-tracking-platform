@@ -19,6 +19,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProductService } from '../../service/product.service';
+import { DatePickerModule } from 'primeng/datepicker';
 
 interface Column {
     field: string;
@@ -38,6 +39,8 @@ interface DebtRecord {
     name: string;
     total: number;
     paid: number; // For debts: amount paid; for receivables: amount received
+    interestRate: number; // Pourcentage
+    frequency: 'Mensuel' | 'Unique' | 'Libre';
     note?: string;
 }
 
@@ -62,8 +65,8 @@ interface DebtRecord {
         TagModule,
         InputIconModule,
         IconFieldModule,
-        ConfirmDialogModule
-    
+        ConfirmDialogModule,
+        DatePickerModule
     ],
     template: `
      <p-toolbar styleClass="mb-6">
@@ -94,7 +97,7 @@ interface DebtRecord {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Debts</h5>
+                    <h5 class="m-0">Gestion des Dettes</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -106,14 +109,12 @@ interface DebtRecord {
                     <th style="width: 3rem">
                         <p-tableHeaderCheckbox />
                     </th>
-                    <th pSortableColumn="date" style="min-width: 10rem">
-                        Date
-                        <p-sortIcon field="date" />
-                    </th>
-                    <th style="min-width: 10rem">Type</th>
                     <th style="min-width: 16rem">Name</th>
+                    <th style="min-width: 10rem">Type</th>
                     <th style="min-width: 10rem">Total</th>
                     <th style="min-width: 10rem">Payé/Reçu</th>
+                    <th style="min-width: 10rem">Taux d'intérêt</th>
+                    <th style="min-width: 10rem">Fréquence</th>
                     <th style="min-width: 10rem">Progression</th>
                     <th style="min-width: 12rem"></th>
                 </tr>
@@ -123,16 +124,17 @@ interface DebtRecord {
                     <td style="width: 3rem">
                         <p-tableCheckbox [value]="record" />
                     </td>
-                    <td>{{ record.date }}</td>
+                    <td>{{ record.name }}</td>
                     <td>
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td>{{ record.name }}</td>
                     <td>{{ record.total | currency:'EUR' }}</td>
                     <td>{{ record.paid | currency:'EUR' }}</td>
+                    <td>{{ record.interestRate }}%</td>
+                    <td>{{ record.frequency }}</td>
                     <td>
                         <div class="flex items-center gap-2">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-32" style="height: 8px">
+                            <div class="bg-surface-300 dark:bg-surface-500 w-full max-w-xs h-2 rounded-border overflow-hidden" style="height: 8px">
                                 <div [ngClass]="record.type === 'Debt' ? 'bg-primary-600' : 'bg-green-600'" class="h-full" [ngStyle]="{ width: getPercent(record) + '%' }"></div>
                             </div>
                             <span [ngClass]="record.type === 'Debt' ? 'text-primary-600' : 'text-green-600'" class="font-medium">{{ getPercent(record) }}%</span>
@@ -147,31 +149,40 @@ interface DebtRecord {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Debt/Receivable Details" [modal]="true">
+        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px', minHeight: '600px', maxHeight: '90vh' }" [header]="isEdit ? 'Debt/Receivable Details' : 'Ajouter une nouvelle Dette/Créance'" [modal]="true">
             <ng-template #content>
-                <div class="flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="date" class="block font-bold mb-3">Date</label>
-                        <input type="date" pInputText id="date" [(ngModel)]="record.date" required autofocus fluid />
+                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" inputId="date" dateFormat="yy-mm-dd" required class="w-full" />
                         <small class="text-red-500" *ngIf="submitted && !record.date">Date is required.</small>
                     </div>
                     <div>
                         <label for="type" class="block font-bold mb-3">Type</label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" fluid />
+                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" class="w-full" />
                     </div>
                     <div>
                         <label for="name" class="block font-bold mb-3">Name</label>
-                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required fluid />
+                        <input pInputText id="name" [(ngModel)]="record.name" required class="w-full" />
                         <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
                     </div>
                     <div>
                         <label for="total" class="block font-bold mb-3">Montant total</label>
-                        <p-inputnumber id="total" [(ngModel)]="record.total" mode="currency" currency="EUR" locale="fr-FR" fluid />
+                        <p-inputnumber id="total" [(ngModel)]="record.total" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
                     </div>
                     <div>
                         <label for="paid" class="block font-bold mb-3">Payé/Reçu</label>
-                        <p-inputnumber id="paid" [(ngModel)]="record.paid" mode="currency" currency="EUR" locale="fr-FR" fluid />
+                        <p-inputnumber id="paid" [(ngModel)]="record.paid" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
                     </div>
+                    <div>
+                        <label for="interestRate" class="block font-bold mb-3">Taux d'intérêt (%)</label>
+                        <p-inputnumber id="interestRate" [(ngModel)]="record.interestRate" mode="decimal" minFractionDigits="2" maxFractionDigits="2" suffix=" %" class="w-full" />
+                    </div>
+                    <div>
+                        <label for="frequency" class="block font-bold mb-3">Fréquence</label>
+                        <p-select [(ngModel)]="record.frequency" inputId="frequency" [options]="frequencies" optionLabel="label" optionValue="value" placeholder="Choisir une fréquence" class="w-full" />
+                    </div>
+                    <div class="md:col-span-2 mb-8"></div>
                 </div>
             </ng-template>
 
@@ -217,6 +228,7 @@ export class DebtsProgress implements OnInit {
     addPaymentIndex: number | null = null;
     addPaymentAmount: number | null = null;
     addPaymentSubmitted = false;
+    isEdit = false;
 
     records = signal<DebtRecord[]>([]);
 
@@ -229,6 +241,12 @@ export class DebtsProgress implements OnInit {
     types = [
         { label: 'Debt', value: 'Debt' },
         { label: 'Receivable', value: 'Receivable' }
+    ];
+
+    frequencies = [
+        { label: 'Mensuel', value: 'Mensuel' },
+        { label: 'Unique', value: 'Unique' },
+        { label: 'Libre', value: 'Libre' }
     ];
 
     @ViewChild('dt') dt!: Table;
@@ -252,18 +270,19 @@ export class DebtsProgress implements OnInit {
 
     loadDemoData() {
         this.records.set([
-            { id: '1', date: '2024-06-01', type: 'Debt', name: 'Loyer 2 mois', total: 2400, paid: 1200, note: 'Loyer en retard' },
-            { id: '2', date: '2024-06-10', type: 'Receivable', name: 'Ami doit remboursement', total: 1000, paid: 300, note: 'Prêt à un ami' },
-            { id: '3', date: '2024-06-15', type: 'Debt', name: 'Crédit Auto', total: 15000, paid: 5000, note: 'Crédit voiture' },
-            { id: '4', date: '2024-07-01', type: 'Receivable', name: 'Remboursement famille', total: 500, paid: 200, note: 'Avance à la famille' }
+            { id: '1', date: '2024-06-01', type: 'Debt', name: 'Loyer 2 mois', total: 2400, paid: 1200, interestRate: 2.5, frequency: 'Mensuel', note: 'Loyer en retard' },
+            { id: '2', date: '2024-06-10', type: 'Receivable', name: 'Ami doit remboursement', total: 1000, paid: 300, interestRate: 0, frequency: 'Libre', note: 'Prêt à un ami' },
+            { id: '3', date: '2024-06-15', type: 'Debt', name: 'Crédit Auto', total: 15000, paid: 5000, interestRate: 3.2, frequency: 'Mensuel', note: 'Crédit voiture' },
+            { id: '4', date: '2024-07-01', type: 'Receivable', name: 'Remboursement famille', total: 500, paid: 200, interestRate: 0, frequency: 'Unique', note: 'Avance à la famille' }
         ]);
 
         this.cols = [
-            { field: 'date', header: 'Date' },
-            { field: 'type', header: 'Type' },
             { field: 'name', header: 'Name' },
+            { field: 'type', header: 'Type' },
             { field: 'total', header: 'Total' },
             { field: 'paid', header: 'Payé/Reçu' },
+            { field: 'interestRate', header: "Taux d'intérêt" },
+            { field: 'frequency', header: 'Fréquence' },
             { field: 'progression', header: 'Progression' },
             { field: 'note', header: 'Note' }
         ];
@@ -276,14 +295,16 @@ export class DebtsProgress implements OnInit {
     }
 
     openNew() {
-        this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '' };
+        this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
         this.submitted = false;
         this.productDialog = true;
+        this.isEdit = false;
     }
 
     editRecord(record: DebtRecord) {
         this.record = { ...record };
         this.productDialog = true;
+        this.isEdit = true;
     }
 
     deleteSelectedRecords() {
@@ -307,6 +328,7 @@ export class DebtsProgress implements OnInit {
     hideDialog() {
         this.productDialog = false;
         this.submitted = false;
+        this.isEdit = false;
     }
 
     deleteRecord(record: DebtRecord) {
@@ -316,7 +338,7 @@ export class DebtsProgress implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.records.set(this.records().filter((val) => val.id !== record.id));
-                this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '' };
+                this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Successful',
@@ -371,7 +393,7 @@ export class DebtsProgress implements OnInit {
                 this.records.set([..._records, this.record]);
             }
             this.productDialog = false;
-            this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '' };
+            this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
         }
     }
 

@@ -19,6 +19,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
+import { DatePickerModule } from 'primeng/datepicker';
 
 interface Column {
     field: string;
@@ -62,7 +63,8 @@ interface TransactionRecord {
         TagModule,
         InputIconModule,
         IconFieldModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        DatePickerModule
     ],
     template: `
         <p-toolbar styleClass="mb-6">
@@ -142,32 +144,32 @@ interface TransactionRecord {
 
         <p-dialog [(visible)]="transactionDialog" [style]="{ width: '450px' }" header="Transaction Details" [modal]="true">
             <ng-template #content>
-                <div class="flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="date" class="block font-bold mb-3">Date</label>
-                        <input type="date" pInputText id="date" [(ngModel)]="record.date" required autofocus fluid />
+                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" inputId="date" dateFormat="yy-mm-dd" required class="w-full" />
                         <small class="text-red-500" *ngIf="submitted && !record.date">Date is required.</small>
                     </div>
                     <div>
                         <label for="name" class="block font-bold mb-3">Name</label>
-                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required fluid />
+                        <input pInputText id="name" [(ngModel)]="record.name" required class="w-full" />
                         <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
                     </div>
                     <div>
                         <label for="type" class="block font-bold mb-3">Type</label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" fluid />
+                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" class="w-full" />
                     </div>
                     <div>
                         <label for="amount" class="block font-bold mb-3">Amount</label>
-                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="USD" locale="en-US" fluid />
+                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="USD" locale="en-US" class="w-full" />
                     </div>
                     <div>
                         <label for="account" class="block font-bold mb-3">Account</label>
-                        <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" optionLabel="label" optionValue="value" placeholder="Select an Account" fluid />
+                        <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" optionLabel="label" optionValue="value" placeholder="Select an Account" class="w-full" />
                     </div>
-                    <div>
+                    <div class="mb-8 md:col-span-2">
                         <label for="remarks" class="block font-bold mb-3">Remarks</label>
-                        <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" cols="20" fluid></textarea>
+                        <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" cols="20" class="w-full"></textarea>
                     </div>
                 </div>
             </ng-template>
