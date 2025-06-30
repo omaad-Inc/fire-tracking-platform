@@ -34,22 +34,22 @@ export class SavingsProgress implements OnInit {
             const documentStyle = getComputedStyle(document.documentElement);
             const textColor = documentStyle.getPropertyValue('--text-color') || '#fff';
             const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#aaa';
-            const borderColor = '#059669';
-            const backgroundColor = 'rgba(5, 150, 105, 0.2)';
+            const borderColor = '#a855f7';
+            const backgroundColor = 'rgba(168, 85, 247, 0.15)';
 
             this.data = {
-                labels: [
-                    'Juin 2025', 'Juil 2025', 'Août 2025', 'Sep 2025', 'Oct 2025', 'Nov 2025',
-                    'Déc 2025', 'Jan 2026', 'Fév 2026', 'Mar 2026', 'Avr 2026', 'Mai 2026', 'Juin 2026', 'Juil 2026', 'Août 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026', 'Déc 2026', 'Jan 2027', 'Fév 2027', 'Mar 2027', 'Avr 2027', 'Mai 2027', 'Juin 2027'
-                ],
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                 datasets: [
                     {
-                        data: [1000, 1200, 1500, 1800, 2200, 2700, 3200, 3800, 4500, 5200, 6000, 6800, 7600, 8300, 9000, 9500, 9800, 10000, 10200, 10400, 10600, 10800, 10900, 10950, 11000],
+                        data: [1000, 2200, 3400, 4800, 6000, 6600],
                         fill: true,
                         borderColor: borderColor,
                         tension: 0.4,
                         backgroundColor: backgroundColor,
-                        pointRadius: 3
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: borderColor,
+                        pointBorderWidth: 2
                     }
                 ]
             };
@@ -77,13 +77,13 @@ export class SavingsProgress implements OnInit {
                             color: textColorSecondary,
                             callback: function(value: number) {
                                 if (value >= 1000) {
-                                    return (value / 1000) + 'K€';
+                                    return '$' + (value / 1000) + 'K';
                                 }
-                                return value + '€';
+                                return '$' + value;
                             }
                         },
                         grid: {
-                            display: false,
+                            display: true,
                             drawBorder: false
                         }
                     }

@@ -15,10 +15,18 @@ import { LayoutService } from '../../../layout/service/layout.service';
         <div class="mb-4">
             <div class="font-semibold text-xl">Distribution du Patrimoine</div>
         </div>
-        <div class="flex-1 flex items-center justify-center relative">
-            <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full max-w-[350px]"></p-chart >
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span class="font-bold text-xl">{{ total | number:'1.0-0' }} €</span>
+        <div class="flex-1 flex flex-col items-center justify-center">
+            <div class="relative w-full max-w-[350px] mb-4">
+                <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                    <span class="font-bold text-xl text-center block">{{ total | number:'1.0-0' }} €</span>
+                </div>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4">
+                <div *ngFor="let label of pieData?.labels; let i = index" class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full" [style.background-color]="getColor(i)"></div>
+                    <span class="text-sm">{{ label }}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -31,6 +39,8 @@ export class WorthDistributionWidget {
     pieOptions: any;
 
     total: number = 0;
+
+    colors: string[] = [];
 
     subscription: Subscription;
     constructor(private layoutService: LayoutService) {
@@ -50,17 +60,19 @@ export class WorthDistributionWidget {
         const values = [1200, 6500, 300, 100];
         this.total = values.reduce((a, b) => a + b, 0);
 
+        this.colors = [
+            documentStyle.getPropertyValue('--p-indigo-500'),
+            documentStyle.getPropertyValue('--p-teal-500'),
+            documentStyle.getPropertyValue('--p-purple-500'),
+            documentStyle.getPropertyValue('--p-orange-500')
+        ];
+
         this.pieData = {
             labels: ['Compte bancaire', 'Matelas de sécurité', 'PEA bourso', 'Immobilier'],
             datasets: [
                 {
                     data: values,
-                    backgroundColor: [
-                        documentStyle.getPropertyValue('--p-indigo-500'),
-                        documentStyle.getPropertyValue('--p-teal-500'),
-                        documentStyle.getPropertyValue('--p-purple-500'),
-                        documentStyle.getPropertyValue('--p-orange-500')
-                    ],
+                    backgroundColor: this.colors,
                     hoverBackgroundColor: [
                         documentStyle.getPropertyValue('--p-indigo-400'),
                         documentStyle.getPropertyValue('--p-teal-400'),
@@ -74,16 +86,17 @@ export class WorthDistributionWidget {
         this.pieOptions = {
             plugins: {
                 legend: {
-                    labels: {
-                        usePointStyle: true,
-                        color: textColor
-                    }
+                    display: false // Désactive la légende automatique
                 }
             },
-            cutout: '75%'
+            cutout: '75%',
+            maintainAspectRatio: true,
+            responsive: true
         };
+    }
 
-       
+    getColor(index: number): string {
+        return this.colors[index] || '#000';
     }
 
     ngOnDestroy() {
@@ -92,5 +105,3 @@ export class WorthDistributionWidget {
         }
     }
 }
-    
-

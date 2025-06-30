@@ -20,20 +20,20 @@ import { AllExpensesProgression } from './components/allexpenseprogressionwidget
             <div class="col-span-12 xl:col-span-6">
                 <app-debts-overview />
             </div>
-            <div class="col-span-12 xl:col-span-7">
+            <div class="col-span-12 xl:col-span-6">
                 <app-worth-progress />
             </div>
 
-            <div class="col-span-12 xl:col-span-5">
+            <div class="col-span-12 xl:col-span-6">
                <app-worth-distribution-widget /> 
             </div>
 
-             <div class="col-span-12 xl:col-span-7">
+             <div class="col-span-12 xl:col-span-6">
                <app-recent-transactions-widget /> 
             </div>
            
 
-            <div class="col-span-12 xl:col-span-5">
+            <div class="col-span-12 xl:col-span-6">
                 <app-expenses-progression-widget />
             </div>
             
