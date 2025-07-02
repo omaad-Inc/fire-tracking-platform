@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 interface Transaction {
     category: string;
@@ -12,12 +13,12 @@ interface Transaction {
 @Component({
     standalone: true,
     selector: 'app-recent-transactions-widget',
-    imports: [CommonModule],
+    imports: [CommonModule, RouterModule],
     template: `
     <div class="card !mb-8 h-full">
         <div class="flex justify-between items-center mb-4">
-            <div class="font-semibold text-xl">Recent Transactions</div>
-            <a href="#" class="text-primary font-medium text-sm">View More</a>
+            <div class="font-semibold text-xl">Transactions Récentes</div>
+            <a [routerLink]="['/pages/transaction']" class="text-primary font-medium text-sm">View More</a>
         </div>
         <div *ngFor="let tx of transactions" class="flex items-center py-4 border-b last:border-b-0 border-surface-200 dark:border-surface-700">
             <div class="flex items-center justify-center rounded-full mr-4 shrink-0" [ngStyle]="{'background': tx.color, 'width': '2.5rem', 'height': '2.5rem'}">
@@ -28,7 +29,7 @@ interface Transaction {
                 <div class="text-muted-color text-sm">{{ tx.description }}</div>
             </div>
             <div class="flex flex-col items-end ml-4">
-                <span class="font-semibold text-red-500">-{{ tx.amount | currency:'USD':'symbol':'1.0-0' }}</span>
+                <span class="font-semibold text-red-500">-{{ tx.amount | currency:'EUR':'symbol':'1.0-0' }}</span>
                 <span class="text-muted-color text-xs mt-1">{{ tx.date }}</span>
             </div>
         </div>

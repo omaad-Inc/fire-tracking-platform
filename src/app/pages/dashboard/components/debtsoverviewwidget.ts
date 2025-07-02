@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   standalone: true,
   selector: 'app-debts-overview',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
     template: `<div class="card">
         <div class="flex justify-between items-center mb-6">
-            <div class="font-semibold text-xl">Debts Overview</div>
+            <div class="font-semibold text-xl">Vue Globale des Dettes</div>
+            <a [routerLink]="['/pages/debts']" class="text-primary font-medium text-sm">View More</a>
         </div>
         <ul class="list-none p-0 m-0">
             <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">

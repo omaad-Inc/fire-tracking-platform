@@ -77,9 +77,9 @@ export class SavingsProgress implements OnInit {
                             color: textColorSecondary,
                             callback: function(value: number) {
                                 if (value >= 1000) {
-                                    return '$' + (value / 1000) + 'K';
+                                    return '€' + (value / 1000) + 'K';
                                 }
-                                return '$' + value;
+                                return '€' + value;
                             }
                         },
                         grid: {

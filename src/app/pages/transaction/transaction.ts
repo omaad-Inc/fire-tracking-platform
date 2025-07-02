@@ -131,7 +131,7 @@ interface TransactionRecord {
                     <td>
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td class="text-right">{{ record.amount | currency: 'USD' }}</td>
+                    <td class="text-right">{{ record.amount | currency: 'EUR' }}</td>
                     <td>{{ record.account }}</td>
                     <td>{{ record.remarks }}</td>
                     <td>
@@ -161,7 +161,7 @@ interface TransactionRecord {
                     </div>
                     <div>
                         <label for="amount" class="block font-bold mb-3">Amount</label>
-                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="USD" locale="en-US" class="w-full" />
+                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
                     </div>
                     <div>
                         <label for="account" class="block font-bold mb-3">Account</label>

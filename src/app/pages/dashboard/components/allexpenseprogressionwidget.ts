@@ -13,7 +13,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
     template: `
     <div class="card !mb-8 h-full flex flex-col">
         <div class="mb-4">
-            <div class="font-semibold text-xl">All Expenses</div>
+            <div class="font-semibold text-xl">Toutes les Dépenses</div>
         </div>
         <div class="flex-1 flex flex-col items-center justify-center">
             <div class="relative w-full max-w-[350px] mb-4">

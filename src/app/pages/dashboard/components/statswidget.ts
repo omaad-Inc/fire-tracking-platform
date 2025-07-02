@@ -6,12 +6,12 @@ import { CommonModule } from '@angular/common';
     selector: 'app-stats-widget',
     imports: [CommonModule],
     template: `
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Total Net Worth</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ netWorth | currency: 'USD' }}</div>
+                        <span class="block text-muted-color font-medium mb-4">Patrimoine Total Brut</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ netWorth | currency: 'EUR' }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-wallet text-green-500 !text-xl"></i>
@@ -21,47 +21,34 @@ import { CommonModule } from '@angular/common';
                 <span class="text-muted-color">since last month</span>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Monthly Savings Rate</span>
+                        <span class="block text-muted-color font-medium mb-4">Taux Epargne mensuel</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ savingsRate }}%</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-chart-line text-blue-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">{{ savingsAmount | currency: 'USD' }} </span>
+                <span class="text-primary font-medium">{{ savingsAmount | currency: 'EUR' }} </span>
                 <span class="text-muted-color">saved this month</span>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">FIRE Progress</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ fireProgress }}%</div>
-                    </div>
-                    <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-flag text-orange-500 !text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-primary font-medium">FIRE Number: {{ fireNumber | currency: '€' }}</span>
-            </div>
-        </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <span class="block text-muted-color font-medium mb-4">Passive Income</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ passiveIncome | currency: 'USD' }}</div>
+                        <span class="block text-muted-color font-medium mb-4">Revenus Passifs</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ passiveIncome | currency: 'EUR' }}</div>
                     </div>
                     <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-star text-purple-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">+{{ passiveIncomeChange | currency: 'USD' }} </span>
+                <span class="text-primary font-medium">+{{ passiveIncomeChange | currency: 'EUR' }} </span>
                 <span class="text-muted-color">this month</span>
             </div>
         </div>
