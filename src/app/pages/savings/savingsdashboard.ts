@@ -9,10 +9,10 @@ import { SavingsStats } from './components/savingstats';
     imports: [SavingsProgress, SavingsTransactions, SavingsStats],
     template: `
         <div class="grid grid-cols-12 gap-8">
-            <div class="col-span-12 xl:col-span-7">
+            <div class="col-span-12 xl:col-span-8">
                 <app-savings-progress />
             </div>
-            <app-savings-stats class="col-span-12 xl:col-span-5" />
+            <app-savings-stats class="col-span-12 xl:col-span-4" />
             <div class="col-span-12">
                 <app-savings-transactions />
             </div>

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
     selector: 'app-debts-stats',
     imports: [CommonModule],
     template: `
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
                 <span class="text-muted-color ml-2">variation ce mois</span>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
@@ -36,7 +36,7 @@ import { CommonModule } from '@angular/common';
                 <span class="text-muted-color ml-2">payé ce mois</span>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
@@ -49,21 +49,6 @@ import { CommonModule } from '@angular/common';
                 </div>
                 <span class="text-primary font-medium">+{{ receivablesChange | currency: 'EUR' }} </span>
                 <span class="text-muted-color ml-2">créances ce mois</span>
-            </div>
-        </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <span class="block text-muted-color font-medium mb-4">Prochain Paiement</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ nextPayment | currency: 'EUR' }}</div>
-                    </div>
-                    <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-calendar text-orange-500 !text-xl"></i>
-                    </div>
-                </div>
-                <span class="text-primary font-medium">{{ nextPaymentDate }}</span>
-                <span class="text-muted-color ml-2">date prévue</span>
             </div>
         </div>
     `
