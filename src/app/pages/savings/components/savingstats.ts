@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { SavingsService, SavingsStatsSummary } from '../../service/savings.service';
 
 @Component({
     standalone: true,
@@ -32,8 +33,20 @@ import { CommonModule } from '@angular/common';
     `
 })
 export class SavingsStats {
-    totalSavings = 45000; // Example data
-    thisMonthSaving = 1200; // Example data
-    avgMonthlySaving = 1100; // Example data
+    totalSavings = 0;
+    thisMonthSaving = 0;
+    avgMonthlySaving = 0;
+
+    constructor(private savingsService: SavingsService) {
+        this.loadStats();
+    }
+
+    private loadStats() {
+        this.savingsService.getStatsSummary().then((s: SavingsStatsSummary) => {
+            this.totalSavings = s.totalSavings;
+            this.thisMonthSaving = s.thisMonthSaving;
+            this.avgMonthlySaving = s.avgMonthlySaving;
+        });
+    }
 }
 

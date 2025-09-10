@@ -4,21 +4,18 @@ import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
-import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ProductService } from '../../service/product.service';
+import { SavingsService, SavingRecord } from '../../service/savings.service';
 
 interface Column {
     field: string;
@@ -26,19 +23,6 @@ interface Column {
     customExportHeader?: string;
 }
 
-interface ExportColumn {
-    title: string;
-    dataKey: string;
-}
-
-interface SavingRecord {
-    id?: string;
-    date: string;
-    type: 'Deposit' | 'Withdrawal';
-    amount: number;
-    name: string;
-    note?: string;
-}
 
 @Component({
     selector: 'app-savings-transactions',
@@ -48,14 +32,11 @@ interface SavingRecord {
         TableModule,
         FormsModule,
         ButtonModule,
-        RippleModule,
         ToastModule,
         ToolbarModule,
-        RatingModule,
         InputTextModule,
         TextareaModule,
         SelectModule,
-        RadioButtonModule,
         InputNumberModule,
         DialogModule,
         TagModule,
@@ -81,7 +62,9 @@ interface SavingRecord {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['date', 'type', 'amount', 'name', 'note']"
+            sortField="date"
+            [sortOrder]="-1"
+            [globalFilterFields]="['date', 'type', 'amount', 'name']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedRecords"
             [rowHover]="true"
@@ -92,7 +75,7 @@ interface SavingRecord {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Manage Savings</h5>
+                    <h5 class="m-0">Gestion de l'Epargne</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
                         <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
@@ -110,8 +93,7 @@ interface SavingRecord {
                     </th>
                     <th style="min-width: 10rem">Type</th>
                     <th style="min-width: 10rem">Amount</th>
-                    <th style="min-width: 16rem">Name</th>
-                    <th style="min-width: 20rem">Note</th>
+                    <th style="min-width: 20rem">Name</th>
                     <th style="min-width: 12rem"></th>
                 </tr>
             </ng-template>
@@ -126,7 +108,6 @@ interface SavingRecord {
                     </td>
                     <td>{{ record.amount | currency: 'EUR' }}</td>
                     <td>{{ record.name }}</td>
-                    <td>{{ record.note }}</td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
                         <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteRecord(record)" />
@@ -156,10 +137,7 @@ interface SavingRecord {
                         <input type="text" pInputText id="name" [(ngModel)]="record.name" required fluid />
                         <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
                     </div>
-                    <div>
-                        <label for="note" class="block font-bold mb-3">Note</label>
-                        <textarea id="note" pTextarea [(ngModel)]="record.note" rows="3" cols="20" fluid></textarea>
-                    </div>
+                    
                 </div>
             </ng-template>
 
@@ -171,7 +149,7 @@ interface SavingRecord {
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, ProductService, ConfirmationService]
+    providers: [MessageService, ConfirmationService]
 })
 export class SavingsTransactions implements OnInit {
     productDialog: boolean = false;
@@ -191,13 +169,12 @@ export class SavingsTransactions implements OnInit {
 
     @ViewChild('dt') dt!: Table;
 
-    exportColumns!: ExportColumn[];
-
     cols!: Column[];
 
     constructor(
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private savingsService: SavingsService
     ) {}
 
     exportCSV() {
@@ -205,37 +182,20 @@ export class SavingsTransactions implements OnInit {
     }
 
     ngOnInit() {
-        this.loadDemoData();
+        this.loadDataFromService();
     }
 
-    loadDemoData() {
-        this.records.set([
-            { id: '1', date: '2024-06-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' },
-            { id: '2', date: '2024-06-10', type: 'Withdrawal', amount: 100, name: 'Gift', note: 'Birthday present for friend' },
-            { id: '3', date: '2024-06-15', type: 'Deposit', amount: 200, name: 'Bonus', note: 'Performance bonus' },
-            { id: '4', date: '2024-06-20', type: 'Withdrawal', amount: 50, name: 'Emergency', note: 'Unexpected expense' },
-            { id: '5', date: '2024-07-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' },
-            { id: '6', date: '2024-07-12', type: 'Withdrawal', amount: 80, name: 'Groceries', note: 'Supermarket shopping' },
-            { id: '7', date: '2024-07-15', type: 'Deposit', amount: 150, name: 'Freelance', note: 'Side project payment' },
-            { id: '8', date: '2024-07-20', type: 'Withdrawal', amount: 60, name: 'Transport', note: 'Car repair' },
-            { id: '9', date: '2024-08-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' },
-            { id: '10', date: '2024-08-05', type: 'Withdrawal', amount: 120, name: 'Vacation', note: 'Trip to the beach' },
-            { id: '11', date: '2024-08-10', type: 'Deposit', amount: 100, name: 'Gift', note: 'Received from family' },
-            { id: '12', date: '2024-08-15', type: 'Withdrawal', amount: 40, name: 'Dining', note: 'Restaurant with friends' },
-            { id: '13', date: '2024-08-20', type: 'Deposit', amount: 300, name: 'Refund', note: 'Tax refund' },
-            { id: '14', date: '2024-08-25', type: 'Withdrawal', amount: 90, name: 'Shopping', note: 'New clothes' },
-            { id: '15', date: '2024-09-01', type: 'Deposit', amount: 500, name: 'Monthly Saving', note: 'Salary deposit' }
-        ]);
-
-        this.cols = [
-            { field: 'date', header: 'Date' },
-            { field: 'type', header: 'Type' },
-            { field: 'amount', header: 'Amount' },
-            { field: 'name', header: 'Name' },
-            { field: 'note', header: 'Note' }
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+    loadDataFromService() {
+        this.savingsService.getTransactions().then((data) => {
+            const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            this.records.set(sorted);
+            this.cols = [
+                { field: 'date', header: 'Date' },
+                { field: 'type', header: 'Type' },
+                { field: 'amount', header: 'Amount' },
+                { field: 'name', header: 'Name' }
+            ];
+        });
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -243,7 +203,7 @@ export class SavingsTransactions implements OnInit {
     }
 
     openNew() {
-        this.record = { date: '', type: 'Deposit', amount: 0, name: '', note: '' };
+        this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as any;
         this.submitted = false;
         this.productDialog = true;
     }
@@ -259,13 +219,16 @@ export class SavingsTransactions implements OnInit {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.records.set(this.records().filter((val) => !this.selectedRecords?.includes(val)));
-                this.selectedRecords = null;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Records Deleted',
-                    life: 3000
+                const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
+                this.savingsService.deleteTransactions(ids).then(() => {
+                    this.records.set(this.records().filter((val) => !ids.includes(val.id!)));
+                    this.selectedRecords = null;
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Records Deleted',
+                        life: 3000
+                    });
                 });
             }
         });
@@ -282,13 +245,16 @@ export class SavingsTransactions implements OnInit {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.records.set(this.records().filter((val) => val.id !== record.id));
-                this.record = { date: '', type: 'Deposit', amount: 0, name: '', note: '' };
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Deleted',
-                    life: 3000
+                if (!record.id) return;
+                this.savingsService.deleteTransactions([record.id]).then(() => {
+                    this.records.set(this.records().filter((val) => val.id !== record.id));
+                    this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as any;
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Deleted',
+                        life: 3000
+                    });
                 });
             }
         });
@@ -305,40 +271,36 @@ export class SavingsTransactions implements OnInit {
         return index;
     }
 
-    createId(): string {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (var i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    }
+    // id creation delegated to savings service
 
     saveRecord() {
         this.submitted = true;
         let _records = this.records();
         if (this.record.name?.trim()) {
             if (this.record.id) {
-                _records[this.findIndexById(this.record.id)] = this.record;
-                this.records.set([..._records]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Updated',
-                    life: 3000
+                this.savingsService.updateTransaction(this.record).then((updated) => {
+                    _records[this.findIndexById(updated.id!)] = updated;
+                    this.records.set(this.sortDesc([..._records]));
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Updated',
+                        life: 3000
+                    });
                 });
             } else {
-                this.record.id = this.createId();
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Created',
-                    life: 3000
+                this.savingsService.addTransaction(this.record).then((created) => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Created',
+                        life: 3000
+                    });
+                    this.records.set(this.sortDesc([..._records, created]));
                 });
-                this.records.set([..._records, this.record]);
             }
             this.productDialog = false;
-            this.record = { date: '', type: 'Deposit', amount: 0, name: '', note: '' };
+            this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as any;
         }
     }
 
@@ -351,5 +313,9 @@ export class SavingsTransactions implements OnInit {
             default:
                 return 'info';
         }
+    }
+
+    private sortDesc(list: SavingRecord[]): SavingRecord[] {
+        return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
 }
