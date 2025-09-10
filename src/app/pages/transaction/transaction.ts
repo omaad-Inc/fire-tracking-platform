@@ -4,14 +4,11 @@ import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
-import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
@@ -19,6 +16,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Product, ProductService } from '../service/product.service';
+import { TransactionsService, TransactionRecord } from '../service/transactions.service';
 import { DatePickerModule } from 'primeng/datepicker';
 
 interface Column {
@@ -32,15 +30,7 @@ interface ExportColumn {
     dataKey: string;
 }
 
-interface TransactionRecord {
-    id?: string;
-    date: string;
-    name: string;
-    type: 'Income' | 'Expense';
-    amount: number;
-    account: string;
-    remarks?: string;
-}
+// TransactionRecord imported from TransactionsService
 
 @Component({
     selector: 'app-transaction',
@@ -50,14 +40,11 @@ interface TransactionRecord {
         TableModule,
         FormsModule,
         ButtonModule,
-        RippleModule,
         ToastModule,
         ToolbarModule,
-        RatingModule,
         InputTextModule,
         TextareaModule,
         SelectModule,
-        RadioButtonModule,
         InputNumberModule,
         DialogModule,
         TagModule,
@@ -207,7 +194,8 @@ export class Transaction implements OnInit {
 
     constructor(
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private transactionsService: TransactionsService
     ) {}
 
     exportCSV() {
@@ -215,36 +203,22 @@ export class Transaction implements OnInit {
     }
 
     ngOnInit() {
-        this.loadDemoData();
+        this.loadFromService();
     }
 
-    loadDemoData() {
-        this.records.set([
-            { id: '1', date: '2025-03-01', name: 'Investments', type: 'Income', amount: 900, account: 'Trade Republic', remarks: 'Crypto gains' },
-            { id: '2', date: '2025-03-01', name: 'Gifts', type: 'Expense', amount: 150, account: 'SG BANK', remarks: "Present for a friend's wedding" },
-            { id: '3', date: '2025-02-15', name: 'Education', type: 'Expense', amount: 200, account: 'Revolut', remarks: 'Subscription to an online course' },
-            { id: '4', date: '2025-02-10', name: 'Side Hustle', type: 'Income', amount: 700, account: 'N26', remarks: 'Etsy shop earnings' },
-            { id: '5', date: '2025-01-30', name: 'Home Maintenance', type: 'Expense', amount: 300, account: 'SG BANK', remarks: 'Fixing bathroom sink' },
-            { id: '6', date: '2025-01-20', name: 'Salary', type: 'Income', amount: 2500, account: 'SG BANK', remarks: 'Monthly salary' },
-            { id: '7', date: '2025-01-18', name: 'Groceries', type: 'Expense', amount: 120, account: 'Revolut', remarks: 'Supermarket' },
-            { id: '8', date: '2025-01-10', name: 'Freelance', type: 'Income', amount: 400, account: 'N26', remarks: 'Web project' },
-            { id: '9', date: '2025-01-05', name: 'Dining', type: 'Expense', amount: 60, account: 'SG BANK', remarks: 'Restaurant' },
-            { id: '10', date: '2024-12-25', name: 'Bonus', type: 'Income', amount: 500, account: 'SG BANK', remarks: 'Year-end bonus' },
-            { id: '11', date: '2024-12-20', name: 'Car Insurance', type: 'Expense', amount: 350, account: 'Revolut', remarks: 'Annual insurance payment' },
-            { id: '12', date: '2024-12-15', name: 'Interest', type: 'Income', amount: 45, account: 'Trade Republic', remarks: 'Savings account interest' },
-            { id: '13', date: '2024-12-10', name: 'Utilities', type: 'Expense', amount: 90, account: 'SG BANK', remarks: 'Electricity and water bill' },
-            { id: '14', date: '2024-12-05', name: 'Child Benefit', type: 'Income', amount: 200, account: 'N26', remarks: 'Government support' },
-            { id: '15', date: '2024-11-30', name: 'Medical', type: 'Expense', amount: 75, account: 'Revolut', remarks: 'Doctor visit' }
-        ]);
-        this.cols = [
-            { field: 'date', header: 'Date' },
-            { field: 'name', header: 'Name' },
-            { field: 'type', header: 'Type' },
-            { field: 'amount', header: 'Amount' },
-            { field: 'account', header: 'Account' },
-            { field: 'remarks', header: 'Remarks' }
-        ];
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+    loadFromService() {
+        this.transactionsService.getRecords().then((data) => {
+            this.records.set(data);
+            this.cols = [
+                { field: 'date', header: 'Date' },
+                { field: 'name', header: 'Name' },
+                { field: 'type', header: 'Type' },
+                { field: 'amount', header: 'Amount' },
+                { field: 'account', header: 'Account' },
+                { field: 'remarks', header: 'Remarks' }
+            ];
+            this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+        });
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -268,13 +242,16 @@ export class Transaction implements OnInit {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.records.set(this.records().filter((val) => !this.selectedRecords?.includes(val)));
-                this.selectedRecords = null;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Records Deleted',
-                    life: 3000
+                const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
+                this.transactionsService.deleteRecords(ids).then(() => {
+                    this.records.set(this.records().filter((val) => !ids.includes(val.id!)));
+                    this.selectedRecords = null;
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Records Deleted',
+                        life: 3000
+                    });
                 });
             }
         });
@@ -291,13 +268,16 @@ export class Transaction implements OnInit {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.records.set(this.records().filter((val) => val.id !== record.id));
-                this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Deleted',
-                    life: 3000
+                if (!record.id) return;
+                this.transactionsService.deleteRecords([record.id]).then(() => {
+                    this.records.set(this.records().filter((val) => val.id !== record.id));
+                    this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Deleted',
+                        life: 3000
+                    });
                 });
             }
         });
@@ -314,37 +294,31 @@ export class Transaction implements OnInit {
         return index;
     }
 
-    createId(): string {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (var i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    }
-
     saveRecord() {
         this.submitted = true;
         let _records = this.records();
         if (this.record.name?.trim()) {
             if (this.record.id) {
-                _records[this.findIndexById(this.record.id)] = this.record;
-                this.records.set([..._records]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Updated',
-                    life: 3000
+                this.transactionsService.updateRecord(this.record).then((updated) => {
+                    _records[this.findIndexById(updated.id!)] = updated;
+                    this.records.set([..._records]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Updated',
+                        life: 3000
+                    });
                 });
             } else {
-                this.record.id = this.createId();
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Created',
-                    life: 3000
+                this.transactionsService.addRecord(this.record).then((created) => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Created',
+                        life: 3000
+                    });
+                    this.records.set([..._records, created]);
                 });
-                this.records.set([..._records, this.record]);
             }
             this.transactionDialog = false;
             this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };

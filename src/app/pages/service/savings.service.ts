@@ -20,6 +20,14 @@ export interface SavingsSeriesPoint {
     value: number;
 }
 
+export interface SavingsGoal {
+    label: string;
+    current: number;
+    target: number;
+    colorClass: string;
+    textColorClass: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SavingsService {
     private demoRecords: SavingRecord[] = [
@@ -112,6 +120,30 @@ export class SavingsService {
             text += possible.charAt(Math.floor(Math.random() * possible.length));
         }
         return text;
+    }
+
+    getGoals(): Promise<SavingsGoal[]> {
+        // Compute from existing transactions
+        const signed = this.demoRecords.map((r) => ({
+            ...r,
+            signedAmount: r.type === 'Deposit' ? r.amount : -r.amount
+        }));
+
+        const totalSavings = signed.reduce((sum, r) => sum + r.signedAmount, 0);
+        const perCurrent = signed
+            .filter((r) => r.type === 'Deposit' && (r.name || '').toLowerCase().includes('monthly'))
+            .reduce((sum, r) => sum + r.amount, 0);
+        const vacationCurrent = signed
+            .filter((r) => r.type === 'Deposit' && ((r.name || '').toLowerCase().includes('vacation') || (r.note || '').toLowerCase().includes('vacation') || (r.note || '').toLowerCase().includes('travel')))
+            .reduce((sum, r) => sum + r.amount, 0);
+
+        const goals: SavingsGoal[] = [
+            { label: 'Emergency Fund', current: Math.max(0, totalSavings), target: 10000, colorClass: 'bg-blue-700', textColorClass: 'text-blue-700' },
+            { label: 'Plan Epargne Retraite', current: Math.max(0, perCurrent), target: 20000, colorClass: 'bg-green-600', textColorClass: 'text-green-600' },
+            { label: 'Vacation', current: Math.max(0, vacationCurrent), target: 3000, colorClass: 'bg-orange-600', textColorClass: 'text-orange-600' }
+        ];
+
+        return Promise.resolve(goals);
     }
 }
 
