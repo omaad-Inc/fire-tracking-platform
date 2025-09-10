@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DebtsService, DebtsStatsSummary } from '../../service/debts.service';
 
 @Component({
     standalone: true,
@@ -54,13 +55,28 @@ import { CommonModule } from '@angular/common';
     `
 })
 export class DeptsStats {
-    totalDebt = 18500; // Dette totale en EUR
-    totalDebtChange = 500; // Variation ce mois
-    paidAmount = 7200; // Montant déjà payé en EUR
-    paidAmountChange = 800; // Payé ce mois
-    receivables = 3200; // Montant des créances en EUR
-    receivablesChange = 200; // Créances ce mois
-    nextPayment = 1200; // Prochain paiement en EUR
-    nextPaymentDate = '15/07/2024'; // Date du prochain paiement
+    totalDebt = 0;
+    totalDebtChange = 0;
+    paidAmount = 0;
+    paidAmountChange = 0;
+    receivables = 0;
+    receivablesChange = 0;
+    nextPayment = 0;
+    nextPaymentDate = '';
+
+    constructor(private debtsService: DebtsService) {
+        this.loadStats();
+    }
+
+    private loadStats() {
+        this.debtsService.getStats().then((s: DebtsStatsSummary) => {
+            this.totalDebt = s.totalDebt;
+            this.totalDebtChange = s.totalDebtChange || 0;
+            this.paidAmount = s.paidAmount;
+            this.paidAmountChange = s.paidAmountChange || 0;
+            this.receivables = s.receivables;
+            this.receivablesChange = s.receivablesChange || 0;
+        });
+    }
 }
 

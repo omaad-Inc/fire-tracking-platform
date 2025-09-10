@@ -4,22 +4,19 @@ import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { RatingModule } from 'primeng/rating';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
-import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ProductService } from '../../service/product.service';
 import { DatePickerModule } from 'primeng/datepicker';
+import { DebtsService, DebtRecord } from '../../service/debts.service';
 
 interface Column {
     field: string;
@@ -32,17 +29,7 @@ interface ExportColumn {
     dataKey: string;
 }
 
-interface DebtRecord {
-    id?: string;
-    date: string;
-    type: 'Debt' | 'Receivable';
-    name: string;
-    total: number;
-    paid: number; // For debts: amount paid; for receivables: amount received
-    interestRate: number; // Pourcentage
-    frequency: 'Mensuel' | 'Unique' | 'Libre';
-    note?: string;
-}
+// DebtRecord type imported from DebtsService
 
 @Component({
     standalone: true,
@@ -52,14 +39,11 @@ interface DebtRecord {
         TableModule,
         FormsModule,
         ButtonModule,
-        RippleModule,
         ToastModule,
         ToolbarModule,
-        RatingModule,
         InputTextModule,
         TextareaModule,
         SelectModule,
-        RadioButtonModule,
         InputNumberModule,
         DialogModule,
         TagModule,
@@ -220,7 +204,7 @@ interface DebtRecord {
 
         <p-confirmdialog [style]="{ width: '450px' }" />
     `,
-    providers: [MessageService, ProductService, ConfirmationService]
+    providers: [MessageService, ConfirmationService]
 })
 export class DebtsProgress implements OnInit {
     productDialog: boolean = false;
@@ -257,7 +241,8 @@ export class DebtsProgress implements OnInit {
 
     constructor(
         private messageService: MessageService,
-        private confirmationService: ConfirmationService
+        private confirmationService: ConfirmationService,
+        private debtsService: DebtsService
     ) {}
 
     exportCSV() {
@@ -265,29 +250,24 @@ export class DebtsProgress implements OnInit {
     }
 
     ngOnInit() {
-        this.loadDemoData();
+        this.loadFromService();
     }
 
-    loadDemoData() {
-        this.records.set([
-            { id: '1', date: '2024-06-01', type: 'Debt', name: 'Loyer 2 mois', total: 2400, paid: 1200, interestRate: 2.5, frequency: 'Mensuel', note: 'Loyer en retard' },
-            { id: '2', date: '2024-06-10', type: 'Receivable', name: 'Ami doit remboursement', total: 1000, paid: 300, interestRate: 0, frequency: 'Libre', note: 'Prêt à un ami' },
-            { id: '3', date: '2024-06-15', type: 'Debt', name: 'Crédit Auto', total: 15000, paid: 5000, interestRate: 3.2, frequency: 'Mensuel', note: 'Crédit voiture' },
-            { id: '4', date: '2024-07-01', type: 'Receivable', name: 'Remboursement famille', total: 500, paid: 200, interestRate: 0, frequency: 'Unique', note: 'Avance à la famille' }
-        ]);
-
-        this.cols = [
-            { field: 'name', header: 'Name' },
-            { field: 'type', header: 'Type' },
-            { field: 'total', header: 'Total' },
-            { field: 'paid', header: 'Payé/Reçu' },
-            { field: 'interestRate', header: "Taux d'intérêt" },
-            { field: 'frequency', header: 'Fréquence' },
-            { field: 'progression', header: 'Progression' },
-            { field: 'note', header: 'Note' }
-        ];
-
-        this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+    loadFromService() {
+        this.debtsService.getRecords().then((data) => {
+            this.records.set(data);
+            this.cols = [
+                { field: 'name', header: 'Name' },
+                { field: 'type', header: 'Type' },
+                { field: 'total', header: 'Total' },
+                { field: 'paid', header: 'Payé/Reçu' },
+                { field: 'interestRate', header: "Taux d'intérêt" },
+                { field: 'frequency', header: 'Fréquence' },
+                { field: 'progression', header: 'Progression' },
+                { field: 'note', header: 'Note' }
+            ];
+            this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
+        });
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -313,13 +293,16 @@ export class DebtsProgress implements OnInit {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.records.set(this.records().filter((val) => !this.selectedRecords?.includes(val)));
-                this.selectedRecords = null;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Records Deleted',
-                    life: 3000
+                const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
+                this.debtsService.deleteRecords(ids).then(() => {
+                    this.records.set(this.records().filter((val) => !ids.includes(val.id!)));
+                    this.selectedRecords = null;
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Records Deleted',
+                        life: 3000
+                    });
                 });
             }
         });
@@ -337,13 +320,16 @@ export class DebtsProgress implements OnInit {
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                this.records.set(this.records().filter((val) => val.id !== record.id));
-                this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Deleted',
-                    life: 3000
+                if (!record.id) return;
+                this.debtsService.deleteRecords([record.id]).then(() => {
+                    this.records.set(this.records().filter((val) => val.id !== record.id));
+                    this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Deleted',
+                        life: 3000
+                    });
                 });
             }
         });
@@ -360,37 +346,31 @@ export class DebtsProgress implements OnInit {
         return index;
     }
 
-    createId(): string {
-        let id = '';
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (var i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    }
-
     saveRecord() {
         this.submitted = true;
         let _records = this.records();
         if (this.record.name?.trim()) {
             if (this.record.id) {
-                _records[this.findIndexById(this.record.id)] = this.record;
-                this.records.set([..._records]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Updated',
-                    life: 3000
+                this.debtsService.updateRecord(this.record).then((updated) => {
+                    _records[this.findIndexById(updated.id!)] = updated;
+                    this.records.set([..._records]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Updated',
+                        life: 3000
+                    });
                 });
             } else {
-                this.record.id = this.createId();
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Record Created',
-                    life: 3000
+                this.debtsService.addRecord(this.record).then((created) => {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Record Created',
+                        life: 3000
+                    });
+                    this.records.set([..._records, created]);
                 });
-                this.records.set([..._records, this.record]);
             }
             this.productDialog = false;
             this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
@@ -437,9 +417,17 @@ export class DebtsProgress implements OnInit {
         this.addPaymentSubmitted = true;
         if (this.addPaymentIndex !== null && this.addPaymentAmount && this.addPaymentAmount > 0) {
             const rec = this.records()[this.addPaymentIndex];
-            rec.paid = Math.min(rec.paid + this.addPaymentAmount, rec.total);
-            this.records.set([...this.records()]);
-            this.closeAddPaymentDialog();
+            if (!rec?.id) {
+                this.closeAddPaymentDialog();
+                return;
+            }
+            this.debtsService.addPayment(rec.id, this.addPaymentAmount).then((updated) => {
+                const current = [...this.records()];
+                const idx = this.findIndexById(updated.id!);
+                if (idx !== -1) current[idx] = updated;
+                this.records.set(current);
+                this.closeAddPaymentDialog();
+            });
         }
     }
 }
