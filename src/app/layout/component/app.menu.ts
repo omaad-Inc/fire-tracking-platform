@@ -33,14 +33,8 @@ export class AppMenu {
                     {
                         label: 'Patrimoine',
                         icon: 'pi pi-fw pi-chart-bar',
-                        routerLink: ['/uikit/charts'],
-                        items: [
-                            { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
-                            { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
-                            { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
-                            { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/uikit/media'] },
-                            { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/uikit/menu'] },
-                        ]
+                        routerLink: ['/pages/patrimoine'],
+    
                     },
                 ]
             },
