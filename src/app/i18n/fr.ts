@@ -24,6 +24,20 @@ export const FR = {
       thisMonth: 'ce mois'
     }
   },
+  patrimoine: {
+    assets: {
+      title: 'Actifs'
+    },
+    list: {
+      name: 'Nom',
+      share: 'Répartition',
+      value: 'Valeur',
+      delta: '+/- valeur Tout'
+    },
+    repartition: {
+      total: 'Total'
+    }
+  },
   transactions: {
     bankBalance: 'Solde Comptes Bancaires',
     totalExpense: 'Dépenses Totales',

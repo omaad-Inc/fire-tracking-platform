@@ -11,7 +11,7 @@ import { AppMenuitem } from './app.menuitem';
     imports: [CommonModule, AppMenuitem, RouterModule],
     template: `<ul class="layout-menu">
         <ng-container *ngFor="let item of model; let i = index">
-            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true"></li>
+            <li app-menuitem *ngIf="!item.separator" [item]="item" [index]="i" [root]="true" class="mb-2"></li>
             <li *ngIf="item.separator" class="menu-separator"></li>
         </ng-container>
     </ul> `

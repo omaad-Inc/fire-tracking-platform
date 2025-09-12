@@ -10,6 +10,7 @@ export interface TransactionRecord {
     remarks?: string;
 }
 
+
 @Injectable({ providedIn: 'root' })
 export class TransactionsService {
     private records: TransactionRecord[] = [
@@ -33,6 +34,7 @@ export class TransactionsService {
     getRecords(): Promise<TransactionRecord[]> {
         return Promise.resolve([...this.records]);
     }
+
 
     addRecord(record: TransactionRecord): Promise<TransactionRecord> {
         const id = this.generateId();

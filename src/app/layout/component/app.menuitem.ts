@@ -15,9 +15,9 @@ import { LayoutService } from '../service/layout.service';
     template: `
         <ng-container>
             <div *ngIf="root && item.visible !== false" class="layout-menuitem-root-text">{{ item.label }}</div>
-            <a *ngIf="(!item.routerLink || item.items) && item.visible !== false" [attr.href]="item.url" (click)="itemClick($event)" [ngClass]="item.styleClass" [attr.target]="item.target" tabindex="0" pRipple>
+            <a *ngIf="(!item.routerLink || item.items) && item.visible !== false" [attr.href]="item.url" (click)="itemClick($event)" [ngClass]="item.styleClass" [attr.target]="item.target" tabindex="0" class="py-3 px-3 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-all" pRipple>
                 <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-                <span class="layout-menuitem-text">{{ item.label }}</span>
+                <span class="layout-menuitem-text text-base">{{ item.label }}</span>
                 <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
             </a>
             <a
@@ -36,10 +36,11 @@ import { LayoutService } from '../service/layout.service';
                 [queryParams]="item.queryParams"
                 [attr.target]="item.target"
                 tabindex="0"
+                class="py-3 px-3 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-all"
                 pRipple
             >
                 <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-                <span class="layout-menuitem-text">{{ item.label }}</span>
+                <span class="layout-menuitem-text text-base">{{ item.label }}</span>
                 <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
             </a>
 
