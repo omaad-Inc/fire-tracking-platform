@@ -140,7 +140,7 @@ export class SavingsService {
         const goals: SavingsGoal[] = [
             { label: 'Emergency Fund', current: Math.max(0, totalSavings), target: 10000, colorClass: 'bg-blue-700', textColorClass: 'text-blue-700' },
             { label: 'Plan Epargne Retraite', current: Math.max(0, perCurrent), target: 20000, colorClass: 'bg-green-600', textColorClass: 'text-green-600' },
-            { label: 'Vacation', current: Math.max(0, vacationCurrent), target: 3000, colorClass: 'bg-orange-600', textColorClass: 'text-orange-600' }
+            { label: 'Vacation', current: Math.max(1500, vacationCurrent), target: 3000, colorClass: 'bg-orange-600', textColorClass: 'text-orange-600' }
         ];
 
         return Promise.resolve(goals);
