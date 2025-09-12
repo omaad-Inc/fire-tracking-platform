@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { I18nService } from '../../../i18n/i18n.service';
+import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
@@ -9,7 +10,7 @@ import { I18nService } from '../../../i18n/i18n.service';
     imports: [CommonModule, RouterModule],
     template: `
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 cursor-pointer" [routerLink]="['/pages/patrimoine']" role="link" aria-label="Voir le patrimoine" tabindex="0">
+            <div class="card mb-0 cursor-pointer" [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">{{ t('dashboard.kpi.netWorth') }}</span>
@@ -24,7 +25,7 @@ import { I18nService } from '../../../i18n/i18n.service';
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 cursor-pointer" [routerLink]="['/pages/savings']" role="link" aria-label="Voir l’épargne" tabindex="0">
+            <div class="card mb-0 cursor-pointer" [routerLink]="link('pages','savings')" role="link" aria-label="Voir l’épargne" tabindex="0">
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">{{ t('dashboard.kpi.monthlySavingsRate') }}</span>
@@ -40,7 +41,7 @@ import { I18nService } from '../../../i18n/i18n.service';
         </div>
         
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 cursor-pointer" [routerLink]="['/pages/transaction']" role="link" aria-label="Voir les revenus passifs" tabindex="0">
+            <div class="card mb-0 cursor-pointer" [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les revenus passifs" tabindex="0">
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">{{ t('dashboard.kpi.passiveIncome') }}</span>
@@ -65,10 +66,17 @@ export class StatsWidget {
     fireNumber = 300000; // Mock data (FIRE number target)
     passiveIncome = 120; // Mock data
     passiveIncomeChange = 20; // Mock data
-    constructor(private i18n: I18nService) {}
+    constructor(private i18n: I18nService, private router: Router) {}
 
     t(key: string): string {
         return this.i18n.t(key);
+    }
+
+    link(...segments: string[]): any[] {
+        const url = this.router.url;
+        const match = url.match(/^\/(fr|en)(?:\/|$)/);
+        const lang = (match ? match[1] : 'fr') as 'fr' | 'en';
+        return ['/', lang, ...segments];
     }
 }
 

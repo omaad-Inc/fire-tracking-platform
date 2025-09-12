@@ -11,5 +11,6 @@ export default [
     { path: 'patrimoine', component: Patrimoine },
     { path: 'debts', component: DebtsDashboard },
     { path: 'empty', component: Empty },
-    { path: '**', redirectTo: '/:lang/notfound' }
+    // child wildcard should redirect within the current :lang tree
+    { path: '**', redirectTo: '/fr/notfound' }
 ] as Routes;
