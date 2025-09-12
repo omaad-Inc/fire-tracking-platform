@@ -16,25 +16,45 @@ export interface PatrimoineAssetItem {
     standalone: true,
     imports: [CommonModule, TagModule],
     template: `
-        <div class="min-w-[40rem]">
-            <div class="grid grid-cols-12 text-sm opacity-70 px-4 py-2">
+        <div class="w-full">
+            <!-- Header shown on md+ -->
+            <div class="hidden md:grid grid-cols-12 text-sm opacity-70 px-4 py-2">
                 <div class="col-span-6">{{ t('patrimoine.list.name') }}</div>
                 <div class="col-span-2 text-right">{{ t('patrimoine.list.share') }}</div>
                 <div class="col-span-2 text-right">{{ t('patrimoine.list.value') }}</div>
                 <div class="col-span-2 text-right">{{ t('patrimoine.list.delta') }}</div>
             </div>
             <div class="space-y-3">
-                <div *ngFor="let item of items" class="grid grid-cols-12 items-center rounded-xl px-4 py-4 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 hover:shadow-sm transition-all duration-200 cursor-pointer">
-                    <div class="col-span-6">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full" [style.background-color]="colorFor(item)"></span>
-                            <span class="font-medium">{{ item.name }}</span>
+                <div *ngFor="let item of items" class="rounded-xl px-3 py-3 md:px-4 md:py-4 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 hover:shadow-sm transition-all duration-200 cursor-pointer">
+                    <div class="grid md:grid-cols-12 items-center gap-2 md:gap-0">
+                        <!-- Name -->
+                        <div class="md:col-span-6">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="w-2 h-2 rounded-full shrink-0" [style.background-color]="colorFor(item)"></span>
+                                <span class="font-medium text-sm md:text-base truncate overflow-hidden whitespace-nowrap">{{ item.name }}</span>
+                            </div>
+                        </div>
+                        <!-- Desktop values -->
+                        <div class="hidden md:block md:col-span-2 text-right">{{ item.sharePct | number: '1.0-0' }} %</div>
+                        <div class="hidden md:block md:col-span-2 text-right">{{ item.value | currency: 'EUR' }}</div>
+                        <div class="hidden md:flex md:justify-end md:col-span-2">
+                            <p-tag *ngIf="item.deltaAbs != null" [severity]="(item.deltaAbs || 0) >= 0 ? 'success' : 'danger'" [value]="formatDelta(item)"></p-tag>
                         </div>
                     </div>
-                    <div class="col-span-2 text-right">{{ item.sharePct | number: '1.0-0' }} %</div>
-                    <div class="col-span-2 text-right">{{ item.value | currency: 'EUR' }}</div>
-                    <div class="col-span-2 text-right">
-                        <p-tag *ngIf="item.deltaAbs != null" [severity]="(item.deltaAbs || 0) >= 0 ? 'success' : 'danger'" [value]="formatDelta(item)"></p-tag>
+                    <!-- Mobile stacked values -->
+                    <div class="md:hidden mt-2 space-y-1 text-xs">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="opacity-70">{{ t('patrimoine.list.share') }}</span>
+                            <span class="text-right whitespace-nowrap">{{ item.sharePct | number: '1.0-0' }} %</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="opacity-70">{{ t('patrimoine.list.value') }}</span>
+                            <span class="text-right whitespace-nowrap">{{ item.value | currency: 'EUR' }}</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="opacity-70">{{ t('patrimoine.list.delta') }}</span>
+                            <p-tag *ngIf="item.deltaAbs != null" [severity]="(item.deltaAbs || 0) >= 0 ? 'success' : 'danger'" [value]="formatDeltaShort(item)" styleClass="text-[10px] px-1.5 py-0.5 leading-4 whitespace-nowrap"></p-tag>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -60,5 +80,11 @@ export class PatrimoineListComponent {
             parts.push(`${sign}${item.deltaPct.toFixed(2)} %`);
         }
         return parts.join(' ');
+    }
+
+    formatDeltaShort(item: PatrimoineAssetItem): string {
+        if (item.deltaAbs == null) return '';
+        const sign = item.deltaAbs >= 0 ? '+' : '';
+        return `${sign}${(item.deltaAbs).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}`;
     }
 }
