@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 interface Transaction {
     category: string;
@@ -18,8 +19,8 @@ interface Transaction {
     template: `
     <div class="card !mb-8 h-full">
         <div class="flex justify-between items-center mb-4">
-            <div class="font-semibold text-xl">Transactions Récentes</div>
-            <a [routerLink]="['/pages/transaction']" class="text-primary font-medium text-sm">View More</a>
+            <div class="font-semibold text-xl">{{ t('dashboard.recentTransactions') }}</div>
+            <a [routerLink]="['/pages/transaction']" class="text-primary font-medium text-sm">{{ t('common.viewMore') }}</a>
         </div>
         <div *ngFor="let tx of transactions" class="flex items-center py-4 border-b last:border-b-0 border-surface-200 dark:border-surface-700">
             <div class="flex items-center justify-center rounded-full mr-4 shrink-0" [ngStyle]="{'background': tx.color, 'width': '2.5rem', 'height': '2.5rem'}">
@@ -39,8 +40,8 @@ interface Transaction {
 })
 export class RecentTransactionsWidget {
     transactions: Transaction[] = [];
-
-    constructor(private transactionsService: TransactionsService) {
+ 
+    constructor(private transactionsService: TransactionsService, private i18n: I18nService) {
         this.loadRecent();
     }
 
@@ -73,5 +74,9 @@ export class RecentTransactionsWidget {
             hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
         }
         return palette[hash % palette.length];
+    }
+
+    t(key: string): string {
+        return this.i18n.t(key);
     }
 }

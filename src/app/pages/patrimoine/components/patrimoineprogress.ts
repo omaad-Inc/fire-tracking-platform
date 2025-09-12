@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, ChangeDetectorRef, inject, effect } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
+import { I18nService } from '../../../i18n/i18n.service';
 import { SavingsService, SavingsSeriesPoint } from '../../service/savings.service';
 
 @Component({
@@ -8,7 +9,7 @@ import { SavingsService, SavingsSeriesPoint } from '../../service/savings.servic
     template: `
         <div class="card h-full">
             <div class="mb-4">
-                <div class="font-semibold text-xl">Patrimoine brut</div>
+                <div class="font-semibold text-xl">{{ t('dashboard.kpi.netWorth') }}</div>
             </div>
             <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[120px] max-h-[300px]" />
         </div>
@@ -20,7 +21,7 @@ export class PatrimoineProgress implements OnInit {
     data: any;
     options: any;
     platformId = inject(PLATFORM_ID);
-    constructor(private cd: ChangeDetectorRef, private savingsService: SavingsService) {}
+    constructor(private cd: ChangeDetectorRef, private savingsService: SavingsService, private i18n: I18nService) {}
 
     themeEffect = effect(() => {
         this.initChart();
@@ -97,5 +98,9 @@ export class PatrimoineProgress implements OnInit {
             };
             this.cd.markForCheck();
         }
+    }
+
+    t(key: string): string {
+        return this.i18n.t(key);
     }
 }

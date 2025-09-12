@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { I18nService } from '../../i18n/i18n.service';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 
@@ -17,14 +18,16 @@ import { AppMenuitem } from './app.menuitem';
 })
 export class AppMenu {
     model: MenuItem[] = [];
+    lang = 'fr';
 
     ngOnInit() {
+        this.lang = this.getCurrentLang();
         this.model = [
             {
                 items: [
                     {
                          label: 'Synthèse', 
-                         icon: 'pi pi-fw pi-objects-column', routerLink: ['/'] 
+                         icon: 'pi pi-fw pi-objects-column', routerLink: this.link() 
                     },
                 ]
             },
@@ -33,7 +36,7 @@ export class AppMenu {
                     {
                         label: 'Patrimoine',
                         icon: 'pi pi-fw pi-chart-bar',
-                        routerLink: ['/pages/patrimoine'],
+                        routerLink: this.link('pages', 'patrimoine'),
     
                     },
                 ]
@@ -43,7 +46,7 @@ export class AppMenu {
                     {
                          label: 'Transactions', 
                          icon: 'pi pi-fw pi-receipt', 
-                         routerLink: ['/pages/transaction']
+                         routerLink: this.link('pages', 'transaction')
                     },
                 ]
             },
@@ -52,7 +55,7 @@ export class AppMenu {
                     {
                          label: 'Epargne', 
                          icon: 'pi pi-fw pi-history', 
-                         routerLink: ['/pages/savings']
+                         routerLink: this.link('pages', 'savings')
                     },
                 ]
             },
@@ -62,7 +65,7 @@ export class AppMenu {
                     {
                          label: 'Dettes', 
                          icon: 'pi pi-fw pi-money-bill', 
-                         routerLink: ['/pages/debts']
+                         routerLink: this.link('pages', 'debts')
                     },
                 ]
             },
@@ -71,7 +74,7 @@ export class AppMenu {
                     {
                         label: 'Landing',
                         icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/landing']
+                        routerLink: this.link('landing')
                     },
                     {
                         label: 'Auth',
@@ -80,32 +83,45 @@ export class AppMenu {
                             {
                                 label: 'Login',
                                 icon: 'pi pi-fw pi-sign-in',
-                                routerLink: ['/auth/login']
+                                routerLink: this.link('auth', 'login')
                             },
                             {
                                 label: 'Error',
                                 icon: 'pi pi-fw pi-times-circle',
-                                routerLink: ['/auth/error']
+                                routerLink: this.link('auth', 'error')
                             },
                             {
                                 label: 'Access Denied',
                                 icon: 'pi pi-fw pi-lock',
-                                routerLink: ['/auth/access']
+                                routerLink: this.link('auth', 'access')
                             }
                         ]
                     },
                     {
                         label: 'Not Found',
                         icon: 'pi pi-fw pi-exclamation-circle',
-                        routerLink: ['/pages/notfound']
+                        routerLink: this.link('notfound')
                     },
                     {
                         label: 'Empty',
                         icon: 'pi pi-fw pi-circle-off',
-                        routerLink: ['/pages/empty']
+                        routerLink: this.link('pages', 'empty')
                     }
                 ]
             },
         ];
+    }
+
+    constructor(private router: Router, private i18n: I18nService) {}
+
+    private getCurrentLang(): 'fr' | 'en' {
+        const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
+        const l = (match ? match[1] : 'fr') as 'fr' | 'en';
+        this.i18n.setLang(l);
+        return l;
+    }
+
+    private link(...segments: string[]): any[] {
+        return ['/', this.lang, ...segments];
     }
 }

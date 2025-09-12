@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
   standalone: true,
@@ -8,8 +9,8 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
     template: `<div class="card">
         <div class="flex justify-between items-center mb-6">
-            <div class="font-semibold text-xl">Vue Globale des Dettes</div>
-            <a [routerLink]="['/pages/debts']" class="text-primary font-medium text-sm">View More</a>
+            <div class="font-semibold text-xl">{{ t('dashboard.debtsOverview') }}</div>
+            <a [routerLink]="['/pages/debts']" class="text-primary font-medium text-sm">{{ t('common.viewMore') }}</a>
         </div>
         <ul class="list-none p-0 m-0">
             <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
@@ -51,4 +52,7 @@ import { RouterModule } from '@angular/router';
         </ul>
     </div>`
 })
-export class DebtsOverview {}
+export class DebtsOverview {
+    constructor(private i18n: I18nService) {}
+    t(key: string): string { return this.i18n.t(key); }
+}

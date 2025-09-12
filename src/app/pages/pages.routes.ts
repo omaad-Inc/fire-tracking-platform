@@ -15,5 +15,5 @@ export default [
     { path: 'patrimoine', component: Patrimoine },
     { path: 'debts', component: DebtsDashboard },
     { path: 'empty', component: Empty },
-    { path: '**', redirectTo: '/notfound' }
+    { path: '**', redirectTo: '/:lang/notfound' }
 ] as Routes;

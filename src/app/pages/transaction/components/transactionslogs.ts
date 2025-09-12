@@ -17,6 +17,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
 import { DatePickerModule } from 'primeng/datepicker';
+import { I18nService } from '../../../i18n/i18n.service';
 
 interface Column {
     field: string;
@@ -55,12 +56,12 @@ interface ExportColumn {
     template: `
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
-                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length" />
+                <p-button [label]="t('transactions.new')" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+                <p-button severity="secondary" [label]="t('transactions.delete')" icon="pi pi-trash" outlined (onClick)="deleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length" />
             </ng-template>
 
             <ng-template #end>
-                <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+                <p-button [label]="t('transactions.export')" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
             </ng-template>
         </p-toolbar>
 
@@ -81,10 +82,10 @@ interface ExportColumn {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Transactions</h5>
+                    <h5 class="m-0">{{ t('transactions.logTitle') }}</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="t('common.search')" />
                     </p-iconfield>
                 </div>
             </ng-template>
@@ -94,14 +95,14 @@ interface ExportColumn {
                         <p-tableHeaderCheckbox />
                     </th>
                     <th pSortableColumn="date" style="min-width: 10rem">
-                        Date
+                        {{ t('common.date') }}
                         <p-sortIcon field="date" />
                     </th>
-                    <th style="min-width: 18rem">Name</th>
-                    <th style="min-width: 10rem">Type</th>
-                    <th style="min-width: 10rem">Amount</th>
-                    <th style="min-width: 12rem">Account</th>
-                    <th style="min-width: 20rem">Remarks</th>
+                    <th style="min-width: 18rem">{{ t('common.name') }}</th>
+                    <th style="min-width: 10rem">{{ t('common.type') }}</th>
+                    <th style="min-width: 10rem">{{ t('common.amount') }}</th>
+                    <th style="min-width: 12rem">{{ t('common.account') }}</th>
+                    <th style="min-width: 20rem">{{ t('common.remarks') }}</th>
                     <th style="min-width: 12rem"></th>
                 </tr>
             </ng-template>
@@ -128,41 +129,41 @@ interface ExportColumn {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="transactionDialog" [style]="{ width: '450px' }" header="Transaction Details" [modal]="true">
+        <p-dialog [(visible)]="transactionDialog" [style]="{ width: '450px' }" [header]="t('transactions.detailsTitle')" [modal]="true">
             <ng-template #content>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="date" class="block font-bold mb-3">Date</label>
+                        <label for="date" class="block font-bold mb-3">{{ t('common.date') }}</label>
                         <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" inputId="date" dateFormat="yy-mm-dd" required class="w-full" />
-                        <small class="text-red-500" *ngIf="submitted && !record.date">Date is required.</small>
+                        <small class="text-red-500" *ngIf="submitted && !record.date">{{ t('transactions.messages.dateRequired') }}</small>
                     </div>
                     <div>
-                        <label for="name" class="block font-bold mb-3">Name</label>
+                        <label for="name" class="block font-bold mb-3">{{ t('common.name') }}</label>
                         <input pInputText id="name" [(ngModel)]="record.name" required class="w-full" />
-                        <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
+                        <small class="text-red-500" *ngIf="submitted && !record.name">{{ t('transactions.messages.nameRequired') }}</small>
                     </div>
                     <div>
-                        <label for="type" class="block font-bold mb-3">Type</label>
+                        <label for="type" class="block font-bold mb-3">{{ t('common.type') }}</label>
                         <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" class="w-full" />
                     </div>
                     <div>
-                        <label for="amount" class="block font-bold mb-3">Amount</label>
+                        <label for="amount" class="block font-bold mb-3">{{ t('common.amount') }}</label>
                         <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
                     </div>
                     <div>
-                        <label for="account" class="block font-bold mb-3">Account</label>
+                        <label for="account" class="block font-bold mb-3">{{ t('common.account') }}</label>
                         <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" optionLabel="label" optionValue="value" placeholder="Select an Account" class="w-full" />
                     </div>
                     <div class="mb-8 md:col-span-2">
-                        <label for="remarks" class="block font-bold mb-3">Remarks</label>
+                        <label for="remarks" class="block font-bold mb-3">{{ t('common.remarks') }}</label>
                         <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" cols="20" class="w-full"></textarea>
                     </div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="saveRecord()" />
+                <p-button [label]="t('common.cancel')" icon="pi pi-times" text (click)="hideDialog()" />
+                <p-button [label]="t('common.save')" icon="pi pi-check" (click)="saveRecord()" />
             </ng-template>
         </p-dialog>
 
@@ -194,7 +195,8 @@ export class TransactionLogs implements OnInit {
     constructor(
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private transactionsService: TransactionsService
+        private transactionsService: TransactionsService,
+        private i18n: I18nService
     ) {}
 
     exportCSV() {
@@ -209,12 +211,12 @@ export class TransactionLogs implements OnInit {
         this.transactionsService.getRecords().then((data) => {
             this.records.set(data);
             this.cols = [
-                { field: 'date', header: 'Date' },
-                { field: 'name', header: 'Name' },
-                { field: 'type', header: 'Type' },
-                { field: 'amount', header: 'Amount' },
-                { field: 'account', header: 'Account' },
-                { field: 'remarks', header: 'Remarks' }
+                { field: 'date', header: this.t('common.date') },
+                { field: 'name', header: this.t('common.name') },
+                { field: 'type', header: this.t('common.type') },
+                { field: 'amount', header: this.t('common.amount') },
+                { field: 'account', header: this.t('common.account') },
+                { field: 'remarks', header: this.t('common.remarks') }
             ];
             this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
         });
@@ -237,7 +239,7 @@ export class TransactionLogs implements OnInit {
 
     deleteSelectedRecords() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected records?',
+            message: this.t('transactions.messages.deleteSelectedConfirm'),
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
@@ -247,8 +249,8 @@ export class TransactionLogs implements OnInit {
                     this.selectedRecords = null;
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Records Deleted',
+                        summary: this.t('transactions.messages.successful'),
+                        detail: this.t('transactions.messages.recordsDeleted'),
                         life: 3000
                     });
                 });
@@ -263,7 +265,7 @@ export class TransactionLogs implements OnInit {
 
     deleteRecord(record: TransactionRecord) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + record.name + '?',
+            message: this.t('transactions.messages.deleteOneConfirm', { name: record.name || '' }),
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
@@ -273,8 +275,8 @@ export class TransactionLogs implements OnInit {
                     this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Deleted',
+                        summary: this.t('transactions.messages.successful'),
+                        detail: this.t('transactions.messages.recordDeleted'),
                         life: 3000
                     });
                 });
@@ -303,8 +305,8 @@ export class TransactionLogs implements OnInit {
                     this.records.set([..._records]);
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Updated',
+                        summary: this.t('transactions.messages.successful'),
+                        detail: this.t('transactions.messages.recordUpdated'),
                         life: 3000
                     });
                 });
@@ -312,8 +314,8 @@ export class TransactionLogs implements OnInit {
                 this.transactionsService.addRecord(this.record).then((created) => {
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Created',
+                        summary: this.t('transactions.messages.successful'),
+                        detail: this.t('transactions.messages.recordCreated'),
                         life: 3000
                     });
                     this.records.set([..._records, created]);
@@ -334,4 +336,6 @@ export class TransactionLogs implements OnInit {
                 return 'info';
         }
     }
+
+    t(key: string, params?: any) { return this.i18n.t(key, params); }
 }

@@ -11,7 +11,7 @@ import { SavingsService, SavingsGoal } from '../../service/savings.service';
         <div class="card">
             <div class="flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl">Progression de l'Epargne</div>
-                <a [routerLink]="['/pages/savings']" class="text-primary font-medium text-sm">View More</a>
+                <a [routerLink]="['/pages/savings']" class="text-primary font-medium text-sm">Voir plus</a>
             </div>
             <ul class="list-none p-0 m-0">
                 <li *ngFor="let g of goals" class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
