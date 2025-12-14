@@ -7,6 +7,7 @@ import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-topbar',
@@ -78,7 +79,7 @@ import { DividerModule } from 'primeng/divider';
                 <div class="layout-topbar-menu-content">
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-bell"></i>
-                        <span>Notifications</span>
+                        <span>{{ t('topbar.notifications') }}</span>
                     </button>
                     <!-- User Profile Menu -->
                     <div class="relative">
@@ -122,15 +123,15 @@ import { DividerModule } from 'primeng/divider';
                             <div class="py-2">
                                 <a [routerLink]="['/'+lang, 'pages', 'settings', 'account']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-user text-indigo-500"></i>
-                                    <span class="text-surface-700 dark:text-surface-200">Mon compte</span>
+                                    <span class="text-surface-700 dark:text-surface-200">{{ t('menu.myAccount') }}</span>
                                 </a>
                                 <a [routerLink]="['/'+lang, 'pages', 'settings', 'security']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-shield text-cyan-500"></i>
-                                    <span class="text-surface-700 dark:text-surface-200">Sécurité</span>
+                                    <span class="text-surface-700 dark:text-surface-200">{{ t('menu.security') }}</span>
                                 </a>
                                 <a [routerLink]="['/'+lang, 'pages', 'settings', 'preferences']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-cog text-emerald-500"></i>
-                                    <span class="text-surface-700 dark:text-surface-200">Préférences</span>
+                                    <span class="text-surface-700 dark:text-surface-200">{{ t('menu.preferences') }}</span>
                                 </a>
                             </div>
 
@@ -140,7 +141,7 @@ import { DividerModule } from 'primeng/divider';
                             <div class="py-2">
                                 <a href="https://help.finova.com" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-question-circle text-amber-500"></i>
-                                    <span class="text-surface-700 dark:text-surface-200">Obtenir de l'aide</span>
+                                    <span class="text-surface-700 dark:text-surface-200">{{ t('settings.getHelp') }}</span>
                                     <i class="pi pi-external-link text-xs text-surface-400 ml-auto"></i>
                                 </a>
                             </div>
@@ -151,7 +152,7 @@ import { DividerModule } from 'primeng/divider';
                             <div class="py-2">
                                 <a [routerLink]="['/'+lang, 'auth', 'login']" class="flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer group">
                                     <i class="pi pi-sign-out text-red-500"></i>
-                                    <span class="text-red-500 group-hover:text-red-600">Se déconnecter</span>
+                                    <span class="text-red-500 group-hover:text-red-600">{{ t('topbar.logout') }}</span>
                                 </a>
                             </div>
                         </div>
@@ -165,7 +166,11 @@ export class AppTopbar implements OnInit {
     items!: MenuItem[];
     lang = 'fr';
 
-    constructor(public layoutService: LayoutService, private router: Router) {}
+    constructor(
+        public layoutService: LayoutService, 
+        private router: Router,
+        private i18n: I18nService
+    ) {}
 
     ngOnInit() {
         this.lang = this.getCurrentLang();
@@ -178,5 +183,9 @@ export class AppTopbar implements OnInit {
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+    }
+
+    t(key: string): string {
+        return this.i18n.t(key);
     }
 }

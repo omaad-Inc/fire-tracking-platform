@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
     selector: 'app-settings-preferences',
@@ -15,20 +17,20 @@ import { LayoutService } from '../../../layout/service/layout.service';
         <div class="card">
             <!-- Language & Region -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Préférences</h2>
+                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.title') }}</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Language -->
                     <div>
-                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">Langue</label>
+                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.preferences.language') }}</label>
                         <p-select 
                             [(ngModel)]="selectedLanguage" 
                             [options]="languages" 
                             optionLabel="name" 
                             optionValue="code"
-                            placeholder="Sélectionner une langue"
                             class="w-full"
                             styleClass="!py-1"
+                            (onChange)="onLanguageChange($event.value)"
                         >
                             <ng-template #selectedItem let-selected>
                                 <div class="flex items-center gap-2" *ngIf="selected">
@@ -47,13 +49,12 @@ import { LayoutService } from '../../../layout/service/layout.service';
 
                     <!-- Currency -->
                     <div>
-                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">Devise</label>
+                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.preferences.currency') }}</label>
                         <p-select 
                             [(ngModel)]="selectedCurrency" 
                             [options]="currencies" 
                             optionLabel="name" 
                             optionValue="code"
-                            placeholder="Sélectionner une devise"
                             class="w-full"
                             styleClass="!py-1"
                         >
@@ -78,7 +79,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
 
             <!-- Theme -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Thème</h2>
+                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.theme') }}</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <!-- Light Theme -->
@@ -91,7 +92,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
                             <i class="pi pi-sun text-2xl text-amber-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium text-surface-900 dark:text-surface-0">Mode Clair</span>
+                            <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.lightMode') }}</span>
                             <div *ngIf="!isDarkMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                                 <i class="pi pi-check text-white text-xs"></i>
                             </div>
@@ -108,7 +109,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
                             <i class="pi pi-moon text-2xl text-indigo-400"></i>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium text-surface-900 dark:text-surface-0">Mode Sombre</span>
+                            <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.darkMode') }}</span>
                             <div *ngIf="isDarkMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                                 <i class="pi pi-check text-white text-xs"></i>
                             </div>
@@ -124,7 +125,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
                             <i class="pi pi-desktop text-2xl text-surface-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium text-surface-900 dark:text-surface-0">Système</span>
+                            <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.systemMode') }}</span>
                         </div>
                     </div>
                 </div>
@@ -134,7 +135,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
 
             <!-- Notifications -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Notifications</h2>
+                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.notifications') }}</h2>
                 
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
@@ -143,8 +144,8 @@ import { LayoutService } from '../../../layout/service/layout.service';
                                 <i class="pi pi-envelope text-white"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">Notifications par email</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">Recevoir des mises à jour par email</p>
+                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.emailNotifications') }}</p>
+                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.emailNotificationsDesc') }}</p>
                             </div>
                         </div>
                         <p-toggleswitch [(ngModel)]="emailNotifications" />
@@ -156,8 +157,8 @@ import { LayoutService } from '../../../layout/service/layout.service';
                                 <i class="pi pi-bell text-white"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">Notifications push</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">Recevoir des notifications push</p>
+                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.pushNotifications') }}</p>
+                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.pushNotificationsDesc') }}</p>
                             </div>
                         </div>
                         <p-toggleswitch [(ngModel)]="pushNotifications" />
@@ -169,8 +170,8 @@ import { LayoutService } from '../../../layout/service/layout.service';
                                 <i class="pi pi-chart-line text-white"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">Rapports mensuels</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">Recevoir un résumé mensuel de votre patrimoine</p>
+                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.monthlyReports') }}</p>
+                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.monthlyReportsDesc') }}</p>
                             </div>
                         </div>
                         <p-toggleswitch [(ngModel)]="monthlyReports" />
@@ -182,8 +183,8 @@ import { LayoutService } from '../../../layout/service/layout.service';
                                 <i class="pi pi-exclamation-triangle text-white"></i>
                             </div>
                             <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">Alertes de dépenses</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">Être alerté en cas de dépenses inhabituelles</p>
+                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.expenseAlerts') }}</p>
+                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.expenseAlertsDesc') }}</p>
                             </div>
                         </div>
                         <p-toggleswitch [(ngModel)]="expenseAlerts" />
@@ -195,7 +196,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
 
             <!-- Data Export -->
             <div>
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Données</h2>
+                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.data') }}</h2>
                 
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
@@ -203,29 +204,25 @@ import { LayoutService } from '../../../layout/service/layout.service';
                             <i class="pi pi-download text-white text-xl"></i>
                         </div>
                         <div>
-                            <p class="font-medium text-surface-900 dark:text-surface-0">Exporter mes données</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">Télécharger toutes vos données au format CSV</p>
+                            <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.exportData') }}</p>
+                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.exportDataDesc') }}</p>
                         </div>
                     </div>
-                    <p-button label="Exporter" icon="pi pi-download" [outlined]="true" />
+                    <p-button [label]="t('common.export')" icon="pi pi-download" [outlined]="true" />
                 </div>
             </div>
         </div>
     `
 })
-export class PreferencesSettings {
+export class PreferencesSettings implements OnInit {
     languages = [
         { name: 'Français', code: 'fr' },
-        { name: 'English', code: 'en' },
-        { name: 'Español', code: 'es' },
-        { name: 'Deutsch', code: 'de' }
+        { name: 'English', code: 'en' }
     ];
 
     currencies = [
         { name: 'EUR - Euro', code: 'EUR', symbol: '€' },
-        { name: 'USD - Dollar', code: 'USD', symbol: '$' },
-        { name: 'GBP - Livre', code: 'GBP', symbol: '£' },
-        { name: 'CHF - Franc suisse', code: 'CHF', symbol: 'CHF' }
+        { name: 'XOF - Franc CFA', code: 'XOF', symbol: 'CFA' }
     ];
 
     selectedLanguage = 'fr';
@@ -235,10 +232,32 @@ export class PreferencesSettings {
     monthlyReports = true;
     expenseAlerts = false;
 
-    constructor(private layoutService: LayoutService) {}
+    constructor(
+        private layoutService: LayoutService,
+        private router: Router,
+        private i18n: I18nService
+    ) {}
+
+    ngOnInit() {
+        // Get current language from URL
+        const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
+        this.selectedLanguage = match ? match[1] : 'fr';
+    }
 
     get isDarkMode(): boolean {
         return this.layoutService.layoutConfig().darkTheme ?? false;
+    }
+
+    onLanguageChange(newLang: string) {
+        // Update i18n service
+        this.i18n.setLang(newLang as 'fr' | 'en');
+        
+        // Navigate to the new language URL and reload the page
+        const currentUrl = this.router.url;
+        const newUrl = currentUrl.replace(/^\/(fr|en)/, `/${newLang}`);
+        
+        // Use window.location to force a full page reload
+        window.location.href = newUrl;
     }
 
     setTheme(theme: 'light' | 'dark' | 'system') {
@@ -253,11 +272,13 @@ export class PreferencesSettings {
     getLanguageFlag(code: string): string {
         const flags: Record<string, string> = {
             'fr': '🇫🇷',
-            'en': '🇬🇧',
-            'es': '🇪🇸',
-            'de': '🇩🇪'
+            'en': '🇬🇧'
         };
         return flags[code] || '🌐';
+    }
+
+    t(key: string, params?: Record<string, string | number>): string {
+        return this.i18n.t(key, params);
     }
 }
 
