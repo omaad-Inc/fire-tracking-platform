@@ -9,63 +9,83 @@ import { Router } from '@angular/router';
     selector: 'app-stats-widget',
     imports: [CommonModule, RouterModule],
     template: `
+        <!-- KPI Card 1 - Patrimoine -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 cursor-pointer" [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
-                <div class="flex justify-between mb-4">
+            <div class="card mb-0 cursor-pointer group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20" 
+                 [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">{{ t('dashboard.kpi.netWorth') }}</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ netWorth | currency: 'EUR' }}</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ netWorth | currency: 'EUR':'symbol':'1.0-0' }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-wallet text-green-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-wallet text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">+{{ netWorthChange | currency: 'EUR' }} </span>
-                <span class="text-muted-color">{{ t('dashboard.kpi.sinceLastMonth') }}</span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                        <i class="pi pi-arrow-up text-xs mr-1"></i>
+                        +12.5%
+                    </span>
+                    <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('dashboard.kpi.sinceLastMonth') }}</span>
+                </div>
             </div>
         </div>
+
+        <!-- KPI Card 2 - Taux d'épargne -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 cursor-pointer" [routerLink]="link('pages','savings')" role="link" aria-label="Voir l’épargne" tabindex="0">
-                <div class="flex justify-between mb-4">
+            <div class="card mb-0 cursor-pointer group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20" 
+                 [routerLink]="link('pages','savings')" role="link" aria-label="Voir l'épargne" tabindex="0">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">{{ t('dashboard.kpi.monthlySavingsRate') }}</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ savingsRate }} %</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlySavingsRate') }}</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ savingsRate }}%</div>
                     </div>
-                    <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-chart-line text-blue-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-chart-line text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">{{ savingsAmount | currency: 'EUR' }} </span>
-                <span class="text-muted-color">{{ t('dashboard.kpi.savedThisMonth') }}</span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-cyan-500/10 text-cyan-500 text-sm font-semibold">
+                        +5% ce mois
+                    </span>
+                    <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('dashboard.kpi.savedThisMonth') }}</span>
+                </div>
             </div>
         </div>
         
+        <!-- KPI Card 3 - Objectif FIRE -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 cursor-pointer" [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les revenus passifs" tabindex="0">
-                <div class="flex justify-between mb-4">
+            <div class="card mb-0 cursor-pointer group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20" 
+                 [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir l'objectif FIRE" tabindex="0">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">{{ t('dashboard.kpi.passiveIncome') }}</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ passiveIncome | currency: 'EUR' }}</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Objectif FIRE</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ fireProgress }}%</div>
                     </div>
-                    <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-star text-purple-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-flag text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">+{{ passiveIncomeChange | currency: 'EUR' }} </span>
-                <span class="text-muted-color">{{ t('dashboard.kpi.thisMonth') }}</span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                        12 ans restants
+                    </span>
+                </div>
             </div>
         </div>
     `
 })
 export class StatsWidget {
-    netWorth = 45000; // Mock data
-    netWorthChange = 1200; // Mock data
-    savingsRate = 38; // Mock data (percentage)
-    savingsAmount = 1200; // Mock data
-    fireProgress = 15; // Mock data (percentage)
-    fireNumber = 300000; // Mock data (FIRE number target)
-    passiveIncome = 120; // Mock data
-    passiveIncomeChange = 20; // Mock data
+    netWorth = 130481;
+    netWorthChange = 8025;
+    savingsRate = 38;
+    savingsAmount = 1200;
+    fireProgress = 43;
+    fireNumber = 300000;
+    passiveIncome = 120;
+    passiveIncomeChange = 20;
+    
     constructor(private i18n: I18nService, private router: Router) {}
 
     t(key: string): string {
@@ -79,4 +99,5 @@ export class StatsWidget {
         return ['/', lang, ...segments];
     }
 }
+
 

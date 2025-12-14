@@ -7,46 +7,51 @@ import { TransactionsService, TransactionRecord } from '../../service/transactio
     selector: 'app-transaction-stats',
     imports: [CommonModule],
     template: `
+        <!-- Card 1 - Solde Comptes Bancaires -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
+            <div class="card mb-0 group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Solde Comptes Bancaires</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ totalBank | currency: 'EUR' }}</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Solde Comptes Bancaires</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ totalBank | currency: 'EUR':'symbol':'1.0-0' }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-wallet text-green-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-wallet text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-muted-color">Somme des entrées - sorties</span>
+                <span class="text-surface-500 dark:text-surface-400 text-sm">Somme des entrées - sorties</span>
             </div>
         </div>
+        
+        <!-- Card 2 - Dépenses Totales -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
+            <div class="card mb-0 group hover:shadow-lg hover:shadow-rose-500/10 transition-all duration-300 border border-transparent hover:border-rose-500/20">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Dépenses Totales</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ totalExpense | currency: 'EUR' }}</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dépenses Totales</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ totalExpense | currency: 'EUR':'symbol':'1.0-0' }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-red-100 dark:bg-red-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-arrow-down text-red-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-arrow-down text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-muted-color">Toutes les dépenses</span>
+                <span class="text-surface-500 dark:text-surface-400 text-sm">Toutes les dépenses</span>
             </div>
         </div>
+        
+        <!-- Card 3 - Dernier Salaire -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
+            <div class="card mb-0 group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Dernier Salaire</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ lastSalaryAmount | currency: 'EUR' }}</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dernier Salaire</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ lastSalaryAmount | currency: 'EUR':'symbol':'1.0-0' }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-briefcase text-blue-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-briefcase text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-muted-color">Le {{ lastSalaryDate }}</span>
+                <span class="text-surface-500 dark:text-surface-400 text-sm">Le {{ lastSalaryDate }}</span>
             </div>
         </div>
     `
@@ -81,4 +86,3 @@ export class TransactionStats {
         });
     }
 }
-

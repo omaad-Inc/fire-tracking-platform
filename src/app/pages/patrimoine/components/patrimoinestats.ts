@@ -8,26 +8,31 @@ import { I18nService } from '../../../i18n/i18n.service';
     selector: 'app-patrimoine-stats',
     imports: [CommonModule],
     template: `
-        <div class="h-full flex flex-col gap-0">
-            <div class="card flex-1 flex flex-col items-center justify-center rounded-b-none text-center relative">
-                <span class="block text-muted-color font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2">{{ totalSavings | currency: 'EUR' }}</div>
-                <div class="absolute top-4 right-4 flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                    <i class="pi pi-wallet text-green-500 !text-xl"></i>
+        <div class="h-full flex flex-col gap-4">
+            <!-- Card 1 - Patrimoine Net -->
+            <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20">
+                <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
+                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2">{{ totalSavings | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <i class="pi pi-wallet text-white text-lg"></i>
                 </div>
             </div>
-            <div class="card flex-1 flex flex-col items-center justify-center rounded-t-none text-center relative">
-                <span class="block text-muted-color font-medium mb-2">{{ t('dashboard.kpi.savedThisMonth') }}</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2">{{ thisMonthSaving | currency: 'EUR' }}</div>
-                <div class="absolute top-4 right-4 flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                    <i class="pi pi-star text-purple-500 !text-xl"></i>
+            
+            <!-- Card 2 - Épargne ce mois -->
+            <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20">
+                <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.savedThisMonth') }}</span>
+                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2">{{ thisMonthSaving | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <i class="pi pi-star text-white text-lg"></i>
                 </div>
             </div>
-            <div class="card flex-1 flex flex-col items-center justify-center text-center mt-2 relative">
-                <span class="block text-muted-color font-medium mb-2">{{ t('transactions.totalExpense') }}</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-xl mb-2">{{ avgMonthlySaving | currency: 'EUR' }}</div>
-                <div class="absolute top-4 right-4 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                    <i class="pi pi-chart-line text-blue-500 !text-xl"></i>
+            
+            <!-- Card 3 - Dépenses totales -->
+            <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20">
+                <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('transactions.totalExpense') }}</span>
+                <div class="text-surface-900 dark:text-surface-0 font-bold text-xl mb-2">{{ avgMonthlySaving | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <i class="pi pi-chart-line text-white text-lg"></i>
                 </div>
             </div>
         </div>
@@ -54,4 +59,3 @@ export class PatrimoineStats {
         return this.i18n.t(key);
     }
 }
-

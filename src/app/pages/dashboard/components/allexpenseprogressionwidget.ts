@@ -11,21 +11,27 @@ import { LayoutService } from '../../../layout/service/layout.service';
     selector: 'app-expenses-progression-widget',
     imports: [CommonModule, ChartModule, FluidModule],
     template: `
-    <div class="card !mb-8 h-full flex flex-col">
-        <div class="mb-4">
-            <div class="font-semibold text-xl">Toutes les Dépenses</div>
+    <div class="card !mb-0 h-full flex flex-col">
+        <div class="mb-6">
+            <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Répartition des Dépenses</div>
         </div>
         <div class="flex-1 flex flex-col items-center justify-center">
-            <div class="relative w-full max-w-[350px] mb-4">
+            <div class="relative w-full max-w-[280px] mx-auto mb-6">
                 <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                    <span class="font-bold text-xl text-center block">{{ total | number:'1.0-0' }} €</span>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div class="text-center">
+                        <span class="text-surface-500 dark:text-surface-400 text-sm block">Total</span>
+                        <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total | number:'1.0-0' }} €</span>
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-wrap justify-center gap-4">
-                <div *ngFor="let label of pieData?.labels; let i = index" class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full" [style.background-color]="getColor(i)"></div>
-                    <span class="text-sm">{{ label }}</span>
+            <div class="grid grid-cols-2 gap-3 w-full">
+                <div *ngFor="let item of legendItems" class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
+                    <div class="w-3 h-3 rounded-full" [style.background]="item.color"></div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium block truncate">{{ item.label }}</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ item.value | currency:'EUR':'symbol':'1.0-0' }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -35,12 +41,9 @@ import { LayoutService } from '../../../layout/service/layout.service';
 export class AllExpensesProgression {
 
     pieData: any;
-
     pieOptions: any;
-
     total: number = 0;
-
-    colors: string[] = [];
+    legendItems: { label: string; color: string; value: number }[] = [];
 
     subscription: Subscription;
     
@@ -55,39 +58,43 @@ export class AllExpensesProgression {
     }
 
     initCharts() {
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-       
-        const values = [1200, 850, 650, 300, 450, 800, 400, 200];
+        const labels = ['Loyer', 'Alimentation', 'Transport', 'Loisirs', 'Épargne', 'Divers'];
+        const values = [1200, 450, 200, 150, 500, 100];
         this.total = values.reduce((a, b) => a + b, 0);
 
-        this.colors = [
-            documentStyle.getPropertyValue('--p-indigo-500'),
-            documentStyle.getPropertyValue('--p-purple-500'),
-            documentStyle.getPropertyValue('--p-teal-500'),
-            documentStyle.getPropertyValue('--p-orange-500'),
-            documentStyle.getPropertyValue('--p-pink-500'),
-            documentStyle.getPropertyValue('--p-cyan-500'),
-            documentStyle.getPropertyValue('--p-green-500'),
-            documentStyle.getPropertyValue('--p-red-500')
+        // Palette de couleurs harmonieuses (indigo → cyan → emerald)
+        const colors = [
+            '#6366f1', // indigo
+            '#8b5cf6', // violet
+            '#06b6d4', // cyan
+            '#14b8a6', // teal
+            '#10b981', // emerald
+            '#f59e0b'  // amber
         ];
 
+        const hoverColors = [
+            '#818cf8',
+            '#a78bfa',
+            '#22d3ee',
+            '#2dd4bf',
+            '#34d399',
+            '#fbbf24'
+        ];
+
+        this.legendItems = labels.map((label, index) => ({
+            label,
+            color: colors[index],
+            value: values[index]
+        }));
+
         this.pieData = {
-            labels: ['Rent', 'Bank loans', 'Food', 'Transportation', 'Travel', 'Vacation', 'Shopping', 'Tontine'],
+            labels: labels,
             datasets: [
                 {
                     data: values,
-                    backgroundColor: this.colors,
-                    hoverBackgroundColor: [
-                        documentStyle.getPropertyValue('--p-indigo-400'),
-                        documentStyle.getPropertyValue('--p-purple-400'),
-                        documentStyle.getPropertyValue('--p-teal-400'),
-                        documentStyle.getPropertyValue('--p-orange-400'),
-                        documentStyle.getPropertyValue('--p-pink-400'),
-                        documentStyle.getPropertyValue('--p-cyan-400'),
-                        documentStyle.getPropertyValue('--p-green-400'),
-                        documentStyle.getPropertyValue('--p-red-400')
-                    ]
+                    backgroundColor: colors,
+                    hoverBackgroundColor: hoverColors,
+                    borderWidth: 0
                 }
             ]
         };
@@ -95,17 +102,28 @@ export class AllExpensesProgression {
         this.pieOptions = {
             plugins: {
                 legend: {
-                    display: false // Désactive la légende automatique
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#94a3b8',
+                    borderColor: 'rgba(99, 102, 241, 0.3)',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context: any) {
+                            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                        }
+                    }
                 }
             },
-            cutout: '75%',
+            cutout: '70%',
             maintainAspectRatio: true,
             responsive: true
         };
-    }
-
-    getColor(index: number): string {
-        return this.colors[index] || '#000';
     }
 
     ngOnDestroy() {

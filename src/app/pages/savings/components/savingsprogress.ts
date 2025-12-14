@@ -7,8 +7,9 @@ import { SavingsService, SavingsSeriesPoint } from '../../service/savings.servic
     selector: 'app-savings-progress',
     template: `
         <div class="card h-full">
-            <div class="mb-4">
-                <div class="font-semibold text-xl">Epargne</div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Évolution de l'Épargne</div>
+                <span class="text-emerald-500 text-sm font-medium">Progression mensuelle</span>
             </div>
             <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[120px] max-h-[300px]" />
         </div>
@@ -33,10 +34,11 @@ export class SavingsProgress implements OnInit {
     initChart() {
         if (isPlatformBrowser(this.platformId)) {
             const documentStyle = getComputedStyle(document.documentElement);
-            const textColor = documentStyle.getPropertyValue('--text-color') || '#fff';
-            const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#aaa';
-            const borderColor = '#a855f7';
-            const backgroundColor = 'rgba(168, 85, 247, 0.15)';
+            const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
+            
+            // Couleurs harmonieuses avec le thème (emerald)
+            const borderColor = '#10b981';
+            const backgroundColor = 'rgba(16, 185, 129, 0.15)';
 
             this.savingsService.getProgressSeries().then((series: SavingsSeriesPoint[]) => {
                 const labels = series.map((p) => p.label);
@@ -48,12 +50,16 @@ export class SavingsProgress implements OnInit {
                             data: values,
                             fill: true,
                             borderColor: borderColor,
-                            tension: 0.4,
                             backgroundColor: backgroundColor,
-                            pointRadius: 5,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: borderColor,
-                            pointBorderWidth: 2
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: borderColor,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: borderColor,
+                            pointHoverBorderColor: '#fff'
                         }
                     ]
                 };
@@ -65,13 +71,31 @@ export class SavingsProgress implements OnInit {
                 aspectRatio: 0.8,
                 plugins: {
                     legend: {
-                        display: false,
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#94a3b8',
+                        borderColor: 'rgba(16, 185, 129, 0.5)',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context: any) {
+                                return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                            }
+                        }
                     }
                 },
                 scales: {
                     x: {
                         ticks: {
-                            color: textColorSecondary
+                            color: textColorSecondary,
+                            font: {
+                                size: 11
+                            }
                         },
                         grid: {
                             display: false,
@@ -81,18 +105,25 @@ export class SavingsProgress implements OnInit {
                     y: {
                         ticks: {
                             color: textColorSecondary,
+                            font: {
+                                size: 11
+                            },
                             callback: function(value: number) {
                                 if (value >= 1000) {
-                                    return '€' + (value / 1000) + 'K';
+                                    return (value / 1000) + 'K€';
                                 }
-                                return '€' + value;
+                                return value + '€';
                             }
                         },
                         grid: {
-                            display: true,
+                            color: 'rgba(148, 163, 184, 0.1)',
                             drawBorder: false
                         }
                     }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 }
             };
             this.cd.markForCheck();

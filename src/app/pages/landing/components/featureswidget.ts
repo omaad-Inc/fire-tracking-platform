@@ -5,135 +5,134 @@ import { CommonModule } from '@angular/common';
     selector: 'features-widget',
     standalone: true,
     imports: [CommonModule],
-    template: ` <div id="features" class="py-6 px-6 lg:px-20 mt-8 mx-0 lg:mx-20">
-        <div class="grid grid-cols-12 gap-4 justify-center">
-            <div class="col-span-12 text-center mt-20 mb-6">
-                <div class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">Marvelous Features</div>
-                <span class="text-muted-color text-2xl">Placerat in egestas erat...</span>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 lg:pb-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-yellow-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-users !text-2xl text-yellow-700"></i>
-                        </div>
-                        <h5 class="mb-2 text-surface-900 dark:text-surface-0">Easy to Use</h5>
-                        <span class="text-surface-600 dark:text-surface-200">Posuere morbi leo urna molestie.</span>
+    template: `
+        <div id="features" class="py-20 px-6 lg:px-20 bg-surface-0 dark:bg-surface-900">
+            <div class="max-w-7xl mx-auto">
+                <!-- Section Header -->
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-6">
+                        <i class="pi pi-sparkles text-indigo-500"></i>
+                        <span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">Fonctionnalités</span>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 lg:pb-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(172, 180, 223, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-cyan-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-palette !text-2xl text-cyan-700"></i>
-                        </div>
-                        <h5 class="mb-2 text-surface-900 dark:text-surface-0">Fresh Design</h5>
-                        <span class="text-surface-600 dark:text-surface-200">Semper risus in hendrerit.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 226, 237, 0.2), rgba(172, 180, 223, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(246, 158, 188, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-indigo-200" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-map !text-2xl text-indigo-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Well Documented</div>
-                        <span class="text-surface-600 dark:text-surface-200">Non arcu risus quis varius quam quisque.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 lg:pb-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(251, 199, 145, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(145, 210, 204, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-slate-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-id-card !text-2xl text-slate-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Responsive Layout</div>
-                        <span class="text-surface-600 dark:text-surface-200">Nulla malesuada pellentesque elit.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 lg:pb-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(187, 199, 205, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(145, 226, 237, 0.2), rgba(160, 210, 250, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-orange-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-star !text-2xl text-orange-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Clean Code</div>
-                        <span class="text-surface-600 dark:text-surface-200">Condimentum lacinia quis vel eros.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(251, 199, 145, 0.2), rgba(246, 158, 188, 0.2)), linear-gradient(180deg, rgba(172, 180, 223, 0.2), rgba(212, 162, 221, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-pink-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-moon !text-2xl text-pink-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Dark Mode</div>
-                        <span class="text-surface-600 dark:text-surface-200">Convallis tellus id interdum velit laoreet.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(160, 210, 250, 0.2)), linear-gradient(180deg, rgba(187, 199, 205, 0.2), rgba(145, 210, 204, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-teal-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-shopping-cart !text-2xl text-teal-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Ready to Use</div>
-                        <span class="text-surface-600 dark:text-surface-200">Mauris sit amet massa vitae.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(212, 162, 221, 0.2)), linear-gradient(180deg, rgba(251, 199, 145, 0.2), rgba(160, 210, 250, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-blue-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-globe !text-2xl text-blue-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Modern Practices</div>
-                        <span class="text-surface-600 dark:text-surface-200">Elementum nibh tellus molestie nunc non.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg-4 mt-6 lg:mt-0">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(160, 210, 250, 0.2), rgba(212, 162, 221, 0.2)), linear-gradient(180deg, rgba(246, 158, 188, 0.2), rgba(212, 162, 221, 0.2))">
-                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">
-                        <div class="flex items-center justify-center bg-purple-200 mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px">
-                            <i class="pi pi-fw pi-eye !text-2xl text-purple-700"></i>
-                        </div>
-                        <div class="mt-6 mb-1 text-surface-900 dark:text-surface-0 text-xl font-semibold">Privacy</div>
-                        <span class="text-surface-600 dark:text-surface-200">Neque egestas congue quisque.</span>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="col-span-12 mt-20 mb-20 p-2 md:p-20"
-                style="border-radius: 20px; background: linear-gradient(0deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, #efe1af 0%, #c3dcfa 100%)"
-            >
-                <div class="flex flex-col justify-center items-center text-center px-4 py-4 md:py-0">
-                    <div class="text-gray-900 mb-2 text-3xl font-semibold">Joséphine Miller</div>
-                    <span class="text-gray-600 text-2xl">Peak Interactive</span>
-                    <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-2xl mt-6" style="max-width: 800px">
-                        “Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.”
+                    <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
+                        Tout pour atteindre la
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">liberté financière</span>
+                    </h2>
+                    <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">
+                        Des outils puissants pour suivre, analyser et optimiser votre parcours vers l'indépendance financière
                     </p>
-                    <img src="https://primefaces.org/cdn/templates/sakai/landing/peak-logo.svg" class="mt-6" alt="Company logo" />
+                </div>
+
+                <!-- Features Grid -->
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- Feature 1 - Large -->
+                    <div class="col-span-12 lg:col-span-8">
+                        <div class="group h-full p-8 rounded-2xl bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-950/50 dark:to-cyan-950/50 border border-indigo-100 dark:border-indigo-900/50 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-500">
+                            <div class="flex flex-col md:flex-row gap-8 items-start">
+                                <div class="flex-1">
+                                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-500 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="pi pi-chart-line text-white text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-3">Suivi du Patrimoine</h3>
+                                    <p class="text-surface-600 dark:text-surface-300 text-lg leading-relaxed mb-6">
+                                        Visualisez l'évolution de votre patrimoine total en temps réel. Immobilier, crypto, actions, comptes bancaires - tout est centralisé pour une vue d'ensemble claire.
+                                    </p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <span class="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-sm">Net Worth</span>
+                                        <span class="px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300 text-sm">Multi-actifs</span>
+                                        <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-sm">Graphiques</span>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-48 h-48 rounded-xl bg-gradient-to-br from-indigo-200 to-cyan-200 dark:from-indigo-800 dark:to-cyan-800 p-4">
+                                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                                        <path d="M10 80 Q 30 60 50 50 T 90 20" stroke="currentColor" stroke-width="3" fill="none" class="text-indigo-600 dark:text-indigo-400"/>
+                                        <circle cx="90" cy="20" r="4" fill="currentColor" class="text-cyan-500"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2 - Small -->
+                    <div class="col-span-12 md:col-span-6 lg:col-span-4">
+                        <div class="group h-full p-6 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/50 dark:to-teal-950/50 border border-emerald-100 dark:border-emerald-900/50 hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-500">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-500 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                <i class="pi pi-wallet text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Épargne Intelligente</h3>
+                            <p class="text-surface-600 dark:text-surface-300">
+                                Définissez des objectifs d'épargne, suivez votre progression et célébrez chaque milestone vers votre liberté.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3 - Small -->
+                    <div class="col-span-12 md:col-span-6 lg:col-span-4">
+                        <div class="group h-full p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 border border-amber-100 dark:border-amber-900/50 hover:shadow-xl hover:shadow-amber-500/10 transition-all duration-500">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                <i class="pi pi-receipt text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Transactions</h3>
+                            <p class="text-surface-600 dark:text-surface-300">
+                                Catégorisez automatiquement vos revenus et dépenses. Identifiez les fuites et optimisez votre budget.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 4 - Small -->
+                    <div class="col-span-12 md:col-span-6 lg:col-span-4">
+                        <div class="group h-full p-6 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-950/50 dark:to-pink-950/50 border border-rose-100 dark:border-rose-900/50 hover:shadow-xl hover:shadow-rose-500/10 transition-all duration-500">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-600 to-rose-500 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                <i class="pi pi-credit-card text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Gestion des Dettes</h3>
+                            <p class="text-surface-600 dark:text-surface-300">
+                                Visualisez vos dettes, créances et leur progression. Stratégies avalanche ou boule de neige intégrées.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 5 - Small -->
+                    <div class="col-span-12 md:col-span-6 lg:col-span-4">
+                        <div class="group h-full p-6 rounded-2xl bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/50 dark:to-purple-950/50 border border-violet-100 dark:border-violet-900/50 hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-500">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-violet-500 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                                <i class="pi pi-chart-pie text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">Répartition des Actifs</h3>
+                            <p class="text-surface-600 dark:text-surface-300">
+                                Analysez la diversification de votre portefeuille. Rééquilibrez pour optimiser risque et rendement.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial Section -->
+                <div class="mt-20 relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/10 via-cyan-600/10 to-emerald-600/10 rounded-3xl blur-xl"></div>
+                    <div class="relative p-8 md:p-12 rounded-3xl bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-xl">
+                        <div class="flex flex-col md:flex-row items-center gap-8">
+                            <div class="flex-shrink-0">
+                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white text-3xl font-bold">
+                                    <i class="pi pi-fire text-4xl"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 text-center md:text-left">
+                                <blockquote class="text-2xl md:text-3xl text-surface-700 dark:text-surface-200 font-light leading-relaxed mb-6">
+                                    "L'indépendance financière n'est pas un rêve, c'est un <span class="text-indigo-600 dark:text-indigo-400 font-medium">plan</span>. 
+                                    Finova transforme ce plan en <span class="text-cyan-600 dark:text-cyan-400 font-medium">réalité mesurable</span>."
+                                </blockquote>
+                                <div class="flex items-center justify-center md:justify-start gap-4">
+                                    <div>
+                                        <div class="font-semibold text-surface-900 dark:text-surface-0">La philosophie FIRE</div>
+                                        <div class="text-surface-500 dark:text-surface-400">Financial Independence, Retire Early</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>`
+    `
 })
 export class FeaturesWidget {}

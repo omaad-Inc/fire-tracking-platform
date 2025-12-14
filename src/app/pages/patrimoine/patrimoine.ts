@@ -20,7 +20,8 @@ import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine
             <div class="col-span-12">
                 <div class="card">
                     <div class="mb-6 flex items-center justify-between">
-                        <div class="font-semibold text-xl">{{ t('patrimoine.assets.title') }}</div>
+                        <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('patrimoine.assets.title') }}</div>
+                        <span class="text-indigo-500 text-sm font-medium">{{ assets.length }} actifs</span>
                     </div>
                     <div class="grid grid-cols-12 gap-8">
                         <div class="col-span-12 xl:col-span-7">
@@ -55,8 +56,9 @@ export class Patrimoine {
 
     t(key: string) { return this.i18n.t(key); }
 
+    // Palette harmonieuse (indigo, cyan, emerald, violet, amber)
     colorFor = (item: PatrimoineAssetItem) => {
-        const palette = ['#8b5cf6', '#14b8a6', '#a855f7', '#f59e0b', '#06b6d4'];
+        const palette = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b'];
         const idx = Math.abs(this.hash(item.name)) % palette.length;
         return palette[idx];
     };

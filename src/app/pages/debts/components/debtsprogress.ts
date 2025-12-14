@@ -118,10 +118,12 @@ interface ExportColumn {
                     <td>{{ record.frequency }}</td>
                     <td>
                         <div class="flex items-center gap-2">
-                            <div class="bg-surface-300 dark:bg-surface-500 w-full max-w-xs h-2 rounded-border overflow-hidden" style="height: 8px">
-                                <div [ngClass]="record.type === 'Debt' ? 'bg-primary-600' : 'bg-green-600'" class="h-full" [ngStyle]="{ width: getPercent(record) + '%' }"></div>
+                            <div class="bg-surface-200 dark:bg-surface-700 w-full max-w-xs rounded-full overflow-hidden" style="height: 8px">
+                                <div class="h-full rounded-full transition-all duration-500" 
+                                     [ngClass]="record.type === 'Debt' ? 'bg-gradient-to-r from-indigo-600 to-indigo-400' : 'bg-gradient-to-r from-emerald-600 to-emerald-400'" 
+                                     [ngStyle]="{ width: getPercent(record) + '%' }"></div>
                             </div>
-                            <span [ngClass]="record.type === 'Debt' ? 'text-primary-600' : 'text-green-600'" class="font-medium">{{ getPercent(record) }}%</span>
+                            <span [ngClass]="record.type === 'Debt' ? 'text-indigo-500' : 'text-emerald-500'" class="font-semibold">{{ getPercent(record) }}%</span>
                         </div>
                     </td>
                     <td>

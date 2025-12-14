@@ -10,12 +10,12 @@ import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-register',
     standalone: true,
     imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule],
     template: `
         <div class="min-h-screen flex">
-            <!-- Left Side - Login Form -->
+            <!-- Left Side - Register Form -->
             <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 bg-surface-0 dark:bg-surface-950">
                 <!-- Logo -->
                 <div class="mb-12">
@@ -52,15 +52,15 @@ import { CommonModule } from '@angular/common';
                     </a>
                 </div>
 
-                <!-- Login Form -->
+                <!-- Register Form -->
                 <div class="max-w-md">
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                        Log in to your account
+                        Create your account
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
-                        Don't have an account? 
-                        <a [routerLink]="[currentLang, 'auth', 'register']" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium cursor-pointer">
-                            Sign up <i class="pi pi-chevron-right text-xs"></i>
+                        Already have an account? 
+                        <a [routerLink]="[currentLang, 'auth', 'login']" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium cursor-pointer">
+                            Log in <i class="pi pi-chevron-right text-xs"></i>
                         </a>
                     </p>
 
@@ -91,16 +91,35 @@ import { CommonModule } from '@angular/common';
                     <!-- Divider -->
                     <div class="flex items-center gap-4 my-8">
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
-                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">or sign in through email</span>
+                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">or sign up with email</span>
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
-                    <!-- Email & Password Form -->
+                    <!-- Registration Form -->
                     <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">First name</label>
+                                <input pInputText id="firstName" type="text" 
+                                       placeholder="John" 
+                                       class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
+                                              focus:!border-indigo-500 focus:!shadow-none"
+                                       [(ngModel)]="firstName" />
+                            </div>
+                            <div>
+                                <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Last name</label>
+                                <input pInputText id="lastName" type="text" 
+                                       placeholder="Doe" 
+                                       class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
+                                              focus:!border-indigo-500 focus:!shadow-none"
+                                       [(ngModel)]="lastName" />
+                            </div>
+                        </div>
+
                         <div>
                             <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Email address</label>
                             <input pInputText id="email" type="email" 
-                                   placeholder="Enter your email" 
+                                   placeholder="john.doe@example.com" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
                                    [(ngModel)]="email" />
@@ -110,7 +129,19 @@ import { CommonModule } from '@angular/common';
                             <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Password</label>
                             <p-password id="password" 
                                         [(ngModel)]="password" 
-                                        placeholder="Enter your password" 
+                                        placeholder="Create a strong password" 
+                                        [toggleMask]="true" 
+                                        [feedback]="true"
+                                        styleClass="w-full"
+                                        inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
+                            </p-password>
+                        </div>
+
+                        <div>
+                            <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Confirm password</label>
+                            <p-password id="confirmPassword" 
+                                        [(ngModel)]="confirmPassword" 
+                                        placeholder="Confirm your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
                                         styleClass="w-full"
@@ -118,20 +149,26 @@ import { CommonModule } from '@angular/common';
                             </p-password>
                         </div>
 
-                        <button pButton pRipple label="Log In" 
-                                [routerLink]="[currentLang]"
-                                class="w-full !py-3 !text-base !font-semibold !bg-surface-300 dark:!bg-surface-700 
-                                       !text-surface-500 dark:!text-surface-400 !border-0 
-                                       hover:!bg-indigo-600 hover:!text-white transition-all duration-300
-                                       disabled:opacity-50"
-                                [disabled]="!email || !password">
-                        </button>
-
-                        <div class="text-center">
-                            <a class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium cursor-pointer text-sm">
-                                Forgot password?
-                            </a>
+                        <!-- Terms Checkbox -->
+                        <div class="flex items-start gap-3">
+                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms"></p-checkbox>
+                            <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
+                                I agree to the 
+                                <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Terms of Service</a> 
+                                and 
+                                <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Privacy Policy</a>
+                            </label>
                         </div>
+
+                        <button pButton pRipple label="Create Account" 
+                                [routerLink]="[currentLang]"
+                                class="w-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300"
+                                [ngClass]="{
+                                    '!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white hover:!shadow-lg hover:!shadow-indigo-500/25': isFormValid,
+                                    '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !isFormValid
+                                }"
+                                [disabled]="!isFormValid">
+                        </button>
                     </div>
                 </div>
             </div>
@@ -143,122 +180,86 @@ import { CommonModule } from '@angular/common';
                     <div class="absolute inset-0 opacity-10" 
                          style="background-image: linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px); background-size: 40px 40px;">
                     </div>
-                    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
-                    <div class="absolute bottom-1/4 left-1/4 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl"></div>
+                    <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"></div>
+                    <div class="absolute bottom-1/3 left-1/4 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>
                 </div>
 
                 <!-- Content -->
                 <div class="relative z-10 flex flex-col justify-center items-center p-12 w-full">
-                    <!-- Dashboard Mockups -->
-                    <div class="relative w-full max-w-2xl">
-                        <!-- Desktop Mockup -->
-                        <div class="bg-slate-800/80 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 shadow-2xl transform rotate-1">
-                            <!-- Browser Header -->
-                            <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-700/50">
-                                <div class="flex gap-1.5">
-                                    <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                    <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                                    <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                    <!-- Illustration -->
+                    <div class="relative w-full max-w-lg mb-12">
+                        <!-- Main Card -->
+                        <div class="bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6 shadow-2xl">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                                    <i class="pi pi-user text-white text-xl"></i>
                                 </div>
-                                <div class="flex-1 flex justify-center">
-                                    <div class="bg-slate-700/50 rounded-lg px-4 py-1 text-slate-400 text-xs flex items-center gap-2">
-                                        <i class="pi pi-lock text-emerald-400"></i>
-                                        finova.app
-                                    </div>
+                                <div>
+                                    <div class="text-white font-semibold">Welcome to Finova</div>
+                                    <div class="text-slate-400 text-sm">Your financial journey starts here</div>
                                 </div>
                             </div>
-                            
-                            <!-- Dashboard Content -->
-                            <div class="grid grid-cols-3 gap-3 mb-4">
-                                <div class="col-span-1 space-y-2">
-                                    <div class="bg-slate-700/50 rounded-lg p-3">
-                                        <div class="text-slate-400 text-xs mb-1">Dashboard</div>
-                                        <div class="h-2 bg-indigo-500/30 rounded"></div>
+
+                            <!-- Progress Steps -->
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                                        <i class="pi pi-check text-white text-sm"></i>
                                     </div>
-                                    <div class="bg-slate-700/50 rounded-lg p-3">
-                                        <div class="text-slate-400 text-xs mb-1">Portfolio</div>
-                                        <div class="h-2 bg-slate-600 rounded"></div>
-                                    </div>
-                                    <div class="bg-slate-700/50 rounded-lg p-3">
-                                        <div class="text-slate-400 text-xs mb-1">Insights</div>
-                                        <div class="h-2 bg-slate-600 rounded"></div>
+                                    <div class="flex-1">
+                                        <div class="text-white text-sm font-medium">Create your account</div>
+                                        <div class="text-slate-400 text-xs">Set up your profile in minutes</div>
                                     </div>
                                 </div>
-                                <div class="col-span-2 bg-slate-700/30 rounded-lg p-4">
-                                    <div class="text-slate-400 text-xs mb-1">Total Worth</div>
-                                    <div class="text-2xl font-bold text-white mb-3">130 481 €</div>
-                                    <div class="flex items-center gap-2 text-xs mb-4">
-                                        <span class="text-emerald-400">+8,025€</span>
-                                        <span class="text-emerald-400">+1.93%</span>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 text-sm font-medium">2</div>
+                                    <div class="flex-1">
+                                        <div class="text-slate-300 text-sm font-medium">Add your assets</div>
+                                        <div class="text-slate-500 text-xs">Connect accounts or add manually</div>
                                     </div>
-                                    <!-- Mini Chart -->
-                                    <div class="flex items-end justify-between h-16 gap-1">
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-indigo-400/50 rounded-t" style="height: 40%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-indigo-400/50 rounded-t" style="height: 55%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-indigo-400/50 rounded-t" style="height: 45%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-cyan-400/50 rounded-t" style="height: 65%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600/50 to-cyan-400/50 rounded-t" style="height: 75%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600/50 to-emerald-400/50 rounded-t" style="height: 85%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-emerald-600/50 to-emerald-400/50 rounded-t" style="height: 100%"></div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 text-sm font-medium">3</div>
+                                    <div class="flex-1">
+                                        <div class="text-slate-300 text-sm font-medium">Track your progress</div>
+                                        <div class="text-slate-500 text-xs">Monitor your path to FIRE</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Mobile Mockup -->
-                        <div class="absolute -bottom-8 -left-8 w-40 bg-slate-800/90 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-3 shadow-2xl transform -rotate-6">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="w-6 h-6 rounded-full bg-slate-700"></div>
-                                <div class="w-4 h-4 rounded-full bg-slate-700"></div>
-                            </div>
-                            <div class="text-white font-bold text-lg mb-1">130 481 €</div>
-                            <div class="flex items-center gap-1 text-xs mb-3">
-                                <span class="text-emerald-400">+8,025€</span>
-                                <span class="text-emerald-400">+1.93%</span>
-                            </div>
-                            <div class="space-y-2">
-                                <div class="flex justify-between text-xs">
-                                    <span class="text-slate-400">Total</span>
-                                    <span class="text-slate-400">Net</span>
-                                    <span class="text-slate-400">Financial</span>
-                                </div>
-                            </div>
+                        <!-- Floating Badge -->
+                        <div class="absolute -top-4 -right-4 bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl px-4 py-2 shadow-lg">
+                            <div class="text-white font-bold text-lg">100%</div>
+                            <div class="text-white/80 text-xs">Free forever</div>
                         </div>
                     </div>
 
                     <!-- Text Content -->
-                    <div class="text-center mt-16">
+                    <div class="text-center">
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                            All your investments <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">in</span>
-                            <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">one place</span>
+                            Start your journey to
+                            <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Financial Freedom</span>
                         </h2>
                         <p class="text-slate-400 max-w-md mx-auto mb-8">
-                            Link your Accounts, automatically track your performance and optimize your portfolio with our bank-grade security app.
+                            Join thousands of users who are taking control of their finances and building their path to early retirement.
                         </p>
 
-                        <!-- Trust Badges -->
-                        <div class="flex items-center justify-center gap-8 text-slate-500 text-xs">
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-lock text-lg"></i>
-                                <span>Bank-grade<br>security</span>
+                        <!-- Stats -->
+                        <div class="flex items-center justify-center gap-8">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-white">10K+</div>
+                                <div class="text-slate-500 text-sm">Active users</div>
                             </div>
-                            <div class="flex flex-col items-center gap-1">
-                                <div class="flex text-cyan-400">
-                                    <i class="pi pi-star-fill text-xs"></i>
-                                    <i class="pi pi-star-fill text-xs"></i>
-                                    <i class="pi pi-star-fill text-xs"></i>
-                                    <i class="pi pi-star-fill text-xs"></i>
-                                    <i class="pi pi-star-fill text-xs"></i>
-                                </div>
-                                <span>Rated 4.8/5 with<br>5000+ reviews</span>
+                            <div class="w-px h-12 bg-slate-700"></div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-white">€50M+</div>
+                                <div class="text-slate-500 text-sm">Assets tracked</div>
                             </div>
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-building text-lg"></i>
-                                <span>20,000 Banks &<br>Platforms</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-desktop text-lg"></i>
-                                <span>Available on App<br>and Web</span>
+                            <div class="w-px h-12 bg-slate-700"></div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-white">4.8/5</div>
+                                <div class="text-slate-500 text-sm">User rating</div>
                             </div>
                         </div>
                     </div>
@@ -267,14 +268,22 @@ import { CommonModule } from '@angular/common';
         </div>
     `
 })
-export class Login {
+export class Register {
+    firstName: string = '';
+    lastName: string = '';
     email: string = '';
     password: string = '';
-    checked: boolean = false;
+    confirmPassword: string = '';
+    acceptTerms: boolean = false;
     currentLang = '/fr';
 
     constructor(private router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
     }
+
+    get isFormValid(): boolean {
+        return !!(this.firstName && this.lastName && this.email && this.password && this.confirmPassword && this.acceptTerms && this.password === this.confirmPassword);
+    }
 }
+
