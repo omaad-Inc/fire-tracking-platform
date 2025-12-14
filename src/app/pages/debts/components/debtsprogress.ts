@@ -135,72 +135,206 @@ interface ExportColumn {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px', minHeight: '600px', maxHeight: '90vh' }" [header]="isEdit ? 'Debt/Receivable Details' : 'Ajouter une nouvelle Dette/Créance'" [modal]="true">
+        <p-dialog [(visible)]="productDialog" 
+                  [style]="{ width: '95vw', maxWidth: '650px' }" 
+                  [breakpoints]="{ '768px': '95vw' }"
+                  [modal]="true"
+                  [draggable]="false"
+                  [resizable]="false"
+                  styleClass="!rounded-2xl overflow-hidden">
+            <ng-template #header>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-lg shadow-rose-500/30">
+                        <i class="pi pi-credit-card text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
+                            {{ isEdit ? 'Modifier la dette/créance' : 'Nouvelle dette/créance' }}
+                        </h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Gérez vos dettes et créances</p>
+                    </div>
+                </div>
+            </ng-template>
+            
             <ng-template #content>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="date" class="block font-bold mb-3">Date</label>
-                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" inputId="date" dateFormat="yy-mm-dd" required class="w-full" />
-                        <small class="text-red-500" *ngIf="submitted && !record.date">Date is required.</small>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                    <!-- Date -->
+                    <div class="flex flex-col gap-2">
+                        <label for="date" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-calendar text-rose-500"></i>
+                            Date
+                        </label>
+                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" 
+                                      inputId="date" dateFormat="yy-mm-dd" required 
+                                      styleClass="w-full"
+                                      inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-rose-500" />
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.date">
+                            <i class="pi pi-exclamation-circle mr-1"></i>La date est requise
+                        </small>
                     </div>
-                    <div>
-                        <label for="type" class="block font-bold mb-3">Type</label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" class="w-full" />
+                    
+                    <!-- Type -->
+                    <div class="flex flex-col gap-2">
+                        <label for="type" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-arrows-h text-indigo-500"></i>
+                            Type
+                        </label>
+                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" 
+                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un type" 
+                                  styleClass="w-full !rounded-xl" />
                     </div>
-                    <div>
-                        <label for="name" class="block font-bold mb-3">Name</label>
-                        <input pInputText id="name" [(ngModel)]="record.name" required class="w-full" />
-                        <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
+                    
+                    <!-- Name -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label for="name" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-tag text-cyan-500"></i>
+                            Nom
+                        </label>
+                        <input pInputText id="name" [(ngModel)]="record.name" required 
+                               class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-rose-500"
+                               placeholder="Ex: Prêt immobilier, Ami..." />
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
+                            <i class="pi pi-exclamation-circle mr-1"></i>Le nom est requis
+                        </small>
                     </div>
-                    <div>
-                        <label for="total" class="block font-bold mb-3">Montant total</label>
-                        <p-inputnumber id="total" [(ngModel)]="record.total" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
+                    
+                    <!-- Total -->
+                    <div class="flex flex-col gap-2">
+                        <label for="total" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-euro text-amber-500"></i>
+                            Montant total
+                        </label>
+                        <p-inputnumber id="total" [(ngModel)]="record.total" mode="currency" currency="EUR" locale="fr-FR" 
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-rose-500" />
                     </div>
-                    <div>
-                        <label for="paid" class="block font-bold mb-3">Payé/Reçu</label>
-                        <p-inputnumber id="paid" [(ngModel)]="record.paid" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
+                    
+                    <!-- Paid -->
+                    <div class="flex flex-col gap-2">
+                        <label for="paid" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-check-circle text-emerald-500"></i>
+                            Payé/Reçu
+                        </label>
+                        <p-inputnumber id="paid" [(ngModel)]="record.paid" mode="currency" currency="EUR" locale="fr-FR" 
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500" />
                     </div>
-                    <div>
-                        <label for="interestRate" class="block font-bold mb-3">Taux d'intérêt (%)</label>
-                        <p-inputnumber id="interestRate" [(ngModel)]="record.interestRate" mode="decimal" minFractionDigits="2" maxFractionDigits="2" suffix=" %" class="w-full" />
+                    
+                    <!-- Interest Rate -->
+                    <div class="flex flex-col gap-2">
+                        <label for="interestRate" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-percentage text-violet-500"></i>
+                            Taux d'intérêt
+                        </label>
+                        <p-inputnumber id="interestRate" [(ngModel)]="record.interestRate" mode="decimal" 
+                                       minFractionDigits="2" maxFractionDigits="2" suffix=" %" 
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-violet-500" />
                     </div>
-                    <div>
-                        <label for="frequency" class="block font-bold mb-3">Fréquence</label>
-                        <p-select [(ngModel)]="record.frequency" inputId="frequency" [options]="frequencies" optionLabel="label" optionValue="value" placeholder="Choisir une fréquence" class="w-full" />
+                    
+                    <!-- Frequency -->
+                    <div class="flex flex-col gap-2">
+                        <label for="frequency" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-sync text-surface-400"></i>
+                            Fréquence
+                        </label>
+                        <p-select [(ngModel)]="record.frequency" inputId="frequency" [options]="frequencies" 
+                                  optionLabel="label" optionValue="value" placeholder="Choisir une fréquence" 
+                                  styleClass="w-full !rounded-xl" />
                     </div>
-                    <div class="md:col-span-2 mb-8"></div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="saveRecord()" />
+                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" 
+                              [outlined]="true" 
+                              (click)="hideDialog()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
+                    <p-button label="Enregistrer" icon="pi pi-check" 
+                              (click)="saveRecord()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-rose-600 !to-indigo-500 hover:!from-rose-700 hover:!to-indigo-600 !border-0" />
+                </div>
             </ng-template>
         </p-dialog>
 
-        <p-dialog [(visible)]="addPaymentDialog" [style]="{ width: '350px' }" header="Ajouter un paiement" [modal]="true">
+        <!-- Add Payment Dialog -->
+        <p-dialog [(visible)]="addPaymentDialog" 
+                  [style]="{ width: '95vw', maxWidth: '420px' }" 
+                  [breakpoints]="{ '768px': '95vw' }"
+                  [modal]="true"
+                  [draggable]="false"
+                  [resizable]="false"
+                  styleClass="!rounded-2xl overflow-hidden">
+            <ng-template #header>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                        <i class="pi pi-plus text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">Ajouter un paiement</h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Enregistrer un remboursement</p>
+                    </div>
+                </div>
+            </ng-template>
+            
             <ng-template #content>
-                <div *ngIf="addPaymentIndex !== null; let idx">
+                <div *ngIf="addPaymentIndex !== null">
                     <ng-container *ngIf="records()[addPaymentIndex] as rec">
-                        <div class="flex flex-col gap-6">
-                            <div>
-                                <div class="font-semibold text-lg mb-1">{{ rec.name }}</div>
-                                <div class="text-sm text-muted-color mb-1">Montant total : <span class="font-semibold">{{ rec.total | currency:'EUR' }}</span></div>
-                                <div class="text-sm text-muted-color mb-1">Déjà payé/reçu : <span class="font-semibold">{{ rec.paid | currency:'EUR' }}</span></div>
-                                <div class="text-sm text-muted-color mb-1">Reste : <span class="font-semibold">{{ (rec.total - rec.paid) | currency:'EUR' }}</span></div>
+                        <div class="flex flex-col gap-5 pt-4">
+                            <!-- Summary Card -->
+                            <div class="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-4 space-y-3">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                                        <i class="pi pi-info-circle text-indigo-500"></i>
+                                    </div>
+                                    <span class="font-semibold text-lg text-surface-900 dark:text-surface-0">{{ rec.name }}</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-3 text-center">
+                                    <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
+                                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Total</div>
+                                        <div class="font-bold text-surface-900 dark:text-surface-0">{{ rec.total | currency:'EUR':'symbol':'1.0-0' }}</div>
+                                    </div>
+                                    <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
+                                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Payé</div>
+                                        <div class="font-bold text-emerald-500">{{ rec.paid | currency:'EUR':'symbol':'1.0-0' }}</div>
+                                    </div>
+                                    <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
+                                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Reste</div>
+                                        <div class="font-bold text-rose-500">{{ (rec.total - rec.paid) | currency:'EUR':'symbol':'1.0-0' }}</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block font-bold mb-3">Montant à ajouter (€)</label>
-                                <p-inputnumber [(ngModel)]="addPaymentAmount" mode="currency" currency="EUR" locale="fr-FR" [min]="1" [max]="getMaxAddPayment()" autofocus />
-                                <small class="text-red-500" *ngIf="addPaymentSubmitted && (!addPaymentAmount || addPaymentAmount <= 0)">Veuillez saisir un montant valide.</small>
+                            
+                            <!-- Amount Input -->
+                            <div class="flex flex-col gap-2">
+                                <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                                    <i class="pi pi-euro text-emerald-500"></i>
+                                    Montant à ajouter
+                                </label>
+                                <p-inputnumber [(ngModel)]="addPaymentAmount" mode="currency" currency="EUR" locale="fr-FR" 
+                                               [min]="1" [max]="getMaxAddPayment()" autofocus 
+                                               styleClass="w-full"
+                                               inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500 !text-lg" />
+                                <small class="text-rose-500 text-xs" *ngIf="addPaymentSubmitted && (!addPaymentAmount || addPaymentAmount <= 0)">
+                                    <i class="pi pi-exclamation-circle mr-1"></i>Veuillez saisir un montant valide
+                                </small>
                             </div>
                         </div>
                     </ng-container>
                 </div>
             </ng-template>
+            
             <ng-template #footer>
-                <p-button label="Annuler" icon="pi pi-times" text (click)="closeAddPaymentDialog()" />
-                <p-button label="Valider" icon="pi pi-check" (click)="confirmAddPayment()" />
+                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" 
+                              [outlined]="true" 
+                              (click)="closeAddPaymentDialog()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
+                    <p-button label="Valider" icon="pi pi-check" 
+                              (click)="confirmAddPayment()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 hover:!from-emerald-700 hover:!to-cyan-600 !border-0" />
+                </div>
             </ng-template>
         </p-dialog>
 

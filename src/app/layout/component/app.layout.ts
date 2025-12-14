@@ -5,11 +5,12 @@ import { filter, Subscription } from 'rxjs';
 import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { LayoutService } from '../service/layout.service';
+import { PwaPromptComponent } from './pwa-prompt.component';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule],
+    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, PwaPromptComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
@@ -17,9 +18,9 @@ import { LayoutService } from '../service/layout.service';
             <div class="layout-main">
                 <router-outlet></router-outlet>
             </div>
-            
         </div>
         <div class="layout-mask animate-fadein"></div>
+        <app-pwa-prompt></app-pwa-prompt>
     </div> `
 })
 export class AppLayout {

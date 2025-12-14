@@ -72,6 +72,31 @@ export class AppMenu {
             {
                 items: [
                     {
+                        label: 'Paramètres',
+                        icon: 'pi pi-fw pi-cog',
+                        items: [
+                            {
+                                label: 'Mon compte',
+                                icon: 'pi pi-fw pi-user',
+                                routerLink: this.link('pages', 'settings', 'account')
+                            },
+                            {
+                                label: 'Sécurité',
+                                icon: 'pi pi-fw pi-shield',
+                                routerLink: this.link('pages', 'settings', 'security')
+                            },
+                            {
+                                label: 'Préférences',
+                                icon: 'pi pi-fw pi-sliders-h',
+                                routerLink: this.link('pages', 'settings', 'preferences')
+                            }
+                        ]
+                    },
+                ]
+            },
+            {
+                items: [
+                    {
                         label: 'Landing',
                         icon: 'pi pi-fw pi-globe',
                         routerLink: this.link('landing')

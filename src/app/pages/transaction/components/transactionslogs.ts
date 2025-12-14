@@ -129,41 +129,112 @@ interface ExportColumn {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="transactionDialog" [style]="{ width: '450px' }" [header]="t('transactions.detailsTitle')" [modal]="true">
+        <p-dialog [(visible)]="transactionDialog" 
+                  [style]="{ width: '95vw', maxWidth: '600px' }" 
+                  [breakpoints]="{ '768px': '95vw' }"
+                  [modal]="true"
+                  [draggable]="false"
+                  [resizable]="false"
+                  styleClass="!rounded-2xl overflow-hidden">
+            <ng-template #header>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <i class="pi pi-wallet text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('transactions.detailsTitle') }}</h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Remplissez les informations de la transaction</p>
+                    </div>
+                </div>
+            </ng-template>
+            
             <ng-template #content>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="date" class="block font-bold mb-3">{{ t('common.date') }}</label>
-                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" inputId="date" dateFormat="yy-mm-dd" required class="w-full" />
-                        <small class="text-red-500" *ngIf="submitted && !record.date">{{ t('transactions.messages.dateRequired') }}</small>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                    <!-- Date -->
+                    <div class="flex flex-col gap-2">
+                        <label for="date" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-calendar text-indigo-500"></i>
+                            {{ t('common.date') }}
+                        </label>
+                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" 
+                                      inputId="date" dateFormat="yy-mm-dd" required 
+                                      styleClass="w-full"
+                                      inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500" />
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.date">
+                            <i class="pi pi-exclamation-circle mr-1"></i>{{ t('transactions.messages.dateRequired') }}
+                        </small>
                     </div>
-                    <div>
-                        <label for="name" class="block font-bold mb-3">{{ t('common.name') }}</label>
-                        <input pInputText id="name" [(ngModel)]="record.name" required class="w-full" />
-                        <small class="text-red-500" *ngIf="submitted && !record.name">{{ t('transactions.messages.nameRequired') }}</small>
+                    
+                    <!-- Name -->
+                    <div class="flex flex-col gap-2">
+                        <label for="name" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-tag text-cyan-500"></i>
+                            {{ t('common.name') }}
+                        </label>
+                        <input pInputText id="name" [(ngModel)]="record.name" required 
+                               class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500"
+                               placeholder="Ex: Salaire, Courses..." />
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
+                            <i class="pi pi-exclamation-circle mr-1"></i>{{ t('transactions.messages.nameRequired') }}
+                        </small>
                     </div>
-                    <div>
-                        <label for="type" class="block font-bold mb-3">{{ t('common.type') }}</label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" class="w-full" />
+                    
+                    <!-- Type -->
+                    <div class="flex flex-col gap-2">
+                        <label for="type" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-arrows-h text-emerald-500"></i>
+                            {{ t('common.type') }}
+                        </label>
+                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" 
+                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un type" 
+                                  styleClass="w-full !rounded-xl" />
                     </div>
-                    <div>
-                        <label for="amount" class="block font-bold mb-3">{{ t('common.amount') }}</label>
-                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" class="w-full" />
+                    
+                    <!-- Amount -->
+                    <div class="flex flex-col gap-2">
+                        <label for="amount" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-euro text-amber-500"></i>
+                            {{ t('common.amount') }}
+                        </label>
+                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" 
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500" />
                     </div>
-                    <div>
-                        <label for="account" class="block font-bold mb-3">{{ t('common.account') }}</label>
-                        <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" optionLabel="label" optionValue="value" placeholder="Select an Account" class="w-full" />
+                    
+                    <!-- Account -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label for="account" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-credit-card text-violet-500"></i>
+                            {{ t('common.account') }}
+                        </label>
+                        <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" 
+                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un compte" 
+                                  styleClass="w-full !rounded-xl" />
                     </div>
-                    <div class="mb-8 md:col-span-2">
-                        <label for="remarks" class="block font-bold mb-3">{{ t('common.remarks') }}</label>
-                        <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" cols="20" class="w-full"></textarea>
+                    
+                    <!-- Remarks -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label for="remarks" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-comment text-surface-400"></i>
+                            {{ t('common.remarks') }}
+                        </label>
+                        <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" 
+                                  class="w-full !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500 resize-none"
+                                  placeholder="Notes ou commentaires..."></textarea>
                     </div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <p-button [label]="t('common.cancel')" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button [label]="t('common.save')" icon="pi pi-check" (click)="saveRecord()" />
+                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+                    <p-button [label]="t('common.cancel')" icon="pi pi-times" 
+                              [outlined]="true" 
+                              (click)="hideDialog()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
+                    <p-button [label]="t('common.save')" icon="pi pi-check" 
+                              (click)="saveRecord()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 hover:!from-indigo-700 hover:!to-cyan-600 !border-0" />
+                </div>
             </ng-template>
         </p-dialog>
 

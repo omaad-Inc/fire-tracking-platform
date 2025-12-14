@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
 import Aura from '@primeng/themes/aura';
 import Lara from '@primeng/themes/lara';
-import Nora from '@primeng/themes/nora';
 import { PrimeNG } from 'primeng/config';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { LayoutService } from '../service/layout.service';
@@ -13,7 +12,6 @@ import { LayoutService } from '../service/layout.service';
 const presets = {
     Aura,
     Lara,
-    Nora
 } as const;
 
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
@@ -67,7 +65,7 @@ declare type SurfacesType = {
                             type="button"
                             [title]="surface.name"
                             (click)="updateColors($event, 'surface', surface)"
-                            [ngClass]="{ 'outline-primary': selectedSurfaceColor() ? selectedSurfaceColor() === surface.name : layoutService.layoutConfig().darkTheme ? surface.name === 'zinc' : surface.name === 'slate' }"
+                            [ngClass]="{ 'outline-primary': selectedSurfaceColor() ? selectedSurfaceColor() === surface.name : layoutService.layoutConfig().darkTheme ? surface.name === 'zinc' : surface.name === 'gray' }"
                             class="border-none w-5 h-5 rounded-full p-0 cursor-pointer outline-none outline-offset-1"
                             [style]="{
                                 'background-color': surface?.name === 'noir' ? 'var(--text-color)' : surface?.palette?.['500']
@@ -151,108 +149,6 @@ export class AppConfigurator {
                 950: '#030712'
             }
         },
-        {
-            name: 'zinc',
-            palette: {
-                0: '#ffffff',
-                50: '#fafafa',
-                100: '#f4f4f5',
-                200: '#e4e4e7',
-                300: '#d4d4d8',
-                400: '#a1a1aa',
-                500: '#71717a',
-                600: '#52525b',
-                700: '#3f3f46',
-                800: '#27272a',
-                900: '#18181b',
-                950: '#09090b'
-            }
-        },
-        {
-            name: 'neutral',
-            palette: {
-                0: '#ffffff',
-                50: '#fafafa',
-                100: '#f5f5f5',
-                200: '#e5e5e5',
-                300: '#d4d4d4',
-                400: '#a3a3a3',
-                500: '#737373',
-                600: '#525252',
-                700: '#404040',
-                800: '#262626',
-                900: '#171717',
-                950: '#0a0a0a'
-            }
-        },
-        {
-            name: 'stone',
-            palette: {
-                0: '#ffffff',
-                50: '#fafaf9',
-                100: '#f5f5f4',
-                200: '#e7e5e4',
-                300: '#d6d3d1',
-                400: '#a8a29e',
-                500: '#78716c',
-                600: '#57534e',
-                700: '#44403c',
-                800: '#292524',
-                900: '#1c1917',
-                950: '#0c0a09'
-            }
-        },
-        {
-            name: 'soho',
-            palette: {
-                0: '#ffffff',
-                50: '#ececec',
-                100: '#dedfdf',
-                200: '#c4c4c6',
-                300: '#adaeb0',
-                400: '#97979b',
-                500: '#7f8084',
-                600: '#6a6b70',
-                700: '#55565b',
-                800: '#3f4046',
-                900: '#2c2c34',
-                950: '#16161d'
-            }
-        },
-        {
-            name: 'viva',
-            palette: {
-                0: '#ffffff',
-                50: '#f3f3f3',
-                100: '#e7e7e8',
-                200: '#cfd0d0',
-                300: '#b7b8b9',
-                400: '#9fa1a1',
-                500: '#87898a',
-                600: '#6e7173',
-                700: '#565a5b',
-                800: '#3e4244',
-                900: '#262b2c',
-                950: '#0e1315'
-            }
-        },
-        {
-            name: 'ocean',
-            palette: {
-                0: '#ffffff',
-                50: '#fbfcfc',
-                100: '#F7F9F8',
-                200: '#EFF3F2',
-                300: '#DADEDD',
-                400: '#B1B7B6',
-                500: '#828787',
-                600: '#5F7274',
-                700: '#415B61',
-                800: '#29444E',
-                900: '#183240',
-                950: '#0c1920'
-            }
-        }
     ];
 
     selectedPrimaryColor = computed(() => {
@@ -267,7 +163,7 @@ export class AppConfigurator {
 
     primaryColors = computed<SurfacesType[]>(() => {
         const presetPalette = presets[this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>].primitive;
-        const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
+        const colors = ['emerald', 'sky', 'blue'];
         const palettes: SurfacesType[] = [{ name: 'noir', palette: {} }];
 
         colors.forEach((color) => {

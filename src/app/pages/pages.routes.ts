@@ -10,6 +10,7 @@ export default [
     { path: 'savings', component: SavingsDashboard },
     { path: 'patrimoine', component: Patrimoine },
     { path: 'debts', component: DebtsDashboard },
+    { path: 'settings', loadChildren: () => import('./settings/settings.routes') },
     { path: 'empty', component: Empty },
     // child wildcard should redirect within the current :lang tree
     { path: '**', redirectTo: '/fr/notfound' }

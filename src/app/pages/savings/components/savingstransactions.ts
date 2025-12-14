@@ -116,34 +116,88 @@ interface Column {
             </ng-template>
         </p-table>
 
-        <p-dialog [(visible)]="productDialog" [style]="{ width: '450px' }" header="Saving Record Details" [modal]="true">
+        <p-dialog [(visible)]="productDialog" 
+                  [style]="{ width: '95vw', maxWidth: '500px' }" 
+                  [breakpoints]="{ '768px': '95vw' }"
+                  [modal]="true"
+                  [draggable]="false"
+                  [resizable]="false"
+                  styleClass="!rounded-2xl overflow-hidden">
+            <ng-template #header>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                        <i class="pi pi-piggy-bank text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">Détails de l'Épargne</h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Enregistrer un mouvement d'épargne</p>
+                    </div>
+                </div>
+            </ng-template>
+            
             <ng-template #content>
-                <div class="flex flex-col gap-6">
-                    <div>
-                        <label for="date" class="block font-bold mb-3">Date</label>
-                        <input type="date" pInputText id="date" [(ngModel)]="record.date" required autofocus fluid />
-                        <small class="text-red-500" *ngIf="submitted && !record.date">Date is required.</small>
-                    </div>
-                    <div>
-                        <label for="type" class="block font-bold mb-3">Type</label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" optionLabel="label" optionValue="value" placeholder="Select a Type" fluid />
-                    </div>
-                    <div>
-                        <label for="amount" class="block font-bold mb-3">Amount</label>
-                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" fluid />
-                    </div>
-                    <div>
-                        <label for="name" class="block font-bold mb-3">Name</label>
-                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required fluid />
-                        <small class="text-red-500" *ngIf="submitted && !record.name">Name is required.</small>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                    <!-- Date -->
+                    <div class="flex flex-col gap-2">
+                        <label for="date" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-calendar text-emerald-500"></i>
+                            Date
+                        </label>
+                        <input type="date" pInputText id="date" [(ngModel)]="record.date" required autofocus 
+                               class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500" />
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.date">
+                            <i class="pi pi-exclamation-circle mr-1"></i>La date est requise
+                        </small>
                     </div>
                     
+                    <!-- Type -->
+                    <div class="flex flex-col gap-2">
+                        <label for="type" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-arrows-h text-cyan-500"></i>
+                            Type
+                        </label>
+                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" 
+                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un type" 
+                                  styleClass="w-full !rounded-xl" />
+                    </div>
+                    
+                    <!-- Amount -->
+                    <div class="flex flex-col gap-2">
+                        <label for="amount" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-euro text-amber-500"></i>
+                            Montant
+                        </label>
+                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" 
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500" />
+                    </div>
+                    
+                    <!-- Name -->
+                    <div class="flex flex-col gap-2">
+                        <label for="name" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-tag text-indigo-500"></i>
+                            Nom
+                        </label>
+                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required 
+                               class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500"
+                               placeholder="Ex: Épargne mensuelle..." />
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
+                            <i class="pi pi-exclamation-circle mr-1"></i>Le nom est requis
+                        </small>
+                    </div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
-                <p-button label="Save" icon="pi pi-check" (click)="saveRecord()" />
+                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" 
+                              [outlined]="true" 
+                              (click)="hideDialog()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
+                    <p-button label="Enregistrer" icon="pi pi-check" 
+                              (click)="saveRecord()" 
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 hover:!from-emerald-700 hover:!to-cyan-600 !border-0" />
+                </div>
             </ng-template>
         </p-dialog>
 

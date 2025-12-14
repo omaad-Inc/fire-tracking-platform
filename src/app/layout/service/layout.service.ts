@@ -30,7 +30,7 @@ export class LayoutService {
         preset: 'Aura',
         primary: 'emerald',
         surface: null,
-        darkTheme: false,
+        darkTheme: true,
         menuMode: 'static'
     };
 
@@ -91,6 +91,8 @@ export class LayoutService {
 
             if (!this.initialized || !config) {
                 this.initialized = true;
+                // Apply dark mode on initial load
+                this.toggleDarkMode(config);
                 return;
             }
 

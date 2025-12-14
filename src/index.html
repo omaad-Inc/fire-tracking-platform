@@ -1,22 +1,75 @@
 <!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8"/>
-        <title>Finova</title>
-        <base href="/"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link rel="preconnect" href="https://primefaces.org"/>
-        <link rel="icon" type="image/svg+xml" href="/assets/finova-logo.svg"/>
-        <link href="https://fonts.cdnfonts.com/css/lato" rel="stylesheet"/>
-        <link rel="manifest" href="/manifest.webmanifest">
-        <meta name="theme-color" content="#111827">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <title>Finova - Gestion de Patrimoine FIRE</title>
+    <base href="/"/>
+    
+    <!-- Viewport & Mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    
+    <!-- SEO & Description -->
+    <meta name="description" content="Finova - Application de gestion de patrimoine et d'indépendance financière. Suivez vos finances, épargne, dettes et progressez vers votre objectif FIRE."/>
+    <meta name="keywords" content="finance, patrimoine, épargne, FIRE, indépendance financière, budget, investissement"/>
+    <meta name="author" content="Finova"/>
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)"/>
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)"/>
+    <meta name="msapplication-TileColor" content="#0f172a"/>
+    <meta name="msapplication-navbutton-color" content="#0f172a"/>
+    
+    <!-- Apple iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Finova"/>
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png"/>
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192x192.png"/>
+    
+    <!-- Apple Splash Screens (optional but improves UX) -->
+    <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png"/>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/finova-logo.svg"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-72x72.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-72x72.png"/>
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest"/>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.cdnfonts.com"/>
+    <link rel="preconnect" href="https://primefaces.org"/>
+    <link rel="dns-prefetch" href="https://fonts.cdnfonts.com"/>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.cdnfonts.com/css/lato" rel="stylesheet"/>
+    
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="Finova - Gestion de Patrimoine FIRE"/>
+    <meta property="og:description" content="Application de gestion de patrimoine et d'indépendance financière"/>
+    <meta property="og:image" content="/icons/icon-512x512.png"/>
+    <meta property="og:url" content="https://finova.app"/>
+    <meta property="og:site_name" content="Finova"/>
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="Finova - Gestion de Patrimoine FIRE"/>
+    <meta name="twitter:description" content="Application de gestion de patrimoine et d'indépendance financière"/>
+    <meta name="twitter:image" content="/icons/icon-512x512.png"/>
 </head>
 
-    <body>
-        <app-root></app-root>
-      <noscript>Please enable JavaScript to continue using this application.</noscript>
+<body>
+    <app-root></app-root>
+    <noscript>
+        <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+            <h1>JavaScript requis</h1>
+            <p>Veuillez activer JavaScript pour utiliser Finova.</p>
+        </div>
+    </noscript>
 </body>
 </html>
