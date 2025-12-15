@@ -105,7 +105,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </div>
                     <p-button 
                         [label]="t('settings.account.logoutButton')" 
-                        severity="warning"
+                        severity="warn"
                         [outlined]="true"
                         icon="pi pi-sign-out"
                         (click)="logout()"
