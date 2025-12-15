@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
                         <!-- Brand Column -->
                         <div class="col-span-12 lg:col-span-4">
                             <a (click)="navigateTo('home')" class="flex items-center gap-3 cursor-pointer mb-6 group">
-                                <!-- Logo SVG Finova -->
+                                <!-- Logo SVG Afrin Nexus -->
                                 <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" 
                                      class="w-12 h-12 transition-transform duration-300 group-hover:scale-110">
                                     <g transform="translate(0,300) scale(0.1,-0.1)" class="fill-indigo-400" stroke="none">
@@ -49,7 +49,7 @@ import { CommonModule } from '@angular/common';
                                     79 -65 172 -36 92 -65 172 -65 178 0 6 -19 11 -44 11 l-43 0 -67 -172z"/>
                                     </g>
                                 </svg>
-                                <span class="font-bold text-2xl tracking-tight">Finova</span>
+                                <span class="font-bold text-2xl tracking-tight">Afrin Nexus</span>
                             </a>
                             <p class="text-slate-400 leading-relaxed mb-6">
                                 Votre compagnon vers l'indépendance financière. Suivez votre patrimoine, optimisez vos dépenses et atteignez vos objectifs FIRE.
@@ -182,7 +182,7 @@ import { CommonModule } from '@angular/common';
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="text-slate-500 text-sm text-center md:text-left">
-                            © {{ currentYear }} Finova. Open source sous licence MIT. 
+                            © {{ currentYear }} Afrin Nexus. Open source sous licence MIT. 
                             <span class="text-slate-600">Fait avec</span> 
                             <i class="pi pi-heart-fill text-red-500 mx-1"></i> 
                             <span class="text-slate-600">pour la communauté FIRE.</span>

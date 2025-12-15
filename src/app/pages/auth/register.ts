@@ -48,7 +48,7 @@ import { CommonModule } from '@angular/common';
                             79 -65 172 -36 92 -65 172 -65 178 0 6 -19 11 -44 11 l-43 0 -67 -172z"/>
                             </g>
                         </svg>
-                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Finova</span>
+                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Afrin Nexus</span>
                     </a>
                 </div>
 
@@ -195,7 +195,7 @@ import { CommonModule } from '@angular/common';
                                     <i class="pi pi-user text-white text-xl"></i>
                                 </div>
                                 <div>
-                                    <div class="text-white font-semibold">Welcome to Finova</div>
+                                    <div class="text-white font-semibold">Welcome to Afrin Nexus</div>
                                     <div class="text-slate-400 text-sm">Your financial journey starts here</div>
                                 </div>
                             </div>

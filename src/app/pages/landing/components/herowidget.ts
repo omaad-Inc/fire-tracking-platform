@@ -41,7 +41,7 @@ import { RouterModule } from '@angular/router';
 
                         <p class="text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
                             Suivez votre patrimoine, optimisez vos dépenses et atteignez l'indépendance financière. 
-                            <span class="text-cyan-400 font-medium">Finova</span> vous accompagne vers votre objectif FIRE.
+                            <span class="text-cyan-400 font-medium">Afrin Nexus</span> vous accompagne vers votre objectif FIRE.
                         </p>
 
                         <!-- Stats -->
@@ -88,7 +88,7 @@ import { RouterModule } from '@angular/router';
                                     <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
                                     <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                                     <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
-                                    <span class="ml-4 text-slate-500 text-sm">finova.app</span>
+                                    <span class="ml-4 text-slate-500 text-sm">afrinnexus.app</span>
                                 </div>
 
                                 <!-- KPI Cards -->

@@ -28,7 +28,7 @@ export class PwaService {
         // Listen for app installed event
         window.addEventListener('appinstalled', () => {
             this.promptEvent = null;
-            console.log('Finova PWA installed successfully!');
+            console.log('Afrin Nexus PWA installed successfully!');
         });
 
         // Listen for service worker updates

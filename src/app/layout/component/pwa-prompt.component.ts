@@ -18,7 +18,7 @@ import { PwaService } from '../service/pwa.service';
                     </div>
                     <div class="flex-1 min-w-0">
                         <h4 class="text-white font-bold text-lg mb-1">Mise à jour disponible</h4>
-                        <p class="text-white/80 text-sm mb-3">Une nouvelle version de Finova est disponible avec des améliorations.</p>
+                        <p class="text-white/80 text-sm mb-3">Une nouvelle version de Afrin Nexus est disponible avec des améliorations.</p>
                         <div class="flex gap-2">
                             <button pButton label="Mettre à jour" 
                                     (click)="pwaService.applyUpdate()"
@@ -41,7 +41,7 @@ import { PwaService } from '../service/pwa.service';
                         <i class="pi pi-download text-white text-xl"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-surface-900 dark:text-surface-0 font-bold text-lg mb-1">Installer Finova</h4>
+                        <h4 class="text-surface-900 dark:text-surface-0 font-bold text-lg mb-1">Installer Afrin Nexus</h4>
                         <p class="text-surface-600 dark:text-surface-400 text-sm mb-3">Installez l'application pour un accès rapide et une utilisation hors-ligne.</p>
                         <div class="flex gap-2">
                             <button pButton label="Installer" 

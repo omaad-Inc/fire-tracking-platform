@@ -18,6 +18,11 @@ const localeResolver = () => {
 };
 
 export const appRoutes: Routes = [
+    // Landing page as the first route (home)
+    { path: '', pathMatch: 'full', component: Landing },
+    { path: ':lang/landing', component: Landing },
+    
+    // Main app with layout
     {
         path: ':lang',
         component: AppLayout,
@@ -32,9 +37,9 @@ export const appRoutes: Routes = [
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },
-    { path: '', pathMatch: 'full', redirectTo: 'fr' },
-    { path: ':lang/landing', component: Landing },
+    
+    // Other standalone routes
     { path: ':lang/notfound', component: Notfound },
     { path: ':lang/auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
-    { path: '**', redirectTo: '/fr' }
+    { path: '**', redirectTo: '' }
 ];

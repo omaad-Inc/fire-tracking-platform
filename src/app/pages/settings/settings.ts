@@ -84,7 +84,7 @@ import { I18nService } from '../../i18n/i18n.service';
                         </div>
                         <nav class="py-2">
                             <a 
-                                href="https://help.finova.com" 
+                                href="https://help.afrinnexus.app" 
                                 target="_blank"
                                 class="flex items-center gap-3 px-4 py-3 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                             >

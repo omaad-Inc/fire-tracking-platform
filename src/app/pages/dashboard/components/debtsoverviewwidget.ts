@@ -4,12 +4,12 @@ import { RouterModule, Router } from '@angular/router';
 import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
-    standalone: true,
-    selector: 'app-debts-overview',
-    imports: [CommonModule, RouterModule],
+  standalone: true,
+  selector: 'app-debts-overview',
+  imports: [CommonModule, RouterModule],
     template: `
         <div class="card h-full">
-            <div class="flex justify-between items-center mb-6">
+        <div class="flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.debtsOverview') }}</div>
                 <a [routerLink]="link('pages', 'debts')" class="text-indigo-500 hover:text-indigo-400 font-medium text-sm transition-colors">
                     {{ t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
@@ -21,22 +21,22 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center" [ngClass]="debt.bgClass">
                                 <i [class]="debt.icon" [ngClass]="debt.iconClass"></i>
-                            </div>
-                            <div>
+        </div>
+                <div>
                                 <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ debt.label }}</span>
                                 <span class="text-surface-500 dark:text-surface-400 text-sm">{{ debt.paid | currency:'EUR':'symbol':'1.0-0' }} / {{ debt.total | currency:'EUR':'symbol':'1.0-0' }}</span>
-                            </div>
-                        </div>
+                </div>
+                    </div>
                         <span class="font-bold text-lg" [ngClass]="debt.textClass">{{ debt.percent }}%</span>
                     </div>
                     <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                         <div class="absolute inset-y-0 left-0 rounded-full transition-all duration-500" 
                              [ngClass]="debt.progressClass" 
                              [ngStyle]="{ width: debt.percent + '%' }">
-                        </div>
-                    </div>
-                </li>
-            </ul>
+                </div>
+                </div>
+            </li>
+        </ul>
         </div>
     `
 })

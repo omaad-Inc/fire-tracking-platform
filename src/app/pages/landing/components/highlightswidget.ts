@@ -84,7 +84,7 @@ import { CommonModule } from '@angular/common';
                         </h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">
                             Définissez votre objectif d'indépendance financière basé sur vos dépenses annuelles et la règle des 4%. 
-                            Finova calcule automatiquement le capital nécessaire et le temps qu'il vous reste pour l'atteindre.
+                            Afrin Nexus calcule automatiquement le capital nécessaire et le temps qu'il vous reste pour l'atteindre.
                         </p>
                         <ul class="space-y-3">
                             <li class="flex items-center gap-3 text-surface-700 dark:text-surface-200">
@@ -250,7 +250,7 @@ import { CommonModule } from '@angular/common';
                             Vos données restent privées
                         </h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">
-                            Finova fonctionne entièrement en local. Vos données financières sensibles ne quittent jamais votre appareil. 
+                            Afrin Nexus fonctionne entièrement en local. Vos données financières sensibles ne quittent jamais votre appareil. 
                             Aucun compte requis, aucune synchronisation cloud, confidentialité totale.
                         </p>
                         <ul class="space-y-3">

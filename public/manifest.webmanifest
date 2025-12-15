@@ -1,6 +1,6 @@
 {
-  "name": "Finova - Gestion de Patrimoine FIRE",
-  "short_name": "Finova",
+  "name": "Afrin Nexus - Gestion de Patrimoine FIRE",
+  "short_name": "Afrin Nexus",
   "description": "Application de gestion de patrimoine et d'indépendance financière. Suivez vos finances, épargne, dettes et progressez vers votre objectif FIRE.",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
@@ -8,7 +8,7 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "start_url": "/fr/",
-  "id": "finova-pwa",
+  "id": "afrin-nexus-pwa",
   "lang": "fr",
   "dir": "ltr",
   "categories": ["finance", "productivity", "utilities"],
@@ -104,14 +104,14 @@
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Finova Dashboard"
+      "label": "Afrin Nexus Dashboard"
     },
     {
       "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Finova Mobile"
+      "label": "Afrin Nexus Mobile"
     }
   ],
   "related_applications": [],

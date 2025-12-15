@@ -23,7 +23,7 @@ import { RouterModule } from '@angular/router';
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-cyan-500">sans frais cachés</span>
                     </h2>
                     <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">
-                        Finova est gratuit et le restera. Notre mission est de démocratiser l'accès aux outils de gestion patrimoniale.
+                        Afrin Nexus est gratuit et le restera. Notre mission est de démocratiser l'accès aux outils de gestion patrimoniale.
                     </p>
                 </div>
 
@@ -43,7 +43,7 @@ import { RouterModule } from '@angular/router';
                                 <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-indigo-100 to-cyan-100 dark:from-indigo-900/50 dark:to-cyan-900/50 flex items-center justify-center">
                                     <i class="pi pi-fire text-4xl text-transparent bg-clip-text bg-gradient-to-br from-indigo-600 to-cyan-500"></i>
                                 </div>
-                                <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2">Finova FIRE</h3>
+                                <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2">Afrin Nexus FIRE</h3>
                                 <p class="text-surface-600 dark:text-surface-400 mb-6">Tout ce dont vous avez besoin pour atteindre l'indépendance financière</p>
                                 
                                 <div class="flex items-baseline justify-center gap-2 mb-8">
@@ -129,10 +129,10 @@ import { RouterModule } from '@angular/router';
                         <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-6 border border-surface-200 dark:border-surface-700">
                             <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-2 flex items-center gap-2">
                                 <i class="pi pi-question-circle text-indigo-500"></i>
-                                Pourquoi Finova est-il gratuit ?
+                                Pourquoi Afrin Nexus est-il gratuit ?
                             </h4>
                             <p class="text-surface-600 dark:text-surface-300">
-                                Nous croyons que les outils de gestion financière devraient être accessibles à tous. Finova est un projet open source, 
+                                Nous croyons que les outils de gestion financière devraient être accessibles à tous. Afrin Nexus est un projet open source, 
                                 développé par la communauté FIRE pour la communauté FIRE.
                             </p>
                         </div>
@@ -154,7 +154,7 @@ import { RouterModule } from '@angular/router';
                                 Puis-je contribuer au projet ?
                             </h4>
                             <p class="text-surface-600 dark:text-surface-300">
-                                Absolument ! Finova est open source. Vous pouvez contribuer au code, signaler des bugs, proposer des fonctionnalités 
+                                Absolument ! Afrin Nexus est open source. Vous pouvez contribuer au code, signaler des bugs, proposer des fonctionnalités 
                                 ou simplement partager l'application avec votre entourage.
                             </p>
                         </div>

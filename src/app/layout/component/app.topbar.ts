@@ -49,7 +49,7 @@ import { filter } from 'rxjs/operators';
                     </g>
                 </svg>
                 <!-- Hide text on mobile -->
-                <span class="hidden lg:inline">Finova</span>
+                <span class="hidden lg:inline">Afrin Nexus</span>
             </a>
         </div>
 
@@ -151,7 +151,7 @@ import { filter } from 'rxjs/operators';
 
                             <!-- Help Section -->
                             <div class="py-2">
-                                <a href="https://help.finova.com" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a href="https://help.afrinnexus.app" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-question-circle text-amber-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('settings.getHelp') }}</span>
                                     <i class="pi pi-external-link text-xs text-surface-400 ml-auto"></i>

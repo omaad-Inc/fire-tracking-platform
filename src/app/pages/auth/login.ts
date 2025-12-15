@@ -48,7 +48,7 @@ import { CommonModule } from '@angular/common';
                             79 -65 172 -36 92 -65 172 -65 178 0 6 -19 11 -44 11 l-43 0 -67 -172z"/>
                             </g>
                         </svg>
-                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Finova</span>
+                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Afrin Nexus</span>
                     </a>
                 </div>
 
@@ -163,7 +163,7 @@ import { CommonModule } from '@angular/common';
                                 <div class="flex-1 flex justify-center">
                                     <div class="bg-slate-700/50 rounded-lg px-4 py-1 text-slate-400 text-xs flex items-center gap-2">
                                         <i class="pi pi-lock text-emerald-400"></i>
-                                        finova.app
+                                        afrinnexus.app
                                     </div>
                                 </div>
                             </div>

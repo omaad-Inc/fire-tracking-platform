@@ -3,7 +3,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 
 const root = process.cwd();
-const srcSvg = path.join(root, 'src/assets/finova-logo.svg');
+const srcSvg = path.join(root, 'src/assets/afrin-nexus-logo.svg');
 const outDir = path.join(root, 'public/icons');
 
 const sizes = [72, 96, 128, 144, 152, 192, 384, 512];

@@ -119,7 +119,7 @@ import { CommonModule } from '@angular/common';
                             <div class="flex-1 text-center md:text-left">
                                 <blockquote class="text-2xl md:text-3xl text-surface-700 dark:text-surface-200 font-light leading-relaxed mb-6">
                                     "L'indépendance financière n'est pas un rêve, c'est un <span class="text-indigo-600 dark:text-indigo-400 font-medium">plan</span>. 
-                                    Finova transforme ce plan en <span class="text-cyan-600 dark:text-cyan-400 font-medium">réalité mesurable</span>."
+                                    Afrin Nexus transforme ce plan en <span class="text-cyan-600 dark:text-cyan-400 font-medium">réalité mesurable</span>."
                                 </blockquote>
                                 <div class="flex items-center justify-center md:justify-start gap-4">
                                     <div>
