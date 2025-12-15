@@ -21,33 +21,98 @@ import { filter } from 'rxjs/operators';
                 <i class="pi pi-bars"></i>
             </button>
             <a class="layout-topbar-logo flex items-center gap-2" routerLink="/">
-                <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 lg:w-14 lg:h-14 transition-all duration-200">
-                    <g transform="translate(0,300) scale(0.1,-0.1)" fill="var(--primary-color)" stroke="none">
-                        <path d="M1655 2196 c-369 -369 -532 -540 -505 -526 14 7 178 165 365 351 188
-                    187 344 339 348 339 4 0 7 -52 7 -115 l0 -114 -219 -221 c-121 -121 -223 -229
-                    -226 -240 -6 -19 -16 -20 -161 -20 l-154 0 0 -230 0 -230 178 0 177 0 218 218
-                    217 217 0 150 0 150 -301 -300 c-201 -200 -299 -292 -295 -275 3 14 6 53 6 88
-                    l0 63 57 -2 56 -3 -2 74 -2 73 241 242 241 241 -3 156 -3 156 -240 -242z m205
-                    -468 l0 -92 -203 -203 -202 -203 -152 0 -152 0 -6 43 c-7 53 0 321 9 336 5 7
-                    47 11 112 11 103 0 105 0 116 -26 16 -35 0 -57 -46 -65 -20 -3 -43 -15 -51
-                    -25 -18 -23 -20 -123 -3 -159 25 -56 46 -41 313 225 137 137 253 250 258 250
-                    4 0 7 -41 7 -92z"/>
-                        <path d="M520 827 l0 -182 40 0 40 0 0 72 0 73 80 0 80 0 0 36 0 36 -80 -4
-                    -80 -3 0 43 0 42 90 0 90 0 0 35 0 35 -130 0 -130 0 0 -183z"/>
-                        <path d="M842 829 l3 -181 38 -3 37 -2 0 184 0 183 -40 0 -40 0 2 -181z"/>
-                        <path d="M1010 827 l0 -184 38 2 37 3 -4 128 -3 129 77 -120 c42 -66 80 -124
-                    85 -129 5 -5 25 -10 44 -11 l36 -2 0 184 0 183 -36 0 -35 0 3 -125 c2 -69 2
-                    -125 1 -125 -1 0 -38 56 -83 125 -82 125 -82 125 -121 125 l-39 0 0 -183z"/>
-                        <path d="M1485 991 c-155 -96 -108 -334 70 -349 29 -2 69 1 88 7 46 16 104 80
-                    113 126 17 91 -22 187 -89 218 -48 23 -143 22 -182 -2z"/>
-                        <path d="M1780 1003 c0 -5 29 -86 64 -182 l63 -174 44 0 43 0 58 159 c31 87
-                    62 169 67 182 10 21 8 22 -32 22 l-43 0 -46 -137 c-25 -76 -48 -131 -51 -123
-                    -3 8 -25 70 -48 138 l-42 122 -38 0 c-22 0 -39 -3 -39 -7z"/>
-                        <path d="M2166 838 c-37 -95 -70 -178 -72 -185 -4 -8 7 -11 37 -8 38 3 44 6
-                    57 39 l14 36 72 0 73 0 11 -38 c11 -35 14 -37 52 -37 22 0 40 1 40 4 0 2 -29
-                    79 -65 172 -36 92 -65 172 -65 178 0 6 -19 11 -44 11 l-43 0 -67 -172z"/>
-                    </g>
+
+                <svg
+                    viewBox="0 0 54 40"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    preserveAspectRatio="xMidYMid meet"
+                    >
+                    <!-- Outer orbit arcs -->
+                    <path
+                        d="M6 20C8 7 46 6 48 20"
+                        stroke="var(--primary-color)"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        opacity="0.85"
+                    />
+
+                    <path
+                        d="M48 20C46 33 8 34 6 20"
+                        stroke="var(--primary-color)"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        opacity="0.45"
+                    />
+
+                    <!-- Africa silhouette (more accurate proportions) -->
+                    <path
+                        d="M26 8
+                        C23 9 21 12 20 15
+                        C19 18 20 21 21 24
+                        C22 27 24 30 27 32
+                        C29 30 31 27 32 24
+                        C33 21 34 18 33 15
+                        C32 12 30 10 28 9
+                        C27 8.5 26.5 8.2 26 8
+                        Z"
+                        fill="var(--primary-color)"
+                        opacity="0.35"
+                    />
+
+                    <!-- Central 8-point star -->
+                    <path
+                        d="M27 13
+                        L29.5 18
+                        L35 20
+                        L29.5 22
+                        L27 27
+                        L24.5 22
+                        L19 20
+                        L24.5 18
+                        Z"
+                        stroke="var(--primary-color)"
+                        stroke-width="1.3"
+                        fill="none"
+                        stroke-linejoin="round"
+                    />
+
+                    <!-- Connection lines -->
+                    <path
+                        d="M27 20 L27 7"
+                        stroke="var(--primary-color)"
+                        stroke-width="1"
+                        opacity="0.6"
+                    />
+                    <path
+                        d="M27 20 L44 20"
+                        stroke="var(--primary-color)"
+                        stroke-width="1"
+                        opacity="0.6"
+                    />
+                    <path
+                        d="M27 20 L27 33"
+                        stroke="var(--primary-color)"
+                        stroke-width="1"
+                        opacity="0.6"
+                    />
+                    <path
+                        d="M27 20 L10 20"
+                        stroke="var(--primary-color)"
+                        stroke-width="1"
+                        opacity="0.6"
+                    />
+
+                    <!-- Orbit nodes -->
+                    <circle cx="27" cy="6.5" r="1.2" fill="var(--primary-color)" />
+                    <circle cx="45.5" cy="20" r="1.2" fill="var(--primary-color)" />
+                    <circle cx="27" cy="33.5" r="1.2" fill="var(--primary-color)" />
+                    <circle cx="8.5" cy="20" r="1.2" fill="var(--primary-color)" />
                 </svg>
+
+
+
+
                 <!-- Hide text on mobile -->
                 <span class="hidden lg:inline">Afrin Nexus</span>
             </a>
