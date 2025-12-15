@@ -35,17 +35,21 @@ export const EN = {
     help: 'Help',
     getHelp: 'Get help',
     account: {
-      title: 'My profile',
-      profilePhoto: 'Profile photo',
+      myProfile: 'My profile',
+      profilePicture: 'Profile picture',
       changePhoto: 'Change photo',
       firstName: 'First name',
       lastName: 'Last name',
-      email: 'My email',
+      myEmail: 'My email',
       verified: 'VERIFIED',
       manageEmail: 'Manage my email',
-      deleteAccount: 'Delete account',
-      deleteWarning: 'Deleting your account will permanently delete all your data and is irreversible.',
-      deleteButton: 'Delete my account'
+      session: 'Session',
+      logout: 'Log out',
+      logoutDesc: 'Log out of your account on this device',
+      logoutButton: 'Log out',
+      deleteAccount: 'Danger zone',
+      deleteAccountDesc: 'Deleting your account will permanently delete all your data and is irreversible.',
+      deleteMyAccount: 'Delete my account'
     },
     security: {
       title: 'Security',

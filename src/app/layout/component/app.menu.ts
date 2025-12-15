@@ -66,7 +66,7 @@ export class AppMenu {
                 items: [
                     {
                         label: this.t('menu.savings'), 
-                        icon: 'pi pi-fw pi-wallet', 
+                        icon: 'pi pi-fw pi-dollar', 
                         routerLink: this.link('pages', 'savings')
                     },
                     {

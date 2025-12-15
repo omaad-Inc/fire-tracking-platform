@@ -35,17 +35,21 @@ export const FR = {
     help: 'Aide',
     getHelp: 'Obtenir de l\'aide',
     account: {
-      title: 'Mon profil',
-      profilePhoto: 'Photo de profil',
+      myProfile: 'Mon profil',
+      profilePicture: 'Photo de profil',
       changePhoto: 'Changer la photo',
       firstName: 'Prénom',
       lastName: 'Nom',
-      email: 'Mon email',
+      myEmail: 'Mon email',
       verified: 'VÉRIFIÉ',
       manageEmail: 'Gérer mon email',
-      deleteAccount: 'Supprimer compte',
-      deleteWarning: 'La suppression de votre compte entraîne la suppression définitive de toutes vos données et est irréversible.',
-      deleteButton: 'Supprimer mon compte'
+      session: 'Session',
+      logout: 'Se déconnecter',
+      logoutDesc: 'Déconnectez-vous de votre compte sur cet appareil',
+      logoutButton: 'Se déconnecter',
+      deleteAccount: 'Zone de danger',
+      deleteAccountDesc: 'La suppression de votre compte entraîne la suppression définitive de toutes vos données et est irréversible.',
+      deleteMyAccount: 'Supprimer mon compte'
     },
     security: {
       title: 'Sécurité',

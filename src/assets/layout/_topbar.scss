@@ -95,62 +95,42 @@
         display: flex;
         gap: 1rem;
     }
+
+    // Mobile user icon - hidden on desktop
+    .mobile-user-icon {
+        display: none;
+    }
+
+    // Desktop menu - visible on desktop
+    .desktop-menu {
+        display: block;
+    }
 }
 
 @media (max-width: 991px) {
     .layout-topbar {
-        padding: 0 2rem;
+        padding: 0 1rem;
 
         .layout-topbar-logo-container {
             width: auto;
         }
 
         .layout-menu-button {
-            margin-left: 0;
-            margin-right: 0.5rem;
+            display: none !important; // Hide hamburger on mobile
         }
 
         .layout-topbar-menu-button {
-            display: inline-flex;
+            display: none !important; // Hide 3 dots on mobile
         }
 
-        .layout-topbar-menu {
-            position: absolute;
-            background-color: var(--surface-overlay);
-            transform-origin: top;
-            box-shadow:
-                0px 3px 5px rgba(0, 0, 0, 0.02),
-                0px 0px 2px rgba(0, 0, 0, 0.05),
-                0px 1px 4px rgba(0, 0, 0, 0.08);
-            border-radius: var(--content-border-radius);
-            padding: 1rem;
-            right: 2rem;
-            top: 4rem;
-            min-width: 15rem;
-            border: 1px solid var(--surface-border);
+        // Mobile user icon - visible on mobile
+        .mobile-user-icon {
+            display: flex !important;
+        }
 
-            .layout-topbar-menu-content {
-                gap: 0.5rem;
-            }
-
-            .layout-topbar-action {
-                display: flex;
-                width: 100%;
-                height: auto;
-                justify-content: flex-start;
-                border-radius: var(--content-border-radius);
-                padding: 0.5rem 1rem;
-
-                i {
-                    font-size: 1rem;
-                    margin-right: 0.5rem;
-                }
-
-                span {
-                    font-weight: medium;
-                    display: block;
-                }
-            }
+        // Desktop menu - hidden on mobile
+        .desktop-menu {
+            display: none !important;
         }
 
         .layout-topbar-menu-content {

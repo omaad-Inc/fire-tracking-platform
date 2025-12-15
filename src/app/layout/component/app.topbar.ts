@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { AppConfigurator } from './app.configurator';
@@ -8,6 +8,7 @@ import { LayoutService } from '../service/layout.service';
 import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
 import { I18nService } from '../../i18n/i18n.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-topbar',
@@ -15,11 +16,12 @@ import { I18nService } from '../../i18n/i18n.service';
     imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator, AvatarModule, DividerModule],
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
-            <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+            <!-- Hamburger menu - hidden on mobile -->
+            <button class="layout-menu-button layout-topbar-action hidden lg:flex" (click)="layoutService.onMenuToggle()">
                 <i class="pi pi-bars"></i>
             </button>
             <a class="layout-topbar-logo flex items-center gap-2" routerLink="/">
-                <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 transition-all duration-200">
+                <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 lg:w-14 lg:h-14 transition-all duration-200">
                     <g transform="translate(0,300) scale(0.1,-0.1)" fill="var(--primary-color)" stroke="none">
                         <path d="M1655 2196 c-369 -369 -532 -540 -505 -526 14 7 178 165 365 351 188
                     187 344 339 348 339 4 0 7 -52 7 -115 l0 -114 -219 -221 c-121 -121 -223 -229
@@ -46,7 +48,8 @@ import { I18nService } from '../../i18n/i18n.service';
                     79 -65 172 -36 92 -65 172 -65 178 0 6 -19 11 -44 11 l-43 0 -67 -172z"/>
                     </g>
                 </svg>
-                <span>Finova</span>
+                <!-- Hide text on mobile -->
+                <span class="hidden lg:inline">Finova</span>
             </a>
         </div>
 
@@ -55,7 +58,8 @@ import { I18nService } from '../../i18n/i18n.service';
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
-                <div class="relative">
+                <!-- Palette config - hidden on mobile -->
+                <div class="relative hidden lg:block">
                     <button
                         class="layout-topbar-action layout-topbar-action-highlight"
                         pStyleClass="@next"
@@ -71,17 +75,25 @@ import { I18nService } from '../../i18n/i18n.service';
                 </div>
             </div>
 
-            <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
-                <i class="pi pi-ellipsis-v"></i>
-            </button>
+            <!-- Mobile ONLY: Simple user icon - redirects directly to settings -->
+            <a 
+                [routerLink]="['/'+lang, 'pages', 'settings', 'account']" 
+                class="layout-topbar-action mobile-user-icon items-center justify-center"
+            >
+                <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center">
+                    <i class="pi pi-user text-surface-200"></i>
+                </div>
+            </a>
 
-            <div class="layout-topbar-menu hidden lg:block">
+            <!-- Desktop ONLY: menu with dropdown -->
+            <div class="layout-topbar-menu desktop-menu">
                 <div class="layout-topbar-menu-content">
+                    <!-- Notifications -->
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-bell"></i>
                         <span>{{ t('topbar.notifications') }}</span>
                     </button>
-                    <!-- User Profile Menu -->
+                    <!-- User Profile Menu with dropdown -->
                     <div class="relative">
                         <button
                             type="button"
@@ -170,7 +182,14 @@ export class AppTopbar implements OnInit {
         public layoutService: LayoutService, 
         private router: Router,
         private i18n: I18nService
-    ) {}
+    ) {
+        // Listen to route changes to update language
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe(() => {
+            this.lang = this.getCurrentLang();
+        });
+    }
 
     ngOnInit() {
         this.lang = this.getCurrentLang();
