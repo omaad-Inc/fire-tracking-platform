@@ -31,12 +31,12 @@ interface Transaction {
                  class="flex items-center p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-4" [ngClass]="tx.bgClass">
                     <i [class]="tx.icon" [ngClass]="tx.iconClass"></i>
-                </div>
+            </div>
                 <div class="flex-1 min-w-0">
                     <div class="font-medium text-surface-900 dark:text-surface-0 truncate">{{ tx.category }}</div>
                     <div class="text-surface-500 dark:text-surface-400 text-sm truncate">{{ tx.description }}</div>
-                </div>
-                <div class="flex flex-col items-end ml-4">
+            </div>
+            <div class="flex flex-col items-end ml-4">
                     <span class="font-bold" [ngClass]="tx.amount < 0 ? 'text-rose-500' : 'text-emerald-500'">
                         {{ tx.amount >= 0 ? '+' : '' }}{{ tx.amount | currency:'EUR':'symbol':'1.0-0' }}
                     </span>

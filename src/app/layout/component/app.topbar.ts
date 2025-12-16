@@ -22,99 +22,13 @@ import { filter } from 'rxjs/operators';
             </button>
             <a class="layout-topbar-logo flex items-center gap-2" routerLink="/">
 
-                <svg
-                    viewBox="0 0 54 40"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    preserveAspectRatio="xMidYMid meet"
-                    >
-                    <!-- Outer orbit arcs -->
-                    <path
-                        d="M6 20C8 7 46 6 48 20"
-                        stroke="var(--primary-color)"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        opacity="0.85"
-                    />
-
-                    <path
-                        d="M48 20C46 33 8 34 6 20"
-                        stroke="var(--primary-color)"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        opacity="0.45"
-                    />
-
-                    <!-- Africa silhouette (more accurate proportions) -->
-                    <path
-                        d="M26 8
-                        C23 9 21 12 20 15
-                        C19 18 20 21 21 24
-                        C22 27 24 30 27 32
-                        C29 30 31 27 32 24
-                        C33 21 34 18 33 15
-                        C32 12 30 10 28 9
-                        C27 8.5 26.5 8.2 26 8
-                        Z"
-                        fill="var(--primary-color)"
-                        opacity="0.35"
-                    />
-
-                    <!-- Central 8-point star -->
-                    <path
-                        d="M27 13
-                        L29.5 18
-                        L35 20
-                        L29.5 22
-                        L27 27
-                        L24.5 22
-                        L19 20
-                        L24.5 18
-                        Z"
-                        stroke="var(--primary-color)"
-                        stroke-width="1.3"
-                        fill="none"
-                        stroke-linejoin="round"
-                    />
-
-                    <!-- Connection lines -->
-                    <path
-                        d="M27 20 L27 7"
-                        stroke="var(--primary-color)"
-                        stroke-width="1"
-                        opacity="0.6"
-                    />
-                    <path
-                        d="M27 20 L44 20"
-                        stroke="var(--primary-color)"
-                        stroke-width="1"
-                        opacity="0.6"
-                    />
-                    <path
-                        d="M27 20 L27 33"
-                        stroke="var(--primary-color)"
-                        stroke-width="1"
-                        opacity="0.6"
-                    />
-                    <path
-                        d="M27 20 L10 20"
-                        stroke="var(--primary-color)"
-                        stroke-width="1"
-                        opacity="0.6"
-                    />
-
-                    <!-- Orbit nodes -->
-                    <circle cx="27" cy="6.5" r="1.2" fill="var(--primary-color)" />
-                    <circle cx="45.5" cy="20" r="1.2" fill="var(--primary-color)" />
-                    <circle cx="27" cy="33.5" r="1.2" fill="var(--primary-color)" />
-                    <circle cx="8.5" cy="20" r="1.2" fill="var(--primary-color)" />
-                </svg>
+                <img src="assets/afrin-nexus-logo.svg" alt="Afrin Nexus Logo" class="w-10 h-10 lg:w-12 lg:h-12">
 
 
 
 
                 <!-- Hide text on mobile -->
-                <span class="hidden lg:inline">Afrin Nexus</span>
+                <span class="hidden lg:inline whitespace-nowrap">Afrin Nexus</span>
             </a>
         </div>
 

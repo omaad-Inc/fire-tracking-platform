@@ -22,7 +22,7 @@ import { SavingsService, SavingsGoal } from '../../service/savings.service';
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center" [ngClass]="g.bgClass">
                                 <i [class]="g.icon" [ngClass]="g.iconClass"></i>
                             </div>
-                            <div>
+                    <div>
                                 <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ g.label }}</span>
                                 <span class="text-surface-500 dark:text-surface-400 text-sm">{{ g.current | currency:'EUR':'symbol':'1.0-0' }} / {{ g.target | currency:'EUR':'symbol':'1.0-0' }}</span>
                             </div>
