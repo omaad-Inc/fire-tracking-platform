@@ -1,8 +1,10 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 
 interface DebtDisplay {
     id: string;
@@ -85,16 +87,27 @@ interface DebtDisplay {
         </div>
     `
 })
-export class DebtsOverview implements OnInit {
+export class DebtsOverview implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
     private debtsService = inject(DebtsService);
-
+    private stateService = inject(AssetsStateService);
+    
+    private subscription?: Subscription;
     loading = signal(true);
     debts = signal<DebtDisplay[]>([]);
 
     async ngOnInit() {
         await this.loadDebts();
+        
+        // Subscribe to debt updates to refresh the list
+        this.subscription = this.stateService.debtsUpdated$.subscribe(() => {
+            this.loadDebts();
+        });
+    }
+    
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
     }
 
     private async loadDebts() {

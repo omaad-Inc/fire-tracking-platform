@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ViewChild, inject } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,9 @@ import { TagModule } from 'primeng/tag';
 import { InputIconModule } from 'primeng/inputicon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { SavingsService, SavingRecord } from '../../service/savings.service';
+import { Subscription } from 'rxjs';
+import { SavingsService, SavingRecord, SavingsGoalDisplay } from '../../service/savings.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 
 interface Column {
     field: string;
@@ -23,6 +25,11 @@ interface Column {
     customExportHeader?: string;
 }
 
+// Extended record with goal info
+interface SavingRecordWithGoal extends SavingRecord {
+    goalId?: number;
+    goalName?: string;
+}
 
 @Component({
     selector: 'app-savings-transactions',
@@ -47,8 +54,8 @@ interface Column {
     template: `
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
-                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length" />
+                <p-button label="Nouveau" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+                <p-button severity="secondary" label="Supprimer" icon="pi pi-trash" outlined (onClick)="deleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length" />
             </ng-template>
 
             <ng-template #end>
@@ -64,7 +71,7 @@ interface Column {
             [paginator]="true"
             sortField="date"
             [sortOrder]="-1"
-            [globalFilterFields]="['date', 'type', 'amount', 'name']"
+            [globalFilterFields]="['date', 'type', 'amount', 'name', 'goalName']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedRecords"
             [rowHover]="true"
@@ -75,10 +82,10 @@ interface Column {
         >
             <ng-template #caption>
                 <div class="flex items-center justify-between">
-                    <h5 class="m-0">Gestion de l'Epargne</h5>
+                    <h5 class="m-0">Gestion de l'Épargne</h5>
                     <p-iconfield>
                         <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Rechercher..." />
                     </p-iconfield>
                 </div>
             </ng-template>
@@ -92,9 +99,10 @@ interface Column {
                         <p-sortIcon field="date" />
                     </th>
                     <th style="min-width: 10rem">Type</th>
-                    <th style="min-width: 10rem">Amount</th>
-                    <th style="min-width: 20rem">Name</th>
-                    <th style="min-width: 12rem"></th>
+                    <th style="min-width: 10rem">Montant</th>
+                    <th style="min-width: 16rem">Objectif</th>
+                    <th style="min-width: 14rem">Description</th>
+                    <th style="min-width: 10rem"></th>
                 </tr>
             </ng-template>
             <ng-template #body let-record>
@@ -104,9 +112,21 @@ interface Column {
                     </td>
                     <td>{{ record.date }}</td>
                     <td>
-                        <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
+                        <p-tag [value]="record.type === 'Deposit' ? 'Dépôt' : 'Retrait'" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td>{{ record.amount | currency: 'EUR' }}</td>
+                    <td class="font-semibold" [ngClass]="record.type === 'Deposit' ? 'text-emerald-500' : 'text-rose-500'">
+                        {{ record.type === 'Deposit' ? '+' : '-' }}{{ record.amount | currency: 'EUR':'symbol':'1.0-0' }}
+                    </td>
+                    <td>
+                        @if (record.goalName) {
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-500 text-sm">
+                                <i class="pi pi-flag text-xs"></i>
+                                {{ record.goalName }}
+                            </span>
+                        } @else {
+                            <span class="text-surface-400 text-sm">Non assigné</span>
+                        }
+                    </td>
                     <td>{{ record.name }}</td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
@@ -114,10 +134,23 @@ interface Column {
                     </td>
                 </tr>
             </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="7" class="text-center py-8">
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
+                                <i class="pi pi-wallet text-2xl text-surface-400"></i>
+                            </div>
+                            <p class="text-surface-500 dark:text-surface-400 mb-2">Aucune transaction d'épargne</p>
+                            <p-button label="Ajouter une transaction" icon="pi pi-plus" [outlined]="true" (onClick)="openNew()" />
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
         </p-table>
 
         <p-dialog [(visible)]="productDialog" 
-                  [style]="{ width: '95vw', maxWidth: '500px' }" 
+                  [style]="{ width: '95vw', maxWidth: '550px' }" 
                   [breakpoints]="{ '768px': '95vw' }"
                   [modal]="true"
                   [draggable]="false"
@@ -161,6 +194,27 @@ interface Column {
                                   styleClass="w-full !rounded-xl" />
                     </div>
                     
+                    <!-- Goal Selection -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label for="goal" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            <i class="pi pi-flag text-indigo-500"></i>
+                            Objectif d'épargne
+                        </label>
+                        <p-select 
+                            [(ngModel)]="record.goalId" 
+                            inputId="goal" 
+                            [options]="goalOptions()" 
+                            optionLabel="label" 
+                            optionValue="value" 
+                            placeholder="Sélectionner un objectif" 
+                            [showClear]="true"
+                            styleClass="w-full !rounded-xl"
+                        />
+                        <small class="text-surface-500 dark:text-surface-400 text-xs">
+                            Assignez cette épargne à un objectif spécifique
+                        </small>
+                    </div>
+                    
                     <!-- Amount -->
                     <div class="flex flex-col gap-2">
                         <label for="amount" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
@@ -172,17 +226,17 @@ interface Column {
                                        inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500" />
                     </div>
                     
-                    <!-- Name -->
+                    <!-- Description -->
                     <div class="flex flex-col gap-2">
                         <label for="name" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-tag text-indigo-500"></i>
-                            Nom
+                            <i class="pi pi-tag text-violet-500"></i>
+                            Description
                         </label>
                         <input type="text" pInputText id="name" [(ngModel)]="record.name" required 
                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500"
                                placeholder="Ex: Épargne mensuelle..." />
                         <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
-                            <i class="pi pi-exclamation-circle mr-1"></i>Le nom est requis
+                            <i class="pi pi-exclamation-circle mr-1"></i>La description est requise
                         </small>
                     </div>
                 </div>
@@ -205,51 +259,85 @@ interface Column {
     `,
     providers: [MessageService, ConfirmationService]
 })
-export class SavingsTransactions implements OnInit {
+export class SavingsTransactions implements OnInit, OnDestroy {
+    private savingsService = inject(SavingsService);
+    private stateService = inject(AssetsStateService);
+    private messageService = inject(MessageService);
+    private confirmationService = inject(ConfirmationService);
+    
+    private subscription?: Subscription;
+    
     productDialog: boolean = false;
 
-    records = signal<SavingRecord[]>([]);
+    records = signal<SavingRecordWithGoal[]>([]);
+    goalOptions = signal<{ label: string; value: number }[]>([]);
 
-    record!: SavingRecord;
+    record!: SavingRecordWithGoal;
 
-    selectedRecords!: SavingRecord[] | null;
+    selectedRecords!: SavingRecordWithGoal[] | null;
 
     submitted: boolean = false;
 
     types = [
-        { label: 'Deposit', value: 'Deposit' },
-        { label: 'Withdrawal', value: 'Withdrawal' }
+        { label: 'Dépôt', value: 'Deposit' },
+        { label: 'Retrait', value: 'Withdrawal' }
     ];
 
     @ViewChild('dt') dt!: Table;
 
     cols!: Column[];
-
-    constructor(
-        private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-        private savingsService: SavingsService
-    ) {}
+    
+    private goals: SavingsGoalDisplay[] = [];
 
     exportCSV() {
         this.dt.exportCSV();
     }
 
     ngOnInit() {
-        this.loadDataFromService();
+        this.loadData();
+        
+        // Subscribe to savings updates to refresh the list
+        this.subscription = this.stateService.savingsUpdated$.subscribe(() => {
+            this.loadData();
+        });
+    }
+    
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
     }
 
-    loadDataFromService() {
-        this.savingsService.getTransactions().then((data) => {
-            const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            this.records.set(sorted);
-            this.cols = [
-                { field: 'date', header: 'Date' },
-                { field: 'type', header: 'Type' },
-                { field: 'amount', header: 'Amount' },
-                { field: 'name', header: 'Name' }
-            ];
-        });
+    async loadData() {
+        // Load goals first
+        this.goals = await this.savingsService.getGoals();
+        this.goalOptions.set(this.goals.map(g => ({ 
+            label: g.label, 
+            value: g.id || 0 
+        })));
+        
+        // Load transactions
+        const data = await this.savingsService.getTransactions();
+        const sorted = [...data].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        
+        // Map transactions with goal names
+        const recordsWithGoals: SavingRecordWithGoal[] = sorted.map(r => ({
+            ...r,
+            goalName: this.getGoalName(r.goalId)
+        }));
+        
+        this.records.set(recordsWithGoals);
+        this.cols = [
+            { field: 'date', header: 'Date' },
+            { field: 'type', header: 'Type' },
+            { field: 'amount', header: 'Montant' },
+            { field: 'goalName', header: 'Objectif' },
+            { field: 'name', header: 'Description' }
+        ];
+    }
+    
+    private getGoalName(goalId?: number): string | undefined {
+        if (!goalId) return undefined;
+        const goal = this.goals.find(g => g.id === goalId);
+        return goal?.label;
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -257,20 +345,27 @@ export class SavingsTransactions implements OnInit {
     }
 
     openNew() {
-        this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as any;
+        this.record = { 
+            date: new Date().toISOString().split('T')[0], 
+            type: 'Deposit', 
+            amount: 0, 
+            name: '',
+            goalId: undefined,
+            goalName: undefined
+        } as SavingRecordWithGoal;
         this.submitted = false;
         this.productDialog = true;
     }
 
-    editRecord(record: SavingRecord) {
+    editRecord(record: SavingRecordWithGoal) {
         this.record = { ...record };
         this.productDialog = true;
     }
 
     deleteSelectedRecords() {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected records?',
-            header: 'Confirm',
+            message: 'Êtes-vous sûr de vouloir supprimer les enregistrements sélectionnés ?',
+            header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
@@ -279,10 +374,11 @@ export class SavingsTransactions implements OnInit {
                     this.selectedRecords = null;
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Records Deleted',
+                        summary: 'Succès',
+                        detail: 'Enregistrements supprimés',
                         life: 3000
                     });
+                    this.stateService.notifySavingsUpdated();
                 });
             }
         });
@@ -293,22 +389,23 @@ export class SavingsTransactions implements OnInit {
         this.submitted = false;
     }
 
-    deleteRecord(record: SavingRecord) {
+    deleteRecord(record: SavingRecordWithGoal) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + record.name + '?',
-            header: 'Confirm',
+            message: 'Êtes-vous sûr de vouloir supprimer "' + record.name + '" ?',
+            header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 if (!record.id) return;
                 this.savingsService.deleteTransactions([record.id]).then(() => {
                     this.records.set(this.records().filter((val) => val.id !== record.id));
-                    this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as any;
+                    this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as SavingRecordWithGoal;
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Deleted',
+                        summary: 'Succès',
+                        detail: 'Enregistrement supprimé',
                         life: 3000
                     });
+                    this.stateService.notifySavingsUpdated();
                 });
             }
         });
@@ -325,36 +422,56 @@ export class SavingsTransactions implements OnInit {
         return index;
     }
 
-    // id creation delegated to savings service
-
-    saveRecord() {
+    async saveRecord() {
         this.submitted = true;
         let _records = this.records();
         if (this.record.name?.trim()) {
+            // Add goal name based on goalId
+            this.record.goalName = this.getGoalName(this.record.goalId);
+            
             if (this.record.id) {
-                this.savingsService.updateTransaction(this.record).then((updated) => {
-                    _records[this.findIndexById(updated.id!)] = updated;
-                    this.records.set(this.sortDesc([..._records]));
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Updated',
-                        life: 3000
-                    });
+                const updated = await this.savingsService.updateTransaction(this.record);
+                const updatedWithGoal: SavingRecordWithGoal = {
+                    ...updated,
+                    goalId: this.record.goalId,
+                    goalName: this.record.goalName
+                };
+                _records[this.findIndexById(updated.id!)] = updatedWithGoal;
+                this.records.set(this.sortDesc([..._records]));
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: 'Enregistrement mis à jour',
+                    life: 3000
                 });
             } else {
-                this.savingsService.addTransaction(this.record).then((created) => {
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Created',
-                        life: 3000
-                    });
-                    this.records.set(this.sortDesc([..._records, created]));
+                const created = await this.savingsService.addTransaction(this.record);
+                const createdWithGoal: SavingRecordWithGoal = {
+                    ...created,
+                    goalId: this.record.goalId,
+                    goalName: this.record.goalName
+                };
+                this.records.set(this.sortDesc([..._records, createdWithGoal]));
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Succès',
+                    detail: 'Enregistrement créé',
+                    life: 3000
                 });
+                
+                // If a goal is selected and it's a deposit, add contribution
+                if (this.record.goalId && this.record.type === 'Deposit' && this.record.amount > 0) {
+                    try {
+                        await this.savingsService.addContribution(this.record.goalId, this.record.amount);
+                    } catch (error) {
+                        console.error('Error adding contribution to goal:', error);
+                    }
+                }
             }
+            
+            this.stateService.notifySavingsUpdated();
             this.productDialog = false;
-            this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as any;
+            this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as SavingRecordWithGoal;
         }
     }
 
@@ -369,7 +486,7 @@ export class SavingsTransactions implements OnInit {
         }
     }
 
-    private sortDesc(list: SavingRecord[]): SavingRecord[] {
+    private sortDesc(list: SavingRecordWithGoal[]): SavingRecordWithGoal[] {
         return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
 }

@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { SavingsService, SavingsGoalDisplay } from '../../service/savings.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 
 interface GoalDisplay {
     label: string;
@@ -85,15 +87,26 @@ interface GoalDisplay {
         </div>
     `
 })
-export class SavingsProgress implements OnInit {
+export class SavingsProgress implements OnInit, OnDestroy {
     private savingsService = inject(SavingsService);
+    private stateService = inject(AssetsStateService);
     private router = inject(Router);
     
+    private subscription?: Subscription;
     loading = signal(true);
     goals = signal<GoalDisplay[]>([]);
 
     async ngOnInit() {
         await this.loadGoals();
+        
+        // Subscribe to savings updates to refresh the list
+        this.subscription = this.stateService.savingsUpdated$.subscribe(() => {
+            this.loadGoals();
+        });
+    }
+    
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
     }
 
     private async loadGoals() {

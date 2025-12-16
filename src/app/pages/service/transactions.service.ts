@@ -47,13 +47,19 @@ const CATEGORY_DISPLAY_MAP: Record<string, string> = {
 export class TransactionsService {
     private api = inject(ApiService);
 
+    // Categories to exclude from main transactions view (these are managed separately in Savings)
+    private readonly SAVINGS_CATEGORIES = ['savings', 'investment'];
+    
     /**
-     * Get all transactions
+     * Get all transactions (excluding savings-related transactions)
      */
     async getRecords(): Promise<TransactionRecord[]> {
         try {
             const transactions = await firstValueFrom(this.api.getTransactions(0, 100));
-            return transactions.map(t => this.mapTransactionToRecord(t));
+            // Filter out savings and investment transactions - they are managed in the Savings section
+            return transactions
+                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
+                .map(t => this.mapTransactionToRecord(t));
         } catch (error) {
             console.error('Error fetching transactions:', error);
             return [];
@@ -61,11 +67,13 @@ export class TransactionsService {
     }
 
     /**
-     * Get transactions as Observable
+     * Get transactions as Observable (excluding savings-related transactions)
      */
     getRecords$(): Observable<TransactionRecord[]> {
         return this.api.getTransactions(0, 100).pipe(
-            map(transactions => transactions.map(t => this.mapTransactionToRecord(t))),
+            map(transactions => transactions
+                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
+                .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
                 return of([]);
@@ -88,12 +96,14 @@ export class TransactionsService {
     }
 
     /**
-     * Get recent transactions (last N)
+     * Get recent transactions (last N, excluding savings-related)
      */
     async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
         try {
-            const transactions = await firstValueFrom(this.api.getTransactions(0, limit));
+            // Fetch more to account for filtering
+            const transactions = await firstValueFrom(this.api.getTransactions(0, limit * 2));
             return transactions
+                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                 .slice(0, limit)
                 .map(t => this.mapTransactionToRecord(t));
@@ -175,10 +185,11 @@ export class TransactionsService {
     }
 
     /**
-     * Get transaction statistics
+     * Get transaction statistics (excluding savings-related)
      */
     async getStats(): Promise<TransactionStats> {
         try {
+            // getRecords already filters out savings
             const transactions = await this.getRecords();
             
             const totalIncome = transactions

@@ -6,7 +6,20 @@ import { environment } from '../../../environments/environment';
 // ============================================
 // ASSET INTERFACES
 // ============================================
-export type AssetCategory = 'real_estate' | 'stocks' | 'bonds' | 'crypto' | 'cash' | 'commodities' | 'other';
+export type AssetCategory = 
+    | 'real_estate' 
+    | 'stocks' 
+    | 'bonds' 
+    | 'crypto' 
+    | 'cash' 
+    | 'retirement'
+    | 'life_insurance'
+    | 'savings_account'
+    | 'business'
+    | 'vehicle'
+    | 'collectibles'
+    | 'commodities' 
+    | 'other';
 
 export interface Asset {
     id: number;

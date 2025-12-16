@@ -1,8 +1,10 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription, merge } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, DashboardStats, FIREProgress } from '../../service/dashboard.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 
 @Component({
     standalone: true,
@@ -129,11 +131,13 @@ import { DashboardService, DashboardStats, FIREProgress } from '../../service/da
         }
     `
 })
-export class StatsWidget implements OnInit {
+export class StatsWidget implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
     private dashboardService = inject(DashboardService);
-
+    private stateService = inject(AssetsStateService);
+    
+    private subscription?: Subscription;
     loading = signal(true);
     stats = signal<DashboardStats | null>(null);
     fireProgress = signal<FIREProgress | null>(null);
@@ -141,6 +145,24 @@ export class StatsWidget implements OnInit {
     monthlySavings = signal(0);
 
     async ngOnInit() {
+        await this.loadStats();
+        
+        // Subscribe to all state updates
+        this.subscription = merge(
+            this.stateService.assetsUpdated$,
+            this.stateService.debtsUpdated$,
+            this.stateService.savingsUpdated$,
+            this.stateService.transactionsUpdated$
+        ).subscribe(() => {
+            this.loadStats();
+        });
+    }
+    
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
+    }
+    
+    private async loadStats() {
         this.loading.set(true);
         try {
             const [stats, fire] = await Promise.all([

@@ -105,7 +105,7 @@ export class AppLayout {
 
     onAddAsset(): void {
         if (this.appTopBar) {
-            this.appTopBar.showAddAssetsDialog = true;
+            this.appTopBar.openAddAssetDialog();
         }
     }
 

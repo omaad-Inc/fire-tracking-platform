@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
 import { PatrimoineStats } from './components/patrimoinestats';
 import { PatrimoineListComponent, PatrimoineAssetItem } from './components/patrimoinelist';
 import { PatrimoineRepartitionComponent } from './components/patrimoinerepartition';
 import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
+import { AssetsStateService } from '../service/assets-state.service';
 
 @Component({
     selector: 'app-patrimoine',
@@ -36,12 +38,28 @@ import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine
         </div>
     `
 })
-export class Patrimoine {
+export class Patrimoine implements OnInit, OnDestroy {
+    private i18n = inject(I18nService);
+    private patrimoineService = inject(PatrimoineService);
+    private stateService = inject(AssetsStateService);
+    private subscription?: Subscription;
+
     assets: PatrimoineAssetItem[] = [];
 
-    constructor(private i18n: I18nService, private patrimoineService: PatrimoineService) {}
-
     ngOnInit() {
+        this.loadAssets();
+        
+        // Subscribe to asset updates to refresh the list dynamically
+        this.subscription = this.stateService.assetsUpdated$.subscribe(() => {
+            this.loadAssets();
+        });
+    }
+    
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
+    }
+    
+    private loadAssets() {
         this.patrimoineService.getAssets().then((items: PatrimoineAssetItemDto[]) => {
             const total = items.reduce((sum, it) => sum + it.value, 0) || 1;
             this.assets = items.map((it) => ({

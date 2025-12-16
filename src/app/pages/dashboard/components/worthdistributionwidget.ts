@@ -2,9 +2,10 @@ import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { FluidModule } from 'primeng/fluid';
-import { debounceTime, Subscription } from 'rxjs';
+import { debounceTime, Subscription, merge } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { DashboardService, AssetAllocation } from '../../service/dashboard.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 
 @Component({
     standalone: true,
@@ -61,6 +62,7 @@ import { DashboardService, AssetAllocation } from '../../service/dashboard.servi
 export class WorthDistributionWidget implements OnInit, OnDestroy {
     private layoutService = inject(LayoutService);
     private dashboardService = inject(DashboardService);
+    private stateService = inject(AssetsStateService);
 
     loading = signal(true);
     total = signal(0);
@@ -75,10 +77,12 @@ export class WorthDistributionWidget implements OnInit, OnDestroy {
     ngOnInit() {
         this.loadData();
         
-        this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
-            if (this.distribution.length > 0) {
-                this.initCharts();
-            }
+        // Subscribe to both config updates and asset updates
+        this.subscription = merge(
+            this.layoutService.configUpdate$.pipe(debounceTime(25)),
+            this.stateService.assetsUpdated$
+        ).subscribe(() => {
+            this.loadData();
         });
     }
 

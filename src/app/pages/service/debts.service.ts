@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom } from 'rxjs';
 import { ApiService, Debt, DebtCreate, DebtUpdate, DebtType, DebtCategory } from '../../core/services/api.service';
+import { AssetsStateService } from './assets-state.service';
 
 export interface DebtRecord {
     id?: string;
@@ -19,17 +20,19 @@ export interface DebtRecord {
 }
 
 export interface DebtsStatsSummary {
-    totalDebt: number;
-    paidAmount: number;
-    receivables: number;
+    totalDebt: number;         // Sum of all debts I owe (current amount remaining)
+    paidAmount: number;        // Last payment made (not cumulative)
+    receivables: number;       // Sum of all receivables (money owed to me)
     totalDebtChange?: number;
     paidAmountChange?: number;
     receivablesChange?: number;
+    lastPaymentDate?: string;  // Date of last payment
 }
 
 @Injectable({ providedIn: 'root' })
 export class DebtsService {
     private api = inject(ApiService);
+    private stateService = inject(AssetsStateService);
 
     /**
      * Get all debt records
@@ -89,6 +92,8 @@ export class DebtsService {
             };
             
             const debt = await firstValueFrom(this.api.createDebt(debtData));
+            // Notify that debts have been updated
+            this.stateService.notifyDebtsUpdated();
             return this.mapDebtToRecord(debt);
         } catch (error) {
             console.error('Error creating debt:', error);
@@ -114,6 +119,8 @@ export class DebtsService {
             };
             
             const debt = await firstValueFrom(this.api.updateDebt(parseInt(record.id), debtData));
+            // Notify that debts have been updated
+            this.stateService.notifyDebtsUpdated();
             return this.mapDebtToRecord(debt);
         } catch (error) {
             console.error('Error updating debt:', error);
@@ -129,6 +136,8 @@ export class DebtsService {
             await Promise.all(ids.map(id => 
                 firstValueFrom(this.api.deleteDebt(parseInt(id)))
             ));
+            // Notify that debts have been updated
+            this.stateService.notifyDebtsUpdated();
         } catch (error) {
             console.error('Error deleting debts:', error);
             throw error;
@@ -141,6 +150,8 @@ export class DebtsService {
     async addPayment(id: string, amount: number): Promise<DebtRecord> {
         try {
             const debt = await firstValueFrom(this.api.makePayment(parseInt(id), amount));
+            // Notify that debts have been updated
+            this.stateService.notifyDebtsUpdated();
             return this.mapDebtToRecord(debt);
         } catch (error) {
             console.error('Error making payment:', error);
@@ -150,30 +161,49 @@ export class DebtsService {
 
     /**
      * Get debt statistics
+     * - totalDebt: Sum of all remaining debt amounts when type is "Debt" (what I still owe)
+     * - paidAmount: The last payment made (most recent)
+     * - receivables: Sum of all remaining receivable amounts when type is "Receivable" (what others owe me)
      */
     async getStats(): Promise<DebtsStatsSummary> {
         try {
             const debts = await this.getRecords();
             
+            // Total debt = Sum of all remaining debt amounts when type is "Debt"
+            // Formula: Sum of (total - paid) for all debts where type === 'Debt' and not paid off
             const totalDebt = debts
-                .filter(d => d.type === 'Debt')
+                .filter(d => d.type === 'Debt' && !d.isPaidOff)
                 .reduce((sum, d) => sum + (d.total - d.paid), 0);
             
-            const paidAmount = debts
-                .filter(d => d.type === 'Debt')
-                .reduce((sum, d) => sum + d.paid, 0);
-            
+            // Receivables = Sum of all remaining receivable amounts when type is "Receivable"
+            // Formula: Sum of (total - paid) for all receivables where type === 'Receivable' and not paid off
             const receivables = debts
-                .filter(d => d.type === 'Receivable')
+                .filter(d => d.type === 'Receivable' && !d.isPaidOff)
                 .reduce((sum, d) => sum + (d.total - d.paid), 0);
+            
+            // Find the last payment made - we need to look at debts with payments
+            // Sort by date to find the most recent one that has any payment
+            const debtsWithPayments = debts
+                .filter(d => d.type === 'Debt' && d.paid > 0)
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            
+            // Get the most recent payment amount
+            let lastPaymentAmount = 0;
+            let lastPaymentDate = '';
+            if (debtsWithPayments.length > 0) {
+                const mostRecentDebt = debtsWithPayments[0];
+                lastPaymentAmount = mostRecentDebt.monthlyPayment || mostRecentDebt.paid;
+                lastPaymentDate = mostRecentDebt.date;
+            }
             
             return {
                 totalDebt,
-                paidAmount,
+                paidAmount: lastPaymentAmount,
                 receivables,
                 totalDebtChange: 0,
-                paidAmountChange: 0,
-                receivablesChange: 0
+                paidAmountChange: lastPaymentAmount,
+                receivablesChange: receivables, // For new receivables this month
+                lastPaymentDate
             };
         } catch (error) {
             console.error('Error fetching stats:', error);

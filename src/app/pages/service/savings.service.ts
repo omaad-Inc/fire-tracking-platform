@@ -9,6 +9,7 @@ export interface SavingRecord {
     amount: number;
     name: string;
     note?: string;
+    goalId?: number;
 }
 
 export interface SavingsStatsSummary {
@@ -147,19 +148,50 @@ export class SavingsService {
 
     /**
      * Get statistics summary from API
+     * Total Savings = Sum of all saving goals current amounts
+     * This Month Saving = Sum of all deposits this month - withdrawals this month
+     * Average Monthly Saving = Average of all deposits per month
      */
     async getStatsSummary(): Promise<SavingsStatsSummary> {
         try {
-            const dashboard = await firstValueFrom(this.api.getDashboardSummary());
             const goals = await this.getGoals();
             
+            // Total Savings = Sum of all saving goals current amounts
             const totalSavings = goals.reduce((sum, g) => sum + g.current, 0);
-            const thisMonthSaving = dashboard.monthly_income - dashboard.monthly_expenses;
+            
+            // Get all savings transactions
+            const transactions = await this.getTransactions();
+            
+            // This month saving
+            const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+            const thisMonthTransactions = transactions.filter(t => t.date.startsWith(currentMonth));
+            const thisMonthDeposits = thisMonthTransactions
+                .filter(t => t.type === 'Deposit')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const thisMonthWithdrawals = thisMonthTransactions
+                .filter(t => t.type === 'Withdrawal')
+                .reduce((sum, t) => sum + t.amount, 0);
+            const thisMonthSaving = thisMonthDeposits - thisMonthWithdrawals;
+            
+            // Calculate average monthly saving
+            // Group deposits by month and calculate average
+            const depositsByMonth = new Map<string, number>();
+            transactions
+                .filter(t => t.type === 'Deposit')
+                .forEach(t => {
+                    const month = t.date.slice(0, 7);
+                    depositsByMonth.set(month, (depositsByMonth.get(month) || 0) + t.amount);
+                });
+            
+            const monthlyTotals = Array.from(depositsByMonth.values());
+            const avgMonthlySaving = monthlyTotals.length > 0 
+                ? monthlyTotals.reduce((a, b) => a + b, 0) / monthlyTotals.length 
+                : 0;
             
             return {
                 totalSavings,
-                thisMonthSaving: thisMonthSaving > 0 ? thisMonthSaving : 0,
-                avgMonthlySaving: thisMonthSaving > 0 ? thisMonthSaving : 0
+                thisMonthSaving,
+                avgMonthlySaving
             };
         } catch (error) {
             console.error('Error fetching stats:', error);
