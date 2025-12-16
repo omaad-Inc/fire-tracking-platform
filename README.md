@@ -1,59 +1,81 @@
-# Sakai19
+# Afrin Nexus - FIRE Tracking App (Angular 19)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.6.
+<p align="center">
+  <img src="src/assets/afrin-nexus-logo.svg" alt="Afrin Nexus" width="120" height="120" />
+</p>
 
-## Development server
+Afrin Nexus is a personal finance web app built on Angular 19 that transforms the Sakai template into a FIRE-oriented tracker. The goal is to track wealth over time and monitor expenses and income month by month, offering clear insights to help reach Financial Independence, Retire Early (FIRE).
 
-To start a local development server, run:
+## Key Features (planned and in-progress)
 
-```bash
-ng serve
-```
+- **Dashboard overview**: Net worth, savings rate, recent transactions, and category breakdowns.
+- **Savings module**: Progress charts, transactions list, and savings KPIs.
+- **Debts module**: Debt overview, payoff progression, and interest tracking.
+- **Transactions**: Unified view for income and expenses with categorization.
+- **Patrimoine (Wealth)**: Assets and liabilities registry to compute net worth.
+- **Theming**: Light/dark mode via PrimeNG themes and Tailwind utilities.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+These align with current code modules such as `dashboard`, `savings`, `debts`, `transaction`, and `patrimoine` under `src/app/pages/`.
 
-## Code scaffolding
+## Tech Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Framework**: Angular 19 (Vite dev server via Angular CLI)
+- **UI**: PrimeNG 19, @primeng/themes, PrimeIcons
+- **Charts**: PrimeNG Chart (Chart.js)
+- **Styling**: SCSS + Tailwind utilities (`tailwind.css`)
+- **Tooling**: ESLint, Prettier, Jasmine/Karma
 
-```bash
-ng generate component component-name
-```
+## Getting Started
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- **Install dependencies**:
+  ```bash
+  npm install
+  ```
+- **Start dev server**:
+  ```bash
+  ng serve --port 4200
+  ```
+  Then open `http://localhost:4200/`.
+- **Build for production**:
+  ```bash
+  ng build
+  ```
+- **Run unit tests**:
+  ```bash
+  ng test
+  ```
 
-```bash
-ng generate --help
-```
+## Current App Structure (high-level)
 
-## Building
+- `src/app/pages/dashboard/`: Widgets for savings, worth distribution/progression, recent transactions
+- `src/app/pages/savings/`: `savingsdashboard`, components for progress and transactions
+- `src/app/pages/debts/`: `debtsdashboard`, stats and progress components
+- `src/app/pages/patrimoine/`: Base for assets/liabilities management
+- `src/app/pages/transaction/`: Transactions page
+- `src/app/layout/`: Topbar, sidebar, menu, and layout services
 
-To build the project run:
+## Roadmap Suggestions
 
-```bash
-ng build
-```
+- **Data model and storage**
+  - Define domain models (Account, Asset, Liability, Transaction, Category, Goal)
+  - Add a persistence layer (start with local storage/IndexedDB; later API)
+- **Transactions**
+  - CRUD with categories and notes; CSV import
+  - Monthly budgeting and category insights
+- **Wealth tracking**
+  - Asset/liability CRUD, valuation snapshots, net worth time series
+  - FIRE progress bar (target number, SWR assumption)
+- **Charts & analytics**
+  - Monthly income/expense trends, savings rate, category sunburst
+- **Security & settings**
+  - Auth (local-first optional), currency, locale, theme
+- **Polish**
+  - Responsive dashboards, empty states, accessibility
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Contributing
 
-## Running unit tests
+Issues and PRs are welcome. Please use ESLint/Prettier and follow Angular style guidelines.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## License
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This project is based on the Sakai template; check `LICENSE.md` for terms.

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { I18nService } from '../../i18n/i18n.service';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { filter } from 'rxjs/operators';
 
 @Component({
     selector: 'app-menu',
@@ -17,141 +19,107 @@ import { AppMenuitem } from './app.menuitem';
 })
 export class AppMenu {
     model: MenuItem[] = [];
+    lang = 'fr';
+
+    constructor(private router: Router, private i18n: I18nService) {
+        // Listen to route changes to update language
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe(() => {
+            this.updateMenu();
+        });
+    }
 
     ngOnInit() {
+        this.updateMenu();
+    }
+
+    private updateMenu() {
+        this.lang = this.getCurrentLang();
         this.model = [
+            // Main Navigation
             {
-                label: 'Home',
-                items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }]
-            },
-            {
-                label: 'UI Components',
-                items: [
-                    { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
-                    { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
-                    { label: 'Button', icon: 'pi pi-fw pi-mobile', class: 'rotated-icon', routerLink: ['/uikit/button'] },
-                    { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
-                    { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/uikit/list'] },
-                    { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/uikit/tree'] },
-                    { label: 'Panel', icon: 'pi pi-fw pi-tablet', routerLink: ['/uikit/panel'] },
-                    { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/uikit/overlay'] },
-                    { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/uikit/media'] },
-                    { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/uikit/menu'] },
-                    { label: 'Message', icon: 'pi pi-fw pi-comment', routerLink: ['/uikit/message'] },
-                    { label: 'File', icon: 'pi pi-fw pi-file', routerLink: ['/uikit/file'] },
-                    { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/uikit/charts'] },
-                    { label: 'Timeline', icon: 'pi pi-fw pi-calendar', routerLink: ['/uikit/timeline'] },
-                    { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/uikit/misc'] }
-                ]
-            },
-            {
-                label: 'Pages',
-                icon: 'pi pi-fw pi-briefcase',
-                routerLink: ['/pages'],
+                label: this.t('menu.navigation'),
                 items: [
                     {
-                        label: 'Landing',
-                        icon: 'pi pi-fw pi-globe',
-                        routerLink: ['/landing']
+                        label: this.t('menu.dashboard'), 
+                        icon: 'pi pi-fw pi-home', 
+                        routerLink: this.link() 
                     },
                     {
-                        label: 'Auth',
-                        icon: 'pi pi-fw pi-user',
+                        label: this.t('menu.patrimony'),
+                        icon: 'pi pi-fw pi-wallet',
+                        routerLink: this.link('pages', 'patrimoine'),
+                    },
+                    {
+                        label: this.t('menu.transactions'), 
+                        icon: 'pi pi-fw pi-arrow-right-arrow-left', 
+                        routerLink: this.link('pages', 'transaction')
+                    },
+                ]
+            },
+            // Separator
+            { separator: true },
+            // Finance
+            {
+                label: this.t('menu.finances'),
+                items: [
+                    {
+                        label: this.t('menu.savings'), 
+                        icon: 'pi pi-fw pi-dollar', 
+                        routerLink: this.link('pages', 'savings')
+                    },
+                    {
+                        label: this.t('menu.debts'), 
+                        icon: 'pi pi-fw pi-credit-card', 
+                        routerLink: this.link('pages', 'debts')
+                    },
+                ]
+            },
+            // Separator
+            { separator: true },
+            // Settings
+            {
+                label: this.t('menu.account'),
+                items: [
+                    {
+                        label: this.t('menu.settings'),
+                        icon: 'pi pi-fw pi-cog',
                         items: [
                             {
-                                label: 'Login',
-                                icon: 'pi pi-fw pi-sign-in',
-                                routerLink: ['/auth/login']
+                                label: this.t('menu.myAccount'),
+                                icon: 'pi pi-fw pi-user',
+                                routerLink: this.link('pages', 'settings', 'account')
                             },
                             {
-                                label: 'Error',
-                                icon: 'pi pi-fw pi-times-circle',
-                                routerLink: ['/auth/error']
+                                label: this.t('menu.security'),
+                                icon: 'pi pi-fw pi-shield',
+                                routerLink: this.link('pages', 'settings', 'security')
                             },
                             {
-                                label: 'Access Denied',
-                                icon: 'pi pi-fw pi-lock',
-                                routerLink: ['/auth/access']
+                                label: this.t('menu.preferences'),
+                                icon: 'pi pi-fw pi-sliders-h',
+                                routerLink: this.link('pages', 'settings', 'preferences')
                             }
                         ]
                     },
-                    {
-                        label: 'Crud',
-                        icon: 'pi pi-fw pi-pencil',
-                        routerLink: ['/pages/crud']
-                    },
-                    {
-                        label: 'Not Found',
-                        icon: 'pi pi-fw pi-exclamation-circle',
-                        routerLink: ['/pages/notfound']
-                    },
-                    {
-                        label: 'Empty',
-                        icon: 'pi pi-fw pi-circle-off',
-                        routerLink: ['/pages/empty']
-                    }
                 ]
             },
-            {
-                label: 'Hierarchy',
-                items: [
-                    {
-                        label: 'Submenu 1',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 1.1',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Submenu 1.2',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Submenu 2',
-                        icon: 'pi pi-fw pi-bookmark',
-                        items: [
-                            {
-                                label: 'Submenu 2.1',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [
-                                    { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' }
-                                ]
-                            },
-                            {
-                                label: 'Submenu 2.2',
-                                icon: 'pi pi-fw pi-bookmark',
-                                items: [{ label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' }]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                label: 'Get Started',
-                items: [
-                    {
-                        label: 'Documentation',
-                        icon: 'pi pi-fw pi-book',
-                        routerLink: ['/documentation']
-                    },
-                    {
-                        label: 'View Source',
-                        icon: 'pi pi-fw pi-github',
-                        url: 'https://github.com/primefaces/sakai-ng',
-                        target: '_blank'
-                    }
-                ]
-            }
         ];
+    }
+
+    private getCurrentLang(): 'fr' | 'en' {
+        const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
+        const l = (match ? match[1] : 'fr') as 'fr' | 'en';
+        this.i18n.setLang(l);
+        return l;
+    }
+
+    private link(...segments: string[]): any[] {
+        return ['/', this.lang, ...segments];
+    }
+
+    private t(key: string): string {
+        return this.i18n.t(key);
     }
 }

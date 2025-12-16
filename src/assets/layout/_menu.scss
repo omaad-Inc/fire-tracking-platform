@@ -2,19 +2,41 @@
 
 .layout-sidebar {
     position: fixed;
-    width: 20rem;
-    height: calc(100vh - 8rem);
+    width: 18rem;
+    height: calc(100vh - 7rem);
     z-index: 999;
     overflow-y: auto;
+    overflow-x: hidden;
     user-select: none;
-    top: 6rem;
-    left: 2rem;
+    top: 5.5rem;
+    left: 1.5rem;
     transition:
-        transform var(--layout-section-transition-duration),
-        left var(--layout-section-transition-duration);
-    background-color: var(--surface-overlay);
-    border-radius: var(--content-border-radius);
-    padding: 0.5rem 1.5rem;
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s ease;
+    background: var(--surface-card);
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--surface-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: var(--surface-border);
+        border-radius: 4px;
+        
+        &:hover {
+            background: var(--primary-color);
+        }
+    }
 }
 
 .layout-menu {
@@ -23,12 +45,15 @@
     list-style-type: none;
 
     .layout-root-menuitem {
+        margin-bottom: 0.25rem;
+        
         > .layout-menuitem-root-text {
-            font-size: 0.857rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            font-weight: 700;
-            color: var(--text-color);
-            margin: 0.75rem 0;
+            font-weight: 600;
+            color: var(--text-color-secondary);
+            margin: 1rem 0 0.5rem 0.75rem;
+            letter-spacing: 0.05em;
         }
 
         > a {
@@ -66,29 +91,53 @@
             outline: 0 none;
             color: var(--text-color);
             cursor: pointer;
-            padding: 0.75rem 1rem;
-            border-radius: var(--content-border-radius);
-            transition:
-                background-color var(--element-transition-duration),
-                box-shadow var(--element-transition-duration);
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
             .layout-menuitem-icon {
-                margin-right: 0.5rem;
+                margin-right: 0.75rem;
+                font-size: 1.1rem;
+                width: 2rem;
+                height: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 0.5rem;
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.1));
+                color: var(--primary-color);
+                transition: all 0.2s ease;
             }
 
             .layout-submenu-toggler {
                 font-size: 75%;
                 margin-left: auto;
-                transition: transform var(--element-transition-duration);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0.6;
             }
 
             &.active-route {
-                font-weight: 700;
+                font-weight: 600;
                 color: var(--primary-color);
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.05));
+                
+                .layout-menuitem-icon {
+                    background: linear-gradient(135deg, #6366f1, #06b6d4);
+                    color: white;
+                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                }
             }
 
             &:hover {
-                background-color: var(--surface-hover);
+                background: var(--surface-hover);
+                transform: translateX(4px);
+                
+                .layout-menuitem-icon {
+                    transform: scale(1.05);
+                }
             }
 
             &:focus {
@@ -98,36 +147,47 @@
 
         ul {
             overflow: hidden;
-            border-radius: var(--content-border-radius);
+            border-radius: 0.75rem;
+            margin-left: 1rem;
+            padding-left: 0.75rem;
+            border-left: 2px solid var(--surface-border);
 
             li {
                 a {
-                    margin-left: 1rem;
+                    margin-left: 0;
+                    padding: 0.75rem 1rem;
+                    font-size: 0.85rem;
+                    
+                    .layout-menuitem-icon {
+                        width: 1.5rem;
+                        height: 1.5rem;
+                        font-size: 0.9rem;
+                    }
                 }
 
                 li {
                     a {
-                        margin-left: 2rem;
+                        margin-left: 0.5rem;
                     }
 
                     li {
                         a {
-                            margin-left: 2.5rem;
+                            margin-left: 1rem;
                         }
 
                         li {
                             a {
-                                margin-left: 3rem;
+                                margin-left: 1.5rem;
                             }
 
                             li {
                                 a {
-                                    margin-left: 3.5rem;
+                                    margin-left: 2rem;
                                 }
 
                                 li {
                                     a {
-                                        margin-left: 4rem;
+                                        margin-left: 2.5rem;
                                     }
                                 }
                             }
@@ -142,19 +202,27 @@
 .layout-submenu-enter-from,
 .layout-submenu-leave-to {
     max-height: 0;
+    opacity: 0;
 }
 
 .layout-submenu-enter-to,
 .layout-submenu-leave-from {
     max-height: 1000px;
+    opacity: 1;
 }
 
 .layout-submenu-leave-active {
     overflow: hidden;
-    transition: max-height 0.45s cubic-bezier(0, 1, 0, 1);
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
 .layout-submenu-enter-active {
     overflow: hidden;
-    transition: max-height 1s ease-in-out;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+// Menu separator
+.menu-separator {
+    margin: 0.75rem 0;
+    border-top: 1px solid var(--surface-border);
 }

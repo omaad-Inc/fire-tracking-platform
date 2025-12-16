@@ -4,13 +4,14 @@ import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
-import { AppFooter } from './app.footer';
+import { AppMobileNav } from './app.mobile-nav';
 import { LayoutService } from '../service/layout.service';
+import { PwaPromptComponent } from './pwa-prompt.component';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, RouterModule, AppFooter],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, RouterModule, PwaPromptComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
@@ -18,9 +19,10 @@ import { LayoutService } from '../service/layout.service';
             <div class="layout-main">
                 <router-outlet></router-outlet>
             </div>
-            <app-footer></app-footer>
         </div>
         <div class="layout-mask animate-fadein"></div>
+        <app-mobile-nav></app-mobile-nav>
+        <app-pwa-prompt></app-pwa-prompt>
     </div> `
 })
 export class AppLayout {

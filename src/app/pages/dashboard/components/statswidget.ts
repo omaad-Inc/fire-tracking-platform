@@ -1,80 +1,103 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { I18nService } from '../../../i18n/i18n.service';
+import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
     selector: 'app-stats-widget',
-    imports: [CommonModule],
+    imports: [CommonModule, RouterModule],
     template: `
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
+        <!-- KPI Card 1 - Patrimoine -->
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="card mb-0 cursor-pointer group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20" 
+                 [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Total Net Worth</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ netWorth | currency: 'USD' }}</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ netWorth | currency: 'EUR':'symbol':'1.0-0' }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-wallet text-green-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-wallet text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">+{{ netWorthChange }} </span>
-                <span class="text-muted-color">since last month</span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                        <i class="pi pi-arrow-up text-xs mr-1"></i>
+                        +12.5%
+                    </span>
+                    <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('dashboard.kpi.sinceLastMonth') }}</span>
+                </div>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
+
+        <!-- KPI Card 2 - Taux d'épargne -->
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="card mb-0 cursor-pointer group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20" 
+                 [routerLink]="link('pages','savings')" role="link" aria-label="Voir l'épargne" tabindex="0">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">Monthly Savings Rate</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ savingsRate }}%</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlySavingsRate') }}</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ savingsRate }}%</div>
                     </div>
-                    <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-chart-line text-blue-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-chart-line text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">{{ savingsAmount | currency: 'USD' }} </span>
-                <span class="text-muted-color">saved this month</span>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-cyan-500/10 text-cyan-500 text-sm font-semibold">
+                        +5% ce mois
+                    </span>
+                    <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('dashboard.kpi.savedThisMonth') }}</span>
+                </div>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
+        
+        <!-- KPI Card 3 - Objectif FIRE -->
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="card mb-0 cursor-pointer group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20" 
+                 [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir l'objectif FIRE" tabindex="0">
+                <div class="flex justify-between items-start mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">FIRE Progress</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ fireProgress }}%</div>
+                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Objectif FIRE</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ fireProgress }}%</div>
                     </div>
-                    <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-flag text-orange-500 !text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <i class="pi pi-flag text-white text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">FIRE Number: {{ fireNumber | currency: '€' }}</span>
-            </div>
-        </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-3">
-            <div class="card mb-0">
-                <div class="flex justify-between mb-4">
-                    <div>
-                        <span class="block text-muted-color font-medium mb-4">Passive Income</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ passiveIncome | currency: 'USD' }}</div>
-                    </div>
-                    <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-star text-purple-500 !text-xl"></i>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                        12 ans restants
+                    </span>
                 </div>
-                <span class="text-primary font-medium">+{{ passiveIncomeChange | currency: 'USD' }} </span>
-                <span class="text-muted-color">this month</span>
             </div>
         </div>
     `
 })
 export class StatsWidget {
-    netWorth = 45000; // Mock data
-    netWorthChange = 1200; // Mock data
-    savingsRate = 38; // Mock data (percentage)
-    savingsAmount = 1200; // Mock data
-    fireProgress = 15; // Mock data (percentage)
-    fireNumber = 300000; // Mock data (FIRE number target)
-    passiveIncome = 120; // Mock data
-    passiveIncomeChange = 20; // Mock data
+    netWorth = 130481;
+    netWorthChange = 8025;
+    savingsRate = 38;
+    savingsAmount = 1200;
+    fireProgress = 43;
+    fireNumber = 300000;
+    passiveIncome = 120;
+    passiveIncomeChange = 20;
+    
+    constructor(private i18n: I18nService, private router: Router) {}
+
+    t(key: string): string {
+        return this.i18n.t(key);
+    }
+
+    link(...segments: string[]): any[] {
+        const url = this.router.url;
+        const match = url.match(/^\/(fr|en)(?:\/|$)/);
+        const lang = (match ? match[1] : 'fr') as 'fr' | 'en';
+        return ['/', lang, ...segments];
+    }
 }
+
 
