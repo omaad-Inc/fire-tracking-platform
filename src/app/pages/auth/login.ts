@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,12 +8,17 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, ToastModule],
+    providers: [MessageService],
     template: `
+        <p-toast position="top-center"></p-toast>
         <div class="min-h-screen flex">
             <!-- Left Side - Login Form -->
             <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 bg-surface-0 dark:bg-surface-950">
@@ -67,6 +72,8 @@ import { CommonModule } from '@angular/common';
                     <!-- Social Login Buttons -->
                     <div class="space-y-3 mb-6">
                         <button pButton pRipple 
+                                (click)="loginWithGoogle()"
+                                [loading]="isGoogleLoading()"
                                 class="w-full !bg-blue-600 hover:!bg-blue-700 !border-0 !py-3 !text-base !font-medium flex items-center justify-center gap-3">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
@@ -78,13 +85,14 @@ import { CommonModule } from '@angular/common';
                         </button>
 
                         <button pButton pRipple [outlined]="true"
+                                [disabled]="true"
                                 class="w-full !py-3 !text-base !font-medium !border-surface-300 dark:!border-surface-600 
                                        !text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800 
-                                       flex items-center justify-center gap-3">
+                                       flex items-center justify-center gap-3 opacity-50">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                             </svg>
-                            Continue with Apple
+                            Continue with Apple (Coming soon)
                         </button>
                     </div>
 
@@ -96,20 +104,21 @@ import { CommonModule } from '@angular/common';
                     </div>
 
                     <!-- Email & Password Form -->
-                    <div class="space-y-6">
+                    <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div>
                             <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Email address</label>
                             <input pInputText id="email" type="email" 
                                    placeholder="Enter your email" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
-                                   [(ngModel)]="email" />
+                                   [(ngModel)]="email" name="email" required />
                         </div>
 
                         <div>
                             <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Password</label>
                             <p-password id="password" 
                                         [(ngModel)]="password" 
+                                        name="password"
                                         placeholder="Enter your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
@@ -119,12 +128,13 @@ import { CommonModule } from '@angular/common';
                         </div>
 
                         <button pButton pRipple label="Log In" 
-                                [routerLink]="[currentLang]"
+                                type="submit"
+                                [loading]="isLoading()"
                                 class="w-full !py-3 !text-base !font-semibold !bg-surface-300 dark:!bg-surface-700 
                                        !text-surface-500 dark:!text-surface-400 !border-0 
                                        hover:!bg-indigo-600 hover:!text-white transition-all duration-300
                                        disabled:opacity-50"
-                                [disabled]="!email || !password">
+                                [disabled]="!email || !password || isLoading()">
                         </button>
 
                         <div class="text-center">
@@ -132,7 +142,7 @@ import { CommonModule } from '@angular/common';
                                 Forgot password?
                             </a>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -268,13 +278,54 @@ import { CommonModule } from '@angular/common';
     `
 })
 export class Login {
-    email: string = '';
-    password: string = '';
-    checked: boolean = false;
-    currentLang = '/fr';
+    private authService = inject(AuthService);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
+    private messageService = inject(MessageService);
 
-    constructor(private router: Router) {
+    email = '';
+    password = '';
+    currentLang = '/fr';
+    
+    isLoading = signal(false);
+    isGoogleLoading = signal(false);
+
+    constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+    }
+
+    onSubmit(): void {
+        if (!this.email || !this.password) return;
+
+        this.isLoading.set(true);
+        this.authService.login({ email: this.email, password: this.password }).subscribe({
+            next: () => {
+                // Fetch user info after login
+                this.authService.getCurrentUser().subscribe({
+                    next: () => {
+                        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                        this.router.navigate([returnUrl]);
+                    },
+                    error: () => {
+                        this.router.navigate([this.currentLang]);
+                    }
+                });
+            },
+            error: (error) => {
+                this.isLoading.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Login Failed',
+                    detail: error.message || 'Invalid credentials',
+                    life: 5000
+                });
+            }
+        });
+    }
+
+    loginWithGoogle(): void {
+        this.isGoogleLoading.set(true);
+        this.authService.loginWithGoogle();
     }
 }

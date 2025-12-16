@@ -7,6 +7,7 @@ import { AppLayout } from './app/layout/component/app.layout';
 import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
+import { authGuard } from './app/core/guards/auth.guard';
 
 const localeResolver = () => {
     const url = window.location.pathname;
@@ -22,10 +23,11 @@ export const appRoutes: Routes = [
     { path: '', pathMatch: 'full', component: Landing },
     { path: ':lang/landing', component: Landing },
     
-    // Main app with layout
+    // Main app with layout (protected routes)
     {
         path: ':lang',
         component: AppLayout,
+        canActivate: [authGuard],
         providers: [
             {
                 provide: LOCALE_ID,

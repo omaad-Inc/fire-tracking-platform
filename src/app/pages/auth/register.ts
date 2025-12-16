@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -8,12 +8,17 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, ToastModule],
+    providers: [MessageService],
     template: `
+        <p-toast position="top-center"></p-toast>
         <div class="min-h-screen flex">
             <!-- Left Side - Register Form -->
             <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 bg-surface-0 dark:bg-surface-950">
@@ -67,6 +72,8 @@ import { CommonModule } from '@angular/common';
                     <!-- Social Login Buttons -->
                     <div class="space-y-3 mb-6">
                         <button pButton pRipple 
+                                (click)="registerWithGoogle()"
+                                [loading]="isGoogleLoading()"
                                 class="w-full !bg-blue-600 hover:!bg-blue-700 !border-0 !py-3 !text-base !font-medium flex items-center justify-center gap-3">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
@@ -78,13 +85,14 @@ import { CommonModule } from '@angular/common';
                         </button>
 
                         <button pButton pRipple [outlined]="true"
+                                [disabled]="true"
                                 class="w-full !py-3 !text-base !font-medium !border-surface-300 dark:!border-surface-600 
                                        !text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800 
-                                       flex items-center justify-center gap-3">
+                                       flex items-center justify-center gap-3 opacity-50">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                             </svg>
-                            Continue with Apple
+                            Continue with Apple (Coming soon)
                         </button>
                     </div>
 
@@ -96,7 +104,7 @@ import { CommonModule } from '@angular/common';
                     </div>
 
                     <!-- Registration Form -->
-                    <div class="space-y-6">
+                    <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">First name</label>
@@ -104,7 +112,7 @@ import { CommonModule } from '@angular/common';
                                        placeholder="John" 
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-indigo-500 focus:!shadow-none"
-                                       [(ngModel)]="firstName" />
+                                       [(ngModel)]="firstName" name="firstName" />
                             </div>
                             <div>
                                 <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Last name</label>
@@ -112,7 +120,7 @@ import { CommonModule } from '@angular/common';
                                        placeholder="Doe" 
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-indigo-500 focus:!shadow-none"
-                                       [(ngModel)]="lastName" />
+                                       [(ngModel)]="lastName" name="lastName" />
                             </div>
                         </div>
 
@@ -122,13 +130,14 @@ import { CommonModule } from '@angular/common';
                                    placeholder="john.doe@example.com" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
-                                   [(ngModel)]="email" />
+                                   [(ngModel)]="email" name="email" required />
                         </div>
 
                         <div>
                             <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Password</label>
                             <p-password id="password" 
                                         [(ngModel)]="password" 
+                                        name="password"
                                         placeholder="Create a strong password" 
                                         [toggleMask]="true" 
                                         [feedback]="true"
@@ -141,6 +150,7 @@ import { CommonModule } from '@angular/common';
                             <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Confirm password</label>
                             <p-password id="confirmPassword" 
                                         [(ngModel)]="confirmPassword" 
+                                        name="confirmPassword"
                                         placeholder="Confirm your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
@@ -149,9 +159,17 @@ import { CommonModule } from '@angular/common';
                             </p-password>
                         </div>
 
+                        <!-- Password mismatch warning -->
+                        @if (password && confirmPassword && password !== confirmPassword) {
+                            <div class="text-red-500 text-sm flex items-center gap-2">
+                                <i class="pi pi-exclamation-circle"></i>
+                                Passwords do not match
+                            </div>
+                        }
+
                         <!-- Terms Checkbox -->
                         <div class="flex items-start gap-3">
-                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms"></p-checkbox>
+                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" name="terms"></p-checkbox>
                             <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
                                 I agree to the 
                                 <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Terms of Service</a> 
@@ -161,15 +179,16 @@ import { CommonModule } from '@angular/common';
                         </div>
 
                         <button pButton pRipple label="Create Account" 
-                                [routerLink]="[currentLang]"
+                                type="submit"
+                                [loading]="isLoading()"
                                 class="w-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300"
                                 [ngClass]="{
                                     '!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white hover:!shadow-lg hover:!shadow-indigo-500/25': isFormValid,
                                     '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !isFormValid
                                 }"
-                                [disabled]="!isFormValid">
+                                [disabled]="!isFormValid || isLoading()">
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -269,21 +288,77 @@ import { CommonModule } from '@angular/common';
     `
 })
 export class Register {
-    firstName: string = '';
-    lastName: string = '';
-    email: string = '';
-    password: string = '';
-    confirmPassword: string = '';
-    acceptTerms: boolean = false;
+    private authService = inject(AuthService);
+    private router = inject(Router);
+    private messageService = inject(MessageService);
+
+    firstName = '';
+    lastName = '';
+    email = '';
+    password = '';
+    confirmPassword = '';
+    acceptTerms = false;
     currentLang = '/fr';
 
-    constructor(private router: Router) {
+    isLoading = signal(false);
+    isGoogleLoading = signal(false);
+
+    constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
     }
 
     get isFormValid(): boolean {
-        return !!(this.firstName && this.lastName && this.email && this.password && this.confirmPassword && this.acceptTerms && this.password === this.confirmPassword);
+        return !!(
+            this.email && 
+            this.password && 
+            this.confirmPassword && 
+            this.acceptTerms && 
+            this.password === this.confirmPassword &&
+            this.password.length >= 8
+        );
+    }
+
+    onSubmit(): void {
+        if (!this.isFormValid) return;
+
+        this.isLoading.set(true);
+        this.authService.register({
+            email: this.email,
+            password: this.password,
+            first_name: this.firstName || undefined,
+            last_name: this.lastName || undefined,
+            preferred_language: this.currentLang.replace('/', '') || 'fr'
+        }).subscribe({
+            next: () => {
+                this.isLoading.set(false);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Account Created!',
+                    detail: 'Your account has been created successfully. Please log in.',
+                    life: 4000
+                });
+                // Clear the token - user should login manually
+                this.authService.logout();
+                // Redirect to login page after a short delay
+                setTimeout(() => {
+                    this.router.navigate([this.currentLang, 'auth', 'login']);
+                }, 1500);
+            },
+            error: (error) => {
+                this.isLoading.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Registration Failed',
+                    detail: error.message || 'Could not create account',
+                    life: 5000
+                });
+            }
+        });
+    }
+
+    registerWithGoogle(): void {
+        this.isGoogleLoading.set(true);
+        this.authService.loginWithGoogle();
     }
 }
-

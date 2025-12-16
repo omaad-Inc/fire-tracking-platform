@@ -95,7 +95,13 @@ export const EN = {
   },
   topbar: {
     notifications: 'Notifications',
-    logout: 'Log out'
+    logout: 'Log out',
+    addAssets: 'Add asset'
+  },
+  addAssets: {
+    title: 'Add an asset',
+    searchPlaceholder: 'Search for an asset type...',
+    allCategories: 'All categories'
   },
   dashboard: {
     recentTransactions: 'Recent transactions',
