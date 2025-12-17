@@ -130,7 +130,8 @@ import { AuthService } from '../../core/services/auth.service';
                                    placeholder="john.doe@example.com" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
-                                   [(ngModel)]="email" name="email" required />
+                                   [(ngModel)]="email" name="email" required 
+                                   [disabled]="isLoading()" />
                         </div>
 
                         <div>
@@ -141,6 +142,7 @@ import { AuthService } from '../../core/services/auth.service';
                                         placeholder="Create a strong password" 
                                         [toggleMask]="true" 
                                         [feedback]="true"
+                                        [disabled]="loading"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
@@ -154,6 +156,7 @@ import { AuthService } from '../../core/services/auth.service';
                                         placeholder="Confirm your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
+                                        [disabled]="loading"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
@@ -169,7 +172,7 @@ import { AuthService } from '../../core/services/auth.service';
 
                         <!-- Terms Checkbox -->
                         <div class="flex items-start gap-3">
-                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" name="terms"></p-checkbox>
+                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" name="terms" [disabled]="isLoading()"></p-checkbox>
                             <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
                                 I agree to the 
                                 <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Terms of Service</a> 
@@ -183,8 +186,8 @@ import { AuthService } from '../../core/services/auth.service';
                                 [loading]="isLoading()"
                                 class="w-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300"
                                 [ngClass]="{
-                                    '!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white hover:!shadow-lg hover:!shadow-indigo-500/25': isFormValid,
-                                    '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !isFormValid
+                                    '!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white hover:!shadow-lg hover:!shadow-indigo-500/25': isFormValid && !isLoading(),
+                                    '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !isFormValid || isLoading()
                                 }"
                                 [disabled]="!isFormValid || isLoading()">
                         </button>

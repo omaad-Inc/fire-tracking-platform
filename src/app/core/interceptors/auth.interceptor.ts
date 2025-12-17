@@ -31,4 +31,3 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
         })
     );
 };
-

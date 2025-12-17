@@ -111,7 +111,8 @@ import { AuthService } from '../../core/services/auth.service';
                                    placeholder="Enter your email" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
-                                   [(ngModel)]="email" name="email" required />
+                                   [(ngModel)]="email" name="email" required 
+                                   [disabled]="isLoading()" />
                         </div>
 
                         <div>
@@ -122,6 +123,7 @@ import { AuthService } from '../../core/services/auth.service';
                                         placeholder="Enter your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
+                                        [disabled]="isLoading()"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>

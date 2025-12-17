@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError, of, map } from 'rxjs';
+import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService, User } from './token.service';
 
@@ -197,4 +197,3 @@ export class AuthService {
         return throwError(() => new Error(errorMessage));
     }
 }
-
