@@ -25,11 +25,14 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
                 // Token expired or invalid - clear and redirect to login
                 // Only redirect if we're not already on an auth page
                 const currentUrl = router.url;
-                const isAuthPage = currentUrl.includes('/auth/login') || currentUrl.includes('/auth/register');
+                const isAuthPage = currentUrl.includes('/auth/login') || 
+                                  currentUrl.includes('/auth/register') ||
+                                  currentUrl.includes('/auth/oauth');
                 
-                tokenService.clear();
-                
+                // Don't clear token immediately - might be a temporary network issue
+                // Only clear if we're sure it's an auth error
                 if (!isAuthPage) {
+                    tokenService.clear();
                     const currentLang = currentUrl.match(/^\/(fr|en)/)?.[1] || 'fr';
                     router.navigate([`/${currentLang}/auth/login`], {
                         queryParams: { returnUrl: currentUrl }

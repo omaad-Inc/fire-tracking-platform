@@ -15,13 +15,8 @@ export class AppComponent implements OnInit {
     private authService = inject(AuthService);
 
     ngOnInit(): void {
-        // Initialize auth state on app startup
-        // This validates tokens and refreshes user data if needed
-        this.authService.initAuth().subscribe({
-            error: (err) => {
-                // Silently handle errors - token will be cleared if invalid
-                console.debug('Auth initialization:', err);
-            }
-        });
+        // Don't initialize auth on startup - let the guard handle it
+        // This prevents clearing valid tokens due to network issues
+        // The auth guard will check authentication when routes are accessed
     }
 }

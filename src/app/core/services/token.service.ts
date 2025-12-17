@@ -11,8 +11,17 @@ export interface User {
     avatar_url: string | null;
     preferred_currency: string;
     preferred_language: string;
+    dark_mode?: boolean;
+    fire_target_amount?: number | null;
+    fire_target_date?: string | null;
+    annual_expenses?: number | null;
+    withdrawal_rate?: number;
+    is_active?: boolean;
     is_verified: boolean;
-    auth_provider: 'email' | 'google' | 'apple';
+    created_at?: string;
+    updated_at?: string;
+    // auth_provider is not returned by backend, inferred from login method
+    auth_provider?: 'email' | 'google' | 'apple';
 }
 
 @Injectable({

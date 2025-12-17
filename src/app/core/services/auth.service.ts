@@ -158,15 +158,30 @@ export class AuthService {
 
     /**
      * Initialize auth state (call on app startup)
+     * Validates token and refreshes user data if needed
      */
     initAuth(): Observable<User | null> {
         if (!this.isAuthenticated()) {
             return of(null);
         }
+        
+        // If user data already exists, don't make unnecessary API call
+        const existingUser = this.tokenService.getUser();
+        if (existingUser) {
+            return of(existingUser);
+        }
+        
+        // Fetch user data, but don't clear token on failure
+        // Let the interceptor handle 401 errors
         return this.getCurrentUser().pipe(
-            catchError(() => {
-                this.tokenService.clear();
-                return of(null);
+            catchError((error) => {
+                // Only clear token if it's a 401 (unauthorized)
+                // Other errors (network, 500, etc.) shouldn't clear the token
+                if (error.status === 401) {
+                    this.tokenService.clear();
+                }
+                // Return existing user or null, don't throw
+                return of(existingUser || null);
             })
         );
     }
