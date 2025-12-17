@@ -142,7 +142,7 @@ import { AuthService } from '../../core/services/auth.service';
                                         placeholder="Create a strong password" 
                                         [toggleMask]="true" 
                                         [feedback]="true"
-                                        [disabled]="loading"
+                                        [disabled]="isLoading()"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
@@ -156,7 +156,7 @@ import { AuthService } from '../../core/services/auth.service';
                                         placeholder="Confirm your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
-                                        [disabled]="loading"
+                                        [disabled]="isLoading()"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
