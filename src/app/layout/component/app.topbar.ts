@@ -390,7 +390,7 @@ interface AssetFormData {
                                         <i class="pi pi-plus text-surface-400"></i>
                                     </div>
                                     <span class="text-surface-600 dark:text-surface-300">Add a member</span>
-                                </button>
+                    </button>
                             </div>
                         </div>
                     }

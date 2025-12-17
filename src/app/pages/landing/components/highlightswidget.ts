@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 border border-cyan-500/30 mb-6">
                         <i class="pi pi-bolt text-cyan-500"></i>
                         <span class="text-cyan-600 dark:text-cyan-400 text-sm font-medium">Vision FIRE</span>
-                    </div>
+            </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         Votre chemin vers
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-emerald-500">l'indépendance</span>
@@ -152,8 +152,8 @@ import { CommonModule } from '@angular/common';
                                 <div class="flex items-center justify-between mb-6">
                                     <span class="text-slate-300 font-medium">Répartition des actifs</span>
                                     <span class="text-slate-500 text-sm">€130,481 total</span>
-                                </div>
-                                
+            </div>
+
                                 <div class="space-y-4">
                                     <div>
                                         <div class="flex items-center justify-between mb-2">

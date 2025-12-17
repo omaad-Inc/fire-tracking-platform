@@ -43,7 +43,7 @@ import { CommonModule } from '@angular/common';
                                     <i class="pi pi-discord text-lg"></i>
                                 </a>
                             </div>
-                        </div>
+                </div>
 
                         <!-- Links Columns -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
@@ -173,11 +173,11 @@ import { CommonModule } from '@angular/common';
                             <div class="flex items-center gap-2 text-slate-500 text-sm">
                                 <i class="pi pi-shield text-indigo-400"></i>
                                 <span>Données privées</span>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         </footer>
     `
 })
