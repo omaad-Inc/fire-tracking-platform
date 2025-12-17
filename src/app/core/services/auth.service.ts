@@ -56,7 +56,12 @@ export class AuthService {
     login(data: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login/json`, data).pipe(
             tap(response => {
-                this.tokenService.setToken(response.access_token);
+                if (response?.access_token) {
+                    this.tokenService.setToken(response.access_token);
+                    console.debug('Login successful - token saved');
+                } else {
+                    console.error('Login response missing access_token');
+                }
             }),
             catchError(this.handleError)
         );

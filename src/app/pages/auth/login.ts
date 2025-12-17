@@ -302,17 +302,54 @@ export class Login {
 
         this.isLoading.set(true);
         this.authService.login({ email: this.email, password: this.password }).subscribe({
-            next: () => {
-                // Fetch user info after login
-                this.authService.getCurrentUser().subscribe({
-                    next: () => {
-                        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                        this.router.navigate([returnUrl]);
-                    },
-                    error: () => {
-                        this.router.navigate([this.currentLang]);
+            next: (authResponse) => {
+                // Verify token was received
+                if (!authResponse?.access_token) {
+                    this.isLoading.set(false);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Login Failed',
+                        detail: 'Invalid response from server. Please try again.',
+                        life: 5000
+                    });
+                    return;
+                }
+                
+                // Token should be set by the login method via tap()
+                // Verify it's actually saved
+                setTimeout(() => {
+                    const isAuth = this.authService.isAuthenticated();
+                    console.log('Token saved check:', isAuth, 'Token:', authResponse.access_token.substring(0, 20) + '...');
+                    
+                    if (!isAuth) {
+                        this.isLoading.set(false);
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Login Failed',
+                            detail: 'Failed to save authentication token. Please check browser console.',
+                            life: 5000
+                        });
+                        return;
                     }
-                });
+                    
+                    // Navigate immediately - don't wait for getCurrentUser
+                    // The dashboard will fetch user data if needed
+                    this.isLoading.set(false);
+                    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                    this.router.navigate([returnUrl]);
+                    
+                    // Fetch user info in background (optional)
+                    this.authService.getCurrentUser().subscribe({
+                        next: () => {
+                            console.log('User data fetched successfully');
+                        },
+                        error: (err) => {
+                            // Don't fail login if getCurrentUser fails - token is valid
+                            // User data will be fetched later by the dashboard
+                            console.warn('Could not fetch user info immediately (non-critical):', err);
+                        }
+                    });
+                }, 50); // Small delay to ensure localStorage write completes
             },
             error: (error) => {
                 this.isLoading.set(false);

@@ -41,18 +41,26 @@ export class TokenService {
 
     private loadFromStorage(): void {
         if (typeof window !== 'undefined' && window.localStorage) {
-            const token = localStorage.getItem(TOKEN_KEY);
-            const userStr = localStorage.getItem(USER_KEY);
-            
-            if (token) {
-                this._token.set(token);
-            }
-            if (userStr) {
-                try {
-                    this._user.set(JSON.parse(userStr));
-                } catch {
-                    localStorage.removeItem(USER_KEY);
+            try {
+                const token = localStorage.getItem(TOKEN_KEY);
+                const userStr = localStorage.getItem(USER_KEY);
+                
+                if (token) {
+                    this._token.set(token);
+                    console.debug('Token loaded from localStorage');
+                } else {
+                    console.debug('No token found in localStorage');
                 }
+                if (userStr) {
+                    try {
+                        this._user.set(JSON.parse(userStr));
+                    } catch {
+                        console.warn('Failed to parse user data from localStorage');
+                        localStorage.removeItem(USER_KEY);
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load from localStorage:', e);
             }
         }
     }
@@ -60,7 +68,14 @@ export class TokenService {
     setToken(token: string): void {
         this._token.set(token);
         if (typeof window !== 'undefined' && window.localStorage) {
-            localStorage.setItem(TOKEN_KEY, token);
+            try {
+                localStorage.setItem(TOKEN_KEY, token);
+                // Update token set time for interceptor
+                (window as any).__tokenSetTime = Date.now();
+                console.debug('Token saved to localStorage at', new Date().toISOString());
+            } catch (e) {
+                console.error('Failed to save token to localStorage:', e);
+            }
         }
     }
 
