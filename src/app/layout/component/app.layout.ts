@@ -5,13 +5,14 @@ import { filter, Subscription } from 'rxjs';
 import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { AppMobileNav } from './app.mobile-nav';
+import { AppFab } from './app.fab';
 import { LayoutService } from '../service/layout.service';
 import { PwaPromptComponent } from './pwa-prompt.component';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, RouterModule, PwaPromptComponent],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, RouterModule, PwaPromptComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
@@ -22,6 +23,7 @@ import { PwaPromptComponent } from './pwa-prompt.component';
         </div>
         <div class="layout-mask animate-fadein"></div>
         <app-mobile-nav></app-mobile-nav>
+        <app-fab (addAsset)="onAddAsset()"></app-fab>
         <app-pwa-prompt></app-pwa-prompt>
     </div> `
 })
@@ -99,6 +101,12 @@ export class AppLayout {
             'layout-overlay-active': this.layoutService.layoutState().overlayMenuActive,
             'layout-mobile-active': this.layoutService.layoutState().staticMenuMobileActive
         };
+    }
+
+    onAddAsset(): void {
+        if (this.appTopBar) {
+            this.appTopBar.openAddAssetDialog();
+        }
     }
 
     ngOnDestroy() {

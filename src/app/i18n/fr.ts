@@ -95,7 +95,13 @@ export const FR = {
   },
   topbar: {
     notifications: 'Notifications',
-    logout: 'Se déconnecter'
+    logout: 'Se déconnecter',
+    addAssets: 'Ajouter un actif'
+  },
+  addAssets: {
+    title: 'Ajouter un actif',
+    searchPlaceholder: 'Rechercher un type d\'actif...',
+    allCategories: 'Toutes les catégories'
   },
   dashboard: {
     recentTransactions: 'Transactions récentes',

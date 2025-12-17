@@ -411,7 +411,7 @@ export class DebtsProgress implements OnInit {
     }
 
     openNew() {
-        this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+        this.record = { date: new Date().toISOString().split('T')[0], type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
         this.submitted = false;
         this.productDialog = true;
         this.isEdit = false;
@@ -459,7 +459,7 @@ export class DebtsProgress implements OnInit {
                 if (!record.id) return;
                 this.debtsService.deleteRecords([record.id]).then(() => {
                     this.records.set(this.records().filter((val) => val.id !== record.id));
-                    this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+                    this.record = { date: new Date().toISOString().split('T')[0], type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Successful',
@@ -509,7 +509,7 @@ export class DebtsProgress implements OnInit {
                 });
             }
             this.productDialog = false;
-            this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+            this.record = { date: new Date().toISOString().split('T')[0], type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
         }
     }
 
