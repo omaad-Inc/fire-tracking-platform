@@ -8,11 +8,13 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
+import { MessageModule } from 'primeng/message';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, MessageModule],
     template: `
         <div class="min-h-screen flex">
             <!-- Left Side - Login Form -->
@@ -97,13 +99,16 @@ import { CommonModule } from '@angular/common';
 
                     <!-- Email & Password Form -->
                     <div class="space-y-6">
+                        <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" [closable]="true" (onClose)="errorMessage = ''"></p-message>
+                        
                         <div>
                             <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Email address</label>
                             <input pInputText id="email" type="email" 
                                    placeholder="Enter your email" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
-                                   [(ngModel)]="email" />
+                                   [(ngModel)]="email" 
+                                   [disabled]="loading" />
                         </div>
 
                         <div>
@@ -113,18 +118,20 @@ import { CommonModule } from '@angular/common';
                                         placeholder="Enter your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
+                                        [disabled]="loading"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
                         </div>
 
-                        <button pButton pRipple label="Log In" 
-                                [routerLink]="[currentLang]"
+                        <button pButton pRipple 
+                                [label]="loading ? 'Logging in...' : 'Log In'"
+                                (click)="onLogin()"
                                 class="w-full !py-3 !text-base !font-semibold !bg-surface-300 dark:!bg-surface-700 
                                        !text-surface-500 dark:!text-surface-400 !border-0 
                                        hover:!bg-indigo-600 hover:!text-white transition-all duration-300
                                        disabled:opacity-50"
-                                [disabled]="!email || !password">
+                                [disabled]="!email || !password || loading">
                         </button>
 
                         <div class="text-center">
@@ -272,9 +279,37 @@ export class Login {
     password: string = '';
     checked: boolean = false;
     currentLang = '/fr';
+    loading: boolean = false;
+    errorMessage: string = '';
 
-    constructor(private router: Router) {
+    constructor(
+        private router: Router,
+        private authService: AuthService
+    ) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+    }
+
+    onLogin(): void {
+        if (!this.email || !this.password) {
+            return;
+        }
+
+        this.loading = true;
+        this.errorMessage = '';
+
+        this.authService.login({
+            email: this.email,
+            password: this.password
+        }).subscribe({
+            next: () => {
+                this.loading = false;
+                this.router.navigate([this.currentLang]);
+            },
+            error: (error) => {
+                this.loading = false;
+                this.errorMessage = error.error?.detail || 'Login failed. Please check your credentials.';
+            }
+        });
     }
 }

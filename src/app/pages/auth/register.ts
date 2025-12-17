@@ -8,11 +8,13 @@ import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
+import { MessageModule } from 'primeng/message';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule],
+    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, MessageModule],
     template: `
         <div class="min-h-screen flex">
             <!-- Left Side - Register Form -->
@@ -122,7 +124,8 @@ import { CommonModule } from '@angular/common';
                                    placeholder="john.doe@example.com" 
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
-                                   [(ngModel)]="email" />
+                                   [(ngModel)]="email" 
+                                   [disabled]="loading" />
                         </div>
 
                         <div>
@@ -132,6 +135,7 @@ import { CommonModule } from '@angular/common';
                                         placeholder="Create a strong password" 
                                         [toggleMask]="true" 
                                         [feedback]="true"
+                                        [disabled]="loading"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
@@ -144,6 +148,7 @@ import { CommonModule } from '@angular/common';
                                         placeholder="Confirm your password" 
                                         [toggleMask]="true" 
                                         [feedback]="false"
+                                        [disabled]="loading"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
                             </p-password>
@@ -151,7 +156,7 @@ import { CommonModule } from '@angular/common';
 
                         <!-- Terms Checkbox -->
                         <div class="flex items-start gap-3">
-                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms"></p-checkbox>
+                            <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" [disabled]="loading"></p-checkbox>
                             <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
                                 I agree to the 
                                 <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Terms of Service</a> 
@@ -160,14 +165,17 @@ import { CommonModule } from '@angular/common';
                             </label>
                         </div>
 
-                        <button pButton pRipple label="Create Account" 
-                                [routerLink]="[currentLang]"
+                        <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" [closable]="true" (onClose)="errorMessage = ''"></p-message>
+                        
+                        <button pButton pRipple 
+                                [label]="loading ? 'Creating Account...' : 'Create Account'"
+                                (click)="onRegister()"
                                 class="w-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300"
                                 [ngClass]="{
-                                    '!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white hover:!shadow-lg hover:!shadow-indigo-500/25': isFormValid,
-                                    '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !isFormValid
+                                    '!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white hover:!shadow-lg hover:!shadow-indigo-500/25': isFormValid && !loading,
+                                    '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !isFormValid || loading
                                 }"
-                                [disabled]="!isFormValid">
+                                [disabled]="!isFormValid || loading">
                         </button>
                     </div>
                 </div>
@@ -276,14 +284,44 @@ export class Register {
     confirmPassword: string = '';
     acceptTerms: boolean = false;
     currentLang = '/fr';
+    loading: boolean = false;
+    errorMessage: string = '';
 
-    constructor(private router: Router) {
+    constructor(
+        private router: Router,
+        private authService: AuthService
+    ) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
     }
 
     get isFormValid(): boolean {
         return !!(this.firstName && this.lastName && this.email && this.password && this.confirmPassword && this.acceptTerms && this.password === this.confirmPassword);
+    }
+
+    onRegister(): void {
+        if (!this.isFormValid) {
+            return;
+        }
+
+        this.loading = true;
+        this.errorMessage = '';
+
+        this.authService.register({
+            email: this.email,
+            password: this.password,
+            first_name: this.firstName,
+            last_name: this.lastName
+        }).subscribe({
+            next: () => {
+                this.loading = false;
+                this.router.navigate([this.currentLang]);
+            },
+            error: (error) => {
+                this.loading = false;
+                this.errorMessage = error.error?.detail || 'Registration failed. Please try again.';
+            }
+        });
     }
 }
 
