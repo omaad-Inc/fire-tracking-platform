@@ -1,7 +1,7 @@
 import { Injectable, ApplicationRef, inject } from '@angular/core';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { filter, first } from 'rxjs/operators';
-import { concat, interval } from 'rxjs';
+import { filter, first, debounceTime } from 'rxjs/operators';
+import { interval, fromEvent } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -15,7 +15,7 @@ export class PwaService {
 
     constructor() {
         this.initPwaListeners();
-        this.checkForUpdates();
+        this.setupUpdateChecks();
     }
 
     private initPwaListeners() {
@@ -42,22 +42,57 @@ export class PwaService {
         }
     }
 
-    private checkForUpdates() {
+    private setupUpdateChecks() {
         if (!this.swUpdate.isEnabled) return;
 
-        // Check for updates after app is stable, then every 6 hours
+        // Immediate check on startup (after app is stable)
         const appIsStable$ = this.appRef.isStable.pipe(first(isStable => isStable === true));
-        const everySixHours$ = interval(6 * 60 * 60 * 1000);
-        const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
-
-        everySixHoursOnceAppIsStable$.subscribe(async () => {
-            try {
-                const updateFound = await this.swUpdate.checkForUpdate();
-                console.log(updateFound ? 'Update available' : 'App is up to date');
-            } catch (err) {
-                console.error('Failed to check for updates:', err);
-            }
+        appIsStable$.subscribe(() => {
+            // Wait a bit for the app to fully initialize, then check
+            setTimeout(() => this.checkForUpdateNow(), 2000);
         });
+
+        // Check every hour (reduced from 6 hours)
+        const everyHour$ = interval(60 * 60 * 1000);
+        everyHour$.subscribe(() => {
+            this.checkForUpdateNow();
+        });
+
+        // Check when app becomes visible (user switches back to the app)
+        if (typeof document !== 'undefined') {
+            fromEvent(document, 'visibilitychange')
+                .pipe(debounceTime(500))
+                .subscribe(() => {
+                    if (!document.hidden) {
+                        // App became visible, check for updates
+                        this.checkForUpdateNow();
+                    }
+                });
+
+            // Check when window gains focus
+            fromEvent(window, 'focus')
+                .pipe(debounceTime(500))
+                .subscribe(() => {
+                    this.checkForUpdateNow();
+                });
+        }
+    }
+
+
+    private async checkForUpdateNow() {
+        if (!this.swUpdate.isEnabled) return;
+
+        try {
+            const updateFound = await this.swUpdate.checkForUpdate();
+            if (updateFound) {
+                console.log('Update available - checking version...');
+                // The versionUpdates observable will emit VERSION_READY event
+            } else {
+                console.log('App is up to date');
+            }
+        } catch (err) {
+            console.error('Failed to check for updates:', err);
+        }
     }
 
     /**
