@@ -532,7 +532,26 @@ export class AppTopbar implements OnInit {
     }
 
     toggleDarkMode() {
-        this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this.layoutService.layoutConfig.update((state) => {
+            const currentMode = state.themeMode || 'system';
+            const isCurrentlyDark = state.darkTheme ?? false;
+            
+            // If in system mode, switch to explicit mode based on current state
+            if (currentMode === 'system') {
+                return {
+                    ...state,
+                    themeMode: isCurrentlyDark ? 'light' : 'dark',
+                    darkTheme: !isCurrentlyDark
+                };
+            } else {
+                // Toggle between light and dark
+                return {
+                    ...state,
+                    themeMode: isCurrentlyDark ? 'light' : 'dark',
+                    darkTheme: !isCurrentlyDark
+                };
+            }
+        });
     }
 
     logout(): void {

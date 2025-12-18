@@ -86,14 +86,14 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div 
                         (click)="setTheme('light')"
                         [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' + 
-                            (!isDarkMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
+                            (isLightMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
                     >
                         <div class="w-full h-20 bg-white border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
                             <i class="pi pi-sun text-2xl text-amber-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.lightMode') }}</span>
-                            <div *ngIf="!isDarkMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                            <div *ngIf="isLightMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                                 <i class="pi pi-check text-white text-xs"></i>
                             </div>
                         </div>
@@ -103,14 +103,14 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div 
                         (click)="setTheme('dark')"
                         [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' + 
-                            (isDarkMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
+                            (isDarkModeSelected ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
                     >
                         <div class="w-full h-20 bg-slate-900 border border-slate-700 rounded-lg mb-3 flex items-center justify-center">
                             <i class="pi pi-moon text-2xl text-indigo-400"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.darkMode') }}</span>
-                            <div *ngIf="isDarkMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                            <div *ngIf="isDarkModeSelected" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                                 <i class="pi pi-check text-white text-xs"></i>
                             </div>
                         </div>
@@ -119,13 +119,17 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <!-- System Theme -->
                     <div 
                         (click)="setTheme('system')"
-                        class="p-4 rounded-xl border-2 border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 cursor-pointer transition-all"
+                        [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' + 
+                            (isSystemMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
                     >
                         <div class="w-full h-20 bg-gradient-to-r from-white to-slate-900 border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
                             <i class="pi pi-desktop text-2xl text-surface-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.systemMode') }}</span>
+                            <div *ngIf="isSystemMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                                <i class="pi pi-check text-white text-xs"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -248,6 +252,22 @@ export class PreferencesSettings implements OnInit {
         return this.layoutService.layoutConfig().darkTheme ?? false;
     }
 
+    get currentThemeMode(): 'light' | 'dark' | 'system' {
+        return this.layoutService.layoutConfig().themeMode || 'system';
+    }
+
+    get isSystemMode(): boolean {
+        return this.currentThemeMode === 'system';
+    }
+
+    get isLightMode(): boolean {
+        return this.currentThemeMode === 'light';
+    }
+
+    get isDarkModeSelected(): boolean {
+        return this.currentThemeMode === 'dark';
+    }
+
     onLanguageChange(newLang: string) {
         // Update i18n service
         this.i18n.setLang(newLang as 'fr' | 'en');
@@ -261,12 +281,21 @@ export class PreferencesSettings implements OnInit {
     }
 
     setTheme(theme: 'light' | 'dark' | 'system') {
-        if (theme === 'system') {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: prefersDark }));
-        } else {
-            this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: theme === 'dark' }));
-        }
+        this.layoutService.layoutConfig.update((state) => {
+            const newState = { ...state, themeMode: theme };
+            
+            // Apply theme based on mode
+            if (theme === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                newState.darkTheme = prefersDark;
+            } else if (theme === 'dark') {
+                newState.darkTheme = true;
+            } else {
+                newState.darkTheme = false;
+            }
+            
+            return newState;
+        });
     }
 
     getLanguageFlag(code: string): string {
