@@ -10,5 +10,6 @@ export default [
     { path: 'error', component: Error },
     { path: 'login', component: Login },
     { path: 'register', component: Register },
-    { path: 'oauth/callback', component: OAuthCallback }
+    { path: 'callback', component: OAuthCallback }, // Backend redirects to /auth/callback
+    { path: 'oauth/callback', component: OAuthCallback } // Also support oauth/callback for consistency
 ] as Routes;

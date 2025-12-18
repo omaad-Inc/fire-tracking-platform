@@ -42,9 +42,12 @@ export class OAuthCallback implements OnInit {
         // Check for token in URL (from backend redirect)
         const params = this.route.snapshot.queryParams;
         
-        if (params['access_token']) {
+        // Backend sends 'token' parameter, not 'access_token'
+        const token = params['token'] || params['access_token'];
+        
+        if (token) {
             // Token received from backend OAuth callback
-            this.handleTokenResponse(params['access_token']);
+            this.handleTokenResponse(token);
         } else if (params['error']) {
             // OAuth error
             this.error = params['error_description'] || params['error'] || 'Authentication failed';
@@ -75,8 +78,14 @@ export class OAuthCallback implements OnInit {
     }
 
     private getLang(): string {
-        const match = this.router.url.match(/^\/(fr|en)/);
-        return match ? match[1] : 'fr';
+        // Try to get lang from URL first
+        const urlMatch = window.location.pathname.match(/^\/(fr|en)/);
+        if (urlMatch) {
+            return urlMatch[1];
+        }
+        // Check if we're on root with query params (/?token=...)
+        // In this case, default to 'fr' and redirect properly
+        return 'fr';
     }
 
     goToLogin(): void {
