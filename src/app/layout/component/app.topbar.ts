@@ -52,11 +52,11 @@ interface AssetFormData {
             <button class="layout-menu-button layout-topbar-action hidden lg:flex" (click)="layoutService.onMenuToggle()">
                 <i class="pi pi-bars"></i>
             </button>
-            <a class="layout-topbar-logo flex items-center gap-2" routerLink="/">
+            <div class="layout-topbar-logo flex items-center gap-2">
                 <img src="assets/afrin-nexus-logo.svg" alt="Afrin Nexus Logo" class="w-10 h-10 lg:w-12 lg:h-12">
                 <!-- Hide text on mobile -->
                 <span class="hidden lg:inline whitespace-nowrap">Afrin Nexus</span>
-            </a>
+            </div>
         </div>
 
         <div class="layout-topbar-actions">
