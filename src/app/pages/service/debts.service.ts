@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, catchError, of, firstValueFrom } from 'rxjs';
+import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
 import { ApiService, Debt, DebtCreate, DebtUpdate, DebtType, DebtCategory } from '../../core/services/api.service';
 import { AssetsStateService } from './assets-state.service';
+
+interface CacheEntry<T> {
+    data: T;
+    timestamp: number;
+}
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface DebtRecord {
     id?: string;
@@ -33,31 +40,91 @@ export interface DebtsStatsSummary {
 export class DebtsService {
     private api = inject(ApiService);
     private stateService = inject(AssetsStateService);
+    
+    // Cache storage
+    private recordsCache: CacheEntry<DebtRecord[]> | null = null;
+    private statsCache: CacheEntry<DebtsStatsSummary> | null = null;
+    
+    // Request deduplication
+    private recordsRequest$: Observable<DebtRecord[]> | null = null;
+    private statsRequest$: Observable<DebtsStatsSummary> | null = null;
 
     /**
-     * Get all debt records
+     * Get all debt records (with caching)
      */
     async getRecords(): Promise<DebtRecord[]> {
-        try {
-            const debts = await firstValueFrom(this.api.getDebts());
-            return debts.map(debt => this.mapDebtToRecord(debt));
-        } catch (error) {
-            console.error('Error fetching debts:', error);
-            return [];
+        // Return cached data immediately if available and fresh
+        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
+            // Refresh in background if stale
+            if (this.isCacheStale(this.recordsCache)) {
+                this.refreshRecords();
+            }
+            return this.recordsCache.data;
         }
+        
+        // Return cached data even if stale (stale-while-revalidate)
+        if (this.recordsCache) {
+            // Refresh in background
+            this.refreshRecords();
+            return this.recordsCache.data;
+        }
+        
+        // No cache, fetch fresh data
+        return firstValueFrom(this.getRecords$());
     }
-
+    
     /**
-     * Get debts as Observable
+     * Refresh records in background
      */
-    getRecords$(): Observable<DebtRecord[]> {
-        return this.api.getDebts().pipe(
+    private refreshRecords(): void {
+        if (this.recordsRequest$) return; // Already refreshing
+        
+        this.recordsRequest$ = this.api.getDebts().pipe(
             map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
             catchError(error => {
                 console.error('Error fetching debts:', error);
-                return of([]);
-            })
+                return of(this.recordsCache?.data || []);
+            }),
+            shareReplay(1)
         );
+        
+        firstValueFrom(this.recordsRequest$).then(data => {
+            this.recordsCache = { data, timestamp: Date.now() };
+            this.recordsRequest$ = null;
+        });
+    }
+
+    /**
+     * Get debts as Observable (with caching and deduplication)
+     */
+    getRecords$(): Observable<DebtRecord[]> {
+        // Return cached data immediately if available
+        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
+            return of(this.recordsCache.data);
+        }
+        
+        // Deduplicate simultaneous requests
+        if (this.recordsRequest$) {
+            return this.recordsRequest$;
+        }
+        
+        // Create new request
+        this.recordsRequest$ = this.api.getDebts().pipe(
+            map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
+            catchError(error => {
+                console.error('Error fetching debts:', error);
+                return of(this.recordsCache?.data || []);
+            }),
+            shareReplay(1)
+        );
+        
+        // Cache the result
+        firstValueFrom(this.recordsRequest$).then(data => {
+            this.recordsCache = { data, timestamp: Date.now() };
+            this.recordsRequest$ = null;
+        });
+        
+        return this.recordsRequest$;
     }
 
     /**
@@ -92,9 +159,13 @@ export class DebtsService {
             };
             
             const debt = await firstValueFrom(this.api.createDebt(debtData));
+            const mapped = this.mapDebtToRecord(debt);
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
             // Notify that debts have been updated
             this.stateService.notifyDebtsUpdated();
-            return this.mapDebtToRecord(debt);
+            return mapped;
         } catch (error) {
             console.error('Error creating debt:', error);
             throw error;
@@ -119,9 +190,13 @@ export class DebtsService {
             };
             
             const debt = await firstValueFrom(this.api.updateDebt(parseInt(record.id), debtData));
+            const mapped = this.mapDebtToRecord(debt);
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
             // Notify that debts have been updated
             this.stateService.notifyDebtsUpdated();
-            return this.mapDebtToRecord(debt);
+            return mapped;
         } catch (error) {
             console.error('Error updating debt:', error);
             throw error;
@@ -136,6 +211,9 @@ export class DebtsService {
             await Promise.all(ids.map(id => 
                 firstValueFrom(this.api.deleteDebt(parseInt(id)))
             ));
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
             // Notify that debts have been updated
             this.stateService.notifyDebtsUpdated();
         } catch (error) {
@@ -150,9 +228,13 @@ export class DebtsService {
     async addPayment(id: string, amount: number): Promise<DebtRecord> {
         try {
             const debt = await firstValueFrom(this.api.makePayment(parseInt(id), amount));
+            const mapped = this.mapDebtToRecord(debt);
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
             // Notify that debts have been updated
             this.stateService.notifyDebtsUpdated();
-            return this.mapDebtToRecord(debt);
+            return mapped;
         } catch (error) {
             console.error('Error making payment:', error);
             throw error;
@@ -160,59 +242,110 @@ export class DebtsService {
     }
 
     /**
-     * Get debt statistics
+     * Get debt statistics (with caching)
      * - totalDebt: Sum of all remaining debt amounts when type is "Debt" (what I still owe)
      * - paidAmount: The last payment made (most recent)
      * - receivables: Sum of all remaining receivable amounts when type is "Receivable" (what others owe me)
      */
     async getStats(): Promise<DebtsStatsSummary> {
-        try {
-            const debts = await this.getRecords();
-            
-            // Total debt = Sum of all remaining debt amounts when type is "Debt"
-            // Formula: Sum of (total - paid) for all debts where type === 'Debt' and not paid off
-            const totalDebt = debts
-                .filter(d => d.type === 'Debt' && !d.isPaidOff)
-                .reduce((sum, d) => sum + (d.total - d.paid), 0);
-            
-            // Receivables = Sum of all remaining receivable amounts when type is "Receivable"
-            // Formula: Sum of (total - paid) for all receivables where type === 'Receivable' and not paid off
-            const receivables = debts
-                .filter(d => d.type === 'Receivable' && !d.isPaidOff)
-                .reduce((sum, d) => sum + (d.total - d.paid), 0);
-            
-            // Find the last payment made - we need to look at debts with payments
-            // Sort by date to find the most recent one that has any payment
-            const debtsWithPayments = debts
-                .filter(d => d.type === 'Debt' && d.paid > 0)
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            
-            // Get the most recent payment amount
-            let lastPaymentAmount = 0;
-            let lastPaymentDate = '';
-            if (debtsWithPayments.length > 0) {
-                const mostRecentDebt = debtsWithPayments[0];
-                lastPaymentAmount = mostRecentDebt.monthlyPayment || mostRecentDebt.paid;
-                lastPaymentDate = mostRecentDebt.date;
+        // Return cached data immediately if available and fresh
+        if (this.statsCache && this.isCacheValid(this.statsCache)) {
+            // Refresh in background if stale
+            if (this.isCacheStale(this.statsCache)) {
+                this.refreshStats();
             }
-            
-            return {
-                totalDebt,
-                paidAmount: lastPaymentAmount,
-                receivables,
-                totalDebtChange: 0,
-                paidAmountChange: lastPaymentAmount,
-                receivablesChange: receivables, // For new receivables this month
-                lastPaymentDate
-            };
-        } catch (error) {
-            console.error('Error fetching stats:', error);
-            return {
-                totalDebt: 0,
-                paidAmount: 0,
-                receivables: 0
-            };
+            return this.statsCache.data;
         }
+        
+        // Return cached data even if stale (stale-while-revalidate)
+        if (this.statsCache) {
+            // Refresh in background
+            this.refreshStats();
+            return this.statsCache.data;
+        }
+        
+        // No cache, fetch fresh data
+        return firstValueFrom(this.getStats$());
+    }
+    
+    /**
+     * Refresh stats in background
+     */
+    private refreshStats(): void {
+        if (this.statsRequest$) return; // Already refreshing
+        
+        this.statsRequest$ = this.getStats$();
+        firstValueFrom(this.statsRequest$).then(data => {
+            this.statsCache = { data, timestamp: Date.now() };
+            this.statsRequest$ = null;
+        });
+    }
+    
+    /**
+     * Get stats as Observable (with caching and deduplication)
+     */
+    getStats$(): Observable<DebtsStatsSummary> {
+        // Return cached data immediately if available
+        if (this.statsCache && this.isCacheValid(this.statsCache)) {
+            return of(this.statsCache.data);
+        }
+        
+        // Deduplicate simultaneous requests
+        if (this.statsRequest$) {
+            return this.statsRequest$;
+        }
+        
+        // Create new request
+        this.statsRequest$ = this.getRecords$().pipe(
+            map(debts => {
+                const totalDebt = debts
+                    .filter(d => d.type === 'Debt' && !d.isPaidOff)
+                    .reduce((sum, d) => sum + (d.total - d.paid), 0);
+                
+                const receivables = debts
+                    .filter(d => d.type === 'Receivable' && !d.isPaidOff)
+                    .reduce((sum, d) => sum + (d.total - d.paid), 0);
+                
+                const debtsWithPayments = debts
+                    .filter(d => d.type === 'Debt' && d.paid > 0)
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                
+                let lastPaymentAmount = 0;
+                let lastPaymentDate = '';
+                if (debtsWithPayments.length > 0) {
+                    const mostRecentDebt = debtsWithPayments[0];
+                    lastPaymentAmount = mostRecentDebt.monthlyPayment || mostRecentDebt.paid;
+                    lastPaymentDate = mostRecentDebt.date;
+                }
+                
+                return {
+                    totalDebt,
+                    paidAmount: lastPaymentAmount,
+                    receivables,
+                    totalDebtChange: 0,
+                    paidAmountChange: lastPaymentAmount,
+                    receivablesChange: receivables,
+                    lastPaymentDate
+                };
+            }),
+            catchError(error => {
+                console.error('Error fetching stats:', error);
+                return of(this.statsCache?.data || {
+                    totalDebt: 0,
+                    paidAmount: 0,
+                    receivables: 0
+                });
+            }),
+            shareReplay(1)
+        );
+        
+        // Cache the result
+        firstValueFrom(this.statsRequest$).then(data => {
+            this.statsCache = { data, timestamp: Date.now() };
+            this.statsRequest$ = null;
+        });
+        
+        return this.statsRequest$;
     }
 
     // ==================== PRIVATE HELPERS ====================
@@ -257,5 +390,33 @@ export class DebtsService {
             return 'family_friend';
         }
         return 'other';
+    }
+    
+    // ==================== CACHE HELPERS ====================
+    
+    private isCacheValid<T>(cache: CacheEntry<T>): boolean {
+        return Date.now() - cache.timestamp < CACHE_TTL;
+    }
+    
+    private isCacheStale<T>(cache: CacheEntry<T>): boolean {
+        return Date.now() - cache.timestamp >= CACHE_TTL;
+    }
+    
+    private invalidateRecordsCache(): void {
+        this.recordsCache = null;
+        this.recordsRequest$ = null;
+    }
+    
+    private invalidateStatsCache(): void {
+        this.statsCache = null;
+        this.statsRequest$ = null;
+    }
+    
+    /**
+     * Clear all caches (useful for logout or manual refresh)
+     */
+    clearCache(): void {
+        this.invalidateRecordsCache();
+        this.invalidateStatsCache();
     }
 }

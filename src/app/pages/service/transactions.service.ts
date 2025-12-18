@@ -1,6 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, catchError, of, firstValueFrom } from 'rxjs';
+import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
 import { ApiService, Transaction, TransactionCreate, TransactionUpdate, TransactionType, TransactionCategory } from '../../core/services/api.service';
+
+interface CacheEntry<T> {
+    data: T;
+    timestamp: number;
+}
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface TransactionRecord {
     id?: string;
@@ -50,35 +57,94 @@ export class TransactionsService {
     // Categories to exclude from main transactions view (these are managed separately in Savings)
     private readonly SAVINGS_CATEGORIES = ['savings', 'investment'];
     
+    // Cache storage
+    private recordsCache: CacheEntry<TransactionRecord[]> | null = null;
+    private statsCache: CacheEntry<TransactionStats> | null = null;
+    
+    // Request deduplication
+    private recordsRequest$: Observable<TransactionRecord[]> | null = null;
+    private statsRequest$: Observable<TransactionStats> | null = null;
+    
     /**
-     * Get all transactions (excluding savings-related transactions)
+     * Get all transactions (excluding savings-related transactions) (with caching)
      */
     async getRecords(): Promise<TransactionRecord[]> {
-        try {
-            const transactions = await firstValueFrom(this.api.getTransactions(0, 100));
-            // Filter out savings and investment transactions - they are managed in the Savings section
-            return transactions
-                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
-                .map(t => this.mapTransactionToRecord(t));
-        } catch (error) {
-            console.error('Error fetching transactions:', error);
-            return [];
+        // Return cached data immediately if available and fresh
+        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
+            // Refresh in background if stale
+            if (this.isCacheStale(this.recordsCache)) {
+                this.refreshRecords();
+            }
+            return this.recordsCache.data;
         }
+        
+        // Return cached data even if stale (stale-while-revalidate)
+        if (this.recordsCache) {
+            // Refresh in background
+            this.refreshRecords();
+            return this.recordsCache.data;
+        }
+        
+        // No cache, fetch fresh data
+        return firstValueFrom(this.getRecords$());
     }
-
+    
     /**
-     * Get transactions as Observable (excluding savings-related transactions)
+     * Refresh records in background
      */
-    getRecords$(): Observable<TransactionRecord[]> {
-        return this.api.getTransactions(0, 100).pipe(
+    private refreshRecords(): void {
+        if (this.recordsRequest$) return; // Already refreshing
+        
+        this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
             map(transactions => transactions
                 .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
-                return of([]);
-            })
+                return of(this.recordsCache?.data || []);
+            }),
+            shareReplay(1)
         );
+        
+        firstValueFrom(this.recordsRequest$).then(data => {
+            this.recordsCache = { data, timestamp: Date.now() };
+            this.recordsRequest$ = null;
+        });
+    }
+
+    /**
+     * Get transactions as Observable (excluding savings-related transactions) (with caching and deduplication)
+     */
+    getRecords$(): Observable<TransactionRecord[]> {
+        // Return cached data immediately if available
+        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
+            return of(this.recordsCache.data);
+        }
+        
+        // Deduplicate simultaneous requests
+        if (this.recordsRequest$) {
+            return this.recordsRequest$;
+        }
+        
+        // Create new request
+        this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
+            map(transactions => transactions
+                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
+                .map(t => this.mapTransactionToRecord(t))),
+            catchError(error => {
+                console.error('Error fetching transactions:', error);
+                return of(this.recordsCache?.data || []);
+            }),
+            shareReplay(1)
+        );
+        
+        // Cache the result
+        firstValueFrom(this.recordsRequest$).then(data => {
+            this.recordsCache = { data, timestamp: Date.now() };
+            this.recordsRequest$ = null;
+        });
+        
+        return this.recordsRequest$;
     }
 
     /**
@@ -96,21 +162,21 @@ export class TransactionsService {
     }
 
     /**
-     * Get recent transactions (last N, excluding savings-related)
+     * Get recent transactions (last N, excluding savings-related) (with caching)
      */
     async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
-        try {
-            // Fetch more to account for filtering
-            const transactions = await firstValueFrom(this.api.getTransactions(0, limit * 2));
-            return transactions
-                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
+        // Use cached records if available
+        if (this.recordsCache) {
+            return this.recordsCache.data
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, limit)
-                .map(t => this.mapTransactionToRecord(t));
-        } catch (error) {
-            console.error('Error fetching recent transactions:', error);
-            return [];
+                .slice(0, limit);
         }
+        
+        // Otherwise fetch fresh
+        const transactions = await this.getRecords();
+        return transactions
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            .slice(0, limit);
     }
 
     /**
@@ -140,7 +206,11 @@ export class TransactionsService {
             };
             
             const transaction = await firstValueFrom(this.api.createTransaction(transactionData));
-            return this.mapTransactionToRecord(transaction);
+            const mapped = this.mapTransactionToRecord(transaction);
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
+            return mapped;
         } catch (error) {
             console.error('Error creating transaction:', error);
             throw error;
@@ -163,7 +233,11 @@ export class TransactionsService {
             };
             
             const transaction = await firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData));
-            return this.mapTransactionToRecord(transaction);
+            const mapped = this.mapTransactionToRecord(transaction);
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
+            return mapped;
         } catch (error) {
             console.error('Error updating transaction:', error);
             throw error;
@@ -178,6 +252,9 @@ export class TransactionsService {
             await Promise.all(ids.map(id => 
                 firstValueFrom(this.api.deleteTransaction(parseInt(id)))
             ));
+            // Invalidate cache
+            this.invalidateRecordsCache();
+            this.invalidateStatsCache();
         } catch (error) {
             console.error('Error deleting transactions:', error);
             throw error;
@@ -185,36 +262,93 @@ export class TransactionsService {
     }
 
     /**
-     * Get transaction statistics (excluding savings-related)
+     * Get transaction statistics (excluding savings-related) (with caching)
      */
     async getStats(): Promise<TransactionStats> {
-        try {
-            // getRecords already filters out savings
-            const transactions = await this.getRecords();
-            
-            const totalIncome = transactions
-                .filter(t => t.type === 'Income')
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            const totalExpenses = transactions
-                .filter(t => t.type === 'Expense')
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            return {
-                totalIncome,
-                totalExpenses,
-                balance: totalIncome - totalExpenses,
-                transactionCount: transactions.length
-            };
-        } catch (error) {
-            console.error('Error calculating stats:', error);
-            return {
-                totalIncome: 0,
-                totalExpenses: 0,
-                balance: 0,
-                transactionCount: 0
-            };
+        // Return cached data immediately if available and fresh
+        if (this.statsCache && this.isCacheValid(this.statsCache)) {
+            // Refresh in background if stale
+            if (this.isCacheStale(this.statsCache)) {
+                this.refreshStats();
+            }
+            return this.statsCache.data;
         }
+        
+        // Return cached data even if stale (stale-while-revalidate)
+        if (this.statsCache) {
+            // Refresh in background
+            this.refreshStats();
+            return this.statsCache.data;
+        }
+        
+        // No cache, fetch fresh data
+        return firstValueFrom(this.getStats$());
+    }
+    
+    /**
+     * Refresh stats in background
+     */
+    private refreshStats(): void {
+        if (this.statsRequest$) return; // Already refreshing
+        
+        this.statsRequest$ = this.getStats$();
+        firstValueFrom(this.statsRequest$).then(data => {
+            this.statsCache = { data, timestamp: Date.now() };
+            this.statsRequest$ = null;
+        });
+    }
+    
+    /**
+     * Get stats as Observable (with caching and deduplication)
+     */
+    getStats$(): Observable<TransactionStats> {
+        // Return cached data immediately if available
+        if (this.statsCache && this.isCacheValid(this.statsCache)) {
+            return of(this.statsCache.data);
+        }
+        
+        // Deduplicate simultaneous requests
+        if (this.statsRequest$) {
+            return this.statsRequest$;
+        }
+        
+        // Create new request
+        this.statsRequest$ = this.getRecords$().pipe(
+            map(transactions => {
+                const totalIncome = transactions
+                    .filter(t => t.type === 'Income')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                const totalExpenses = transactions
+                    .filter(t => t.type === 'Expense')
+                    .reduce((sum, t) => sum + t.amount, 0);
+                
+                return {
+                    totalIncome,
+                    totalExpenses,
+                    balance: totalIncome - totalExpenses,
+                    transactionCount: transactions.length
+                };
+            }),
+            catchError(error => {
+                console.error('Error calculating stats:', error);
+                return of(this.statsCache?.data || {
+                    totalIncome: 0,
+                    totalExpenses: 0,
+                    balance: 0,
+                    transactionCount: 0
+                });
+            }),
+            shareReplay(1)
+        );
+        
+        // Cache the result
+        firstValueFrom(this.statsRequest$).then(data => {
+            this.statsCache = { data, timestamp: Date.now() };
+            this.statsRequest$ = null;
+        });
+        
+        return this.statsRequest$;
     }
 
     // ==================== PRIVATE HELPERS ====================
@@ -257,5 +391,33 @@ export class TransactionsService {
             if (nameLower.includes('tax')) return 'taxes';
             return 'other_expense';
         }
+    }
+    
+    // ==================== CACHE HELPERS ====================
+    
+    private isCacheValid<T>(cache: CacheEntry<T>): boolean {
+        return Date.now() - cache.timestamp < CACHE_TTL;
+    }
+    
+    private isCacheStale<T>(cache: CacheEntry<T>): boolean {
+        return Date.now() - cache.timestamp >= CACHE_TTL;
+    }
+    
+    private invalidateRecordsCache(): void {
+        this.recordsCache = null;
+        this.recordsRequest$ = null;
+    }
+    
+    private invalidateStatsCache(): void {
+        this.statsCache = null;
+        this.statsRequest$ = null;
+    }
+    
+    /**
+     * Clear all caches (useful for logout or manual refresh)
+     */
+    clearCache(): void {
+        this.invalidateRecordsCache();
+        this.invalidateStatsCache();
     }
 }

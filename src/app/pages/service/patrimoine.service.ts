@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, catchError, of, firstValueFrom, BehaviorSubject } from 'rxjs';
+import { Observable, map, catchError, of, firstValueFrom, BehaviorSubject, shareReplay } from 'rxjs';
 import { ApiService, Asset, AssetCreate, AssetUpdate } from '../../core/services/api.service';
 import { AssetsStateService } from './assets-state.service';
+
+interface CacheEntry<T> {
+    data: T;
+    timestamp: number;
+}
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface PatrimoineAssetItemDto {
     id?: number;
@@ -23,28 +30,48 @@ export class PatrimoineService {
     // BehaviorSubject to hold the current assets list
     private _assets$ = new BehaviorSubject<PatrimoineAssetItemDto[]>([]);
     public assets$ = this._assets$.asObservable();
+    
+    // Cache storage
+    private assetsCache: CacheEntry<PatrimoineAssetItemDto[]> | null = null;
+    
+    // Request deduplication
+    private assetsRequest$: Observable<PatrimoineAssetItemDto[]> | null = null;
 
     /**
-     * Get all assets from the API
+     * Get all assets from the API (with caching)
      */
     async getAssets(): Promise<PatrimoineAssetItemDto[]> {
-        try {
-            const assets = await firstValueFrom(this.api.getAssets());
-            const mapped = assets.map(asset => this.mapAssetToDto(asset));
-            this._assets$.next(mapped);
-            return mapped;
-        } catch (error) {
-            console.error('Error fetching assets:', error);
-            // Return empty array on error
-            return [];
+        // Return cached data immediately if available and fresh
+        if (this.assetsCache && this.isCacheValid(this.assetsCache)) {
+            // Refresh in background if stale
+            if (this.isCacheStale(this.assetsCache)) {
+                this.refreshAssetsBackground();
+            }
+            // Update BehaviorSubject with cached data
+            this._assets$.next(this.assetsCache.data);
+            return this.assetsCache.data;
         }
+        
+        // Return cached data even if stale (stale-while-revalidate)
+        if (this.assetsCache) {
+            // Update BehaviorSubject with cached data
+            this._assets$.next(this.assetsCache.data);
+            // Refresh in background
+            this.refreshAssetsBackground();
+            return this.assetsCache.data;
+        }
+        
+        // No cache, fetch fresh data
+        return firstValueFrom(this.getAssets$());
     }
-
+    
     /**
-     * Get assets as Observable
+     * Refresh assets in background
      */
-    getAssets$(): Observable<PatrimoineAssetItemDto[]> {
-        return this.api.getAssets().pipe(
+    private refreshAssetsBackground(): void {
+        if (this.assetsRequest$) return; // Already refreshing
+        
+        this.assetsRequest$ = this.api.getAssets().pipe(
             map(assets => {
                 const mapped = assets.map(asset => this.mapAssetToDto(asset));
                 this._assets$.next(mapped);
@@ -52,15 +79,61 @@ export class PatrimoineService {
             }),
             catchError(error => {
                 console.error('Error fetching assets:', error);
-                return of([]);
-            })
+                return of(this.assetsCache?.data || []);
+            }),
+            shareReplay(1)
         );
+        
+        firstValueFrom(this.assetsRequest$).then(data => {
+            this.assetsCache = { data, timestamp: Date.now() };
+            this.assetsRequest$ = null;
+        });
+    }
+
+    /**
+     * Get assets as Observable (with caching and deduplication)
+     */
+    getAssets$(): Observable<PatrimoineAssetItemDto[]> {
+        // Return cached data immediately if available
+        if (this.assetsCache && this.isCacheValid(this.assetsCache)) {
+            this._assets$.next(this.assetsCache.data);
+            return of(this.assetsCache.data);
+        }
+        
+        // Deduplicate simultaneous requests
+        if (this.assetsRequest$) {
+            return this.assetsRequest$;
+        }
+        
+        // Create new request
+        this.assetsRequest$ = this.api.getAssets().pipe(
+            map(assets => {
+                const mapped = assets.map(asset => this.mapAssetToDto(asset));
+                this._assets$.next(mapped);
+                return mapped;
+            }),
+            catchError(error => {
+                console.error('Error fetching assets:', error);
+                return of(this.assetsCache?.data || []);
+            }),
+            shareReplay(1)
+        );
+        
+        // Cache the result
+        firstValueFrom(this.assetsRequest$).then(data => {
+            this.assetsCache = { data, timestamp: Date.now() };
+            this.assetsRequest$ = null;
+        });
+        
+        return this.assetsRequest$;
     }
     
     /**
-     * Refresh assets and notify subscribers
+     * Refresh assets and notify subscribers (public method)
      */
     async refreshAssets(): Promise<void> {
+        // Invalidate cache and fetch fresh
+        this.invalidateAssetsCache();
         await this.getAssets();
         this.stateService.notifyAssetsUpdated();
     }
@@ -88,6 +161,8 @@ export class PatrimoineService {
             // Add to current list and notify
             const currentAssets = this._assets$.getValue();
             this._assets$.next([...currentAssets, newAsset]);
+            // Invalidate cache
+            this.invalidateAssetsCache();
             this.stateService.notifyAssetsUpdated();
             return newAsset;
         } catch (error) {
@@ -110,6 +185,8 @@ export class PatrimoineService {
                 currentAssets[index] = updatedAsset;
                 this._assets$.next([...currentAssets]);
             }
+            // Invalidate cache
+            this.invalidateAssetsCache();
             this.stateService.notifyAssetsUpdated();
             return updatedAsset;
         } catch (error) {
@@ -127,6 +204,8 @@ export class PatrimoineService {
             // Remove from current list and notify
             const currentAssets = this._assets$.getValue();
             this._assets$.next(currentAssets.filter(a => a.id !== id));
+            // Invalidate cache
+            this.invalidateAssetsCache();
             this.stateService.notifyAssetsUpdated();
         } catch (error) {
             console.error('Error deleting asset:', error);
@@ -181,5 +260,27 @@ export class PatrimoineService {
             isLiquid: asset.is_liquid,
             notes: asset.notes ?? undefined
         };
+    }
+    
+    // ==================== CACHE HELPERS ====================
+    
+    private isCacheValid<T>(cache: CacheEntry<T>): boolean {
+        return Date.now() - cache.timestamp < CACHE_TTL;
+    }
+    
+    private isCacheStale<T>(cache: CacheEntry<T>): boolean {
+        return Date.now() - cache.timestamp >= CACHE_TTL;
+    }
+    
+    private invalidateAssetsCache(): void {
+        this.assetsCache = null;
+        this.assetsRequest$ = null;
+    }
+    
+    /**
+     * Clear all caches (useful for logout or manual refresh)
+     */
+    clearCache(): void {
+        this.invalidateAssetsCache();
     }
 }
