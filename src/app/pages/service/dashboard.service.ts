@@ -285,6 +285,22 @@ export class DashboardService {
         }
     }
 
+    /**
+     * Get total assets progression (Patrimoine Total Brut)
+     */
+    async getTotalAssetsProgression(months: number = 12): Promise<ChartDataPoint[]> {
+        try {
+            const progression = await firstValueFrom(this.api.getWorthProgression(months));
+            return progression.map(p => ({
+                label: this.formatDateLabel(p.date),
+                value: p.total_assets
+            }));
+        } catch (error) {
+            console.error('Error fetching total assets progression:', error);
+            return [];
+        }
+    }
+
     // ==================== PRIVATE HELPERS ====================
 
     private formatDateLabel(dateStr: string): string {

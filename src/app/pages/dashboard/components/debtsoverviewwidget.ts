@@ -115,30 +115,32 @@ export class DebtsOverview implements OnInit, OnDestroy {
         try {
             const records = await this.debtsService.getRecords();
             
-            const colorConfigs = [
-                { icon: 'pi pi-home', bgClass: 'bg-indigo-500/10', iconClass: 'text-indigo-500', progressClass: 'bg-gradient-to-r from-indigo-600 to-indigo-400', textClass: 'text-indigo-500' },
-                { icon: 'pi pi-users', bgClass: 'bg-emerald-500/10', iconClass: 'text-emerald-500', progressClass: 'bg-gradient-to-r from-emerald-600 to-emerald-400', textClass: 'text-emerald-500' },
-                { icon: 'pi pi-car', bgClass: 'bg-cyan-500/10', iconClass: 'text-cyan-500', progressClass: 'bg-gradient-to-r from-cyan-600 to-cyan-400', textClass: 'text-cyan-500' },
-                { icon: 'pi pi-credit-card', bgClass: 'bg-amber-500/10', iconClass: 'text-amber-500', progressClass: 'bg-gradient-to-r from-amber-600 to-amber-400', textClass: 'text-amber-500' },
-                { icon: 'pi pi-book', bgClass: 'bg-violet-500/10', iconClass: 'text-violet-500', progressClass: 'bg-gradient-to-r from-violet-600 to-violet-400', textClass: 'text-violet-500' }
-            ];
+            if (records.length > 0) {
+                const colorConfigs = [
+                    { icon: 'pi pi-home', bgClass: 'bg-indigo-500/10', iconClass: 'text-indigo-500', progressClass: 'bg-gradient-to-r from-indigo-600 to-indigo-400', textClass: 'text-indigo-500' },
+                    { icon: 'pi pi-users', bgClass: 'bg-emerald-500/10', iconClass: 'text-emerald-500', progressClass: 'bg-gradient-to-r from-emerald-600 to-emerald-400', textClass: 'text-emerald-500' },
+                    { icon: 'pi pi-car', bgClass: 'bg-cyan-500/10', iconClass: 'text-cyan-500', progressClass: 'bg-gradient-to-r from-cyan-600 to-cyan-400', textClass: 'text-cyan-500' },
+                    { icon: 'pi pi-credit-card', bgClass: 'bg-amber-500/10', iconClass: 'text-amber-500', progressClass: 'bg-gradient-to-r from-amber-600 to-amber-400', textClass: 'text-amber-500' },
+                    { icon: 'pi pi-book', bgClass: 'bg-violet-500/10', iconClass: 'text-violet-500', progressClass: 'bg-gradient-to-r from-violet-600 to-violet-400', textClass: 'text-violet-500' }
+                ];
 
-            // Filter only active debts and sort by remaining amount
-            const activeDebts = records
-                .filter(d => d.type === 'Debt' && d.paid < d.total)
-                .sort((a, b) => (b.total - b.paid) - (a.total - a.paid))
-                .slice(0, 5);
+                // Filter only active debts and sort by remaining amount
+                const activeDebts = records
+                    .filter(d => d.type === 'Debt' && d.paid < d.total)
+                    .sort((a, b) => (b.total - b.paid) - (a.total - a.paid))
+                    .slice(0, 5);
 
-            const mapped = activeDebts.map((d, index) => ({
-                id: d.id || index.toString(),
-                label: d.name,
-                paid: d.paid,
-                total: d.total,
-                percent: Math.min(100, Math.max(0, Math.round((d.paid / (d.total || 1)) * 100))),
-                ...colorConfigs[index % colorConfigs.length]
-            }));
-            
-            this.debts.set(mapped);
+                const mapped = activeDebts.map((d, index) => ({
+                    id: d.id || index.toString(),
+                    label: d.name,
+                    paid: d.paid,
+                    total: d.total,
+                    percent: Math.min(100, Math.max(0, Math.round((d.paid / (d.total || 1)) * 100))),
+                    ...colorConfigs[index % colorConfigs.length]
+                }));
+                
+                this.debts.set(mapped);
+            }
         } catch (error) {
             console.error('Error loading debts:', error);
             this.debts.set([]);

@@ -44,3 +44,5 @@ Thumbs.db
 
 # Backend (separate repository)
 /backend/
+.claude/
+CLAUDE.md

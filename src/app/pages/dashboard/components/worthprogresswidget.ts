@@ -53,7 +53,7 @@ export class WorthProgress implements OnInit {
     async ngOnInit() {
         await this.loadData();
     }
-
+    
     private async loadData() {
         this.loading.set(true);
         try {
