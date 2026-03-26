@@ -5,16 +5,19 @@ import { FluidModule } from 'primeng/fluid';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { DashboardService, AssetAllocation } from '../../service/dashboard.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { I18nService } from '../../../i18n/i18n.service';
 
 
 @Component({
     standalone: true,
     selector: 'app-expenses-progression-widget',
-    imports: [CommonModule, ChartModule, FluidModule],
+    imports: [CommonModule, ChartModule, FluidModule, AppCurrencyPipe],
     template: `
     <div class="card !mb-0 h-full flex flex-col">
         <div class="mb-6">
-            <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Répartition des Dépenses</div>
+            <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.expenseDistribution') }}</div>
         </div>
         
         @if (loading()) {
@@ -31,8 +34,8 @@ import { DashboardService, AssetAllocation } from '../../service/dashboard.servi
                 <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                     <i class="pi pi-chart-pie text-2xl text-surface-400"></i>
                 </div>
-                <p class="text-surface-600 dark:text-surface-400 mb-2">Aucune dépense ce mois</p>
-                <p class="text-surface-400 dark:text-surface-500 text-sm">Vos dépenses apparaîtront ici</p>
+                <p class="text-surface-600 dark:text-surface-400 mb-2">{{ i18n.t('dashboard.noExpenses') }}</p>
+                <p class="text-surface-400 dark:text-surface-500 text-sm">{{ i18n.t('dashboard.noExpensesDesc') }}</p>
             </div>
         } @else {
             <div class="flex-1 flex flex-col items-center justify-center">
@@ -40,8 +43,8 @@ import { DashboardService, AssetAllocation } from '../../service/dashboard.servi
                     <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div class="text-center">
-                            <span class="text-surface-500 dark:text-surface-400 text-sm block">Total</span>
-                            <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total() | number:'1.0-0' }} €</span>
+                            <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ i18n.t('patrimoine.repartition.total') }}</span>
+                            <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total() | appCurrency }}</span>
                         </div>
                     </div>
                 </div>
@@ -51,7 +54,7 @@ import { DashboardService, AssetAllocation } from '../../service/dashboard.servi
                             <div class="w-3 h-3 rounded-full" [style.background]="item.color"></div>
                             <div class="flex-1 min-w-0">
                                 <span class="text-surface-900 dark:text-surface-0 text-sm font-medium block truncate">{{ item.label }}</span>
-                                <span class="text-surface-500 dark:text-surface-400 text-xs">{{ item.value | currency:'EUR':'symbol':'1.0-0' }}</span>
+                                <span class="text-surface-500 dark:text-surface-400 text-xs">{{ item.value | appCurrency }}</span>
                             </div>
                         </div>
                     }
@@ -64,6 +67,8 @@ import { DashboardService, AssetAllocation } from '../../service/dashboard.servi
 export class AllExpensesProgression implements OnInit, OnDestroy {
     private layoutService = inject(LayoutService);
     private dashboardService = inject(DashboardService);
+    private cs = inject(CurrencyService);
+    readonly i18n = inject(I18nService);
 
     loading = signal(true);
     total = signal(0);
@@ -128,6 +133,7 @@ export class AllExpensesProgression implements OnInit, OnDestroy {
             ]
         };
 
+        const cs = this.cs;
         this.pieOptions = {
             plugins: {
                 legend: {
@@ -144,7 +150,7 @@ export class AllExpensesProgression implements OnInit, OnDestroy {
                     displayColors: true,
                     callbacks: {
                         label: function(context: any) {
-                            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                            return cs.format(context.raw, 0);
                         }
                     }
                 }

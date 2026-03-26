@@ -78,6 +78,21 @@ import { I18nService } from '../../i18n/i18n.service';
                             </a>
                         </nav>
 
+                        <!-- Section: Indépendance Financière -->
+                        <div class="p-4 border-t border-b border-surface-200 dark:border-surface-700">
+                            <span class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">Indépendance Financière</span>
+                        </div>
+                        <nav class="py-2">
+                            <a
+                                routerLink="fire"
+                                routerLinkActive="bg-primary/10 border-l-4 border-primary text-primary"
+                                class="flex items-center gap-3 px-4 py-3 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                            >
+                                <i class="pi pi-flag"></i>
+                                <span>Objectif FIRE</span>
+                            </a>
+                        </nav>
+
                         <!-- Section: Aide -->
                         <div class="p-4 border-t border-b border-surface-200 dark:border-surface-700">
                             <span class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">{{ t('settings.help') }}</span>

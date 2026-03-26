@@ -6,6 +6,8 @@ import { debounceTime, Subscription, merge } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { DashboardService, AssetAllocation } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
     standalone: true,
@@ -14,7 +16,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
     template: `
         <div class="card !mb-0 h-full flex flex-col">
             <div class="mb-6">
-                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Distribution du Patrimoine</div>
+                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.distribution') }}</div>
             </div>
             
             @if (loading()) {
@@ -31,15 +33,15 @@ import { AssetsStateService } from '../../service/assets-state.service';
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-chart-pie text-2xl text-surface-400"></i>
                     </div>
-                    <p class="text-surface-600 dark:text-surface-400 mb-2">Aucun actif enregistré</p>
-                    <p class="text-surface-400 dark:text-surface-500 text-sm">Ajoutez vos premiers actifs pour voir la distribution</p>
+                    <p class="text-surface-600 dark:text-surface-400 mb-2">{{ i18n.t('dashboard.noAssets') }}</p>
+                    <p class="text-surface-400 dark:text-surface-500 text-sm">{{ i18n.t('dashboard.noAssetsDesc') }}</p>
                 </div>
             } @else {
                 <div class="flex-1 flex flex-col items-center justify-center">
                     <div class="relative w-full max-w-[280px] mb-6">
                         <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
                         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
-                            <span class="text-surface-500 dark:text-surface-400 text-sm block">Total</span>
+                            <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ i18n.t('patrimoine.repartition.total') }}</span>
                             <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total() | number:'1.0-0' }}€</span>
                         </div>
                     </div>
@@ -63,6 +65,8 @@ export class WorthDistributionWidget implements OnInit, OnDestroy {
     private layoutService = inject(LayoutService);
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
+    private cs = inject(CurrencyService);
+    readonly i18n = inject(I18nService);
 
     loading = signal(true);
     total = signal(0);
@@ -129,6 +133,7 @@ export class WorthDistributionWidget implements OnInit, OnDestroy {
             ]
         };
 
+        const cs = this.cs;
         this.pieOptions = {
             plugins: {
                 legend: {
@@ -145,7 +150,7 @@ export class WorthDistributionWidget implements OnInit, OnDestroy {
                     displayColors: true,
                     callbacks: {
                         label: function(context: any) {
-                            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                            return cs.format(context.raw, 0);
                         }
                     }
                 }

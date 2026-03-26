@@ -12,13 +12,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { SavingsService, SavingsGoalDisplay } from '../../service/savings.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { SavingGoalCreate } from '../../../core/services/api.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
     standalone: true,
     selector: 'app-savings-goals',
     imports: [
-        CommonModule, FormsModule, ButtonModule, DialogModule, 
-        InputTextModule, InputNumberModule, ToastModule, ConfirmDialogModule
+        CommonModule, FormsModule, ButtonModule, DialogModule,
+        InputTextModule, InputNumberModule, ToastModule, ConfirmDialogModule, AppCurrencyPipe
     ],
     providers: [MessageService, ConfirmationService],
     template: `
@@ -37,80 +38,87 @@ import { SavingGoalCreate } from '../../../core/services/api.service';
             </div>
             
             @if (loading()) {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @for (i of [1,2,3]; track i) {
-                        <div class="animate-pulse bg-surface-100 dark:bg-surface-800 rounded-xl p-4 h-32"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @for (i of [1,2,3,4]; track i) {
+                        <div class="animate-pulse bg-surface-100 dark:bg-surface-800 rounded-2xl p-5 h-36"></div>
                     }
                 </div>
             } @else if (goals().length === 0) {
                 <div class="flex flex-col items-center justify-center py-12 text-center">
-                    <div class="w-20 h-20 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
-                        <i class="pi pi-flag text-3xl text-surface-400"></i>
+                    <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
+                        <i class="pi pi-flag text-2xl text-surface-400"></i>
                     </div>
                     <h3 class="text-lg font-medium text-surface-900 dark:text-surface-0 mb-2">Aucun objectif d'épargne</h3>
-                    <p class="text-surface-500 dark:text-surface-400 mb-4">Créez votre premier objectif pour commencer à épargner</p>
-                    <p-button 
-                        icon="pi pi-plus" 
-                        label="Créer un objectif" 
+                    <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">Créez votre premier objectif pour commencer à épargner</p>
+                    <p-button
+                        icon="pi pi-plus"
+                        label="Créer un objectif"
                         (onClick)="openNewGoalDialog()"
                         styleClass="!rounded-xl"
                     />
                 </div>
             } @else {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                     @for (goal of goals(); track goal.id) {
-                        <div class="relative bg-surface-50 dark:bg-surface-800 rounded-xl p-5 group hover:shadow-lg transition-all duration-300 border border-surface-200 dark:border-surface-700">
-                            <!-- Actions -->
-                            <div class="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button 
-                                    class="w-8 h-8 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
-                                    (click)="editGoal(goal)"
-                                >
-                                    <i class="pi pi-pencil text-xs text-surface-600 dark:text-surface-400"></i>
-                                </button>
-                                <button 
-                                    class="w-8 h-8 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                    (click)="confirmDeleteGoal(goal)"
-                                >
-                                    <i class="pi pi-trash text-xs text-surface-600 dark:text-surface-400"></i>
-                                </button>
-                            </div>
-                            
-                            <!-- Icon & Name -->
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" [ngClass]="goal.colorClass + '/10'">
-                                    <i class="pi pi-flag text-lg" [ngClass]="goal.textColorClass"></i>
+                        <div class="bg-surface-50 dark:bg-surface-800 rounded-2xl p-5 hover:shadow-lg transition-all duration-300 border border-surface-200 dark:border-surface-700 flex flex-col gap-3">
+
+                            <!-- Header row: icon + name + actions -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5" [ngClass]="goal.colorClass + '/15'">
+                                    <i class="pi pi-flag" [ngClass]="[goal.textColorClass, 'text-base']"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <h3 class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ goal.label }}</h3>
+                                    <h3 class="font-semibold text-surface-900 dark:text-surface-0 text-sm leading-snug line-clamp-2">{{ goal.label }}</h3>
                                     @if (goal.targetDate) {
-                                        <span class="text-xs text-surface-500 dark:text-surface-400">
-                                            Objectif: {{ goal.targetDate | date:'MMM yyyy' }}
+                                        <span class="text-xs text-surface-400 dark:text-surface-500 flex items-center gap-1 mt-0.5">
+                                            <i class="pi pi-calendar text-[10px]"></i>
+                                            {{ goal.targetDate | date:'MMM yyyy' }}
                                         </span>
                                     }
                                 </div>
+                                <!-- Action buttons — always visible -->
+                                <div class="flex gap-1 shrink-0">
+                                    <button
+                                        class="w-7 h-7 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                        title="Modifier"
+                                        (click)="editGoal(goal)"
+                                    >
+                                        <i class="pi pi-pencil text-xs text-surface-500 dark:text-surface-400"></i>
+                                    </button>
+                                    <button
+                                        class="w-7 h-7 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                                        title="Supprimer"
+                                        (click)="confirmDeleteGoal(goal)"
+                                    >
+                                        <i class="pi pi-trash text-xs text-surface-500 dark:text-surface-400"></i>
+                                    </button>
+                                </div>
                             </div>
-                            
+
                             <!-- Progress -->
-                            <div class="mb-3">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm text-surface-500 dark:text-surface-400">Progression</span>
-                                    <span class="font-bold" [ngClass]="goal.textColorClass">{{ getProgressPercent(goal) }}%</span>
+                            <div>
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="text-xs text-surface-500 dark:text-surface-400">Progression</span>
+                                    <span class="text-sm font-bold" [ngClass]="goal.textColorClass">{{ getProgressPercent(goal) }}%</span>
                                 </div>
                                 <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                    <div 
+                                    <div
                                         class="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
                                         [ngClass]="goal.colorClass"
                                         [ngStyle]="{ width: getProgressPercent(goal) + '%' }"
                                     ></div>
                                 </div>
                             </div>
-                            
+
                             <!-- Amounts -->
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-surface-900 dark:text-surface-0 font-medium">{{ goal.current | currency:'EUR':'symbol':'1.0-0' }}</span>
-                                <span class="text-surface-500 dark:text-surface-400">/ {{ goal.target | currency:'EUR':'symbol':'1.0-0' }}</span>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="text-surface-900 dark:text-surface-0 font-semibold text-sm">{{ goal.current | appCurrency }}</span>
+                                    <div class="text-xs text-surface-400 dark:text-surface-500">sur {{ goal.target | appCurrency }}</div>
+                                </div>
+                                <div class="text-xs text-surface-400">{{ goal.target - goal.current > 0 ? '-' : '' }}{{ (goal.target - goal.current) | appCurrency }} restant</div>
                             </div>
+
                         </div>
                     }
                 </div>

@@ -136,12 +136,6 @@ import { environment } from '../../../../environments/environment';
                                 severity="success"
                                 [style]="{ 'background': 'rgba(16, 185, 129, 0.1)', 'color': '#10b981' }"
                             />
-                        } @else {
-                            <p-tag 
-                                value="Not verified" 
-                                icon="pi pi-exclamation-circle" 
-                                severity="warn"
-                            />
                         }
                         @if (user()?.auth_provider && user()?.auth_provider !== 'email') {
                             <p-tag 

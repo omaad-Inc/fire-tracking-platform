@@ -18,6 +18,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
 import { DatePickerModule } from 'primeng/datepicker';
 import { I18nService } from '../../../i18n/i18n.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 interface Column {
     field: string;
@@ -51,7 +52,8 @@ interface ExportColumn {
         InputIconModule,
         IconFieldModule,
         ConfirmDialogModule,
-        DatePickerModule
+        DatePickerModule,
+        AppCurrencyPipe
     ],
     template: `
         <p-toolbar styleClass="mb-6">
@@ -118,12 +120,33 @@ interface ExportColumn {
                     <td>
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td class="text-right">{{ record.amount | currency: 'EUR' }}</td>
+                    <td class="text-right">{{ record.amount | appCurrency }}</td>
                     <td>{{ record.account }}</td>
                     <td>{{ record.remarks }}</td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
                         <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteRecord(record)" />
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td [attr.colspan]="8">
+                        <div class="flex flex-col items-center justify-center py-16 text-center">
+                            <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
+                                <i class="pi pi-arrow-right-arrow-left text-2xl text-surface-400"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">Aucune transaction</h3>
+                            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6 max-w-sm">
+                                Enregistrez vos revenus et dépenses pour suivre votre progression financière.
+                            </p>
+                            <button pButton
+                                    icon="pi pi-plus"
+                                    label="Ajouter une transaction"
+                                    (click)="openNew()"
+                                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white"
+                            ></button>
+                        </div>
                     </td>
                 </tr>
             </ng-template>

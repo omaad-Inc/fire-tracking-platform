@@ -32,6 +32,20 @@ export interface Asset {
     notes: string | null;
     is_liquid: boolean;
     institution: string | null;
+    location: string | null;
+    description: string | null;
+    annual_return: number | null;
+    rental_income: number | null;
+    gain_loss: number | null;
+    gain_loss_percent: number | null;
+    // Real estate specific
+    surface_m2: number | null;
+    price_per_m2_purchase: number | null;
+    construction_date: string | null;
+    agency_fees: number | null;
+    notary_fees: number | null;
+    renovation_fees: number | null;
+    furnishing_costs: number | null;
     created_at: string;
     updated_at: string;
 }

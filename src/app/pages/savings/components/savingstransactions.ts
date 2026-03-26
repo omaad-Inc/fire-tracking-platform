@@ -18,6 +18,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Subscription } from 'rxjs';
 import { SavingsService, SavingRecord, SavingsGoalDisplay } from '../../service/savings.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 interface Column {
     field: string;
@@ -49,7 +50,8 @@ interface SavingRecordWithGoal extends SavingRecord {
         TagModule,
         InputIconModule,
         IconFieldModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        AppCurrencyPipe
     ],
     template: `
         <p-toolbar styleClass="mb-6">
@@ -115,7 +117,7 @@ interface SavingRecordWithGoal extends SavingRecord {
                         <p-tag [value]="record.type === 'Deposit' ? 'Dépôt' : 'Retrait'" [severity]="getSeverityType(record.type)" />
                     </td>
                     <td class="font-semibold" [ngClass]="record.type === 'Deposit' ? 'text-emerald-500' : 'text-rose-500'">
-                        {{ record.type === 'Deposit' ? '+' : '-' }}{{ record.amount | currency: 'EUR':'symbol':'1.0-0' }}
+                        {{ record.type === 'Deposit' ? '+' : '-' }}{{ record.amount | appCurrency }}
                     </td>
                     <td>
                         @if (record.goalName) {

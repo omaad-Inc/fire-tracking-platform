@@ -2,18 +2,20 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, ChangeDetectorRef, inject, effect, signal } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
     selector: 'app-worth-progress',
     template: `
         <div class="card h-full">
             <div class="flex items-center justify-between mb-4">
-                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Évolution du patrimoine</div>
+                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.worthEvolution') }}</div>
                 @if (!loading()) {
-                    <span class="text-cyan-500 text-sm font-medium">{{ dataPoints().length }} mois</span>
+                    <span class="text-cyan-500 text-sm font-medium">{{ dataPoints().length }} {{ i18n.t('dashboard.months') }}</span>
                 }
             </div>
-            
+
             @if (loading()) {
                 <div class="animate-pulse">
                     <div class="h-[200px] bg-surface-200 dark:bg-surface-700 rounded"></div>
@@ -23,7 +25,7 @@ import { DashboardService, ChartDataPoint } from '../../service/dashboard.servic
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-line text-xl text-surface-400"></i>
                     </div>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm">Pas encore de données</p>
+                    <p class="text-surface-500 dark:text-surface-400 text-sm">{{ i18n.t('dashboard.noDataYet') }}</p>
                 </div>
             } @else {
                 <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[120px] max-h-[300px]" />
@@ -37,6 +39,8 @@ export class WorthProgress implements OnInit {
     private dashboardService = inject(DashboardService);
     private platformId = inject(PLATFORM_ID);
     private cd = inject(ChangeDetectorRef);
+    private cs = inject(CurrencyService);
+    readonly i18n = inject(I18nService);
 
     loading = signal(true);
     dataPoints = signal<ChartDataPoint[]>([]);
@@ -57,7 +61,7 @@ export class WorthProgress implements OnInit {
     private async loadData() {
         this.loading.set(true);
         try {
-            const progression = await this.dashboardService.getWorthProgression(25);
+            const progression = await this.dashboardService.getWorthProgression(0); // 0 = all-time
             this.dataPoints.set(progression);
             
             if (progression.length > 0) {
@@ -75,6 +79,7 @@ export class WorthProgress implements OnInit {
         if (isPlatformBrowser(this.platformId)) {
             const documentStyle = getComputedStyle(document.documentElement);
             const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
+            const cs = this.cs;
             
             // Couleurs harmonieuses avec le thème (cyan)
             const borderColor = '#06b6d4';
@@ -121,7 +126,7 @@ export class WorthProgress implements OnInit {
                         displayColors: false,
                         callbacks: {
                             label: function(context: any) {
-                                return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                                return cs.format(context.raw, 0);
                             }
                         }
                     }
@@ -146,12 +151,7 @@ export class WorthProgress implements OnInit {
                             font: {
                                 size: 11
                             },
-                            callback: function(value: number) {
-                                if (value >= 1000) {
-                                    return (value / 1000).toFixed(0) + 'K€';
-                                }
-                                return value + '€';
-                            }
+                            callback: cs.tickFormatter()
                         },
                         grid: {
                             color: 'rgba(148, 163, 184, 0.1)',

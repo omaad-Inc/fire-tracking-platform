@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { FluidModule } from 'primeng/fluid';
@@ -6,6 +6,7 @@ import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { PatrimoineAssetItem } from './patrimoinelist';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     selector: 'app-patrimoine-repartition',
@@ -18,7 +19,7 @@ import { PatrimoineAssetItem } from './patrimoinelist';
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div class="text-center">
                         <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ t('patrimoine.repartition.total') }}</span>
-                        <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total | number: '1.0-0' }} €</span>
+                        <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ formatTotal() }}</span>
                     </div>
                 </div>
             </div>
@@ -36,6 +37,7 @@ import { PatrimoineAssetItem } from './patrimoinelist';
     `
 })
 export class PatrimoineRepartitionComponent implements OnDestroy {
+    private cs = inject(CurrencyService);
     private _items: PatrimoineAssetItem[] = [];
     @Input() set items(value: PatrimoineAssetItem[]) {
         this._items = value || [];
@@ -106,8 +108,8 @@ export class PatrimoineRepartitionComponent implements OnDestroy {
                     padding: 12,
                     displayColors: true,
                     callbacks: {
-                        label: function(context: any) {
-                            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                        label: (context: any) => {
+                            return this.cs.format(context.raw, 0);
                         }
                     }
                 }
@@ -117,6 +119,8 @@ export class PatrimoineRepartitionComponent implements OnDestroy {
             responsive: true
         };
     }
+
+    formatTotal(): string { return this.cs.format(this.total, 0); }
 
     getPercent(index: number): number {
         if (!this.pieData?.datasets?.[0]?.data || this.total === 0) return 0;

@@ -8,55 +8,41 @@ import { PwaService } from '../service/pwa.service';
     standalone: true,
     imports: [CommonModule, ButtonModule],
     template: `
-        <!-- Update Available Banner -->
-        <div *ngIf="pwaService.hasUpdate()" 
-             class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 z-50 animate-slide-up">
-            <div class="bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-2xl p-4 shadow-2xl shadow-indigo-500/30">
-                <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
-                        <i class="pi pi-refresh text-white text-xl"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h4 class="text-white font-bold text-lg mb-1">Mise à jour disponible</h4>
-                        <p class="text-white/80 text-sm mb-3">Une nouvelle version de Afrin Nexus est disponible avec des améliorations.</p>
-                        <div class="flex gap-2">
-                            <button pButton label="Mettre à jour" 
-                                    (click)="pwaService.applyUpdate()"
-                                    class="!bg-white !text-indigo-600 !border-0 !py-2 !px-4 !text-sm !font-semibold !rounded-xl hover:!bg-white/90"></button>
-                            <button pButton label="Plus tard" 
-                                    (click)="dismissUpdate()"
-                                    class="!bg-transparent !text-white !border-white/30 !py-2 !px-4 !text-sm !rounded-xl hover:!bg-white/10"></button>
-                        </div>
-                    </div>
-                </div>
+        <!-- Update Available Banner (top) -->
+        <div *ngIf="pwaService.hasUpdate()"
+             class="fixed top-0 left-0 right-0 z-[60] h-14 flex items-center justify-between px-4 bg-gradient-to-r from-indigo-600 to-cyan-500 shadow-md">
+            <div class="flex items-center gap-3">
+                <i class="pi pi-refresh text-white text-lg"></i>
+                <span class="text-white font-medium text-sm">Nouvelle version disponible</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button pButton label="Mettre à jour"
+                        (click)="pwaService.applyUpdate()"
+                        class="!bg-white !text-indigo-600 !border-0 !py-1 !px-3 !text-sm !font-semibold !rounded-lg hover:!bg-white/90"></button>
+                <button (click)="dismissUpdate()"
+                        class="text-white/70 hover:text-white transition-colors p-1 ml-1">
+                    <i class="pi pi-times text-sm"></i>
+                </button>
             </div>
         </div>
 
-        <!-- Install PWA Banner (shown only if not installed and prompt available) -->
-        <div *ngIf="showInstallBanner && pwaService.canInstall() && !pwaService.isRunningStandalone()" 
-             class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 z-50 animate-slide-up">
-            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl p-4 shadow-2xl border border-surface-200 dark:border-surface-700">
-                <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/30">
-                        <i class="pi pi-download text-white text-xl"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h4 class="text-surface-900 dark:text-surface-0 font-bold text-lg mb-1">Installer Afrin Nexus</h4>
-                        <p class="text-surface-600 dark:text-surface-400 text-sm mb-3">Installez l'application pour un accès rapide et une utilisation hors-ligne.</p>
-                        <div class="flex gap-2">
-                            <button pButton label="Installer" 
-                                    (click)="installApp()"
-                                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 !py-2 !px-4 !text-sm !font-semibold !rounded-xl"></button>
-                            <button pButton label="Non merci" 
-                                    (click)="dismissInstall()"
-                                    class="!bg-transparent !text-surface-600 dark:!text-surface-400 !border-surface-300 dark:!border-surface-600 !py-2 !px-4 !text-sm !rounded-xl hover:!bg-surface-100 dark:hover:!bg-surface-800"></button>
-                        </div>
-                    </div>
-                    <button (click)="dismissInstall()" 
-                            class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 transition-colors p-1">
-                        <i class="pi pi-times"></i>
-                    </button>
+        <!-- Install PWA Banner (top, shown only if not installed and prompt available) -->
+        <div *ngIf="showInstallBanner && pwaService.canInstall() && !pwaService.isRunningStandalone()"
+             class="fixed top-0 left-0 right-0 z-[60] h-14 flex items-center justify-between px-4 bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                    <i class="pi pi-download text-white text-xs"></i>
                 </div>
+                <span class="text-surface-900 dark:text-surface-0 font-medium text-sm">Installer Afrin Nexus pour un accès hors-ligne</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button pButton label="Installer"
+                        (click)="installApp()"
+                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 !py-1 !px-3 !text-sm !font-semibold !rounded-lg"></button>
+                <button (click)="dismissInstall()"
+                        class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 transition-colors p-1">
+                    <i class="pi pi-times text-sm"></i>
+                </button>
             </div>
         </div>
     `,

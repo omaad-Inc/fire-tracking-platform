@@ -18,18 +18,13 @@
             .layout-sidebar {
                 transform: translateX(-100%);
                 left: 0;
-                top: 0;
-                height: 100vh;
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
+                top: 4rem;
+                height: calc(100vh - 4rem);
+                border-radius: 0;
                 border-right: 1px solid var(--surface-border);
+                box-shadow: 4px 0 16px rgba(0, 0, 0, 0.12);
                 transition:
-                    transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
-                    left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
-                box-shadow:
-                    0px 3px 5px rgba(0, 0, 0, 0.02),
-                    0px 0px 2px rgba(0, 0, 0, 0.05),
-                    0px 1px 4px rgba(0, 0, 0, 0.08);
+                    transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
             }
 
             &.layout-overlay-active {
@@ -41,7 +36,7 @@
 
         &.layout-static {
             .layout-main-container {
-                margin-left: 22rem;
+                margin-left: 17rem;
             }
 
             &.layout-static-inactive {
@@ -92,7 +87,8 @@
 
         // Simplify topbar on mobile
         .layout-topbar {
-            padding: 0.75rem 1rem;
+            padding: 0 1rem;
+            border-bottom: 1px solid var(--surface-border);
 
             .layout-topbar-logo {
                 span {

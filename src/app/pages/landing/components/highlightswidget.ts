@@ -209,68 +209,87 @@ import { CommonModule } from '@angular/common';
                     </div>
                 </div>
 
-                <!-- Highlight 3 - Privacy focused -->
+                <!-- Highlight 3 - Security focused -->
                 <div class="grid grid-cols-12 gap-8 items-center">
                     <div class="col-span-12 lg:col-span-6 order-2 lg:order-1">
                         <div class="relative">
                             <div class="absolute -inset-4 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-3xl blur-2xl"></div>
                             <div class="relative bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-700/50">
-                                <!-- Privacy shield visualization -->
-                                <div class="text-center py-8">
-                                    <div class="relative inline-block">
-                                        <div class="absolute inset-0 bg-emerald-500/20 rounded-full blur-xl animate-pulse"></div>
-                                        <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-500 flex items-center justify-center mx-auto">
-                                            <i class="pi pi-shield text-white text-5xl"></i>
+                                <!-- Security checklist -->
+                                <div class="space-y-4 py-4">
+                                    <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-800/60">
+                                        <div class="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
+                                            <i class="pi pi-lock text-emerald-400"></i>
                                         </div>
+                                        <div>
+                                            <div class="text-white font-medium text-sm">Chiffrement SSL/TLS</div>
+                                            <div class="text-slate-400 text-xs">Toutes les communications sont chiffrées</div>
+                                        </div>
+                                        <i class="pi pi-check-circle text-emerald-400 ml-auto"></i>
                                     </div>
-                                    <div class="mt-6 space-y-3">
-                                        <div class="flex items-center justify-center gap-2 text-emerald-400">
-                                            <i class="pi pi-lock"></i>
-                                            <span class="font-medium">100% Local</span>
+                                    <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-800/60">
+                                        <div class="w-10 h-10 rounded-lg bg-cyan-500/20 flex items-center justify-center shrink-0">
+                                            <i class="pi pi-user-minus text-cyan-400"></i>
                                         </div>
-                                        <div class="flex items-center justify-center gap-2 text-slate-400 text-sm">
-                                            <i class="pi pi-database"></i>
-                                            <span>Stockage sur votre appareil</span>
+                                        <div>
+                                            <div class="text-white font-medium text-sm">Jamais partagé</div>
+                                            <div class="text-slate-400 text-xs">Aucune vente de données à des tiers</div>
                                         </div>
-                                        <div class="flex items-center justify-center gap-2 text-slate-400 text-sm">
-                                            <i class="pi pi-ban"></i>
-                                            <span>Aucun serveur externe</span>
+                                        <i class="pi pi-check-circle text-emerald-400 ml-auto"></i>
+                                    </div>
+                                    <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-800/60">
+                                        <div class="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center shrink-0">
+                                            <i class="pi pi-shield text-indigo-400"></i>
                                         </div>
+                                        <div>
+                                            <div class="text-white font-medium text-sm">Authentification sécurisée</div>
+                                            <div class="text-slate-400 text-xs">JWT + Google OAuth2</div>
+                                        </div>
+                                        <i class="pi pi-check-circle text-emerald-400 ml-auto"></i>
+                                    </div>
+                                    <div class="flex items-center gap-4 p-3 rounded-xl bg-slate-800/60">
+                                        <div class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+                                            <i class="pi pi-ban text-amber-400"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-white font-medium text-sm">Lecture seule</div>
+                                            <div class="text-slate-400 text-xs">Aucun accès à vos comptes bancaires</div>
+                                        </div>
+                                        <i class="pi pi-check-circle text-emerald-400 ml-auto"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-span-12 lg:col-span-6 order-1 lg:order-2 text-center lg:text-left">
                         <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-500 flex items-center justify-center mb-6 mx-auto lg:mx-0">
                             <i class="pi pi-lock text-white text-3xl"></i>
                         </div>
                         <h3 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-4">
-                            Vos données restent privées
+                            La sécurité est notre priorité
                         </h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">
-                            Afrin Nexus fonctionne entièrement en local. Vos données financières sensibles ne quittent jamais votre appareil. 
-                            Aucun compte requis, aucune synchronisation cloud, confidentialité totale.
+                            Vos données financières sont sensibles. Afrin Nexus les protège avec les mêmes standards que les applications bancaires — chiffrement, isolation des données et accès zéro aux établissements financiers.
                         </p>
                         <ul class="space-y-3">
                             <li class="flex items-center gap-3 text-surface-700 dark:text-surface-200">
                                 <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
                                     <i class="pi pi-check text-emerald-600 dark:text-emerald-400 text-sm"></i>
                                 </div>
-                                <span>Stockage IndexedDB local</span>
+                                <span>Données hébergées en Europe</span>
                             </li>
                             <li class="flex items-center gap-3 text-surface-700 dark:text-surface-200">
                                 <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
                                     <i class="pi pi-check text-emerald-600 dark:text-emerald-400 text-sm"></i>
                                 </div>
-                                <span>Export/Import de vos données</span>
+                                <span>Aucune publicité, aucun tracking</span>
                             </li>
                             <li class="flex items-center gap-3 text-surface-700 dark:text-surface-200">
                                 <div class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center">
                                     <i class="pi pi-check text-emerald-600 dark:text-emerald-400 text-sm"></i>
                                 </div>
-                                <span>Open source et auditable</span>
+                                <span>Suppression totale des données sur demande</span>
                             </li>
                         </ul>
                     </div>

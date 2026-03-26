@@ -72,7 +72,7 @@ export class LayoutService {
         primary: 'emerald',
         surface: 'slate',
         darkTheme: true,
-        themeMode: 'system', // Default to system mode
+        themeMode: 'dark', // Default to dark mode for consistent Finary-like aesthetic
         menuMode: 'static'
     };
 

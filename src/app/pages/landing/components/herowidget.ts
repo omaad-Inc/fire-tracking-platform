@@ -47,12 +47,12 @@ import { RouterModule } from '@angular/router';
                         <!-- Stats -->
                         <div class="flex flex-wrap justify-center lg:justify-start gap-8 mb-10">
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">100%</div>
-                                <div class="text-slate-400 text-sm">Gratuit</div>
+                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Gratuit</div>
+                                <div class="text-slate-400 text-sm">Pour commencer</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Local</div>
-                                <div class="text-slate-400 text-sm">Vos données restent privées</div>
+                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">Sécurisé</div>
+                                <div class="text-slate-400 text-sm">Données chiffrées</div>
                             </div>
                             <div class="text-center">
                                 <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">FIRE</div>
@@ -68,9 +68,10 @@ import { RouterModule } from '@angular/router';
                                 Accéder au Dashboard
                             </button>
                             <button pButton pRipple [rounded]="true" [outlined]="true"
+                                (click)="scrollToFeatures()"
                                 class="!text-lg !px-8 !py-3 !border-slate-600 !text-slate-300 hover:!bg-slate-800 transition-all duration-300">
-                                <i class="pi pi-play-circle mr-2"></i>
-                                Voir la démo
+                                <i class="pi pi-compass mr-2"></i>
+                                Découvrir les fonctionnalités
                             </button>
                         </div>
                     </div>
@@ -151,4 +152,8 @@ import { RouterModule } from '@angular/router';
         }
     `]
 })
-export class HeroWidget {}
+export class HeroWidget {
+    scrollToFeatures() {
+        document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+    }
+}

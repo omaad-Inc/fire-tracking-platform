@@ -1,10 +1,12 @@
-import { isPlatformBrowser, CurrencyPipe } from '@angular/common';
+import { isPlatformBrowser, NgClass } from '@angular/common';
 import { Component, OnInit, OnDestroy, PLATFORM_ID, ChangeDetectorRef, inject, effect, signal } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { Subscription } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
     selector: 'app-patrimoine-progress',
@@ -16,8 +18,16 @@ import { AssetsStateService } from '../../service/assets-state.service';
                     <i class="pi pi-chevron-down text-surface-500 text-sm cursor-pointer"></i>
                 </div>
                 @if (!loading()) {
-                    <div class="flex items-center gap-2">
-                        <button class="px-3 py-1 text-xs rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">1Y</button>
+                    <div class="flex items-center gap-1">
+                        @for (r of ranges; track r.months) {
+                            <button (click)="setRange(r.months)"
+                                class="px-3 py-1 text-xs rounded-lg transition-colors"
+                                [ngClass]="selectedMonths() === r.months
+                                    ? 'bg-indigo-500 text-white'
+                                    : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
+                                {{ r.label }}
+                            </button>
+                        }
                     </div>
                 }
             </div>
@@ -36,14 +46,14 @@ import { AssetsStateService } from '../../service/assets-state.service';
             } @else {
                 <div class="mb-4">
                     <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ currentDate() }}</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl">{{ currentValue() | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl">{{ currentValue() | appCurrency }}</div>
                 </div>
                 <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[250px]" />
             }
         </div>
     `,
     standalone: true,
-    imports: [ChartModule, CurrencyPipe]
+    imports: [ChartModule, NgClass, AppCurrencyPipe]
 })
 export class PatrimoineProgress implements OnInit, OnDestroy {
     private platformId = inject(PLATFORM_ID);
@@ -51,6 +61,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
     private i18n = inject(I18nService);
+    private cs = inject(CurrencyService);
     
     private subscription?: Subscription;
     
@@ -58,6 +69,21 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     dataPoints = signal<ChartDataPoint[]>([]);
     currentValue = signal(0);
     currentDate = signal('');
+
+    readonly ranges = [
+        { label: '1M', months: 1 },
+        { label: '3M', months: 3 },
+        { label: '6M', months: 6 },
+        { label: '1A', months: 12 },
+        { label: 'Max', months: 0 },
+    ];
+
+    selectedMonths = signal(0);
+
+    setRange(months: number) {
+        this.selectedMonths.set(months);
+        this.loadData();
+    }
     
     data: any;
     options: any;
@@ -71,8 +97,9 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     ngOnInit() {
         this.loadData();
         
-        // Subscribe to asset updates to refresh the chart
+        // Subscribe to asset updates to refresh the chart (invalidate cache first)
         this.subscription = this.stateService.assetsUpdated$.subscribe(() => {
+            this.dashboardService.invalidateCache();
             this.loadData();
         });
     }
@@ -85,7 +112,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
         this.loading.set(true);
         try {
             // Get total assets progression (Patrimoine Total Brut)
-            const progression = await this.dashboardService.getTotalAssetsProgression(12);
+            const progression = await this.dashboardService.getTotalAssetsProgression(this.selectedMonths());
             this.dataPoints.set(progression);
             
             if (progression.length > 0) {
@@ -112,10 +139,11 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
         if (isPlatformBrowser(this.platformId)) {
             const documentStyle = getComputedStyle(document.documentElement);
             const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
-            
-            // Couleurs orange/dorées comme dans les images
-            const borderColor = '#f59e0b'; // Amber-500
-            const backgroundColor = 'rgba(245, 158, 11, 0.15)';
+            const cs = this.cs;
+
+            // Couleurs indigo/cyan Finary-style
+            const borderColor = '#6366f1'; // Indigo-500
+            const backgroundColor = 'rgba(99, 102, 241, 0.15)';
 
             const points = this.dataPoints();
             
@@ -131,11 +159,11 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         tension: 0.4,
                         borderWidth: 3,
                         pointRadius: 0, // Pas de points par défaut
-                        pointBackgroundColor: borderColor,
+                        pointBackgroundColor: '#6366f1',
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointHoverRadius: 6,
-                        pointHoverBackgroundColor: borderColor,
+                        pointHoverBackgroundColor: '#6366f1',
                         pointHoverBorderColor: '#fff',
                         pointHoverBorderWidth: 2
                     }
@@ -153,7 +181,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         backgroundColor: 'rgba(15, 23, 42, 0.95)',
                         titleColor: '#fff',
                         bodyColor: '#94a3b8',
-                        borderColor: 'rgba(245, 158, 11, 0.5)',
+                        borderColor: 'rgba(99, 102, 241, 0.5)',
                         borderWidth: 1,
                         cornerRadius: 8,
                         padding: 12,
@@ -163,7 +191,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                                 return context[0].label || '';
                             },
                             label: function(context: any) {
-                                return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                                return cs.format(context.raw, 0);
                             }
                         }
                     }
@@ -185,22 +213,12 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         }
                     },
                     y: {
-                        beginAtZero: true,
-                        min: 0,
                         ticks: {
                             color: textColorSecondary,
                             font: {
                                 size: 11
                             },
-                            callback: function(value: number) {
-                                if (value >= 1000000) {
-                                    return (value / 1000000).toFixed(1) + 'M€';
-                                }
-                                if (value >= 1000) {
-                                    return (value / 1000).toFixed(0) + 'K€';
-                                }
-                                return value + '€';
-                            }
+                            callback: cs.tickFormatter()
                         },
                         grid: {
                             color: 'rgba(148, 163, 184, 0.1)',

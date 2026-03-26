@@ -60,18 +60,18 @@ import { AuthService } from '../../core/services/auth.service';
                 <!-- Register Form -->
                 <div class="max-w-md">
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                        Create your account
+                        Bienvenue sur Afrin Nexus
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
-                        Already have an account? 
+                        Déjà un compte ?
                         <a [routerLink]="[currentLang, 'auth', 'login']" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium cursor-pointer">
-                            Log in <i class="pi pi-chevron-right text-xs"></i>
+                            Se connecter <i class="pi pi-chevron-right text-xs"></i>
                         </a>
                     </p>
 
                     <!-- Social Login Buttons -->
                     <div class="space-y-3 mb-6">
-                        <button pButton pRipple 
+                        <button pButton pRipple
                                 (click)="registerWithGoogle()"
                                 [loading]="isGoogleLoading()"
                                 class="w-full !bg-blue-600 hover:!bg-blue-700 !border-0 !py-3 !text-base !font-medium flex items-center justify-center gap-3">
@@ -81,25 +81,14 @@ import { AuthService } from '../../core/services/auth.service';
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff"/>
                                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff"/>
                             </svg>
-                            Continue with Google
-                        </button>
-
-                        <button pButton pRipple [outlined]="true"
-                                [disabled]="true"
-                                class="w-full !py-3 !text-base !font-medium !border-surface-300 dark:!border-surface-600 
-                                       !text-surface-900 dark:!text-surface-0 hover:!bg-surface-100 dark:hover:!bg-surface-800 
-                                       flex items-center justify-center gap-3 opacity-50">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                            </svg>
-                            Continue with Apple (Coming soon)
+                            Continuer avec Google
                         </button>
                     </div>
 
                     <!-- Divider -->
                     <div class="flex items-center gap-4 my-8">
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
-                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">or sign up with email</span>
+                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">ou par email</span>
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
@@ -107,17 +96,17 @@ import { AuthService } from '../../core/services/auth.service';
                     <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">First name</label>
-                                <input pInputText id="firstName" type="text" 
-                                       placeholder="John" 
+                                <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Prénom</label>
+                                <input pInputText id="firstName" type="text"
+                                       placeholder="Mbaye"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-indigo-500 focus:!shadow-none"
                                        [(ngModel)]="firstName" name="firstName" />
                             </div>
                             <div>
-                                <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Last name</label>
-                                <input pInputText id="lastName" type="text" 
-                                       placeholder="Doe" 
+                                <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Nom</label>
+                                <input pInputText id="lastName" type="text"
+                                       placeholder="Sene"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-indigo-500 focus:!shadow-none"
                                        [(ngModel)]="lastName" name="lastName" />
@@ -125,9 +114,9 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Email address</label>
-                            <input pInputText id="email" type="email" 
-                                   placeholder="john.doe@example.com" 
+                            <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Adresse email</label>
+                            <input pInputText id="email" type="email"
+                                   placeholder="vous@exemple.com"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-indigo-500 focus:!shadow-none"
                                    [(ngModel)]="email" name="email" required 
@@ -135,11 +124,11 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Password</label>
-                            <p-password id="password" 
-                                        [(ngModel)]="password" 
+                            <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Mot de passe</label>
+                            <p-password id="password"
+                                        [(ngModel)]="password"
                                         name="password"
-                                        placeholder="Create a strong password" 
+                                        placeholder="Créez un mot de passe fort"
                                         [toggleMask]="true" 
                                         [feedback]="true"
                                         [disabled]="isLoading()"
@@ -149,11 +138,11 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Confirm password</label>
-                            <p-password id="confirmPassword" 
-                                        [(ngModel)]="confirmPassword" 
+                            <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Confirmer le mot de passe</label>
+                            <p-password id="confirmPassword"
+                                        [(ngModel)]="confirmPassword"
                                         name="confirmPassword"
-                                        placeholder="Confirm your password" 
+                                        placeholder="Confirmez votre mot de passe"
                                         [toggleMask]="true" 
                                         [feedback]="false"
                                         [disabled]="isLoading()"
@@ -166,7 +155,7 @@ import { AuthService } from '../../core/services/auth.service';
                         @if (password && confirmPassword && password !== confirmPassword) {
                             <div class="text-red-500 text-sm flex items-center gap-2">
                                 <i class="pi pi-exclamation-circle"></i>
-                                Passwords do not match
+                                Les mots de passe ne correspondent pas
                             </div>
                         }
 
@@ -174,14 +163,14 @@ import { AuthService } from '../../core/services/auth.service';
                         <div class="flex items-start gap-3">
                             <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" name="terms" [disabled]="isLoading()"></p-checkbox>
                             <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
-                                I agree to the 
-                                <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Terms of Service</a> 
-                                and 
-                                <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Privacy Policy</a>
+                                J'accepte les
+                                <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Conditions d'utilisation</a>
+                                et la
+                                <a class="text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer">Politique de confidentialité</a>
                             </label>
                         </div>
 
-                        <button pButton pRipple label="Create Account" 
+                        <button pButton pRipple label="Créer mon compte"
                                 type="submit"
                                 [loading]="isLoading()"
                                 class="w-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300"
@@ -217,8 +206,8 @@ import { AuthService } from '../../core/services/auth.service';
                                     <i class="pi pi-user text-white text-xl"></i>
                                 </div>
                                 <div>
-                                    <div class="text-white font-semibold">Welcome to Afrin Nexus</div>
-                                    <div class="text-slate-400 text-sm">Your financial journey starts here</div>
+                                    <div class="text-white font-semibold">Bienvenue sur Afrin Nexus</div>
+                                    <div class="text-slate-400 text-sm">Votre voyage financier commence ici</div>
                                 </div>
                             </div>
 
@@ -229,22 +218,22 @@ import { AuthService } from '../../core/services/auth.service';
                                         <i class="pi pi-check text-white text-sm"></i>
                                     </div>
                                     <div class="flex-1">
-                                        <div class="text-white text-sm font-medium">Create your account</div>
-                                        <div class="text-slate-400 text-xs">Set up your profile in minutes</div>
+                                        <div class="text-white text-sm font-medium">Créez votre compte</div>
+                                        <div class="text-slate-400 text-xs">Configurez votre profil en quelques minutes</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 text-sm font-medium">2</div>
                                     <div class="flex-1">
-                                        <div class="text-slate-300 text-sm font-medium">Add your assets</div>
-                                        <div class="text-slate-500 text-xs">Connect accounts or add manually</div>
+                                        <div class="text-slate-300 text-sm font-medium">Ajoutez vos actifs</div>
+                                        <div class="text-slate-500 text-xs">Saisissez vos biens et placements</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-slate-400 text-sm font-medium">3</div>
                                     <div class="flex-1">
-                                        <div class="text-slate-300 text-sm font-medium">Track your progress</div>
-                                        <div class="text-slate-500 text-xs">Monitor your path to FIRE</div>
+                                        <div class="text-slate-300 text-sm font-medium">Suivez votre progression</div>
+                                        <div class="text-slate-500 text-xs">Visualisez votre chemin vers la liberté</div>
                                     </div>
                                 </div>
                             </div>
@@ -253,35 +242,39 @@ import { AuthService } from '../../core/services/auth.service';
                         <!-- Floating Badge -->
                         <div class="absolute -top-4 -right-4 bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl px-4 py-2 shadow-lg">
                             <div class="text-white font-bold text-lg">100%</div>
-                            <div class="text-white/80 text-xs">Free forever</div>
+                            <div class="text-white/80 text-xs">Pour toujours</div>
                         </div>
                     </div>
 
                     <!-- Text Content -->
                     <div class="text-center">
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                            Start your journey to
-                            <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Financial Freedom</span>
+                            Votre chemin vers
+                            <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">l'indépendance financière</span>
                         </h2>
                         <p class="text-slate-400 max-w-md mx-auto mb-8">
-                            Join thousands of users who are taking control of their finances and building their path to early retirement.
+                            Prenez le contrôle de vos finances et construisez votre chemin vers la retraite anticipée.
                         </p>
 
-                        <!-- Stats -->
-                        <div class="flex items-center justify-center gap-8">
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-white">10K+</div>
-                                <div class="text-slate-500 text-sm">Active users</div>
+                        <!-- Value Props -->
+                        <div class="flex items-center justify-center gap-8 text-slate-400 text-sm">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+                                    <i class="pi pi-lock text-indigo-400 text-lg"></i>
+                                </div>
+                                <span>Sécurisé</span>
                             </div>
-                            <div class="w-px h-12 bg-slate-700"></div>
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-white">€50M+</div>
-                                <div class="text-slate-500 text-sm">Assets tracked</div>
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                                    <i class="pi pi-shield text-cyan-400 text-lg"></i>
+                                </div>
+                                <span>Confidentiel</span>
                             </div>
-                            <div class="w-px h-12 bg-slate-700"></div>
-                            <div class="text-center">
-                                <div class="text-2xl font-bold text-white">4.8/5</div>
-                                <div class="text-slate-500 text-sm">User rating</div>
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                                    <i class="pi pi-star text-emerald-400 text-lg"></i>
+                                </div>
+                                <span>Gratuit</span>
                             </div>
                         </div>
                     </div>

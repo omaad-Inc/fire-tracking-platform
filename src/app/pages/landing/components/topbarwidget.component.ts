@@ -47,15 +47,15 @@ import { CommonModule } from '@angular/common';
 
         <!-- Desktop CTA Buttons -->
         <div class="hidden lg:flex items-center gap-3 shrink-0">
-            <button pButton pRipple label="Login" 
-                    [routerLink]="[currentLang, 'auth', 'login']" 
-                    [rounded]="true" [text]="true" 
+            <button pButton pRipple label="Se connecter"
+                    [routerLink]="[currentLang, 'auth', 'login']"
+                    [rounded]="true" [text]="true"
                     class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-indigo-600 dark:hover:!text-indigo-400">
             </button>
-            <button pButton pRipple label="Sign up" 
-                    [routerLink]="[currentLang, 'auth', 'register']" 
-                    [rounded]="true" 
-                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold 
+            <button pButton pRipple label="S'inscrire"
+                    [routerLink]="[currentLang, 'auth', 'register']"
+                    [rounded]="true"
+                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold
                            hover:!shadow-lg hover:!shadow-indigo-500/25 transition-all duration-300">
             </button>
         </div>
@@ -112,15 +112,15 @@ import { CommonModule } from '@angular/common';
             </ul>
 
             <div class="flex flex-col gap-2 border-t border-surface-200 dark:border-surface-700 pt-4 mt-4">
-                <button pButton pRipple label="Login" 
-                        [routerLink]="[currentLang, 'auth', 'login']" 
-                        [rounded]="true" [text]="true" 
+                <button pButton pRipple label="Se connecter"
+                        [routerLink]="[currentLang, 'auth', 'login']"
+                        [rounded]="true" [text]="true"
                         class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-indigo-600 dark:hover:!text-indigo-400 w-full justify-center">
                 </button>
-                <button pButton pRipple label="Sign up" 
-                        [routerLink]="[currentLang, 'auth', 'register']" 
-                        [rounded]="true" 
-                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold 
+                <button pButton pRipple label="S'inscrire"
+                        [routerLink]="[currentLang, 'auth', 'register']"
+                        [rounded]="true"
+                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold
                                hover:!shadow-lg hover:!shadow-indigo-500/25 transition-all duration-300 w-full justify-center">
                 </button>
             </div>

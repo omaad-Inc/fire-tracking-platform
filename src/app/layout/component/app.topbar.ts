@@ -3,7 +3,6 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
-import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '../service/layout.service';
 import { AvatarModule } from 'primeng/avatar';
 import { DividerModule } from 'primeng/divider';
@@ -21,6 +20,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
 import { AssetCreate, AssetCategory } from '../../core/services/api.service';
 import { PatrimoineService } from '../../pages/service/patrimoine.service';
+import { AppCurrencyPipe } from '../../core/pipes/app-currency.pipe';
 
 interface Owner {
     name: string;
@@ -41,9 +41,9 @@ interface AssetFormData {
     selector: 'app-topbar',
     standalone: true,
     imports: [
-        RouterModule, CommonModule, StyleClassModule, AppConfigurator, AvatarModule, 
-        DividerModule, DialogModule, ButtonModule, FormsModule, InputTextModule, 
-        SelectModule, InputNumberModule, ToastModule
+        RouterModule, CommonModule, StyleClassModule, AvatarModule,
+        DividerModule, DialogModule, ButtonModule, FormsModule, InputTextModule,
+        SelectModule, InputNumberModule, ToastModule, AppCurrencyPipe
     ],
     providers: [MessageService],
     template: ` <div class="layout-topbar">
@@ -64,27 +64,12 @@ interface AssetFormData {
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
-                <!-- Palette config - hidden on mobile -->
-                <div class="relative hidden lg:block">
-                    <button
-                        class="layout-topbar-action layout-topbar-action-highlight"
-                        pStyleClass="@next"
-                        enterFromClass="hidden"
-                        enterActiveClass="animate-scalein"
-                        leaveToClass="hidden"
-                        leaveActiveClass="animate-fadeout"
-                        [hideOnOutsideClick]="true"
-                    >
-                        <i class="pi pi-palette"></i>
-                    </button>
-                    <app-configurator />
-                </div>
             </div>
 
             <!-- Add Assets Button - Desktop Only -->
             <button 
                 type="button" 
-                class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-contrast font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-primary/30"
+                class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/30"
                 (click)="openAddAssetDialog()"
             >
                 <i class="pi pi-plus"></i>
@@ -177,6 +162,10 @@ interface AssetFormData {
                                     <i class="pi pi-cog text-emerald-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('menu.preferences') }}</span>
                                 </a>
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'fire']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                    <i class="pi pi-flag text-emerald-600"></i>
+                                    <span class="text-surface-700 dark:text-surface-200">Objectif FIRE</span>
+                                </a>
                             </div>
 
                             <p-divider styleClass="!my-0" />
@@ -248,7 +237,7 @@ interface AssetFormData {
                                   [ngClass]="currentStep() === 1 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
                             <span>Informations</span>
                         </button>
-                        <button 
+                        <button
                             type="button"
                             class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left w-full"
                             [ngClass]="currentStep() === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
@@ -257,7 +246,7 @@ interface AssetFormData {
                         >
                             <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
                                   [ngClass]="currentStep() === 2 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
-                            <span>Ownership</span>
+                            <span>Répartition</span>
                         </button>
                     </div>
                 </div>
@@ -269,31 +258,31 @@ interface AssetFormData {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Name -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Name</label>
-                                <input 
-                                    pInputText 
-                                    [(ngModel)]="assetForm.name" 
-                                    placeholder="Ex: Land, Apartment..."
+                                <label class="text-surface-500 dark:text-surface-400 text-sm">Nom</label>
+                                <input
+                                    pInputText
+                                    [(ngModel)]="assetForm.name"
+                                    placeholder="Ex: Appartement, Terrain..."
                                     class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
                                 />
                             </div>
                             
                             <!-- Category -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Category</label>
-                                <p-select 
-                                    [(ngModel)]="assetForm.category" 
-                                    [options]="categoryOptions" 
-                                    optionLabel="label" 
+                                <label class="text-surface-500 dark:text-surface-400 text-sm">Catégorie</label>
+                                <p-select
+                                    [(ngModel)]="assetForm.category"
+                                    [options]="categoryOptions"
+                                    optionLabel="label"
                                     optionValue="value"
-                                    placeholder="Select category"
+                                    placeholder="Sélectionner une catégorie"
                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
                                 />
                             </div>
                             
                             <!-- Quantity -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Quantity</label>
+                                <label class="text-surface-500 dark:text-surface-400 text-sm">Quantité</label>
                                 <p-inputnumber 
                                     [(ngModel)]="assetForm.quantity" 
                                     [min]="1"
@@ -303,7 +292,7 @@ interface AssetFormData {
                             
                             <!-- Buying price per unit -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Buying price per unit</label>
+                                <label class="text-surface-500 dark:text-surface-400 text-sm">Prix d'achat unitaire</label>
                                 <div class="relative">
                                     <p-inputnumber 
                                         [(ngModel)]="assetForm.purchasePrice" 
@@ -318,7 +307,7 @@ interface AssetFormData {
                             
                             <!-- Current price per unit -->
                             <div class="flex flex-col gap-2 md:col-span-1">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Current price per unit</label>
+                                <label class="text-surface-500 dark:text-surface-400 text-sm">Prix actuel unitaire</label>
                                 <div class="relative">
                                     <p-inputnumber 
                                         [(ngModel)]="assetForm.currentPrice" 
@@ -344,14 +333,14 @@ interface AssetFormData {
                                     </div>
                                     <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || 'Asset' }}</span>
                                     <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-                                        {{ (assetForm.currentPrice * assetForm.quantity) | currency:'EUR':'symbol':'1.0-0' }}
+                                        {{ (assetForm.currentPrice * assetForm.quantity) | appCurrency }}
                                     </span>
                                 </div>
                             </div>
                             
                             <!-- Owners Section -->
                             <div>
-                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Owners</h3>
+                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Propriétaires</h3>
                                 <div class="space-y-4">
                                     @for (owner of assetForm.owners; track owner.name) {
                                         <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
@@ -380,8 +369,8 @@ interface AssetFormData {
                             
                             <!-- Members Section -->
                             <div>
-                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Members</h3>
-                                <button 
+                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Co-propriétaires</h3>
+                                <button
                                     type="button"
                                     class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-primary hover:bg-primary/5 transition-all w-full"
                                     (click)="addMember()"
@@ -389,7 +378,7 @@ interface AssetFormData {
                                     <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
                                         <i class="pi pi-plus text-surface-400"></i>
                                     </div>
-                                    <span class="text-surface-600 dark:text-surface-300">Add a member</span>
+                                    <span class="text-surface-600 dark:text-surface-300">Ajouter un co-propriétaire</span>
                     </button>
                             </div>
                         </div>
@@ -403,7 +392,7 @@ interface AssetFormData {
                     <button 
                         pButton
                         type="button"
-                        label="Next"
+                        label="Suivant"
                         class="px-8"
                         [disabled]="!isStep1Valid()"
                         (click)="nextStep()"
@@ -412,15 +401,15 @@ interface AssetFormData {
                     <button 
                         pButton
                         type="button"
-                        label="Back"
+                        label="Retour"
                         [outlined]="true"
                         (click)="previousStep()"
                     ></button>
                     <button 
                         pButton
                         type="button"
-                        label="Submit"
-                        class="!bg-amber-100 !text-amber-900 !border-amber-100 hover:!bg-amber-200"
+                        label="Enregistrer"
+                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 hover:!opacity-90"
                         [loading]="isSubmitting()"
                         (click)="submitAsset()"
                     ></button>
@@ -623,8 +612,8 @@ export class AppTopbar implements OnInit {
         // For now, just show a message - in a full implementation, this would open a member selection dialog
         this.messageService.add({
             severity: 'info',
-            summary: 'Coming Soon',
-            detail: 'Member management will be available soon',
+            summary: 'Bientôt disponible',
+            detail: 'La gestion des co-propriétaires sera disponible prochainement',
             life: 3000
         });
     }
@@ -648,8 +637,8 @@ export class AppTopbar implements OnInit {
             
             this.messageService.add({
                 severity: 'success',
-                summary: 'Success',
-                detail: 'Asset added successfully',
+                summary: 'Succès',
+                detail: 'Actif ajouté avec succès',
                 life: 3000
             });
             
@@ -663,8 +652,8 @@ export class AppTopbar implements OnInit {
             console.error('Error creating asset:', error);
             this.messageService.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: 'Failed to create asset',
+                summary: 'Erreur',
+                detail: "Impossible de créer l'actif",
                 life: 5000
             });
         } finally {

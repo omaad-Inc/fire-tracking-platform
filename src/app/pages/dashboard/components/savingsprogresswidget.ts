@@ -4,6 +4,8 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SavingsService, SavingsGoalDisplay } from '../../service/savings.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { I18nService } from '../../../i18n/i18n.service';
 
 interface GoalDisplay {
     label: string;
@@ -20,13 +22,13 @@ interface GoalDisplay {
 @Component({
     standalone: true,
     selector: 'app-savings-progress',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, AppCurrencyPipe],
     template: `
         <div class="card h-full">
             <div class="flex justify-between items-center mb-6">
-                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Progression de l'Épargne</div>
+                <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.savingsProgress') }}</div>
                 <a [routerLink]="link('pages', 'savings')" class="text-indigo-500 hover:text-indigo-400 font-medium text-sm transition-colors">
-                    Voir plus <i class="pi pi-chevron-right text-xs ml-1"></i>
+                    {{ i18n.t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
                 </a>
             </div>
             
@@ -53,9 +55,9 @@ interface GoalDisplay {
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-wallet text-2xl text-surface-400"></i>
                     </div>
-                    <p class="text-surface-600 dark:text-surface-400 mb-2">Aucun objectif d'épargne</p>
+                    <p class="text-surface-600 dark:text-surface-400 mb-2">{{ i18n.t('dashboard.savingsNoGoal') }}</p>
                     <a [routerLink]="link('pages', 'savings')" class="text-indigo-500 hover:text-indigo-400 text-sm">
-                        Créer un objectif <i class="pi pi-arrow-right text-xs ml-1"></i>
+                        {{ i18n.t('dashboard.savingsCreateGoal') }} <i class="pi pi-arrow-right text-xs ml-1"></i>
                     </a>
                 </div>
             } @else {
@@ -69,7 +71,7 @@ interface GoalDisplay {
                                     </div>
                                     <div>
                                         <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ g.label }}</span>
-                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ g.current | currency:'EUR':'symbol':'1.0-0' }} / {{ g.target | currency:'EUR':'symbol':'1.0-0' }}</span>
+                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ g.current | appCurrency }} / {{ g.target | appCurrency }}</span>
                                     </div>
                                 </div>
                                 <span class="font-bold text-lg" [ngClass]="g.textColorClass">{{ g.percent }}%</span>
@@ -91,6 +93,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
     private savingsService = inject(SavingsService);
     private stateService = inject(AssetsStateService);
     private router = inject(Router);
+    readonly i18n = inject(I18nService);
     
     private subscription?: Subscription;
     loading = signal(true);
@@ -121,14 +124,17 @@ export class SavingsProgress implements OnInit, OnDestroy {
                 { bgClass: 'bg-amber-500/10', iconClass: 'text-amber-500', progressClass: 'bg-gradient-to-r from-amber-600 to-amber-400', textColorClass: 'text-amber-500', icon: 'pi pi-flag' }
             ];
 
-            const mapped = gs.map((g, index) => ({
-                label: g.label,
-                current: g.current,
-                target: g.target,
-                percent: Math.min(100, Math.max(0, Math.round((g.current / (g.target || 1)) * 100))),
-                ...colorConfigs[index % colorConfigs.length]
-            }));
-            
+            const mapped = gs
+                .map((g, index) => ({
+                    label: g.label,
+                    current: g.current,
+                    target: g.target,
+                    percent: Math.min(100, Math.max(0, Math.round((g.current / (g.target || 1)) * 100))),
+                    ...colorConfigs[index % colorConfigs.length]
+                }))
+                .sort((a, b) => b.percent - a.percent)
+                .slice(0, 4);
+
             this.goals.set(mapped);
         } catch (error) {
             console.error('Error loading goals:', error);

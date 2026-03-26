@@ -11,10 +11,10 @@ interface CacheEntry<T> {
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 export interface PatrimoineAssetItemDto {
-    id?: number;
+    id: number;
     name: string;
     value: number;
-    category?: string;
+    category: string;
     deltaAbs?: number;
     deltaPct?: number;
     institution?: string;

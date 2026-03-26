@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 interface DebtDisplay {
     id: string;
@@ -22,7 +23,7 @@ interface DebtDisplay {
 @Component({
     standalone: true,
     selector: 'app-debts-overview',
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, AppCurrencyPipe],
     template: `
         <div class="card h-full">
             <div class="flex justify-between items-center mb-6">
@@ -55,8 +56,8 @@ interface DebtDisplay {
                     <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
                         <i class="pi pi-check-circle text-2xl text-emerald-500"></i>
                     </div>
-                    <p class="text-surface-600 dark:text-surface-400 mb-2">Aucune dette enregistrée</p>
-                    <p class="text-emerald-500 text-sm">Félicitations ! 🎉</p>
+                    <p class="text-surface-600 dark:text-surface-400 mb-2">{{ t('dashboard.noDebts') }}</p>
+                    <p class="text-emerald-500 text-sm">{{ t('dashboard.noDebtsCongrats') }}</p>
                 </div>
             } @else {
                 <ul class="list-none p-0 m-0 space-y-5">
@@ -69,7 +70,7 @@ interface DebtDisplay {
                                     </div>
                                     <div>
                                         <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ debt.label }}</span>
-                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ debt.paid | currency:'EUR':'symbol':'1.0-0' }} / {{ debt.total | currency:'EUR':'symbol':'1.0-0' }}</span>
+                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ debt.paid | appCurrency }} / {{ debt.total | appCurrency }}</span>
                                     </div>
                                 </div>
                                 <span class="font-bold text-lg" [ngClass]="debt.textClass">{{ debt.percent }}%</span>

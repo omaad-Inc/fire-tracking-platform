@@ -5,6 +5,7 @@ import { PatrimoineProgress } from './components/patrimoineprogress';
 import { PatrimoineStats } from './components/patrimoinestats';
 import { PatrimoineListComponent, PatrimoineAssetItem } from './components/patrimoinelist';
 import { PatrimoineRepartitionComponent } from './components/patrimoinerepartition';
+import { PatrimoineByCategoryComponent } from './components/patrimoine-by-category';
 import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
 import { AssetsStateService } from '../service/assets-state.service';
@@ -12,7 +13,7 @@ import { AssetsStateService } from '../service/assets-state.service';
 @Component({
     selector: 'app-patrimoine',
     standalone: true,
-    imports: [CommonModule, PatrimoineProgress, PatrimoineStats, PatrimoineListComponent, PatrimoineRepartitionComponent],
+    imports: [CommonModule, PatrimoineProgress, PatrimoineStats, PatrimoineRepartitionComponent, PatrimoineByCategoryComponent],
     template: `
         <div class="grid grid-cols-12 gap-8">
             <div class="col-span-12 xl:col-span-8">
@@ -21,13 +22,13 @@ import { AssetsStateService } from '../service/assets-state.service';
             <app-patrimoine-stats class="col-span-12 xl:col-span-4" />
             <div class="col-span-12">
                 <div class="card">
-                    <div class="mb-6 flex items-center justify-between">
+                    <div class="mb-4 flex items-center justify-between">
                         <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('patrimoine.assets.title') }}</div>
                         <span class="text-indigo-500 text-sm font-medium">{{ assets.length }} actifs</span>
                     </div>
                     <div class="grid grid-cols-12 gap-8">
                         <div class="col-span-12 xl:col-span-7">
-                            <app-patrimoine-list [items]="assets" [colorFor]="colorFor"></app-patrimoine-list>
+                            <app-patrimoine-by-category [items]="assetDtos"></app-patrimoine-by-category>
                         </div>
                         <div class="col-span-12 xl:col-span-5">
                             <app-patrimoine-repartition [items]="assets"></app-patrimoine-repartition>
@@ -45,6 +46,7 @@ export class Patrimoine implements OnInit, OnDestroy {
     private subscription?: Subscription;
 
     assets: PatrimoineAssetItem[] = [];
+    assetDtos: PatrimoineAssetItemDto[] = [];
 
     ngOnInit() {
         this.loadAssets();
@@ -69,6 +71,7 @@ export class Patrimoine implements OnInit, OnDestroy {
                 deltaAbs: it.deltaAbs,
                 deltaPct: it.deltaPct
             }));
+            this.assetDtos = items;
         });
     }
 

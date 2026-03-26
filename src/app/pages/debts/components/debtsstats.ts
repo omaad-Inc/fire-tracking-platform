@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { DebtsService, DebtsStatsSummary } from '../../service/debts.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
 @Component({
     standalone: true,
     selector: 'app-debts-stats',
-    imports: [CommonModule],
+    imports: [CommonModule, AppCurrencyPipe],
     template: `
         <!-- Card 1 - Dette Totale (Sum of all debts with type "Debt") -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
@@ -15,7 +16,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dette Totale</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ totalDebt | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ totalDebt | appCurrency }}</div>
                     </div>
                     <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/30 group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-credit-card text-white text-xl"></i>
@@ -33,7 +34,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dernier Paiement</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ paidAmount | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ paidAmount | appCurrency }}</div>
                     </div>
                     <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-check-circle text-white text-xl"></i>
@@ -55,7 +56,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Montant des Créances</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ receivables | currency: 'EUR':'symbol':'1.0-0' }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ receivables | appCurrency }}</div>
                     </div>
                     <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-arrow-right text-white text-xl"></i>

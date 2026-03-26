@@ -25,14 +25,11 @@ import { CommonModule } from '@angular/common';
                                 <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Afrin Nexus</span>
                             </a>
                             <p class="text-slate-400 leading-relaxed mb-6">
-                                Votre compagnon vers l'indépendance financière. Suivez votre patrimoine, optimisez vos dépenses et atteignez vos objectifs FIRE.
+                                Votre application de gestion patrimoniale dédiée à l'indépendance financière. Suivez, optimisez et atteignez vos objectifs FIRE.
                             </p>
                             
                             <!-- Social Links -->
                             <div class="flex gap-3">
-                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-indigo-600 flex items-center justify-center transition-all duration-300 hover:scale-110">
-                                    <i class="pi pi-github text-lg"></i>
-                                </a>
                                 <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-cyan-600 flex items-center justify-center transition-all duration-300 hover:scale-110">
                                     <i class="pi pi-twitter text-lg"></i>
                                 </a>
@@ -86,7 +83,7 @@ import { CommonModule } from '@angular/common';
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                                    <a (click)="navigateTo('pricing')" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
                                         FAQ
                                     </a>
                                 </li>
@@ -99,23 +96,24 @@ import { CommonModule } from '@angular/common';
                         </div>
 
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Communauté</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Suivez-nous</h4>
                             <ul class="space-y-3">
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-2">
-                                        <i class="pi pi-github text-sm"></i>
-                                        GitHub
+                                        <i class="pi pi-twitter text-sm"></i>
+                                        Twitter / X
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-2">
+                                        <i class="pi pi-linkedin text-sm"></i>
+                                        LinkedIn
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-2">
                                         <i class="pi pi-discord text-sm"></i>
                                         Discord
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Contribuer
                                     </a>
                                 </li>
                                 <li>
@@ -131,17 +129,17 @@ import { CommonModule } from '@angular/common';
                             <ul class="space-y-3">
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Confidentialité
+                                        Politique de confidentialité
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Conditions
+                                        Conditions d'utilisation
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Licence MIT
+                                        Mentions légales
                                     </a>
                                 </li>
                             </ul>
@@ -155,26 +153,26 @@ import { CommonModule } from '@angular/common';
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="text-slate-500 text-sm text-center md:text-left">
-                            © {{ currentYear }} Afrin Nexus. Open source sous licence MIT. 
-                            <span class="text-slate-600">Fait avec</span> 
-                            <i class="pi pi-heart-fill text-red-500 mx-1"></i> 
-                            <span class="text-slate-600">pour la communauté FIRE.</span>
+                            © {{ currentYear }} Afrin Nexus. Tous droits réservés.
+                            <span class="text-slate-600">Fait avec</span>
+                            <i class="pi pi-heart-fill text-red-500 mx-1"></i>
+                            <span class="text-slate-600">pour votre liberté financière.</span>
                         </div>
-                        
+
                         <div class="flex items-center gap-4">
                             <div class="flex items-center gap-2 text-slate-500 text-sm">
                                 <span class="relative flex h-2 w-2">
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
-                                <span>100% Local</span>
+                                <span>Disponible</span>
                             </div>
                             <span class="text-slate-700">•</span>
                             <div class="flex items-center gap-2 text-slate-500 text-sm">
                                 <i class="pi pi-shield text-indigo-400"></i>
-                                <span>Données privées</span>
+                                <span>Données sécurisées</span>
+                            </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

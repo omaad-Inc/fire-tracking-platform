@@ -106,26 +106,35 @@ import { CommonModule } from '@angular/common';
                     </div>
                 </div>
 
-                <!-- Testimonial Section -->
+                <!-- Value proposition banner -->
                 <div class="mt-20 relative">
                     <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/10 via-cyan-600/10 to-emerald-600/10 rounded-3xl blur-xl"></div>
                     <div class="relative p-8 md:p-12 rounded-3xl bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-xl">
-                        <div class="flex flex-col md:flex-row items-center gap-8">
-                            <div class="flex-shrink-0">
-                                <div class="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center text-white text-3xl font-bold">
-                                    <i class="pi pi-fire text-4xl"></i>
-                                </div>
-                            </div>
-                            <div class="flex-1 text-center md:text-left">
-                                <blockquote class="text-2xl md:text-3xl text-surface-700 dark:text-surface-200 font-light leading-relaxed mb-6">
-                                    "L'indépendance financière n'est pas un rêve, c'est un <span class="text-indigo-600 dark:text-indigo-400 font-medium">plan</span>. 
+                        <div class="grid grid-cols-12 gap-8 items-center">
+                            <div class="col-span-12 md:col-span-8 text-center md:text-left">
+                                <blockquote class="text-2xl md:text-3xl text-surface-700 dark:text-surface-200 font-light leading-relaxed mb-4">
+                                    "L'indépendance financière n'est pas un rêve, c'est un <span class="text-indigo-600 dark:text-indigo-400 font-medium">plan</span>.
                                     Afrin Nexus transforme ce plan en <span class="text-cyan-600 dark:text-cyan-400 font-medium">réalité mesurable</span>."
                                 </blockquote>
-                                <div class="flex items-center justify-center md:justify-start gap-4">
-                                    <div>
-                                        <div class="font-semibold text-surface-900 dark:text-surface-0">La philosophie FIRE</div>
-                                        <div class="text-surface-500 dark:text-surface-400">Financial Independence, Retire Early</div>
-                                    </div>
+                                <div class="font-semibold text-surface-900 dark:text-surface-0">La philosophie FIRE</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-sm">Financial Independence, Retire Early</div>
+                            </div>
+                            <div class="col-span-12 md:col-span-4 flex flex-col items-center md:items-end gap-3">
+                                <div class="flex items-center gap-3 text-surface-600 dark:text-surface-300">
+                                    <i class="pi pi-shield text-indigo-500 text-xl"></i>
+                                    <span class="font-medium">Sécurisé</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-surface-600 dark:text-surface-300">
+                                    <i class="pi pi-lock text-cyan-500 text-xl"></i>
+                                    <span class="font-medium">Confidentiel</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-surface-600 dark:text-surface-300">
+                                    <i class="pi pi-desktop text-emerald-500 text-xl"></i>
+                                    <span class="font-medium">Multi-plateforme</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-surface-600 dark:text-surface-300">
+                                    <i class="pi pi-globe text-indigo-500 text-xl"></i>
+                                    <span class="font-medium">Multilingue</span>
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
-import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression } from '../../core/services/api.service';
+import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
 
 export interface DashboardStats {
     netWorth: number;
@@ -74,6 +74,27 @@ const EXPENSE_COLORS: string[] = [
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
     private api = inject(ApiService);
+
+    // ── Cache (5-minute TTL, stale-while-revalidate) ──────────────────────────
+    private readonly CACHE_TTL = 5 * 60 * 1000;
+    private _cache: Record<string, { data: any; ts: number }> = {};
+
+    private isFresh(key: string): boolean {
+        const entry = this._cache[key];
+        return !!entry && (Date.now() - entry.ts) < this.CACHE_TTL;
+    }
+
+    private getCached<T>(key: string): T | null {
+        return this._cache[key]?.data ?? null;
+    }
+
+    private setCache(key: string, data: any): void {
+        this._cache[key] = { data, ts: Date.now() };
+    }
+
+    invalidateCache(): void {
+        this._cache = {};
+    }
 
     // Reactive state
     private _loading = signal(false);
@@ -152,62 +173,81 @@ export class DashboardService {
      * Get dashboard stats (simplified)
      */
     async getStats(): Promise<DashboardStats> {
-        try {
-            const summary = await firstValueFrom(this.api.getDashboardSummary());
-            return {
-                netWorth: summary.net_worth,
-                netWorthChange: summary.net_worth_change_30d,
-                netWorthChangePct: summary.net_worth_change_percentage,
-                totalAssets: summary.total_assets,
-                totalDebts: summary.total_debts,
-                savingsRate: summary.savings_rate,
-                monthlyIncome: summary.monthly_income,
-                monthlyExpenses: summary.monthly_expenses
-            };
-        } catch (error) {
-            console.error('Error fetching stats:', error);
-            return {
-                netWorth: 0,
-                netWorthChange: 0,
-                netWorthChangePct: 0,
-                totalAssets: 0,
-                totalDebts: 0,
-                savingsRate: 0,
-                monthlyIncome: 0,
-                monthlyExpenses: 0
-            };
+        const KEY = 'stats';
+        const cached = this.getCached<DashboardStats>(KEY);
+
+        const fetch = async () => {
+            try {
+                const summary = await firstValueFrom(this.api.getDashboardSummary());
+                const result: DashboardStats = {
+                    netWorth: summary.net_worth,
+                    netWorthChange: summary.net_worth_change_30d,
+                    netWorthChangePct: summary.net_worth_change_percentage,
+                    totalAssets: summary.total_assets,
+                    totalDebts: summary.total_debts,
+                    savingsRate: summary.savings_rate,
+                    monthlyIncome: summary.monthly_income,
+                    monthlyExpenses: summary.monthly_expenses
+                };
+                this.setCache(KEY, result);
+                return result;
+            } catch {
+                return cached ?? {
+                    netWorth: 0, netWorthChange: 0, netWorthChangePct: 0,
+                    totalAssets: 0, totalDebts: 0, savingsRate: 0,
+                    monthlyIncome: 0, monthlyExpenses: 0
+                };
+            }
+        };
+
+        if (cached) {
+            if (!this.isFresh(KEY)) fetch(); // revalidate in background
+            return cached;
         }
+        return fetch();
     }
 
     /**
      * Get FIRE metrics
      */
     async getFIREMetrics(): Promise<FIREProgress> {
-        try {
-            const metrics = await firstValueFrom(this.api.getFIREMetrics());
-            return {
-                currentNetWorth: metrics.current_net_worth,
-                targetAmount: metrics.fire_target,
-                progressPct: metrics.progress_percentage,
-                yearsToFire: metrics.years_to_fire,
-                estimatedDate: metrics.estimated_fire_date,
-                monthlyPassiveIncomeNeeded: metrics.monthly_passive_income_needed,
-                currentPassiveIncome: metrics.current_passive_income,
-                savingsRate: metrics.monthly_savings_rate
-            };
-        } catch (error) {
-            console.error('Error fetching FIRE metrics:', error);
-            return {
-                currentNetWorth: 0,
-                targetAmount: 0,
-                progressPct: 0,
-                yearsToFire: null,
-                estimatedDate: null,
-                monthlyPassiveIncomeNeeded: 0,
-                currentPassiveIncome: 0,
-                savingsRate: 0
-            };
+        const KEY = 'fire';
+        const cached = this.getCached<FIREProgress>(KEY);
+
+        const fetch = async () => {
+            try {
+                const raw: any = await firstValueFrom(this.api.getFIREMetrics());
+                const result: FIREProgress = {
+                    // /dashboard/fire-metrics returns total_net_worth; /dashboard/summary returns current_net_worth
+                    currentNetWorth: raw.total_net_worth ?? raw.current_net_worth ?? 0,
+                    targetAmount: raw.fire_target ?? 0,
+                    // Pydantic schema uses fire_progress_percentage; summary dict uses progress_percentage
+                    progressPct: raw.fire_progress_percentage ?? raw.progress_percentage ?? 0,
+                    yearsToFire: raw.years_to_fire ?? null,
+                    // Pydantic schema uses fire_date; summary dict uses estimated_fire_date
+                    estimatedDate: raw.fire_date ?? raw.estimated_fire_date ?? null,
+                    monthlyPassiveIncomeNeeded: raw.monthly_passive_income_needed ?? 0,
+                    // Pydantic schema uses passive_income; summary dict uses current_passive_income
+                    currentPassiveIncome: raw.passive_income ?? raw.current_passive_income ?? 0,
+                    // Pydantic schema uses savings_rate; summary dict uses monthly_savings_rate
+                    savingsRate: raw.savings_rate ?? raw.monthly_savings_rate ?? 0
+                };
+                this.setCache(KEY, result);
+                return result;
+            } catch {
+                return cached ?? {
+                    currentNetWorth: 0, targetAmount: 0, progressPct: 0,
+                    yearsToFire: null, estimatedDate: null,
+                    monthlyPassiveIncomeNeeded: 0, currentPassiveIncome: 0, savingsRate: 0
+                };
+            }
+        };
+
+        if (cached) {
+            if (!this.isFresh(KEY)) fetch();
+            return cached;
         }
+        return fetch();
     }
 
     /**
@@ -247,58 +287,163 @@ export class DashboardService {
     }
 
     /**
-     * Get worth progression for line chart
+     * Compute worth progression client-side using asset purchase_date + linear interpolation.
+     * months = 0 → all-time view: starts 3 months before the earliest purchase_date.
+     * months > 0 → last N months.
      */
-    async getWorthProgression(months: number = 12): Promise<ChartDataPoint[]> {
-        try {
-            const progression = await firstValueFrom(this.api.getWorthProgression(months));
-            return progression.map(p => ({
-                label: this.formatDateLabel(p.date),
-                value: p.net_worth
-            }));
-        } catch (error) {
-            console.error('Error fetching worth progression:', error);
-            return [];
+    private async computeProgressionClientSide(months: number): Promise<{
+        labels: string[];
+        assets: number[];
+        debts: number[];
+        netWorth: number[];
+    }> {
+        const [assets, debts] = await Promise.all([
+            firstValueFrom(this.api.getAssets(0, 200)),
+            firstValueFrom(this.api.getDebts(0, 100))
+        ]);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Determine the start of the chart window
+        let startDate: Date;
+        if (months === 0) {
+            // All-time: find earliest purchase_date among all assets
+            let earliest = new Date(today);
+            for (const asset of assets) {
+                if (asset.purchase_date) {
+                    const d = new Date(asset.purchase_date);
+                    if (d < earliest) earliest = d;
+                }
+            }
+            // Start 3 months before first purchase so curve clearly starts from 0
+            startDate = new Date(earliest.getFullYear(), earliest.getMonth() - 3, 1);
+        } else {
+            startDate = new Date(today.getFullYear(), today.getMonth() - (months - 1), 1);
         }
+
+        // Build monthly point list from startDate to today
+        const pointDates: Date[] = [];
+        let cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        while (cur <= today) {
+            pointDates.push(new Date(cur));
+            cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+        }
+
+        const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const labels: string[] = [];
+        const assetsArr: number[] = [];
+        const debtsArr: number[] = [];
+        const netWorthArr: number[] = [];
+
+        const lastIdx = pointDates.length - 1;
+        for (let idx = 0; idx < pointDates.length; idx++) {
+            const pointDate = pointDates[idx];
+            const monthsAgo = lastIdx - idx; // how many months before current
+
+            let totalAssets = 0;
+            for (const asset of assets) {
+                if (!asset.purchase_date) {
+                    totalAssets += asset.current_value;
+                    continue;
+                }
+                const assetStart = new Date(asset.purchase_date);
+                if (assetStart <= pointDate) {
+                    const purchaseVal = asset.purchase_value ?? asset.current_value;
+                    const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
+                    const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
+                    const pct = Math.min(1, elapsed / totalDays);
+                    totalAssets += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                }
+                // asset not yet acquired at this point → skip (value = 0)
+            }
+
+            let totalDebts = 0;
+            for (const debt of debts) {
+                if (debt.type === 'i_owe') {
+                    const monthly = debt.monthly_payment ?? 0;
+                    totalDebts += debt.current_amount + monthly * monthsAgo;
+                }
+            }
+
+            const year = pointDate.getFullYear();
+            const month = pointDate.getMonth();
+            // Compact label: always show year on January or first point
+            const showYear = month === 0 || idx === 0;
+            labels.push(showYear ? `${MONTH_NAMES[month]} ${year}` : MONTH_NAMES[month]);
+            assetsArr.push(Math.round(totalAssets));
+            debtsArr.push(Math.round(totalDebts));
+            netWorthArr.push(Math.max(0, Math.round(totalAssets - totalDebts)));
+        }
+
+        return { labels, assets: assetsArr, debts: debtsArr, netWorth: netWorthArr };
     }
 
     /**
-     * Get worth progression with breakdown
+     * Get worth progression for line chart (client-side interpolation)
      */
-    async getWorthProgressionDetailed(months: number = 12): Promise<{ 
-        labels: string[], 
-        assets: number[], 
-        debts: number[], 
-        netWorth: number[] 
+    async getWorthProgression(months: number = 12): Promise<ChartDataPoint[]> {
+        const KEY = `progression_${months}`;
+        const cached = this.getCached<ChartDataPoint[]>(KEY);
+
+        const fetch = async () => {
+            try {
+                const { labels, netWorth } = await this.computeProgressionClientSide(months);
+                const result: ChartDataPoint[] = labels.map((label, idx) => ({ label, value: netWorth[idx] }));
+                this.setCache(KEY, result);
+                return result;
+            } catch {
+                return cached ?? [];
+            }
+        };
+
+        if (cached) {
+            if (!this.isFresh(KEY)) fetch();
+            return cached;
+        }
+        return fetch();
+    }
+
+    /**
+     * Get worth progression with breakdown (client-side interpolation)
+     */
+    async getWorthProgressionDetailed(months: number = 12): Promise<{
+        labels: string[];
+        assets: number[];
+        debts: number[];
+        netWorth: number[];
     }> {
         try {
-            const progression = await firstValueFrom(this.api.getWorthProgression(months));
-            return {
-                labels: progression.map(p => this.formatDateLabel(p.date)),
-                assets: progression.map(p => p.total_assets),
-                debts: progression.map(p => p.total_debts),
-                netWorth: progression.map(p => p.net_worth)
-            };
+            return await this.computeProgressionClientSide(months);
         } catch (error) {
-            console.error('Error fetching worth progression:', error);
+            console.error('Error computing worth progression:', error);
             return { labels: [], assets: [], debts: [], netWorth: [] };
         }
     }
 
     /**
-     * Get total assets progression (Patrimoine Total Brut)
+     * Get total assets progression — Patrimoine Total Brut (client-side interpolation)
      */
     async getTotalAssetsProgression(months: number = 12): Promise<ChartDataPoint[]> {
-        try {
-            const progression = await firstValueFrom(this.api.getWorthProgression(months));
-            return progression.map(p => ({
-                label: this.formatDateLabel(p.date),
-                value: p.total_assets
-            }));
-        } catch (error) {
-            console.error('Error fetching total assets progression:', error);
-            return [];
+        const KEY = `assets_progression_${months}`;
+        const cached = this.getCached<ChartDataPoint[]>(KEY);
+
+        const fetch = async () => {
+            try {
+                const { labels, assets } = await this.computeProgressionClientSide(months);
+                const result: ChartDataPoint[] = labels.map((label, idx) => ({ label, value: assets[idx] }));
+                this.setCache(KEY, result);
+                return result;
+            } catch {
+                return cached ?? [];
+            }
+        };
+
+        if (cached) {
+            if (!this.isFresh(KEY)) fetch();
+            return cached;
         }
+        return fetch();
     }
 
     // ==================== PRIVATE HELPERS ====================

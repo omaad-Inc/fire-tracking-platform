@@ -7,16 +7,24 @@
     left: 0;
     top: 0;
     width: 100%;
-    padding: 0 2rem;
+    padding: 0 2rem 0 0;
+    border-bottom: 1px solid var(--surface-border);
     background-color: var(--surface-card);
     transition: left var(--layout-section-transition-duration);
     display: flex;
     align-items: center;
 
     .layout-topbar-logo-container {
-        width: 20rem;
+        width: 17rem;
+        min-width: 17rem;
         display: flex;
         align-items: center;
+        height: 100%;
+        padding-left: 1.5rem;
+        padding-right: 1rem;
+        border-right: 1px solid var(--surface-border);
+        margin-right: 1.5rem;
+        flex-shrink: 0;
     }
 
     .layout-topbar-logo {
@@ -113,6 +121,11 @@
 
         .layout-topbar-logo-container {
             width: auto;
+            min-width: auto;
+            border-right: none;
+            padding-left: 0;
+            margin-right: 0;
+            height: auto;
         }
 
         .layout-menu-button {
