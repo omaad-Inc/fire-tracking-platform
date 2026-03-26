@@ -429,7 +429,21 @@ export class AssetDetailPage implements OnInit {
         const url = this.router.url;
         const match = url.match(/^\/(fr|en)\//);
         const lang = match ? match[1] : 'fr';
-        this.router.navigate(['/', lang, 'pages', 'patrimoine']);
+        // Try to go back to category detail if we know the category
+        const cat = this.asset()?.category;
+        const catToGroup: Record<string, string> = {
+            real_estate: 'real_estate',
+            stocks: 'stocks_bonds', bonds: 'stocks_bonds',
+            savings_account: 'savings', cash: 'savings', life_insurance: 'savings', retirement: 'savings',
+            crypto: 'crypto',
+            business: 'other', vehicle: 'other', collectibles: 'other', commodities: 'other', other: 'other',
+        };
+        const groupId = cat ? catToGroup[cat] : null;
+        if (groupId) {
+            this.router.navigate(['/', lang, 'pages', 'patrimoine', 'category', groupId]);
+        } else {
+            this.router.navigate(['/', lang, 'pages', 'patrimoine']);
+        }
     }
 
     editAsset() {

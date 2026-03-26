@@ -446,6 +446,89 @@ export class DashboardService {
         return fetch();
     }
 
+    /**
+     * Get progression for a specific category group (filtered assets only)
+     */
+    async getCategoryProgression(categories: string[], months: number = 0): Promise<ChartDataPoint[]> {
+        const KEY = `cat_progression_${categories.join('_')}_${months}`;
+        const cached = this.getCached<ChartDataPoint[]>(KEY);
+
+        const fetch = async () => {
+            try {
+                const result = await this.computeCategoryProgressionClientSide(categories, months);
+                this.setCache(KEY, result);
+                return result;
+            } catch {
+                return cached ?? [];
+            }
+        };
+
+        if (cached) {
+            if (!this.isFresh(KEY)) fetch();
+            return cached;
+        }
+        return fetch();
+    }
+
+    private async computeCategoryProgressionClientSide(categories: string[], months: number): Promise<ChartDataPoint[]> {
+        const all = await firstValueFrom(this.api.getAssets(0, 200));
+        const assets = all.filter(a => categories.includes(a.category ?? ''));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let startDate: Date;
+        if (months === 0) {
+            let earliest = new Date(today);
+            for (const asset of assets) {
+                if (asset.purchase_date) {
+                    const d = new Date(asset.purchase_date);
+                    if (d < earliest) earliest = d;
+                }
+            }
+            startDate = new Date(earliest.getFullYear(), earliest.getMonth() - 3, 1);
+        } else {
+            startDate = new Date(today.getFullYear(), today.getMonth() - (months - 1), 1);
+        }
+
+        const pointDates: Date[] = [];
+        let cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        while (cur <= today) {
+            pointDates.push(new Date(cur));
+            cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+        }
+
+        const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const result: ChartDataPoint[] = [];
+
+        for (let idx = 0; idx < pointDates.length; idx++) {
+            const pointDate = pointDates[idx];
+            let total = 0;
+            for (const asset of assets) {
+                if (!asset.purchase_date) {
+                    total += asset.current_value;
+                    continue;
+                }
+                const assetStart = new Date(asset.purchase_date);
+                if (assetStart <= pointDate) {
+                    const purchaseVal = asset.purchase_value ?? asset.current_value;
+                    const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
+                    const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
+                    const pct = Math.min(1, elapsed / totalDays);
+                    total += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                }
+            }
+            const month = pointDate.getMonth();
+            const showYear = month === 0 || idx === 0;
+            result.push({
+                label: showYear ? `${MONTH_NAMES[month]} ${pointDate.getFullYear()}` : MONTH_NAMES[month],
+                value: Math.round(total)
+            });
+        }
+
+        return result;
+    }
+
     // ==================== PRIVATE HELPERS ====================
 
     private formatDateLabel(dateStr: string): string {
