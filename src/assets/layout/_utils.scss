@@ -16,6 +16,10 @@
     }
 }
 
+.app-dark .card {
+    background: var(--p-surface-800);
+}
+
 .p-toast {
     &.p-toast-top-right,
     &.p-toast-top-left,
