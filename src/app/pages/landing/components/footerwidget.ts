@@ -96,29 +96,21 @@ import { CommonModule } from '@angular/common';
                         </div>
 
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Suivez-nous</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">Advisory</h4>
                             <ul class="space-y-3">
                                 <li>
-                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-2">
-                                        <i class="pi pi-twitter text-sm"></i>
-                                        Twitter / X
+                                    <a [routerLink]="[currentLang, 'advisory']" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                                        Nos offres
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-2">
-                                        <i class="pi pi-linkedin text-sm"></i>
-                                        LinkedIn
+                                    <a [routerLink]="[currentLang, 'advisory']" [fragment]="'offres'" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                                        Services
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-2">
-                                        <i class="pi pi-discord text-sm"></i>
-                                        Discord
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Roadmap
+                                    <a [routerLink]="[currentLang, 'advisory']" [fragment]="'contact'" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                                        Prendre contact
                                     </a>
                                 </li>
                             </ul>

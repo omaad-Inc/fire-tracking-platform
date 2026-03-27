@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
+import { LayoutService } from '../../../layout/service/layout.service';
 
 @Component({
     selector: 'topbar-widget',
@@ -37,7 +38,14 @@ import { CommonModule } from '@angular/common';
                       transition-all duration-200 cursor-pointer">
                 Vision FIRE
             </a>
-            <a (click)="navigateTo('pricing')" pRipple 
+            <a [routerLink]="[currentLang, 'advisory']" pRipple
+               class="flex items-center px-4 py-2 rounded-lg font-medium text-base
+                      text-indigo-600 dark:text-indigo-400
+                      hover:bg-indigo-50 dark:hover:bg-indigo-900/30
+                      transition-all duration-200 cursor-pointer">
+                Advisory
+            </a>
+            <a (click)="navigateTo('pricing')" pRipple
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
                       transition-all duration-200 cursor-pointer">
@@ -47,6 +55,15 @@ import { CommonModule } from '@angular/common';
 
         <!-- Desktop CTA Buttons -->
         <div class="hidden lg:flex items-center gap-3 shrink-0">
+            <!-- Theme toggle -->
+            <button (click)="toggleDarkMode()" pRipple
+                    class="w-9 h-9 rounded-full flex items-center justify-center
+                           text-surface-600 dark:text-surface-300
+                           hover:bg-surface-100 dark:hover:bg-surface-800
+                           transition-all duration-200"
+                    [title]="layoutService.isDarkTheme() ? 'Passer en mode clair' : 'Passer en mode sombre'">
+                <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun text-base' : 'pi pi-moon text-base'"></i>
+            </button>
             <button pButton pRipple label="Se connecter"
                     [routerLink]="[currentLang, 'auth', 'login']"
                     [rounded]="true" [text]="true"
@@ -101,7 +118,17 @@ import { CommonModule } from '@angular/common';
                     </a>
                 </li>
                 <li>
-                    <a (click)="navigateTo('pricing')" pRipple 
+                    <a [routerLink]="[currentLang, 'advisory']" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg font-medium text-base
+                              text-indigo-600 dark:text-indigo-400
+                              hover:bg-indigo-50 dark:hover:bg-indigo-900/30
+                              transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-briefcase mr-2"></i>
+                        <span>Advisory</span>
+                    </a>
+                </li>
+                <li>
+                    <a (click)="navigateTo('pricing')" pRipple
                        class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                               hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
                               transition-all duration-200 cursor-pointer">
@@ -112,6 +139,17 @@ import { CommonModule } from '@angular/common';
             </ul>
 
             <div class="flex flex-col gap-2 border-t border-surface-200 dark:border-surface-700 pt-4 mt-4">
+                <!-- Theme toggle (mobile) -->
+                <button (click)="toggleDarkMode()" pRipple
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
+                               text-surface-700 dark:text-surface-200
+                               hover:bg-surface-100 dark:hover:bg-surface-800
+                               transition-all duration-200 cursor-pointer">
+                    <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
+                    <span class="font-medium text-base">
+                        {{ layoutService.isDarkTheme() ? 'Mode clair' : 'Mode sombre' }}
+                    </span>
+                </button>
                 <button pButton pRipple label="Se connecter"
                         [routerLink]="[currentLang, 'auth', 'login']"
                         [rounded]="true" [text]="true"
@@ -129,6 +167,7 @@ import { CommonModule } from '@angular/common';
 })
 export class TopbarWidget {
     currentLang = '/fr';
+    layoutService = inject(LayoutService);
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -137,5 +176,13 @@ export class TopbarWidget {
 
     navigateTo(fragment: string) {
         this.router.navigate([this.currentLang + '/landing'], { fragment });
+    }
+
+    toggleDarkMode() {
+        this.layoutService.layoutConfig.update((state) => ({
+            ...state,
+            themeMode: state.darkTheme ? 'light' : 'dark',
+            darkTheme: !state.darkTheme
+        }));
     }
 }
