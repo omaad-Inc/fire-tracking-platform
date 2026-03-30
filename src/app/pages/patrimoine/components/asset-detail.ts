@@ -278,6 +278,67 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                     </div>
                 }
 
+                <!-- Tontine specific -->
+                @if (asset()!.category === 'tontine') {
+                    <div>
+                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Détails de la tontine</h3>
+                        <div class="space-y-3">
+                            @if (tontineData(); as td) {
+                                @if (td.mise_mensuelle) {
+                                    <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                        <span class="text-surface-500 text-sm">Mise mensuelle</span>
+                                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ td.mise_mensuelle | number:'1.0-0' }} {{ td.devise || 'FCFA' }}</span>
+                                    </div>
+                                }
+                                @if (td.participants) {
+                                    <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                        <span class="text-surface-500 text-sm">Nombre de participants</span>
+                                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ td.participants }}</span>
+                                    </div>
+                                }
+                                @if (td.date_collecte) {
+                                    <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                        <span class="text-surface-500 text-sm">Date de collecte de ma mise</span>
+                                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ td.date_collecte }}</span>
+                                    </div>
+                                }
+                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                    <span class="text-surface-500 text-sm">Statut</span>
+                                    <span class="text-sm font-medium px-2 py-0.5 rounded-full"
+                                          [ngClass]="td.statut === 'mise_recue' ? 'bg-emerald-500/10 text-emerald-500' : td.statut === 'termine' ? 'bg-surface-500/10 text-surface-500' : 'bg-indigo-500/10 text-indigo-500'">
+                                        {{ td.statut === 'mise_recue' ? 'Mise reçue ✓' : td.statut === 'termine' ? 'Terminée' : 'En cours' }}
+                                    </span>
+                                </div>
+                            }
+                            @if (asset()!.purchase_date) {
+                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                    <span class="text-surface-500 text-sm">Date de début</span>
+                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ asset()!.purchase_date }}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Mobile Money specific -->
+                @if (asset()!.category === 'mobile_money') {
+                    <div>
+                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Compte Mobile Money</h3>
+                        <div class="space-y-3">
+                            @if (asset()!.institution) {
+                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                    <span class="text-surface-500 text-sm">Opérateur</span>
+                                    <span class="text-sky-500 text-sm font-semibold">{{ asset()!.institution }}</span>
+                                </div>
+                            }
+                            <div class="p-3 rounded-xl bg-sky-500/5 border border-sky-500/20 flex items-center gap-2 text-xs text-surface-400">
+                                <i class="pi pi-info-circle text-sky-400"></i>
+                                Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <!-- Vehicle specific -->
                 @if (asset()!.category === 'vehicle') {
                     <div>
@@ -326,53 +387,67 @@ export class AssetDetailPage implements OnInit {
     });
 
     private readonly CATEGORY_ICONS: Record<string, string> = {
-        real_estate: 'pi pi-building',
-        stocks: 'pi pi-chart-line',
-        bonds: 'pi pi-chart-bar',
-        crypto: 'pi pi-bitcoin',
-        cash: 'pi pi-wallet',
-        retirement: 'pi pi-shield',
-        life_insurance: 'pi pi-heart',
+        real_estate:     'pi pi-building',
+        stocks:          'pi pi-chart-line',
+        bonds:           'pi pi-chart-bar',
+        crypto:          'pi pi-bitcoin',
+        cash:            'pi pi-wallet',
+        retirement:      'pi pi-shield',
+        life_insurance:  'pi pi-heart',
         savings_account: 'pi pi-dollar',
-        business: 'pi pi-briefcase',
-        vehicle: 'pi pi-car',
-        collectibles: 'pi pi-star',
-        other: 'pi pi-box',
+        business:        'pi pi-briefcase',
+        vehicle:         'pi pi-car',
+        tontine:         'pi pi-users',
+        mobile_money:    'pi pi-mobile',
+        collectibles:    'pi pi-star',
+        commodities:     'pi pi-box',
+        other:           'pi pi-box',
     };
 
     private readonly CATEGORY_BGS: Record<string, string> = {
-        real_estate: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-        stocks: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-        bonds: 'linear-gradient(135deg, #10b981, #059669)',
-        crypto: 'linear-gradient(135deg, #f59e0b, #d97706)',
-        cash: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-        retirement: 'linear-gradient(135deg, #14b8a6, #0d9488)',
-        life_insurance: 'linear-gradient(135deg, #ec4899, #db2777)',
+        real_estate:     'linear-gradient(135deg, #6366f1, #4f46e5)',
+        stocks:          'linear-gradient(135deg, #06b6d4, #0891b2)',
+        bonds:           'linear-gradient(135deg, #10b981, #059669)',
+        crypto:          'linear-gradient(135deg, #f59e0b, #d97706)',
+        cash:            'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+        retirement:      'linear-gradient(135deg, #14b8a6, #0d9488)',
+        life_insurance:  'linear-gradient(135deg, #ec4899, #db2777)',
         savings_account: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-        business: 'linear-gradient(135deg, #f97316, #ea580c)',
-        vehicle: 'linear-gradient(135deg, #64748b, #475569)',
-        collectibles: 'linear-gradient(135deg, #a855f7, #9333ea)',
-        other: 'linear-gradient(135deg, #94a3b8, #64748b)',
+        business:        'linear-gradient(135deg, #f97316, #ea580c)',
+        vehicle:         'linear-gradient(135deg, #64748b, #475569)',
+        tontine:         'linear-gradient(135deg, #e11d48, #be123c)',
+        mobile_money:    'linear-gradient(135deg, #0ea5e9, #0284c7)',
+        collectibles:    'linear-gradient(135deg, #a855f7, #9333ea)',
+        other:           'linear-gradient(135deg, #94a3b8, #64748b)',
     };
 
     private readonly CATEGORY_LABELS: Record<string, string> = {
-        real_estate: 'Immobilier',
-        stocks: 'Actions',
-        bonds: 'Obligations',
-        crypto: 'Crypto-monnaies',
-        cash: 'Liquidités',
-        retirement: 'Épargne retraite',
-        life_insurance: 'Assurance vie',
+        real_estate:     'Immobilier',
+        stocks:          'Actions',
+        bonds:           'Obligations',
+        crypto:          'Crypto-monnaies',
+        cash:            'Liquidités',
+        retirement:      'Épargne retraite',
+        life_insurance:  'Assurance vie',
         savings_account: 'Livret d\'épargne',
-        business: 'Entreprise',
-        vehicle: 'Véhicule',
-        collectibles: 'Collections',
-        other: 'Autres',
+        business:        'Entreprise',
+        vehicle:         'Véhicule',
+        tontine:         'Tontine',
+        mobile_money:    'Mobile Money',
+        collectibles:    'Collections',
+        commodities:     'Matières premières',
+        other:           'Autres',
     };
 
     categoryIcon = computed(() => this.CATEGORY_ICONS[this.asset()?.category ?? ''] ?? 'pi pi-box');
     categoryBg = computed(() => this.CATEGORY_BGS[this.asset()?.category ?? ''] ?? 'linear-gradient(135deg, #94a3b8, #64748b)');
     categoryLabel = computed(() => this.CATEGORY_LABELS[this.asset()?.category ?? ''] ?? this.asset()?.category ?? '');
+
+    tontineData = computed(() => {
+        const notes = this.asset()?.notes;
+        if (!notes) return null;
+        try { return JSON.parse(notes); } catch { return null; }
+    });
 
     async ngOnInit() {
         const id = Number(this.route.snapshot.paramMap.get('id'));

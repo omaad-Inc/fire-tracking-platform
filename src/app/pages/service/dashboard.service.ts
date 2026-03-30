@@ -38,23 +38,39 @@ export interface AssetAllocation {
 
 // Color mapping for asset categories
 const CATEGORY_COLORS: Record<string, string> = {
-    'real_estate': '#6366f1', // Indigo
-    'stocks': '#06b6d4',      // Cyan
-    'bonds': '#10b981',       // Emerald
-    'crypto': '#f59e0b',      // Amber
-    'cash': '#8b5cf6',        // Violet
-    'commodities': '#ec4899', // Pink
-    'other': '#94a3b8'        // Gray
+    'real_estate':  '#6366f1', // Indigo
+    'stocks':       '#06b6d4', // Cyan
+    'bonds':        '#10b981', // Emerald
+    'crypto':       '#f59e0b', // Amber
+    'cash':         '#8b5cf6', // Violet
+    'retirement':   '#3b82f6', // Blue
+    'life_insurance':'#14b8a6',// Teal
+    'savings_account':'#a855f7',// Purple
+    'business':     '#f97316', // Orange
+    'vehicle':      '#64748b', // Slate
+    'tontine':      '#e11d48', // Rose
+    'mobile_money': '#0ea5e9', // Sky
+    'collectibles': '#84cc16', // Lime
+    'commodities':  '#ec4899', // Pink
+    'other':        '#94a3b8'  // Gray
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
-    'real_estate': 'Immobilier',
-    'stocks': 'Actions',
-    'bonds': 'Obligations',
-    'crypto': 'Cryptomonnaies',
-    'cash': 'Liquidités',
-    'commodities': 'Matières premières',
-    'other': 'Autres'
+    'real_estate':   'Immobilier',
+    'stocks':        'Actions / Bourse',
+    'bonds':         'Obligations',
+    'crypto':        'Cryptomonnaies',
+    'cash':          'Liquidités',
+    'retirement':    'Épargne retraite',
+    'life_insurance':'Assurance vie',
+    'savings_account':'Livrets',
+    'business':      'Entreprise',
+    'vehicle':       'Véhicules',
+    'tontine':       'Tontine',
+    'mobile_money':  'Mobile Money',
+    'collectibles':  'Collections',
+    'commodities':   'Matières premières',
+    'other':         'Autres'
 };
 
 // Color palette for expense categories

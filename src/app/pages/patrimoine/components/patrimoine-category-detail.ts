@@ -17,41 +17,47 @@ interface GroupConfig {
 }
 
 const GROUPS: GroupConfig[] = [
-    { id: 'real_estate',  label: 'Immobilier',      icon: 'pi pi-building',   bg: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#6366f1', categories: ['real_estate'] },
-    { id: 'stocks_bonds', label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)', color: '#06b6d4', categories: ['stocks', 'bonds'] },
-    { id: 'savings',      label: 'Épargne',          icon: 'pi pi-dollar',     bg: 'linear-gradient(135deg, #10b981, #059669)', color: '#10b981', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
-    { id: 'crypto',       label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#f59e0b', categories: ['crypto'] },
-    { id: 'other',        label: 'Autres',           icon: 'pi pi-box',        bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', color: '#8b5cf6', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
+    { id: 'real_estate',    label: 'Immobilier',       icon: 'pi pi-building',   bg: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#6366f1', categories: ['real_estate'] },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)', color: '#06b6d4', categories: ['stocks', 'bonds'] },
+    { id: 'savings',        label: 'Épargne',          icon: 'pi pi-dollar',     bg: 'linear-gradient(135deg, #10b981, #059669)', color: '#10b981', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
+    { id: 'crypto',         label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#f59e0b', categories: ['crypto'] },
+    { id: 'tontine',        label: 'Tontine',          icon: 'pi pi-users',      bg: 'linear-gradient(135deg, #e11d48, #be123c)', color: '#e11d48', categories: ['tontine'] },
+    { id: 'mobile_money',   label: 'Mobile Money',     icon: 'pi pi-mobile',     bg: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: '#0ea5e9', categories: ['mobile_money'] },
+    { id: 'other',          label: 'Autres',           icon: 'pi pi-box',        bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', color: '#8b5cf6', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
     real_estate: 'pi pi-building', stocks: 'pi pi-chart-line', bonds: 'pi pi-chart-bar',
     crypto: 'pi pi-bitcoin', cash: 'pi pi-wallet', retirement: 'pi pi-shield',
     life_insurance: 'pi pi-heart', savings_account: 'pi pi-dollar', business: 'pi pi-briefcase',
-    vehicle: 'pi pi-car', collectibles: 'pi pi-star', commodities: 'pi pi-box', other: 'pi pi-box',
+    vehicle: 'pi pi-car', tontine: 'pi pi-users', mobile_money: 'pi pi-mobile',
+    collectibles: 'pi pi-star', commodities: 'pi pi-box', other: 'pi pi-box',
 };
 
 const CATEGORY_BGS: Record<string, string> = {
-    real_estate: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-    stocks: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-    bonds: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-    crypto: 'linear-gradient(135deg, #f59e0b, #d97706)',
-    cash: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-    retirement: 'linear-gradient(135deg, #14b8a6, #0d9488)',
-    life_insurance: 'linear-gradient(135deg, #ec4899, #db2777)',
+    real_estate:     'linear-gradient(135deg, #6366f1, #4f46e5)',
+    stocks:          'linear-gradient(135deg, #06b6d4, #0891b2)',
+    bonds:           'linear-gradient(135deg, #06b6d4, #0891b2)',
+    crypto:          'linear-gradient(135deg, #f59e0b, #d97706)',
+    cash:            'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+    retirement:      'linear-gradient(135deg, #14b8a6, #0d9488)',
+    life_insurance:  'linear-gradient(135deg, #ec4899, #db2777)',
     savings_account: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-    business: 'linear-gradient(135deg, #f97316, #ea580c)',
-    vehicle: 'linear-gradient(135deg, #64748b, #475569)',
-    collectibles: 'linear-gradient(135deg, #a855f7, #9333ea)',
-    other: 'linear-gradient(135deg, #94a3b8, #64748b)',
+    business:        'linear-gradient(135deg, #f97316, #ea580c)',
+    vehicle:         'linear-gradient(135deg, #64748b, #475569)',
+    tontine:         'linear-gradient(135deg, #e11d48, #be123c)',
+    mobile_money:    'linear-gradient(135deg, #0ea5e9, #0284c7)',
+    collectibles:    'linear-gradient(135deg, #a855f7, #9333ea)',
+    other:           'linear-gradient(135deg, #94a3b8, #64748b)',
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
     real_estate: 'Immobilier', stocks: 'Actions', bonds: 'Obligations',
     crypto: 'Crypto-monnaies', cash: 'Liquidités', retirement: 'Épargne retraite',
     life_insurance: 'Assurance vie', savings_account: "Livret d'épargne",
-    business: 'Entreprise', vehicle: 'Véhicule', collectibles: 'Collections',
-    commodities: 'Matières premières', other: 'Autres',
+    business: 'Entreprise', vehicle: 'Véhicule',
+    tontine: 'Tontine', mobile_money: 'Mobile Money',
+    collectibles: 'Collections', commodities: 'Matières premières', other: 'Autres',
 };
 
 const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#f97316', '#14b8a6', '#64748b', '#a855f7'];

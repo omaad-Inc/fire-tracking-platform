@@ -74,7 +74,7 @@ import { TokenService } from '../../../core/services/token.service';
                                 </div>
                             </ng-template>
                         </p-select>
-                        <p class="text-xs text-surface-400 mt-1">Taux de conversion : 1 EUR = 655,957 FCFA</p>
+                        <p class="text-xs text-surface-400 mt-1">Taux de référence : 1 EUR = 655,957 FCFA ≈ 1,08 USD</p>
                     </div>
                 </div>
             </div>
@@ -235,12 +235,13 @@ export class PreferencesSettings implements OnInit {
     ];
 
     currencies = [
-        { name: 'EUR - Euro', code: 'EUR', symbol: '€' },
-        { name: 'XOF - Franc CFA', code: 'XOF', symbol: 'FCFA' }
+        { name: 'XOF - Franc CFA', code: 'XOF', symbol: 'FCFA' },
+        { name: 'EUR - Euro',       code: 'EUR', symbol: '€'    },
+        { name: 'USD - Dollar US',  code: 'USD', symbol: '$'    }
     ];
 
     selectedLanguage = 'fr';
-    selectedCurrency = 'EUR';
+    selectedCurrency = 'XOF';
     emailNotifications = true;
     pushNotifications = true;
     monthlyReports = true;
@@ -249,7 +250,7 @@ export class PreferencesSettings implements OnInit {
     ngOnInit() {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.selectedLanguage = match ? match[1] : 'fr';
-        this.selectedCurrency = this.tokenService.user()?.preferred_currency || 'EUR';
+        this.selectedCurrency = this.tokenService.user()?.preferred_currency || 'XOF';
     }
 
     get isDarkMode(): boolean { return this.layoutService.layoutConfig().darkTheme ?? false; }

@@ -96,7 +96,7 @@ import { RouterModule } from '@angular/router';
                                 <div class="grid grid-cols-3 gap-4 mb-6">
                                     <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
                                         <div class="text-slate-400 text-xs mb-1">Patrimoine</div>
-                                        <div class="text-white font-bold text-lg">€130,481</div>
+                                        <div class="text-white font-bold text-lg">85,6M FCFA</div>
                                         <div class="text-emerald-400 text-xs">+12.5%</div>
                                     </div>
                                     <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">

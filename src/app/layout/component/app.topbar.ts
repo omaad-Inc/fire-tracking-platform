@@ -21,6 +21,8 @@ import { ToastModule } from 'primeng/toast';
 import { AssetCreate, AssetCategory } from '../../core/services/api.service';
 import { PatrimoineService } from '../../pages/service/patrimoine.service';
 import { AppCurrencyPipe } from '../../core/pipes/app-currency.pipe';
+import { CurrencyService } from '../../core/services/currency.service';
+import { DecimalPipe } from '@angular/common';
 
 interface Owner {
     name: string;
@@ -35,6 +37,14 @@ interface AssetFormData {
     purchasePrice: number;
     currentPrice: number;
     owners: Owner[];
+    // Tontine specific
+    tontineMonthlyContribution: number;
+    tontineParticipants: number;
+    tontineStartDate: string;
+    tontineCollectionDate: string;
+    tontineStatus: 'en_cours' | 'mise_recue' | 'termine';
+    // Mobile Money specific
+    mobileMoneyProvider: string;
 }
 
 @Component({
@@ -43,7 +53,7 @@ interface AssetFormData {
     imports: [
         RouterModule, CommonModule, StyleClassModule, AvatarModule,
         DividerModule, DialogModule, ButtonModule, FormsModule, InputTextModule,
-        SelectModule, InputNumberModule, ToastModule, AppCurrencyPipe
+        SelectModule, InputNumberModule, ToastModule, AppCurrencyPipe, DecimalPipe
     ],
     providers: [MessageService],
     template: ` <div class="layout-topbar">
@@ -262,11 +272,11 @@ interface AssetFormData {
                                 <input
                                     pInputText
                                     [(ngModel)]="assetForm.name"
-                                    placeholder="Ex: Appartement, Terrain..."
+                                    [placeholder]="assetForm.category === 'tontine' ? 'Ex: Tontine Famille Diallo' : assetForm.category === 'mobile_money' ? 'Ex: Compte Wave' : 'Ex: Appartement, Actions...'"
                                     class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
                                 />
                             </div>
-                            
+
                             <!-- Category -->
                             <div class="flex flex-col gap-2">
                                 <label class="text-surface-500 dark:text-surface-400 text-sm">Catégorie</label>
@@ -279,46 +289,151 @@ interface AssetFormData {
                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
                                 />
                             </div>
-                            
-                            <!-- Quantity -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Quantité</label>
-                                <p-inputnumber 
-                                    [(ngModel)]="assetForm.quantity" 
-                                    [min]="1"
-                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
-                                />
-                            </div>
-                            
-                            <!-- Buying price per unit -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Prix d'achat unitaire</label>
-                                <div class="relative">
-                                    <p-inputnumber 
-                                        [(ngModel)]="assetForm.purchasePrice" 
-                                        mode="decimal"
-                                        [minFractionDigits]="0"
-                                        [maxFractionDigits]="2"
-                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-12"
-                                    />
-                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-sm">EUR</span>
+
+                            <!-- ===== TONTINE FIELDS ===== -->
+                            @if (assetForm.category === 'tontine') {
+                                <!-- Mise mensuelle -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Mise mensuelle</label>
+                                    <div class="relative">
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.tontineMonthlyContribution"
+                                            [min]="0" mode="decimal" [minFractionDigits]="0"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                        />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Current price per unit -->
-                            <div class="flex flex-col gap-2 md:col-span-1">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Prix actuel unitaire</label>
-                                <div class="relative">
-                                    <p-inputnumber 
-                                        [(ngModel)]="assetForm.currentPrice" 
-                                        mode="decimal"
-                                        [minFractionDigits]="0"
-                                        [maxFractionDigits]="2"
-                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-12"
+
+                                <!-- Nombre de participants -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Nombre de participants</label>
+                                    <p-inputnumber
+                                        [(ngModel)]="assetForm.tontineParticipants"
+                                        [min]="2" [max]="100"
+                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
                                     />
-                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-sm">EUR</span>
                                 </div>
-                            </div>
+
+                                <!-- Date de début -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Date de début</label>
+                                    <input
+                                        pInputText type="date"
+                                        [(ngModel)]="assetForm.tontineStartDate"
+                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                    />
+                                </div>
+
+                                <!-- Date de collecte de ma mise -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Date de collecte de ma mise</label>
+                                    <input
+                                        pInputText type="date"
+                                        [(ngModel)]="assetForm.tontineCollectionDate"
+                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                    />
+                                </div>
+
+                                <!-- Statut -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Statut</label>
+                                    <p-select
+                                        [(ngModel)]="assetForm.tontineStatus"
+                                        [options]="tontineStatusOptions"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
+                                    />
+                                </div>
+
+                                <!-- Valeur estimée (auto) -->
+                                @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
+                                    <div class="md:col-span-2 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-3">
+                                        <i class="pi pi-calculator text-indigo-400"></i>
+                                        <div>
+                                            <p class="text-xs text-surface-400 mb-0.5">Valeur accumulée estimée</p>
+                                            <p class="font-bold text-indigo-400">
+                                                {{ tontineCurrentValue() | number:'1.0-0' }} {{ currencyService.config().symbol }}
+                                                <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} mois × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                            }
+
+                            <!-- ===== MOBILE MONEY FIELDS ===== -->
+                            @if (assetForm.category === 'mobile_money') {
+                                <!-- Opérateur -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Opérateur</label>
+                                    <p-select
+                                        [(ngModel)]="assetForm.mobileMoneyProvider"
+                                        [options]="mobileMoneyProviders"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        placeholder="Sélectionner l'opérateur"
+                                        styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
+                                    />
+                                </div>
+
+                                <!-- Solde actuel -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Solde actuel</label>
+                                    <div class="relative">
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.currentPrice"
+                                            [min]="0" mode="decimal" [minFractionDigits]="0"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                        />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
+                                    <i class="pi pi-info-circle text-cyan-400"></i>
+                                    Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
+                                </div>
+                            }
+
+                            <!-- ===== STANDARD FIELDS (not tontine/mobile_money) ===== -->
+                            @if (assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
+                                <!-- Quantity -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Quantité</label>
+                                    <p-inputnumber
+                                        [(ngModel)]="assetForm.quantity"
+                                        [min]="1"
+                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                    />
+                                </div>
+
+                                <!-- Buying price per unit -->
+                                <div class="flex flex-col gap-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Prix d'achat unitaire</label>
+                                    <div class="relative">
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.purchasePrice"
+                                            mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                        />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Current price per unit -->
+                                <div class="flex flex-col gap-2 md:col-span-1">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Valeur actuelle unitaire</label>
+                                    <div class="relative">
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.currentPrice"
+                                            mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                        />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     }
                     
@@ -425,6 +540,7 @@ export class AppTopbar implements OnInit {
     private authService = inject(AuthService);
     private patrimoineService = inject(PatrimoineService);
     private messageService = inject(MessageService);
+    currencyService = inject(CurrencyService);
 
     layoutService = inject(LayoutService);
 
@@ -443,23 +559,46 @@ export class AppTopbar implements OnInit {
         quantity: 1,
         purchasePrice: 0,
         currentPrice: 0,
-        owners: []
+        owners: [],
+        tontineMonthlyContribution: 0,
+        tontineParticipants: 2,
+        tontineStartDate: '',
+        tontineCollectionDate: '',
+        tontineStatus: 'en_cours',
+        mobileMoneyProvider: ''
     };
     
     // Category options
     categoryOptions = [
         { label: 'Immobilier', value: 'real_estate' },
-        { label: 'Actions', value: 'stocks' },
+        { label: 'Actions / Bourse (BRVM, ...)', value: 'stocks' },
         { label: 'Obligations', value: 'bonds' },
         { label: 'Crypto-monnaies', value: 'crypto' },
         { label: 'Liquidités', value: 'cash' },
         { label: 'Épargne retraite', value: 'retirement' },
         { label: 'Assurance vie', value: 'life_insurance' },
-        { label: 'Livrets', value: 'savings_account' },
+        { label: 'Livrets / Comptes épargne', value: 'savings_account' },
         { label: 'Entreprise', value: 'business' },
         { label: 'Véhicules', value: 'vehicle' },
+        { label: 'Tontine', value: 'tontine' },
+        { label: 'Mobile Money (Wave, Orange...)', value: 'mobile_money' },
         { label: 'Collections', value: 'collectibles' },
+        { label: 'Matières premières', value: 'commodities' },
         { label: 'Autres', value: 'other' }
+    ];
+
+    mobileMoneyProviders = [
+        { label: 'Wave', value: 'Wave' },
+        { label: 'Orange Money', value: 'Orange Money' },
+        { label: 'Free Money', value: 'Free Money' },
+        { label: 'Expresso', value: 'Expresso' },
+        { label: 'Autre', value: 'Autre' }
+    ];
+
+    tontineStatusOptions = [
+        { label: 'En cours', value: 'en_cours' },
+        { label: "J'ai reçu ma mise", value: 'mise_recue' },
+        { label: 'Terminée', value: 'termine' }
     ];
 
     user = this.tokenService.user;
@@ -565,17 +704,42 @@ export class AppTopbar implements OnInit {
             quantity: 1,
             purchasePrice: 0,
             currentPrice: 0,
-            owners: [{
-                name: ownerName,
-                initials: initials,
-                percentage: 100
-            }]
+            owners: [{ name: ownerName, initials: initials, percentage: 100 }],
+            tontineMonthlyContribution: 0,
+            tontineParticipants: 2,
+            tontineStartDate: '',
+            tontineCollectionDate: '',
+            tontineStatus: 'en_cours',
+            mobileMoneyProvider: ''
         };
         this.currentStep.set(1);
     }
     
     isStep1Valid(): boolean {
-        return !!(this.assetForm.name && this.assetForm.category && this.assetForm.currentPrice > 0);
+        const f = this.assetForm;
+        if (!f.name || !f.category) return false;
+        if (f.category === 'tontine')
+            return f.tontineMonthlyContribution > 0 && f.tontineParticipants > 1 && !!f.tontineStartDate;
+        if (f.category === 'mobile_money')
+            return f.currentPrice > 0 && !!f.mobileMoneyProvider;
+        return f.currentPrice > 0;
+    }
+
+    /** Months elapsed since a given ISO date string. */
+    tontineMonthsElapsed(): number {
+        if (!this.assetForm.tontineStartDate) return 0;
+        const start = new Date(this.assetForm.tontineStartDate).getTime();
+        return Math.max(0, Math.floor((Date.now() - start) / (30.44 * 24 * 60 * 60 * 1000)));
+    }
+
+    /** Estimated current tontine value in display currency. */
+    tontineCurrentValue(): number {
+        return this.assetForm.tontineMonthlyContribution * this.tontineMonthsElapsed();
+    }
+
+    /** Convert a display-currency amount to EUR for storage. */
+    private toEur(displayValue: number): number {
+        return displayValue / this.currencyService.config().rate;
     }
     
     nextStep(): void {
@@ -624,13 +788,44 @@ export class AppTopbar implements OnInit {
         this.isSubmitting.set(true);
         
         try {
-            const assetData: AssetCreate = {
-                name: this.assetForm.name,
-                category: this.assetForm.category as AssetCategory,
-                current_value: this.assetForm.currentPrice * this.assetForm.quantity,
-                purchase_value: this.assetForm.purchasePrice * this.assetForm.quantity,
-                purchase_date: new Date().toISOString().split('T')[0]
-            };
+            const f = this.assetForm;
+            let assetData: AssetCreate;
+
+            if (f.category === 'tontine') {
+                const months = Math.max(1, this.tontineMonthsElapsed());
+                assetData = {
+                    name: f.name,
+                    category: 'tontine',
+                    current_value: this.toEur(f.tontineMonthlyContribution * months),
+                    purchase_value: this.toEur(f.tontineMonthlyContribution),
+                    purchase_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
+                    notes: JSON.stringify({
+                        mise_mensuelle: f.tontineMonthlyContribution,
+                        participants: f.tontineParticipants,
+                        date_collecte: f.tontineCollectionDate,
+                        statut: f.tontineStatus,
+                        devise: this.currencyService.config().code
+                    })
+                };
+            } else if (f.category === 'mobile_money') {
+                assetData = {
+                    name: f.name,
+                    category: 'mobile_money',
+                    current_value: this.toEur(f.currentPrice),
+                    purchase_value: this.toEur(f.currentPrice),
+                    purchase_date: new Date().toISOString().split('T')[0],
+                    institution: f.mobileMoneyProvider,
+                    is_liquid: true
+                };
+            } else {
+                assetData = {
+                    name: f.name,
+                    category: f.category as AssetCategory,
+                    current_value: this.toEur(f.currentPrice * f.quantity),
+                    purchase_value: this.toEur(f.purchasePrice * f.quantity),
+                    purchase_date: new Date().toISOString().split('T')[0]
+                };
+            }
             
             // Use PatrimoineService which will notify subscribers of the update
             await this.patrimoineService.createAsset(assetData);
@@ -648,13 +843,18 @@ export class AppTopbar implements OnInit {
             // Navigate to patrimoine page to see the new asset
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error creating asset:', error);
+            const detail = error?.error?.detail
+                ? (typeof error.error.detail === 'string'
+                    ? error.error.detail
+                    : JSON.stringify(error.error.detail).slice(0, 120))
+                : "Impossible de créer l'actif";
             this.messageService.add({
                 severity: 'error',
                 summary: 'Erreur',
-                detail: "Impossible de créer l'actif",
-                life: 5000
+                detail,
+                life: 6000
             });
         } finally {
             this.isSubmitting.set(false);

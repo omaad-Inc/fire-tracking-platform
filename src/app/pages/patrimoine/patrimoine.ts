@@ -22,11 +22,13 @@ interface CategoryGroupCard {
 }
 
 const GROUPS = [
-    { id: 'real_estate',  label: 'Immobilier',      icon: 'pi pi-building',   bg: 'linear-gradient(135deg, #6366f1, #4f46e5)', categories: ['real_estate'] },
-    { id: 'stocks_bonds', label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)', categories: ['stocks', 'bonds'] },
-    { id: 'savings',      label: 'Épargne',          icon: 'pi pi-dollar',     bg: 'linear-gradient(135deg, #10b981, #059669)', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
-    { id: 'crypto',       label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: 'linear-gradient(135deg, #f59e0b, #d97706)', categories: ['crypto'] },
-    { id: 'other',        label: 'Autres',           icon: 'pi pi-box',        bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
+    { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: 'linear-gradient(135deg, #6366f1, #4f46e5)', categories: ['real_estate'] },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)', categories: ['stocks', 'bonds'] },
+    { id: 'savings',        label: 'Épargne',           icon: 'pi pi-dollar',     bg: 'linear-gradient(135deg, #10b981, #059669)', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
+    { id: 'crypto',         label: 'Crypto',            icon: 'pi pi-bitcoin',    bg: 'linear-gradient(135deg, #f59e0b, #d97706)', categories: ['crypto'] },
+    { id: 'tontine',        label: 'Tontine',           icon: 'pi pi-users',      bg: 'linear-gradient(135deg, #e11d48, #be123c)', categories: ['tontine'] },
+    { id: 'mobile_money',   label: 'Mobile Money',      icon: 'pi pi-mobile',     bg: 'linear-gradient(135deg, #0ea5e9, #0284c7)', categories: ['mobile_money'] },
+    { id: 'other',          label: 'Autres',            icon: 'pi pi-box',        bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
 ];
 
 @Component({

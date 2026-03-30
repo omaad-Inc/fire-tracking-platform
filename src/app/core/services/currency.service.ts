@@ -11,8 +11,9 @@ export interface CurrencyConfig {
 }
 
 const CURRENCIES: Record<string, CurrencyConfig> = {
-    EUR: { code: 'EUR', symbol: '€',     rate: 1,       locale: 'fr-FR' },
-    XOF: { code: 'XOF', symbol: 'F CFA', rate: 655.957, locale: 'fr-FR' },
+    XOF: { code: 'XOF', symbol: 'FCFA',  rate: 655.957, locale: 'fr-FR' },
+    EUR: { code: 'EUR', symbol: '€',      rate: 1,       locale: 'fr-FR' },
+    USD: { code: 'USD', symbol: '$',      rate: 1.08,    locale: 'en-US' },
 };
 
 @Injectable({ providedIn: 'root' })
@@ -22,7 +23,7 @@ export class CurrencyService {
 
     /** Current currency code — reacts to user preference changes. */
     readonly currencyCode = computed<string>(() =>
-        this.tokenService.user()?.preferred_currency || 'EUR'
+        this.tokenService.user()?.preferred_currency || 'XOF'
     );
 
     /** Current currency config. */
@@ -49,6 +50,16 @@ export class CurrencyService {
         } catch {
             return `${displayValue.toFixed(fractionDigits)} ${this.config().symbol}`;
         }
+    }
+
+    /** Format a EUR value as a plain number string (no currency symbol) in the display locale. */
+    formatNumber(eurValue: number, fractionDigits = 0): string {
+        const displayValue = this.convert(eurValue);
+        const { locale } = this.config();
+        return new Intl.NumberFormat(locale, {
+            maximumFractionDigits: fractionDigits,
+            minimumFractionDigits: fractionDigits,
+        }).format(displayValue);
     }
 
     /** Y-axis tick formatter for Chart.js (passed as a plain function ref). */

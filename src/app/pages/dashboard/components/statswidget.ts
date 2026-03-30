@@ -6,6 +6,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, DashboardStats, FIREProgress } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     standalone: true,
@@ -58,7 +59,9 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl md:text-4xl">{{ stats()?.netWorth | appCurrency }}</div>
+                            <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl md:text-4xl leading-tight">
+                                    {{ cs.formatNumber(stats()?.netWorth ?? 0) }}<span class="text-base md:text-lg font-semibold ml-1 opacity-60">{{ cs.config().symbol }}</span>
+                                </div>
                         </div>
                         <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
                             <i class="pi pi-wallet text-white text-2xl"></i>
@@ -93,9 +96,9 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlyFlux') }}</span>
                             @if ((stats()?.monthlyIncome ?? 0) > 0 || (stats()?.monthlyExpenses ?? 0) > 0) {
-                                <div class="font-bold text-2xl"
+                                <div class="font-bold text-2xl leading-tight"
                                      [ngClass]="monthlySavings() >= 0 ? 'text-emerald-500' : 'text-rose-500'">
-                                    {{ monthlySavings() >= 0 ? '+' : '' }}{{ monthlySavings() | appCurrency }}
+                                    {{ monthlySavings() >= 0 ? '+' : '-' }}{{ cs.formatNumber(abs(monthlySavings())) }}<span class="text-sm font-semibold ml-1 opacity-70">{{ cs.config().symbol }}</span>
                                 </div>
                                 <div class="text-surface-500 dark:text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.monthlyFluxNet') }}</div>
                             } @else {
@@ -199,6 +202,7 @@ export class StatsWidget implements OnInit, OnDestroy {
     private router = inject(Router);
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
+    cs = inject(CurrencyService);
     
     private subscription?: Subscription;
     loading = signal(true);
@@ -260,6 +264,8 @@ export class StatsWidget implements OnInit, OnDestroy {
             this.loading.set(false);
         }
     }
+
+    abs(n: number): number { return Math.abs(n); }
 
     t(key: string): string {
         return this.i18n.t(key);

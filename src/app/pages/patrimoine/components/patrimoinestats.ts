@@ -74,7 +74,7 @@ export class PatrimoineStats implements OnInit, OnDestroy {
         
         // Get savings stats
         const savingsStats = await this.savingsService.getStatsSummary();
-        this.thisMonthSaving = savingsStats.thisMonthSaving;
+        this.thisMonthSaving = Math.max(0, savingsStats.thisMonthSaving);
     }
 
     t(key: string): string {

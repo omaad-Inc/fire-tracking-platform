@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router';
 import { PatrimoineAssetItemDto } from '../../service/patrimoine.service';
 import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
 
-type CategoryGroup = 'all' | 'real_estate' | 'stocks_bonds' | 'savings' | 'crypto' | 'other';
+type CategoryGroup = 'all' | 'real_estate' | 'stocks_bonds' | 'savings' | 'crypto' | 'tontine' | 'mobile_money' | 'other';
 
 interface GroupConfig {
     id: CategoryGroup;
@@ -15,28 +15,32 @@ interface GroupConfig {
 }
 
 const GROUPS: GroupConfig[] = [
-    { id: 'all', label: 'Tous', icon: 'pi pi-th-large', categories: [], color: '#6366f1' },
-    { id: 'real_estate', label: 'Immobilier', icon: 'pi pi-building', categories: ['real_estate'], color: '#6366f1' },
-    { id: 'stocks_bonds', label: 'Actions & Fonds', icon: 'pi pi-chart-line', categories: ['stocks', 'bonds'], color: '#06b6d4' },
-    { id: 'savings', label: 'Épargne', icon: 'pi pi-dollar', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'], color: '#10b981' },
-    { id: 'crypto', label: 'Crypto', icon: 'pi pi-bitcoin', categories: ['crypto'], color: '#f59e0b' },
-    { id: 'other', label: 'Autres', icon: 'pi pi-box', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'], color: '#8b5cf6' },
+    { id: 'all',          label: 'Tous',           icon: 'pi pi-th-large',   categories: [],                                                                    color: '#6366f1' },
+    { id: 'real_estate',  label: 'Immobilier',     icon: 'pi pi-building',   categories: ['real_estate'],                                                       color: '#6366f1' },
+    { id: 'stocks_bonds', label: 'Actions & Fonds',icon: 'pi pi-chart-line', categories: ['stocks', 'bonds'],                                                    color: '#06b6d4' },
+    { id: 'savings',      label: 'Épargne',        icon: 'pi pi-dollar',     categories: ['savings_account', 'cash', 'life_insurance', 'retirement'],            color: '#10b981' },
+    { id: 'crypto',         label: 'Crypto',             icon: 'pi pi-bitcoin',    categories: ['crypto'],                                                color: '#f59e0b' },
+    { id: 'tontine',        label: 'Tontine',             icon: 'pi pi-users',      categories: ['tontine'],                                               color: '#e11d48' },
+    { id: 'mobile_money',   label: 'Mobile Money',        icon: 'pi pi-mobile',     categories: ['mobile_money'],                                          color: '#0ea5e9' },
+    { id: 'other',          label: 'Autres',             icon: 'pi pi-box',        categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'], color: '#8b5cf6' },
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
-    real_estate: 'pi pi-building',
-    stocks: 'pi pi-chart-line',
-    bonds: 'pi pi-chart-bar',
-    crypto: 'pi pi-bitcoin',
-    cash: 'pi pi-wallet',
-    retirement: 'pi pi-shield',
-    life_insurance: 'pi pi-heart',
+    real_estate:     'pi pi-building',
+    stocks:          'pi pi-chart-line',
+    bonds:           'pi pi-chart-bar',
+    crypto:          'pi pi-bitcoin',
+    cash:            'pi pi-wallet',
+    retirement:      'pi pi-shield',
+    life_insurance:  'pi pi-heart',
     savings_account: 'pi pi-dollar',
-    business: 'pi pi-briefcase',
-    vehicle: 'pi pi-car',
-    collectibles: 'pi pi-star',
-    commodities: 'pi pi-box',
-    other: 'pi pi-box',
+    business:        'pi pi-briefcase',
+    vehicle:         'pi pi-car',
+    tontine:         'pi pi-users',
+    mobile_money:    'pi pi-mobile',
+    collectibles:    'pi pi-star',
+    commodities:     'pi pi-box',
+    other:           'pi pi-box',
 };
 
 const ICON_BGS = [
@@ -189,8 +193,9 @@ export class PatrimoineByCategoryComponent {
             real_estate: 'Immobilier', stocks: 'Actions', bonds: 'Obligations',
             crypto: 'Crypto', cash: 'Liquidités', retirement: 'Retraite',
             life_insurance: 'Assurance vie', savings_account: 'Livret',
-            business: 'Entreprise', vehicle: 'Véhicule', collectibles: 'Collections',
-            commodities: 'Matières premières', other: 'Autres',
+            business: 'Entreprise', vehicle: 'Véhicule',
+            tontine: 'Tontine', mobile_money: 'Mobile Money',
+            collectibles: 'Collections', commodities: 'Matières premières', other: 'Autres',
         };
         return labels[cat ?? ''] ?? cat ?? '';
     }
