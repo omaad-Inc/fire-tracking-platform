@@ -20,7 +20,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { ToastModule } from 'primeng/toast';
 import { AssetCreate, AssetCategory } from '../../core/services/api.service';
 import { PatrimoineService } from '../../pages/service/patrimoine.service';
-import { AppCurrencyPipe } from '../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
 import { DecimalPipe } from '@angular/common';
 
@@ -53,7 +53,7 @@ interface AssetFormData {
     imports: [
         RouterModule, CommonModule, StyleClassModule, AvatarModule,
         DividerModule, DialogModule, ButtonModule, FormsModule, InputTextModule,
-        SelectModule, InputNumberModule, ToastModule, AppCurrencyPipe, DecimalPipe
+        SelectModule, InputNumberModule, ToastModule, AppAmountComponent, DecimalPipe
     ],
     providers: [MessageService],
     template: ` <div class="layout-topbar">
@@ -448,7 +448,7 @@ interface AssetFormData {
                                     </div>
                                     <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || 'Asset' }}</span>
                                     <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-                                        {{ (assetForm.currentPrice * assetForm.quantity) | appCurrency }}
+                                        <app-amount [value]="assetForm.currentPrice * assetForm.quantity" />
                                     </span>
                                 </div>
                             </div>

@@ -5,18 +5,18 @@ import { PatrimoineService } from '../../service/patrimoine.service';
 import { SavingsService, SavingsStatsSummary } from '../../service/savings.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AssetsStateService } from '../../service/assets-state.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
     standalone: true,
     selector: 'app-patrimoine-stats',
-    imports: [CommonModule, AppCurrencyPipe],
+    imports: [CommonModule, AppAmountComponent],
     template: `
         <div class="h-full flex flex-col gap-4">
             <!-- Card 1 - Patrimoine Total Brut (Total of all assets) -->
             <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20">
                 <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Patrimoine Total Brut</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2">{{ totalPatrimoine | appCurrency }}</div>
+                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2"><app-amount [value]="totalPatrimoine" /></div>
                 <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
                     <i class="pi pi-wallet text-white text-lg"></i>
                 </div>
@@ -26,7 +26,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
             <!-- Card 2 - Épargne Totale -->
             <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20">
                 <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.savedThisMonth') }}</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2">{{ thisMonthSaving | appCurrency }}</div>
+                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-2"><app-amount [value]="thisMonthSaving" /></div>
                 <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
                     <i class="pi pi-star text-white text-lg"></i>
                 </div>

@@ -2,7 +2,7 @@ import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { I18nService } from '../../../i18n/i18n.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 
 export interface PatrimoineAssetItem {
@@ -16,7 +16,7 @@ export interface PatrimoineAssetItem {
 @Component({
     selector: 'app-patrimoine-list',
     standalone: true,
-    imports: [CommonModule, TagModule, AppCurrencyPipe],
+    imports: [CommonModule, TagModule, AppAmountComponent],
     template: `
         <div class="w-full">
             <!-- Header shown on md+ -->
@@ -59,7 +59,7 @@ export interface PatrimoineAssetItem {
                                 />
                             </svg>
                         </div>
-                        <div class="hidden md:block md:col-span-2 text-right text-surface-900 dark:text-surface-0 font-semibold">{{ item.value | appCurrency }}</div>
+                        <div class="hidden md:block md:col-span-2 text-right text-surface-900 dark:text-surface-0 font-semibold"><app-amount [value]="item.value" /></div>
                         <div class="hidden md:flex md:justify-end md:col-span-2">
                             <span *ngIf="item.deltaAbs != null"
                                   class="inline-flex items-center px-2 py-1 rounded-lg text-sm font-semibold"
@@ -73,7 +73,7 @@ export interface PatrimoineAssetItem {
                     <div class="md:hidden mt-3 pt-3 border-t border-surface-200 dark:border-surface-700 space-y-2 text-sm">
                         <div class="flex items-center justify-between">
                             <span class="text-surface-500 dark:text-surface-400">{{ t('patrimoine.list.value') }}</span>
-                            <span class="font-semibold text-surface-900 dark:text-surface-0">{{ item.value | appCurrency }}</span>
+                            <span class="font-semibold text-surface-900 dark:text-surface-0"><app-amount [value]="item.value" /></span>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="text-surface-500 dark:text-surface-400">{{ t('patrimoine.list.delta') }}</span>

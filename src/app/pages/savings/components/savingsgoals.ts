@@ -12,14 +12,14 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { SavingsService, SavingsGoalDisplay } from '../../service/savings.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { SavingGoalCreate } from '../../../core/services/api.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
     standalone: true,
     selector: 'app-savings-goals',
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule,
-        InputTextModule, InputNumberModule, ToastModule, ConfirmDialogModule, AppCurrencyPipe
+        InputTextModule, InputNumberModule, ToastModule, ConfirmDialogModule, AppAmountComponent
     ],
     providers: [MessageService, ConfirmationService],
     template: `
@@ -113,10 +113,10 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                             <!-- Amounts -->
                             <div class="flex justify-between items-end">
                                 <div>
-                                    <span class="text-surface-900 dark:text-surface-0 font-semibold text-sm">{{ goal.current | appCurrency }}</span>
-                                    <div class="text-xs text-surface-400 dark:text-surface-500">sur {{ goal.target | appCurrency }}</div>
+                                    <span class="text-surface-900 dark:text-surface-0 font-semibold text-sm"><app-amount [value]="goal.current" /></span>
+                                    <div class="text-xs text-surface-400 dark:text-surface-500">sur <app-amount [value]="goal.target" /></div>
                                 </div>
-                                <div class="text-xs text-surface-400">{{ goal.target - goal.current > 0 ? '-' : '' }}{{ (goal.target - goal.current) | appCurrency }} restant</div>
+                                <div class="text-xs text-surface-400"><app-amount [value]="goal.target - goal.current" [prefix]="goal.target - goal.current > 0 ? '-' : ''" /> restant</div>
                             </div>
 
                         </div>

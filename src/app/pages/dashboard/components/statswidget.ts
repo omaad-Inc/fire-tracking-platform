@@ -5,13 +5,13 @@ import { Subscription, merge } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, DashboardStats, FIREProgress } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     standalone: true,
     selector: 'app-stats-widget',
-    imports: [CommonModule, RouterModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
         <!-- Loading State -->
         @if (loading()) {
@@ -118,14 +118,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                         <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                                         <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('dashboard.kpi.monthlyFluxRevenues') }}</span>
                                     </div>
-                                    <span class="text-emerald-500 text-xs font-semibold">+{{ stats()?.monthlyIncome | appCurrency }}</span>
+                                    <span class="text-emerald-500 text-xs font-semibold"><app-amount [value]="stats()?.monthlyIncome ?? 0" prefix="+" /></span>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-1.5">
                                         <div class="w-2 h-2 rounded-full bg-rose-500"></div>
                                         <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('dashboard.kpi.monthlyFluxExpenses') }}</span>
                                     </div>
-                                    <span class="text-rose-500 text-xs font-semibold">-{{ stats()?.monthlyExpenses | appCurrency }}</span>
+                                    <span class="text-rose-500 text-xs font-semibold"><app-amount [value]="stats()?.monthlyExpenses ?? 0" prefix="-" /></span>
                                 </div>
                                 @if ((stats()?.monthlyIncome ?? 0) > 0) {
                                     <div class="w-full h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden mt-1">
@@ -157,7 +157,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>
                             @if (fireProgress() && (fireProgress()!.targetAmount ?? 0) > 0) {
                                 <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ fireProgress()?.progressPct | number:'1.1-1' }}%</div>
-                                <div class="text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.fireTarget') }} {{ fireProgress()?.targetAmount | appCurrency }}</div>
+                                <div class="text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></div>
                             } @else {
                                 <div class="text-surface-400 dark:text-surface-500 font-medium text-lg">{{ t('dashboard.kpi.fireNotConfigured') }}</div>
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.fireGoalUndefined') }}</div>

@@ -8,7 +8,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
 import { AssetsStateService } from '../service/assets-state.service';
 import { ApiService, Debt } from '../../core/services/api.service';
-import { AppCurrencyPipe } from '../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../core/components/app-amount.component';
 
 interface CategoryGroupCard {
     id: string;
@@ -34,7 +34,7 @@ const GROUPS = [
 @Component({
     selector: 'app-patrimoine',
     standalone: true,
-    imports: [CommonModule, PatrimoineProgress, PatrimoineStats, AppCurrencyPipe],
+    imports: [CommonModule, PatrimoineProgress, PatrimoineStats, AppAmountComponent],
     template: `
         <div class="flex flex-col gap-8">
 
@@ -52,7 +52,7 @@ const GROUPS = [
                     <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Actifs</h2>
                     @if (!loadingGroups()) {
                         <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                            {{ totalAssets() | appCurrency }}
+                            <app-amount [value]="totalAssets()" />
                         </span>
                     }
                 </div>
@@ -90,7 +90,7 @@ const GROUPS = [
                                 <div class="flex items-center gap-3 shrink-0 ml-4">
                                     <div class="text-right">
                                         <div class="font-bold text-surface-900 dark:text-surface-0 text-base">
-                                            {{ group.totalValue | appCurrency }}
+                                            <app-amount [value]="group.totalValue" />
                                         </div>
                                         @if (group.totalDeltaAbs !== 0) {
                                             <div class="flex items-center justify-end gap-1 mt-0.5">
@@ -98,7 +98,7 @@ const GROUPS = [
                                                    [ngClass]="group.totalDeltaAbs >= 0 ? 'pi-arrow-up text-emerald-500' : 'pi-arrow-down text-rose-500'"></i>
                                                 <span class="text-sm font-medium"
                                                       [ngClass]="group.totalDeltaAbs >= 0 ? 'text-emerald-500' : 'text-rose-500'">
-                                                    {{ group.totalDeltaAbs >= 0 ? '+' : '' }}{{ group.totalDeltaAbs | appCurrency }}
+                                                    <app-amount [value]="group.totalDeltaAbs" [prefix]="group.totalDeltaAbs >= 0 ? '+' : '-'" />
                                                     &nbsp;{{ group.totalDeltaPct | number:'1.2-2' }}%
                                                 </span>
                                             </div>
@@ -118,7 +118,7 @@ const GROUPS = [
                     <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Passifs</h2>
                     @if (!loadingDebts() && totalDebts() > 0) {
                         <span class="text-rose-500 text-sm font-medium">
-                            -{{ totalDebts() | appCurrency }}
+                            <app-amount [value]="totalDebts()" prefix="-" />
                         </span>
                     }
                 </div>
@@ -146,7 +146,7 @@ const GROUPS = [
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
                             <div class="font-bold text-rose-500 text-base">
-                                -{{ totalDebts() | appCurrency }}
+                                <app-amount [value]="totalDebts()" prefix="-" />
                             </div>
                             <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-rose-400 transition-colors"></i>
                         </div>

@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
 
 interface MoverItem extends PatrimoineAssetItemDto {
@@ -11,7 +11,7 @@ interface MoverItem extends PatrimoineAssetItemDto {
 @Component({
     selector: 'app-top-movers-widget',
     standalone: true,
-    imports: [CommonModule, AppCurrencyPipe],
+    imports: [CommonModule, AppAmountComponent],
     template: `
         <div class="card h-full">
             <div class="flex items-center justify-between mb-6">
@@ -55,7 +55,7 @@ interface MoverItem extends PatrimoineAssetItemDto {
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-surface-900 dark:text-surface-0 text-sm truncate">{{ item.name }}</div>
-                                <div class="text-surface-500 dark:text-surface-400 text-xs">{{ item.value | appCurrency }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-xs"><app-amount [value]="item.value" /></div>
                             </div>
                             <div class="flex items-center gap-3">
                                 <svg viewBox="0 0 60 24" width="60" height="24" preserveAspectRatio="none">

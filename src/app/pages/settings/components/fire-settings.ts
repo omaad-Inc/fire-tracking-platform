@@ -8,12 +8,12 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { DividerModule } from 'primeng/divider';
 import { ApiService } from '../../../core/services/api.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
     selector: 'app-fire-settings',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputNumberModule, DatePickerModule, ToastModule, DividerModule, AppCurrencyPipe],
+    imports: [CommonModule, FormsModule, ButtonModule, InputNumberModule, DatePickerModule, ToastModule, DividerModule, AppAmountComponent],
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
@@ -80,7 +80,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                     <div class="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
                         <span class="text-surface-700 dark:text-surface-300 text-sm">Objectif calculé automatiquement</span>
                         <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                            {{ autoTarget() | appCurrency }}
+                            <app-amount [value]="autoTarget()" />
                         </span>
                     </div>
                 }

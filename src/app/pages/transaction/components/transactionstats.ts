@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
     standalone: true,
     selector: 'app-transaction-stats',
-    imports: [CommonModule, AppCurrencyPipe],
+    imports: [CommonModule, AppAmountComponent],
     template: `
         <!-- Card 1 - Solde Comptes Bancaires -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
@@ -14,7 +14,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Solde Comptes Bancaires</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ totalBank | appCurrency }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="totalBank" /></div>
                     </div>
                     <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-wallet text-white text-xl"></i>
@@ -30,7 +30,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dépenses Totales</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ totalExpense | appCurrency }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="totalExpense" /></div>
                     </div>
                     <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/30 group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-arrow-down text-white text-xl"></i>
@@ -46,7 +46,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dernier Salaire</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ lastSalaryAmount | appCurrency }}</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="lastSalaryAmount" /></div>
                     </div>
                     <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-briefcase text-white text-xl"></i>

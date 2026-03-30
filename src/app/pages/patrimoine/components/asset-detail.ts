@@ -10,12 +10,12 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
 import { AssetsStateService } from '../../service/assets-state.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
     selector: 'app-asset-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule, ConfirmDialogModule, ToastModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule, ConfirmDialogModule, ToastModule, AppAmountComponent],
     providers: [ConfirmationService, MessageService],
     template: `
         <p-toast position="top-center" />
@@ -67,14 +67,14 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                     <div>
                         <p class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ formatDate(asset()!.updated_at) }}</p>
                         <div class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0">
-                            {{ asset()!.current_value | appCurrency }}
+                            <app-amount [value]="asset()!.current_value" />
                         </div>
                         @if (gainLoss() !== null) {
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-semibold"
                                       [ngClass]="(gainLoss()! >= 0) ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
                                     <i class="pi text-xs" [ngClass]="gainLoss()! >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
-                                    {{ gainLoss()! >= 0 ? '+' : '' }}{{ gainLoss() | appCurrency }}
+                                    <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                                     @if (gainLossPct() !== null) {
                                         ({{ gainLossPct()! >= 0 ? '+' : '' }}{{ gainLossPct() | number:'1.1-1' }}%)
                                     }
@@ -112,7 +112,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                     @if (gainLoss() !== null) {
                         <div class="text-2xl font-bold"
                              [ngClass]="gainLoss()! >= 0 ? 'text-emerald-500' : 'text-rose-500'">
-                            {{ gainLoss()! >= 0 ? '+' : '' }}{{ gainLoss() | appCurrency }}
+                            <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                         </div>
                         <p class="text-surface-400 text-xs mt-1">Basé sur le prix d'achat</p>
                     } @else {
@@ -124,7 +124,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Prix d'achat</p>
                     <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
                         @if (asset()!.purchase_value) {
-                            {{ asset()!.purchase_value | appCurrency }}
+                            <app-amount [value]="asset()!.purchase_value!" />
                         } @else {
                             <span class="text-surface-400">—</span>
                         }
@@ -191,13 +191,13 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                             @if (asset()!.price_per_m2_purchase) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Prix/m² à l'achat</span>
-                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ asset()!.price_per_m2_purchase | appCurrency }}/m²</span>
+                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium"><app-amount [value]="asset()!.price_per_m2_purchase!" />/m²</span>
                                 </div>
                             }
                             @if (asset()!.surface_m2 && asset()!.current_value) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Prix/m² actuel (estimé)</span>
-                                    <span class="text-indigo-500 text-sm font-medium">{{ (asset()!.current_value / asset()!.surface_m2!) | appCurrency }}/m²</span>
+                                    <span class="text-indigo-500 text-sm font-medium"><app-amount [value]="asset()!.current_value / asset()!.surface_m2!" />/m²</span>
                                 </div>
                             }
                             @if (asset()!.construction_date) {
@@ -209,7 +209,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                             @if (asset()!.rental_income) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Revenus locatifs/mois</span>
-                                    <span class="text-emerald-500 text-sm font-medium">{{ asset()!.rental_income | appCurrency }}</span>
+                                    <span class="text-emerald-500 text-sm font-medium"><app-amount [value]="asset()!.rental_income!" /></span>
                                 </div>
                             }
                         </div>
@@ -221,25 +221,25 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                                 <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
                                     <p class="text-surface-500 text-xs mb-1">Frais d'agence</p>
                                     <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        {{ asset()!.agency_fees ? (asset()!.agency_fees | appCurrency) : '—' }}
+                                        @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { — }
                                     </p>
                                 </div>
                                 <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
                                     <p class="text-surface-500 text-xs mb-1">Frais de notaire</p>
                                     <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        {{ asset()!.notary_fees ? (asset()!.notary_fees | appCurrency) : '—' }}
+                                        @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { — }
                                     </p>
                                 </div>
                                 <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
                                     <p class="text-surface-500 text-xs mb-1">Frais de rénovation</p>
                                     <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        {{ asset()!.renovation_fees ? (asset()!.renovation_fees | appCurrency) : '—' }}
+                                        @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { — }
                                     </p>
                                 </div>
                                 <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
                                     <p class="text-surface-500 text-xs mb-1">Ameublement</p>
                                     <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        {{ asset()!.furnishing_costs ? (asset()!.furnishing_costs | appCurrency) : '—' }}
+                                        @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { — }
                                     </p>
                                 </div>
                             </div>
@@ -256,7 +256,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Gain/Perte total</span>
                                     <span class="text-sm font-medium" [ngClass]="gainLoss()! >= 0 ? 'text-emerald-500' : 'text-rose-500'">
-                                        {{ gainLoss()! >= 0 ? '+' : '' }}{{ gainLoss() | appCurrency }}
+                                        <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                                     </span>
                                 </div>
                             }
@@ -351,7 +351,7 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
                             <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                 <span class="text-surface-500 text-sm">Valeur estimée dans 5 ans</span>
                                 <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">
-                                    {{ (asset()!.current_value * Math.pow(0.85, 5)) | appCurrency }}
+                                    <app-amount [value]="asset()!.current_value * Math.pow(0.85, 5)" />
                                 </span>
                             </div>
                         </div>

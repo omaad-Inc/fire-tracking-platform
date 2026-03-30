@@ -6,14 +6,14 @@ import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { DashboardService, AssetAllocation } from '../../service/dashboard.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
 
 
 @Component({
     standalone: true,
     selector: 'app-expenses-progression-widget',
-    imports: [CommonModule, ChartModule, FluidModule, AppCurrencyPipe],
+    imports: [CommonModule, ChartModule, FluidModule, AppAmountComponent],
     template: `
     <div class="card !mb-0 h-full flex flex-col">
         <div class="mb-6">
@@ -44,7 +44,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div class="text-center">
                             <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ i18n.t('patrimoine.repartition.total') }}</span>
-                            <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total() | appCurrency }}</span>
+                            <app-amount [value]="total()" class="font-bold text-2xl text-surface-900 dark:text-surface-0 block" />
                         </div>
                     </div>
                 </div>
@@ -54,7 +54,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <div class="w-3 h-3 rounded-full" [style.background]="item.color"></div>
                             <div class="flex-1 min-w-0">
                                 <span class="text-surface-900 dark:text-surface-0 text-sm font-medium block truncate">{{ item.label }}</span>
-                                <span class="text-surface-500 dark:text-surface-400 text-xs">{{ item.value | appCurrency }}</span>
+                                <span class="text-surface-500 dark:text-surface-400 text-xs"><app-amount [value]="item.value" /></span>
                             </div>
                         </div>
                     }

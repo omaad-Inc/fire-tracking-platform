@@ -18,7 +18,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
 import { DatePickerModule } from 'primeng/datepicker';
 import { I18nService } from '../../../i18n/i18n.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 interface Column {
     field: string;
@@ -53,7 +53,7 @@ interface ExportColumn {
         IconFieldModule,
         ConfirmDialogModule,
         DatePickerModule,
-        AppCurrencyPipe
+        AppAmountComponent
     ],
     template: `
         <p-toolbar styleClass="mb-6">
@@ -120,7 +120,7 @@ interface ExportColumn {
                     <td>
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td class="text-right">{{ record.amount | appCurrency }}</td>
+                    <td class="text-right"><app-amount [value]="record.amount" /></td>
                     <td>{{ record.account }}</td>
                     <td>{{ record.remarks }}</td>
                     <td>

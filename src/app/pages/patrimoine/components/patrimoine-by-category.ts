@@ -2,7 +2,7 @@ import { Component, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PatrimoineAssetItemDto } from '../../service/patrimoine.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 type CategoryGroup = 'all' | 'real_estate' | 'stocks_bonds' | 'savings' | 'crypto' | 'tontine' | 'mobile_money' | 'other';
 
@@ -55,7 +55,7 @@ const ICON_BGS = [
 @Component({
     selector: 'app-patrimoine-by-category',
     standalone: true,
-    imports: [CommonModule, RouterModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
         <!-- Category tabs -->
         <div class="flex flex-wrap gap-2 mb-6">
@@ -128,7 +128,7 @@ const ICON_BGS = [
                             </div>
                             <!-- Value -->
                             <div class="hidden md:block md:col-span-2 text-right text-surface-900 dark:text-surface-0 font-semibold text-sm">
-                                {{ item.value | appCurrency }}
+                                <app-amount [value]="item.value" />
                             </div>
                             <!-- Delta -->
                             <div class="hidden md:flex md:justify-end md:items-center md:col-span-2 gap-1">
@@ -146,7 +146,7 @@ const ICON_BGS = [
                             <!-- Mobile stacked -->
                             <div class="md:hidden col-span-12 mt-2 pt-2 border-t border-surface-200 dark:border-surface-700 flex justify-between text-sm">
                                 <span class="text-surface-500">{{ sharePct(item) | number:'1.0-0' }}% du patrimoine</span>
-                                <span class="font-semibold text-surface-900 dark:text-surface-0">{{ item.value | appCurrency }}</span>
+                                <span class="font-semibold text-surface-900 dark:text-surface-0"><app-amount [value]="item.value" /></span>
                             </div>
                         </div>
                     </a>

@@ -5,7 +5,7 @@ import { ChartModule } from 'primeng/chart';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 interface GroupConfig {
     id: string;
@@ -65,7 +65,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
 @Component({
     selector: 'app-patrimoine-category-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, ChartModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent],
     template: `
         <!-- ── Global loading skeleton ── -->
         @if (loading) {
@@ -105,12 +105,12 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                     <div class="min-w-0">
                         <div class="text-sm font-medium text-surface-500 dark:text-surface-400">{{ currentGroup?.label }}</div>
                         <div class="flex items-center gap-3 mt-0.5 flex-wrap">
-                            <span class="text-3xl font-bold text-surface-900 dark:text-surface-0">{{ totalValue | appCurrency }}</span>
+                            <app-amount [value]="totalValue" class="text-3xl font-bold text-surface-900 dark:text-surface-0" />
                             @if (totalDeltaAbs !== 0) {
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"
                                       [ngClass]="totalDeltaAbs >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
                                     <i class="pi text-xs" [ngClass]="totalDeltaAbs >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
-                                    {{ totalDeltaAbs >= 0 ? '+' : '' }}{{ totalDeltaAbs | appCurrency }}
+                                    <app-amount [value]="totalDeltaAbs" [prefix]="totalDeltaAbs >= 0 ? '+' : '-'" />
                                     &nbsp;{{ totalDeltaPct | number:'1.2-2' }}%
                                 </span>
                             }
@@ -151,7 +151,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                     } @else {
                         <div class="mb-3">
                             <div class="text-surface-500 dark:text-surface-400 text-xs">{{ todayLabel }}</div>
-                            <div class="text-surface-900 dark:text-surface-0 font-bold text-xl">{{ totalValue | appCurrency }}</div>
+                            <div class="text-surface-900 dark:text-surface-0 font-bold text-xl"><app-amount [value]="totalValue" /></div>
                         </div>
                         <p-chart type="line" [data]="lineData" [options]="lineOptions" styleClass="w-full" [height]="'200px'" />
                     }
@@ -175,7 +175,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                             <p-chart type="doughnut" [data]="donutData" [options]="donutOptions" styleClass="w-full h-full" [height]="'220px'" />
                             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                 <span class="text-surface-500 dark:text-surface-400 text-xs">Total</span>
-                                <span class="font-bold text-surface-900 dark:text-surface-0 text-sm leading-tight text-center px-2">{{ totalValue | appCurrency }}</span>
+                                <span class="font-bold text-surface-900 dark:text-surface-0 text-sm leading-tight text-center px-2"><app-amount [value]="totalValue" /></span>
                                 <span class="text-surface-500 dark:text-surface-400 text-xs mt-0.5">100 %</span>
                             </div>
                         </div>
@@ -189,7 +189,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                                     </div>
                                     <div class="flex items-center gap-3 shrink-0 ml-3">
                                         <span class="text-surface-400 dark:text-surface-500 text-sm">{{ sharePct(item) }}%</span>
-                                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ item.value | appCurrency }}</span>
+                                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm"><app-amount [value]="item.value" /></span>
                                     </div>
                                 </div>
                             }
@@ -226,12 +226,12 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0 ml-4">
                                     <div class="text-right">
-                                        <div class="font-bold text-surface-900 dark:text-surface-0">{{ item.value | appCurrency }}</div>
+                                        <div class="font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="item.value" /></div>
                                         @if (item.deltaPct != null) {
                                             <div class="flex items-center justify-end gap-1 mt-0.5">
                                                 <i class="pi text-xs" [ngClass]="(item.deltaPct) >= 0 ? 'pi-arrow-up text-emerald-500' : 'pi-arrow-down text-rose-500'"></i>
                                                 <span class="text-sm font-medium" [ngClass]="item.deltaPct >= 0 ? 'text-emerald-500' : 'text-rose-500'">
-                                                    {{ (item.deltaAbs ?? 0) >= 0 ? '+' : '' }}{{ item.deltaAbs | appCurrency }}
+                                                    <app-amount [value]="item.deltaAbs ?? 0" [prefix]="(item.deltaAbs ?? 0) >= 0 ? '+' : '-'" />
                                                     &nbsp;{{ item.deltaPct | number:'1.2-2' }}%
                                                 </span>
                                             </div>

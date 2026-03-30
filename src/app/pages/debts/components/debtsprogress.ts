@@ -17,7 +17,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 interface Column {
     field: string;
@@ -52,7 +52,7 @@ interface ExportColumn {
         IconFieldModule,
         ConfirmDialogModule,
         DatePickerModule,
-        AppCurrencyPipe
+        AppAmountComponent
     ],
     template: `
      <p-toolbar styleClass="mb-6">
@@ -114,8 +114,8 @@ interface ExportColumn {
                     <td>
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
-                    <td>{{ record.total | appCurrency }}</td>
-                    <td>{{ record.paid | appCurrency }}</td>
+                    <td><app-amount [value]="record.total" /></td>
+                    <td><app-amount [value]="record.paid" /></td>
                     <td>{{ record.interestRate }}%</td>
                     <td>{{ record.frequency }}</td>
                     <td>
@@ -295,15 +295,15 @@ interface ExportColumn {
                                 <div class="grid grid-cols-3 gap-3 text-center">
                                     <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
                                         <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Total</div>
-                                        <div class="font-bold text-surface-900 dark:text-surface-0">{{ rec.total | appCurrency }}</div>
+                                        <div class="font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="rec.total" /></div>
                                     </div>
                                     <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
                                         <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Payé</div>
-                                        <div class="font-bold text-emerald-500">{{ rec.paid | appCurrency }}</div>
+                                        <div class="font-bold text-emerald-500"><app-amount [value]="rec.paid" /></div>
                                     </div>
                                     <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
                                         <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Reste</div>
-                                        <div class="font-bold text-rose-500">{{ (rec.total - rec.paid) | appCurrency }}</div>
+                                        <div class="font-bold text-rose-500"><app-amount [value]="rec.total - rec.paid" /></div>
                                     </div>
                                 </div>
                             </div>

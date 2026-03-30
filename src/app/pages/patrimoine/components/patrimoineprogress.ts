@@ -6,7 +6,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
     selector: 'app-patrimoine-progress',
@@ -46,14 +46,14 @@ import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
             } @else {
                 <div class="mb-4">
                     <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ currentDate() }}</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl">{{ currentValue() | appCurrency }}</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl"><app-amount [value]="currentValue()" /></div>
                 </div>
                 <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[250px]" />
             }
         </div>
     `,
     standalone: true,
-    imports: [ChartModule, NgClass, AppCurrencyPipe]
+    imports: [ChartModule, NgClass, AppAmountComponent]
 })
 export class PatrimoineProgress implements OnInit, OnDestroy {
     private platformId = inject(PLATFORM_ID);

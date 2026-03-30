@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SavingsService, SavingsGoalDisplay } from '../../service/savings.service';
 import { AssetsStateService } from '../../service/assets-state.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
 
 interface GoalDisplay {
@@ -22,7 +22,7 @@ interface GoalDisplay {
 @Component({
     standalone: true,
     selector: 'app-savings-progress',
-    imports: [CommonModule, RouterModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
         <div class="card h-full">
             <div class="flex justify-between items-center mb-6">
@@ -71,7 +71,7 @@ interface GoalDisplay {
                                     </div>
                                     <div>
                                         <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ g.label }}</span>
-                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ g.current | appCurrency }} / {{ g.target | appCurrency }}</span>
+                                        <span class="text-surface-500 dark:text-surface-400 text-sm"><app-amount [value]="g.current" /> / <app-amount [value]="g.target" /></span>
                                     </div>
                                 </div>
                                 <span class="font-bold text-lg" [ngClass]="g.textColorClass">{{ g.percent }}%</span>

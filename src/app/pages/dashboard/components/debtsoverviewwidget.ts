@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AssetsStateService } from '../../service/assets-state.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 interface DebtDisplay {
     id: string;
@@ -23,7 +23,7 @@ interface DebtDisplay {
 @Component({
     standalone: true,
     selector: 'app-debts-overview',
-    imports: [CommonModule, RouterModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
         <div class="card h-full">
             <div class="flex justify-between items-center mb-6">
@@ -70,7 +70,7 @@ interface DebtDisplay {
                                     </div>
                                     <div>
                                         <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ debt.label }}</span>
-                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ debt.paid | appCurrency }} / {{ debt.total | appCurrency }}</span>
+                                        <span class="text-surface-500 dark:text-surface-400 text-sm"><app-amount [value]="debt.paid" /> / <app-amount [value]="debt.total" /></span>
                                     </div>
                                 </div>
                                 <span class="font-bold text-lg" [ngClass]="debt.textClass">{{ debt.percent }}%</span>

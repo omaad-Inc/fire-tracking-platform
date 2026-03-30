@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
 import { I18nService } from '../../../i18n/i18n.service';
-import { AppCurrencyPipe } from '../../../core/pipes/app-currency.pipe';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 interface TransactionDisplay {
     id: string;
@@ -19,7 +19,7 @@ interface TransactionDisplay {
 @Component({
     standalone: true,
     selector: 'app-recent-transactions-widget',
-    imports: [CommonModule, RouterModule, AppCurrencyPipe],
+    imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
         <div class="card !mb-0 h-full">
             <div class="flex justify-between items-center mb-6">
@@ -67,7 +67,7 @@ interface TransactionDisplay {
                             </div>
                             <div class="flex flex-col items-end ml-4">
                                 <span class="font-bold" [ngClass]="tx.amount < 0 ? 'text-rose-500' : 'text-emerald-500'">
-                                    {{ tx.amount >= 0 ? '+' : '' }}{{ tx.amount | appCurrency }}
+                                    <app-amount [value]="tx.amount" [prefix]="tx.amount >= 0 ? '+' : '-'" />
                                 </span>
                                 <span class="text-surface-400 dark:text-surface-500 text-xs mt-1">{{ tx.date }}</span>
                             </div>
