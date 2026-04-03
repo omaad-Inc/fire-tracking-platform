@@ -1,11 +1,16 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
@@ -15,7 +20,9 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 @Component({
     selector: 'app-asset-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule, ConfirmDialogModule, ToastModule, AppAmountComponent],
+    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, TagModule, DividerModule,
+              ConfirmDialogModule, ToastModule, DialogModule, InputTextModule, InputNumberModule,
+              DatePickerModule, AppAmountComponent],
     providers: [ConfirmationService, MessageService],
     template: `
         <p-toast position="top-center" />
@@ -359,6 +366,97 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 }
             </div>
         }
+
+        <!-- ── Edit dialog ── -->
+        <p-dialog [(visible)]="editDialog"
+                  [style]="{ width: '95vw', maxWidth: '560px' }"
+                  [modal]="true" [draggable]="false" [resizable]="false"
+                  styleClass="!rounded-2xl overflow-hidden">
+            <ng-template #header>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                         [style.background]="categoryBg()">
+                        <i [class]="categoryIcon()" class="text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">Modifier l'actif</h3>
+                        <p class="text-surface-500 text-sm m-0">{{ categoryLabel() }}</p>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template #content>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                    <!-- Name -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nom de l'actif</label>
+                        <input pInputText [(ngModel)]="editForm.name"
+                               class="w-full !py-3 !rounded-xl"
+                               placeholder="Nom de l'actif" />
+                    </div>
+                    <!-- Current value -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Valeur actuelle</label>
+                        <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                       [min]="0" [maxFractionDigits]="2"
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl" />
+                    </div>
+                    <!-- Purchase value -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Prix d'achat</label>
+                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
+                                       [min]="0" [maxFractionDigits]="2"
+                                       styleClass="w-full"
+                                       inputStyleClass="!py-3 !rounded-xl" />
+                    </div>
+                    <!-- Purchase date -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date d'achat</label>
+                        <p-datepicker [(ngModel)]="editForm.purchaseDate"
+                                      [showIcon]="true" [showButtonBar]="true"
+                                      dateFormat="dd/mm/yy"
+                                      styleClass="w-full"
+                                      inputStyleClass="!py-3 !rounded-xl" />
+                    </div>
+                    <!-- Institution -->
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Institution / Opérateur</label>
+                        <input pInputText [(ngModel)]="editForm.institution"
+                               class="w-full !py-3 !rounded-xl"
+                               placeholder="Banque, plateforme..." />
+                    </div>
+                    @if (asset()!.category === 'real_estate') {
+                        <!-- Surface -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Surface (m²)</label>
+                            <p-inputnumber [(ngModel)]="editForm.surfaceM2"
+                                           [min]="0" [maxFractionDigits]="1"
+                                           styleClass="w-full"
+                                           inputStyleClass="!py-3 !rounded-xl" />
+                        </div>
+                        <!-- Rental income -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Revenus locatifs/mois</label>
+                            <p-inputnumber [(ngModel)]="editForm.rentalIncome"
+                                           [min]="0" [maxFractionDigits]="2"
+                                           styleClass="w-full"
+                                           inputStyleClass="!py-3 !rounded-xl" />
+                        </div>
+                    }
+                </div>
+            </ng-template>
+            <ng-template #footer>
+                <div class="flex gap-3 pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="editDialog = false"
+                              styleClass="flex-1 !rounded-xl !py-3" />
+                    <p-button label="Enregistrer" icon="pi pi-check"
+                              [loading]="isSaving()"
+                              (click)="saveEdit()"
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0" />
+                </div>
+            </ng-template>
+        </p-dialog>
     `
 })
 export class AssetDetailPage implements OnInit {
@@ -373,6 +471,9 @@ export class AssetDetailPage implements OnInit {
 
     loading = signal(true);
     asset = signal<Asset | null>(null);
+    isSaving = signal(false);
+    editDialog = false;
+    editForm = { name: '', currentValue: 0, purchaseValue: <number|null>null, purchaseDate: <Date|null>null, institution: '', surfaceM2: <number|null>null, rentalIncome: <number|null>null };
 
     gainLoss = computed(() => {
         const a = this.asset();
@@ -522,7 +623,51 @@ export class AssetDetailPage implements OnInit {
     }
 
     editAsset() {
-        this.messageService.add({ severity: 'info', summary: 'Modification', detail: 'Utilisez le bouton "+ Ajouter un actif" pour modifier depuis la liste.', life: 4000 });
+        const a = this.asset();
+        if (!a) return;
+        this.editForm = {
+            name: a.name,
+            currentValue: a.current_value,
+            purchaseValue: a.purchase_value ?? null,
+            purchaseDate: a.purchase_date ? new Date(a.purchase_date) : null,
+            institution: a.institution ?? '',
+            surfaceM2: a.surface_m2 ?? null,
+            rentalIncome: a.rental_income ?? null,
+        };
+        this.editDialog = true;
+    }
+
+    saveEdit() {
+        const a = this.asset();
+        if (!a || !this.editForm.name?.trim() || this.editForm.currentValue == null) return;
+        this.isSaving.set(true);
+        const payload: any = {
+            name: this.editForm.name.trim(),
+            current_value: this.editForm.currentValue,
+        };
+        if (this.editForm.purchaseValue != null) payload.purchase_value = this.editForm.purchaseValue;
+        if (this.editForm.purchaseDate) {
+            payload.purchase_date = this.editForm.purchaseDate instanceof Date
+                ? this.editForm.purchaseDate.toISOString().split('T')[0]
+                : this.editForm.purchaseDate;
+        }
+        if (this.editForm.institution) payload.institution = this.editForm.institution;
+        if (this.editForm.surfaceM2 != null) payload.surface_m2 = this.editForm.surfaceM2;
+        if (this.editForm.rentalIncome != null) payload.rental_income = this.editForm.rentalIncome;
+
+        this.apiService.updateAsset(a.id, payload).subscribe({
+            next: (updated: Asset) => {
+                this.asset.set(updated);
+                this.editDialog = false;
+                this.isSaving.set(false);
+                this.stateService.notifyAssetsUpdated();
+                this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Actif mis à jour avec succès.', life: 3000 });
+            },
+            error: () => {
+                this.isSaving.set(false);
+                this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de mettre à jour l\'actif.', life: 4000 });
+            }
+        });
     }
 
     confirmDelete() {

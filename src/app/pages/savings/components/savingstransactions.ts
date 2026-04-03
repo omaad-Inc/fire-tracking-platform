@@ -234,12 +234,9 @@ interface SavingRecordWithGoal extends SavingRecord {
                             <i class="pi pi-tag text-violet-500"></i>
                             Description
                         </label>
-                        <input type="text" pInputText id="name" [(ngModel)]="record.name" required 
+                        <input type="text" pInputText id="name" [(ngModel)]="record.name"
                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500"
-                               placeholder="Ex: Épargne mensuelle..." />
-                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
-                            <i class="pi pi-exclamation-circle mr-1"></i>La description est requise
-                        </small>
+                               placeholder="Ex: Épargne mensuelle... (optionnel)" />
                     </div>
                 </div>
             </ng-template>
@@ -427,7 +424,7 @@ export class SavingsTransactions implements OnInit, OnDestroy {
     async saveRecord() {
         this.submitted = true;
         let _records = this.records();
-        if (this.record.name?.trim()) {
+        if (this.record.date && this.record.amount > 0) {
             // Add goal name based on goalId
             this.record.goalName = this.getGoalName(this.record.goalId);
             

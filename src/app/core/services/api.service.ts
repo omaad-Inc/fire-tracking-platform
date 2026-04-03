@@ -443,7 +443,7 @@ export class ApiService {
     }
 
     updateFIRESettings(data: FIRESettings): Observable<any> {
-        return this.http.patch(`${this.apiUrl}/users/me/fire-settings`, data);
+        return this.http.put(`${this.apiUrl}/users/me/fire-settings`, data);
     }
 
     uploadAvatar(file: File): Observable<any> {

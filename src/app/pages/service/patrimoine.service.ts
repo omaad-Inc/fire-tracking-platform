@@ -30,12 +30,20 @@ export class PatrimoineService {
     // BehaviorSubject to hold the current assets list
     private _assets$ = new BehaviorSubject<PatrimoineAssetItemDto[]>([]);
     public assets$ = this._assets$.asObservable();
-    
+
     // Cache storage
     private assetsCache: CacheEntry<PatrimoineAssetItemDto[]> | null = null;
-    
+
     // Request deduplication
     private assetsRequest$: Observable<PatrimoineAssetItemDto[]> | null = null;
+
+    constructor() {
+        // Invalidate cache whenever assets are created/updated/deleted externally (e.g. via topbar)
+        this.stateService.assetsUpdated$.subscribe(() => {
+            this.assetsCache = null;
+            this.assetsRequest$ = null;
+        });
+    }
 
     /**
      * Get all assets from the API (with caching)

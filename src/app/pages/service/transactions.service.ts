@@ -195,6 +195,12 @@ export class TransactionsService {
     /**
      * Create a new transaction
      */
+    private toDateString(d: string | Date | unknown): string {
+        if (d instanceof Date) return d.toISOString().split('T')[0];
+        if (typeof d === 'string') return d.split('T')[0];
+        return '';
+    }
+
     async addRecord(record: TransactionRecord): Promise<TransactionRecord> {
         try {
             const transactionData: TransactionCreate = {
@@ -202,7 +208,7 @@ export class TransactionsService {
                 category: this.mapNameToCategory(record.name, record.type),
                 amount: record.amount,
                 description: record.remarks,
-                date: record.date
+                date: this.toDateString(record.date)
             };
             
             const transaction = await firstValueFrom(this.api.createTransaction(transactionData));
@@ -229,7 +235,7 @@ export class TransactionsService {
                 category: this.mapNameToCategory(record.name, record.type),
                 amount: record.amount,
                 description: record.remarks,
-                date: record.date
+                date: this.toDateString(record.date)
             };
             
             const transaction = await firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData));

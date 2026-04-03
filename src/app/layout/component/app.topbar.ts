@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -36,6 +36,8 @@ interface AssetFormData {
     quantity: number;
     purchasePrice: number;
     currentPrice: number;
+    purchaseDate: string;
+    institution: string;
     owners: Owner[];
     // Tontine specific
     tontineMonthlyContribution: number;
@@ -45,6 +47,15 @@ interface AssetFormData {
     tontineStatus: 'en_cours' | 'mise_recue' | 'termine';
     // Mobile Money specific
     mobileMoneyProvider: string;
+}
+
+interface CategoryCard {
+    value: AssetCategory;
+    label: string;
+    desc: string;
+    icon: string;
+    bgClass: string;
+    textClass: string;
 }
 
 @Component({
@@ -77,8 +88,8 @@ interface AssetFormData {
             </div>
 
             <!-- Add Assets Button - Desktop Only -->
-            <button 
-                type="button" 
+            <button
+                type="button"
                 class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/30"
                 (click)="openAddAssetDialog()"
             >
@@ -87,8 +98,8 @@ interface AssetFormData {
             </button>
 
             <!-- Mobile ONLY: Simple user icon - redirects directly to settings -->
-            <a 
-                [routerLink]="['/'+lang, 'pages', 'settings', 'account']" 
+            <a
+                [routerLink]="['/'+lang, 'pages', 'settings', 'account']"
                 class="layout-topbar-action mobile-user-icon items-center justify-center"
             >
                 <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center overflow-hidden">
@@ -121,13 +132,13 @@ interface AssetFormData {
                             [hideOnOutsideClick]="true"
                         >
                             @if (avatarUrl) {
-                                <img [src]="avatarUrl" 
-                                     alt="Profile" 
+                                <img [src]="avatarUrl"
+                                     alt="Profile"
                                      class="w-8 h-8 rounded-full object-cover">
                             } @else {
-                                <p-avatar 
-                                    [label]="userInitials" 
-                                    shape="circle" 
+                                <p-avatar
+                                    [label]="userInitials"
+                                    shape="circle"
                                     [style]="{ 'background': 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)', 'color': 'white', 'font-weight': '600', 'font-size': '0.75rem' }"
                                     size="normal"
                                 />
@@ -139,13 +150,13 @@ interface AssetFormData {
                             <div class="p-4 bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 border-b border-surface">
                                 <div class="flex items-center gap-3">
                                     @if (avatarUrl) {
-                                        <img [src]="avatarUrl" 
-                                             alt="Profile" 
+                                        <img [src]="avatarUrl"
+                                             alt="Profile"
                                              class="w-12 h-12 rounded-full object-cover">
                                     } @else {
-                                        <p-avatar 
-                                            [label]="userInitials" 
-                                            shape="circle" 
+                                        <p-avatar
+                                            [label]="userInitials"
+                                            shape="circle"
                                             size="large"
                                             [style]="{ 'background': 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)', 'color': 'white', 'font-weight': '600' }"
                                         />
@@ -157,7 +168,7 @@ interface AssetFormData {
                                     <i class="pi pi-chevron-right text-surface-400"></i>
                                 </div>
                             </div>
-                            
+
                             <!-- Menu Items -->
                             <div class="py-2">
                                 <a [routerLink]="['/'+lang, 'pages', 'settings', 'account']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
@@ -204,332 +215,410 @@ interface AssetFormData {
             </div>
         </div>
     </div>
-    
+
     <!-- Add Asset Dialog -->
     <p-toast position="top-center"></p-toast>
-    <p-dialog 
-        [(visible)]="showAddAssetDialog" 
-        [modal]="true" 
+    <p-dialog
+        [(visible)]="showAddAssetDialog"
+        [modal]="true"
         [dismissableMask]="true"
         [draggable]="false"
         [resizable]="false"
-        [style]="{ width: '90vw', maxWidth: '800px' }"
+        [style]="{ width: '90vw', maxWidth: currentStep() === 0 ? '700px' : '800px' }"
         [contentStyle]="{ 'padding': '0' }"
         styleClass="add-asset-dialog"
         [showHeader]="false"
     >
         <div class="bg-surface-0 dark:bg-surface-900">
-            <!-- Header with back button and title -->
+            <!-- Header -->
             <div class="flex items-center gap-4 p-6 border-b border-surface-200 dark:border-surface-700">
-                @if (currentStep() > 1) {
-                    <button 
-                        type="button" 
-                        class="w-10 h-10 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
+                @if (currentStep() > 0) {
+                    <button
+                        type="button"
+                        class="w-10 h-10 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors flex-shrink-0"
                         (click)="previousStep()"
                     >
                         <i class="pi pi-chevron-left text-surface-600 dark:text-surface-300"></i>
                     </button>
                 }
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('addAssets.title') }}</h2>
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">
+                        @if (currentStep() === 0) { Choisissez un type d'actif }
+                        @if (currentStep() === 1) {
+                            <span class="flex items-center gap-2">
+                                @if (selectedCard()) {
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg {{ selectedCard()!.bgClass }}">
+                                        <i class="pi {{ selectedCard()!.icon }} {{ selectedCard()!.textClass }} text-sm"></i>
+                                    </span>
+                                }
+                                {{ selectedCard()?.label ?? 'Informations' }}
+                            </span>
+                        }
+                        @if (currentStep() === 2) { Répartition }
+                    </h2>
+                </div>
+                <button
+                    type="button"
+                    class="w-10 h-10 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors flex-shrink-0"
+                    (click)="showAddAssetDialog = false"
+                >
+                    <i class="pi pi-times text-surface-600 dark:text-surface-300"></i>
+                </button>
             </div>
-            
-            <div class="flex flex-col lg:flex-row min-h-[500px]">
-                <!-- Left Sidebar - Steps -->
-                <div class="w-full lg:w-64 p-6 border-b lg:border-b-0 lg:border-r border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="flex lg:flex-col gap-4">
-                        <button 
-                            type="button"
-                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left w-full"
-                            [ngClass]="currentStep() === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
-                            (click)="goToStep(1)"
-                        >
-                            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                                  [ngClass]="currentStep() === 1 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
-                            <span>Informations</span>
-                        </button>
-                        <button
-                            type="button"
-                            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left w-full"
-                            [ngClass]="currentStep() === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
-                            (click)="goToStep(2)"
-                            [disabled]="!isStep1Valid()"
-                        >
-                            <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                                  [ngClass]="currentStep() === 2 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
-                            <span>Répartition</span>
-                        </button>
+
+            <!-- ===== STEP 0: Category Picker ===== -->
+            @if (currentStep() === 0) {
+                <div class="p-6">
+                    <p class="text-surface-500 dark:text-surface-400 text-sm mb-5">Sélectionnez le type d'actif à ajouter à votre patrimoine</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        @for (cat of categoryCards; track cat.value) {
+                            <button
+                                type="button"
+                                class="flex flex-col items-center gap-2 p-3 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-500/5 transition-all text-center group"
+                                (click)="selectCategory(cat.value)"
+                            >
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center {{ cat.bgClass }} transition-transform group-hover:scale-110">
+                                    <i class="pi {{ cat.icon }} {{ cat.textClass }} text-lg"></i>
+                                </div>
+                                <span class="text-xs font-medium text-surface-700 dark:text-surface-200 leading-tight">{{ cat.label }}</span>
+                            </button>
+                        }
                     </div>
                 </div>
-                
-                <!-- Right Content -->
-                <div class="flex-1 p-6">
-                    <!-- Step 1: Informations -->
-                    @if (currentStep() === 1) {
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Name -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Nom</label>
-                                <input
-                                    pInputText
-                                    [(ngModel)]="assetForm.name"
-                                    [placeholder]="assetForm.category === 'tontine' ? 'Ex: Tontine Famille Diallo' : assetForm.category === 'mobile_money' ? 'Ex: Compte Wave' : 'Ex: Appartement, Actions...'"
-                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
-                                />
-                            </div>
+            }
 
-                            <!-- Category -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm">Catégorie</label>
-                                <p-select
-                                    [(ngModel)]="assetForm.category"
-                                    [options]="categoryOptions"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="Sélectionner une catégorie"
-                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
-                                />
-                            </div>
+            <!-- ===== STEPS 1 & 2: Form with sidebar ===== -->
+            @if (currentStep() >= 1) {
+                <div class="flex flex-col lg:flex-row min-h-[460px]">
+                    <!-- Left Sidebar -->
+                    <div class="w-full lg:w-56 p-5 border-b lg:border-b-0 lg:border-r border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                        <div class="flex lg:flex-col gap-3">
+                            <button
+                                type="button"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
+                                [ngClass]="currentStep() === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
+                                (click)="goToStep(1)"
+                            >
+                                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                      [ngClass]="currentStep() === 1 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
+                                <span class="text-sm">Informations</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
+                                [ngClass]="currentStep() === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
+                                (click)="goToStep(2)"
+                                [disabled]="!isStep1Valid()"
+                            >
+                                <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                      [ngClass]="currentStep() === 2 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
+                                <span class="text-sm">Répartition</span>
+                            </button>
+                        </div>
+                    </div>
 
-                            <!-- ===== TONTINE FIELDS ===== -->
-                            @if (assetForm.category === 'tontine') {
-                                <!-- Mise mensuelle -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Mise mensuelle</label>
-                                    <div class="relative">
-                                        <p-inputnumber
-                                            [(ngModel)]="assetForm.tontineMonthlyContribution"
-                                            [min]="0" mode="decimal" [minFractionDigits]="0"
-                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
-                                        />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                    <!-- Right Content -->
+                    <div class="flex-1 p-6 overflow-y-auto">
+
+                        <!-- Step 1: Per-category form -->
+                        @if (currentStep() === 1) {
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                                <!-- Name (always) -->
+                                <div class="flex flex-col gap-2 md:col-span-2">
+                                    <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nom de l'actif <span class="text-red-400">*</span></label>
+                                    <input
+                                        pInputText
+                                        [(ngModel)]="assetForm.name"
+                                        [placeholder]="namePlaceholder()"
+                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                    />
+                                </div>
+
+                                <!-- ===== TONTINE FIELDS ===== -->
+                                @if (assetForm.category === 'tontine') {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Mise mensuelle <span class="text-red-400">*</span></label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.tontineMonthlyContribution"
+                                                [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- Nombre de participants -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Nombre de participants</label>
-                                    <p-inputnumber
-                                        [(ngModel)]="assetForm.tontineParticipants"
-                                        [min]="2" [max]="100"
-                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
-                                    />
-                                </div>
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nombre de participants <span class="text-red-400">*</span></label>
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.tontineParticipants"
+                                            [min]="2" [max]="100"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
 
-                                <!-- Date de début -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Date de début</label>
-                                    <input
-                                        pInputText type="date"
-                                        [(ngModel)]="assetForm.tontineStartDate"
-                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
-                                    />
-                                </div>
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date de début <span class="text-red-400">*</span></label>
+                                        <input
+                                            pInputText type="date"
+                                            [(ngModel)]="assetForm.tontineStartDate"
+                                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
 
-                                <!-- Date de collecte de ma mise -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Date de collecte de ma mise</label>
-                                    <input
-                                        pInputText type="date"
-                                        [(ngModel)]="assetForm.tontineCollectionDate"
-                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
-                                    />
-                                </div>
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date de collecte de ma mise</label>
+                                        <input
+                                            pInputText type="date"
+                                            [(ngModel)]="assetForm.tontineCollectionDate"
+                                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
 
-                                <!-- Statut -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Statut</label>
-                                    <p-select
-                                        [(ngModel)]="assetForm.tontineStatus"
-                                        [options]="tontineStatusOptions"
-                                        optionLabel="label"
-                                        optionValue="value"
-                                        styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
-                                    />
-                                </div>
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Statut</label>
+                                        <p-select
+                                            [(ngModel)]="assetForm.tontineStatus"
+                                            [options]="tontineStatusOptions"
+                                            optionLabel="label"
+                                            optionValue="value"
+                                            styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
+                                        />
+                                    </div>
 
-                                <!-- Valeur estimée (auto) -->
-                                @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
-                                    <div class="md:col-span-2 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-3">
-                                        <i class="pi pi-calculator text-indigo-400"></i>
-                                        <div>
-                                            <p class="text-xs text-surface-400 mb-0.5">Valeur accumulée estimée</p>
-                                            <p class="font-bold text-indigo-400">
-                                                {{ tontineCurrentValue() | number:'1.0-0' }} {{ currencyService.config().symbol }}
-                                                <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} mois × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
-                                            </p>
+                                    @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
+                                        <div class="md:col-span-2 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-3">
+                                            <i class="pi pi-calculator text-indigo-400"></i>
+                                            <div>
+                                                <p class="text-xs text-surface-400 mb-0.5">Valeur accumulée estimée</p>
+                                                <p class="font-bold text-indigo-400">
+                                                    {{ tontineCurrentValue() | number:'1.0-0' }} {{ currencyService.config().symbol }}
+                                                    <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} mois × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+
+                                <!-- ===== MOBILE MONEY FIELDS ===== -->
+                                @if (assetForm.category === 'mobile_money') {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Opérateur <span class="text-red-400">*</span></label>
+                                        <p-select
+                                            [(ngModel)]="assetForm.mobileMoneyProvider"
+                                            [options]="mobileMoneyProviders"
+                                            optionLabel="label"
+                                            optionValue="value"
+                                            placeholder="Sélectionner l'opérateur"
+                                            styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
+                                        />
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Solde actuel <span class="text-red-400">*</span></label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.currentPrice"
+                                                [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
+                                        <i class="pi pi-info-circle text-cyan-400"></i>
+                                        Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
+                                    </div>
+                                }
+
+                                <!-- ===== QUANTITY-BASED (stocks, bonds, crypto, collectibles, commodities) ===== -->
+                                @if (isQuantityBased()) {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Quantité</label>
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.quantity"
+                                            [min]="1"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat unitaire</label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.purchasePrice"
+                                                mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle unitaire <span class="text-red-400">*</span></label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.currentPrice"
+                                                mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
                                         </div>
                                     </div>
                                 }
-                            }
 
-                            <!-- ===== MOBILE MONEY FIELDS ===== -->
-                            @if (assetForm.category === 'mobile_money') {
-                                <!-- Opérateur -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Opérateur</label>
-                                    <p-select
-                                        [(ngModel)]="assetForm.mobileMoneyProvider"
-                                        [options]="mobileMoneyProviders"
-                                        optionLabel="label"
-                                        optionValue="value"
-                                        placeholder="Sélectionner l'opérateur"
-                                        styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
-                                    />
-                                </div>
-
-                                <!-- Solde actuel -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Solde actuel</label>
-                                    <div class="relative">
-                                        <p-inputnumber
-                                            [(ngModel)]="assetForm.currentPrice"
-                                            [min]="0" mode="decimal" [minFractionDigits]="0"
-                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
-                                        />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
-                                    <i class="pi pi-info-circle text-cyan-400"></i>
-                                    Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
-                                </div>
-                            }
-
-                            <!-- ===== STANDARD FIELDS (not tontine/mobile_money) ===== -->
-                            @if (assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
-                                <!-- Quantity -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Quantité</label>
-                                    <p-inputnumber
-                                        [(ngModel)]="assetForm.quantity"
-                                        [min]="1"
-                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
-                                    />
-                                </div>
-
-                                <!-- Buying price per unit -->
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Prix d'achat unitaire</label>
-                                    <div class="relative">
-                                        <p-inputnumber
-                                            [(ngModel)]="assetForm.purchasePrice"
-                                            mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
-                                        />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
-                                    </div>
-                                </div>
-
-                                <!-- Current price per unit -->
-                                <div class="flex flex-col gap-2 md:col-span-1">
-                                    <label class="text-surface-500 dark:text-surface-400 text-sm">Valeur actuelle unitaire</label>
-                                    <div class="relative">
-                                        <p-inputnumber
-                                            [(ngModel)]="assetForm.currentPrice"
-                                            mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
-                                        />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                    
-                    <!-- Step 2: Ownership -->
-                    @if (currentStep() === 2) {
-                        <div class="space-y-6">
-                            <!-- Asset Summary Card -->
-                            <div class="flex items-center justify-center mb-8">
-                                <div class="flex flex-col items-center">
-                                    <div class="w-20 h-20 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center mb-4">
-                                        <i class="pi pi-building text-3xl text-surface-500 dark:text-surface-400"></i>
-                                    </div>
-                                    <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || 'Asset' }}</span>
-                                    <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">
-                                        <app-amount [value]="assetForm.currentPrice * assetForm.quantity" />
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <!-- Owners Section -->
-                            <div>
-                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Propriétaires</h3>
-                                <div class="space-y-4">
-                                    @for (owner of assetForm.owners; track owner.name) {
-                                        <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-                                                    <span class="text-white font-semibold text-sm">{{ owner.initials }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="font-medium text-surface-900 dark:text-surface-0">{{ owner.name }}</span>
-                                                    <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ owner.percentage | number:'1.2-2' }} %</span>
-                                                </div>
-                                            </div>
-                                            @if (assetForm.owners.length > 1) {
-                                                <button 
-                                                    type="button"
-                                                    class="w-8 h-8 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700 flex items-center justify-center transition-colors"
-                                                    (click)="removeOwner(owner)"
-                                                >
-                                                    <i class="pi pi-times text-surface-400"></i>
-                                                </button>
-                                            }
+                                <!-- ===== TOTAL-VALUE-BASED (real_estate, cash, retirement, life_insurance, savings_account, business, vehicle, other) ===== -->
+                                @if (!isQuantityBased() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur d'achat / initiale</label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.purchasePrice"
+                                                [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
                                         </div>
-                                    }
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle <span class="text-red-400">*</span></label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.currentPrice"
+                                                [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Purchase date (all except mobile_money) -->
+                                @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine') {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date d'achat</label>
+                                        <input
+                                            pInputText type="date"
+                                            [(ngModel)]="assetForm.purchaseDate"
+                                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
+                                }
+
+                                <!-- Institution (for relevant categories) -->
+                                @if (isInstitutionBased()) {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
+                                        <input
+                                            pInputText
+                                            [(ngModel)]="assetForm.institution"
+                                            [placeholder]="institutionPlaceholder()"
+                                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <!-- Step 2: Ownership -->
+                        @if (currentStep() === 2) {
+                            <div class="space-y-6">
+                                <!-- Asset Summary Card -->
+                                <div class="flex items-center justify-center mb-6">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 {{ selectedCard()?.bgClass ?? 'bg-surface-200 dark:bg-surface-700' }}">
+                                            <i class="pi {{ selectedCard()?.icon ?? 'pi-box' }} text-2xl {{ selectedCard()?.textClass ?? 'text-surface-500' }}"></i>
+                                        </div>
+                                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || 'Actif' }}</span>
+                                        <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 mt-1">
+                                            <app-amount [value]="totalValue()" />
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Owners Section -->
+                                <div>
+                                    <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Propriétaires</h3>
+                                    <div class="space-y-3">
+                                        @for (owner of assetForm.owners; track owner.name) {
+                                            <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                                                        <span class="text-white font-semibold text-sm">{{ owner.initials }}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="font-medium text-surface-900 dark:text-surface-0">{{ owner.name }}</span>
+                                                        <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ owner.percentage | number:'1.2-2' }} %</span>
+                                                    </div>
+                                                </div>
+                                                @if (assetForm.owners.length > 1) {
+                                                    <button
+                                                        type="button"
+                                                        class="w-8 h-8 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700 flex items-center justify-center transition-colors"
+                                                        (click)="removeOwner(owner)"
+                                                    >
+                                                        <i class="pi pi-times text-surface-400"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Members Section -->
+                                <div>
+                                    <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Co-propriétaires</h3>
+                                    <button
+                                        type="button"
+                                        class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-primary hover:bg-primary/5 transition-all w-full"
+                                        (click)="addMember()"
+                                    >
+                                        <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
+                                            <i class="pi pi-plus text-surface-400"></i>
+                                        </div>
+                                        <span class="text-surface-600 dark:text-surface-300">Ajouter un co-propriétaire</span>
+                                    </button>
                                 </div>
                             </div>
-                            
-                            <!-- Members Section -->
-                            <div>
-                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Co-propriétaires</h3>
-                                <button
-                                    type="button"
-                                    class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-primary hover:bg-primary/5 transition-all w-full"
-                                    (click)="addMember()"
-                                >
-                                    <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
-                                        <i class="pi pi-plus text-surface-400"></i>
-                                    </div>
-                                    <span class="text-surface-600 dark:text-surface-300">Ajouter un co-propriétaire</span>
-                    </button>
-                            </div>
-                        </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Footer -->
+            @if (currentStep() >= 1) {
+                <div class="flex items-center justify-end gap-4 p-6 border-t border-surface-200 dark:border-surface-700">
+                    @if (currentStep() === 1) {
+                        <button
+                            pButton
+                            type="button"
+                            label="Suivant"
+                            class="px-8"
+                            [disabled]="!isStep1Valid()"
+                            (click)="nextStep()"
+                        ></button>
+                    } @else {
+                        <button
+                            pButton
+                            type="button"
+                            label="Retour"
+                            [outlined]="true"
+                            (click)="previousStep()"
+                        ></button>
+                        <button
+                            pButton
+                            type="button"
+                            label="Enregistrer"
+                            class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 hover:!opacity-90"
+                            [loading]="isSubmitting()"
+                            (click)="submitAsset()"
+                        ></button>
                     }
                 </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="flex items-center justify-end gap-4 p-6 border-t border-surface-200 dark:border-surface-700">
-                @if (currentStep() === 1) {
-                    <button 
-                        pButton
-                        type="button"
-                        label="Suivant"
-                        class="px-8"
-                        [disabled]="!isStep1Valid()"
-                        (click)="nextStep()"
-                    ></button>
-                } @else {
-                    <button 
-                        pButton
-                        type="button"
-                        label="Retour"
-                        [outlined]="true"
-                        (click)="previousStep()"
-                    ></button>
-                    <button 
-                        pButton
-                        type="button"
-                        label="Enregistrer"
-                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 hover:!opacity-90"
-                        [loading]="isSubmitting()"
-                        (click)="submitAsset()"
-                    ></button>
-                }
-            </div>
+            }
         </div>
     </p-dialog>`
 })
@@ -546,12 +635,13 @@ export class AppTopbar implements OnInit {
 
     items!: MenuItem[];
     lang = 'fr';
-    
+
     // Add Asset Dialog
     showAddAssetDialog = false;
-    currentStep = signal(1);
+    currentStep = signal(0);
     isSubmitting = signal(false);
-    
+    selectedCategory = signal<AssetCategory | ''>('');
+
     // Asset Form Data
     assetForm: AssetFormData = {
         name: '',
@@ -559,6 +649,8 @@ export class AppTopbar implements OnInit {
         quantity: 1,
         purchasePrice: 0,
         currentPrice: 0,
+        purchaseDate: '',
+        institution: '',
         owners: [],
         tontineMonthlyContribution: 0,
         tontineParticipants: 2,
@@ -567,24 +659,24 @@ export class AppTopbar implements OnInit {
         tontineStatus: 'en_cours',
         mobileMoneyProvider: ''
     };
-    
-    // Category options
-    categoryOptions = [
-        { label: 'Immobilier', value: 'real_estate' },
-        { label: 'Actions / Bourse (BRVM, ...)', value: 'stocks' },
-        { label: 'Obligations', value: 'bonds' },
-        { label: 'Crypto-monnaies', value: 'crypto' },
-        { label: 'Liquidités', value: 'cash' },
-        { label: 'Épargne retraite', value: 'retirement' },
-        { label: 'Assurance vie', value: 'life_insurance' },
-        { label: 'Livrets / Comptes épargne', value: 'savings_account' },
-        { label: 'Entreprise', value: 'business' },
-        { label: 'Véhicules', value: 'vehicle' },
-        { label: 'Tontine', value: 'tontine' },
-        { label: 'Mobile Money (Wave, Orange...)', value: 'mobile_money' },
-        { label: 'Collections', value: 'collectibles' },
-        { label: 'Matières premières', value: 'commodities' },
-        { label: 'Autres', value: 'other' }
+
+    // Category cards for step 0
+    categoryCards: CategoryCard[] = [
+        { value: 'real_estate',     label: 'Immobilier',      desc: 'Appartement, terrain...', icon: 'pi-home',        bgClass: 'bg-indigo-500/10',  textClass: 'text-indigo-400' },
+        { value: 'stocks',          label: 'Actions / Bourse', desc: 'BRVM, ETF, fonds...',    icon: 'pi-chart-line',  bgClass: 'bg-cyan-500/10',    textClass: 'text-cyan-400' },
+        { value: 'bonds',           label: 'Obligations',     desc: 'Bons du trésor...',        icon: 'pi-percentage',  bgClass: 'bg-blue-500/10',    textClass: 'text-blue-400' },
+        { value: 'crypto',          label: 'Crypto',          desc: 'Bitcoin, USDT...',          icon: 'pi-bolt',        bgClass: 'bg-orange-500/10',  textClass: 'text-orange-400' },
+        { value: 'cash',            label: 'Liquidités',      desc: 'Espèces, compte courant',   icon: 'pi-wallet',      bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-400' },
+        { value: 'retirement',      label: 'Retraite',        desc: 'PER, épargne retraite...',  icon: 'pi-clock',       bgClass: 'bg-purple-500/10',  textClass: 'text-purple-400' },
+        { value: 'life_insurance',  label: 'Assurance vie',   desc: 'Contrats vie...',           icon: 'pi-shield',      bgClass: 'bg-teal-500/10',    textClass: 'text-teal-400' },
+        { value: 'savings_account', label: 'Livret épargne',  desc: 'Livret A, CEL...',          icon: 'pi-book',        bgClass: 'bg-green-500/10',   textClass: 'text-green-400' },
+        { value: 'business',        label: 'Entreprise',      desc: 'Parts, actions privées',    icon: 'pi-briefcase',   bgClass: 'bg-amber-500/10',   textClass: 'text-amber-400' },
+        { value: 'vehicle',         label: 'Véhicule',        desc: 'Voiture, moto...',          icon: 'pi-car',         bgClass: 'bg-slate-500/10',   textClass: 'text-slate-400' },
+        { value: 'tontine',         label: 'Tontine',         desc: 'Épargne collective',        icon: 'pi-users',       bgClass: 'bg-pink-500/10',    textClass: 'text-pink-400' },
+        { value: 'mobile_money',    label: 'Mobile Money',    desc: 'Wave, Orange Money...',     icon: 'pi-mobile',      bgClass: 'bg-sky-500/10',     textClass: 'text-sky-400' },
+        { value: 'collectibles',    label: 'Collections',     desc: 'Art, bijoux, montres...',   icon: 'pi-star',        bgClass: 'bg-yellow-500/10',  textClass: 'text-yellow-500' },
+        { value: 'commodities',     label: 'Matières prem.',  desc: 'Or, café, pétrole...',      icon: 'pi-box',         bgClass: 'bg-amber-600/10',   textClass: 'text-amber-500' },
+        { value: 'other',           label: 'Autres',          desc: 'Tout autre actif',          icon: 'pi-ellipsis-h',  bgClass: 'bg-surface-500/10', textClass: 'text-surface-400' },
     ];
 
     mobileMoneyProviders = [
@@ -601,10 +693,12 @@ export class AppTopbar implements OnInit {
         { label: 'Terminée', value: 'termine' }
     ];
 
+    // Computed helpers
+    selectedCard = computed(() => this.categoryCards.find(c => c.value === this.selectedCategory()) ?? null);
+
     user = this.tokenService.user;
 
     constructor() {
-        // Listen to route changes to update language
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd)
         ).subscribe(() => {
@@ -619,8 +713,7 @@ export class AppTopbar implements OnInit {
     get avatarUrl(): string | null {
         const user = this.user();
         if (!user?.avatar_url) return null;
-        
-        // If it's a relative URL, prepend the backend base URL
+
         if (user.avatar_url.startsWith('/uploads/')) {
             const baseUrl = environment.apiUrl.replace('/api/v1', '');
             return `${baseUrl}${user.avatar_url}`;
@@ -631,10 +724,10 @@ export class AppTopbar implements OnInit {
     get userInitials(): string {
         const currentUser = this.user();
         if (!currentUser) return 'U';
-        
+
         const first = currentUser.first_name || '';
         const last = currentUser.last_name || '';
-        
+
         if (!first && !last) {
             return currentUser.email?.charAt(0).toUpperCase() || 'U';
         }
@@ -644,10 +737,10 @@ export class AppTopbar implements OnInit {
     get userName(): string {
         const currentUser = this.user();
         if (!currentUser) return 'User';
-        
+
         const first = currentUser.first_name || '';
         const last = currentUser.last_name || '';
-        
+
         if (!first && !last) {
             return currentUser.email?.split('@')[0] || 'User';
         }
@@ -663,8 +756,7 @@ export class AppTopbar implements OnInit {
         this.layoutService.layoutConfig.update((state) => {
             const currentMode = state.themeMode || 'system';
             const isCurrentlyDark = state.darkTheme ?? false;
-            
-            // If in system mode, switch to explicit mode based on current state
+
             if (currentMode === 'system') {
                 return {
                     ...state,
@@ -672,7 +764,6 @@ export class AppTopbar implements OnInit {
                     darkTheme: !isCurrentlyDark
                 };
             } else {
-                // Toggle between light and dark
                 return {
                     ...state,
                     themeMode: isCurrentlyDark ? 'light' : 'dark',
@@ -685,25 +776,26 @@ export class AppTopbar implements OnInit {
     logout(): void {
         this.authService.logout();
     }
-    
+
     // ==================== Add Asset Dialog Methods ====================
-    
+
     openAddAssetDialog(): void {
         this.resetForm();
         this.showAddAssetDialog = true;
     }
-    
+
     resetForm(): void {
-        const currentUser = this.user();
         const ownerName = this.userName;
         const initials = this.userInitials;
-        
+
         this.assetForm = {
             name: '',
             category: '',
             quantity: 1,
             purchasePrice: 0,
             currentPrice: 0,
+            purchaseDate: '',
+            institution: '',
             owners: [{ name: ownerName, initials: initials, percentage: 100 }],
             tontineMonthlyContribution: 0,
             tontineParticipants: 2,
@@ -712,9 +804,69 @@ export class AppTopbar implements OnInit {
             tontineStatus: 'en_cours',
             mobileMoneyProvider: ''
         };
+        this.selectedCategory.set('');
+        this.currentStep.set(0);
+    }
+
+    selectCategory(value: AssetCategory): void {
+        this.assetForm.category = value;
+        this.selectedCategory.set(value);
         this.currentStep.set(1);
     }
-    
+
+    // Category helpers
+    isQuantityBased(): boolean {
+        return ['stocks', 'bonds', 'crypto', 'collectibles', 'commodities'].includes(this.assetForm.category);
+    }
+
+    isInstitutionBased(): boolean {
+        return ['stocks', 'bonds', 'crypto', 'retirement', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
+    }
+
+    namePlaceholder(): string {
+        const placeholders: Partial<Record<AssetCategory, string>> = {
+            tontine: 'Ex: Tontine Famille Diallo',
+            mobile_money: 'Ex: Compte Wave',
+            real_estate: 'Ex: Appartement Dakar',
+            stocks: 'Ex: Actions SONATEL',
+            crypto: 'Ex: Bitcoin',
+            vehicle: 'Ex: Toyota Hilux 2021',
+        };
+        return placeholders[this.assetForm.category as AssetCategory] ?? 'Ex: Nom de l\'actif';
+    }
+
+    institutionLabel(): string {
+        const labels: Partial<Record<AssetCategory, string>> = {
+            stocks: 'Courtier / Plateforme',
+            bonds: 'Émetteur / Banque',
+            crypto: 'Plateforme / Exchange',
+            savings_account: 'Banque',
+            cash: 'Banque',
+            retirement: 'Gestionnaire',
+            life_insurance: 'Assureur',
+            real_estate: 'Agence / Notaire',
+        };
+        return labels[this.assetForm.category as AssetCategory] ?? 'Institution';
+    }
+
+    institutionPlaceholder(): string {
+        const placeholders: Partial<Record<AssetCategory, string>> = {
+            stocks: 'Ex: SGI BRVM, Binance...',
+            crypto: 'Ex: Binance, Coinbase...',
+            savings_account: 'Ex: CBAO, BHS...',
+            cash: 'Ex: SGBS, Ecobank...',
+            retirement: 'Ex: Fonctionnaires, IPRES...',
+            life_insurance: 'Ex: AXA, SANLAM...',
+            real_estate: 'Ex: Cabinet Tall Immobilier',
+        };
+        return placeholders[this.assetForm.category as AssetCategory] ?? '';
+    }
+
+    totalValue(): number {
+        if (this.assetForm.category === 'tontine') return this.tontineCurrentValue();
+        return this.assetForm.currentPrice * (this.isQuantityBased() ? this.assetForm.quantity : 1);
+    }
+
     isStep1Valid(): boolean {
         const f = this.assetForm;
         if (!f.name || !f.category) return false;
@@ -725,55 +877,54 @@ export class AppTopbar implements OnInit {
         return f.currentPrice > 0;
     }
 
-    /** Months elapsed since a given ISO date string. */
     tontineMonthsElapsed(): number {
         if (!this.assetForm.tontineStartDate) return 0;
         const start = new Date(this.assetForm.tontineStartDate).getTime();
         return Math.max(0, Math.floor((Date.now() - start) / (30.44 * 24 * 60 * 60 * 1000)));
     }
 
-    /** Estimated current tontine value in display currency. */
     tontineCurrentValue(): number {
         return this.assetForm.tontineMonthlyContribution * this.tontineMonthsElapsed();
     }
 
-    /** Convert a display-currency amount to EUR for storage. */
     private toEur(displayValue: number): number {
         return displayValue / this.currencyService.config().rate;
     }
-    
+
     nextStep(): void {
-        if (this.currentStep() < 2) {
-            this.currentStep.update(v => v + 1);
+        if (this.currentStep() === 0 && this.assetForm.category) {
+            this.currentStep.set(1);
+        } else if (this.currentStep() === 1 && this.isStep1Valid()) {
+            this.currentStep.set(2);
         }
     }
-    
+
     previousStep(): void {
-        if (this.currentStep() > 1) {
+        if (this.currentStep() > 0) {
             this.currentStep.update(v => v - 1);
         }
     }
-    
+
     goToStep(step: number): void {
-        if (step === 1 || (step === 2 && this.isStep1Valid())) {
-            this.currentStep.set(step);
+        if (step === 1 && this.assetForm.category) {
+            this.currentStep.set(1);
+        } else if (step === 2 && this.isStep1Valid()) {
+            this.currentStep.set(2);
         }
     }
-    
+
     removeOwner(owner: Owner): void {
         if (this.assetForm.owners.length > 1) {
             const index = this.assetForm.owners.indexOf(owner);
             if (index > -1) {
                 this.assetForm.owners.splice(index, 1);
-                // Redistribute percentages
                 const remaining = 100 / this.assetForm.owners.length;
                 this.assetForm.owners.forEach(o => o.percentage = remaining);
             }
         }
     }
-    
+
     addMember(): void {
-        // For now, just show a message - in a full implementation, this would open a member selection dialog
         this.messageService.add({
             severity: 'info',
             summary: 'Bientôt disponible',
@@ -781,14 +932,15 @@ export class AppTopbar implements OnInit {
             life: 3000
         });
     }
-    
+
     async submitAsset(): Promise<void> {
         if (!this.isStep1Valid()) return;
-        
+
         this.isSubmitting.set(true);
-        
+
         try {
             const f = this.assetForm;
+            const purchaseDateValue = f.purchaseDate || new Date().toISOString().split('T')[0];
             let assetData: AssetCreate;
 
             if (f.category === 'tontine') {
@@ -818,31 +970,31 @@ export class AppTopbar implements OnInit {
                     is_liquid: true
                 };
             } else {
+                const qty = this.isQuantityBased() ? f.quantity : 1;
                 assetData = {
                     name: f.name,
                     category: f.category as AssetCategory,
-                    current_value: this.toEur(f.currentPrice * f.quantity),
-                    purchase_value: this.toEur(f.purchasePrice * f.quantity),
-                    purchase_date: new Date().toISOString().split('T')[0]
+                    current_value: this.toEur(f.currentPrice * qty),
+                    purchase_value: f.purchasePrice > 0 ? this.toEur(f.purchasePrice * qty) : undefined,
+                    purchase_date: purchaseDateValue,
+                    institution: f.institution || undefined
                 };
             }
-            
-            // Use PatrimoineService which will notify subscribers of the update
+
             await this.patrimoineService.createAsset(assetData);
-            
+
             this.messageService.add({
                 severity: 'success',
                 summary: 'Succès',
                 detail: 'Actif ajouté avec succès',
                 life: 3000
             });
-            
+
             this.showAddAssetDialog = false;
             this.resetForm();
-            
-            // Navigate to patrimoine page to see the new asset
+
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
-            
+
         } catch (error: any) {
             console.error('Error creating asset:', error);
             const detail = error?.error?.detail

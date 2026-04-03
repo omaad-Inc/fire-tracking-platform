@@ -56,6 +56,7 @@ interface ExportColumn {
         AppAmountComponent
     ],
     template: `
+        <p-toast position="top-center" />
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
                 <p-button [label]="t('transactions.new')" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
@@ -179,11 +180,11 @@ interface ExportColumn {
                             <i class="pi pi-calendar text-indigo-500"></i>
                             {{ t('common.date') }}
                         </label>
-                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" 
-                                      inputId="date" dateFormat="yy-mm-dd" required 
+                        <p-datepicker id="date" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
+                                      inputId="date" dateFormat="yy-mm-dd" required
                                       styleClass="w-full"
                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500" />
-                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.date">
+                        <small class="text-rose-500 text-xs" *ngIf="submitted && !editDate">
                             <i class="pi pi-exclamation-circle mr-1"></i>{{ t('transactions.messages.dateRequired') }}
                         </small>
                     </div>
@@ -254,8 +255,9 @@ interface ExportColumn {
                               [outlined]="true" 
                               (click)="hideDialog()" 
                               styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
-                    <p-button [label]="t('common.save')" icon="pi pi-check" 
-                              (click)="saveRecord()" 
+                    <p-button [label]="t('common.save')" icon="pi pi-check"
+                              [loading]="isSaving()"
+                              (click)="saveRecord()"
                               styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 hover:!from-indigo-700 hover:!to-cyan-600 !border-0" />
                 </div>
             </ng-template>
@@ -267,9 +269,11 @@ interface ExportColumn {
 })
 export class TransactionLogs implements OnInit {
     transactionDialog: boolean = false;
+    isSaving = signal(false);
 
     records = signal<TransactionRecord[]>([]);
     record!: TransactionRecord;
+    editDate: Date | null = null;
     selectedRecords!: TransactionRecord[] | null;
     submitted: boolean = false;
     types = [
@@ -322,12 +326,16 @@ export class TransactionLogs implements OnInit {
 
     openNew() {
         this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+        this.editDate = null;
         this.submitted = false;
         this.transactionDialog = true;
     }
 
     editRecord(record: TransactionRecord) {
         this.record = { ...record };
+        // Convert date string to Date object for p-datepicker
+        this.editDate = record.date ? new Date(record.date) : null;
+        this.submitted = false;
         this.transactionDialog = true;
     }
 
@@ -336,9 +344,10 @@ export class TransactionLogs implements OnInit {
             message: this.t('transactions.messages.deleteSelectedConfirm'),
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => {
+            accept: async () => {
                 const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
-                this.transactionsService.deleteRecords(ids).then(() => {
+                try {
+                    await this.transactionsService.deleteRecords(ids);
                     this.records.set(this.records().filter((val) => !ids.includes(val.id!)));
                     this.selectedRecords = null;
                     this.messageService.add({
@@ -347,7 +356,9 @@ export class TransactionLogs implements OnInit {
                         detail: this.t('transactions.messages.recordsDeleted'),
                         life: 3000
                     });
-                });
+                } catch {
+                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de supprimer les transactions', life: 5000 });
+                }
             }
         });
     }
@@ -362,18 +373,20 @@ export class TransactionLogs implements OnInit {
             message: this.t('transactions.messages.deleteOneConfirm', { name: record.name || '' }),
             header: 'Confirm',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => {
+            accept: async () => {
                 if (!record.id) return;
-                this.transactionsService.deleteRecords([record.id]).then(() => {
+                try {
+                    await this.transactionsService.deleteRecords([record.id]);
                     this.records.set(this.records().filter((val) => val.id !== record.id));
-                    this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
                     this.messageService.add({
                         severity: 'success',
                         summary: this.t('transactions.messages.successful'),
                         detail: this.t('transactions.messages.recordDeleted'),
                         life: 3000
                     });
-                });
+                } catch {
+                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de supprimer la transaction', life: 5000 });
+                }
             }
         });
     }
@@ -389,34 +402,57 @@ export class TransactionLogs implements OnInit {
         return index;
     }
 
-    saveRecord() {
+    async saveRecord() {
         this.submitted = true;
-        let _records = this.records();
-        if (this.record.name?.trim()) {
+
+        // Validation: require date and amount
+        if (!this.editDate || !this.record.amount || this.record.amount <= 0) return;
+
+        // Inject the picked date back into the record as a YYYY-MM-DD string
+        const d = this.editDate;
+        this.record.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+        // Default name if empty
+        if (!this.record.name?.trim()) {
+            this.record.name = this.record.type === 'Income' ? 'Revenu' : 'Dépense';
+        }
+
+        this.isSaving.set(true);
+        const _records = this.records();
+
+        try {
             if (this.record.id) {
-                this.transactionsService.updateRecord(this.record).then((updated) => {
-                    _records[this.findIndexById(updated.id!)] = updated;
-                    this.records.set([..._records]);
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: this.t('transactions.messages.successful'),
-                        detail: this.t('transactions.messages.recordUpdated'),
-                        life: 3000
-                    });
+                const updated = await this.transactionsService.updateRecord(this.record);
+                const idx = this.findIndexById(updated.id!);
+                if (idx !== -1) _records[idx] = updated;
+                this.records.set([..._records]);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.t('transactions.messages.successful'),
+                    detail: this.t('transactions.messages.recordUpdated'),
+                    life: 3000
                 });
             } else {
-                this.transactionsService.addRecord(this.record).then((created) => {
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: this.t('transactions.messages.successful'),
-                        detail: this.t('transactions.messages.recordCreated'),
-                        life: 3000
-                    });
-                    this.records.set([..._records, created]);
+                const created = await this.transactionsService.addRecord(this.record);
+                this.records.set([..._records, created]);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.t('transactions.messages.successful'),
+                    detail: this.t('transactions.messages.recordCreated'),
+                    life: 3000
                 });
             }
             this.transactionDialog = false;
+            this.submitted = false;
+            this.editDate = null;
             this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+        } catch (error: any) {
+            const detail = error?.error?.detail
+                ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
+                : 'Impossible d\'enregistrer la transaction';
+            this.messageService.add({ severity: 'error', summary: 'Erreur', detail, life: 6000 });
+        } finally {
+            this.isSaving.set(false);
         }
     }
 
