@@ -25,7 +25,7 @@ import { CommonModule } from '@angular/common';
                                 <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Afrin Nexus</span>
                             </a>
                             <p class="text-slate-400 leading-relaxed mb-6">
-                                Votre application de gestion patrimoniale dédiée à l'indépendance financière. Suivez, optimisez et atteignez vos objectifs FIRE.
+                                Votre application de gestion patrimoniale dédiée à l'indépendance financière. Suivez, optimisez et atteignez vos objectifs financiers.
                             </p>
                             
                             <!-- Social Links -->
@@ -74,7 +74,7 @@ import { CommonModule } from '@angular/common';
                             <ul class="space-y-3">
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Guide FIRE
+                                        Guide Financier
                                     </a>
                                 </li>
                                 <li>
@@ -89,7 +89,7 @@ import { CommonModule } from '@angular/common';
                                 </li>
                                 <li>
                                     <a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
-                                        Calculateur FIRE
+                                        Calculateur financier
                                     </a>
                                 </li>
                             </ul>

@@ -15,7 +15,6 @@ export interface TransactionRecord {
     name: string;
     type: 'Income' | 'Expense';
     amount: number;
-    account: string;
     remarks?: string;
     category?: string;
 }
@@ -366,7 +365,6 @@ export class TransactionsService {
             name: CATEGORY_DISPLAY_MAP[t.category] || t.category,
             type: t.type === 'income' || t.type === 'investment' ? 'Income' : 'Expense',
             amount: t.amount,
-            account: t.asset_id ? `Asset #${t.asset_id}` : 'Default',
             remarks: t.description ?? undefined,
             category: t.category
         };

@@ -30,6 +30,7 @@ export interface Asset {
     current_value: number;
     purchase_value: number | null;
     purchase_date: string | null;
+    quantity: number | null;
     currency: string;
     notes: string | null;
     is_liquid: boolean;
@@ -62,6 +63,10 @@ export interface AssetCreate {
     notes?: string;
     is_liquid?: boolean;
     institution?: string;
+    location?: string;
+    surface_m2?: number;
+    price_per_m2_purchase?: number;
+    quantity?: number;
 }
 
 export interface AssetUpdate {
@@ -74,6 +79,10 @@ export interface AssetUpdate {
     notes?: string;
     is_liquid?: boolean;
     institution?: string;
+    location?: string;
+    surface_m2?: number;
+    price_per_m2_purchase?: number;
+    quantity?: number | null;
 }
 
 // ============================================
@@ -288,10 +297,10 @@ export interface PasswordChange {
 }
 
 export interface FIRESettings {
-    fire_target_amount?: number;
-    fire_target_date?: string;
-    fire_monthly_expenses?: number;
-    fire_safe_withdrawal_rate?: number;
+    fire_target_amount?: number | null;
+    fire_target_date?: string | null;
+    annual_expenses?: number | null;
+    withdrawal_rate?: number;
 }
 
 // ============================================

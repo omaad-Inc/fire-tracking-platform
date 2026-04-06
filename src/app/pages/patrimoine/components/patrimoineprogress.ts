@@ -1,12 +1,13 @@
 import { isPlatformBrowser, NgClass } from '@angular/common';
 import { Component, OnInit, OnDestroy, PLATFORM_ID, ChangeDetectorRef, inject, effect, signal } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { ApiService } from '../../../core/services/api.service';
 
 @Component({
     selector: 'app-patrimoine-progress',
@@ -62,6 +63,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     private stateService = inject(AssetsStateService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
+    private api = inject(ApiService);
     
     private subscription?: Subscription;
     
@@ -111,13 +113,18 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     private async loadData() {
         this.loading.set(true);
         try {
-            // Get total assets progression (Patrimoine Total Brut)
-            const progression = await this.dashboardService.getTotalAssetsProgression(this.selectedMonths());
+            // Fetch chart progression and actual assets in parallel
+            const [progression, assets] = await Promise.all([
+                this.dashboardService.getTotalAssetsProgression(this.selectedMonths()),
+                firstValueFrom(this.api.getAssets(0, 200))
+            ]);
             this.dataPoints.set(progression);
-            
+
             if (progression.length > 0) {
-                const latest = progression[progression.length - 1];
-                this.currentValue.set(latest.value);
+                // Always derive the displayed total from the real current_value of each asset,
+                // never from the last interpolated chart point which can be slightly off.
+                const realTotal = assets.reduce((sum, a) => sum + a.current_value, 0);
+                this.currentValue.set(realTotal);
                 this.currentDate.set(this.formatCurrentDate());
                 this.initChart();
             }

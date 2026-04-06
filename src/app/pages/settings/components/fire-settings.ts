@@ -1,13 +1,17 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { DividerModule } from 'primeng/divider';
-import { ApiService } from '../../../core/services/api.service';
+import { ApiService, FIRESettings } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { TokenService } from '../../../core/services/token.service';
+import { DashboardService } from '../../service/dashboard.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 @Component({
@@ -24,22 +28,30 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <i class="pi pi-flag text-white text-xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">Objectif FIRE</h2>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Financial Independence, Retire Early</p>
+                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">Mon objectif financier</h2>
+                    <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Le capital que vous voulez atteindre — entièrement optionnel</p>
                 </div>
             </div>
 
-            <!-- Info card: règle des 4% -->
+            <!-- Explainer card -->
             <div class="flex items-start gap-3 p-4 mb-6 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
                 <i class="pi pi-info-circle text-indigo-500 mt-0.5 flex-shrink-0"></i>
-                <div class="text-sm text-surface-700 dark:text-surface-300">
-                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">Règle des 4 %</span> — Votre objectif FIRE est calculé en multipliant vos dépenses annuelles par 25 (l'inverse du taux de retrait de 4 %). Ce montant représente le capital nécessaire pour vivre indéfiniment de vos rendements sans toucher au capital.
+                <div class="text-sm text-surface-700 dark:text-surface-300 leading-relaxed">
+                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">À quoi ça sert ?</span>
+                    <span class="ml-1">C'est simplement un cap que vous vous fixez : le montant total d'épargne et d'investissements à partir duquel vos revenus passifs (loyers, dividendes, intérêts…) couvrent vos dépenses de vie. Une fois ce cap atteint, vous n'êtes plus obligé de travailler pour vivre.</span>
+                    <br/>
+                    <span class="text-surface-500 dark:text-surface-500 text-xs mt-1 block">Cet objectif est facultatif. L'appli fonctionne parfaitement sans.</span>
                 </div>
             </div>
 
-            <!-- Calcul automatique -->
+            <!-- Auto-calculation section -->
             <div class="mb-6">
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Calcul automatique</h3>
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Calculer mon objectif automatiquement</h3>
+                <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
+                    Renseignez vos dépenses annuelles et nous calculerons le capital à atteindre.
+                    La règle utilisée : votre capital doit être environ 25× vos dépenses annuelles
+                    pour que les rendements couvrent vos frais de vie sans puiser dans le capital.
+                </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-2">
                         <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Dépenses annuelles (€)</label>
@@ -50,15 +62,15 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             currency="EUR"
                             locale="fr-FR"
                             [maxFractionDigits]="0"
-                            placeholder="Ex: 24 000"
+                            placeholder="Ex : 24 000"
                             inputStyleClass="w-full !py-3 !rounded-xl"
                             styleClass="w-full"
                             (ngModelChange)="onCalcChange()"
                         />
-                        <p class="text-xs text-surface-400 dark:text-surface-500">Toutes vos dépenses courantes sur 12 mois</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500">Logement, alimentation, transport, loisirs… sur 12 mois</p>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Taux de retrait (%)</label>
+                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Taux de rendement attendu (%)</label>
                         <p-inputnumber
                             [(ngModel)]="withdrawalRate"
                             [min]="1"
@@ -71,14 +83,14 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             styleClass="w-full"
                             (ngModelChange)="onCalcChange()"
                         />
-                        <p class="text-xs text-surface-400 dark:text-surface-500">Généralement entre 3 % et 4 % (recommandé : 4 %)</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500">Le rendement annuel moyen que vous espérez de vos placements (4 % est une référence prudente)</p>
                     </div>
                 </div>
 
                 <!-- Auto-calculated result -->
                 @if (autoTarget() > 0) {
                     <div class="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
-                        <span class="text-surface-700 dark:text-surface-300 text-sm">Objectif calculé automatiquement</span>
+                        <span class="text-surface-700 dark:text-surface-300 text-sm">Capital calculé automatiquement</span>
                         <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                             <app-amount [value]="autoTarget()" />
                         </span>
@@ -88,11 +100,11 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 
             <p-divider />
 
-            <!-- Montant cible FIRE -->
+            <!-- Manual target -->
             <div class="mb-6">
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Montant cible FIRE (€)</h3>
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Capital cible (€)</h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
-                    Pré-rempli automatiquement depuis le calcul ci-dessus, ou saisissez votre propre montant.
+                    Pré-rempli depuis le calcul ci-dessus, ou saisissez directement votre propre objectif.
                 </p>
                 <p-inputnumber
                     [(ngModel)]="fireTarget"
@@ -101,19 +113,24 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     currency="EUR"
                     locale="fr-FR"
                     [maxFractionDigits]="0"
-                    placeholder="Ex: 600 000"
+                    placeholder="Ex : 600 000"
                     inputStyleClass="w-full !py-3 !rounded-xl"
                     styleClass="w-full md:w-1/2"
                 />
+                @if (fireTarget && fireTarget > 0) {
+                    <p class="text-xs text-surface-400 dark:text-surface-500 mt-2">
+                        Votre objectif actuel : <span class="font-semibold text-emerald-600 dark:text-emerald-400"><app-amount [value]="fireTarget" /></span>
+                    </p>
+                }
             </div>
 
             <p-divider />
 
-            <!-- Date cible (optional) -->
+            <!-- Target date (optional) -->
             <div class="mb-8">
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Date cible (optionnel)</h3>
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Date cible <span class="text-sm font-normal text-surface-400">(facultatif)</span></h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
-                    La date à laquelle vous souhaitez atteindre la liberté financière.
+                    La date à laquelle vous aimeriez atteindre cet objectif. Laissez vide si vous ne vous êtes pas fixé d'échéance.
                 </p>
                 <p-datepicker
                     [(ngModel)]="targetDate"
@@ -126,8 +143,8 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 />
             </div>
 
-            <!-- Save button -->
-            <div class="flex items-center gap-4">
+            <!-- Actions -->
+            <div class="flex items-center gap-4 flex-wrap">
                 <button pButton
                         type="button"
                         label="Enregistrer"
@@ -136,10 +153,17 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         (click)="save()"
                         class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 !px-8 !py-3 !font-semibold hover:!opacity-90"
                 ></button>
-                @if (saveSuccess()) {
-                    <span class="flex items-center gap-2 text-emerald-500 text-sm font-medium">
-                        <i class="pi pi-check-circle"></i> Enregistré avec succès
-                    </span>
+                @if (hasExistingTarget) {
+                    <button pButton
+                            type="button"
+                            label="Supprimer l'objectif"
+                            icon="pi pi-trash"
+                            severity="danger"
+                            [outlined]="true"
+                            [loading]="isClearing()"
+                            (click)="clearTarget()"
+                            class="!py-3"
+                    ></button>
                 }
             </div>
         </div>
@@ -147,7 +171,11 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 })
 export class FireSettings implements OnInit {
     private apiService = inject(ApiService);
+    private authService = inject(AuthService);
+    private tokenService = inject(TokenService);
+    private dashboardService = inject(DashboardService);
     private messageService = inject(MessageService);
+    private router = inject(Router);
 
     annualExpenses: number | null = null;
     withdrawalRate: number | null = 4.0;
@@ -155,14 +183,28 @@ export class FireSettings implements OnInit {
     targetDate: Date | null = null;
 
     isSaving = signal(false);
-    saveSuccess = signal(false);
+    isClearing = signal(false);
+
+    get hasExistingTarget(): boolean {
+        return !!(this.tokenService.user()?.fire_target_amount);
+    }
 
     autoTarget = computed(() => {
         if (!this.annualExpenses || !this.withdrawalRate || this.withdrawalRate <= 0) return 0;
         return Math.round(this.annualExpenses / (this.withdrawalRate / 100));
     });
 
-    ngOnInit() {}
+    ngOnInit() {
+        const user = this.tokenService.user();
+        if (user) {
+            this.annualExpenses = user.annual_expenses ?? null;
+            this.withdrawalRate = user.withdrawal_rate ?? 4.0;
+            this.fireTarget = user.fire_target_amount ?? null;
+            if (user.fire_target_date) {
+                this.targetDate = new Date(user.fire_target_date);
+            }
+        }
+    }
 
     onCalcChange() {
         const calc = this.autoTarget();
@@ -171,29 +213,43 @@ export class FireSettings implements OnInit {
         }
     }
 
+    private getLang(): string {
+        return this.router.url.match(/^\/(fr|en)/)?.[1] ?? 'fr';
+    }
+
     save() {
         this.isSaving.set(true);
-        this.saveSuccess.set(false);
 
-        const payload: any = {};
+        const payload: FIRESettings = {
+            withdrawal_rate: this.withdrawalRate ?? 4.0
+        };
         if (this.fireTarget) payload.fire_target_amount = this.fireTarget;
         if (this.annualExpenses) payload.annual_expenses = this.annualExpenses;
-        if (this.withdrawalRate) payload.withdrawal_rate = this.withdrawalRate;
         if (this.targetDate) {
             payload.fire_target_date = this.targetDate.toISOString().split('T')[0];
         }
 
-        this.apiService.updateFIRESettings(payload as any).subscribe({
-            next: () => {
+        this.apiService.updateFIRESettings(payload).subscribe({
+            next: (updatedUser) => {
+                // Refresh user in token service so other components see the new values
+                if (updatedUser) {
+                    this.tokenService.setUser(updatedUser);
+                } else {
+                    this.authService.getCurrentUser().subscribe();
+                }
+                // Invalidate dashboard cache so it recomputes with the new target
+                this.dashboardService.invalidateCache();
+
                 this.isSaving.set(false);
-                this.saveSuccess.set(true);
                 this.messageService.add({
                     severity: 'success',
-                    summary: 'Objectif FIRE enregistré',
-                    detail: 'Vos paramètres FIRE ont été mis à jour.',
-                    life: 4000
+                    summary: 'Objectif enregistré',
+                    detail: 'Votre objectif financier a été mis à jour.',
+                    life: 2000
                 });
-                setTimeout(() => this.saveSuccess.set(false), 4000);
+                setTimeout(() => {
+                    this.router.navigate([`/${this.getLang()}`]);
+                }, 800);
             },
             error: (err) => {
                 this.isSaving.set(false);
@@ -201,6 +257,46 @@ export class FireSettings implements OnInit {
                     severity: 'error',
                     summary: 'Erreur',
                     detail: err.message || 'Impossible de sauvegarder les paramètres.',
+                    life: 5000
+                });
+            }
+        });
+    }
+
+    clearTarget() {
+        this.isClearing.set(true);
+
+        this.apiService.updateFIRESettings({
+            fire_target_amount: null,
+            fire_target_date: null,
+            annual_expenses: null,
+            withdrawal_rate: 4.0
+        }).subscribe({
+            next: (updatedUser) => {
+                if (updatedUser) {
+                    this.tokenService.setUser(updatedUser);
+                } else {
+                    this.authService.getCurrentUser().subscribe();
+                }
+                this.dashboardService.invalidateCache();
+                this.annualExpenses = null;
+                this.fireTarget = null;
+                this.targetDate = null;
+                this.withdrawalRate = 4.0;
+                this.isClearing.set(false);
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Objectif supprimé',
+                    detail: 'Votre objectif financier a été retiré. L\'appli continue de fonctionner normalement.',
+                    life: 3000
+                });
+            },
+            error: (err) => {
+                this.isClearing.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: err.message || 'Impossible de supprimer l\'objectif.',
                     life: 5000
                 });
             }

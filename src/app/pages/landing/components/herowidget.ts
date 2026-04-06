@@ -30,7 +30,7 @@ import { RouterModule } from '@angular/router';
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
-                            <span class="text-indigo-300 text-sm font-medium tracking-wide">Mouvement FIRE • Indépendance Financière</span>
+                            <span class="text-indigo-300 text-sm font-medium tracking-wide">Indépendance Financière</span>
                         </div>
 
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
@@ -41,7 +41,7 @@ import { RouterModule } from '@angular/router';
 
                         <p class="text-lg md:text-xl text-slate-300 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
                             Suivez votre patrimoine, optimisez vos dépenses et atteignez l'indépendance financière. 
-                            <span class="text-cyan-400 font-medium">Afrin Nexus</span> vous accompagne vers votre objectif FIRE.
+                            <span class="text-cyan-400 font-medium">Afrin Nexus</span> vous accompagne vers votre objectif financier.
                         </p>
 
                         <!-- Stats -->
@@ -55,8 +55,8 @@ import { RouterModule } from '@angular/router';
                                 <div class="text-slate-400 text-sm">Données chiffrées</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">FIRE</div>
-                                <div class="text-slate-400 text-sm">Financial Independence</div>
+                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">Libre</div>
+                                <div class="text-slate-400 text-sm">Indépendance financière</div>
                             </div>
                         </div>
 
@@ -105,7 +105,7 @@ import { RouterModule } from '@angular/router';
                                         <div class="text-cyan-400 text-xs">+5% ce mois</div>
                                     </div>
                                     <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                                        <div class="text-slate-400 text-xs mb-1">Objectif FIRE</div>
+                                        <div class="text-slate-400 text-xs mb-1">Objectif Financier</div>
                                         <div class="text-white font-bold text-lg">43%</div>
                                         <div class="text-indigo-400 text-xs">12 ans restants</div>
                                     </div>

@@ -143,7 +143,7 @@ export class RecentTransactionsWidget implements OnInit {
         return {
             id: r.id || '',
             category: r.name,
-            description: r.remarks || r.account,
+            description: r.remarks ?? '',
             amount: isExpense ? -r.amount : r.amount,
             date: this.formatDate(r.date),
             ...config

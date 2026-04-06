@@ -47,6 +47,9 @@ interface AssetFormData {
     tontineStatus: 'en_cours' | 'mise_recue' | 'termine';
     // Mobile Money specific
     mobileMoneyProvider: string;
+    // Real estate specific
+    surfaceM2: number;
+    region: string;
 }
 
 interface CategoryCard {
@@ -520,6 +523,41 @@ interface CategoryCard {
                                         />
                                     </div>
                                 }
+
+                                <!-- Real estate specific fields -->
+                                @if (assetForm.category === 'real_estate') {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Superficie (m²)</label>
+                                        <p-inputnumber
+                                            [(ngModel)]="assetForm.surfaceM2"
+                                            [min]="0"
+                                            [minFractionDigits]="0"
+                                            [maxFractionDigits]="1"
+                                            suffix=" m²"
+                                            placeholder="Ex : 150"
+                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
+
+                                    @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
+                                        <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
+                                            <span class="text-surface-500 dark:text-surface-400 text-xs">Prix au m² (achat)</span>
+                                            <span class="text-indigo-500 font-semibold text-sm">
+                                                {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ currencyService.config().symbol }}/m²
+                                            </span>
+                                        </div>
+                                    }
+
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Région / Localité</label>
+                                        <input
+                                            pInputText
+                                            [(ngModel)]="assetForm.region"
+                                            placeholder="Ex : Dakar, Abidjan, Paris..."
+                                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
+                                }
                             </div>
                         }
 
@@ -657,7 +695,9 @@ export class AppTopbar implements OnInit {
         tontineStartDate: '',
         tontineCollectionDate: '',
         tontineStatus: 'en_cours',
-        mobileMoneyProvider: ''
+        mobileMoneyProvider: '',
+        surfaceM2: 0,
+        region: ''
     };
 
     // Category cards for step 0
@@ -802,7 +842,9 @@ export class AppTopbar implements OnInit {
             tontineStartDate: '',
             tontineCollectionDate: '',
             tontineStatus: 'en_cours',
-            mobileMoneyProvider: ''
+            mobileMoneyProvider: '',
+            surfaceM2: 0,
+            region: ''
         };
         this.selectedCategory.set('');
         this.currentStep.set(0);
@@ -971,13 +1013,28 @@ export class AppTopbar implements OnInit {
                 };
             } else {
                 const qty = this.isQuantityBased() ? f.quantity : 1;
+                const purchaseEur = f.purchasePrice > 0 ? this.toEur(f.purchasePrice * qty) : undefined;
+                const isQtyBased = this.isQuantityBased();
+                // Persist quantity in notes JSON so it works on the current deployed backend
+                // (which has no quantity column yet). Also send the quantity field for
+                // backends that do have the column.
+                const quantityNotes = isQtyBased && qty > 1
+                    ? JSON.stringify({ quantity: qty })
+                    : undefined;
                 assetData = {
                     name: f.name,
                     category: f.category as AssetCategory,
                     current_value: this.toEur(f.currentPrice * qty),
-                    purchase_value: f.purchasePrice > 0 ? this.toEur(f.purchasePrice * qty) : undefined,
+                    purchase_value: purchaseEur,
                     purchase_date: purchaseDateValue,
-                    institution: f.institution || undefined
+                    institution: f.institution || undefined,
+                    location: f.region || undefined,
+                    notes: quantityNotes,
+                    quantity: isQtyBased && qty > 1 ? qty : undefined,
+                    surface_m2: f.category === 'real_estate' && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
+                    price_per_m2_purchase: f.category === 'real_estate' && f.surfaceM2 > 0 && f.purchasePrice > 0
+                        ? Math.round(this.toEur(f.purchasePrice) / f.surfaceM2)
+                        : undefined
                 };
             }
 

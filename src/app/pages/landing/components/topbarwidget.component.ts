@@ -36,7 +36,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
                       transition-all duration-200 cursor-pointer">
-                Vision FIRE
+                Objectif Financier
             </a>
             <a [routerLink]="[currentLang, 'advisory']" pRipple
                class="flex items-center px-4 py-2 rounded-lg font-medium text-base
@@ -114,7 +114,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
                               hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
                               transition-all duration-200 cursor-pointer">
                         <i class="pi pi-bolt mr-2"></i>
-                        <span>Vision FIRE</span>
+                        <span>Objectif Financier</span>
                     </a>
                 </li>
                 <li>

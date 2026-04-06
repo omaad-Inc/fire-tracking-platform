@@ -49,7 +49,15 @@ export const FR = {
       logoutButton: 'Se déconnecter',
       deleteAccount: 'Zone de danger',
       deleteAccountDesc: 'La suppression de votre compte entraîne la suppression définitive de toutes vos données et est irréversible.',
-      deleteMyAccount: 'Supprimer mon compte'
+      deleteMyAccount: 'Supprimer mon compte',
+      deleteConfirmTitle: 'Supprimer définitivement votre compte',
+      deleteConfirmWarning: 'Cette action est irréversible. Les données suivantes seront supprimées définitivement :',
+      deleteConfirmItems: 'Actifs & patrimoine · Transactions · Objectifs d\'épargne · Dettes · Historique du patrimoine net',
+      deleteConfirmType: 'Tapez SUPPRIMER pour confirmer',
+      deleteConfirmPlaceholder: 'SUPPRIMER',
+      deleteConfirmKeyword: 'SUPPRIMER',
+      deleteConfirmButton: 'Supprimer définitivement',
+      deleteSuccessDetail: 'Votre compte et toutes vos données ont été supprimés définitivement.'
     },
     security: {
       title: 'Sécurité',
@@ -138,7 +146,7 @@ export const FR = {
       monthlyFluxSub: 'dépenses',
       monthlyFluxNet: 'flux net',
       noData: 'Aucune donnée',
-      fireObjectif: 'Objectif FIRE',
+      fireObjectif: 'Objectif Financier',
       fireNotConfigured: 'Non configuré',
       fireGoalUndefined: 'objectif non défini',
       fireConfigure: 'Configurer',

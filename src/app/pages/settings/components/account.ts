@@ -10,6 +10,7 @@ import { DividerModule } from 'primeng/divider';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -20,11 +21,76 @@ import { environment } from '../../../../environments/environment';
 @Component({
     selector: 'app-settings-account',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, InputTextModule, AvatarModule, TagModule, DividerModule, FileUploadModule, ToastModule, ConfirmDialogModule],
+    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, InputTextModule, AvatarModule, TagModule, DividerModule, FileUploadModule, ToastModule, ConfirmDialogModule, DialogModule],
     providers: [MessageService, ConfirmationService],
     template: `
         <p-toast position="top-center"></p-toast>
         <p-confirmDialog></p-confirmDialog>
+
+        <!-- Delete Account Confirmation Dialog -->
+        <p-dialog
+            [(visible)]="showDeleteDialog"
+            [modal]="true"
+            [closable]="!isDeleting()"
+            [draggable]="false"
+            [resizable]="false"
+            styleClass="w-full max-w-lg"
+        >
+            <ng-template pTemplate="header">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                        <i class="pi pi-exclamation-triangle text-red-500 text-lg"></i>
+                    </div>
+                    <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.account.deleteConfirmTitle') }}</span>
+                </div>
+            </ng-template>
+
+            <div class="py-2">
+                <p class="text-surface-600 dark:text-surface-400 mb-4">
+                    {{ t('settings.account.deleteConfirmWarning') }}
+                </p>
+                <ul class="mb-6 space-y-2">
+                    @for (item of deleteConfirmItems; track item) {
+                        <li class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
+                            <i class="pi pi-times-circle text-red-400 text-xs"></i>
+                            {{ item }}
+                        </li>
+                    }
+                </ul>
+                <div>
+                    <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+                        {{ t('settings.account.deleteConfirmType') }}
+                        <span class="font-mono font-bold text-red-500 ml-1">{{ t('settings.account.deleteConfirmKeyword') }}</span>
+                    </label>
+                    <input
+                        pInputText
+                        [(ngModel)]="deleteConfirmText"
+                        [placeholder]="t('settings.account.deleteConfirmPlaceholder')"
+                        [disabled]="isDeleting()"
+                        class="w-full"
+                    />
+                </div>
+            </div>
+
+            <ng-template pTemplate="footer">
+                <div class="flex justify-end gap-3">
+                    <p-button
+                        label="Annuler"
+                        [outlined]="true"
+                        [disabled]="isDeleting()"
+                        (click)="closeDeleteDialog()"
+                    />
+                    <p-button
+                        [label]="t('settings.account.deleteConfirmButton')"
+                        severity="danger"
+                        icon="pi pi-trash"
+                        [loading]="isDeleting()"
+                        [disabled]="!isDeleteConfirmed"
+                        (click)="deleteAccount()"
+                    />
+                </div>
+            </ng-template>
+        </p-dialog>
         <div class="card">
             <!-- Mon Profil Section -->
             <div class="mb-8">
@@ -204,10 +270,28 @@ export class AccountSettings implements OnInit {
     user = this.tokenService.user;
     isSaving = signal(false);
     isUploadingAvatar = signal(false);
+    isDeleting = signal(false);
+
+    showDeleteDialog = false;
+    deleteConfirmText = '';
 
     firstName = '';
     lastName = '';
     lang = 'fr';
+
+    get deleteConfirmItems(): string[] {
+        return [
+            this.t('settings.account.deleteConfirmItems').split(' · ')[0],
+            this.t('settings.account.deleteConfirmItems').split(' · ')[1],
+            this.t('settings.account.deleteConfirmItems').split(' · ')[2],
+            this.t('settings.account.deleteConfirmItems').split(' · ')[3],
+            this.t('settings.account.deleteConfirmItems').split(' · ')[4],
+        ];
+    }
+
+    get isDeleteConfirmed(): boolean {
+        return this.deleteConfirmText === this.t('settings.account.deleteConfirmKeyword');
+    }
 
     ngOnInit() {
         this.lang = this.getCurrentLang();
@@ -383,35 +467,38 @@ export class AccountSettings implements OnInit {
     }
 
     confirmDeleteAccount(): void {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete your account? This action cannot be undone.',
-            header: 'Delete Account',
-            icon: 'pi pi-exclamation-triangle',
-            acceptButtonStyleClass: 'p-button-danger',
-            accept: () => {
-                this.deleteAccount();
-            }
-        });
+        this.deleteConfirmText = '';
+        this.showDeleteDialog = true;
+    }
+
+    closeDeleteDialog(): void {
+        this.showDeleteDialog = false;
+        this.deleteConfirmText = '';
     }
 
     deleteAccount(): void {
+        if (!this.isDeleteConfirmed) return;
+
+        this.isDeleting.set(true);
         this.apiService.deleteAccount().subscribe({
             next: () => {
+                this.showDeleteDialog = false;
                 this.messageService.add({
-                    severity: 'info',
-                    summary: 'Account Deleted',
-                    detail: 'Your account has been deleted.',
+                    severity: 'success',
+                    summary: this.t('settings.account.deleteAccount'),
+                    detail: this.t('settings.account.deleteSuccessDetail'),
                     life: 3000
                 });
                 setTimeout(() => {
                     this.authService.logout();
-                }, 1000);
+                }, 1500);
             },
             error: (error) => {
+                this.isDeleting.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Error',
-                    detail: error.message || 'Could not delete account',
+                    summary: 'Erreur',
+                    detail: error.message || 'Impossible de supprimer le compte',
                     life: 5000
                 });
             }

@@ -49,7 +49,15 @@ export const EN = {
       logoutButton: 'Log out',
       deleteAccount: 'Danger zone',
       deleteAccountDesc: 'Deleting your account will permanently delete all your data and is irreversible.',
-      deleteMyAccount: 'Delete my account'
+      deleteMyAccount: 'Delete my account',
+      deleteConfirmTitle: 'Permanently delete your account',
+      deleteConfirmWarning: 'This action is irreversible. The following data will be permanently deleted:',
+      deleteConfirmItems: 'Assets & portfolio · Transactions · Savings goals · Debts · Net worth history',
+      deleteConfirmType: 'Type DELETE to confirm',
+      deleteConfirmPlaceholder: 'DELETE',
+      deleteConfirmKeyword: 'DELETE',
+      deleteConfirmButton: 'Permanently delete',
+      deleteSuccessDetail: 'Your account and all your data have been permanently deleted.'
     },
     security: {
       title: 'Security',
@@ -138,7 +146,7 @@ export const EN = {
       monthlyFluxSub: 'expenses',
       monthlyFluxNet: 'net cash flow',
       noData: 'No data',
-      fireObjectif: 'FIRE Goal',
+      fireObjectif: 'Financial Goal',
       fireNotConfigured: 'Not configured',
       fireGoalUndefined: 'goal not defined',
       fireConfigure: 'Configure',

@@ -357,6 +357,11 @@ export class DashboardService {
             const pointDate = pointDates[idx];
             const monthsAgo = lastIdx - idx; // how many months before current
 
+            // For the current month point, use actual current values — no interpolation
+            const isCurrentMonth =
+                pointDate.getFullYear() === today.getFullYear() &&
+                pointDate.getMonth() === today.getMonth();
+
             let totalAssets = 0;
             for (const asset of assets) {
                 if (!asset.purchase_date) {
@@ -365,11 +370,17 @@ export class DashboardService {
                 }
                 const assetStart = new Date(asset.purchase_date);
                 if (assetStart <= pointDate) {
-                    const purchaseVal = asset.purchase_value ?? asset.current_value;
-                    const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
-                    const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
-                    const pct = Math.min(1, elapsed / totalDays);
-                    totalAssets += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                    if (isCurrentMonth) {
+                        // This IS the current value — no interpolation needed
+                        totalAssets += asset.current_value;
+                    } else {
+                        // Historical point: interpolate linearly from purchase to current
+                        const purchaseVal = asset.purchase_value ?? asset.current_value;
+                        const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
+                        const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
+                        const pct = Math.min(1, elapsed / totalDays);
+                        totalAssets += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                    }
                 }
                 // asset not yet acquired at this point → skip (value = 0)
             }
@@ -519,6 +530,10 @@ export class DashboardService {
 
         for (let idx = 0; idx < pointDates.length; idx++) {
             const pointDate = pointDates[idx];
+            const isCurrentMonth =
+                pointDate.getFullYear() === today.getFullYear() &&
+                pointDate.getMonth() === today.getMonth();
+
             let total = 0;
             for (const asset of assets) {
                 if (!asset.purchase_date) {
@@ -527,11 +542,15 @@ export class DashboardService {
                 }
                 const assetStart = new Date(asset.purchase_date);
                 if (assetStart <= pointDate) {
-                    const purchaseVal = asset.purchase_value ?? asset.current_value;
-                    const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
-                    const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
-                    const pct = Math.min(1, elapsed / totalDays);
-                    total += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                    if (isCurrentMonth) {
+                        total += asset.current_value;
+                    } else {
+                        const purchaseVal = asset.purchase_value ?? asset.current_value;
+                        const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
+                        const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
+                        const pct = Math.min(1, elapsed / totalDays);
+                        total += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                    }
                 }
             }
             const month = pointDate.getMonth();

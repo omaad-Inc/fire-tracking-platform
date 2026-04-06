@@ -112,7 +112,8 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             </div>
 
             <!-- KPI Row -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="grid gap-4 mb-6"
+                 [ngClass]="isQuantityBased() ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-3'">
                 <!-- P&L -->
                 <div class="card text-center">
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">P&amp;L</p>
@@ -140,6 +141,25 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         <p class="text-surface-400 text-xs mt-1">{{ formatShortDate(asset()!.purchase_date!) }}</p>
                     }
                 </div>
+                <!-- Quantité (only for quantity-based assets) -->
+                @if (isQuantityBased()) {
+                    <div class="card text-center">
+                        <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Quantité</p>
+                        @if (displayQuantity() != null) {
+                            <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
+                                {{ displayQuantity() | number:'1.0-6' }}
+                            </div>
+                            @if (displayQuantity()! > 0) {
+                                <p class="text-surface-400 text-xs mt-1">
+                                    {{ asset()!.current_value / displayQuantity()! | number:'1.2-2' }} €/part
+                                </p>
+                            }
+                        } @else {
+                            <div class="text-surface-400 text-lg">—</div>
+                            <p class="text-surface-400 text-xs mt-1">Non renseigné</p>
+                        }
+                    </div>
+                }
                 <!-- Institution -->
                 <div class="card text-center">
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Institution</p>
@@ -167,6 +187,18 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                 <span class="text-surface-500 text-sm">Date d'achat</span>
                                 <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ formatShortDate(asset()!.purchase_date!) }}</span>
+                            </div>
+                        }
+                        @if (isQuantityBased() && displayQuantity() != null) {
+                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                <span class="text-surface-500 text-sm">Nombre de parts</span>
+                                <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ displayQuantity() | number:'1.0-6' }}</span>
+                            </div>
+                        }
+                        @if (isQuantityBased() && displayQuantity() != null && displayQuantity()! > 0) {
+                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
+                                <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
+                                <span class="text-cyan-500 text-sm font-medium">{{ asset()!.current_value / displayQuantity()! | number:'1.2-2' }} €</span>
                             </div>
                         }
                         @if (asset()!.annual_return) {
@@ -443,6 +475,25 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                            inputStyleClass="!py-3 !rounded-xl" />
                         </div>
                     }
+                    @if (isQuantityBased()) {
+                        <!-- Quantity -->
+                        <div class="flex flex-col gap-2">
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nombre de parts / Quantité</label>
+                            <p-inputnumber [(ngModel)]="editForm.quantity"
+                                           [min]="0" [maxFractionDigits]="6"
+                                           placeholder="Ex : 10, 0.5..."
+                                           styleClass="w-full"
+                                           inputStyleClass="!py-3 !rounded-xl" />
+                        </div>
+                        @if ((editForm.quantity ?? 0) > 0 && editForm.currentValue > 0) {
+                            <div class="sm:col-span-2 flex items-center justify-between px-4 py-2.5 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
+                                <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
+                                <span class="text-cyan-500 font-semibold">
+                                    {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} €/part
+                                </span>
+                            </div>
+                        }
+                    }
                 </div>
             </ng-template>
             <ng-template #footer>
@@ -473,7 +524,45 @@ export class AssetDetailPage implements OnInit {
     asset = signal<Asset | null>(null);
     isSaving = signal(false);
     editDialog = false;
-    editForm = { name: '', currentValue: 0, purchaseValue: <number|null>null, purchaseDate: <Date|null>null, institution: '', surfaceM2: <number|null>null, rentalIncome: <number|null>null };
+    editForm = { name: '', currentValue: 0, purchaseValue: <number|null>null, purchaseDate: <Date|null>null, institution: '', surfaceM2: <number|null>null, rentalIncome: <number|null>null, quantity: <number|null>null };
+
+    readonly QUANTITY_CATEGORIES = ['stocks', 'bonds', 'crypto', 'collectibles', 'commodities'];
+    isQuantityBased = computed(() => this.QUANTITY_CATEGORIES.includes(this.asset()?.category ?? ''));
+
+    /**
+     * Read quantity from asset.quantity (new schema) OR from asset.notes JSON
+     * (backward-compat with the deployed backend that has no quantity column).
+     */
+    private readQuantity(a: Asset): number | null {
+        if (a.quantity != null) return a.quantity;
+        if (a.notes) {
+            try { return (JSON.parse(a.notes) as any)?.quantity ?? null; } catch { /* */ }
+        }
+        return null;
+    }
+
+    /**
+     * Merge quantity into the notes JSON string, preserving any other notes keys.
+     */
+    private writeQuantityToNotes(existingNotes: string | null | undefined, qty: number | null): string | null {
+        let data: Record<string, any> = {};
+        if (existingNotes) {
+            try { data = JSON.parse(existingNotes); } catch { /* */ }
+        }
+        if (qty != null) {
+            data['quantity'] = qty;
+        } else {
+            delete data['quantity'];
+        }
+        const json = JSON.stringify(data);
+        return json === '{}' ? null : json;
+    }
+
+    /** Quantity to display — reads from quantity field OR notes JSON. */
+    readonly displayQuantity = computed(() => {
+        const a = this.asset();
+        return a ? this.readQuantity(a) : null;
+    });
 
     gainLoss = computed(() => {
         const a = this.asset();
@@ -633,6 +722,7 @@ export class AssetDetailPage implements OnInit {
             institution: a.institution ?? '',
             surfaceM2: a.surface_m2 ?? null,
             rentalIncome: a.rental_income ?? null,
+            quantity: this.readQuantity(a),
         };
         this.editDialog = true;
     }
@@ -655,13 +745,50 @@ export class AssetDetailPage implements OnInit {
         if (this.editForm.surfaceM2 != null) payload.surface_m2 = this.editForm.surfaceM2;
         if (this.editForm.rentalIncome != null) payload.rental_income = this.editForm.rentalIncome;
 
+        // Persist quantity in TWO ways so it works regardless of backend version:
+        // 1. quantity field — picked up by backends that have the DB column
+        // 2. notes JSON   — works on the current deployed backend with no column
+        if (this.isQuantityBased()) {
+            payload.quantity = this.editForm.quantity;
+            payload.notes = this.writeQuantityToNotes(a.notes, this.editForm.quantity);
+        }
+
+        // Snapshot the quantity the user entered before the async call clears editForm
+        const savedQuantity = this.editForm.quantity;
+
         this.apiService.updateAsset(a.id, payload).subscribe({
-            next: (updated: Asset) => {
-                this.asset.set(updated);
+            next: () => {
+                // Optimistic update — apply all form values immediately so the UI
+                // never reverts while the re-fetch is in-flight.
+                this.asset.update(curr => curr ? {
+                    ...curr,
+                    name: this.editForm.name.trim(),
+                    current_value: this.editForm.currentValue,
+                    purchase_value: this.editForm.purchaseValue ?? curr.purchase_value,
+                    institution: this.editForm.institution || curr.institution,
+                    surface_m2: this.editForm.surfaceM2 ?? curr.surface_m2,
+                    rental_income: this.editForm.rentalIncome ?? curr.rental_income,
+                    quantity: savedQuantity,
+                    notes: this.isQuantityBased()
+                        ? this.writeQuantityToNotes(curr.notes, savedQuantity)
+                        : curr.notes,
+                } : null);
+
                 this.editDialog = false;
                 this.isSaving.set(false);
                 this.stateService.notifyAssetsUpdated();
                 this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Actif mis à jour avec succès.', life: 3000 });
+
+                // Background re-fetch — keep the locally-saved quantity
+                // if the server response doesn't include it yet.
+                this.apiService.getAsset(a.id).subscribe({
+                    next: (fresh: Asset) => {
+                        this.asset.set({
+                            ...fresh,
+                            quantity: fresh.quantity ?? this.readQuantity(fresh) ?? savedQuantity,
+                        });
+                    }
+                });
             },
             error: () => {
                 this.isSaving.set(false);

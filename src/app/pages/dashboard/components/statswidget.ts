@@ -151,7 +151,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <div class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20"
                      [routerLink]="fireProgress() && (fireProgress()!.targetAmount ?? 0) > 0 ? link('pages','patrimoine') : link('pages','settings','fire')"
-                     role="link" aria-label="Voir l'objectif FIRE" tabindex="0">
+                     role="link" aria-label="Voir l'objectif financier" tabindex="0">
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>

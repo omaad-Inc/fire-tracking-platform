@@ -176,7 +176,7 @@ import { RouterModule } from '@angular/router';
 })
 export class PricingWidget {
     freeFeatures = [
-        'Dashboard & KPIs FIRE',
+        'Dashboard & KPIs',
         'Suivi du patrimoine (actifs illimités)',
         'Transactions et budget',
         'Objectifs d\'épargne',

@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
                 <div class="text-center mb-16">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 dark:bg-cyan-500/20 border border-cyan-500/30 mb-6">
                         <i class="pi pi-bolt text-cyan-500"></i>
-                        <span class="text-cyan-600 dark:text-cyan-400 text-sm font-medium">Vision FIRE</span>
+                        <span class="text-cyan-600 dark:text-cyan-400 text-sm font-medium">Objectif Financier</span>
             </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         Votre chemin vers
@@ -32,7 +32,7 @@ import { CommonModule } from '@angular/common';
                                 <!-- FIRE Progress visualization -->
                                 <div class="mb-6">
                                     <div class="flex items-center justify-between mb-3">
-                                        <span class="text-slate-300 font-medium">Progression vers FIRE</span>
+                                        <span class="text-slate-300 font-medium">Progression vers l'objectif financier</span>
                                         <span class="text-emerald-400 font-bold">43%</span>
                                     </div>
                                     <div class="h-4 bg-slate-800 rounded-full overflow-hidden">
@@ -45,7 +45,7 @@ import { CommonModule } from '@angular/common';
                                     <div class="bg-slate-800/50 rounded-xl p-4">
                                         <div class="flex items-center gap-2 mb-2">
                                             <i class="pi pi-flag text-indigo-400"></i>
-                                            <span class="text-slate-400 text-sm">Objectif FIRE</span>
+                                            <span class="text-slate-400 text-sm">Objectif Financier</span>
                                         </div>
                                         <div class="text-white font-bold text-xl">€300,000</div>
                                     </div>
@@ -80,7 +80,7 @@ import { CommonModule } from '@angular/common';
                             <i class="pi pi-compass text-white text-3xl"></i>
                         </div>
                         <h3 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-4">
-                            Calculez votre nombre FIRE
+                            Calculez votre objectif financier
                         </h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">
                             Définissez votre objectif d'indépendance financière basé sur vos dépenses annuelles et la règle des 4%. 

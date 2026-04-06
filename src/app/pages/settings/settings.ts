@@ -89,7 +89,7 @@ import { I18nService } from '../../i18n/i18n.service';
                                 class="flex items-center gap-3 px-4 py-3 text-surface-700 dark:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                             >
                                 <i class="pi pi-flag"></i>
-                                <span>Objectif FIRE</span>
+                                <span>Objectif Financier</span>
                             </a>
                         </nav>
 

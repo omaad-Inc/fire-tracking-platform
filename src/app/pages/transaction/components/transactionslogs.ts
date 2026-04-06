@@ -74,7 +74,7 @@ interface ExportColumn {
             [rows]="10"
             [columns]="cols"
             [paginator]="true"
-            [globalFilterFields]="['date', 'name', 'type', 'amount', 'account', 'remarks']"
+            [globalFilterFields]="['date', 'name', 'type', 'amount', 'remarks']"
             [tableStyle]="{ 'min-width': '75rem' }"
             [(selection)]="selectedRecords"
             [rowHover]="true"
@@ -104,7 +104,6 @@ interface ExportColumn {
                     <th style="min-width: 18rem">{{ t('common.name') }}</th>
                     <th style="min-width: 10rem">{{ t('common.type') }}</th>
                     <th style="min-width: 10rem">{{ t('common.amount') }}</th>
-                    <th style="min-width: 12rem">{{ t('common.account') }}</th>
                     <th style="min-width: 20rem">{{ t('common.remarks') }}</th>
                     <th style="min-width: 12rem"></th>
                 </tr>
@@ -122,7 +121,6 @@ interface ExportColumn {
                         <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
                     </td>
                     <td class="text-right"><app-amount [value]="record.amount" /></td>
-                    <td>{{ record.account }}</td>
                     <td>{{ record.remarks }}</td>
                     <td>
                         <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
@@ -132,7 +130,7 @@ interface ExportColumn {
             </ng-template>
             <ng-template #emptymessage>
                 <tr>
-                    <td [attr.colspan]="8">
+                    <td [attr.colspan]="7">
                         <div class="flex flex-col items-center justify-center py-16 text-center">
                             <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                                 <i class="pi pi-arrow-right-arrow-left text-2xl text-surface-400"></i>
@@ -225,17 +223,6 @@ interface ExportColumn {
                                        inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500" />
                     </div>
                     
-                    <!-- Account -->
-                    <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label for="account" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-credit-card text-violet-500"></i>
-                            {{ t('common.account') }}
-                        </label>
-                        <p-select [(ngModel)]="record.account" inputId="account" [options]="accounts" 
-                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un compte" 
-                                  styleClass="w-full !rounded-xl" />
-                    </div>
-                    
                     <!-- Remarks -->
                     <div class="flex flex-col gap-2 sm:col-span-2">
                         <label for="remarks" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
@@ -280,12 +267,6 @@ export class TransactionLogs implements OnInit {
         { label: 'Income', value: 'Income' },
         { label: 'Expense', value: 'Expense' }
     ];
-    accounts = [
-        { label: 'SG BANK', value: 'SG BANK' },
-        { label: 'Revolut', value: 'Revolut' },
-        { label: 'Trade Republic', value: 'Trade Republic' },
-        { label: 'N26', value: 'N26' }
-    ];
     @ViewChild('dt') dt!: Table;
     exportColumns!: ExportColumn[];
     cols!: Column[];
@@ -313,7 +294,6 @@ export class TransactionLogs implements OnInit {
                 { field: 'name', header: this.t('common.name') },
                 { field: 'type', header: this.t('common.type') },
                 { field: 'amount', header: this.t('common.amount') },
-                { field: 'account', header: this.t('common.account') },
                 { field: 'remarks', header: this.t('common.remarks') }
             ];
             this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
@@ -325,7 +305,7 @@ export class TransactionLogs implements OnInit {
     }
 
     openNew() {
-        this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+        this.record = { date: '', name: '', type: 'Income', amount: 0, remarks: '' };
         this.editDate = null;
         this.submitted = false;
         this.transactionDialog = true;
@@ -445,7 +425,7 @@ export class TransactionLogs implements OnInit {
             this.transactionDialog = false;
             this.submitted = false;
             this.editDate = null;
-            this.record = { date: '', name: '', type: 'Income', amount: 0, account: '', remarks: '' };
+            this.record = { date: '', name: '', type: 'Income', amount: 0, remarks: '' };
         } catch (error: any) {
             const detail = error?.error?.detail
                 ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))

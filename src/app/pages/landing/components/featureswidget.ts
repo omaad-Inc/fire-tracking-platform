@@ -116,7 +116,7 @@ import { CommonModule } from '@angular/common';
                                     "L'indépendance financière n'est pas un rêve, c'est un <span class="text-indigo-600 dark:text-indigo-400 font-medium">plan</span>.
                                     Afrin Nexus transforme ce plan en <span class="text-cyan-600 dark:text-cyan-400 font-medium">réalité mesurable</span>."
                                 </blockquote>
-                                <div class="font-semibold text-surface-900 dark:text-surface-0">La philosophie FIRE</div>
+                                <div class="font-semibold text-surface-900 dark:text-surface-0">Votre objectif financier</div>
                                 <div class="text-surface-500 dark:text-surface-400 text-sm">Financial Independence, Retire Early</div>
                             </div>
                             <div class="col-span-12 md:col-span-4 flex flex-col items-center md:items-end gap-3">

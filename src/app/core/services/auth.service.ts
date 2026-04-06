@@ -4,6 +4,11 @@ import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService, User } from './token.service';
+import { DashboardService } from '../../pages/service/dashboard.service';
+import { PatrimoineService } from '../../pages/service/patrimoine.service';
+import { SavingsService } from '../../pages/service/savings.service';
+import { DebtsService } from '../../pages/service/debts.service';
+import { TransactionsService } from '../../pages/service/transactions.service';
 
 export interface LoginRequest {
     email: string;
@@ -35,8 +40,21 @@ export class AuthService {
     private http = inject(HttpClient);
     private tokenService = inject(TokenService);
     private router = inject(Router);
+    private dashboardService = inject(DashboardService);
+    private patrimoineService = inject(PatrimoineService);
+    private savingsService = inject(SavingsService);
+    private debtsService = inject(DebtsService);
+    private transactionsService = inject(TransactionsService);
 
     private apiUrl = environment.apiUrl;
+
+    private clearAllCaches(): void {
+        this.dashboardService.invalidateCache();
+        this.patrimoineService.clearCache();
+        this.savingsService.clearCache();
+        this.debtsService.clearCache();
+        this.transactionsService.clearCache();
+    }
 
     /**
      * Register a new user with email/password
@@ -44,6 +62,7 @@ export class AuthService {
     register(data: RegisterRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
             tap(response => {
+                this.clearAllCaches();
                 this.tokenService.setToken(response.access_token);
             }),
             catchError(this.handleError)
@@ -57,6 +76,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login/json`, data).pipe(
             tap(response => {
                 if (response?.access_token) {
+                    this.clearAllCaches();
                     this.tokenService.setToken(response.access_token);
                     console.debug('Login successful - token saved');
                 } else {
@@ -77,6 +97,7 @@ export class AuthService {
 
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, formData).pipe(
             tap(response => {
+                this.clearAllCaches();
                 this.tokenService.setToken(response.access_token);
             }),
             catchError(this.handleError)
@@ -132,6 +153,7 @@ export class AuthService {
             params: { id_token: idToken }
         }).pipe(
             tap(response => {
+                this.clearAllCaches();
                 this.tokenService.setToken(response.access_token);
             }),
             catchError(this.handleError)
@@ -142,6 +164,7 @@ export class AuthService {
      * Logout - clear tokens and redirect
      */
     logout(): void {
+        this.clearAllCaches();
         this.tokenService.clear();
         const currentLang = this.router.url.match(/^\/(fr|en)/)?.[1] || 'fr';
         this.router.navigate([`/${currentLang}/auth/login`]);
