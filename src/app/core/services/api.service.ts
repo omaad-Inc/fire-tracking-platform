@@ -89,11 +89,15 @@ export interface AssetUpdate {
 // TRANSACTION INTERFACES
 // ============================================
 export type TransactionType = 'income' | 'expense' | 'transfer' | 'investment';
-export type TransactionCategory = 
-    | 'salary' | 'investment_income' | 'rental_income' | 'side_hustle' | 'other_income'
-    | 'housing' | 'utilities' | 'food' | 'transportation' | 'healthcare'
-    | 'entertainment' | 'shopping' | 'education' | 'savings' | 'investment'
-    | 'debt_payment' | 'insurance' | 'taxes' | 'other_expense';
+export type TransactionCategory =
+    // Income
+    | 'salary' | 'freelance' | 'dividends' | 'rental_income' | 'interest' | 'gift_received' | 'other_income'
+    // Expense
+    | 'housing' | 'utilities' | 'groceries' | 'transport' | 'health' | 'insurance'
+    | 'entertainment' | 'dining' | 'shopping' | 'education' | 'subscriptions'
+    | 'travel' | 'gift_given' | 'taxes' | 'savings' | 'investment' | 'debt_payment' | 'other_expense'
+    // Transfer
+    | 'transfer';
 
 export interface Transaction {
     id: number;

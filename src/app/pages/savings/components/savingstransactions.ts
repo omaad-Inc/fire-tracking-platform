@@ -54,6 +54,7 @@ interface SavingRecordWithGoal extends SavingRecord {
         AppAmountComponent
     ],
     template: `
+        <p-toast position="top-center" />
         <p-toolbar styleClass="mb-6">
             <ng-template #start>
                 <p-button label="Nouveau" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
@@ -247,8 +248,9 @@ interface SavingRecordWithGoal extends SavingRecord {
                               [outlined]="true" 
                               (click)="hideDialog()" 
                               styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
-                    <p-button label="Enregistrer" icon="pi pi-check" 
-                              (click)="saveRecord()" 
+                    <p-button label="Enregistrer" icon="pi pi-check"
+                              [loading]="isSaving()"
+                              (click)="saveRecord()"
                               styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 hover:!from-emerald-700 hover:!to-cyan-600 !border-0" />
                 </div>
             </ng-template>
@@ -267,6 +269,7 @@ export class SavingsTransactions implements OnInit, OnDestroy {
     private subscription?: Subscription;
     
     productDialog: boolean = false;
+    isSaving = signal(false);
 
     records = signal<SavingRecordWithGoal[]>([]);
     goalOptions = signal<{ label: string; value: number }[]>([]);
@@ -423,11 +426,22 @@ export class SavingsTransactions implements OnInit, OnDestroy {
 
     async saveRecord() {
         this.submitted = true;
-        let _records = this.records();
-        if (this.record.date && this.record.amount > 0) {
-            // Add goal name based on goalId
+
+        if (!this.record.date || !(this.record.amount > 0)) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Champs requis',
+                detail: 'Veuillez renseigner une date et un montant supérieur à 0.',
+                life: 4000
+            });
+            return;
+        }
+
+        this.isSaving.set(true);
+        try {
+            let _records = this.records();
             this.record.goalName = this.getGoalName(this.record.goalId);
-            
+
             if (this.record.id) {
                 const updated = await this.savingsService.updateTransaction(this.record);
                 const updatedWithGoal: SavingRecordWithGoal = {
@@ -440,7 +454,7 @@ export class SavingsTransactions implements OnInit, OnDestroy {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Succès',
-                    detail: 'Enregistrement mis à jour',
+                    detail: 'Mouvement d\'épargne mis à jour',
                     life: 3000
                 });
             } else {
@@ -453,12 +467,12 @@ export class SavingsTransactions implements OnInit, OnDestroy {
                 this.records.set(this.sortDesc([..._records, createdWithGoal]));
                 this.messageService.add({
                     severity: 'success',
-                    summary: 'Succès',
-                    detail: 'Enregistrement créé',
+                    summary: 'Mouvement enregistré',
+                    detail: 'Votre mouvement d\'épargne a été enregistré avec succès.',
                     life: 3000
                 });
-                
-                // If a goal is selected and it's a deposit, add contribution
+
+                // If a deposit is linked to a goal, update the goal's current_amount
                 if (this.record.goalId && this.record.type === 'Deposit' && this.record.amount > 0) {
                     try {
                         await this.savingsService.addContribution(this.record.goalId, this.record.amount);
@@ -467,10 +481,19 @@ export class SavingsTransactions implements OnInit, OnDestroy {
                     }
                 }
             }
-            
+
             this.stateService.notifySavingsUpdated();
             this.productDialog = false;
             this.record = { date: '', type: 'Deposit', amount: 0, name: '' } as SavingRecordWithGoal;
+        } catch (error: any) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: error?.message || 'Impossible d\'enregistrer le mouvement d\'épargne.',
+                life: 5000
+            });
+        } finally {
+            this.isSaving.set(false);
         }
     }
 

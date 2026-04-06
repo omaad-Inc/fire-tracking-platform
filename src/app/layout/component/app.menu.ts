@@ -52,8 +52,13 @@ export class AppMenu {
                         routerLink: this.link('pages', 'patrimoine'),
                     },
                     {
-                        label: this.t('menu.transactions'), 
-                        icon: 'pi pi-fw pi-arrow-right-arrow-left', 
+                        label: 'Rapports',
+                        icon: 'pi pi-fw pi-chart-bar',
+                        routerLink: this.link('pages', 'reports'),
+                    },
+                    {
+                        label: this.t('menu.transactions'),
+                        icon: 'pi pi-fw pi-arrow-right-arrow-left',
                         routerLink: this.link('pages', 'transaction')
                     },
                 ]

@@ -154,8 +154,9 @@ export class SavingsService {
         try {
             const goal = await firstValueFrom(this.api.createSavingGoal(data));
             const displayGoal = this.mapGoalToDisplay(goal, 0);
-            // Invalidate cache
             this.invalidateGoalsCache();
+            this.invalidateProgressCache(); // current_amount affects the chart immediately
+            this.invalidateStatsCache();
             return displayGoal;
         } catch (error) {
             console.error('Error creating saving goal:', error);
@@ -170,8 +171,8 @@ export class SavingsService {
         try {
             const goal = await firstValueFrom(this.api.updateSavingGoal(id, data));
             const displayGoal = this.mapGoalToDisplay(goal, 0);
-            // Invalidate cache
             this.invalidateGoalsCache();
+            this.invalidateProgressCache(); // updated current_amount must be reflected in chart
             this.invalidateStatsCache();
             return displayGoal;
         } catch (error) {
@@ -186,8 +187,8 @@ export class SavingsService {
     async deleteGoal(id: number): Promise<void> {
         try {
             await firstValueFrom(this.api.deleteSavingGoal(id));
-            // Invalidate cache
             this.invalidateGoalsCache();
+            this.invalidateProgressCache();
             this.invalidateStatsCache();
         } catch (error) {
             console.error('Error deleting saving goal:', error);

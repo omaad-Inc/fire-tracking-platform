@@ -1,451 +1,529 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
+import { Component, OnInit, signal, computed, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { SelectModule } from 'primeng/select';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import { TagModule } from 'primeng/tag';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectModule } from 'primeng/select';
+import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
 import { DatePickerModule } from 'primeng/datepicker';
-import { I18nService } from '../../../i18n/i18n.service';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import {
+    TransactionsService, TransactionRecord,
+    CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
+} from '../../service/transactions.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
-interface Column {
-    field: string;
-    header: string;
-    customExportHeader?: string;
+interface DayGroup {
+    dateKey: string;
+    label: string;
+    records: TransactionRecord[];
 }
-
-interface ExportColumn {
-    title: string;
-    dataKey: string;
-}
-
-// TransactionRecord imported from TransactionsService
 
 @Component({
     selector: 'app-transaction-logs',
     standalone: true,
     imports: [
-        CommonModule,
-        TableModule,
-        FormsModule,
-        ButtonModule,
-        ToastModule,
-        ToolbarModule,
-        InputTextModule,
-        TextareaModule,
-        SelectModule,
-        InputNumberModule,
-        DialogModule,
-        TagModule,
-        InputIconModule,
-        IconFieldModule,
-        ConfirmDialogModule,
-        DatePickerModule,
-        AppAmountComponent
+        CommonModule, FormsModule, ButtonModule, DialogModule,
+        InputTextModule, InputNumberModule, SelectModule,
+        ToastModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent
     ],
+    providers: [MessageService, ConfirmationService],
     template: `
         <p-toast position="top-center" />
-        <p-toolbar styleClass="mb-6">
-            <ng-template #start>
-                <p-button [label]="t('transactions.new')" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" [label]="t('transactions.delete')" icon="pi pi-trash" outlined (onClick)="deleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length" />
-            </ng-template>
+        <p-confirmDialog />
 
-            <ng-template #end>
-                <p-button [label]="t('transactions.export')" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-            </ng-template>
-        </p-toolbar>
+        <!-- ── Top bar ───────────────────────────────────────────── -->
+        <div class="flex flex-wrap items-center gap-3 mb-5">
+            <!-- Month navigation -->
+            <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-1 py-1">
+                <button pButton icon="pi pi-chevron-left" [text]="true" size="small"
+                        class="!rounded-lg !w-8 !h-8" (click)="prevMonth()"></button>
+                <span class="px-3 text-sm font-semibold text-surface-900 dark:text-surface-0 min-w-[120px] text-center">
+                    {{ monthLabel() }}
+                </span>
+                <button pButton icon="pi pi-chevron-right" [text]="true" size="small"
+                        class="!rounded-lg !w-8 !h-8" (click)="nextMonth()"
+                        [disabled]="isCurrentMonth()"></button>
+            </div>
 
-        <p-table
-            #dt
-            [value]="records()"
-            [rows]="10"
-            [columns]="cols"
-            [paginator]="true"
-            [globalFilterFields]="['date', 'name', 'type', 'amount', 'remarks']"
-            [tableStyle]="{ 'min-width': '75rem' }"
-            [(selection)]="selectedRecords"
-            [rowHover]="true"
-            dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
-            [showCurrentPageReport]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-        >
-            <ng-template #caption>
-                <div class="flex items-center justify-between">
-                    <h5 class="m-0">{{ t('transactions.logTitle') }}</h5>
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" [placeholder]="t('common.search')" />
-                    </p-iconfield>
+            <!-- Search -->
+            <div class="relative flex-1 min-w-[160px]">
+                <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
+                <input pInputText [(ngModel)]="search" placeholder="Rechercher..."
+                       class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
+            </div>
+
+            <!-- Type filter -->
+            <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl p-1">
+                @for (f of typeFilters; track f.value) {
+                    <button (click)="typeFilter.set(f.value)"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                            [class]="typeFilter() === f.value
+                                ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
+                                : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
+                        {{ f.label }}
+                    </button>
+                }
+            </div>
+
+            <!-- Add button -->
+            <button pButton icon="pi pi-plus" label="Ajouter"
+                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !rounded-xl !px-4 !py-2.5 !text-sm !font-semibold"
+                    (click)="openNew()"></button>
+        </div>
+
+        <!-- ── Transaction list ───────────────────────────────────── -->
+        @if (loading()) {
+            <div class="space-y-3">
+                @for (i of [1,2,3,4,5]; track i) {
+                    <div class="h-14 bg-surface-100 dark:bg-surface-800 rounded-xl animate-pulse"></div>
+                }
+            </div>
+        } @else if (dayGroups().length === 0) {
+            <div class="flex flex-col items-center justify-center py-20 text-center">
+                <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
+                    <i class="pi pi-arrow-right-arrow-left text-2xl text-surface-400"></i>
                 </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th style="width: 3rem">
-                        <p-tableHeaderCheckbox />
-                    </th>
-                    <th pSortableColumn="date" style="min-width: 10rem">
-                        {{ t('common.date') }}
-                        <p-sortIcon field="date" />
-                    </th>
-                    <th style="min-width: 18rem">{{ t('common.name') }}</th>
-                    <th style="min-width: 10rem">{{ t('common.type') }}</th>
-                    <th style="min-width: 10rem">{{ t('common.amount') }}</th>
-                    <th style="min-width: 20rem">{{ t('common.remarks') }}</th>
-                    <th style="min-width: 12rem"></th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-record>
-                <tr>
-                    <td style="width: 3rem">
-                        <p-tableCheckbox [value]="record" />
-                    </td>
-                    <td>{{ record.date }}</td>
-                    <td>
-                        <div class="font-semibold text-surface-900 dark:text-surface-0">{{ record.name }}</div>
-                    </td>
-                    <td>
-                        <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
-                    </td>
-                    <td class="text-right"><app-amount [value]="record.amount" /></td>
-                    <td>{{ record.remarks }}</td>
-                    <td>
-                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
-                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteRecord(record)" />
-                    </td>
-                </tr>
-            </ng-template>
-            <ng-template #emptymessage>
-                <tr>
-                    <td [attr.colspan]="7">
-                        <div class="flex flex-col items-center justify-center py-16 text-center">
-                            <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
-                                <i class="pi pi-arrow-right-arrow-left text-2xl text-surface-400"></i>
-                            </div>
-                            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">Aucune transaction</h3>
-                            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6 max-w-sm">
-                                Enregistrez vos revenus et dépenses pour suivre votre progression financière.
-                            </p>
-                            <button pButton
-                                    icon="pi pi-plus"
-                                    label="Ajouter une transaction"
-                                    (click)="openNew()"
-                                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white"
-                            ></button>
+                <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
+                    {{ search || typeFilter() !== 'all'
+                        ? 'Aucune transaction ne correspond à vos filtres'
+                        : 'Aucune transaction ce mois-ci' }}
+                </p>
+                @if (!search && typeFilter() === 'all') {
+                    <button pButton icon="pi pi-plus" label="Ajouter une transaction"
+                            [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
+                }
+            </div>
+        } @else {
+            <div class="space-y-6">
+                @for (group of dayGroups(); track group.dateKey) {
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                                {{ group.label }}
+                            </span>
+                            <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
+                            <span class="text-xs text-surface-400 dark:text-surface-500">
+                                {{ group.records.length }} opération{{ group.records.length > 1 ? 's' : '' }}
+                            </span>
                         </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
 
-        <p-dialog [(visible)]="transactionDialog" 
-                  [style]="{ width: '95vw', maxWidth: '600px' }" 
-                  [breakpoints]="{ '768px': '95vw' }"
-                  [modal]="true"
-                  [draggable]="false"
-                  [resizable]="false"
+                        <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 divide-y divide-surface-100 dark:divide-surface-700/50 overflow-hidden">
+                            @for (rec of group.records; track rec.id) {
+                                <div class="flex items-center gap-4 px-4 py-3 hover:bg-surface-50 dark:hover:bg-surface-700/40 transition-colors group">
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                                         [style.background]="getCategoryConfig(rec).color + '1a'">
+                                        <i [class]="getCategoryConfig(rec).icon + ' text-sm'"
+                                           [style.color]="getCategoryConfig(rec).color"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate">
+                                            {{ rec.remarks || rec.name }}
+                                        </div>
+                                        <span class="inline-flex items-center gap-1 text-xs mt-0.5 px-2 py-0.5 rounded-full"
+                                              [style.color]="getCategoryConfig(rec).color"
+                                              [style.background]="getCategoryConfig(rec).color + '1a'">
+                                            {{ getCategoryConfig(rec).label }}
+                                        </span>
+                                    </div>
+                                    <div class="text-sm font-bold shrink-0"
+                                         [ngClass]="rec.type === 'Income' ? 'text-emerald-500' : 'text-rose-500'">
+                                        {{ rec.type === 'Income' ? '+' : '−' }}<app-amount [value]="rec.amount" />
+                                    </div>
+                                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                                (click)="editRecord(rec)">
+                                            <i class="pi pi-pencil text-xs text-surface-500"></i>
+                                        </button>
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                                                (click)="deleteRecord(rec)">
+                                            <i class="pi pi-trash text-xs text-surface-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- ── Add / Edit dialog ──────────────────────────────────── -->
+        <p-dialog [(visible)]="dialogVisible"
+                  [style]="{ width: '95vw', maxWidth: '680px' }"
+                  [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                        <i class="pi pi-wallet text-white text-lg"></i>
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg"
+                         [ngClass]="formType() === 'Income'
+                             ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-500/30'
+                             : 'bg-gradient-to-br from-rose-500 to-rose-600 shadow-rose-500/30'">
+                        <i class="pi text-white text-lg"
+                           [ngClass]="formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right'"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('transactions.detailsTitle') }}</h3>
-                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Remplissez les informations de la transaction</p>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
+                            {{ editingRecord ? 'Modifier la transaction' : 'Nouvelle transaction' }}
+                        </h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">
+                            {{ editingRecord ? 'Modifiez les détails' : 'Renseignez les informations ci-dessous' }}
+                        </p>
                     </div>
                 </div>
             </ng-template>
-            
+
             <ng-template #content>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
-                    <!-- Date -->
+                <div class="flex flex-col gap-6 pt-2">
+
+                    <!-- Type toggle -->
+                    <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl">
+                        <button (click)="setType('Expense')"
+                                class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                                [ngClass]="formType() === 'Expense'
+                                    ? 'bg-white dark:bg-surface-700 text-rose-500 shadow-sm'
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                            <i class="pi pi-arrow-up-right text-xs"></i> Dépense
+                        </button>
+                        <button (click)="setType('Income')"
+                                class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                                [ngClass]="formType() === 'Income'
+                                    ? 'bg-white dark:bg-surface-700 text-emerald-500 shadow-sm'
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                            <i class="pi pi-arrow-down-left text-xs"></i> Revenu
+                        </button>
+                    </div>
+
+                    <!-- Amount + Date row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Montant</label>
+                            <p-inputnumber [(ngModel)]="form.amount" mode="currency" currency="EUR" locale="fr-FR"
+                                           styleClass="w-full"
+                                           inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
+                            @if (submitted && !(form.amount > 0)) {
+                                <small class="text-rose-500 text-xs">Montant requis</small>
+                            }
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date</label>
+                            <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
+                                          dateFormat="yy-mm-dd" styleClass="w-full"
+                                          inputStyleClass="!py-3 !rounded-xl" />
+                            @if (submitted && !editDate) {
+                                <small class="text-rose-500 text-xs">Date requise</small>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Description -->
                     <div class="flex flex-col gap-2">
-                        <label for="date" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-calendar text-indigo-500"></i>
-                            {{ t('common.date') }}
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            Description <span class="text-surface-400 font-normal">(optionnel)</span>
                         </label>
-                        <p-datepicker id="date" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
-                                      inputId="date" dateFormat="yy-mm-dd" required
-                                      styleClass="w-full"
-                                      inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500" />
-                        <small class="text-rose-500 text-xs" *ngIf="submitted && !editDate">
-                            <i class="pi pi-exclamation-circle mr-1"></i>{{ t('transactions.messages.dateRequired') }}
-                        </small>
+                        <input pInputText [(ngModel)]="form.remarks"
+                               placeholder="Ex : Salaire avril, Courses Auchan..."
+                               class="w-full !py-3 !rounded-xl" />
                     </div>
-                    
-                    <!-- Name -->
-                    <div class="flex flex-col gap-2">
-                        <label for="name" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-tag text-cyan-500"></i>
-                            {{ t('common.name') }}
+
+                    <!-- Category grid -->
+                    <div class="flex flex-col gap-3">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            Catégorie
+                            @if (submitted && !form.category) {
+                                <span class="text-rose-500 ml-2 text-xs">Requise</span>
+                            }
                         </label>
-                        <input pInputText id="name" [(ngModel)]="record.name" required 
-                               class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500"
-                               placeholder="Ex: Salaire, Courses..." />
-                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
-                            <i class="pi pi-exclamation-circle mr-1"></i>{{ t('transactions.messages.nameRequired') }}
-                        </small>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                            @for (cat of currentCategories(); track cat) {
+                                <button (click)="form.category = cat"
+                                        class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all text-center"
+                                        [style.border-color]="form.category === cat ? getCatConfig(cat).color : ''"
+                                        [style.background]="form.category === cat ? getCatConfig(cat).color + '15' : ''"
+                                        [ngClass]="form.category === cat
+                                            ? 'shadow-sm scale-[1.02]'
+                                            : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                         [style.background]="getCatConfig(cat).color + '20'">
+                                        <i [class]="getCatConfig(cat).icon + ' text-sm'"
+                                           [style.color]="getCatConfig(cat).color"></i>
+                                    </div>
+                                    <span class="text-[11px] font-medium leading-tight text-surface-700 dark:text-surface-300">
+                                        {{ getCatConfig(cat).label }}
+                                    </span>
+                                </button>
+                            }
+                        </div>
                     </div>
-                    
-                    <!-- Type -->
-                    <div class="flex flex-col gap-2">
-                        <label for="type" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-arrows-h text-emerald-500"></i>
-                            {{ t('common.type') }}
-                        </label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" 
-                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un type" 
-                                  styleClass="w-full !rounded-xl" />
-                    </div>
-                    
-                    <!-- Amount -->
-                    <div class="flex flex-col gap-2">
-                        <label for="amount" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-euro text-amber-500"></i>
-                            {{ t('common.amount') }}
-                        </label>
-                        <p-inputnumber id="amount" [(ngModel)]="record.amount" mode="currency" currency="EUR" locale="fr-FR" 
-                                       styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500" />
-                    </div>
-                    
-                    <!-- Remarks -->
-                    <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label for="remarks" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-comment text-surface-400"></i>
-                            {{ t('common.remarks') }}
-                        </label>
-                        <textarea id="remarks" pTextarea [(ngModel)]="record.remarks" rows="3" 
-                                  class="w-full !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500 resize-none"
-                                  placeholder="Notes ou commentaires..."></textarea>
-                    </div>
+
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
-                    <p-button [label]="t('common.cancel')" icon="pi pi-times" 
-                              [outlined]="true" 
-                              (click)="hideDialog()" 
-                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
-                    <p-button [label]="t('common.save')" icon="pi pi-check"
+                <div class="flex gap-3 pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="hideDialog()"
+                              styleClass="flex-1 !rounded-xl !py-3" />
+                    <p-button [label]="editingRecord ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 hover:!from-indigo-700 hover:!to-cyan-600 !border-0" />
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !border-0"
+                              [ngClass]="formType() === 'Income'
+                                  ? '!from-emerald-600 !to-teal-500'
+                                  : '!from-indigo-600 !to-cyan-500'" />
                 </div>
             </ng-template>
         </p-dialog>
-
-        <p-confirmdialog [style]="{ width: '450px' }" />
-    `,
-    providers: [MessageService, ConfirmationService]
+    `
 })
 export class TransactionLogs implements OnInit {
-    transactionDialog: boolean = false;
-    isSaving = signal(false);
+    private transactionsService = inject(TransactionsService);
+    private messageService      = inject(MessageService);
+    private confirmationService = inject(ConfirmationService);
 
-    records = signal<TransactionRecord[]>([]);
-    record!: TransactionRecord;
-    editDate: Date | null = null;
-    selectedRecords!: TransactionRecord[] | null;
-    submitted: boolean = false;
-    types = [
-        { label: 'Income', value: 'Income' },
-        { label: 'Expense', value: 'Expense' }
+    @Output() monthChanged = new EventEmitter<string>();
+
+    // ── State ─────────────────────────────────────────────────────
+    loading   = signal(true);
+    isSaving  = signal(false);
+    submitted = false;
+
+    private allRecords   = signal<TransactionRecord[]>([]);
+    private _selectedYear  = signal(new Date().getFullYear());
+    private _selectedMonth = signal(new Date().getMonth() + 1);
+
+    search     = '';
+    typeFilter = signal<'all' | 'Income' | 'Expense'>('all');
+
+    typeFilters = [
+        { label: 'Tous',     value: 'all'     as const },
+        { label: 'Revenus',  value: 'Income'  as const },
+        { label: 'Dépenses', value: 'Expense' as const },
     ];
-    @ViewChild('dt') dt!: Table;
-    exportColumns!: ExportColumn[];
-    cols!: Column[];
 
-    constructor(
-        private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-        private transactionsService: TransactionsService,
-        private i18n: I18nService
-    ) {}
+    // ── Dialog state ──────────────────────────────────────────────
+    dialogVisible  = false;
+    editingRecord: TransactionRecord | null = null;
+    editDate: Date | null = null;
+    // formType is a Signal so computed() can track changes reactively
+    formType = signal<'Income' | 'Expense'>('Expense');
+    form: { amount: number; remarks: string; category: string } = {
+        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0]
+    };
 
-    exportCSV() {
-        this.dt.exportCSV();
+    readonly currentCategories = computed(() =>
+        this.formType() === 'Income' ? [...INCOME_CATEGORIES] : [...EXPENSE_CATEGORIES]
+    );
+
+    getCatConfig(cat: string) {
+        return CATEGORY_CONFIG[cat] ?? { label: cat, icon: 'pi pi-circle', color: '#94a3b8', bg: '' };
     }
+
+    setType(t: 'Income' | 'Expense') {
+        this.formType.set(t);
+        const cats = t === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+        if (!(cats as readonly string[]).includes(this.form.category)) {
+            this.form.category = cats[0];
+        }
+    }
+
+    // ── Computed ──────────────────────────────────────────────────
+    readonly selectedYearMonth = computed(() => {
+        const y = this._selectedYear();
+        const m = String(this._selectedMonth()).padStart(2, '0');
+        return `${y}-${m}`;
+    });
+
+    readonly monthLabel = computed(() => {
+        const d = new Date(this._selectedYear(), this._selectedMonth() - 1, 1);
+        return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+                .replace(/^\w/, c => c.toUpperCase());
+    });
+
+    readonly isCurrentMonth = computed(() => {
+        const now = new Date();
+        return this._selectedYear() === now.getFullYear() && this._selectedMonth() === now.getMonth() + 1;
+    });
+
+    readonly filteredRecords = computed(() => {
+        const ym     = this.selectedYearMonth();
+        const filter = this.typeFilter();
+        const q      = this.search.toLowerCase().trim();
+
+        return this.allRecords()
+            .filter(r => r.date.startsWith(ym))
+            .filter(r => filter === 'all' || r.type === filter)
+            .filter(r => !q ||
+                (r.name    || '').toLowerCase().includes(q) ||
+                (r.remarks || '').toLowerCase().includes(q));
+    });
+
+    readonly dayGroups = computed((): DayGroup[] => {
+        const byDay: Record<string, TransactionRecord[]> = {};
+        for (const r of this.filteredRecords()) {
+            (byDay[r.date] = byDay[r.date] || []).push(r);
+        }
+        return Object.entries(byDay)
+            .sort(([a], [b]) => b.localeCompare(a))
+            .map(([dateKey, records]) => ({
+                dateKey,
+                label: this.formatDayLabel(dateKey),
+                records: [...records].sort((a, b) => (b.id || '').localeCompare(a.id || ''))
+            }));
+    });
 
     ngOnInit() {
-        this.loadFromService();
+        this.load();
     }
 
-    loadFromService() {
-        this.transactionsService.getRecords().then((data) => {
-            this.records.set(data);
-            this.cols = [
-                { field: 'date', header: this.t('common.date') },
-                { field: 'name', header: this.t('common.name') },
-                { field: 'type', header: this.t('common.type') },
-                { field: 'amount', header: this.t('common.amount') },
-                { field: 'remarks', header: this.t('common.remarks') }
-            ];
-            this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
-        });
+    private async load() {
+        this.loading.set(true);
+        try {
+            const recs = await this.transactionsService.getRecords();
+            this.allRecords.set(recs);
+            this.emitMonth();
+        } finally {
+            this.loading.set(false);
+        }
     }
 
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    private emitMonth() {
+        this.monthChanged.emit(this.selectedYearMonth());
     }
 
+    // ── Month navigation ──────────────────────────────────────────
+    prevMonth() {
+        let m = this._selectedMonth() - 1;
+        let y = this._selectedYear();
+        if (m < 1) { m = 12; y--; }
+        this._selectedMonth.set(m);
+        this._selectedYear.set(y);
+        this.emitMonth();
+    }
+
+    nextMonth() {
+        if (this.isCurrentMonth()) return;
+        let m = this._selectedMonth() + 1;
+        let y = this._selectedYear();
+        if (m > 12) { m = 1; y++; }
+        this._selectedMonth.set(m);
+        this._selectedYear.set(y);
+        this.emitMonth();
+    }
+
+    // ── Dialog ────────────────────────────────────────────────────
     openNew() {
-        this.record = { date: '', name: '', type: 'Income', amount: 0, remarks: '' };
-        this.editDate = null;
+        this.editingRecord = null;
+        this.editDate = new Date();
+        this.formType.set('Expense');
+        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0] };
         this.submitted = false;
-        this.transactionDialog = true;
+        this.dialogVisible = true;
     }
 
-    editRecord(record: TransactionRecord) {
-        this.record = { ...record };
-        // Convert date string to Date object for p-datepicker
-        this.editDate = record.date ? new Date(record.date) : null;
+    editRecord(rec: TransactionRecord) {
+        this.editingRecord = rec;
+        this.editDate = rec.date ? new Date(rec.date) : new Date();
+        this.formType.set(rec.type);
+        this.form = {
+            amount:   rec.amount,
+            remarks:  rec.remarks || rec.name || '',
+            category: rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0])
+        };
         this.submitted = false;
-        this.transactionDialog = true;
-    }
-
-    deleteSelectedRecords() {
-        this.confirmationService.confirm({
-            message: this.t('transactions.messages.deleteSelectedConfirm'),
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: async () => {
-                const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
-                try {
-                    await this.transactionsService.deleteRecords(ids);
-                    this.records.set(this.records().filter((val) => !ids.includes(val.id!)));
-                    this.selectedRecords = null;
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: this.t('transactions.messages.successful'),
-                        detail: this.t('transactions.messages.recordsDeleted'),
-                        life: 3000
-                    });
-                } catch {
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de supprimer les transactions', life: 5000 });
-                }
-            }
-        });
+        this.dialogVisible = true;
     }
 
     hideDialog() {
-        this.transactionDialog = false;
+        this.dialogVisible = false;
         this.submitted = false;
-    }
-
-    deleteRecord(record: TransactionRecord) {
-        this.confirmationService.confirm({
-            message: this.t('transactions.messages.deleteOneConfirm', { name: record.name || '' }),
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: async () => {
-                if (!record.id) return;
-                try {
-                    await this.transactionsService.deleteRecords([record.id]);
-                    this.records.set(this.records().filter((val) => val.id !== record.id));
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: this.t('transactions.messages.successful'),
-                        detail: this.t('transactions.messages.recordDeleted'),
-                        life: 3000
-                    });
-                } catch {
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible de supprimer la transaction', life: 5000 });
-                }
-            }
-        });
-    }
-
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.records().length; i++) {
-            if (this.records()[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-        return index;
     }
 
     async saveRecord() {
         this.submitted = true;
+        if (!this.editDate || !(this.form.amount > 0) || !this.form.category) return;
 
-        // Validation: require date and amount
-        if (!this.editDate || !this.record.amount || this.record.amount <= 0) return;
-
-        // Inject the picked date back into the record as a YYYY-MM-DD string
-        const d = this.editDate;
-        this.record.date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-        // Default name if empty
-        if (!this.record.name?.trim()) {
-            this.record.name = this.record.type === 'Income' ? 'Revenu' : 'Dépense';
-        }
-
+        const dateStr = this.toDateStr(this.editDate);
         this.isSaving.set(true);
-        const _records = this.records();
 
         try {
-            if (this.record.id) {
-                const updated = await this.transactionsService.updateRecord(this.record);
-                const idx = this.findIndexById(updated.id!);
-                if (idx !== -1) _records[idx] = updated;
-                this.records.set([..._records]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: this.t('transactions.messages.successful'),
-                    detail: this.t('transactions.messages.recordUpdated'),
-                    life: 3000
+            if (this.editingRecord?.id) {
+                const updated = await this.transactionsService.updateRecord({
+                    ...this.editingRecord,
+                    date:     dateStr,
+                    type:     this.formType(),
+                    amount:   this.form.amount,
+                    remarks:  this.form.remarks,
+                    category: this.form.category,
+                    name:     this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name,
                 });
+                this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
+                this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Transaction mise à jour.', life: 3000 });
             } else {
-                const created = await this.transactionsService.addRecord(this.record);
-                this.records.set([..._records, created]);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: this.t('transactions.messages.successful'),
-                    detail: this.t('transactions.messages.recordCreated'),
-                    life: 3000
+                const created = await this.transactionsService.addRecord({
+                    date:     dateStr,
+                    type:     this.formType(),
+                    amount:   this.form.amount,
+                    remarks:  this.form.remarks,
+                    category: this.form.category,
+                    name:     this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense'),
                 });
+                this.allRecords.update(rs => [created, ...rs]);
+                this.messageService.add({ severity: 'success', summary: 'Enregistré', detail: 'Transaction ajoutée.', life: 3000 });
             }
-            this.transactionDialog = false;
-            this.submitted = false;
-            this.editDate = null;
-            this.record = { date: '', name: '', type: 'Income', amount: 0, remarks: '' };
-        } catch (error: any) {
-            const detail = error?.error?.detail
-                ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
-                : 'Impossible d\'enregistrer la transaction';
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail, life: 6000 });
+            this.dialogVisible = false;
+        } catch (err: any) {
+            this.messageService.add({ severity: 'error', summary: 'Erreur',
+                detail: err?.message || 'Impossible d\'enregistrer la transaction.', life: 5000 });
         } finally {
             this.isSaving.set(false);
         }
     }
 
-    getSeverityType(type: string) {
-        switch (type) {
-            case 'Income':
-                return 'success';
-            case 'Expense':
-                return 'danger';
-            default:
-                return 'info';
-        }
+    deleteRecord(rec: TransactionRecord) {
+        this.confirmationService.confirm({
+            message: `Supprimer cette transaction ?`,
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Supprimer',
+            rejectLabel: 'Annuler',
+            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            accept: async () => {
+                if (!rec.id) return;
+                try {
+                    await this.transactionsService.deleteRecords([rec.id]);
+                    this.allRecords.update(rs => rs.filter(r => r.id !== rec.id));
+                    this.messageService.add({ severity: 'success', summary: 'Supprimé', detail: 'Transaction supprimée.', life: 3000 });
+                } catch {
+                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Suppression impossible.', life: 4000 });
+                }
+            }
+        });
     }
 
-    t(key: string, params?: any) { return this.i18n.t(key, params); }
+    // ── Helpers ───────────────────────────────────────────────────
+    getCategoryConfig(rec: TransactionRecord) {
+        const cat = rec.category || (rec.type === 'Income' ? 'other_income' : 'other_expense');
+        return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-slate-500/10' };
+    }
+
+    private formatDayLabel(dateStr: string): string {
+        const today     = new Date(); today.setHours(0, 0, 0, 0);
+        const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+        const dt        = new Date(dateStr + 'T00:00:00');
+
+        if (dt.getTime() === today.getTime())     return 'Aujourd\'hui';
+        if (dt.getTime() === yesterday.getTime()) return 'Hier';
+
+        return new Date(dateStr + 'T12:00:00')
+            .toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })
+            .replace(/^\w/, c => c.toUpperCase());
+    }
+
+    private toDateStr(d: Date): string {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
 }
