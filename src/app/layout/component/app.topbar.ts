@@ -78,8 +78,8 @@ interface CategoryCard {
             </button>
             <div class="layout-topbar-logo flex items-center gap-2">
                 <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo" class="w-10 h-10 lg:w-12 lg:h-12">
-                <!-- Hide text on mobile -->
-                <span class="hidden lg:inline whitespace-nowrap">Omaad Wealth</span>
+                <!-- Hide text on mobile; show only "Omaad" on desktop to fit within the 17rem sidebar container -->
+                <span class="hidden lg:inline whitespace-nowrap">Omaad</span>
             </div>
         </div>
 
