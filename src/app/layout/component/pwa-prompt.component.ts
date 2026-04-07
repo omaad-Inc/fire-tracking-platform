@@ -33,7 +33,7 @@ import { PwaService } from '../service/pwa.service';
                 <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
                     <i class="pi pi-download text-white text-xs"></i>
                 </div>
-                <span class="text-surface-900 dark:text-surface-0 font-medium text-sm">Installer Afrin Nexus pour un accès hors-ligne</span>
+                <span class="text-surface-900 dark:text-surface-0 font-medium text-sm">Installer Omaad Wealth pour un accès hors-ligne</span>
             </div>
             <div class="flex items-center gap-2">
                 <button pButton label="Installer"

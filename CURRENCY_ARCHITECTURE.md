@@ -1,8 +1,8 @@
-# Currency Architecture — Afrin Nexus
+# Currency Architecture — Omaad Wealth
 
 ## Overview
 
-Afrin Nexus is designed to serve users across different currency zones — Senegal (FCFA / XOF),
+Omaad Wealth is designed to serve users across different currency zones — Senegal (FCFA / XOF),
 France (EUR), and beyond.  
 The golden rule is simple:
 

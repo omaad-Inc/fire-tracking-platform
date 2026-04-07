@@ -77,9 +77,9 @@ interface CategoryCard {
                 <i class="pi pi-bars"></i>
             </button>
             <div class="layout-topbar-logo flex items-center gap-2">
-                <img src="assets/afrin-nexus-logo.svg" alt="Afrin Nexus Logo" class="w-10 h-10 lg:w-12 lg:h-12">
+                <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo" class="w-10 h-10 lg:w-12 lg:h-12">
                 <!-- Hide text on mobile -->
-                <span class="hidden lg:inline whitespace-nowrap">Afrin Nexus</span>
+                <span class="hidden lg:inline whitespace-nowrap">Omaad Wealth</span>
             </div>
         </div>
 

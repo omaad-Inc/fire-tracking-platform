@@ -19,9 +19,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <!-- Brand -->
                         <div class="col-span-12 lg:col-span-4">
                             <a (click)="navigateTo('home')" class="flex items-center gap-3 cursor-pointer mb-6 group">
-                                <img src="assets/afrin-nexus-logo.svg" alt="Afrin Nexus Logo"
+                                <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo"
                                      class="w-12 h-12 transition-transform duration-300 group-hover:scale-110">
-                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Afrin Nexus</span>
+                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad Wealth</span>
                             </a>
                             <p class="text-slate-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
                             <div class="flex gap-3">
@@ -87,7 +87,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="text-slate-500 text-sm text-center md:text-left">
-                            © {{ currentYear }} Afrin Nexus. {{ t('landing.footer.copyright') }}
+                            © {{ currentYear }} Omaad Wealth. {{ t('landing.footer.copyright') }}
                             <span class="text-slate-600">{{ t('landing.footer.madeWith') }}</span>
                             <i class="pi pi-heart-fill text-red-500 mx-1"></i>
                             <span class="text-slate-600">{{ t('landing.footer.forFreedom') }}</span>

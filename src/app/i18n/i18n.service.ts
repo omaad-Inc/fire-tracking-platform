@@ -5,7 +5,7 @@ import { FR } from './fr';
 export type Lang = 'fr' | 'en';
 type Dictionaries = typeof FR;
 
-const LANG_KEY = 'afrin_nexus_lang';
+const LANG_KEY = 'omaad_lang';
 
 @Injectable({ providedIn: 'root' })
 export class I18nService {

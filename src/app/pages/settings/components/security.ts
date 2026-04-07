@@ -35,7 +35,7 @@ import { firstValueFrom } from 'rxjs';
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Méthode de connexion</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Comment vous vous connectez à Afrin Nexus</p>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Comment vous vous connectez à Omaad Wealth</p>
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@ import { firstValueFrom } from 'rxjs';
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">Compte créé</p>
-                                    <p class="text-xs text-surface-500 dark:text-surface-400">Inscription à Afrin Nexus</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">Inscription à Omaad Wealth</p>
                                 </div>
                                 <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
                             </div>

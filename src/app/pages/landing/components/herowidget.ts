@@ -81,7 +81,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
                                     <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                                     <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
-                                    <span class="ml-4 text-slate-500 text-sm">afrinnexus.app</span>
+                                    <span class="ml-4 text-slate-500 text-sm">omaad.app</span>
                                 </div>
                                 <div class="grid grid-cols-3 gap-4 mb-6">
                                     <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">

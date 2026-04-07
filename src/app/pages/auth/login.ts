@@ -25,9 +25,9 @@ import { AuthService } from '../../core/services/auth.service';
                 <!-- Logo -->
                 <div class="mb-12">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="assets/afrin-nexus-logo.svg" alt="Afrin Nexus Logo"
+                        <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo"
                              class="w-10 h-10 transition-transform duration-300 group-hover:scale-110">
-                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Afrin Nexus</span>
+                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad Wealth</span>
                     </a>
                 </div>
 
@@ -138,7 +138,7 @@ import { AuthService } from '../../core/services/auth.service';
                                 <div class="flex-1 flex justify-center">
                                     <div class="bg-slate-700/50 rounded-lg px-4 py-1 text-slate-400 text-xs flex items-center gap-2">
                                         <i class="pi pi-lock text-emerald-400"></i>
-                                        afrinnexus.app
+                                        omaad.app
                                     </div>
                                 </div>
                             </div>

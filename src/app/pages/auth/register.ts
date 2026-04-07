@@ -25,16 +25,16 @@ import { AuthService } from '../../core/services/auth.service';
                 <!-- Logo -->
                 <div class="mb-12">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="assets/afrin-nexus-logo.svg" alt="Afrin Nexus Logo"
+                        <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo"
                              class="w-10 h-10 transition-transform duration-300 group-hover:scale-110">
-                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Afrin Nexus</span>
+                        <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad Wealth</span>
                     </a>
                 </div>
 
                 <!-- Register Form -->
                 <div class="max-w-md">
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                        Bienvenue sur Afrin Nexus
+                        Bienvenue sur Omaad Wealth
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
                         Déjà un compte ?
@@ -180,7 +180,7 @@ import { AuthService } from '../../core/services/auth.service';
                                     <i class="pi pi-user text-white text-xl"></i>
                                 </div>
                                 <div>
-                                    <div class="text-white font-semibold">Bienvenue sur Afrin Nexus</div>
+                                    <div class="text-white font-semibold">Bienvenue sur Omaad Wealth</div>
                                     <div class="text-slate-400 text-sm">Votre voyage financier commence ici</div>
                                 </div>
                             </div>

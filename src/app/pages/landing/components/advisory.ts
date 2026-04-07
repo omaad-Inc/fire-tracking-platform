@@ -724,7 +724,7 @@ export class AdvisoryPage {
         { label: 'LinkedIn', value: 'linkedin' },
         { label: 'Recommandation', value: 'recommendation' },
         { label: 'Google', value: 'google' },
-        { label: 'Plateforme Afrin Nexus', value: 'platform' },
+        { label: 'Plateforme Omaad Wealth', value: 'platform' },
         { label: 'Autre', value: 'other' }
     ];
 

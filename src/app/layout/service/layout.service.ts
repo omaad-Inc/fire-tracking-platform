@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { updateSurfacePalette } from '@primeng/themes';
 
 // Storage key for preferences
-const STORAGE_KEY = 'afrin-nexus-layout-config';
+const STORAGE_KEY = 'omaad-layout-config';
 
 // Surface palettes
 const SURFACE_PALETTES: Record<string, Record<string, string>> = {

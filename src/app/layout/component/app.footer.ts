@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
     standalone: true,
     selector: 'app-footer',
     template: `<div class="layout-footer">
-        Afrin Nexus by
+        Omaad Wealth by
         <a href="https://mbayestein.netlify.app/" target="_blank" rel="noopener noreferrer" class="text-primary font-bold hover:underline">MbayeStein</a>
     </div>`
 })

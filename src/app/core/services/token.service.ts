@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
-const TOKEN_KEY = 'afrin_nexus_token';
-const USER_KEY = 'afrin_nexus_user';
+const TOKEN_KEY = 'omaad_token';
+const USER_KEY = 'omaad_user';
 
 export interface User {
     id: number;

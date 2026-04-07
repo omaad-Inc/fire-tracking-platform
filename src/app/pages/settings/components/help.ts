@@ -153,7 +153,7 @@ interface FaqItem {
             <!-- ── Version info ─────────────────────────────────── -->
             <div class="text-center py-2">
                 <p class="text-xs text-surface-400 dark:text-surface-500">
-                    Afrin Nexus · v1.0.0 · <span class="text-emerald-500">●</span> Opérationnel
+                    Omaad Wealth · v1.0.0 · <span class="text-emerald-500">●</span> Opérationnel
                 </p>
             </div>
         </div>
@@ -177,13 +177,13 @@ export class HelpSettings {
         {
             label: 'Centre d\'aide en ligne',
             desc:  'Documentation complète et tutoriels vidéo',
-            url:   'https://help.afrinnexus.app',
+            url:   'https://help.omaad.app',
             icon:  'pi-book',  color: 'text-indigo-500', bg: 'bg-indigo-500/10',
         },
         {
             label: 'Signaler un bug',
             desc:  'Aidez-nous à améliorer l\'application',
-            url:   'https://github.com/afrinnexus/feedback/issues',
+            url:   'https://github.com/omaad-wealth/feedback/issues',
             icon:  'pi-github', color: 'text-surface-500', bg: 'bg-surface-500/10',
         },
         {
@@ -207,7 +207,7 @@ export class HelpSettings {
         },
         {
             question: 'Qu\'est-ce que l\'objectif FIRE et comment le configurer ?',
-            answer:   'FIRE (Financial Independence, Retire Early) est une méthode qui consiste à épargner un capital suffisant pour vivre de ses revenus passifs. Dans Afrin Nexus, allez dans Paramètres → Objectif Financier, renseignez vos dépenses annuelles et le taux de rendement attendu — l\'application calcule automatiquement le capital cible (basé sur la règle des 4%).',
+            answer:   'FIRE (Financial Independence, Retire Early) est une méthode qui consiste à épargner un capital suffisant pour vivre de ses revenus passifs. Dans Omaad Wealth, allez dans Paramètres → Objectif Financier, renseignez vos dépenses annuelles et le taux de rendement attendu — l\'application calcule automatiquement le capital cible (basé sur la règle des 4%).',
             open: false,
         },
         {
@@ -222,7 +222,7 @@ export class HelpSettings {
         },
         {
             question: 'Je me connecte via Google. Puis-je changer mon email ?',
-            answer:   'Non directement depuis Afrin Nexus. Votre email est géré par Google. Pour changer l\'email associé, rendez-vous sur myaccount.google.com, modifiez votre email Google, puis reconnectez-vous à Afrin Nexus.',
+            answer:   'Non directement depuis Omaad Wealth. Votre email est géré par Google. Pour changer l\'email associé, rendez-vous sur myaccount.google.com, modifiez votre email Google, puis reconnectez-vous à Omaad Wealth.',
             open: false,
         },
         {
@@ -232,7 +232,7 @@ export class HelpSettings {
         },
         {
             question: 'L\'application fonctionne-t-elle hors ligne ?',
-            answer:   'Afrin Nexus est une Progressive Web App (PWA). L\'interface s\'affiche hors ligne grâce au cache du navigateur, mais la création et modification de données nécessite une connexion internet pour synchroniser avec le serveur.',
+            answer:   'Omaad Wealth est une Progressive Web App (PWA). L\'interface s\'affiche hors ligne grâce au cache du navigateur, mais la création et modification de données nécessite une connexion internet pour synchroniser avec le serveur.',
             open: false,
         },
         {

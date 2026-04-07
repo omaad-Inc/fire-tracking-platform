@@ -28,7 +28,7 @@ export class PwaService {
         // Listen for app installed event
         window.addEventListener('appinstalled', () => {
             this.promptEvent = null;
-            console.log('Afrin Nexus PWA installed successfully!');
+            console.log('Omaad Wealth PWA installed successfully!');
         });
 
         // Listen for service worker updates
