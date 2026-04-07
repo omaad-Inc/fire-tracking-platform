@@ -440,8 +440,13 @@ interface CategoryCard {
                                     <div class="flex flex-col gap-2">
                                         <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Quantité</label>
                                         <p-inputnumber
-                                            [(ngModel)]="assetForm.quantity"
+                                            [ngModel]="assetForm.quantity"
+                                            (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
+                                            mode="decimal"
+                                            [minFractionDigits]="0"
+                                            [maxFractionDigits]="0"
                                             [min]="1"
+                                            [allowEmpty]="false"
                                             inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
                                         />
                                     </div>
@@ -571,7 +576,8 @@ interface CategoryCard {
                                         </div>
                                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || 'Actif' }}</span>
                                         <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 mt-1">
-                                            <app-amount [value]="totalValue()" />
+                                            <!-- totalValue() is in display currency; toEur() converts to EUR so app-amount renders correctly -->
+                                            <app-amount [value]="toEur(totalValue())" />
                                         </span>
                                     </div>
                                 </div>
@@ -915,6 +921,11 @@ export class AppTopbar implements OnInit {
             return f.tontineMonthlyContribution > 0 && f.tontineParticipants > 1 && !!f.tontineStartDate;
         if (f.category === 'mobile_money')
             return f.currentPrice > 0 && !!f.mobileMoneyProvider;
+        // For quantity-based categories: require currentPrice > 0.
+        // quantity defaults to 1 and is always kept >= 1 by the ngModelChange guard,
+        // so we only need to guard against null (which [allowEmpty]="false" also prevents).
+        if (this.isQuantityBased())
+            return f.currentPrice > 0;
         return f.currentPrice > 0;
     }
 
@@ -928,7 +939,7 @@ export class AppTopbar implements OnInit {
         return this.assetForm.tontineMonthlyContribution * this.tontineMonthsElapsed();
     }
 
-    private toEur(displayValue: number): number {
+    toEur(displayValue: number): number {
         return displayValue / this.currencyService.config().rate;
     }
 
@@ -1011,15 +1022,10 @@ export class AppTopbar implements OnInit {
                     is_liquid: true
                 };
             } else {
-                const qty = this.isQuantityBased() ? f.quantity : 1;
+                // Coerce quantity to 1 if null/undefined (safety net for edge cases)
+                const qty = this.isQuantityBased() ? Math.max(1, f.quantity ?? 1) : 1;
                 const purchaseEur = f.purchasePrice > 0 ? this.toEur(f.purchasePrice * qty) : undefined;
                 const isQtyBased = this.isQuantityBased();
-                // Persist quantity in notes JSON so it works on the current deployed backend
-                // (which has no quantity column yet). Also send the quantity field for
-                // backends that do have the column.
-                const quantityNotes = isQtyBased && qty > 1
-                    ? JSON.stringify({ quantity: qty })
-                    : undefined;
                 assetData = {
                     name: f.name,
                     category: f.category as AssetCategory,
@@ -1028,8 +1034,8 @@ export class AppTopbar implements OnInit {
                     purchase_date: purchaseDateValue,
                     institution: f.institution || undefined,
                     location: f.region || undefined,
-                    notes: quantityNotes,
-                    quantity: isQtyBased && qty > 1 ? qty : undefined,
+                    notes: isQtyBased ? JSON.stringify({ quantity: qty }) : undefined,
+                    quantity: isQtyBased ? qty : undefined,
                     surface_m2: f.category === 'real_estate' && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
                     price_per_m2_purchase: f.category === 'real_estate' && f.surfaceM2 > 0 && f.purchasePrice > 0
                         ? Math.round(this.toEur(f.purchasePrice) / f.surfaceM2)
