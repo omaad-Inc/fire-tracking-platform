@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
@@ -89,12 +89,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <!-- Mobile Menu Toggle -->
         <a pButton [text]="true" severity="secondary" [rounded]="true" pRipple
            class="lg:!hidden !p-2 shrink-0"
-           pStyleClass="@next" enterFromClass="hidden" leaveToClass="hidden" [hideOnOutsideClick]="true">
-            <i class="pi pi-bars !text-xl"></i>
+           (click)="mobileMenuOpen.set(!mobileMenuOpen())">
+            <i class="pi !text-xl" [ngClass]="mobileMenuOpen() ? 'pi-times' : 'pi-bars'"></i>
         </a>
 
         <!-- Mobile Dropdown -->
-        <div class="hidden lg:!hidden absolute left-0 right-0 top-full mx-4 mt-2 z-20 rounded-xl
+        <div [class.hidden]="!mobileMenuOpen()"
+             class="lg:!hidden absolute left-0 right-0 top-full mx-4 mt-2 z-20 rounded-xl
                     bg-surface-0/95 dark:bg-surface-900/95 backdrop-blur-lg
                     shadow-lg border border-surface-200/50 dark:border-surface-700/50 p-4">
             <ul class="list-none p-0 m-0 flex flex-col gap-1">
@@ -150,7 +151,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                text-surface-700 dark:text-surface-200
                                hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                     <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
-                    <span class="font-medium text-base">{{ layoutService.isDarkTheme() ? 'Mode clair' : 'Mode sombre' }}</span>
+                    <span class="font-medium text-base">{{ layoutService.isDarkTheme() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode') }}</span>
                 </button>
                 <button pButton pRipple [label]="t('landing.nav.login')"
                         [routerLink]="[currentLang, 'auth', 'login']"
@@ -173,6 +174,7 @@ export class TopbarWidget {
 
     currentLang = '/fr';
     private lang: Lang = 'fr';
+    mobileMenuOpen = signal(false);
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -183,12 +185,15 @@ export class TopbarWidget {
     }
 
     t(key: string): string { return this.i18n.t(key); }
+    _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
 
     navigateTo(fragment: string) {
+        this.mobileMenuOpen.set(false);
         this.router.navigate([this.currentLang + '/landing'], { fragment });
     }
 
     switchLang() {
+        this.mobileMenuOpen.set(false);
         const newLang: Lang = this.lang === 'fr' ? 'en' : 'fr';
         // Update the service signal FIRST so all components re-render immediately
         this.i18n.setLang(newLang);
@@ -201,6 +206,7 @@ export class TopbarWidget {
     }
 
     toggleDarkMode() {
+        this.mobileMenuOpen.set(false);
         this.layoutService.layoutConfig.update((state) => ({
             ...state,
             themeMode: state.darkTheme ? 'light' : 'dark',
