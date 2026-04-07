@@ -150,12 +150,12 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <!-- KPI Card 3 - Objectif FIRE -->
             <div class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20"
-                     [routerLink]="fireProgress() && (fireProgress()!.targetAmount ?? 0) > 0 ? link('pages','patrimoine') : link('pages','settings','fire')"
+                     [routerLink]="fireProgress() && (fireProgress()!.targetAmount) > 0 ? link('pages','patrimoine') : link('pages','settings','fire')"
                      role="link" aria-label="Voir l'objectif financier" tabindex="0">
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>
-                            @if (fireProgress() && (fireProgress()!.targetAmount ?? 0) > 0) {
+                            @if (fireProgress() && (fireProgress()!.targetAmount) > 0) {
                                 <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ fireProgress()?.progressPct | number:'1.1-1' }}%</div>
                                 <div class="text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></div>
                             } @else {
@@ -168,7 +168,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         </div>
                     </div>
                     <div class="mt-auto">
-                        @if (fireProgress() && (fireProgress()!.targetAmount ?? 0) > 0) {
+                        @if (fireProgress() && (fireProgress()!.targetAmount) > 0) {
                             <!-- Progress bar -->
                             <div class="w-full h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mb-3 overflow-hidden">
                                 <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500"

@@ -36,58 +36,115 @@ interface DayGroup {
         <p-confirmDialog />
 
         <!-- ── Top bar ───────────────────────────────────────────── -->
-        <div class="flex flex-wrap items-center gap-3 mb-5">
-            <!-- Month navigation -->
-            <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-1 py-1">
-                <button pButton icon="pi pi-chevron-left" [text]="true" size="small"
-                        class="!rounded-lg !w-8 !h-8" (click)="prevMonth()"></button>
-                <span class="px-3 text-sm font-semibold text-surface-900 dark:text-surface-0 min-w-[120px] text-center">
-                    {{ monthLabel() }}
-                </span>
-                <button pButton icon="pi pi-chevron-right" [text]="true" size="small"
-                        class="!rounded-lg !w-8 !h-8" (click)="nextMonth()"
-                        [disabled]="isCurrentMonth()"></button>
+        <div class="flex flex-col gap-2 mb-5">
+            <!-- Row 1: month nav + add button -->
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-1 py-1">
+                    <button pButton icon="pi pi-chevron-left" [text]="true" size="small"
+                            class="!rounded-lg !w-8 !h-8" (click)="prevMonth()"></button>
+                    <span class="px-2 text-sm font-semibold text-surface-900 dark:text-surface-0 min-w-[110px] text-center">
+                        {{ monthLabel() }}
+                    </span>
+                    <button pButton icon="pi pi-chevron-right" [text]="true" size="small"
+                            class="!rounded-lg !w-8 !h-8" (click)="nextMonth()"
+                            [disabled]="isCurrentMonth()"></button>
+                </div>
+                <div class="flex-1"></div>
+                <button pButton icon="pi pi-plus" label="Ajouter"
+                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
+                        (click)="openNew()"></button>
             </div>
-
-            <!-- Search -->
-            <div class="relative flex-1 min-w-[160px]">
-                <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm"></i>
-                <input pInputText [(ngModel)]="search" placeholder="Rechercher..."
-                       class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
+            <!-- Row 2: search + type filter -->
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1 min-w-0">
+                    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
+                    <input pInputText [(ngModel)]="search" placeholder="Rechercher..."
+                           class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
+                </div>
+                <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
+                    @for (f of typeFilters; track f.value) {
+                        <button (click)="typeFilter.set(f.value)"
+                                class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap"
+                                [class]="typeFilter() === f.value
+                                    ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
+                                    : 'text-surface-500 dark:text-surface-400'">
+                            {{ f.label }}
+                        </button>
+                    }
+                </div>
             </div>
-
-            <!-- Type filter -->
-            <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl p-1">
-                @for (f of typeFilters; track f.value) {
-                    <button (click)="typeFilter.set(f.value)"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                            [class]="typeFilter() === f.value
-                                ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
-                                : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
-                        {{ f.label }}
-                    </button>
-                }
-            </div>
-
-            <!-- Add button -->
-            <button pButton icon="pi pi-plus" label="Ajouter"
-                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !rounded-xl !px-4 !py-2.5 !text-sm !font-semibold"
-                    (click)="openNew()"></button>
         </div>
+
+        <!-- ── Monthly KPI summary ───────────────────────────────── -->
+        @if (!loading()) {
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                <!-- Revenus -->
+                <div class="card !p-4 h-[86px] flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                            <i class="pi pi-arrow-down-left text-emerald-500 text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="text-base font-bold text-emerald-500 truncate">+<app-amount [value]="monthSummary().income" /></div>
+                </div>
+                <!-- Dépenses -->
+                <div class="card !p-4 h-[86px] flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
+                        <div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                            <i class="pi pi-arrow-up-right text-rose-500 text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="text-base font-bold text-rose-500 truncate">−<app-amount [value]="monthSummary().expenses" /></div>
+                </div>
+                <!-- Solde net -->
+                <div class="card !p-4 h-[86px] flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center"
+                             [ngClass]="monthSummary().net >= 0 ? 'bg-indigo-500/10' : 'bg-rose-500/10'">
+                            <i class="pi text-xs"
+                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-indigo-500' : 'pi-trending-down text-rose-500'"></i>
+                        </div>
+                    </div>
+                    <div class="text-base font-bold truncate"
+                         [ngClass]="monthSummary().net >= 0 ? 'text-indigo-500' : 'text-rose-500'">
+                        {{ monthSummary().net >= 0 ? '+' : '−' }}<app-amount [value]="monthSummary().net" />
+                    </div>
+                </div>
+                <!-- Taux d'épargne — value + bar grouped as one bottom block to match other cards -->
+                <div class="card !p-4 h-[86px] flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
+                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                            <i class="pi pi-percentage text-cyan-500 text-xs"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-base font-bold text-cyan-500 mb-1">{{ monthSummary().savingsRate }}%</div>
+                        <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                                 [style.width]="monthSummary().savingsRate + '%'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
 
         <!-- ── Transaction list ───────────────────────────────────── -->
         @if (loading()) {
-            <div class="space-y-3">
+            <div class="space-y-2">
                 @for (i of [1,2,3,4,5]; track i) {
-                    <div class="h-14 bg-surface-100 dark:bg-surface-800 rounded-xl animate-pulse"></div>
+                    <div class="h-[62px] bg-surface-100 dark:bg-surface-800 rounded-xl animate-pulse"></div>
                 }
             </div>
         } @else if (dayGroups().length === 0) {
-            <div class="flex flex-col items-center justify-center py-20 text-center">
-                <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
-                    <i class="pi pi-arrow-right-arrow-left text-2xl text-surface-400"></i>
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+                <div class="w-14 h-14 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
+                    <i class="pi pi-arrow-right-arrow-left text-xl text-surface-400"></i>
                 </div>
-                <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
+                <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
                     {{ search || typeFilter() !== 'all'
                         ? 'Aucune transaction ne correspond à vos filtres'
                         : 'Aucune transaction ce mois-ci' }}
@@ -113,27 +170,31 @@ interface DayGroup {
 
                         <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 divide-y divide-surface-100 dark:divide-surface-700/50 overflow-hidden">
                             @for (rec of group.records; track rec.id) {
-                                <div class="flex items-center gap-4 px-4 py-3 hover:bg-surface-50 dark:hover:bg-surface-700/40 transition-colors group">
-                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                                <div class="flex items-center gap-3 px-3 py-3 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-700/40 transition-colors group">
+                                    <!-- Category icon -->
+                                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="getCategoryConfig(rec).color + '1a'">
-                                        <i [class]="getCategoryConfig(rec).icon + ' text-sm'"
+                                        <i [class]="getCategoryConfig(rec).icon + ' text-xs sm:text-sm'"
                                            [style.color]="getCategoryConfig(rec).color"></i>
                                     </div>
+                                    <!-- Name + category -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate">
+                                        <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate leading-tight">
                                             {{ rec.remarks || rec.name }}
                                         </div>
-                                        <span class="inline-flex items-center gap-1 text-xs mt-0.5 px-2 py-0.5 rounded-full"
+                                        <span class="inline-flex items-center text-[10px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
                                               [style.color]="getCategoryConfig(rec).color"
                                               [style.background]="getCategoryConfig(rec).color + '1a'">
                                             {{ getCategoryConfig(rec).label }}
                                         </span>
                                     </div>
+                                    <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
                                          [ngClass]="rec.type === 'Income' ? 'text-emerald-500' : 'text-rose-500'">
                                         {{ rec.type === 'Income' ? '+' : '−' }}<app-amount [value]="rec.amount" />
                                     </div>
-                                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                    <!-- Actions: always visible on mobile, hover-reveal on desktop -->
+                                    <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                         <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
                                                 (click)="editRecord(rec)">
                                             <i class="pi pi-pencil text-xs text-surface-500"></i>
@@ -237,7 +298,7 @@ interface DayGroup {
                                 <span class="text-rose-500 ml-2 text-xs">Requise</span>
                             }
                         </label>
-                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        <div class="grid grid-cols-3 gap-2">
                             @for (cat of currentCategories(); track cat) {
                                 <button (click)="form.category = cat"
                                         class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all text-center"
@@ -359,6 +420,16 @@ export class TransactionLogs implements OnInit {
             .filter(r => !q ||
                 (r.name    || '').toLowerCase().includes(q) ||
                 (r.remarks || '').toLowerCase().includes(q));
+    });
+
+    readonly monthSummary = computed(() => {
+        const ym = this.selectedYearMonth();
+        const recs = this.allRecords().filter(r => r.date.startsWith(ym));
+        const income   = recs.filter(r => r.type === 'Income') .reduce((s, r) => s + r.amount, 0);
+        const expenses = recs.filter(r => r.type === 'Expense').reduce((s, r) => s + r.amount, 0);
+        const net      = income - expenses;
+        const savingsRate = income > 0 ? Math.max(0, Math.min(100, Math.round(net / income * 100))) : 0;
+        return { income, expenses, net, savingsRate };
     });
 
     readonly dayGroups = computed((): DayGroup[] => {
