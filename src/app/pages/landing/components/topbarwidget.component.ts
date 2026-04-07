@@ -194,7 +194,10 @@ export class TopbarWidget {
         this.i18n.setLang(newLang);
         this.lang = newLang;
         this.currentLang = '/' + newLang;
-        this.router.navigate(['/' + newLang + '/landing']);
+        // Stay on the current page — just swap the language prefix in the URL
+        const currentUrl = this.router.url;
+        const newUrl = currentUrl.replace(/^\/(fr|en)/, '/' + newLang);
+        this.router.navigateByUrl(newUrl);
     }
 
     toggleDarkMode() {

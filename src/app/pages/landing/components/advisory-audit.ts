@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { TopbarWidget } from './topbarwidget.component';
 import { FooterWidget } from './footerwidget';
+import { I18nService, Lang } from '../../../i18n/i18n.service';
 
 @Component({
     selector: 'app-advisory-audit',
@@ -27,23 +28,23 @@ import { FooterWidget } from './footerwidget';
                 <div class="relative max-w-4xl mx-auto">
                     <!-- Breadcrumb -->
                     <div class="flex items-center gap-2 text-sm text-slate-500 mb-8">
-                        <a [routerLink]="['/fr/advisory']" class="hover:text-indigo-400 transition-colors cursor-pointer">Advisory</a>
+                        <a [routerLink]="[currentLang + '/advisory']" class="hover:text-indigo-400 transition-colors cursor-pointer">Advisory</a>
                         <i class="pi pi-chevron-right text-xs"></i>
-                        <span class="text-slate-400">Audit & Diagnostic Data</span>
+                        <span class="text-slate-400">{{ _('Audit & Diagnostic Data', 'Data Audit & Diagnostic') }}</span>
                     </div>
 
                     <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-5">EXPERTISE</p>
                     <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
-                        Posez les bases d'une<br>
+                        {{ heroTitle() }}<br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
-                            plateforme data solide
+                            {{ _('plateforme data solide', 'solid data platform') }}
                         </span>
                     </h1>
                     <p class="text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
-                        Nous auditons votre existant et concevons une architecture moderne et sur-mesure, prête à accueillir vos futurs cas d'usage Data & IA.
+                        {{ heroSubtitle() }}
                     </p>
-                    <button pButton pRipple label="DISCUTER D'UN PROJET"
-                            [routerLink]="['/fr/advisory']" [fragment]="'contact'"
+                    <button pButton pRipple [label]="ctaProject()"
+                            [routerLink]="[currentLang + '/advisory']" [fragment]="'contact'"
                             class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
                                    !tracking-wide !px-8 !py-3 !rounded-lg
                                    hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
@@ -55,8 +56,8 @@ import { FooterWidget } from './footerwidget';
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">VOUS RECONNAISSEZ-VOUS ?</p>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">Quand faire appel à nous ?</h2>
+                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('VOUS RECONNAISSEZ-VOUS ?', 'DOES THIS SOUND FAMILIAR?') }}</p>
+                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Quand faire appel a nous ?', 'When should you call on us?') }}</h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         @for (pain of painPoints; track pain.title) {
@@ -79,10 +80,10 @@ import { FooterWidget } from './footerwidget';
             <section class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">MÉTHODE ÉPROUVÉE</p>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">Notre approche en 4 étapes</h2>
+                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('METHODE EPROUVEE', 'PROVEN METHOD') }}</p>
+                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Notre approche en 4 etapes', 'Our 4-step approach') }}</h2>
                         <p class="text-slate-500 dark:text-slate-400 mt-4 max-w-xl text-lg">
-                            Diagnostic précis, choix technologiques éclairés et mise en production rapide pour créer de la valeur dès les premiers mois.
+                            {{ approachSubtitle() }}
                         </p>
                     </div>
 
@@ -107,10 +108,10 @@ import { FooterWidget } from './footerwidget';
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">ARCHITECTURE OUVERTE</p>
-                        <h2 class="text-4xl font-bold text-white max-w-2xl">Passez à la Modern Data Platform</h2>
+                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">{{ _('ARCHITECTURE OUVERTE', 'OPEN ARCHITECTURE') }}</p>
+                        <h2 class="text-4xl font-bold text-white max-w-2xl">{{ _('Passez a la Modern Data Platform', 'Upgrade to a Modern Data Platform') }}</h2>
                         <p class="text-slate-400 mt-4 max-w-2xl text-lg">
-                            Nous privilégions des architectures ouvertes plutôt que des stacks monolithiques. Toutes les sources sont intégrées pour produire des données fiables, sans recréer de dette à moyen terme.
+                            {{ platformSubtitle() }}
                         </p>
                     </div>
 
@@ -134,13 +135,13 @@ import { FooterWidget } from './footerwidget';
                 </div>
             </section>
 
-            <!-- ══════════ BÉNÉFICES ══════════ -->
+            <!-- ══════════ BENEFICES ══════════ -->
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">CE QUE VOUS GAGNEZ</p>
+                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('CE QUE VOUS GAGNEZ', 'WHAT YOU GAIN') }}</p>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
-                            Transformez vos données en atout stratégique
+                            {{ _('Transformez vos donnees en atout strategique', 'Turn your data into a strategic asset') }}
                         </h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -158,8 +159,8 @@ import { FooterWidget } from './footerwidget';
             <section class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">TRANSPARENCE TOTALE</p>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">Ce que vous recevez</h2>
+                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('TRANSPARENCE TOTALE', 'FULL TRANSPARENCY') }}</p>
+                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Ce que vous recevez', 'What you receive') }}</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @for (deliverable of deliverables; track deliverable.title) {
@@ -181,7 +182,7 @@ import { FooterWidget } from './footerwidget';
                 <div class="max-w-4xl mx-auto">
                     <div class="mb-14 text-center">
                         <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">FAQ</p>
-                        <h2 class="text-4xl font-bold text-white">Questions fréquentes</h2>
+                        <h2 class="text-4xl font-bold text-white">{{ _('Questions frequentes', 'Frequently asked questions') }}</h2>
                     </div>
                     <div class="space-y-4">
                         @for (faq of faqs; track faq.q; let i = $index) {
@@ -206,15 +207,15 @@ import { FooterWidget } from './footerwidget';
             <!-- ══════════ CTA FINAL ══════════ -->
             <section class="bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">PRÊT À DÉMARRER ?</p>
+                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">{{ ctaReady() }}</p>
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
-                        Vous avez un projet en tête ?<br>Parlons-en.
+                        {{ ctaHeadline() }}
                     </h2>
                     <p class="text-slate-400 text-lg mb-10">
-                        Un appel de 30 minutes suffit pour comprendre vos enjeux et évaluer comment nous pouvons vous aider.
+                        {{ ctaDesc() }}
                     </p>
-                    <button pButton pRipple label="PRENDRE CONTACT AVEC UN EXPERT"
-                            [routerLink]="['/fr/advisory']" [fragment]="'contact'"
+                    <button pButton pRipple [label]="ctaContactExpert()"
+                            [routerLink]="[currentLang + '/advisory']" [fragment]="'contact'"
                             class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
                                    !tracking-wide !px-10 !py-4 !rounded-lg !text-base
                                    hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
@@ -227,163 +228,376 @@ import { FooterWidget } from './footerwidget';
     `
 })
 export class AdvisoryAuditPage {
+    private router = inject(Router);
+    private i18n = inject(I18nService);
+    currentLang = '/fr';
+
+    /** True when display language is French */
+    readonly isFr = computed(() => this.i18n.lang() === 'fr');
+
+    constructor() {
+        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
+        const lang = (match ? match[1] : 'fr') as Lang;
+        this.currentLang = '/' + lang;
+        this.i18n.setLang(lang);
+    }
+
+    /** Shortcut for template: {{ _('French text', 'English text') }} */
+    _(fr: string, en: string): string { return this.isFr() ? fr : en; }
+
+    // ── Computed signals for strings containing apostrophes ──
+
+    readonly heroTitle = computed(() => this.isFr()
+        ? 'Posez les bases d\u2019une'
+        : 'Lay the foundations for a');
+
+    readonly heroSubtitle = computed(() => this.isFr()
+        ? 'Nous auditons votre existant et concevons une architecture moderne et sur-mesure, pr\u00eate \u00e0 accueillir vos futurs cas d\u2019usage Data & IA.'
+        : 'We audit your existing infrastructure and design a modern, tailor-made architecture ready to support your future Data & AI use cases.');
+
+    readonly ctaProject = computed(() => this.isFr()
+        ? 'DISCUTER D\u2019UN PROJET'
+        : 'DISCUSS A PROJECT');
+
+    readonly ctaContactExpert = computed(() => this.isFr()
+        ? 'PRENDRE CONTACT AVEC UN EXPERT'
+        : 'CONTACT A DATA EXPERT');
+
+    readonly approachSubtitle = computed(() => this.isFr()
+        ? 'Diagnostic pr\u00e9cis, choix technologiques \u00e9clair\u00e9s et mise en production rapide pour cr\u00e9er de la valeur d\u00e8s les premiers mois.'
+        : 'Precise diagnostics, informed technology choices, and rapid deployment to deliver value within the first months.');
+
+    readonly platformSubtitle = computed(() => this.isFr()
+        ? 'Nous privil\u00e9gions des architectures ouvertes plut\u00f4t que des stacks monolithiques. Toutes les sources sont int\u00e9gr\u00e9es pour produire des donn\u00e9es fiables, sans recr\u00e9er de dette \u00e0 moyen terme.'
+        : 'We favour open architectures over monolithic stacks. All sources are integrated to produce reliable data without creating new technical debt.');
+
+    readonly ctaReady = computed(() => this.isFr()
+        ? 'PR\u00caT \u00c0 D\u00c9MARRER ?'
+        : 'READY TO GET STARTED?');
+
+    readonly ctaHeadline = computed(() => this.isFr()
+        ? 'Vous avez un projet en t\u00eate ?\nParlons-en.'
+        : 'Have a project in mind?\nLet\u2019s talk.');
+
+    readonly ctaDesc = computed(() => this.isFr()
+        ? 'Un appel de 30 minutes suffit pour comprendre vos enjeux et \u00e9valuer comment nous pouvons vous aider.'
+        : 'A 30-minute call is all it takes to understand your challenges and assess how we can help.');
+
+    // ── Component state ──
+
     openFaq: number | null = null;
 
     toggleFaq(i: number) {
         this.openFaq = this.openFaq === i ? null : i;
     }
 
-    painPoints = [
-        {
-            icon: 'pi pi-database',
-            iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-            title: 'Données dispersées, qualité incertaine',
-            desc: 'Vos données sont éparpillées dans de multiples systèmes. Personne ne sait vraiment quelle source est fiable ni comment elles circulent.'
-        },
-        {
-            icon: 'pi pi-file-excel',
-            iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-            title: 'Pilotage manuel via spreadsheets',
-            desc: 'Vous produisez vos KPIs à la main dans Excel. Chaque rapport prend des heures et les chiffres divergent selon les équipes.'
-        },
-        {
-            icon: 'pi pi-sitemap',
-            iconBg: 'linear-gradient(135deg, #10b981, #059669)',
-            title: 'Stack technologique mal adaptée',
-            desc: 'Vos outils actuels ne répondent plus à vos besoins. La dette technique s\'accumule et freine l\'autonomie de vos équipes métier.'
-        },
-        {
-            icon: 'pi pi-lock',
-            iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
-            title: 'Dépendance forte aux équipes techniques',
-            desc: 'Les équipes métier ne peuvent pas accéder aux données sans passer par l\'IT. Les projets s\'accumulent dans les backlogs.'
-        }
-    ];
+    // ── Data arrays as getters (bilingual) ──
 
-    steps = [
-        {
-            num: '1',
-            title: 'Diagnostic de l\'existant',
-            desc: 'Nous observons comment vos données circulent, sont documentées et alimentent vos KPIs. Cette étape met en évidence ce qui fonctionne et ce qui freine vos ambitions. Vous repartez avec une vision claire de l\'état réel de votre plateforme.'
-        },
-        {
-            num: '2',
-            title: 'Benchmark technologique',
-            desc: 'Nous comparons plusieurs options possibles. Chaque stack est évaluée selon vos objectifs : performance, agilité, ouverture à l\'IA. Vous gagnez un regard objectif qui éclaire vos choix sans parti pris commercial.'
-        },
-        {
-            num: '3',
-            title: 'Architecture cible & scénarios',
-            desc: 'Nous dessinons plusieurs trajectoires pour votre future plateforme. Chaque scénario met en balance robustesse, évolutivité et contraintes internes. Vous décidez en toute confiance du chemin qui correspond à votre organisation.'
-        },
-        {
-            num: '4',
-            title: 'Roadmap & premiers projets',
-            desc: 'Nous traduisons la vision en un plan concret, pensé pour donner des résultats rapides. Les premiers projets créent de la valeur immédiatement tout en préparant le socle de long terme.'
-        }
-    ];
+    get painPoints() {
+        return this.isFr() ? [
+            {
+                icon: 'pi pi-database',
+                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                title: 'Donn\u00e9es dispers\u00e9es, qualit\u00e9 incertaine',
+                desc: 'Vos donn\u00e9es sont \u00e9parpill\u00e9es dans de multiples syst\u00e8mes. Personne ne sait vraiment quelle source est fiable ni comment elles circulent.'
+            },
+            {
+                icon: 'pi pi-file-excel',
+                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                title: 'Pilotage manuel via spreadsheets',
+                desc: 'Vous produisez vos KPIs \u00e0 la main dans Excel. Chaque rapport prend des heures et les chiffres divergent selon les \u00e9quipes.'
+            },
+            {
+                icon: 'pi pi-sitemap',
+                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                title: 'Stack technologique mal adapt\u00e9e',
+                desc: 'Vos outils actuels ne r\u00e9pondent plus \u00e0 vos besoins. La dette technique s\u2019accumule et freine l\u2019autonomie de vos \u00e9quipes m\u00e9tier.'
+            },
+            {
+                icon: 'pi pi-lock',
+                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                title: 'D\u00e9pendance forte aux \u00e9quipes techniques',
+                desc: 'Les \u00e9quipes m\u00e9tier ne peuvent pas acc\u00e9der aux donn\u00e9es sans passer par l\u2019IT. Les projets s\u2019accumulent dans les backlogs.'
+            }
+        ] : [
+            {
+                icon: 'pi pi-database',
+                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                title: 'Scattered data, uncertain quality',
+                desc: 'Your data is spread across multiple systems. No one really knows which source is reliable or how data flows between them.'
+            },
+            {
+                icon: 'pi pi-file-excel',
+                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                title: 'Manual reporting via spreadsheets',
+                desc: 'You build your KPIs by hand in Excel. Every report takes hours, and the numbers differ depending on the team.'
+            },
+            {
+                icon: 'pi pi-sitemap',
+                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                title: 'Ill-fitting technology stack',
+                desc: 'Your current tools no longer meet your needs. Technical debt is piling up and preventing your business teams from being autonomous.'
+            },
+            {
+                icon: 'pi pi-lock',
+                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                title: 'Heavy reliance on technical teams',
+                desc: 'Business teams cannot access data without going through IT. Projects keep stacking up in the backlog.'
+            }
+        ];
+    }
 
-    stackLayers = [
-        {
-            icon: 'pi pi-arrow-right-arrow-left',
-            iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-            name: 'Ingestion',
-            desc: 'Pipelines robustes qui collectent, normalisent et synchronisent vos données en continu depuis toutes les sources.',
-            tools: ['Airbyte', 'Fivetran', 'Airflow', 'DLT']
-        },
-        {
-            icon: 'pi pi-server',
-            iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-            name: 'Stockage',
-            desc: 'Architecture moderne (Warehouse, Lakehouse) qui sécurise vos données et constitue un socle durable pour toute la plateforme.',
-            tools: ['Snowflake', 'BigQuery', 'Redshift', 'S3']
-        },
-        {
-            icon: 'pi pi-code',
-            iconBg: 'linear-gradient(135deg, #10b981, #059669)',
-            name: 'Transformation',
-            desc: 'Les données sont nettoyées, structurées et unifiées pour créer des modèles fiables, cohérents et exploitables.',
-            tools: ['dbt Cloud', 'dbt Core', 'SQL', 'Python']
-        },
-        {
-            icon: 'pi pi-cog',
-            iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
-            name: 'Orchestration',
-            desc: 'Les flux sont automatisés et coordonnés pour garantir des traitements performants et une disponibilité maximale.',
-            tools: ['Airflow', 'Dagster', 'Prefect', 'MWAA']
-        },
-        {
-            icon: 'pi pi-chart-bar',
-            iconBg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-            name: 'Activation',
-            desc: 'Les données deviennent actionnables : dashboards BI, analyses avancées ou modèles ML intégrés aux outils métier.',
-            tools: ['Power BI', 'Metabase', 'Superset', 'Looker']
-        },
-        {
-            icon: 'pi pi-shield',
-            iconBg: 'linear-gradient(135deg, #ec4899, #db2777)',
-            name: 'Observabilité & Gouvernance',
-            desc: 'Qualité, sécurité et conformité assurées grâce à une surveillance continue et une traçabilité complète.',
-            tools: ['Great Expectations', 'Elementary', 'dbt tests', 'DataHub']
-        }
-    ];
+    get steps() {
+        return this.isFr() ? [
+            {
+                num: '1',
+                title: 'Diagnostic de l\u2019existant',
+                desc: 'Nous observons comment vos donn\u00e9es circulent, sont document\u00e9es et alimentent vos KPIs. Cette \u00e9tape met en \u00e9vidence ce qui fonctionne et ce qui freine vos ambitions. Vous repartez avec une vision claire de l\u2019\u00e9tat r\u00e9el de votre plateforme.'
+            },
+            {
+                num: '2',
+                title: 'Benchmark technologique',
+                desc: 'Nous comparons plusieurs options possibles. Chaque stack est \u00e9valu\u00e9e selon vos objectifs : performance, agilit\u00e9, ouverture \u00e0 l\u2019IA. Vous gagnez un regard objectif qui \u00e9claire vos choix sans parti pris commercial.'
+            },
+            {
+                num: '3',
+                title: 'Architecture cible & sc\u00e9narios',
+                desc: 'Nous dessinons plusieurs trajectoires pour votre future plateforme. Chaque sc\u00e9nario met en balance robustesse, \u00e9volutivit\u00e9 et contraintes internes. Vous d\u00e9cidez en toute confiance du chemin qui correspond \u00e0 votre organisation.'
+            },
+            {
+                num: '4',
+                title: 'Roadmap & premiers projets',
+                desc: 'Nous traduisons la vision en un plan concret, pens\u00e9 pour donner des r\u00e9sultats rapides. Les premiers projets cr\u00e9ent de la valeur imm\u00e9diatement tout en pr\u00e9parant le socle de long terme.'
+            }
+        ] : [
+            {
+                num: '1',
+                title: 'Current-state diagnostic',
+                desc: 'We observe how your data flows, how it is documented, and how it feeds your KPIs. This step highlights what works and what holds you back. You walk away with a clear picture of your platform\u2019s actual state.'
+            },
+            {
+                num: '2',
+                title: 'Technology benchmark',
+                desc: 'We compare several viable options. Each stack is evaluated against your goals: performance, agility, and AI readiness. You gain an objective perspective that informs your decisions with no vendor bias.'
+            },
+            {
+                num: '3',
+                title: 'Target architecture & scenarios',
+                desc: 'We map out multiple trajectories for your future platform. Each scenario balances robustness, scalability, and internal constraints. You decide with confidence which path fits your organisation.'
+            },
+            {
+                num: '4',
+                title: 'Roadmap & first projects',
+                desc: 'We translate the vision into a concrete plan designed to deliver quick wins. The first projects create immediate value while laying the foundation for long-term growth.'
+            }
+        ];
+    }
 
-    benefits = [
-        {
-            title: 'Une vision enfin claire de vos données',
-            desc: 'Vous savez exactement où vous en êtes et où aller. Fini les zones d\'ombre — place à une plateforme lisible, fiable et pilotable par vos équipes.'
-        },
-        {
-            title: 'Des décisions éclairées et partagées',
-            desc: 'Vos équipes métiers et IT disposent d\'un langage commun et de KPIs fiables. Les arbitrages se font plus vite et avec moins de friction.'
-        },
-        {
-            title: 'Un temps d\'exécution réduit',
-            desc: 'Grâce à une architecture pensée pour l\'efficacité, vous gagnez en rapidité à chaque nouveau projet. Les premiers résultats se mesurent en semaines.'
-        },
-        {
-            title: 'Un socle qui prépare l\'avenir',
-            desc: 'Votre plateforme est conçue pour accueillir vos évolutions : nouveaux cas d\'usage, IA/GenAI, croissance des volumes. Vous avancez avec un système pérenne.'
-        }
-    ];
+    get stackLayers() {
+        return this.isFr() ? [
+            {
+                icon: 'pi pi-arrow-right-arrow-left',
+                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                name: 'Ingestion',
+                desc: 'Pipelines robustes qui collectent, normalisent et synchronisent vos donn\u00e9es en continu depuis toutes les sources.',
+                tools: ['Airbyte', 'Fivetran', 'Airflow', 'DLT']
+            },
+            {
+                icon: 'pi pi-server',
+                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                name: 'Stockage',
+                desc: 'Architecture moderne (Warehouse, Lakehouse) qui s\u00e9curise vos donn\u00e9es et constitue un socle durable pour toute la plateforme.',
+                tools: ['Snowflake', 'BigQuery', 'Redshift', 'S3']
+            },
+            {
+                icon: 'pi pi-code',
+                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                name: 'Transformation',
+                desc: 'Les donn\u00e9es sont nettoy\u00e9es, structur\u00e9es et unifi\u00e9es pour cr\u00e9er des mod\u00e8les fiables, coh\u00e9rents et exploitables.',
+                tools: ['dbt Cloud', 'dbt Core', 'SQL', 'Python']
+            },
+            {
+                icon: 'pi pi-cog',
+                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                name: 'Orchestration',
+                desc: 'Les flux sont automatis\u00e9s et coordonn\u00e9s pour garantir des traitements performants et une disponibilit\u00e9 maximale.',
+                tools: ['Airflow', 'Dagster', 'Prefect', 'MWAA']
+            },
+            {
+                icon: 'pi pi-chart-bar',
+                iconBg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                name: 'Activation',
+                desc: 'Les donn\u00e9es deviennent actionnables : dashboards BI, analyses avanc\u00e9es ou mod\u00e8les ML int\u00e9gr\u00e9s aux outils m\u00e9tier.',
+                tools: ['Power BI', 'Metabase', 'Superset', 'Looker']
+            },
+            {
+                icon: 'pi pi-shield',
+                iconBg: 'linear-gradient(135deg, #ec4899, #db2777)',
+                name: 'Observabilit\u00e9 & Gouvernance',
+                desc: 'Qualit\u00e9, s\u00e9curit\u00e9 et conformit\u00e9 assur\u00e9es gr\u00e2ce \u00e0 une surveillance continue et une tra\u00e7abilit\u00e9 compl\u00e8te.',
+                tools: ['Great Expectations', 'Elementary', 'dbt tests', 'DataHub']
+            }
+        ] : [
+            {
+                icon: 'pi pi-arrow-right-arrow-left',
+                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                name: 'Ingestion',
+                desc: 'Robust pipelines that collect, normalise, and continuously synchronise your data from every source.',
+                tools: ['Airbyte', 'Fivetran', 'Airflow', 'DLT']
+            },
+            {
+                icon: 'pi pi-server',
+                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                name: 'Storage',
+                desc: 'Modern architecture (Warehouse, Lakehouse) that secures your data and provides a durable foundation for the entire platform.',
+                tools: ['Snowflake', 'BigQuery', 'Redshift', 'S3']
+            },
+            {
+                icon: 'pi pi-code',
+                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                name: 'Transformation',
+                desc: 'Data is cleansed, structured, and unified to produce reliable, consistent, and actionable models.',
+                tools: ['dbt Cloud', 'dbt Core', 'SQL', 'Python']
+            },
+            {
+                icon: 'pi pi-cog',
+                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                name: 'Orchestration',
+                desc: 'Workflows are automated and coordinated to ensure high-performance processing and maximum availability.',
+                tools: ['Airflow', 'Dagster', 'Prefect', 'MWAA']
+            },
+            {
+                icon: 'pi pi-chart-bar',
+                iconBg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                name: 'Activation',
+                desc: 'Data becomes actionable: BI dashboards, advanced analytics, or ML models embedded in business tools.',
+                tools: ['Power BI', 'Metabase', 'Superset', 'Looker']
+            },
+            {
+                icon: 'pi pi-shield',
+                iconBg: 'linear-gradient(135deg, #ec4899, #db2777)',
+                name: 'Observability & Governance',
+                desc: 'Quality, security, and compliance guaranteed through continuous monitoring and full traceability.',
+                tools: ['Great Expectations', 'Elementary', 'dbt tests', 'DataHub']
+            }
+        ];
+    }
 
-    deliverables = [
-        {
-            icon: 'pi pi-file',
-            iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
-            title: 'Document d\'Architecture Technique',
-            desc: 'Cartographie complète de votre plateforme actuelle, identification des gaps critiques et scénarios d\'architecture cible comparés.'
-        },
-        {
-            icon: 'pi pi-map',
-            iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-            title: 'Feuille de route priorisée',
-            desc: 'Plan d\'action court/moyen/long terme avec estimation des coûts, des délais et de l\'impact business de chaque initiative.'
-        },
-        {
-            icon: 'pi pi-users',
-            iconBg: 'linear-gradient(135deg, #10b981, #059669)',
-            title: 'Restitution & ateliers',
-            desc: 'Présentation exécutive de nos conclusions, ateliers de co-construction avec vos équipes techniques et métier.'
-        }
-    ];
+    get benefits() {
+        return this.isFr() ? [
+            {
+                title: 'Une vision enfin claire de vos donn\u00e9es',
+                desc: 'Vous savez exactement o\u00f9 vous en \u00eates et o\u00f9 aller. Fini les zones d\u2019ombre \u2014 place \u00e0 une plateforme lisible, fiable et pilotable par vos \u00e9quipes.'
+            },
+            {
+                title: 'Des d\u00e9cisions \u00e9clair\u00e9es et partag\u00e9es',
+                desc: 'Vos \u00e9quipes m\u00e9tiers et IT disposent d\u2019un langage commun et de KPIs fiables. Les arbitrages se font plus vite et avec moins de friction.'
+            },
+            {
+                title: 'Un temps d\u2019ex\u00e9cution r\u00e9duit',
+                desc: 'Gr\u00e2ce \u00e0 une architecture pens\u00e9e pour l\u2019efficacit\u00e9, vous gagnez en rapidit\u00e9 \u00e0 chaque nouveau projet. Les premiers r\u00e9sultats se mesurent en semaines.'
+            },
+            {
+                title: 'Un socle qui pr\u00e9pare l\u2019avenir',
+                desc: 'Votre plateforme est con\u00e7ue pour accueillir vos \u00e9volutions : nouveaux cas d\u2019usage, IA/GenAI, croissance des volumes. Vous avancez avec un syst\u00e8me p\u00e9renne.'
+            }
+        ] : [
+            {
+                title: 'A clear vision of your data at last',
+                desc: 'You know exactly where you stand and where to go. No more blind spots \u2014 just a readable, reliable platform your teams can steer with confidence.'
+            },
+            {
+                title: 'Informed, shared decision-making',
+                desc: 'Your business and IT teams share a common language and trustworthy KPIs. Trade-offs happen faster and with far less friction.'
+            },
+            {
+                title: 'Faster time to execution',
+                desc: 'With an architecture designed for efficiency, every new project moves faster. You see measurable results within weeks.'
+            },
+            {
+                title: 'A foundation built for the future',
+                desc: 'Your platform is designed to accommodate new use cases, AI/GenAI, and growing data volumes. You move forward with a system that lasts.'
+            }
+        ];
+    }
 
-    faqs = [
-        {
-            q: 'Quelle est la durée typique d\'un audit data ?',
-            a: 'Un audit complet prend généralement 2 à 5 jours ouvrés, selon la complexité de votre infrastructure. Il inclut des entretiens avec vos équipes, l\'analyse technique de vos systèmes existants, et la restitution des recommandations avec une feuille de route priorisée.'
-        },
-        {
-            q: 'Quels sont les signes qu\'il est temps de faire un audit ?',
-            a: 'Les principaux signaux sont : des KPIs qui divergent selon les sources, des rapports produits manuellement dans Excel, une forte dépendance des équipes métier à l\'IT pour accéder aux données, l\'absence de CI/CD sur vos pipelines data, ou des temps de traitement qui dépassent plusieurs heures.'
-        },
-        {
-            q: 'L\'audit inclut-il des recommandations d\'outils spécifiques ?',
-            a: 'Oui, et nous n\'avons aucun partenariat commercial avec les éditeurs. Nous recommandons les outils les mieux adaptés à votre contexte, vos contraintes budgétaires et vos ambitions — pas les outils sur lesquels nous touchons des commissions.'
-        },
-        {
-            q: 'Que se passe-t-il après l\'audit ?',
-            a: 'Vous recevez le Document d\'Architecture Technique et la feuille de route. Vous êtes totalement libre de l\'implémenter en interne ou de nous confier la suite. Si vous choisissez de travailler avec nous, l\'audit est décompté du budget de la mission.'
-        }
-    ];
+    get deliverables() {
+        return this.isFr() ? [
+            {
+                icon: 'pi pi-file',
+                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                title: 'Document d\u2019Architecture Technique',
+                desc: 'Cartographie compl\u00e8te de votre plateforme actuelle, identification des gaps critiques et sc\u00e9narios d\u2019architecture cible compar\u00e9s.'
+            },
+            {
+                icon: 'pi pi-map',
+                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                title: 'Feuille de route prioris\u00e9e',
+                desc: 'Plan d\u2019action court/moyen/long terme avec estimation des co\u00fbts, des d\u00e9lais et de l\u2019impact business de chaque initiative.'
+            },
+            {
+                icon: 'pi pi-users',
+                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                title: 'Restitution & ateliers',
+                desc: 'Pr\u00e9sentation ex\u00e9cutive de nos conclusions, ateliers de co-construction avec vos \u00e9quipes techniques et m\u00e9tier.'
+            }
+        ] : [
+            {
+                icon: 'pi pi-file',
+                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                title: 'Technical Architecture Document',
+                desc: 'Complete mapping of your current platform, identification of critical gaps, and compared target architecture scenarios.'
+            },
+            {
+                icon: 'pi pi-map',
+                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                title: 'Prioritised roadmap',
+                desc: 'Short, medium, and long-term action plan with cost estimates, timelines, and business impact for each initiative.'
+            },
+            {
+                icon: 'pi pi-users',
+                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                title: 'Executive presentation & workshops',
+                desc: 'Executive-level presentation of our findings, plus co-design workshops with your technical and business teams.'
+            }
+        ];
+    }
+
+    get faqs() {
+        return this.isFr() ? [
+            {
+                q: 'Quelle est la dur\u00e9e typique d\u2019un audit data ?',
+                a: 'Un audit complet prend g\u00e9n\u00e9ralement 2 \u00e0 5 jours ouvr\u00e9s, selon la complexit\u00e9 de votre infrastructure. Il inclut des entretiens avec vos \u00e9quipes, l\u2019analyse technique de vos syst\u00e8mes existants, et la restitution des recommandations avec une feuille de route prioris\u00e9e.'
+            },
+            {
+                q: 'Quels sont les signes qu\u2019il est temps de faire un audit ?',
+                a: 'Les principaux signaux sont : des KPIs qui divergent selon les sources, des rapports produits manuellement dans Excel, une forte d\u00e9pendance des \u00e9quipes m\u00e9tier \u00e0 l\u2019IT pour acc\u00e9der aux donn\u00e9es, l\u2019absence de CI/CD sur vos pipelines data, ou des temps de traitement qui d\u00e9passent plusieurs heures.'
+            },
+            {
+                q: 'L\u2019audit inclut-il des recommandations d\u2019outils sp\u00e9cifiques ?',
+                a: 'Oui, et nous n\u2019avons aucun partenariat commercial avec les \u00e9diteurs. Nous recommandons les outils les mieux adapt\u00e9s \u00e0 votre contexte, vos contraintes budg\u00e9taires et vos ambitions \u2014 pas les outils sur lesquels nous touchons des commissions.'
+            },
+            {
+                q: 'Que se passe-t-il apr\u00e8s l\u2019audit ?',
+                a: 'Vous recevez le Document d\u2019Architecture Technique et la feuille de route. Vous \u00eates totalement libre de l\u2019impl\u00e9menter en interne ou de nous confier la suite. Si vous choisissez de travailler avec nous, l\u2019audit est d\u00e9compt\u00e9 du budget de la mission.'
+            }
+        ] : [
+            {
+                q: 'How long does a typical data audit take?',
+                a: 'A full audit generally takes 2 to 5 business days, depending on the complexity of your infrastructure. It includes interviews with your teams, a technical analysis of your existing systems, and a deliverable with prioritised recommendations and a roadmap.'
+            },
+            {
+                q: 'What are the signs it is time for an audit?',
+                a: 'Key indicators include: KPIs that differ depending on the source, reports built manually in Excel, business teams heavily dependent on IT to access data, no CI/CD on your data pipelines, or processing times that stretch to several hours.'
+            },
+            {
+                q: 'Does the audit include specific tool recommendations?',
+                a: 'Yes, and we have no commercial partnerships with any vendors. We recommend the tools best suited to your context, budget constraints, and ambitions \u2014 not the tools on which we earn commissions.'
+            },
+            {
+                q: 'What happens after the audit?',
+                a: 'You receive the Technical Architecture Document and the roadmap. You are completely free to implement it in-house or to engage us for the next phase. If you choose to work with us, the audit fee is deducted from the project budget.'
+            }
+        ];
+    }
 }
