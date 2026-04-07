@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterModule, Router } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { StyleClassModule } from 'primeng/styleclass';
 import { ButtonModule } from 'primeng/button';
@@ -10,8 +10,7 @@ import { FeaturesWidget } from './components/featureswidget';
 import { HighlightsWidget } from './components/highlightswidget';
 import { PricingWidget } from './components/pricingwidget';
 import { FooterWidget } from './components/footerwidget';
-import { Router } from '@angular/router';
-import { inject } from '@angular/core';
+import { I18nService, Lang } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-landing',
@@ -45,27 +44,26 @@ import { inject } from '@angular/core';
                         <!-- Badge -->
                         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/40 bg-indigo-500/10 text-indigo-300 text-sm font-medium mb-6">
                             <i class="pi pi-briefcase text-xs"></i>
-                            <span>Afrin Nexus Advisory — Solutions B2B</span>
+                            <span>{{ t('landing.advisory.badge') }}</span>
                         </div>
 
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-                            Vous êtes une entreprise ?
+                            {{ t('landing.advisory.h2') }}
                         </h2>
                         <p class="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-cyan-300 mb-6">
-                            Afrin Nexus Advisory accompagne votre transformation data
+                            {{ t('landing.advisory.subtitle') }}
                         </p>
                         <p class="text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                            Missions Data Engineering, IA et Architecture —
-                            des consultants qui connaissent les réalités africaines.
+                            {{ t('landing.advisory.description') }}
                         </p>
 
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                            <button pButton pRipple label="En savoir plus"
+                            <button pButton pRipple [label]="t('landing.advisory.ctaLearn')"
                                     [routerLink]="[currentLang, 'advisory']"
                                     [outlined]="true"
                                     class="!border-indigo-500 !text-indigo-300 hover:!bg-indigo-500/10 !rounded-full !px-8 !py-3 !font-semibold">
                             </button>
-                            <button pButton pRipple label="Prendre contact"
+                            <button pButton pRipple [label]="t('landing.advisory.ctaContact')"
                                     [routerLink]="[currentLang, 'advisory']"
                                     [fragment]="'contact'"
                                     class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !rounded-full !px-8 !py-3 !font-semibold
@@ -90,11 +88,18 @@ import { inject } from '@angular/core';
     `]
 })
 export class Landing {
+    private i18n = inject(I18nService);
+    private router = inject(Router);
+
     currentLang = '/fr';
 
     constructor() {
-        const router = inject(Router);
-        const match = router.url.match(/^\/(fr|en)(?:\/|$)/);
-        this.currentLang = '/' + (match ? match[1] : 'fr');
+        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
+        const lang  = (match ? match[1] : 'fr') as Lang;
+        this.currentLang = '/' + lang;
+        // Sync i18n service with the URL language on every navigation to this page
+        this.i18n.setLang(lang);
     }
+
+    t(key: string): string { return this.i18n.t(key); }
 }

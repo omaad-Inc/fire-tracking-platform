@@ -97,7 +97,7 @@ import { environment } from '../../../../environments/environment';
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
                 
                 <!-- Avatar Section -->
-                <div class="flex items-center gap-6 mb-8">
+                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8 text-center sm:text-left">
                     <div class="relative group">
                         @if (user()?.avatar_url) {
                             <img [src]="getAvatarUrl()" 
@@ -179,9 +179,9 @@ import { environment } from '../../../../environments/environment';
                 <!-- Save Profile Button -->
                 @if (hasProfileChanges) {
                     <div class="mb-6">
-                        <p-button 
-                            label="Save Changes" 
-                            icon="pi pi-check" 
+                        <p-button
+                            [label]="t('common.save')"
+                            icon="pi pi-check"
                             [loading]="isSaving()"
                             (click)="saveProfile()"
                         />
@@ -345,20 +345,20 @@ export class AccountSettings implements OnInit {
         if (file.size > 5 * 1024 * 1024) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: 'File size must be less than 5MB',
+                summary: 'Erreur',
+                detail: 'La photo doit faire moins de 5 Mo.',
                 life: 5000
             });
             return;
         }
-        
+
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: 'Invalid file type. Allowed: JPEG, PNG, GIF, WebP',
+                summary: 'Erreur',
+                detail: 'Format non supporté. Utilisez JPEG, PNG, GIF ou WebP.',
                 life: 5000
             });
             return;
@@ -373,14 +373,13 @@ export class AccountSettings implements OnInit {
         this.isUploadingAvatar.set(true);
         this.apiService.uploadAvatar(file).subscribe({
             next: () => {
-                // Refresh user data
                 this.authService.getCurrentUser().subscribe({
                     next: () => {
                         this.isUploadingAvatar.set(false);
                         this.messageService.add({
                             severity: 'success',
-                            summary: 'Success',
-                            detail: 'Profile picture updated',
+                            summary: 'Photo mise à jour',
+                            detail: 'Votre photo de profil a été modifiée.',
                             life: 3000
                         });
                     }
@@ -390,8 +389,8 @@ export class AccountSettings implements OnInit {
                 this.isUploadingAvatar.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Error',
-                    detail: error.message || 'Could not upload image',
+                    summary: 'Erreur',
+                    detail: error?.error?.detail || 'Impossible de télécharger la photo.',
                     life: 5000
                 });
             }
@@ -400,9 +399,12 @@ export class AccountSettings implements OnInit {
 
     deleteAvatar(): void {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to remove your profile picture?',
-            header: 'Remove Picture',
+            message: 'Supprimer votre photo de profil ?',
+            header: 'Confirmer la suppression',
             icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Supprimer',
+            rejectLabel: 'Annuler',
+            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
             accept: () => {
                 this.apiService.deleteAvatar().subscribe({
                     next: () => {
@@ -410,8 +412,8 @@ export class AccountSettings implements OnInit {
                             next: () => {
                                 this.messageService.add({
                                     severity: 'success',
-                                    summary: 'Success',
-                                    detail: 'Profile picture removed',
+                                    summary: 'Photo supprimée',
+                                    detail: 'Votre photo de profil a été retirée.',
                                     life: 3000
                                 });
                             }
@@ -420,8 +422,8 @@ export class AccountSettings implements OnInit {
                     error: (error) => {
                         this.messageService.add({
                             severity: 'error',
-                            summary: 'Error',
-                            detail: error.message || 'Could not remove picture',
+                            summary: 'Erreur',
+                            detail: error?.error?.detail || 'Impossible de supprimer la photo.',
                             life: 5000
                         });
                     }
@@ -434,17 +436,16 @@ export class AccountSettings implements OnInit {
         this.isSaving.set(true);
         this.apiService.updateProfile({
             first_name: this.firstName || undefined,
-            last_name: this.lastName || undefined
+            last_name:  this.lastName  || undefined
         }).subscribe({
             next: () => {
-                // Refresh user data
                 this.authService.getCurrentUser().subscribe({
                     next: () => {
                         this.isSaving.set(false);
                         this.messageService.add({
                             severity: 'success',
-                            summary: 'Success',
-                            detail: 'Profile updated successfully',
+                            summary: 'Profil mis à jour',
+                            detail: 'Vos informations ont été enregistrées.',
                             life: 3000
                         });
                     }
@@ -454,8 +455,8 @@ export class AccountSettings implements OnInit {
                 this.isSaving.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Error',
-                    detail: error.message || 'Could not update profile',
+                    summary: 'Erreur',
+                    detail: error?.error?.detail || 'Impossible de mettre à jour le profil.',
                     life: 5000
                 });
             }
@@ -489,16 +490,14 @@ export class AccountSettings implements OnInit {
                     detail: this.t('settings.account.deleteSuccessDetail'),
                     life: 3000
                 });
-                setTimeout(() => {
-                    this.authService.logout();
-                }, 1500);
+                setTimeout(() => this.authService.logout(), 1500);
             },
             error: (error) => {
                 this.isDeleting.set(false);
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Erreur',
-                    detail: error.message || 'Impossible de supprimer le compte',
+                    detail: error?.error?.detail || 'Impossible de supprimer le compte.',
                     life: 5000
                 });
             }

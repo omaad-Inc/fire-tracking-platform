@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription, merge } from 'rxjs';
@@ -15,7 +15,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
     template: `
         <!-- Loading State -->
         @if (loading()) {
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
@@ -27,7 +27,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <div class="h-6 bg-surface-200 dark:bg-surface-700 rounded w-40"></div>
                 </div>
             </div>
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
@@ -39,7 +39,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <div class="h-6 bg-surface-200 dark:bg-surface-700 rounded w-40"></div>
                 </div>
             </div>
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
@@ -53,15 +53,16 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
         } @else {
             <!-- KPI Card 1 - Patrimoine -->
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
+            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20"
                      [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl md:text-4xl leading-tight">
-                                    {{ cs.formatNumber(stats()?.netWorth ?? 0) }}<span class="text-base md:text-lg font-semibold ml-1 opacity-60">{{ cs.config().symbol }}</span>
-                                </div>
+                            <div class="font-bold text-3xl md:text-4xl leading-tight"
+                                 [ngClass]="realNetWorth() >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-rose-500'">
+                                {{ realNetWorth() < 0 ? '−' : '' }}{{ cs.formatNumber(realNetWorth() < 0 ? -realNetWorth() : realNetWorth()) }}<span class="text-base md:text-lg font-semibold ml-1 opacity-60">{{ cs.config().symbol }}</span>
+                            </div>
                         </div>
                         <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
                             <i class="pi pi-wallet text-white text-2xl"></i>
@@ -89,7 +90,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
 
             <!-- KPI Card 2 - Flux Mensuel -->
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
+            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20"
                      [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les transactions" tabindex="0">
                     <div class="flex justify-between items-start mb-3">
@@ -148,7 +149,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
 
             <!-- KPI Card 3 - Objectif FIRE -->
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4 h-full">
+            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20"
                      [routerLink]="fireProgress() && (fireProgress()!.targetAmount) > 0 ? link('pages','patrimoine') : link('pages','settings','fire')"
                      role="link" aria-label="Voir l'objectif financier" tabindex="0">
@@ -208,6 +209,18 @@ export class StatsWidget implements OnInit, OnDestroy {
     loading = signal(true);
     stats = signal<DashboardStats | null>(null);
     fireProgress = signal<FIREProgress | null>(null);
+
+    /**
+     * Real net worth = totalAssets − totalDebts.
+     * The backend's `net_worth` field only accounts for assets; we subtract
+     * debts here on the frontend to get the true net worth.
+     * Returns a signed value: negative means debts exceed assets.
+     */
+    readonly realNetWorth = computed(() => {
+        const s = this.stats();
+        if (!s) return 0;
+        return (s.totalAssets ?? 0) - (s.totalDebts ?? 0);
+    });
     
     monthlySavings = signal(0);
     savingsRatePct = signal(0);

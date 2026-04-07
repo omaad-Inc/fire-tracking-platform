@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
 import { ApiService, Transaction, TransactionCreate, TransactionUpdate, TransactionType, TransactionCategory } from '../../core/services/api.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 interface CacheEntry<T> {
     data: T;
@@ -92,7 +93,8 @@ const CATEGORY_DISPLAY_MAP: Record<string, string> = Object.fromEntries(
 
 @Injectable({ providedIn: 'root' })
 export class TransactionsService {
-    private api = inject(ApiService);
+    private api             = inject(ApiService);
+    private currencyService = inject(CurrencyService);
 
     // Categories to exclude from main transactions view (these are managed separately in Savings)
     private readonly SAVINGS_CATEGORIES = ['savings', 'investment'];
@@ -243,10 +245,11 @@ export class TransactionsService {
 
     async addRecord(record: TransactionRecord): Promise<TransactionRecord> {
         try {
+            // Convert from display currency (e.g. FCFA) → EUR before persisting.
             const transactionData: TransactionCreate = {
                 type: record.type === 'Income' ? 'income' : 'expense',
                 category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                amount: record.amount,
+                amount: this.currencyService.toBaseAmount(record.amount),
                 description: record.remarks,
                 date: this.toDateString(record.date)
             };
@@ -268,12 +271,13 @@ export class TransactionsService {
      */
     async updateRecord(record: TransactionRecord): Promise<TransactionRecord> {
         if (!record.id) throw new Error('Missing id');
-        
+
         try {
+            // Same conversion as addRecord — user edits in display currency.
             const transactionData: TransactionUpdate = {
                 type: record.type === 'Income' ? 'income' : 'expense',
                 category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                amount: record.amount,
+                amount: this.currencyService.toBaseAmount(record.amount),
                 description: record.remarks,
                 date: this.toDateString(record.date)
             };

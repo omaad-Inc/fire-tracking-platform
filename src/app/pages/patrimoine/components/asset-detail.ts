@@ -43,28 +43,28 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             </div>
         } @else {
             <!-- Header -->
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-4">
-                    <button (click)="goBack()"
-                            class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
-                    </button>
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
-                             [style.background]="categoryBg()">
-                            <i [class]="categoryIcon()" class="text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ asset()!.name }}</h1>
-                            <span class="text-surface-500 text-sm">{{ categoryLabel() }}</span>
-                        </div>
+            <div class="flex items-start gap-3 mb-5">
+                <button (click)="goBack()"
+                        class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer mt-0.5">
+                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
+                </button>
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl shrink-0 flex items-center justify-center shadow-lg"
+                         [style.background]="categoryBg()">
+                        <i [class]="categoryIcon()" class="text-white text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 m-0 truncate">{{ asset()!.name }}</h1>
+                        <span class="text-surface-500 text-sm">{{ categoryLabel() }}</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button pButton icon="pi pi-pencil" label="Modifier" severity="secondary"
-                            [outlined]="true" size="small" (click)="editAsset()"></button>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button pButton icon="pi pi-pencil" severity="secondary"
+                            [outlined]="true" size="small" (click)="editAsset()"
+                            class="!w-9 !h-9 !p-0"></button>
                     <button pButton icon="pi pi-trash" severity="danger"
-                            [outlined]="true" size="small" (click)="confirmDelete()"></button>
+                            [outlined]="true" size="small" (click)="confirmDelete()"
+                            class="!w-9 !h-9 !p-0"></button>
                 </div>
             </div>
 
@@ -112,8 +112,8 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             </div>
 
             <!-- KPI Row -->
-            <div class="grid gap-4 mb-6"
-                 [ngClass]="isQuantityBased() ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-3'">
+            <div class="grid gap-3 md:gap-4 mb-5"
+                 [ngClass]="isQuantityBased() ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'">
                 <!-- P&L -->
                 <div class="card text-center">
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">P&amp;L</p>

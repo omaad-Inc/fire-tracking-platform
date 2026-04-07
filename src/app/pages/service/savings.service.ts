@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, shareReplay, switchMap } from 'rxjs';
 import { ApiService, SavingGoal, SavingGoalCreate, SavingGoalUpdate, Transaction } from '../../core/services/api.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 export interface SavingRecord {
     id?: string;
@@ -53,7 +54,8 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 @Injectable({ providedIn: 'root' })
 export class SavingsService {
-    private api = inject(ApiService);
+    private api             = inject(ApiService);
+    private currencyService = inject(CurrencyService);
     
     // Cache storage
     private goalsCache: CacheEntry<SavingsGoalDisplay[]> | null = null;
@@ -201,7 +203,8 @@ export class SavingsService {
      */
     async addContribution(goalId: number, amount: number): Promise<SavingsGoalDisplay | null> {
         try {
-            const goal = await firstValueFrom(this.api.addContribution(goalId, amount));
+            // amount is in display currency — convert to EUR before sending.
+            const goal = await firstValueFrom(this.api.addContribution(goalId, this.currencyService.toBaseAmount(amount)));
             const displayGoal = this.mapGoalToDisplay(goal, 0);
             // Invalidate cache
             this.invalidateGoalsCache();
@@ -573,11 +576,11 @@ export class SavingsService {
     // ==================== LEGACY METHODS (for backward compatibility) ====================
 
     addTransaction(record: SavingRecord): Promise<SavingRecord> {
-        // Convert to API format and create
+        // Convert amount from display currency (e.g. FCFA) → EUR before persisting.
         const transactionData = {
             type: record.type === 'Deposit' ? 'income' as const : 'expense' as const,
             category: 'savings' as const,
-            amount: record.amount,
+            amount: this.currencyService.toBaseAmount(record.amount),
             description: record.note,
             date: record.date
         };
@@ -593,10 +596,11 @@ export class SavingsService {
 
     updateTransaction(record: SavingRecord): Promise<SavingRecord> {
         if (!record.id) return Promise.reject(new Error('Missing id'));
-        
+
+        // Same conversion as addTransaction.
         const transactionData = {
             type: record.type === 'Deposit' ? 'income' as const : 'expense' as const,
-            amount: record.amount,
+            amount: this.currencyService.toBaseAmount(record.amount),
             description: record.note,
             date: record.date
         };

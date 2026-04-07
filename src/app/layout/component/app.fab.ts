@@ -1,47 +1,51 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
+// Routes where the FAB should NOT appear (detail pages, settings)
+const HIDE_FAB_PATTERNS = [
+    '/patrimoine/assets/',
+    '/patrimoine/category/',
+    '/settings/',
+];
 
 @Component({
     selector: 'app-fab',
     standalone: true,
     imports: [CommonModule],
     template: `
-        <!-- Floating Action Button - Mobile Only -->
-        <button
-            class="fab-button lg:hidden fixed right-6 z-50 w-14 h-14 rounded-full bg-primary text-primary-contrast shadow-xl shadow-primary/30 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-            [class.fab-expanded]="isExpanded"
-            (click)="toggleOrEmit()"
-            aria-label="Add asset"
-        >
-            <i class="pi pi-plus text-xl transition-transform duration-300" [class.rotate-45]="isExpanded"></i>
-        </button>
+        @if (showFab) {
+            <button
+                class="fab-button lg:hidden fixed right-5 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-xl shadow-indigo-500/30 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+                (click)="addAsset.emit()"
+                aria-label="Ajouter un actif"
+            >
+                <i class="pi pi-plus text-xl"></i>
+            </button>
+        }
     `,
     styles: [`
         .fab-button {
-            bottom: calc(5rem + env(safe-area-inset-bottom, 0px) + 1rem);
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        .fab-button:not(:hover) {
-            animation: pulse 3s ease-in-out infinite;
-        }
-        
-        .fab-button:hover {
-            animation: none;
+            /* Sits just above the bottom nav (70px) with a 12px gap */
+            bottom: calc(70px + 12px + env(safe-area-inset-bottom, 0px));
         }
     `]
 })
-export class AppFab {
+export class AppFab implements OnInit {
     @Output() addAsset = new EventEmitter<void>();
-    
-    isExpanded = false;
 
-    toggleOrEmit(): void {
-        this.addAsset.emit();
+    private router = inject(Router);
+    showFab = true;
+
+    ngOnInit() {
+        this.updateVisibility(this.router.url);
+        this.router.events
+            .pipe(filter(e => e instanceof NavigationEnd))
+            .subscribe((e: NavigationEnd) => this.updateVisibility(e.urlAfterRedirects));
+    }
+
+    private updateVisibility(url: string) {
+        this.showFab = !HIDE_FAB_PATTERNS.some(p => url.includes(p));
     }
 }
-

@@ -36,10 +36,10 @@ const GROUPS = [
     standalone: true,
     imports: [CommonModule, PatrimoineProgress, PatrimoineStats, AppAmountComponent],
     template: `
-        <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
 
             <!-- Chart + KPI stats -->
-            <div class="grid grid-cols-12 gap-6">
+            <div class="grid grid-cols-12 gap-4 md:gap-6">
                 <div class="col-span-12 xl:col-span-8">
                     <app-patrimoine-progress />
                 </div>
@@ -74,7 +74,7 @@ const GROUPS = [
                     <div class="space-y-3">
                         @for (group of categoryGroups(); track group.id) {
                             <button (click)="navigateToCategory(group.id)"
-                                    class="w-full flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-indigo-500/30 text-left shadow-sm">
+                                    class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-indigo-500/30 text-left shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
                                          [style.background]="group.bg">
@@ -131,7 +131,7 @@ const GROUPS = [
                     </div>
                 } @else {
                     <button (click)="navigateToDebts()"
-                            class="w-full flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-rose-500/30 text-left shadow-sm">
+                            class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-rose-500/30 text-left shadow-sm">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
                                  style="background: linear-gradient(135deg, #f43f5e, #e11d48)">

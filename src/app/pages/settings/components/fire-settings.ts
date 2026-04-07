@@ -13,6 +13,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TokenService } from '../../../core/services/token.service';
 import { DashboardService } from '../../service/dashboard.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     selector: 'app-fire-settings',
@@ -54,15 +55,15 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-2">
-                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Dépenses annuelles (€)</label>
+                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                            Dépenses annuelles <span class="text-surface-400">({{ cs.config().symbol }})</span>
+                        </label>
                         <p-inputnumber
                             [(ngModel)]="annualExpenses"
                             [min]="0"
-                            mode="currency"
-                            currency="EUR"
-                            locale="fr-FR"
-                            [maxFractionDigits]="0"
-                            placeholder="Ex : 24 000"
+                            mode="decimal"
+                            [minFractionDigits]="0" [maxFractionDigits]="0"
+                            placeholder="Ex : 15 000 000"
                             inputStyleClass="w-full !py-3 !rounded-xl"
                             styleClass="w-full"
                             (ngModelChange)="onCalcChange()"
@@ -88,11 +89,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </div>
 
                 <!-- Auto-calculated result -->
+                <!-- autoTarget() returns a display-currency value (annualExpenses is in display currency)
+                     — format directly, do NOT use app-amount which expects EUR and would double-convert -->
                 @if (autoTarget() > 0) {
                     <div class="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
                         <span class="text-surface-700 dark:text-surface-300 text-sm">Capital calculé automatiquement</span>
                         <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                            <app-amount [value]="autoTarget()" />
+                            {{ cs.formatNumber(autoTarget()) }} {{ cs.config().symbol }}
                         </span>
                     </div>
                 }
@@ -102,24 +105,28 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 
             <!-- Manual target -->
             <div class="mb-6">
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Capital cible (€)</h3>
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">
+                    Capital cible <span class="text-surface-400 font-normal text-base">({{ cs.config().symbol }})</span>
+                </h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
                     Pré-rempli depuis le calcul ci-dessus, ou saisissez directement votre propre objectif.
                 </p>
                 <p-inputnumber
                     [(ngModel)]="fireTarget"
                     [min]="0"
-                    mode="currency"
-                    currency="EUR"
-                    locale="fr-FR"
-                    [maxFractionDigits]="0"
-                    placeholder="Ex : 600 000"
+                    mode="decimal"
+                    [minFractionDigits]="0" [maxFractionDigits]="0"
+                    placeholder="Ex : 375 000 000"
                     inputStyleClass="w-full !py-3 !rounded-xl"
                     styleClass="w-full md:w-1/2"
                 />
                 @if (fireTarget && fireTarget > 0) {
                     <p class="text-xs text-surface-400 dark:text-surface-500 mt-2">
-                        Votre objectif actuel : <span class="font-semibold text-emerald-600 dark:text-emerald-400"><app-amount [value]="fireTarget" /></span>
+                        Votre objectif actuel :
+                        <!-- fireTarget is already in display currency — format directly, do NOT use app-amount which would double-convert -->
+                        <span class="font-semibold text-emerald-600 dark:text-emerald-400">
+                            {{ cs.formatNumber(fireTarget) }} {{ cs.config().symbol }}
+                        </span>
                     </p>
                 }
             </div>
@@ -170,12 +177,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     `
 })
 export class FireSettings implements OnInit {
-    private apiService = inject(ApiService);
-    private authService = inject(AuthService);
-    private tokenService = inject(TokenService);
+    private apiService       = inject(ApiService);
+    private authService      = inject(AuthService);
+    private tokenService     = inject(TokenService);
     private dashboardService = inject(DashboardService);
-    private messageService = inject(MessageService);
-    private router = inject(Router);
+    private messageService   = inject(MessageService);
+    private router           = inject(Router);
+    cs = inject(CurrencyService);
 
     annualExpenses: number | null = null;
     withdrawalRate: number | null = 4.0;
@@ -197,9 +205,14 @@ export class FireSettings implements OnInit {
     ngOnInit() {
         const user = this.tokenService.user();
         if (user) {
-            this.annualExpenses = user.annual_expenses ?? null;
+            // API stores amounts in EUR — convert to display currency so the
+            // user sees their preferred currency in the input fields.
+            const toDisplay = (v: number | null | undefined) =>
+                v != null ? Math.round(this.cs.convert(v)) : null;
+
+            this.annualExpenses = toDisplay(user.annual_expenses);
             this.withdrawalRate = user.withdrawal_rate ?? 4.0;
-            this.fireTarget = user.fire_target_amount ?? null;
+            this.fireTarget     = toDisplay(user.fire_target_amount);
             if (user.fire_target_date) {
                 this.targetDate = new Date(user.fire_target_date);
             }
@@ -208,6 +221,8 @@ export class FireSettings implements OnInit {
 
     onCalcChange() {
         const calc = this.autoTarget();
+        // autoTarget() returns a display-currency value — keep it in display
+        // currency for the input field; save() will convert to EUR on submit.
         if (calc > 0) {
             this.fireTarget = calc;
         }
@@ -220,11 +235,14 @@ export class FireSettings implements OnInit {
     save() {
         this.isSaving.set(true);
 
+        // Convert monetary fields from display currency → EUR before sending to API.
+        const toBase = (v: number) => this.cs.toBaseAmount(v);
+
         const payload: FIRESettings = {
             withdrawal_rate: this.withdrawalRate ?? 4.0
         };
-        if (this.fireTarget) payload.fire_target_amount = this.fireTarget;
-        if (this.annualExpenses) payload.annual_expenses = this.annualExpenses;
+        if (this.fireTarget)     payload.fire_target_amount = toBase(this.fireTarget);
+        if (this.annualExpenses) payload.annual_expenses    = toBase(this.annualExpenses);
         if (this.targetDate) {
             payload.fire_target_date = this.targetDate.toISOString().split('T')[0];
         }

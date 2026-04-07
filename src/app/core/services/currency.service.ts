@@ -31,9 +31,39 @@ export class CurrencyService {
         CURRENCIES[this.currencyCode()] ?? CURRENCIES['EUR']
     );
 
-    /** Convert a EUR value to the display currency. */
+    /**
+     * Convert a EUR (base) value → display currency.
+     * Used for reading values from the API before showing them in the UI.
+     *
+     * Example (FCFA user): 38 € × 655.957 = 24 926 FCFA
+     */
     convert(eurValue: number): number {
         return eurValue * this.config().rate;
+    }
+
+    /**
+     * Convert a display-currency value → EUR (base) for storage.
+     * Must be called in every service method that sends monetary values
+     * to the API, so that a FCFA user entering 25 000 000 and a EUR user
+     * entering 38 109 both result in the same value stored on the backend.
+     *
+     * Example (FCFA user): 25 000 000 ÷ 655.957 ≈ 38 109 €
+     * Example (EUR  user): 38 109 ÷ 1           = 38 109 €
+     */
+    toBaseAmount(displayValue: number): number {
+        const rate = this.config().rate;
+        if (!rate || rate === 0) return displayValue;
+        return displayValue / rate;
+    }
+
+    /**
+     * Convert a display-currency amount back using an explicit rate.
+     * Useful when the rate at time of entry differs from the current rate
+     * (e.g. historical transactions).  For most use-cases, prefer toBaseAmount().
+     */
+    toBaseAmountWithRate(displayValue: number, rate: number): number {
+        if (!rate || rate === 0) return displayValue;
+        return displayValue / rate;
     }
 
     /** Format a EUR value as a localized currency string. */

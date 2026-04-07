@@ -15,6 +15,7 @@ import {
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 interface DayGroup {
     dateKey: string;
@@ -261,8 +262,11 @@ interface DayGroup {
                     <!-- Amount + Date row -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Montant</label>
-                            <p-inputnumber [(ngModel)]="form.amount" mode="currency" currency="EUR" locale="fr-FR"
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                                Montant <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
+                            </label>
+                            <p-inputnumber [(ngModel)]="form.amount" mode="decimal"
+                                           [minFractionDigits]="0" [maxFractionDigits]="0"
                                            styleClass="w-full"
                                            inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
                             @if (submitted && !(form.amount > 0)) {
@@ -344,6 +348,7 @@ export class TransactionLogs implements OnInit {
     private transactionsService = inject(TransactionsService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
+    cs = inject(CurrencyService);
 
     @Output() monthChanged = new EventEmitter<string>();
 

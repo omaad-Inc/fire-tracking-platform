@@ -1,157 +1,493 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { DividerModule } from 'primeng/divider';
-import { TagModule } from 'primeng/tag';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { TokenService } from '../../../core/services/token.service';
+import { ApiService } from '../../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-settings-security',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, PasswordModule, ToggleSwitchModule, DividerModule, TagModule],
+    imports: [
+        CommonModule, FormsModule,
+        ButtonModule, InputTextModule, PasswordModule,
+        DialogModule, ToastModule,
+    ],
+    providers: [MessageService],
     template: `
-        <div class="card">
-            <!-- Password Section -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Mot de passe</h2>
-                
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl mb-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-                            <i class="pi pi-lock text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-surface-900 dark:text-surface-0">Mot de passe</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">Dernière modification il y a 3 mois</p>
-                        </div>
-                    </div>
-                    <p-button label="Modifier" [outlined]="true" size="small" />
-                </div>
-            </div>
+        <p-toast position="top-center" />
 
-            <p-divider />
+        <div class="flex flex-col gap-4 md:gap-6">
 
-            <!-- Two-Factor Authentication -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Authentification à deux facteurs</h2>
-                
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl mb-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                            <i class="pi pi-shield text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="font-medium text-surface-900 dark:text-surface-0">Authentification 2FA</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">Ajoutez une couche de sécurité supplémentaire</p>
-                        </div>
+            <!-- ── 1. Méthode de connexion ──────────────────────────── -->
+            <section class="card !p-0 overflow-hidden">
+                <!-- Section header -->
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-lock text-indigo-500"></i>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <p-tag 
-                            [value]="twoFactorEnabled ? 'Activé' : 'Désactivé'" 
-                            [severity]="twoFactorEnabled ? 'success' : 'warn'"
-                        />
-                        <p-toggleswitch [(ngModel)]="twoFactorEnabled" />
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Méthode de connexion</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Comment vous vous connectez à Afrin Nexus</p>
                     </div>
                 </div>
 
-                <div *ngIf="twoFactorEnabled" class="ml-16 mt-4 space-y-3">
-                    <div class="flex items-center gap-3 p-3 bg-surface-100 dark:bg-surface-700 rounded-lg">
-                        <i class="pi pi-mobile text-indigo-500"></i>
-                        <span class="text-surface-700 dark:text-surface-200">Application d'authentification</span>
-                        <p-tag value="Configuré" severity="success" class="ml-auto" />
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-surface-100 dark:bg-surface-700 rounded-lg">
-                        <i class="pi pi-envelope text-cyan-500"></i>
-                        <span class="text-surface-700 dark:text-surface-200">Email de récupération</span>
-                        <p-tag value="Configuré" severity="success" class="ml-auto" />
-                    </div>
-                </div>
-            </div>
-
-            <p-divider />
-
-            <!-- Connected Sessions -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Sessions actives</h2>
-                
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
-                                <i class="pi pi-desktop text-white text-xl"></i>
+                <div class="p-5">
+                    @if (isGoogleUser()) {
+                        <!-- Google OAuth user -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-cyan-50 dark:from-indigo-950/30 dark:to-cyan-950/30 border border-indigo-100 dark:border-indigo-900/40">
+                            <div class="w-12 h-12 rounded-full bg-white dark:bg-surface-700 flex items-center justify-center shadow-sm shrink-0">
+                                <!-- Google logo SVG -->
+                                <svg class="w-6 h-6" viewBox="0 0 24 24">
+                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
                             </div>
-                            <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">MacBook Pro - Chrome</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">Paris, France · Actif maintenant</p>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Connecté via Google</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
+                            </div>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold shrink-0">
+                                <i class="pi pi-check text-[10px]"></i> Actif
+                            </span>
+                        </div>
+                        <p class="text-sm text-surface-500 dark:text-surface-400 mt-3 flex items-start gap-2">
+                            <i class="pi pi-info-circle text-indigo-400 mt-0.5 shrink-0"></i>
+                            Votre mot de passe est géré par Google. Pour le modifier, rendez-vous dans votre
+                            <a href="https://myaccount.google.com/security" target="_blank"
+                               class="text-indigo-500 hover:text-indigo-600 font-medium ml-1">compte Google →</a>
+                        </p>
+                    } @else {
+                        <!-- Email / password user -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shrink-0">
+                                <i class="pi pi-envelope text-white text-lg"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Email & mot de passe</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
                             </div>
                         </div>
-                        <p-tag value="Session actuelle" severity="info" />
-                    </div>
 
-                    <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-surface-300 dark:bg-surface-600 flex items-center justify-center">
-                                <i class="pi pi-mobile text-surface-600 dark:text-surface-300 text-xl"></i>
+                        <div class="mt-4 p-4 rounded-2xl border border-surface-200 dark:border-surface-700">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i class="pi pi-key text-amber-500"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Mot de passe</p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400">Modifiez votre mot de passe de connexion</p>
+                                    </div>
+                                </div>
+                                <button pButton label="Modifier" [outlined]="true" size="small"
+                                        class="shrink-0" (click)="openPasswordDialog()"></button>
                             </div>
-                            <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">iPhone 15 Pro - Safari</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">Paris, France · Actif il y a 2 heures</p>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- ── 2. Sécurité avancée (2FA) ────────────────────────── -->
+            <section class="card !p-0 overflow-hidden">
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-shield text-emerald-500"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Sécurité avancée</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Authentification à deux facteurs</p>
+                    </div>
+                </div>
+
+                <div class="p-5">
+                    @if (isGoogleUser()) {
+                        <!-- Google handles 2FA -->
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-100 dark:border-emerald-900/40">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="pi pi-verified text-emerald-500 text-lg"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">Protégé par Google</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
+                                    Votre compte bénéficie des protections de Google, incluant la 2FA si vous l'avez activée dans votre compte Google.
+                                </p>
+                                <a href="https://myaccount.google.com/security" target="_blank"
+                                   class="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-2 hover:underline">
+                                    Gérer la sécurité Google <i class="pi pi-external-link text-[10px]"></i>
+                                </a>
                             </div>
                         </div>
-                        <p-button icon="pi pi-times" severity="danger" [text]="true" [rounded]="true" />
+                    } @else {
+                        <!-- Email user — 2FA coming soon -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl border border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800/50">
+                            <div class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700 flex items-center justify-center shrink-0">
+                                <i class="pi pi-clock text-surface-500"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Authentification 2FA</p>
+                                    <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-semibold uppercase tracking-wide">Bientôt</span>
+                                </div>
+                                <p class="text-xs text-surface-500 dark:text-surface-400">
+                                    L'authentification à deux facteurs par application (TOTP) sera disponible prochainement.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- ── 3. Session actuelle ──────────────────────────────── -->
+            <section class="card !p-0 overflow-hidden">
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                    <div class="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-desktop text-violet-500"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Session actuelle</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Appareil sur lequel vous êtes connecté</p>
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <p-button 
-                        label="Déconnecter toutes les autres sessions" 
-                        severity="secondary" 
-                        [outlined]="true"
-                        icon="pi pi-sign-out"
-                    />
-                </div>
-            </div>
-
-            <p-divider />
-
-            <!-- Security Log -->
-            <div>
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">Historique de sécurité</h2>
-                
-                <div class="space-y-3">
-                    <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                        <i class="pi pi-sign-in text-emerald-500"></i>
-                        <div class="flex-1">
-                            <p class="text-surface-900 dark:text-surface-0">Connexion réussie</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">Chrome sur MacBook Pro</p>
+                <div class="p-5">
+                    <!-- Current real session -->
+                    <div class="flex items-center gap-3 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+                        <div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
+                            <i [class]="'pi ' + currentSession().deviceIcon + ' text-violet-500'"></i>
                         </div>
-                        <span class="text-sm text-surface-400">Il y a 5 min</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ currentSession().device }}</p>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    Actif maintenant
+                                </span>
+                            </div>
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+                                {{ currentSession().browser }} · {{ user()?.email }}
+                            </p>
+                            <p class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+                                Connecté {{ currentSession().loginTime }}
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                        <i class="pi pi-key text-amber-500"></i>
-                        <div class="flex-1">
-                            <p class="text-surface-900 dark:text-surface-0">Mot de passe modifié</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">Changement de mot de passe</p>
-                        </div>
-                        <span class="text-sm text-surface-400">Il y a 3 mois</span>
+
+                    <!-- Multi-session coming soon note -->
+                    <div class="flex items-start gap-2 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
+                        <i class="pi pi-info-circle text-surface-400 text-sm mt-0.5 shrink-0"></i>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
+                            La gestion multi-appareils et la révocation à distance de sessions seront disponibles prochainement.
+                        </p>
                     </div>
-                    <div class="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                        <i class="pi pi-shield text-indigo-500"></i>
-                        <div class="flex-1">
-                            <p class="text-surface-900 dark:text-surface-0">2FA activé</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">Authentification à deux facteurs</p>
-                        </div>
-                        <span class="text-sm text-surface-400">Il y a 6 mois</span>
+
+                    <!-- Logout button -->
+                    <div class="mt-4">
+                        <button pButton label="Se déconnecter de cette session" icon="pi pi-sign-out"
+                                severity="secondary" [outlined]="true"
+                                class="w-full sm:w-auto"
+                                (click)="logout()"></button>
                     </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- ── 4. Activité récente ──────────────────────────────── -->
+            <section class="card !p-0 overflow-hidden">
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-history text-amber-500"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Activité récente</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Dernières actions sur votre compte</p>
+                    </div>
+                </div>
+
+                <div class="p-5">
+                    <div class="space-y-1">
+                        <!-- Real login event -->
+                        <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                                <i [class]="'pi ' + loginIcon() + ' text-emerald-500 text-sm'"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ loginEventLabel() }}</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400">{{ currentSession().browser }} · {{ currentSession().device }}</p>
+                            </div>
+                            <span class="text-xs text-surface-400 shrink-0">{{ currentSession().loginTime }}</span>
+                        </div>
+
+                        <!-- Account creation event (real) -->
+                        @if (user()?.created_at) {
+                            <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-user-plus text-indigo-500 text-sm"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">Compte créé</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">Inscription à Afrin Nexus</p>
+                                </div>
+                                <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="flex items-start gap-2 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
+                        <i class="pi pi-info-circle text-surface-400 text-sm mt-0.5 shrink-0"></i>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
+                            L'historique de sécurité complet (connexions, modifications de profil, etc.) sera disponible prochainement.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
         </div>
+
+        <!-- ── Password change dialog ─────────────────────────────────── -->
+        <p-dialog [(visible)]="showPasswordDialog"
+                  [style]="{ width: '95vw', maxWidth: '460px' }"
+                  [modal]="true" [draggable]="false" [resizable]="false"
+                  styleClass="!rounded-2xl overflow-hidden">
+            <ng-template #header>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                        <i class="pi pi-key text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Modifier le mot de passe</h3>
+                        <p class="text-surface-500 text-sm m-0">Choisissez un mot de passe fort</p>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template #content>
+                <div class="flex flex-col gap-5 pt-3">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            Mot de passe actuel <span class="text-rose-400">*</span>
+                        </label>
+                        <p-password [(ngModel)]="pwForm.current" [feedback]="false" [toggleMask]="true"
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl" />
+                        @if (pwSubmitted && !pwForm.current) {
+                            <small class="text-rose-500 text-xs">Requis</small>
+                        }
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            Nouveau mot de passe <span class="text-rose-400">*</span>
+                        </label>
+                        <p-password [(ngModel)]="pwForm.newPw" [toggleMask]="true"
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl"
+                                    promptLabel="Choisissez un mot de passe"
+                                    weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort" />
+                        @if (pwSubmitted && !pwForm.newPw) {
+                            <small class="text-rose-500 text-xs">Requis</small>
+                        }
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            Confirmer le nouveau mot de passe <span class="text-rose-400">*</span>
+                        </label>
+                        <p-password [(ngModel)]="pwForm.confirm" [feedback]="false" [toggleMask]="true"
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl" />
+                        @if (pwSubmitted && pwForm.confirm && pwForm.confirm !== pwForm.newPw) {
+                            <small class="text-rose-500 text-xs">Les mots de passe ne correspondent pas</small>
+                        }
+                    </div>
+
+                    <!-- Password rules -->
+                    <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800 space-y-1.5">
+                        <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 mb-2">Règles :</p>
+                        @for (rule of passwordRules; track rule.label) {
+                            <div class="flex items-center gap-2">
+                                <i class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'pi pi-check text-emerald-500' : 'pi pi-times text-surface-400'"></i>
+                                <span class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'text-emerald-600 dark:text-emerald-400' : 'text-surface-500'">{{ rule.label }}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template #footer>
+                <div class="flex gap-3 pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="closePasswordDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                    <p-button label="Enregistrer" icon="pi pi-check"
+                              [loading]="savingPassword()"
+                              (click)="savePassword()"
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0" />
+                </div>
+            </ng-template>
+        </p-dialog>
     `
 })
-export class SecuritySettings {
-    twoFactorEnabled = true;
-}
+export class SecuritySettings implements OnInit {
+    private tokenService = inject(TokenService);
+    private apiService   = inject(ApiService);
+    private authService  = inject(AuthService);
+    private msgService   = inject(MessageService);
 
+    user = this.tokenService.user;
+
+    // ── Auth method detection ──────────────────────────────────────────
+    /**
+     * A user is a Google OAuth user if:
+     * 1. Their auth_provider is 'google' (set locally at login), OR
+     * 2. Their avatar is hosted on googleusercontent.com (Google profile pic)
+     */
+    readonly isGoogleUser = computed(() => {
+        const u = this.user();
+        if (!u) return false;
+        return u.auth_provider === 'google'
+            || !!(u.avatar_url?.includes('googleusercontent.com'));
+    });
+
+    // ── Session info (real, derived from browser + token) ─────────────
+    readonly currentSession = computed(() => {
+        return {
+            device:     this.detectDevice(),
+            deviceIcon: this.deviceIcon(),
+            browser:    this.detectBrowser(),
+            loginTime:  this.getLoginTime(),
+        };
+    });
+
+    // ── Password dialog ────────────────────────────────────────────────
+    showPasswordDialog = false;
+    savingPassword     = signal(false);
+    pwSubmitted        = false;
+    pwForm             = { current: '', newPw: '', confirm: '' };
+
+    passwordRules = [
+        { label: 'Au moins 8 caractères',           valid: (p: string) => p.length >= 8 },
+        { label: 'Une lettre majuscule',             valid: (p: string) => /[A-Z]/.test(p) },
+        { label: 'Une lettre minuscule',             valid: (p: string) => /[a-z]/.test(p) },
+        { label: 'Un chiffre',                       valid: (p: string) => /\d/.test(p) },
+        { label: 'Un caractère spécial (@!#$%…)',    valid: (p: string) => /[^A-Za-z0-9]/.test(p) },
+    ];
+
+    ngOnInit() {
+        // If auth_provider is not set but user has a Google avatar, persist the inference
+        const u = this.user();
+        if (u && !u.auth_provider && u.avatar_url?.includes('googleusercontent.com')) {
+            this.tokenService.setUser({ ...u, auth_provider: 'google' });
+        }
+    }
+
+    // ── Login icon: google = logo SVG inside span, email = pi-sign-in ──
+    readonly loginIcon = computed(() => 'pi-sign-in');
+
+    readonly loginEventLabel = computed(() =>
+        this.isGoogleUser() ? 'Connexion via Google' : 'Connexion réussie'
+    );
+
+    // ── Device detection ───────────────────────────────────────────────
+    private detectDevice(): string {
+        const ua = navigator.userAgent;
+        if (/iPhone/.test(ua)) return 'iPhone';
+        if (/iPad/.test(ua))   return 'iPad';
+        if (/Android.*Mobile/.test(ua)) return 'Android (mobile)';
+        if (/Android/.test(ua)) return 'Android (tablette)';
+        if (/Mac OS X/.test(ua) && !/iPhone|iPad/.test(ua)) return 'Mac';
+        if (/Windows/.test(ua)) return 'Windows';
+        if (/Linux/.test(ua))   return 'Linux';
+        return 'Navigateur web';
+    }
+
+    private deviceIcon(): string {
+        const ua = navigator.userAgent;
+        if (/iPhone|Android.*Mobile/.test(ua)) return 'pi-mobile';
+        if (/iPad|Android(?!.*Mobile)/.test(ua)) return 'pi-tablet';
+        return 'pi-desktop';
+    }
+
+    private detectBrowser(): string {
+        const ua = navigator.userAgent;
+        if (/Edg\//.test(ua))            return 'Microsoft Edge';
+        if (/OPR\/|Opera/.test(ua))      return 'Opera';
+        if (/Chrome\//.test(ua))         return 'Chrome';
+        if (/Firefox\//.test(ua))        return 'Firefox';
+        if (/Safari\//.test(ua))         return 'Safari';
+        return 'Navigateur';
+    }
+
+    private getLoginTime(): string {
+        // Try to read the JWT `iat` claim for the actual login timestamp
+        const token = this.tokenService.token();
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (payload.iat) {
+                    const d = new Date(payload.iat * 1000);
+                    const now = Date.now();
+                    const diff = now - d.getTime();
+                    if (diff < 60_000)      return 'à l\'instant';
+                    if (diff < 3_600_000)   return `il y a ${Math.round(diff / 60_000)} min`;
+                    if (diff < 86_400_000)  return `il y a ${Math.round(diff / 3_600_000)} h`;
+                    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                }
+            } catch { /* non-blocking */ }
+        }
+        return 'récemment';
+    }
+
+    formatDate(isoDate?: string): string {
+        if (!isoDate) return '—';
+        const d = new Date(isoDate);
+        return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    // ── Password dialog actions ────────────────────────────────────────
+    openPasswordDialog() {
+        this.pwForm = { current: '', newPw: '', confirm: '' };
+        this.pwSubmitted = false;
+        this.showPasswordDialog = true;
+    }
+
+    closePasswordDialog() {
+        this.showPasswordDialog = false;
+        this.pwSubmitted = false;
+    }
+
+    async savePassword() {
+        this.pwSubmitted = true;
+
+        if (!this.pwForm.current || !this.pwForm.newPw || !this.pwForm.confirm) return;
+        if (this.pwForm.newPw !== this.pwForm.confirm) return;
+        if (this.passwordRules.some(r => !r.valid(this.pwForm.newPw))) {
+            this.msgService.add({ severity: 'warn', summary: 'Mot de passe trop faible',
+                detail: 'Respectez toutes les règles de sécurité.', life: 4000 });
+            return;
+        }
+
+        this.savingPassword.set(true);
+        try {
+            await firstValueFrom(this.apiService.changePassword({
+                current_password: this.pwForm.current,
+                new_password:     this.pwForm.newPw,
+            }));
+            this.msgService.add({ severity: 'success', summary: 'Mot de passe modifié',
+                detail: 'Votre mot de passe a été mis à jour.', life: 4000 });
+            this.closePasswordDialog();
+        } catch (err: any) {
+            const detail = err?.error?.detail === 'Invalid current password'
+                ? 'Mot de passe actuel incorrect.'
+                : 'Impossible de modifier le mot de passe.';
+            this.msgService.add({ severity: 'error', summary: 'Erreur', detail, life: 5000 });
+        } finally {
+            this.savingPassword.set(false);
+        }
+    }
+
+    // ── Logout ─────────────────────────────────────────────────────────
+    logout() {
+        this.authService.logout();
+    }
+}

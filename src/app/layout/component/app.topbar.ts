@@ -102,7 +102,7 @@ interface CategoryCard {
 
             <!-- Mobile ONLY: Simple user icon - redirects directly to settings -->
             <a
-                [routerLink]="['/'+lang, 'pages', 'settings', 'account']"
+                [routerLink]="['/'+lang, 'pages', 'settings']"
                 class="layout-topbar-action mobile-user-icon items-center justify-center"
             >
                 <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center overflow-hidden">
@@ -196,10 +196,9 @@ interface CategoryCard {
 
                             <!-- Help Section -->
                             <div class="py-2">
-                                <a href="https://help.afrinnexus.app" target="_blank" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'help']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-question-circle text-amber-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('settings.getHelp') }}</span>
-                                    <i class="pi pi-external-link text-xs text-surface-400 ml-auto"></i>
                                 </a>
                             </div>
 

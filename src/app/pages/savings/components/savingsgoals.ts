@@ -13,6 +13,7 @@ import { SavingsService, SavingsGoalDisplay } from '../../service/savings.servic
 import { AssetsStateService } from '../../service/assets-state.service';
 import { SavingGoalCreate } from '../../../core/services/api.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     standalone: true,
@@ -79,14 +80,14 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                 <!-- Action buttons — always visible -->
                                 <div class="flex gap-1 shrink-0">
                                     <button
-                                        class="w-7 h-7 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                        class="w-8 h-8 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
                                         title="Modifier"
                                         (click)="editGoal(goal)"
                                     >
                                         <i class="pi pi-pencil text-xs text-surface-500 dark:text-surface-400"></i>
                                     </button>
                                     <button
-                                        class="w-7 h-7 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                                        class="w-8 h-8 rounded-lg bg-surface-200 dark:bg-surface-700 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                                         title="Supprimer"
                                         (click)="confirmDeleteGoal(goal)"
                                     >
@@ -170,30 +171,28 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Target Amount -->
                     <div class="flex flex-col gap-2">
                         <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-euro text-emerald-500"></i>
-                            Montant cible
+                            <i class="pi pi-wallet text-emerald-500"></i>
+                            Montant cible <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                         </label>
-                        <p-inputnumber 
-                            [(ngModel)]="goalForm.target_amount" 
-                            mode="currency" 
-                            currency="EUR" 
-                            locale="fr-FR"
+                        <p-inputnumber
+                            [(ngModel)]="goalForm.target_amount"
+                            mode="decimal"
+                            [minFractionDigits]="0" [maxFractionDigits]="0"
                             styleClass="w-full"
                             inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500"
                         />
                     </div>
-                    
+
                     <!-- Current Amount -->
                     <div class="flex flex-col gap-2">
                         <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
                             <i class="pi pi-wallet text-cyan-500"></i>
-                            Montant actuel (optionnel)
+                            Montant actuel <span class="text-surface-400 font-normal">(optionnel · {{ cs.config().symbol }})</span>
                         </label>
-                        <p-inputnumber 
-                            [(ngModel)]="goalForm.current_amount" 
-                            mode="currency" 
-                            currency="EUR" 
-                            locale="fr-FR"
+                        <p-inputnumber
+                            [(ngModel)]="goalForm.current_amount"
+                            mode="decimal"
+                            [minFractionDigits]="0" [maxFractionDigits]="0"
                             styleClass="w-full"
                             inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-cyan-500"
                         />
@@ -240,10 +239,11 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     `
 })
 export class SavingsGoals implements OnInit, OnDestroy {
-    private savingsService = inject(SavingsService);
-    private stateService = inject(AssetsStateService);
-    private messageService = inject(MessageService);
+    private savingsService      = inject(SavingsService);
+    private stateService        = inject(AssetsStateService);
+    private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
+    cs = inject(CurrencyService);
     
     private subscription?: Subscription;
     

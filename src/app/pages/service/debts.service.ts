@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
 import { ApiService, Debt, DebtCreate, DebtUpdate, DebtType, DebtCategory } from '../../core/services/api.service';
 import { AssetsStateService } from './assets-state.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 interface CacheEntry<T> {
     data: T;
@@ -38,8 +39,9 @@ export interface DebtsStatsSummary {
 
 @Injectable({ providedIn: 'root' })
 export class DebtsService {
-    private api = inject(ApiService);
-    private stateService = inject(AssetsStateService);
+    private api           = inject(ApiService);
+    private stateService  = inject(AssetsStateService);
+    private currencyService = inject(CurrencyService);
     
     // Cache storage
     private recordsCache: CacheEntry<DebtRecord[]> | null = null;
@@ -145,14 +147,18 @@ export class DebtsService {
      */
     async addRecord(record: DebtRecord): Promise<DebtRecord> {
         try {
+            // Convert amounts from the user's display currency (e.g. FCFA) to the
+            // backend's base currency (EUR) before persisting.
+            const toBase = (v: number) => this.currencyService.toBaseAmount(v);
+
             const debtData: DebtCreate = {
                 name: record.name,
                 type: record.type === 'Debt' ? 'i_owe' : 'owed_to_me',
                 category: record.category || this.inferCategory(record.name),
-                initial_amount: record.total,
-                current_amount: record.total - record.paid,
+                initial_amount: toBase(record.total),
+                current_amount: toBase(record.total - record.paid),
                 interest_rate: record.interestRate || 0,
-                monthly_payment: record.monthlyPayment || 0,
+                monthly_payment: record.monthlyPayment ? toBase(record.monthlyPayment) : 0,
                 creditor_name: record.creditor,
                 description: record.note,
                 start_date: record.date
@@ -177,14 +183,17 @@ export class DebtsService {
      */
     async updateRecord(record: DebtRecord): Promise<DebtRecord> {
         if (!record.id) throw new Error('Missing id');
-        
+
         try {
+            // Same conversion as addRecord — user edits in their display currency.
+            const toBase = (v: number) => this.currencyService.toBaseAmount(v);
+
             const debtData: DebtUpdate = {
                 name: record.name,
-                initial_amount: record.total,
-                current_amount: record.total - record.paid,
+                initial_amount: toBase(record.total),
+                current_amount: toBase(record.total - record.paid),
                 interest_rate: record.interestRate,
-                monthly_payment: record.monthlyPayment,
+                monthly_payment: record.monthlyPayment ? toBase(record.monthlyPayment) : undefined,
                 creditor_name: record.creditor,
                 description: record.note
             };
@@ -227,7 +236,9 @@ export class DebtsService {
      */
     async addPayment(id: string, amount: number): Promise<DebtRecord> {
         try {
-            const debt = await firstValueFrom(this.api.makePayment(parseInt(id), amount));
+            // amount is entered in display currency — convert to EUR before sending.
+            const baseAmount = this.currencyService.toBaseAmount(amount);
+            const debt = await firstValueFrom(this.api.makePayment(parseInt(id), baseAmount));
             const mapped = this.mapDebtToRecord(debt);
             // Invalidate cache
             this.invalidateRecordsCache();

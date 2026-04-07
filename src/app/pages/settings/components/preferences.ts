@@ -143,70 +143,43 @@ import { TokenService } from '../../../core/services/token.service';
 
             <!-- Notifications -->
             <div class="mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.notifications') }}</h2>
-
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-                                <i class="pi pi-envelope text-white"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.emailNotifications') }}</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.emailNotificationsDesc') }}</p>
-                            </div>
-                        </div>
-                        <p-toggleswitch [(ngModel)]="emailNotifications" />
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                                <i class="pi pi-bell text-white"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.pushNotifications') }}</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.pushNotificationsDesc') }}</p>
-                            </div>
-                        </div>
-                        <p-toggleswitch [(ngModel)]="pushNotifications" />
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                                <i class="pi pi-chart-line text-white"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.monthlyReports') }}</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.monthlyReportsDesc') }}</p>
-                            </div>
-                        </div>
-                        <p-toggleswitch [(ngModel)]="monthlyReports" />
-                    </div>
-
-                    <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center">
-                                <i class="pi pi-exclamation-triangle text-white"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.expenseAlerts') }}</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.expenseAlertsDesc') }}</p>
-                            </div>
-                        </div>
-                        <p-toggleswitch [(ngModel)]="expenseAlerts" />
-                    </div>
+                <div class="flex items-center gap-3 mb-6">
+                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.notifications') }}</h2>
+                    <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
                 </div>
+
+                <div class="space-y-3 opacity-50 pointer-events-none select-none" title="Bientôt disponible">
+                    @for (notif of notificationItems; track notif.key) {
+                        <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center" [ngClass]="notif.bg">
+                                    <i [class]="'pi ' + notif.icon + ' text-white'"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-surface-900 dark:text-surface-0">{{ t(notif.label) }}</p>
+                                    <p class="text-sm text-surface-500 dark:text-surface-400">{{ t(notif.desc) }}</p>
+                                </div>
+                            </div>
+                            <p-toggleswitch [ngModel]="false" [disabled]="true" />
+                        </div>
+                    }
+                </div>
+                <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 flex items-center gap-1.5">
+                    <i class="pi pi-info-circle"></i>
+                    La gestion des notifications sera disponible dans une prochaine mise à jour.
+                </p>
             </div>
 
             <p-divider />
 
             <!-- Data Export -->
             <div>
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.data') }}</h2>
+                <div class="flex items-center gap-3 mb-6">
+                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.data') }}</h2>
+                    <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
+                </div>
 
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
+                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl opacity-50">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
                             <i class="pi pi-download text-white text-xl"></i>
@@ -216,8 +189,12 @@ import { TokenService } from '../../../core/services/token.service';
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.exportDataDesc') }}</p>
                         </div>
                     </div>
-                    <p-button [label]="t('common.export')" icon="pi pi-download" [outlined]="true" />
+                    <p-button [label]="t('common.export')" icon="pi pi-download" [outlined]="true" [disabled]="true" />
                 </div>
+                <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 flex items-center gap-1.5">
+                    <i class="pi pi-info-circle"></i>
+                    L'export CSV / PDF sera disponible avec le plan Pro.
+                </p>
             </div>
         </div>
     `
@@ -242,10 +219,14 @@ export class PreferencesSettings implements OnInit {
 
     selectedLanguage = 'fr';
     selectedCurrency = 'XOF';
-    emailNotifications = true;
-    pushNotifications = true;
-    monthlyReports = true;
-    expenseAlerts = false;
+
+    // Notification items — disabled/coming soon (no backend support yet)
+    readonly notificationItems = [
+        { key: 'email',   label: 'settings.preferences.emailNotifications',  desc: 'settings.preferences.emailNotificationsDesc',  icon: 'pi-envelope',              bg: 'bg-gradient-to-br from-indigo-500 to-cyan-500'   },
+        { key: 'push',    label: 'settings.preferences.pushNotifications',   desc: 'settings.preferences.pushNotificationsDesc',   icon: 'pi-bell',                  bg: 'bg-gradient-to-br from-emerald-500 to-teal-500'  },
+        { key: 'monthly', label: 'settings.preferences.monthlyReports',      desc: 'settings.preferences.monthlyReportsDesc',      icon: 'pi-chart-line',            bg: 'bg-gradient-to-br from-amber-500 to-orange-500'  },
+        { key: 'alert',   label: 'settings.preferences.expenseAlerts',       desc: 'settings.preferences.expenseAlertsDesc',       icon: 'pi-exclamation-triangle',  bg: 'bg-gradient-to-br from-rose-500 to-pink-500'     },
+    ];
 
     ngOnInit() {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);

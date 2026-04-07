@@ -68,7 +68,8 @@
             margin-left: 0;
             padding-left: 1rem;
             padding-right: 1rem;
-            padding-bottom: 90px; // Space for bottom navigation
+            // 70px bottom nav + 56px FAB + 16px gap + safe area
+            padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px));
         }
 
         // Hide sidebar completely on mobile - we use bottom nav instead
