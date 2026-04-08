@@ -61,7 +61,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
                             <div class="font-bold text-3xl md:text-4xl leading-tight"
                                  [ngClass]="realNetWorth() >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-rose-500'">
-                                {{ realNetWorth() < 0 ? '−' : '' }}{{ cs.formatNumber(realNetWorth() < 0 ? -realNetWorth() : realNetWorth()) }}<span class="text-base md:text-lg font-semibold ml-1 opacity-60">{{ cs.config().symbol }}</span>
+                                <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" />
                             </div>
                         </div>
                         <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
@@ -221,6 +221,9 @@ export class StatsWidget implements OnInit, OnDestroy {
         if (!s) return 0;
         return (s.totalAssets ?? 0) - (s.totalDebts ?? 0);
     });
+
+    /** Absolute net worth in EUR — for <app-amount> which handles Math.abs internally */
+    readonly absNetWorth = computed(() => Math.abs(this.realNetWorth()));
     
     monthlySavings = signal(0);
     savingsRatePct = signal(0);

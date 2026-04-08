@@ -753,6 +753,11 @@ export class AppTopbar implements OnInit {
 
     ngOnInit() {
         this.lang = this.getCurrentLang();
+
+        // Listen for onboarding "add asset" event from the dashboard
+        if (typeof window !== 'undefined') {
+            window.addEventListener('omaad:open-add-asset', () => this.openAddAssetDialog());
+        }
     }
 
     get avatarUrl(): string | null {

@@ -34,7 +34,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                         <span class="text-slate-400">{{ _('Formation & Transfert de Comp\u00e9tences', 'Training & Skills Transfer') }}</span>
                     </div>
 
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-5">EXPERTISE</p>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">EXPERTISE</span></div>
                     <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
                         {{ heroTitle1() }}<br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
@@ -64,7 +64,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-500 mb-4">{{ _('POUR QUI ?', 'WHO IS IT FOR?') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-500 text-xs"></i><span class="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{{ _('POUR QUI ?', 'WHO IS IT FOR?') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
                             {{ _('Des formations pens\u00e9es pour votre contexte', 'Training programs designed for your context') }}
                         </h2>
@@ -74,7 +74,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @for (audience of audiences; track audience.title) {
-                            <div class="rounded-3xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
                                      [style.background]="audience.iconBg">
                                     <i [class]="audience.icon + ' text-white'"></i>
@@ -99,7 +99,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section id="formations" class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-500 mb-4">{{ _('NOS PROGRAMMES', 'OUR PROGRAMS') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-500 text-xs"></i><span class="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{{ _('NOS PROGRAMMES', 'OUR PROGRAMS') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Catalogue de formations', 'Training Catalog') }}</h2>
                         <p class="text-slate-500 dark:text-slate-400 mt-4 max-w-xl text-lg">
                             {{ catalogDesc() }}
@@ -108,7 +108,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
 
                     <div class="space-y-6">
                         @for (formation of formations; track formation.title) {
-                            <div class="rounded-3xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row">
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row">
                                 <!-- Left -->
                                 <div class="lg:w-72 flex-shrink-0 flex flex-col justify-center p-10 min-h-[200px]"
                                      [style.background]="formation.illustrationBg">
@@ -154,7 +154,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-4">{{ _('COMMENT ON FORME', 'HOW WE TRAIN') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">{{ _('COMMENT ON FORME', 'HOW WE TRAIN') }}</span></div>
                         <h2 class="text-4xl font-bold text-white max-w-2xl">{{ _('Notre approche p\u00e9dagogique', 'Our training methodology') }}</h2>
                         <p class="text-slate-400 mt-4 max-w-xl text-lg">
                             {{ pedagogySubtitle() }}
@@ -181,14 +181,14 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-500 mb-4">{{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-500 text-xs"></i><span class="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
                             {{ _('Pas une formation g\u00e9n\u00e9rique', 'Not a generic training program') }}
                         </h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @for (diff of differentiators; track diff.title) {
-                            <div class="rounded-3xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
                                      [style.background]="diff.iconBg">
                                     <i [class]="diff.icon + ' text-white'"></i>
@@ -205,7 +205,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto">
                     <div class="mb-14 text-center">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-4">FAQ</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">FAQ</span></div>
                         <h2 class="text-4xl font-bold text-white">{{ _('Questions fr\u00e9quentes', 'Frequently Asked Questions') }}</h2>
                     </div>
                     <div class="space-y-4">
@@ -231,7 +231,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <!-- ══════════ CTA FINAL ══════════ -->
             <section class="bg-gradient-to-br from-emerald-950 via-slate-900 to-cyan-950 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-emerald-400 mb-4">{{ ctaReady() }}</p>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">{{ ctaReady() }}</span></div>
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
                         {{ ctaHeadline() }}
                     </h2>
@@ -362,7 +362,7 @@ export class AdvisoryFormationPage {
                 title: f ? 'Data Engineering avec la Modern Data Stack' : 'Data Engineering with the Modern Data Stack',
                 duration: f ? '2 \u00e0 3 jours' : '2 to 3 days',
                 desc: f ? 'Formation pratique sur les outils qui font la Modern Data Stack africaine : ingestion, transformation avec dbt, orchestration avec Airflow, stockage cloud. Chaque exercice s\u2019appuie sur des cas r\u00e9els de votre secteur.'
-                       : 'Hands-on training on the tools powering the African Modern Data Stack: ingestion, transformation with dbt, orchestration with Airflow, cloud storage. Every exercise is based on real cases from your industry.',
+                       : 'Hands-on training on the tools powering the Modern Data Stack: ingestion, transformation with dbt, orchestration with Airflow, cloud storage. Every exercise is based on real cases from your industry.',
                 modules: f
                     ? [
                         'Architecture data moderne (Lakehouse, Warehouse)',
@@ -487,7 +487,7 @@ export class AdvisoryFormationPage {
                 iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
                 title: f ? 'Formateurs praticiens' : 'Practitioner trainers',
                 desc: f ? 'Nos formateurs d\u00e9ployent ces outils en production tous les jours. Ils connaissent les pi\u00e8ges r\u00e9els, les workarounds qui fonctionnent, et les contextes africains o\u00f9 ces solutions ont \u00e9t\u00e9 mises en \u0153uvre.'
-                       : 'Our trainers deploy these tools in production every day. They know the real pitfalls, the workarounds that work, and the African contexts where these solutions have been implemented.'
+                       : 'Our trainers deploy these tools in production every day. They know the real pitfalls, the workarounds that work, and the local contexts where these solutions have been implemented.'
             },
             {
                 icon: 'pi pi-wrench',
@@ -526,8 +526,8 @@ export class AdvisoryFormationPage {
             },
             {
                 q: f ? 'Les formations sont-elles disponibles en distanciel ?' : 'Are training programs available remotely?',
-                a: f ? 'Oui, en pr\u00e9sentiel (Dakar et d\u00e9placement possible sur d\u2019autres villes) ou en distanciel via Zoom/Google Meet. Nous recommandons le pr\u00e9sentiel pour les formations pratiques longues (2-3 jours) car les \u00e9changes informels sont tr\u00e8s pr\u00e9cieux, mais le distanciel est efficace pour les sessions courtes ou de suivi.'
-                     : 'Yes, on-site (Dakar, with travel to other cities available) or remotely via Zoom/Google Meet. We recommend on-site delivery for longer hands-on programs (2\u20133 days) as informal exchanges are invaluable, but remote sessions are effective for shorter or follow-up sessions.'
+                a: f ? 'Oui, en pr\u00e9sentiel (sur site et d\u00e9placement possible sur d\u2019autres villes) ou en distanciel via Zoom/Google Meet. Nous recommandons le pr\u00e9sentiel pour les formations pratiques longues (2-3 jours) car les \u00e9changes informels sont tr\u00e8s pr\u00e9cieux, mais le distanciel est efficace pour les sessions courtes ou de suivi.'
+                     : 'Yes, on-site (on-site, with travel to other cities available) or remotely via Zoom/Google Meet. We recommend on-site delivery for longer hands-on programs (2\u20133 days) as informal exchanges are invaluable, but remote sessions are effective for shorter or follow-up sessions.'
             }
         ];
     }

@@ -42,14 +42,14 @@ import { I18nService } from '../../../i18n/i18n.service';
                                             <i class="pi pi-flag text-indigo-400"></i>
                                             <span class="text-slate-400 text-sm">{{ t('landing.highlights.h1MockupFire') }}</span>
                                         </div>
-                                        <div class="text-white font-bold text-xl">€300,000</div>
+                                        <div class="text-white font-bold text-xl">200M FCFA</div>
                                     </div>
                                     <div class="bg-slate-800/50 rounded-xl p-4">
                                         <div class="flex items-center gap-2 mb-2">
                                             <i class="pi pi-wallet text-cyan-400"></i>
                                             <span class="text-slate-400 text-sm">{{ t('landing.highlights.h1MockupWorth') }}</span>
                                         </div>
-                                        <div class="text-white font-bold text-xl">€130,481</div>
+                                        <div class="text-white font-bold text-xl">85,6M FCFA</div>
                                     </div>
                                     <div class="bg-slate-800/50 rounded-xl p-4">
                                         <div class="flex items-center gap-2 mb-2">
@@ -133,7 +133,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <div class="relative bg-slate-900 rounded-2xl p-6 shadow-2xl border border-slate-700/50">
                                 <div class="flex items-center justify-between mb-6">
                                     <span class="text-slate-300 font-medium">{{ t('landing.highlights.h2MockupTitle') }}</span>
-                                    <span class="text-slate-500 text-sm">€130,481 total</span>
+                                    <span class="text-slate-500 text-sm">85,6M FCFA total</span>
                                 </div>
                                 <div class="space-y-4">
                                     <div>

@@ -76,48 +76,80 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div class="col-span-12 lg:col-span-6 mt-12 lg:mt-0">
                         <div class="relative">
                             <div class="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-cyan-500/20 to-emerald-500/20 rounded-2xl blur-xl"></div>
-                            <div class="relative bg-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 shadow-2xl">
-                                <div class="flex items-center gap-2 mb-6">
-                                    <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                    <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                                    <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
-                                    <span class="ml-4 text-slate-500 text-sm">omaad.app</span>
-                                </div>
-                                <div class="grid grid-cols-3 gap-4 mb-6">
-                                    <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                                        <div class="text-slate-400 text-xs mb-1">Patrimoine</div>
-                                        <div class="text-white font-bold text-lg">85,6M FCFA</div>
-                                        <div class="text-emerald-400 text-xs">+12.5%</div>
-                                    </div>
-                                    <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                                        <div class="text-slate-400 text-xs mb-1">{{ t('landing.hero.mockupSavings') }}</div>
-                                        <div class="text-white font-bold text-lg">38%</div>
-                                        <div class="text-cyan-400 text-xs">+5% ce mois</div>
-                                    </div>
-                                    <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                                        <div class="text-slate-400 text-xs mb-1">{{ t('landing.hero.mockupFire') }}</div>
-                                        <div class="text-white font-bold text-lg">43%</div>
-                                        <div class="text-indigo-400 text-xs">12 {{ t('landing.hero.mockupFireYears') }}</div>
+                            <div class="relative bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
+                                <!-- Fake topbar -->
+                                <div class="flex items-center gap-2 px-5 py-3 border-b border-slate-700/50 bg-slate-800/60">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-red-500/70"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/70"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full bg-green-500/70"></div>
+                                    <span class="ml-3 text-slate-500 text-xs">omaad.app</span>
+                                    <div class="ml-auto w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                                        <span class="text-white text-[8px] font-bold">MS</span>
                                     </div>
                                 </div>
-                                <div class="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <span class="text-slate-300 font-medium">{{ t('landing.hero.mockupTitle') }}</span>
-                                        <span class="text-slate-500 text-sm">{{ t('landing.hero.mockupSubtitle') }}</span>
+
+                                <div class="p-5 space-y-4">
+                                    <!-- Patrimoine Net headline -->
+                                    <div>
+                                        <div class="text-slate-500 text-[10px] uppercase tracking-wider mb-1">Patrimoine Net</div>
+                                        <div class="flex items-baseline gap-2">
+                                            <span class="text-white font-bold text-2xl">85,6M</span>
+                                            <span class="text-slate-400 text-sm">FCFA</span>
+                                            <span class="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
+                                                <i class="pi pi-arrow-up text-[8px]"></i>+12.5%
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="flex items-end justify-between h-24 gap-2">
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style="height: 40%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style="height: 50%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style="height: 45%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style="height: 60%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t" style="height: 55%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600 to-cyan-400 rounded-t" style="height: 70%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600 to-cyan-400 rounded-t" style="height: 65%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600 to-cyan-400 rounded-t" style="height: 75%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600 to-emerald-400 rounded-t" style="height: 80%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t" style="height: 85%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t" style="height: 90%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t animate-pulse" style="height: 100%"></div>
+
+                                    <!-- 3 mini KPIs -->
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <div class="bg-slate-800/60 rounded-lg px-3 py-2.5 text-center">
+                                            <div class="text-[10px] text-slate-500 mb-0.5">{{ t('landing.hero.mockupSavings') }}</div>
+                                            <div class="text-cyan-400 font-bold text-sm">38%</div>
+                                        </div>
+                                        <div class="bg-slate-800/60 rounded-lg px-3 py-2.5 text-center">
+                                            <div class="text-[10px] text-slate-500 mb-0.5">{{ t('landing.hero.mockupFire') }}</div>
+                                            <div class="text-indigo-400 font-bold text-sm">43%</div>
+                                        </div>
+                                        <div class="bg-slate-800/60 rounded-lg px-3 py-2.5 text-center">
+                                            <div class="text-[10px] text-slate-500 mb-0.5">Dettes</div>
+                                            <div class="text-rose-400 font-bold text-sm">−4,2M</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- FIRE progress -->
+                                    <div class="bg-slate-800/40 rounded-xl p-3">
+                                        <div class="flex items-center justify-between mb-1.5">
+                                            <span class="text-slate-400 text-[10px] font-medium uppercase tracking-wider">{{ t('landing.hero.mockupFire') }}</span>
+                                            <span class="text-emerald-400 text-xs font-bold">43% · 12 {{ t('landing.hero.mockupFireYears') }}</span>
+                                        </div>
+                                        <div class="h-2 bg-slate-700 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-indigo-500 via-cyan-500 to-emerald-500 rounded-full" style="width: 43%"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Asset breakdown -->
+                                    <div class="space-y-2">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-6 h-6 rounded-md bg-indigo-500/20 flex items-center justify-center shrink-0"><i class="pi pi-home text-indigo-400" style="font-size:10px"></i></div>
+                                            <span class="text-slate-400 text-xs flex-1">Immobilier</span>
+                                            <span class="text-white text-xs font-semibold tnum">52,4M</span>
+                                        </div>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-6 h-6 rounded-md bg-cyan-500/20 flex items-center justify-center shrink-0"><i class="pi pi-chart-line text-cyan-400" style="font-size:10px"></i></div>
+                                            <span class="text-slate-400 text-xs flex-1">BRVM / SONATEL</span>
+                                            <span class="text-white text-xs font-semibold tnum">18,2M</span>
+                                        </div>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-6 h-6 rounded-md bg-pink-500/20 flex items-center justify-center shrink-0"><i class="pi pi-users text-pink-400" style="font-size:10px"></i></div>
+                                            <span class="text-slate-400 text-xs flex-1">Tontine Famille</span>
+                                            <span class="text-white text-xs font-semibold tnum">8,5M</span>
+                                        </div>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-6 h-6 rounded-md bg-sky-500/20 flex items-center justify-center shrink-0"><i class="pi pi-mobile text-sky-400" style="font-size:10px"></i></div>
+                                            <span class="text-slate-400 text-xs flex-1">Wave</span>
+                                            <span class="text-white text-xs font-semibold tnum">6,5M</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

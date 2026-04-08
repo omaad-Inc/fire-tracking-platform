@@ -160,11 +160,11 @@ import { AuthService } from '../../core/services/auth.service';
                                     </div>
                                 </div>
                                 <div class="col-span-2 bg-slate-700/30 rounded-lg p-4">
-                                    <div class="text-slate-400 text-xs mb-1">Total Worth</div>
-                                    <div class="text-2xl font-bold text-white mb-3">130 481 €</div>
+                                    <div class="text-slate-400 text-xs mb-1">Patrimoine Net</div>
+                                    <div class="text-2xl font-bold text-white mb-3">85,6M FCFA</div>
                                     <div class="flex items-center gap-2 text-xs mb-4">
-                                        <span class="text-emerald-400">+8,025€</span>
-                                        <span class="text-emerald-400">+1.93%</span>
+                                        <span class="text-emerald-400">+5,2M</span>
+                                        <span class="text-emerald-400">+12.5%</span>
                                     </div>
                                     <!-- Mini Chart -->
                                     <div class="flex items-end justify-between h-16 gap-1">
@@ -186,10 +186,10 @@ import { AuthService } from '../../core/services/auth.service';
                                 <div class="w-6 h-6 rounded-full bg-slate-700"></div>
                                 <div class="w-4 h-4 rounded-full bg-slate-700"></div>
                             </div>
-                            <div class="text-white font-bold text-lg mb-1">130 481 €</div>
+                            <div class="text-white font-bold text-lg mb-1">85,6M FCFA</div>
                             <div class="flex items-center gap-1 text-xs mb-3">
-                                <span class="text-emerald-400">+8,025€</span>
-                                <span class="text-emerald-400">+1.93%</span>
+                                <span class="text-emerald-400">+5,2M</span>
+                                <span class="text-emerald-400">+12.5%</span>
                             </div>
                             <div class="space-y-2">
                                 <div class="flex justify-between text-xs">
@@ -203,31 +203,30 @@ import { AuthService } from '../../core/services/auth.service';
 
                     <!-- Text Content -->
                     <div class="text-center mt-16">
-                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                            Tout votre patrimoine <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">en</span>
-                            <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">un seul endroit</span>
+                        <p class="text-xs font-semibold tracking-[0.15em] uppercase text-indigo-400 mb-4">
+                            Construis. Protège. Règne.
+                        </p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+                            Devenez le roi<br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">de votre patrimoine</span>
                         </h2>
-                        <p class="text-slate-400 max-w-md mx-auto mb-8">
-                            Suivez votre patrimoine, vos transactions et votre progression vers l'indépendance financière.
+                        <p class="text-slate-400 max-w-md mx-auto mb-10 leading-relaxed">
+                            Patrimoine, épargne, dettes, objectif FIRE — tout est centralisé pour que vous preniez les bonnes décisions.
                         </p>
 
                         <!-- Value Props -->
-                        <div class="flex items-center justify-center gap-8 text-slate-400 text-xs">
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-lock text-lg text-indigo-400"></i>
+                        <div class="flex items-center justify-center gap-6 text-slate-400 text-xs">
+                            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                                <i class="pi pi-lock text-indigo-400"></i>
                                 <span>Sécurisé</span>
                             </div>
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-shield text-lg text-cyan-400"></i>
-                                <span>Privé</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-heart text-lg text-emerald-400"></i>
+                            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                                <i class="pi pi-heart text-emerald-400"></i>
                                 <span>Gratuit</span>
                             </div>
-                            <div class="flex flex-col items-center gap-1">
-                                <i class="pi pi-desktop text-lg text-amber-400"></i>
-                                <span>Multiplateforme</span>
+                            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                                <i class="pi pi-globe text-cyan-400"></i>
+                                <span>Multi-devises</span>
                             </div>
                         </div>
                     </div>

@@ -51,9 +51,9 @@ interface ContactForm {
 
                 <div class="relative max-w-5xl mx-auto text-center">
                     <!-- Overline -->
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-6"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
                         {{ _('Cabinet de conseil Data & IA', 'Data & AI Consulting Firm') }}
-                    </p>
+                    </span></div>
 
                     <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
                         {{ _('Partenaire de votre', 'Partner for your') }}<br>
@@ -103,11 +103,11 @@ interface ContactForm {
                 <div class="max-w-6xl mx-auto">
                     <!-- Section header -->
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
                             {{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}
-                        </p>
+                        </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight max-w-2xl">
-                            {{ _('Pourquoi les entreprises africaines travaillent avec nous', 'Why African businesses work with us') }}
+                            {{ _('Pourquoi nos clients nous font confiance', 'Why our clients trust us') }}
                         </h2>
                     </div>
 
@@ -143,7 +143,7 @@ interface ContactForm {
                                     </button>
                                 </div>
                                 <!-- Visual card -->
-                                <div class="relative rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 p-10 flex items-center justify-center min-h-[280px]">
+                                <div class="relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 p-10 flex items-center justify-center min-h-[280px]">
                                     <div class="text-center">
                                         <div class="w-20 h-20 rounded-2xl mx-auto mb-5 flex items-center justify-center"
                                              [style.background]="diff.iconBg">
@@ -171,9 +171,9 @@ interface ContactForm {
             <section id="offres" class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
                             {{ _('CONSTRUIRE VOS FONDATIONS DATA', 'BUILD YOUR DATA FOUNDATIONS') }}
-                        </p>
+                        </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight max-w-2xl">
                             {{ _('Ce que nous faisons', 'What we do') }}
                         </h2>
@@ -184,7 +184,7 @@ interface ContactForm {
 
                     <div class="space-y-6">
                         @for (offer of offers; track offer.title) {
-                            <div class="rounded-3xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row"
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row"
                                  [class.ring-2]="offer.featured"
                                  [class.ring-indigo-500]="offer.featured">
 
@@ -241,9 +241,9 @@ interface ContactForm {
             ══════════════════════════════════════════ -->
             <section class="bg-slate-950 py-20 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto text-center">
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
                         {{ _('UN PROJET EN TÊTE ?', 'HAVE A PROJECT IN MIND?') }}
-                    </p>
+                    </span></div>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
                         {{ _('Vous avez un projet data ?', 'Have a data project?') }}<br>{{ talkLabel() }}
                     </h2>
@@ -263,9 +263,9 @@ interface ContactForm {
             <section class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
                             {{ _('CHAQUE MARCHÉ A SES RÉALITÉS', 'EVERY MARKET HAS ITS REALITIES') }}
-                        </p>
+                        </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight max-w-2xl">
                             {{ _('Nos secteurs cibles', 'Our target sectors') }}
                         </h2>
@@ -276,7 +276,7 @@ interface ContactForm {
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @for (sector of sectors; track sector.title) {
-                            <div class="rounded-3xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col">
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col">
                                 <!-- Top — colored icon area -->
                                 <div class="flex items-center justify-center py-10 min-h-[140px]"
                                      [style.background]="sector.illustrationBg">
@@ -311,9 +311,9 @@ interface ContactForm {
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
                             MODERN DATA STACK
-                        </p>
+                        </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight max-w-2xl">
                             {{ _('Notre expertise technique', 'Our technical expertise') }}
                         </h2>
@@ -346,9 +346,9 @@ interface ContactForm {
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-16">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
                             {{ _('SIMPLE ET TRANSPARENT', 'SIMPLE AND TRANSPARENT') }}
-                        </p>
+                        </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
                             {{ _('Comment ça marche', 'How it works') }}
                         </h2>
@@ -359,7 +359,7 @@ interface ContactForm {
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         @for (step of steps; track step.num) {
-                            <div class="relative rounded-3xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="relative rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
                                 <!-- Step number badge -->
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6 font-bold text-xl text-white"
                                      style="background: linear-gradient(135deg, #6366f1, #06b6d4)">
@@ -397,9 +397,9 @@ interface ContactForm {
             <section id="contact" class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto">
                     <div class="text-center mb-12">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
                             {{ _('DÉMARRONS ENSEMBLE', 'LET'S START TOGETHER') }}
-                        </p>
+                        </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
                             {{ _('Discutons de votre projet', 'Let's discuss your project') }}
                         </h2>
@@ -409,7 +409,7 @@ interface ContactForm {
                     </div>
 
                     @if (submitted()) {
-                        <div class="flex flex-col items-center justify-center py-20 text-center rounded-3xl
+                        <div class="flex flex-col items-center justify-center py-20 text-center rounded-2xl
                                     bg-white/5 border border-white/10">
                             <div class="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6">
                                 <i class="pi pi-check text-3xl text-emerald-400"></i>
@@ -421,7 +421,7 @@ interface ContactForm {
                         </div>
                     } @else {
                         <form #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)"
-                              class="rounded-3xl p-8 md:p-10 bg-white/5 border border-white/10 space-y-6">
+                              class="rounded-2xl p-8 md:p-10 bg-white/5 border border-white/10 space-y-6">
 
                             <!-- Nom + Email -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -540,14 +540,14 @@ export class AdvisoryPage {
     _(fr: string, en: string): string { return this.isFr() ? fr : en; }
 
     // ── Strings with apostrophes (cannot use inline quotes in Angular templates) ──
-    readonly heroDesc2          = computed(() => this.isFr() ? 'et des solutions IA pour acc\u00e9l\u00e9rer l\u2019innovation en Afrique de l\u2019Ouest.' : 'and AI solutions to accelerate innovation in West Africa.');
+    readonly heroDesc2          = computed(() => this.isFr() ? 'et des solutions IA pour acc\u00e9l\u00e9rer l\u2019innovation sur le continent.' : 'and AI solutions to accelerate innovation on the ground.');
     readonly ctaProject         = computed(() => this.isFr() ? 'DISCUTER D\u2019UN PROJET' : 'DISCUSS A PROJECT');
     readonly ctaContact         = computed(() => this.isFr() ? 'PRENDRE CONTACT AVEC UN EXPERT DATA' : 'CONTACT A DATA EXPERT');
     readonly ctaContactShort    = computed(() => this.isFr() ? 'PRENDRE CONTACT' : 'GET IN TOUCH');
     readonly ctaSend            = computed(() => this.isFr() ? 'ENVOYER MA DEMANDE' : 'SEND MY REQUEST');
     readonly sectorLabel        = computed(() => this.isFr() ? 'Secteur d\u2019activit\u00e9' : 'Industry sector');
     readonly howFoundUs         = computed(() => this.isFr() ? 'Comment nous avez-vous connus ?' : 'How did you hear about us?');
-    readonly sectorSubtitle     = computed(() => this.isFr() ? 'Nous connaissons les acteurs, les contraintes et les enjeux data de chaque secteur en Afrique de l\u2019Ouest.' : 'We know the players, constraints and data challenges of every sector in West Africa.');
+    readonly sectorSubtitle     = computed(() => this.isFr() ? 'Nous connaissons les acteurs, les contraintes et les enjeux data de chaque secteur.' : 'We know the players, constraints and data challenges of every sector we serve.');
     readonly socialProof1       = computed(() => this.isFr() ? 'Nous d\u00e9marrons. Soyez parmi nos premi\u00e8res r\u00e9f\u00e9rences et b\u00e9n\u00e9ficiez' : 'We are launching. Be among our first references and benefit from');
     readonly socialProof2       = computed(() => this.isFr() ? 'd\u2019un accompagnement personnalis\u00e9 et d\u2019un tarif de lancement.' : 'personalised support and launch pricing.');
     readonly talkLabel          = computed(() => this.isFr() ? 'Parlons-en !' : 'Let\u2019s talk!');
@@ -564,14 +564,14 @@ export class AdvisoryPage {
         return [
             { id: 0, tab: f ? 'EXPERTISE DATA' : 'DATA EXPERTISE',
               title: f ? 'Expertise en Data Engineering' : 'Data Engineering Expertise',
-              desc: f ? 'Conçue par des praticiens pour des praticiens, notre approche repose sur une maîtrise approfondie des architectures data modernes. Nous concevons des plateformes fiables, performantes et durables, adaptées aux contraintes réelles des entreprises africaines.'
-                     : 'Built by practitioners for practitioners, our approach relies on deep mastery of modern data architectures. We design reliable, performant and sustainable platforms adapted to the real constraints of African businesses.',
+              desc: f ? 'Conçue par des praticiens pour des praticiens, notre approche repose sur une maîtrise approfondie des architectures data modernes. Nous concevons des plateformes fiables, performantes et durables, adaptées aux contraintes réelles des entreprises.'
+                     : 'Built by practitioners for practitioners, our approach relies on deep mastery of modern data architectures. We design reliable, performant and sustainable platforms adapted to the real constraints of businesses.',
               icon: 'pi pi-server', iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
               keywords: ['Snowflake', 'dbt', 'Airflow', 'Kafka', 'Spark'] },
             { id: 1, tab: f ? 'CONNAISSANCE LOCALE' : 'LOCAL EXPERTISE',
-              title: f ? 'Connaissance du marché africain' : 'Deep African market knowledge',
-              desc: f ? 'Nous connaissons les infrastructures bancaires, les opérateurs télécoms, les contraintes réglementaires et les réalités opérationnelles de l\'Afrique de l\'Ouest. Pas de boîte noire importée — des solutions pensées pour votre contexte.'
-                     : 'We understand banking infrastructure, telecom operators, regulatory constraints and operational realities in West Africa. No imported black box — solutions designed for your context.',
+              title: f ? 'Connaissance de votre marché' : 'Deep knowledge of your market',
+              desc: f ? 'Nous connaissons les infrastructures bancaires, les opérateurs télécoms, les contraintes réglementaires et les réalités opérationnelles du terrain. Pas de boîte noire importée — des solutions pensées pour votre contexte.'
+                     : 'We understand banking infrastructure, telecom operators, regulatory constraints and operational realities on the ground. No imported black box — solutions designed for your context.',
               icon: 'pi pi-globe', iconBg: 'linear-gradient(135deg, #10b981, #059669)',
               keywords: f ? ['Sénégal', 'UEMOA', 'Banques', 'Télécoms', 'Microfinance'] : ['Senegal', 'WAEMU', 'Banking', 'Telecoms', 'Microfinance'] },
             { id: 2, tab: f ? 'STACK MONDIALE' : 'WORLD-CLASS STACK',

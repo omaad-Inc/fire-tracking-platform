@@ -34,7 +34,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                         <span class="text-slate-400">{{ _('Mission Data Engineering / IA', 'Data Engineering / AI Mission') }}</span>
                     </div>
 
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-5">EXPERTISE</p>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">EXPERTISE</span></div>
                     <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
                         {{ heroTitle() }}<br>
                         <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
@@ -64,12 +64,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('VOUS RECONNAISSEZ-VOUS ?', 'SOUND FAMILIAR?') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('VOUS RECONNAISSEZ-VOUS ?', 'SOUND FAMILIAR?') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ whenToCallTitle() }}</h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         @for (pain of painPoints; track pain.title) {
-                            <div class="rounded-3xl bg-slate-100 dark:bg-slate-800 p-8 flex gap-5">
+                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8 flex gap-5">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-1"
                                      [style.background]="pain.iconBg">
                                     <i [class]="pain.icon + ' text-white text-sm'"></i>
@@ -88,12 +88,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('CE QUE NOUS CONSTRUISONS', 'WHAT WE BUILD') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('CE QUE NOUS CONSTRUISONS', 'WHAT WE BUILD') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ usecasesTitle() }}</h2>
                     </div>
                     <div class="space-y-5">
                         @for (usecase of usecases; track usecase.title) {
-                            <div class="rounded-3xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row">
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row">
                                 <div class="lg:w-64 flex-shrink-0 flex items-center justify-center p-10 min-h-[120px]"
                                      [style.background]="usecase.illustrationBg">
                                     <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -122,12 +122,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">{{ _('AVANT / APRES', 'BEFORE / AFTER') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">{{ _('AVANT / APRES', 'BEFORE / AFTER') }}</span></div>
                         <h2 class="text-4xl font-bold text-white">{{ _('Debloquez le potentiel de vos donnees', 'Unlock the full potential of your data') }}</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Avant -->
-                        <div class="rounded-3xl bg-white/5 border border-white/10 p-8">
+                        <div class="rounded-2xl bg-white/5 border border-white/10 p-8">
                             <div class="flex items-center gap-3 mb-6">
                                 <div class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center">
                                     <i class="pi pi-times text-rose-400 text-sm"></i>
@@ -144,7 +144,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             </ul>
                         </div>
                         <!-- Après -->
-                        <div class="rounded-3xl bg-indigo-500/10 border border-indigo-500/30 p-8">
+                        <div class="rounded-2xl bg-indigo-500/10 border border-indigo-500/30 p-8">
                             <div class="flex items-center gap-3 mb-6">
                                 <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
                                     <i class="pi pi-check text-emerald-400 text-sm"></i>
@@ -168,7 +168,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section id="approche" class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('METHODE STRUCTUREE', 'STRUCTURED METHODOLOGY') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('METHODE STRUCTUREE', 'STRUCTURED METHODOLOGY') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
                             {{ phasesTitle() }}
                         </h2>
@@ -178,7 +178,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     </div>
                     <div class="space-y-5">
                         @for (phase of phases; track phase.num) {
-                            <div class="rounded-3xl bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden">
                                 <div class="flex flex-col lg:flex-row">
                                     <!-- Phase number + title -->
                                     <div class="lg:w-72 flex-shrink-0 p-8 flex gap-5 items-start"
@@ -217,7 +217,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">{{ _('ARCHITECTURE OUVERTE', 'OPEN ARCHITECTURE') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">{{ _('ARCHITECTURE OUVERTE', 'OPEN ARCHITECTURE') }}</span></div>
                         <h2 class="text-4xl font-bold text-white max-w-2xl">{{ _('Passez a la Modern Data Platform', 'Embrace the Modern Data Platform') }}</h2>
                         <p class="text-slate-400 mt-4 max-w-2xl text-lg">
                             {{ stackDesc() }}
@@ -247,12 +247,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-500 mb-4">{{ _('CE QUE VOUS GAGNEZ', 'WHAT YOU GAIN') }}</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('CE QUE VOUS GAGNEZ', 'WHAT YOU GAIN') }}</span></div>
                         <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Un impact business mesurable', 'Measurable business impact') }}</h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         @for (benefit of benefits; track benefit.title) {
-                            <div class="rounded-3xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
                                      [style.background]="benefit.iconBg">
                                     <i [class]="benefit.icon + ' text-white'"></i>
@@ -269,7 +269,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <section class="bg-slate-950 py-24 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto">
                     <div class="mb-14 text-center">
-                        <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">FAQ</p>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">FAQ</span></div>
                         <h2 class="text-4xl font-bold text-white">{{ _('Questions frequentes', 'Frequently asked questions') }}</h2>
                     </div>
                     <div class="space-y-4">
@@ -295,7 +295,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <!-- ══════════ CTA FINAL ══════════ -->
             <section class="bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-xs font-semibold tracking-[0.2em] uppercase text-indigo-400 mb-4">{{ ctaReadyLabel() }}</p>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">{{ ctaReadyLabel() }}</span></div>
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
                         {{ ctaTitle() }}
                     </h2>
