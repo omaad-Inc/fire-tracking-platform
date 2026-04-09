@@ -143,12 +143,7 @@ interface CategoryCard {
                         <button
                             type="button"
                             class="layout-topbar-action"
-                            pStyleClass="@next"
-                            enterFromClass="hidden"
-                            enterActiveClass="animate-scalein"
-                            leaveToClass="hidden"
-                            leaveActiveClass="animate-fadeout"
-                            [hideOnOutsideClick]="true"
+                            (click)="userMenuOpen.set(!userMenuOpen())"
                         >
                             @if (avatarUrl) {
                                 <img [src]="avatarUrl"
@@ -164,7 +159,8 @@ interface CategoryCard {
                             }
                         </button>
                         <!-- User Dropdown Menu -->
-                        <div class="hidden absolute top-[3.25rem] right-0 w-72 bg-surface-0 dark:bg-surface-900 border border-surface rounded-xl origin-top shadow-xl overflow-hidden z-50">
+                        <div [class.hidden]="!userMenuOpen()"
+                             class="absolute top-[3.25rem] right-0 w-72 bg-surface-0 dark:bg-surface-900 border border-surface rounded-xl origin-top shadow-xl overflow-hidden z-50">
                             <!-- User Header -->
                             <div class="p-4 bg-gradient-to-r from-indigo-500/10 to-cyan-500/10 border-b border-surface">
                                 <div class="flex items-center gap-3">
@@ -190,19 +186,19 @@ interface CategoryCard {
 
                             <!-- Menu Items -->
                             <div class="py-2">
-                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'account']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'account']" (click)="userMenuOpen.set(false)" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-user text-indigo-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('menu.myAccount') }}</span>
                                 </a>
-                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'security']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'security']" (click)="userMenuOpen.set(false)" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-shield text-cyan-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('menu.security') }}</span>
                                 </a>
-                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'preferences']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'preferences']" (click)="userMenuOpen.set(false)" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-cog text-emerald-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('menu.preferences') }}</span>
                                 </a>
-                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'fire']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'fire']" (click)="userMenuOpen.set(false)" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-flag text-emerald-600"></i>
                                     <span class="text-surface-700 dark:text-surface-200">Objectif FIRE</span>
                                 </a>
@@ -212,7 +208,7 @@ interface CategoryCard {
 
                             <!-- Help Section -->
                             <div class="py-2">
-                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'help']" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
+                                <a [routerLink]="['/'+lang, 'pages', 'settings', 'help']" (click)="userMenuOpen.set(false)" class="flex items-center gap-3 px-4 py-3 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors cursor-pointer">
                                     <i class="pi pi-question-circle text-amber-500"></i>
                                     <span class="text-surface-700 dark:text-surface-200">{{ t('settings.getHelp') }}</span>
                                 </a>
@@ -222,7 +218,7 @@ interface CategoryCard {
 
                             <!-- Logout -->
                             <div class="py-2">
-                                <button (click)="logout()" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer group">
+                                <button (click)="logout(); userMenuOpen.set(false)" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer group">
                                     <i class="pi pi-sign-out text-red-500"></i>
                                     <span class="text-red-500 group-hover:text-red-600">{{ t('topbar.logout') }}</span>
                                 </button>
@@ -696,6 +692,9 @@ export class AppTopbar implements OnInit {
     items!: MenuItem[];
     lang = 'fr';
 
+    // User dropdown menu (desktop)
+    userMenuOpen = signal(false);
+
     // Add Asset Dialog
     showAddAssetDialog = false;
     currentStep = signal(0);
@@ -765,6 +764,8 @@ export class AppTopbar implements OnInit {
             filter(event => event instanceof NavigationEnd)
         ).subscribe(() => {
             this.lang = this.getCurrentLang();
+            // Close the user dropdown on any navigation
+            this.userMenuOpen.set(false);
         });
     }
 
