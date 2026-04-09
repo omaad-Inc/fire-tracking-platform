@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { PinService } from '../../../core/services/pin.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -145,7 +146,112 @@ import { firstValueFrom } from 'rxjs';
                 </div>
             </section>
 
-            <!-- ── 3. Session actuelle ──────────────────────────────── -->
+            <!-- ── 3. Code PIN ────────────────────────────────────── -->
+            <section class="card !p-0 overflow-hidden">
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-lock text-amber-500"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Code PIN</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Verrouillez l'accès à votre app</p>
+                    </div>
+                </div>
+
+                <div class="p-5">
+                    @if (!pinService.isPinSet()) {
+                        <!-- PIN not set — setup flow -->
+                        @if (!pinSetupActive) {
+                            <div class="flex items-center justify-between p-4 rounded-2xl border border-dashed border-surface-300 dark:border-surface-600">
+                                <div class="flex items-center gap-3">
+                                    <i class="pi pi-lock text-surface-400"></i>
+                                    <div>
+                                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Aucun code PIN défini</p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400">Ajoutez un code pour protéger l'accès</p>
+                                    </div>
+                                </div>
+                                <button pButton label="Configurer" size="small" [outlined]="true"
+                                        (click)="startPinSetup()" class="shrink-0"></button>
+                            </div>
+                        } @else {
+                            <!-- PIN entry UI -->
+                            <div class="text-center">
+                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 mb-1">
+                                    {{ pinSetupStep === 'new' ? 'Choisissez un code à 4 chiffres' : 'Confirmez votre code' }}
+                                </p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mb-5">
+                                    {{ pinSetupStep === 'new' ? 'Ce code sera demandé à chaque ouverture' : 'Entrez le même code à nouveau' }}
+                                </p>
+                                <!-- Dots -->
+                                <div class="flex gap-4 justify-center mb-5">
+                                    @for (i of [0,1,2,3]; track i) {
+                                        <div class="w-3.5 h-3.5 rounded-full border-2 transition-all"
+                                             [ngClass]="i < pinSetupInput.length ? 'bg-amber-500 border-amber-500' : 'border-amber-500/40'"></div>
+                                    }
+                                </div>
+                                <!-- Mini numpad -->
+                                <div class="grid grid-cols-3 gap-2 max-w-[240px] mx-auto mb-4">
+                                    @for (d of ['1','2','3','4','5','6','7','8','9','','0','⌫']; track d) {
+                                        @if (d === '') {
+                                            <div></div>
+                                        } @else if (d === '⌫') {
+                                            <button (click)="pinSetupDelete()"
+                                                    class="h-12 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center
+                                                           hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
+                                                <i class="pi pi-delete-left text-surface-500"></i>
+                                            </button>
+                                        } @else {
+                                            <button (click)="pinSetupDigit(d)"
+                                                    class="h-12 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center
+                                                           text-lg font-medium text-surface-900 dark:text-surface-0
+                                                           hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors active:scale-95">
+                                                {{ d }}
+                                            </button>
+                                        }
+                                    }
+                                </div>
+                                <button (click)="cancelPinSetup()" class="text-xs text-surface-400 hover:text-surface-600 transition-colors">
+                                    Annuler
+                                </button>
+                            </div>
+                        }
+                    } @else {
+                        <!-- PIN is set -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                    <i class="pi pi-check text-emerald-500"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Code PIN activé</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">Votre app est protégée</p>
+                                </div>
+                            </div>
+                            <button pButton label="Supprimer" severity="danger" size="small" [outlined]="true"
+                                    (click)="removePin()" class="shrink-0"></button>
+                        </div>
+
+                        <!-- Lock delay setting -->
+                        <div class="mt-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Verrouillage auto</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400">Délai avant verrouillage en arrière-plan</p>
+                            </div>
+                            <select (change)="onLockDelayChange($event)"
+                                    [value]="pinService.getLockDelay()"
+                                    class="text-sm bg-surface-100 dark:bg-surface-800 border-0 rounded-lg px-3 py-2
+                                           text-surface-900 dark:text-surface-0">
+                                <option value="0">Immédiat</option>
+                                <option value="30000">30 secondes</option>
+                                <option value="60000">1 minute</option>
+                                <option value="300000">5 minutes</option>
+                            </select>
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- ── 4. Session actuelle ──────────────────────────────── -->
             <section class="card !p-0 overflow-hidden">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
@@ -333,6 +439,69 @@ export class SecuritySettings implements OnInit {
     private apiService   = inject(ApiService);
     private authService  = inject(AuthService);
     private msgService   = inject(MessageService);
+    pinService           = inject(PinService);
+
+    // ── PIN setup state ──
+    pinSetupActive = false;
+    pinSetupStep: 'new' | 'confirm' = 'new';
+    pinSetupInput = '';
+    private pinSetupFirstEntry = '';
+
+    startPinSetup() {
+        this.pinSetupActive = true;
+        this.pinSetupStep = 'new';
+        this.pinSetupInput = '';
+        this.pinSetupFirstEntry = '';
+    }
+
+    cancelPinSetup() {
+        this.pinSetupActive = false;
+        this.pinSetupInput = '';
+    }
+
+    async pinSetupDigit(d: string) {
+        if (this.pinSetupInput.length >= 4) return;
+        this.pinSetupInput += d;
+
+        if (this.pinSetupInput.length === 4) {
+            await new Promise(r => setTimeout(r, 200));
+
+            if (this.pinSetupStep === 'new') {
+                // First entry — move to confirm step
+                this.pinSetupFirstEntry = this.pinSetupInput;
+                this.pinSetupInput = '';
+                this.pinSetupStep = 'confirm';
+            } else {
+                // Confirm step — check match
+                if (this.pinSetupInput === this.pinSetupFirstEntry) {
+                    await this.pinService.setPin(this.pinSetupInput);
+                    this.msgService.add({ severity: 'success', summary: 'Code PIN activé', detail: 'Votre app est maintenant protégée.', life: 3000 });
+                    this.pinSetupActive = false;
+                } else {
+                    this.msgService.add({ severity: 'error', summary: 'Codes différents', detail: 'Les deux codes ne correspondent pas. Réessayez.', life: 4000 });
+                    this.pinSetupInput = '';
+                    this.pinSetupStep = 'new';
+                    this.pinSetupFirstEntry = '';
+                }
+            }
+        }
+    }
+
+    pinSetupDelete() {
+        if (this.pinSetupInput.length > 0) {
+            this.pinSetupInput = this.pinSetupInput.slice(0, -1);
+        }
+    }
+
+    removePin() {
+        this.pinService.removePin();
+        this.msgService.add({ severity: 'success', summary: 'Code PIN supprimé', detail: 'Le verrouillage est désactivé.', life: 3000 });
+    }
+
+    onLockDelayChange(event: Event) {
+        const val = parseInt((event.target as HTMLSelectElement).value, 10);
+        this.pinService.setLockDelay(val);
+    }
 
     user = this.tokenService.user;
 
