@@ -86,25 +86,24 @@
             display: none;
         }
 
-        // Simplify topbar on mobile
+        // Simplify topbar on mobile — Finary-style: [👤 avatar] ... [👁] [PRO]
         .layout-topbar {
-            padding: 0 1rem;
+            padding: 0 0.75rem;
             border-bottom: 1px solid var(--surface-border);
 
-            .layout-topbar-logo {
-                span {
-                    display: none; // Hide "Omaad Wealth" text, keep only logo
-                }
-
-                svg {
-                    width: 2.5rem !important;
-                    height: 2.5rem !important;
-                }
+            .layout-topbar-logo-container {
+                // On mobile: shrink to just the avatar, no fixed width or border
+                width: auto;
+                min-width: auto;
+                border-right: none;
+                margin-right: 0;
+                padding-left: 0.25rem;
+                padding-right: 0;
             }
 
-            // Hide config palette and notifications on mobile
-            .layout-config-menu .relative:has(.pi-palette) {
-                display: none;
+            // Force-hide the logo on mobile (SCSS `display: inline-flex` overrides Tailwind `hidden`)
+            .layout-topbar-logo {
+                display: none !important;
             }
 
             .layout-topbar-menu-content {

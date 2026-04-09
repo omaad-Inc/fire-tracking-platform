@@ -19,7 +19,7 @@ interface OnboardingStep {
     standalone: true,
     imports: [CommonModule, ButtonModule, RippleModule],
     template: `
-        <div class="card !p-0 overflow-hidden mb-6">
+        <div class="card !p-0 overflow-hidden mb-12 sm:mb-8">
             <!-- Header with gradient -->
             <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 px-6 py-8 sm:px-8 sm:py-10 text-center relative overflow-hidden">
                 <!-- Background decoration -->

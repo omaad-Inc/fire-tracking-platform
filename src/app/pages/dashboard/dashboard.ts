@@ -19,10 +19,12 @@ import { LayoutService } from '../../layout/service/layout.service';
     template: `
         <!-- Onboarding for new users: shown when no assets and not dismissed -->
         @if (showOnboarding()) {
-            <app-onboarding
-                (addAsset)="openAddAsset()"
-                (dismissed)="showOnboarding.set(false)"
-            />
+            <div class="pb-6">
+                <app-onboarding
+                    (addAsset)="openAddAsset()"
+                    (dismissed)="showOnboarding.set(false)"
+                />
+            </div>
         }
 
         <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">

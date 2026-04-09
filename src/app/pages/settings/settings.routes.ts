@@ -5,6 +5,7 @@ import { SecuritySettings } from './components/security';
 import { PreferencesSettings } from './components/preferences';
 import { FireSettings } from './components/fire-settings';
 import { HelpSettings } from './components/help';
+import { PlansSettings } from './components/plans';
 
 export default [
     {
@@ -17,6 +18,7 @@ export default [
             { path: 'preferences', component: PreferencesSettings },
             { path: 'fire',        component: FireSettings        },
             { path: 'help',        component: HelpSettings        },
+            { path: 'plans',       component: PlansSettings       },
         ]
     }
 ] as Routes;

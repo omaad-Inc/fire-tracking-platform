@@ -184,6 +184,7 @@ export class Settings implements OnInit {
         if (url.includes('/account'))     return this.t('menu.myAccount');
         if (url.includes('/preferences')) return this.t('menu.preferences');
         if (url.includes('/fire'))        return 'Objectif Financier';
+        if (url.includes('/plans'))       return 'Omaad Pro';
         if (url.includes('/help'))        return this.t('settings.getHelp');
         return this.t('settings.title');
     }

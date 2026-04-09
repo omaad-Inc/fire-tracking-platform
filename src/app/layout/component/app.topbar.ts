@@ -22,6 +22,7 @@ import { AssetCreate, AssetCategory } from '../../core/services/api.service';
 import { PatrimoineService } from '../../pages/service/patrimoine.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
+import { PrivacyService } from '../../core/services/privacy.service';
 import { DecimalPipe } from '@angular/common';
 
 interface Owner {
@@ -76,19 +77,48 @@ interface CategoryCard {
             <button class="layout-menu-button layout-topbar-action hidden lg:flex" (click)="layoutService.onMenuToggle()">
                 <i class="pi pi-bars"></i>
             </button>
-            <div class="layout-topbar-logo flex items-center gap-2">
-                <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo" class="w-10 h-10 lg:w-12 lg:h-12">
-                <!-- Hide text on mobile; show only "Omaad" on desktop to fit within the 17rem sidebar container -->
-                <span class="hidden lg:inline whitespace-nowrap">Omaad</span>
+
+            <!-- Mobile ONLY: User avatar in the logo area (replaces logo on mobile) -->
+            <a [routerLink]="['/'+lang, 'pages', 'settings']"
+               class="lg:hidden flex items-center justify-center shrink-0">
+                <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center overflow-hidden">
+                    @if (avatarUrl) {
+                        <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover">
+                    } @else {
+                        <i class="pi pi-user text-surface-200"></i>
+                    }
+                </div>
+            </a>
+
+            <!-- Desktop: Logo + text (hidden on mobile) -->
+            <div class="layout-topbar-logo hidden lg:flex items-center gap-2">
+                <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo" class="w-12 h-12">
+                <span class="whitespace-nowrap">Omaad</span>
             </div>
         </div>
 
         <div class="layout-topbar-actions">
-            <div class="layout-config-menu">
+            <!-- Desktop ONLY: dark mode toggle -->
+            <div class="layout-config-menu hidden lg:flex">
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
                     <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
             </div>
+
+            <!-- Eye icon (privacy toggle) — one button, visible on ALL sizes -->
+            <button type="button" class="layout-topbar-action" (click)="privacyService.toggle()"
+                    [title]="privacyService.hidden() ? 'Afficher les montants' : 'Masquer les montants'">
+                <i class="pi" [ngClass]="privacyService.hidden() ? 'pi-eye-slash' : 'pi-eye'"></i>
+            </button>
+
+            <!-- UPGRADE PRO pill — visible on ALL sizes -->
+            <a [routerLink]="['/'+lang, 'pages', 'plans']"
+               class="flex items-center gap-1 px-2.5 py-1.5 rounded-full
+                      bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] lg:text-xs font-bold
+                      tracking-wider transition-all hover:scale-105 hover:shadow-lg hover:shadow-amber-500/30">
+                <i class="pi pi-crown" style="font-size:9px"></i>
+                PRO
+            </a>
 
             <!-- Add Assets Button - Desktop Only -->
             <button
@@ -99,20 +129,6 @@ interface CategoryCard {
                 <i class="pi pi-plus"></i>
                 <span>{{ t('topbar.addAssets') }}</span>
             </button>
-
-            <!-- Mobile ONLY: Simple user icon - redirects directly to settings -->
-            <a
-                [routerLink]="['/'+lang, 'pages', 'settings']"
-                class="layout-topbar-action mobile-user-icon items-center justify-center"
-            >
-                <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center overflow-hidden">
-                    @if (avatarUrl) {
-                        <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover">
-                    } @else {
-                        <i class="pi pi-user text-surface-200"></i>
-                    }
-                </div>
-            </a>
 
             <!-- Desktop ONLY: menu with dropdown -->
             <div class="layout-topbar-menu desktop-menu">
@@ -673,6 +689,7 @@ export class AppTopbar implements OnInit {
     private patrimoineService = inject(PatrimoineService);
     private messageService = inject(MessageService);
     currencyService = inject(CurrencyService);
+    privacyService  = inject(PrivacyService);
 
     layoutService = inject(LayoutService);
 

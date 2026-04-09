@@ -1,28 +1,28 @@
 import { Component, input, computed, inject, signal, effect, OnDestroy } from '@angular/core';
 import { CurrencyService } from '../services/currency.service';
+import { PrivacyService } from '../services/privacy.service';
 
 /**
- * Renders a EUR value as a formatted amount with the currency symbol
- * displayed smaller than the number.
+ * Renders a EUR value as a formatted amount with the currency symbol.
  *
  * Features:
  *  - Auto-converts EUR → display currency via CurrencyService
  *  - Count-up animation from 0 on first render (~600ms ease-out)
+ *  - Privacy mode: shows ••••• when PrivacyService.hidden() is true
  *  - Tabular numbers for perfect column alignment
- *
- * Usage:
- *   <app-amount [value]="item.value" />
- *   <app-amount [value]="item.value" prefix="+" />
- *   <app-amount [value]="item.value" [animate]="false" />  ← skip count-up
  */
 @Component({
     selector: 'app-amount',
     standalone: true,
     template: `
-        @if (prefix()) {
-            <span>{{ prefix() }}</span>
+        @if (privacy.hidden()) {
+            <span class="tracking-wide">•••••</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 align-baseline">{{ symbol() }}</span>
+        } @else {
+            @if (prefix()) {
+                <span>{{ prefix() }}</span>
+            }
+            <span>{{ displayStr() }}</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 align-baseline">{{ symbol() }}</span>
         }
-        <span>{{ displayStr() }}</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 align-baseline">{{ symbol() }}</span>
     `,
     host: { class: 'inline-flex items-baseline gap-0' },
 })
@@ -37,6 +37,7 @@ export class AppAmountComponent implements OnDestroy {
     animate = input<boolean>(true);
 
     private cs = inject(CurrencyService);
+    privacy    = inject(PrivacyService);
 
     symbol = computed(() => this.cs.config().symbol);
 
@@ -51,10 +52,9 @@ export class AppAmountComponent implements OnDestroy {
     private animFrameId = 0;
     private hasAnimated = false;
 
-    // Formatted display string — reads from animatedValue during animation
+    // Formatted display string
     displayStr = computed(() => {
         const val = this.animatedValue();
-        // Format using Intl (same as CurrencyService.formatNumber but on raw display value)
         const { locale } = this.cs.config();
         return new Intl.NumberFormat(locale, {
             maximumFractionDigits: 0,
@@ -63,13 +63,13 @@ export class AppAmountComponent implements OnDestroy {
     });
 
     constructor() {
-        // Trigger animation when target value changes
         effect(() => {
             const target = this.targetDisplayValue();
             const shouldAnimate = this.animate();
+            const isHidden = this.privacy.hidden();
 
-            if (!shouldAnimate || this.hasAnimated || target === 0) {
-                // No animation: set directly
+            // Skip animation if privacy mode or already animated
+            if (isHidden || !shouldAnimate || this.hasAnimated || target === 0) {
                 this.animatedValue.set(target);
                 return;
             }
@@ -85,14 +85,11 @@ export class AppAmountComponent implements OnDestroy {
 
     private countUp(from: number, to: number, duration: number) {
         if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
-
         const start = performance.now();
 
         const step = (now: number) => {
             const elapsed = now - start;
             const progress = Math.min(elapsed / duration, 1);
-
-            // Ease-out cubic: fast start, smooth end
             const eased = 1 - Math.pow(1 - progress, 3);
 
             this.animatedValue.set(from + (to - from) * eased);
@@ -100,7 +97,7 @@ export class AppAmountComponent implements OnDestroy {
             if (progress < 1) {
                 this.animFrameId = requestAnimationFrame(step);
             } else {
-                this.animatedValue.set(to); // Ensure exact final value
+                this.animatedValue.set(to);
                 this.animFrameId = 0;
             }
         };

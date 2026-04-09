@@ -6,7 +6,9 @@ import { SavingsDashboard } from './savings/savingsdashboard';
 import { DebtsDashboard } from './debts/debtsdashboard';
 import { AssetDetailPage } from './patrimoine/components/asset-detail';
 import { PatrimoineCategoryDetailPage } from './patrimoine/components/patrimoine-category-detail';
+import { PlansSettings } from './settings/components/plans';
 export default [
+    { path: 'plans', component: PlansSettings },       // Standalone — no settings sidebar
     { path: 'transaction', component: Transaction },
     { path: 'savings', component: SavingsDashboard },
     { path: 'patrimoine', component: Patrimoine },
