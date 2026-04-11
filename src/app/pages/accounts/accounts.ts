@@ -239,9 +239,8 @@ export class AccountsPage implements OnInit, OnDestroy {
                 datasets: [{
                     label: 'Valeur nette',
                     data: netWorth,
-                    fill: true,
+                    fill: false,
                     borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99,102,241,0.12)',
                     tension: 0.45,
                     borderWidth: 2.5,
                     pointRadius: 0,
@@ -269,7 +268,7 @@ export class AccountsPage implements OnInit, OnDestroy {
                 },
                 scales: {
                     x: { ticks: { color: textColor, font: { size: 10 }, maxTicksLimit: 8 }, grid: { display: false } },
-                    y: { ticks: { color: textColor, font: { size: 10 }, callback: cs.tickFormatter() }, grid: { color: 'rgba(148,163,184,0.08)' } }
+                    y: { ticks: { color: textColor, font: { size: 10 }, callback: cs.tickFormatter() }, grid: { display: false } }
                 },
                 interaction: { intersect: false, mode: 'index' },
                 elements: { point: { radius: 0, hoverRadius: 5 } }

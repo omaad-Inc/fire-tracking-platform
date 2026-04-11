@@ -83,7 +83,6 @@ export class WorthProgress implements OnInit {
             
             // Couleurs harmonieuses avec le thème (cyan)
             const borderColor = '#06b6d4';
-            const backgroundColor = 'rgba(6, 182, 212, 0.15)';
 
             const points = this.dataPoints();
             
@@ -92,9 +91,8 @@ export class WorthProgress implements OnInit {
                 datasets: [
                     {
                         data: points.map(p => p.value),
-                        fill: true,
+                        fill: false,
                         borderColor: borderColor,
-                        backgroundColor: backgroundColor,
                         tension: 0.4,
                         borderWidth: 3,
                         pointRadius: 3,
@@ -154,7 +152,7 @@ export class WorthProgress implements OnInit {
                             callback: cs.tickFormatter()
                         },
                         grid: {
-                            color: 'rgba(148, 163, 184, 0.1)',
+                            display: false,
                             drawBorder: false
                         }
                     }

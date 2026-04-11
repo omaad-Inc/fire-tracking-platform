@@ -464,7 +464,7 @@ interface CategoryCard {
                                     </div>
 
                                     <div class="flex flex-col gap-2">
-                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat unitaire</label>
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat unitaire <span class="text-red-400">*</span></label>
                                         <div class="relative">
                                             <p-inputnumber
                                                 [(ngModel)]="assetForm.purchasePrice"
@@ -476,7 +476,7 @@ interface CategoryCard {
                                     </div>
 
                                     <div class="flex flex-col gap-2">
-                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle unitaire <span class="text-red-400">*</span></label>
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle unitaire <span class="text-surface-400 text-xs">(optionnel)</span></label>
                                         <div class="relative">
                                             <p-inputnumber
                                                 [(ngModel)]="assetForm.currentPrice"
@@ -488,10 +488,42 @@ interface CategoryCard {
                                     </div>
                                 }
 
-                                <!-- ===== TOTAL-VALUE-BASED (real_estate, cash, retirement, life_insurance, savings_account, business, vehicle, other) ===== -->
-                                @if (!isQuantityBased() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
+                                <!-- ===== SIMPLE BALANCE (Compte bancaire, Livret épargne) ===== -->
+                                @if (assetForm.category === 'cash' || assetForm.category === 'savings_account') {
                                     <div class="flex flex-col gap-2">
-                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur d'achat / initiale</label>
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                            {{ assetForm.category === 'cash' ? 'Solde actuel' : 'Montant de l\\'épargne' }} <span class="text-red-400">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <p-inputnumber
+                                                [(ngModel)]="assetForm.currentPrice"
+                                                [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16"
+                                            />
+                                            <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ currencyService.config().symbol }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Banque</label>
+                                        <input
+                                            pInputText
+                                            [(ngModel)]="assetForm.institution"
+                                            [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
+                                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                                        />
+                                    </div>
+                                }
+
+                                <!-- ===== TOTAL-VALUE-BASED (real_estate, life_insurance, vehicle, other) ===== -->
+                                @if (!isQuantityBased() && !isSimpleBalanceCategory() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                            Valeur d'achat / initiale
+                                            @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
+                                                <span class="text-red-400">*</span>
+                                            }
+                                        </label>
                                         <div class="relative">
                                             <p-inputnumber
                                                 [(ngModel)]="assetForm.purchasePrice"
@@ -503,7 +535,14 @@ interface CategoryCard {
                                     </div>
 
                                     <div class="flex flex-col gap-2">
-                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle <span class="text-red-400">*</span></label>
+                                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                            Valeur actuelle
+                                            @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
+                                                <span class="text-surface-400 text-xs">(optionnel)</span>
+                                            } @else {
+                                                <span class="text-red-400">*</span>
+                                            }
+                                        </label>
                                         <div class="relative">
                                             <p-inputnumber
                                                 [(ngModel)]="assetForm.currentPrice"
@@ -515,8 +554,8 @@ interface CategoryCard {
                                     </div>
                                 }
 
-                                <!-- Purchase date (all except mobile_money) -->
-                                @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine') {
+                                <!-- Purchase date (all except mobile_money, tontine, cash, savings_account) -->
+                                @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
                                     <div class="flex flex-col gap-2">
                                         <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date d'achat</label>
                                         <input
@@ -527,8 +566,8 @@ interface CategoryCard {
                                     </div>
                                 }
 
-                                <!-- Institution (for relevant categories) -->
-                                @if (isInstitutionBased()) {
+                                <!-- Institution (for relevant categories, except simple balance which has its own bank field) -->
+                                @if (isInstitutionBased() && !isSimpleBalanceCategory()) {
                                     <div class="flex flex-col gap-2">
                                         <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
                                         <input
@@ -727,11 +766,9 @@ export class AppTopbar implements OnInit {
         { value: 'stocks',          label: 'Actions / Bourse', desc: 'BRVM, ETF, fonds...',    icon: 'pi-chart-line',  bgClass: 'bg-cyan-500/10',    textClass: 'text-cyan-400' },
         { value: 'bonds',           label: 'Obligations',     desc: 'Bons du trésor...',        icon: 'pi-percentage',  bgClass: 'bg-blue-500/10',    textClass: 'text-blue-400' },
         { value: 'crypto',          label: 'Crypto',          desc: 'Bitcoin, USDT...',          icon: 'pi-bolt',        bgClass: 'bg-orange-500/10',  textClass: 'text-orange-400' },
-        { value: 'cash',            label: 'Liquidités',      desc: 'Espèces, compte courant',   icon: 'pi-wallet',      bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-400' },
-        { value: 'retirement',      label: 'Retraite',        desc: 'PER, épargne retraite...',  icon: 'pi-clock',       bgClass: 'bg-purple-500/10',  textClass: 'text-purple-400' },
+        { value: 'cash',            label: 'Compte bancaire', desc: 'Compte courant, compte chèque', icon: 'pi-wallet',   bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-400' },
         { value: 'life_insurance',  label: 'Assurance vie',   desc: 'Contrats vie...',           icon: 'pi-shield',      bgClass: 'bg-teal-500/10',    textClass: 'text-teal-400' },
         { value: 'savings_account', label: 'Livret épargne',  desc: 'Livret A, CEL...',          icon: 'pi-book',        bgClass: 'bg-green-500/10',   textClass: 'text-green-400' },
-        { value: 'business',        label: 'Entreprise',      desc: 'Parts, actions privées',    icon: 'pi-briefcase',   bgClass: 'bg-amber-500/10',   textClass: 'text-amber-400' },
         { value: 'vehicle',         label: 'Véhicule',        desc: 'Voiture, moto...',          icon: 'pi-car',         bgClass: 'bg-slate-500/10',   textClass: 'text-slate-400' },
         { value: 'tontine',         label: 'Tontine',         desc: 'Épargne collective',        icon: 'pi-users',       bgClass: 'bg-pink-500/10',    textClass: 'text-pink-400' },
         { value: 'mobile_money',    label: 'Mobile Money',    desc: 'Wave, Orange Money...',     icon: 'pi-mobile',      bgClass: 'bg-sky-500/10',     textClass: 'text-sky-400' },
@@ -889,8 +926,12 @@ export class AppTopbar implements OnInit {
         return ['stocks', 'bonds', 'crypto', 'collectibles', 'commodities'].includes(this.assetForm.category);
     }
 
+    isSimpleBalanceCategory(): boolean {
+        return ['cash', 'savings_account'].includes(this.assetForm.category);
+    }
+
     isInstitutionBased(): boolean {
-        return ['stocks', 'bonds', 'crypto', 'retirement', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
+        return ['stocks', 'bonds', 'crypto', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
     }
 
     namePlaceholder(): string {
@@ -912,7 +953,6 @@ export class AppTopbar implements OnInit {
             crypto: 'Plateforme / Exchange',
             savings_account: 'Banque',
             cash: 'Banque',
-            retirement: 'Gestionnaire',
             life_insurance: 'Assureur',
             real_estate: 'Agence / Notaire',
         };
@@ -925,7 +965,6 @@ export class AppTopbar implements OnInit {
             crypto: 'Ex: Binance, Coinbase...',
             savings_account: 'Ex: CBAO, BHS...',
             cash: 'Ex: SGBS, Ecobank...',
-            retirement: 'Ex: Fonctionnaires, IPRES...',
             life_insurance: 'Ex: AXA, SANLAM...',
             real_estate: 'Ex: Cabinet Tall Immobilier',
         };
@@ -944,11 +983,15 @@ export class AppTopbar implements OnInit {
             return f.tontineMonthlyContribution > 0 && f.tontineParticipants > 1 && !!f.tontineStartDate;
         if (f.category === 'mobile_money')
             return f.currentPrice > 0 && !!f.mobileMoneyProvider;
-        // For quantity-based categories: require currentPrice > 0.
-        // quantity defaults to 1 and is always kept >= 1 by the ngModelChange guard,
-        // so we only need to guard against null (which [allowEmpty]="false" also prevents).
-        if (this.isQuantityBased())
+        // Simple balance categories (cash, savings_account): only need a positive balance
+        if (this.isSimpleBalanceCategory())
             return f.currentPrice > 0;
+        // Immobilier & Véhicule: purchasePrice required, currentPrice optional
+        if (f.category === 'real_estate' || f.category === 'vehicle')
+            return f.purchasePrice > 0;
+        // Quantity-based (stocks, bonds, crypto, collectibles, commodities): purchasePrice required, currentPrice optional
+        if (this.isQuantityBased())
+            return f.purchasePrice > 0;
         return f.currentPrice > 0;
     }
 
@@ -1044,7 +1087,21 @@ export class AppTopbar implements OnInit {
                     institution: f.mobileMoneyProvider,
                     is_liquid: true
                 };
+            } else if (f.category === 'cash' || f.category === 'savings_account') {
+                assetData = {
+                    name: f.name,
+                    category: f.category as AssetCategory,
+                    current_value: this.toEur(f.currentPrice),
+                    purchase_value: this.toEur(f.currentPrice),
+                    purchase_date: new Date().toISOString().split('T')[0],
+                    institution: f.institution || undefined,
+                    is_liquid: true
+                };
             } else {
+                // Default currentPrice to purchasePrice if not provided (real_estate, vehicle, quantity-based)
+                if ((!f.currentPrice || f.currentPrice === 0) && f.purchasePrice > 0) {
+                    f.currentPrice = f.purchasePrice;
+                }
                 // Coerce quantity to 1 if null/undefined (safety net for edge cases)
                 const qty = this.isQuantityBased() ? Math.max(1, f.quantity ?? 1) : 1;
                 const purchaseEur = f.purchasePrice > 0 ? this.toEur(f.purchasePrice * qty) : undefined;

@@ -215,7 +215,7 @@ export const EN = {
       stocks: 'Stocks / Market',
       bonds: 'Bonds',
       crypto: 'Crypto',
-      cash: 'Cash',
+      cash: 'Checking Account',
       retirement: 'Retirement',
       life_insurance: 'Life Insurance',
       savings_account: 'Savings Account',

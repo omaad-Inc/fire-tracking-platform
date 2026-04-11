@@ -215,7 +215,7 @@ export const FR = {
       stocks: 'Actions / Bourse',
       bonds: 'Obligations',
       crypto: 'Crypto',
-      cash: 'Liquidités',
+      cash: 'Compte bancaire',
       retirement: 'Retraite',
       life_insurance: 'Assurance vie',
       savings_account: 'Livret épargne',

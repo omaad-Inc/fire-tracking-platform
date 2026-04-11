@@ -14,6 +14,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
@@ -113,24 +114,26 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 
             <!-- KPI Row -->
             <div class="grid gap-3 md:gap-4 mb-5"
-                 [ngClass]="isQuantityBased() ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'">
+                 [ngClass]="isQuantityBased() ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'"
+                 style="grid-auto-rows: 1fr;">
                 <!-- P&L -->
-                <div class="card text-center">
+                <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center">
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">P&amp;L</p>
                     @if (gainLoss() !== null) {
-                        <div class="text-2xl font-bold"
+                        <div class="text-xl font-bold leading-7"
                              [ngClass]="gainLoss()! >= 0 ? 'text-emerald-500' : 'text-rose-500'">
                             <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                         </div>
                         <p class="text-surface-400 text-xs mt-1">Basé sur le prix d'achat</p>
                     } @else {
-                        <div class="text-surface-400 text-lg">—</div>
+                        <div class="text-xl font-bold leading-7 text-surface-400">—</div>
+                        <p class="text-surface-400 text-xs mt-1">&nbsp;</p>
                     }
                 </div>
                 <!-- Prix d'achat -->
-                <div class="card text-center">
+                <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center">
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Prix d'achat</p>
-                    <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
+                    <div class="text-xl font-bold leading-7 text-surface-900 dark:text-surface-0">
                         @if (asset()!.purchase_value) {
                             <app-amount [value]="asset()!.purchase_value!" />
                         } @else {
@@ -139,14 +142,16 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     </div>
                     @if (asset()!.purchase_date) {
                         <p class="text-surface-400 text-xs mt-1">{{ formatShortDate(asset()!.purchase_date!) }}</p>
+                    } @else {
+                        <p class="text-surface-400 text-xs mt-1">&nbsp;</p>
                     }
                 </div>
                 <!-- Quantité (only for quantity-based assets) -->
                 @if (isQuantityBased()) {
-                    <div class="card text-center">
+                    <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center">
                         <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Quantité</p>
                         @if (displayQuantity() != null) {
-                            <div class="text-2xl font-bold text-surface-900 dark:text-surface-0">
+                            <div class="text-xl font-bold leading-7 text-surface-900 dark:text-surface-0">
                                 {{ displayQuantity() | number:'1.0-6' }}
                             </div>
                             @if (displayQuantity()! > 0) {
@@ -155,19 +160,21 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                 </p>
                             }
                         } @else {
-                            <div class="text-surface-400 text-lg">—</div>
+                            <div class="text-xl font-bold leading-7 text-surface-400">—</div>
                             <p class="text-surface-400 text-xs mt-1">Non renseigné</p>
                         }
                     </div>
                 }
                 <!-- Institution -->
-                <div class="card text-center">
+                <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center overflow-hidden">
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Institution</p>
-                    <div class="text-lg font-semibold text-surface-900 dark:text-surface-0 truncate">
+                    <div class="text-xl font-bold leading-7 text-surface-900 dark:text-surface-0 truncate max-w-full">
                         {{ asset()!.institution || '—' }}
                     </div>
                     @if (asset()!.location) {
-                        <p class="text-surface-400 text-xs mt-1">{{ asset()!.location }}</p>
+                        <p class="text-surface-400 text-xs mt-1 truncate max-w-full">{{ asset()!.location }}</p>
+                    } @else {
+                        <p class="text-surface-400 text-xs mt-1">&nbsp;</p>
                     }
                 </div>
             </div>
@@ -401,7 +408,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 
         <!-- ── Edit dialog ── -->
         <p-dialog [(visible)]="editDialog"
-                  [style]="{ width: '95vw', maxWidth: '560px' }"
+                  [style]="{ width: '95vw', maxWidth: '680px' }"
                   [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
@@ -417,79 +424,97 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </div>
             </ng-template>
             <ng-template #content>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
+                <div class="space-y-6 pt-2">
                     <!-- Name -->
-                    <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nom de l'actif</label>
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nom de l'actif</label>
                         <input pInputText [(ngModel)]="editForm.name"
-                               class="w-full !py-3 !rounded-xl"
-                               placeholder="Nom de l'actif" />
+                               placeholder="Nom de l'actif"
+                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                     </div>
-                    <!-- Current value -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Valeur actuelle</label>
-                        <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                       [min]="0" [maxFractionDigits]="2"
-                                       styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl" />
+
+                    <!-- Values section -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle <span class="text-red-400">*</span></label>
+                            <div class="relative">
+                                <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                               [min]="0" [maxFractionDigits]="2"
+                                               inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat</label>
+                            <div class="relative">
+                                <p-inputnumber [(ngModel)]="editForm.purchaseValue"
+                                               [min]="0" [maxFractionDigits]="2"
+                                               inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Purchase value -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Prix d'achat</label>
-                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
-                                       [min]="0" [maxFractionDigits]="2"
-                                       styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl" />
+
+                    <!-- Date & Institution -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date d'achat</label>
+                            <p-datepicker [(ngModel)]="editForm.purchaseDate"
+                                          [showIcon]="true" [showButtonBar]="true"
+                                          dateFormat="dd/mm/yy"
+                                          styleClass="w-full"
+                                          inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Institution / Opérateur</label>
+                            <input pInputText [(ngModel)]="editForm.institution"
+                                   placeholder="Banque, plateforme..."
+                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                        </div>
                     </div>
-                    <!-- Purchase date -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date d'achat</label>
-                        <p-datepicker [(ngModel)]="editForm.purchaseDate"
-                                      [showIcon]="true" [showButtonBar]="true"
-                                      dateFormat="dd/mm/yy"
-                                      styleClass="w-full"
-                                      inputStyleClass="!py-3 !rounded-xl" />
-                    </div>
-                    <!-- Institution -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Institution / Opérateur</label>
-                        <input pInputText [(ngModel)]="editForm.institution"
-                               class="w-full !py-3 !rounded-xl"
-                               placeholder="Banque, plateforme..." />
-                    </div>
+
                     @if (asset()!.category === 'real_estate') {
-                        <!-- Surface -->
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Surface (m²)</label>
-                            <p-inputnumber [(ngModel)]="editForm.surfaceM2"
-                                           [min]="0" [maxFractionDigits]="1"
-                                           styleClass="w-full"
-                                           inputStyleClass="!py-3 !rounded-xl" />
+                        <!-- Real estate fields -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Surface (m²)</label>
+                                <p-inputnumber [(ngModel)]="editForm.surfaceM2"
+                                               [min]="0" [maxFractionDigits]="1" suffix=" m²"
+                                               inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Revenus locatifs/mois</label>
+                                <div class="relative">
+                                    <p-inputnumber [(ngModel)]="editForm.rentalIncome"
+                                                   [min]="0" [maxFractionDigits]="2"
+                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}/mois</span>
+                                </div>
+                            </div>
                         </div>
-                        <!-- Rental income -->
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Revenus locatifs/mois</label>
-                            <p-inputnumber [(ngModel)]="editForm.rentalIncome"
-                                           [min]="0" [maxFractionDigits]="2"
-                                           styleClass="w-full"
-                                           inputStyleClass="!py-3 !rounded-xl" />
-                        </div>
+                        @if ((editForm.surfaceM2 ?? 0) > 0 && editForm.currentValue > 0) {
+                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                                <span class="text-surface-500 text-sm">Prix au m² actuel</span>
+                                <span class="text-indigo-400 font-semibold">
+                                    {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ cs.config().symbol }}/m²
+                                </span>
+                            </div>
+                        }
                     }
+
                     @if (isQuantityBased()) {
-                        <!-- Quantity -->
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nombre de parts / Quantité</label>
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nombre de parts / Quantité</label>
                             <p-inputnumber [(ngModel)]="editForm.quantity"
                                            [min]="0" [maxFractionDigits]="6"
                                            placeholder="Ex : 10, 0.5..."
-                                           styleClass="w-full"
-                                           inputStyleClass="!py-3 !rounded-xl" />
+                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                         </div>
                         @if ((editForm.quantity ?? 0) > 0 && editForm.currentValue > 0) {
-                            <div class="sm:col-span-2 flex items-center justify-between px-4 py-2.5 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
+                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
                                 <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
-                                <span class="text-cyan-500 font-semibold">
-                                    {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} €/part
+                                <span class="text-cyan-400 font-semibold">
+                                    {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ cs.config().symbol }}/part
                                 </span>
                             </div>
                         }
@@ -517,6 +542,7 @@ export class AssetDetailPage implements OnInit {
     private stateService = inject(AssetsStateService);
     private confirmationService = inject(ConfirmationService);
     private messageService = inject(MessageService);
+    readonly cs = inject(CurrencyService);
 
     readonly Math = Math;
 
@@ -616,7 +642,7 @@ export class AssetDetailPage implements OnInit {
         stocks:          'Actions',
         bonds:           'Obligations',
         crypto:          'Crypto-monnaies',
-        cash:            'Liquidités',
+        cash:            'Compte bancaire',
         retirement:      'Épargne retraite',
         life_insurance:  'Assurance vie',
         savings_account: 'Livret d\'épargne',

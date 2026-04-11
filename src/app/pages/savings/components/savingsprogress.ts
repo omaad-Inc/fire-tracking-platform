@@ -143,7 +143,6 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const cs = this.cs;
 
         const borderColor = '#10b981';
-        const backgroundColor = 'rgba(16, 185, 129, 0.15)';
 
         const points = this.getVisiblePoints();
 
@@ -153,9 +152,8 @@ export class SavingsProgress implements OnInit, OnDestroy {
                 {
                     label: this.i18n.t('savings.evolution'),
                     data: points.map(p => p.value),
-                    fill: true,
+                    fill: false,
                     borderColor,
-                    backgroundColor,
                     tension: 0.4,
                     borderWidth: 3,
                     pointRadius: 0,
@@ -209,7 +207,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
                         callback: cs.tickFormatter()
                     },
                     grid: {
-                        color: 'rgba(148, 163, 184, 0.1)',
+                        display: false,
                         drawBorder: false
                     }
                 }

@@ -60,7 +60,7 @@ const CATEGORY_LABELS: Record<string, string> = {
     'stocks':        'Actions / Bourse',
     'bonds':         'Obligations',
     'crypto':        'Cryptomonnaies',
-    'cash':          'Liquidités',
+    'cash':          'Compte bancaire',
     'retirement':    'Épargne retraite',
     'life_insurance':'Assurance vie',
     'savings_account':'Livrets',

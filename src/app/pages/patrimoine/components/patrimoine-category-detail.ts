@@ -53,7 +53,7 @@ const CATEGORY_BGS: Record<string, string> = {
 
 const CATEGORY_LABELS: Record<string, string> = {
     real_estate: 'Immobilier', stocks: 'Actions', bonds: 'Obligations',
-    crypto: 'Crypto-monnaies', cash: 'Liquidités', retirement: 'Épargne retraite',
+    crypto: 'Crypto-monnaies', cash: 'Compte bancaire', retirement: 'Épargne retraite',
     life_insurance: 'Assurance vie', savings_account: "Livret d'épargne",
     business: 'Entreprise', vehicle: 'Véhicule',
     tontine: 'Tontine', mobile_money: 'Mobile Money',
@@ -345,9 +345,8 @@ export class PatrimoineCategoryDetailPage implements OnInit {
             labels: points.map(p => p.label),
             datasets: [{
                 data: points.map(p => p.value),
-                fill: true,
+                fill: false,
                 borderColor: color,
-                backgroundColor: color + '26',
                 tension: 0.4,
                 borderWidth: 2.5,
                 pointRadius: 0,
@@ -381,7 +380,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
                 },
                 y: {
                     ticks: { color: textMuted, font: { size: 10 }, callback: cs.tickFormatter() },
-                    grid: { color: 'rgba(148,163,184,0.1)' }
+                    grid: { display: false }
                 }
             },
             interaction: { intersect: false, mode: 'index' },

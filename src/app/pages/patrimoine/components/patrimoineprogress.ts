@@ -150,7 +150,6 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
 
             // Couleurs indigo/cyan Finary-style
             const borderColor = '#6366f1'; // Indigo-500
-            const backgroundColor = 'rgba(99, 102, 241, 0.15)';
 
             const points = this.dataPoints();
             
@@ -160,9 +159,8 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                     {
                         label: 'Patrimoine Brut',
                         data: points.map(p => p.value),
-                        fill: true,
+                        fill: false,
                         borderColor: borderColor,
-                        backgroundColor: backgroundColor,
                         tension: 0.4,
                         borderWidth: 3,
                         pointRadius: 0, // Pas de points par défaut
@@ -228,7 +226,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                             callback: cs.tickFormatter()
                         },
                         grid: {
-                            color: 'rgba(148, 163, 184, 0.1)',
+                            display: false,
                             drawBorder: false
                         }
                     }

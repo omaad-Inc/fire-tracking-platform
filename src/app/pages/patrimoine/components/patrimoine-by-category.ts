@@ -191,7 +191,7 @@ export class PatrimoineByCategoryComponent {
     getCategoryLabel(cat?: string): string {
         const labels: Record<string, string> = {
             real_estate: 'Immobilier', stocks: 'Actions', bonds: 'Obligations',
-            crypto: 'Crypto', cash: 'Liquidités', retirement: 'Retraite',
+            crypto: 'Crypto', cash: 'Compte bancaire', retirement: 'Retraite',
             life_insurance: 'Assurance vie', savings_account: 'Livret',
             business: 'Entreprise', vehicle: 'Véhicule',
             tontine: 'Tontine', mobile_money: 'Mobile Money',
