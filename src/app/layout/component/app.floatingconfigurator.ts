@@ -23,6 +23,25 @@ export class AppFloatingConfigurator {
     isDarkTheme = computed(() => this.LayoutService.layoutConfig().darkTheme);
 
     toggleDarkMode() {
-        this.LayoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));
+        this.LayoutService.layoutConfig.update((state) => {
+            const currentMode = state.themeMode || 'system';
+            const isCurrentlyDark = state.darkTheme ?? false;
+            
+            // If in system mode, switch to explicit mode based on current state
+            if (currentMode === 'system') {
+                return {
+                    ...state,
+                    themeMode: isCurrentlyDark ? 'light' : 'dark',
+                    darkTheme: !isCurrentlyDark
+                };
+            } else {
+                // Toggle between light and dark
+                return {
+                    ...state,
+                    themeMode: isCurrentlyDark ? 'light' : 'dark',
+                    darkTheme: !isCurrentlyDark
+                };
+            }
+        });
     }
 }

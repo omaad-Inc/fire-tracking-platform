@@ -1,10 +1,10 @@
-# Afrin Nexus - FIRE Tracking App (Angular 19)
+# Omaad Wealth - FIRE Tracking App (Angular 19)
 
 <p align="center">
-  <img src="src/assets/afrin-nexus-logo.svg" alt="Afrin Nexus" width="120" height="120" />
+  <img src="src/assets/omaad-logo.svg" alt="Omaad Wealth" width="120" height="120" />
 </p>
 
-Afrin Nexus is a personal finance web app built on Angular 19 that transforms the Sakai template into a FIRE-oriented tracker. The goal is to track wealth over time and monitor expenses and income month by month, offering clear insights to help reach Financial Independence, Retire Early (FIRE).
+Omaad Wealth is a personal finance web app built on Angular 19 that transforms the Sakai template into a FIRE-oriented tracker. The goal is to track wealth over time and monitor expenses and income month by month, offering clear insights to help reach Financial Independence, Retire Early (FIRE).
 
 ## Key Features (planned and in-progress)
 

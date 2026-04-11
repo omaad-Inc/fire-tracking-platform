@@ -1,91 +1,125 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { FluidModule } from 'primeng/fluid';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { DashboardService, AssetAllocation } from '../../service/dashboard.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { I18nService } from '../../../i18n/i18n.service';
 
 
 @Component({
     standalone: true,
     selector: 'app-expenses-progression-widget',
-    imports: [CommonModule, ChartModule, FluidModule],
+    imports: [CommonModule, ChartModule, FluidModule, AppAmountComponent],
     template: `
     <div class="card !mb-0 h-full flex flex-col">
         <div class="mb-6">
-            <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Répartition des Dépenses</div>
+            <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.expenseDistribution') }}</div>
         </div>
-        <div class="flex-1 flex flex-col items-center justify-center">
-            <div class="relative w-full max-w-[280px] mx-auto mb-6">
-                <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div class="text-center">
-                        <span class="text-surface-500 dark:text-surface-400 text-sm block">Total</span>
-                        <span class="font-bold text-2xl text-surface-900 dark:text-surface-0 block">{{ total | number:'1.0-0' }} €</span>
-                    </div>
+        
+        @if (loading()) {
+            <div class="flex-1 flex flex-col items-center justify-center animate-pulse">
+                <div class="w-[200px] h-[200px] rounded-full bg-surface-200 dark:bg-surface-700 mb-6"></div>
+                <div class="grid grid-cols-2 gap-3 w-full">
+                    @for (i of [1,2,3,4]; track i) {
+                        <div class="h-12 bg-surface-200 dark:bg-surface-700 rounded-xl"></div>
+                    }
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-3 w-full">
-                <div *ngFor="let item of legendItems" class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-3 h-3 rounded-full" [style.background]="item.color"></div>
-                    <div class="flex-1 min-w-0">
-                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium block truncate">{{ item.label }}</span>
-                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ item.value | currency:'EUR':'symbol':'1.0-0' }}</span>
+        } @else if (legendItems().length === 0) {
+            <div class="flex-1 flex flex-col items-center justify-center text-center">
+                <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
+                    <i class="pi pi-chart-pie text-2xl text-surface-400"></i>
+                </div>
+                <p class="text-surface-600 dark:text-surface-400 mb-2">{{ i18n.t('dashboard.noExpenses') }}</p>
+                <p class="text-surface-400 dark:text-surface-500 text-sm">{{ i18n.t('dashboard.noExpensesDesc') }}</p>
+            </div>
+        } @else {
+            <div class="flex-1 flex flex-col items-center justify-center">
+                <div class="relative w-full max-w-[280px] mx-auto mb-6">
+                    <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div class="text-center">
+                            <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ i18n.t('patrimoine.repartition.total') }}</span>
+                            <app-amount [value]="total()" class="font-bold text-2xl text-surface-900 dark:text-surface-0 block" />
+                        </div>
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-3 w-full">
+                    @for (item of legendItems(); track item.label) {
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
+                            <div class="w-3 h-3 rounded-full" [style.background]="item.color"></div>
+                            <div class="flex-1 min-w-0">
+                                <span class="text-surface-900 dark:text-surface-0 text-sm font-medium block truncate">{{ item.label }}</span>
+                                <span class="text-surface-500 dark:text-surface-400 text-xs"><app-amount [value]="item.value" /></span>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
+        }
     </div>
     `
 })
-export class AllExpensesProgression {
+export class AllExpensesProgression implements OnInit, OnDestroy {
+    private layoutService = inject(LayoutService);
+    private dashboardService = inject(DashboardService);
+    private cs = inject(CurrencyService);
+    readonly i18n = inject(I18nService);
+
+    loading = signal(true);
+    total = signal(0);
+    legendItems = signal<{ label: string; color: string; value: number }[]>([]);
 
     pieData: any;
     pieOptions: any;
-    total: number = 0;
-    legendItems: { label: string; color: string; value: number }[] = [];
 
-    subscription: Subscription;
-    
-    constructor(private layoutService: LayoutService) {
+    private subscription?: Subscription;
+    private distribution: AssetAllocation[] = [];
+
+    ngOnInit() {
+        this.loadData();
+        
         this.subscription = this.layoutService.configUpdate$.pipe(debounceTime(25)).subscribe(() => {
-            this.initCharts();
+            if (this.distribution.length > 0) {
+                this.initCharts();
+            }
         });
     }
 
-    ngOnInit() {
-        this.initCharts();
+    private async loadData() {
+        this.loading.set(true);
+        try {
+            this.distribution = await this.dashboardService.getExpenseDistribution();
+            
+            if (this.distribution.length > 0) {
+                const totalValue = this.distribution.reduce((sum, d) => sum + d.value, 0);
+                this.total.set(totalValue);
+                this.initCharts();
+            }
+        } catch (error) {
+            console.error('Error loading expense distribution:', error);
+        } finally {
+            this.loading.set(false);
+        }
     }
 
     initCharts() {
-        const labels = ['Loyer', 'Alimentation', 'Transport', 'Loisirs', 'Épargne', 'Divers'];
-        const values = [1200, 450, 200, 150, 500, 100];
-        this.total = values.reduce((a, b) => a + b, 0);
+        const labels = this.distribution.map(d => d.category);
+        const values = this.distribution.map(d => d.value);
+        const colors = this.distribution.map(d => d.color);
 
-        // Palette de couleurs harmonieuses (indigo → cyan → emerald)
-        const colors = [
-            '#6366f1', // indigo
-            '#8b5cf6', // violet
-            '#06b6d4', // cyan
-            '#14b8a6', // teal
-            '#10b981', // emerald
-            '#f59e0b'  // amber
-        ];
+        // Generate lighter hover colors
+        const hoverColors = colors.map(color => this.lightenColor(color, 20));
 
-        const hoverColors = [
-            '#818cf8',
-            '#a78bfa',
-            '#22d3ee',
-            '#2dd4bf',
-            '#34d399',
-            '#fbbf24'
-        ];
-
-        this.legendItems = labels.map((label, index) => ({
-            label,
-            color: colors[index],
-            value: values[index]
-        }));
+        this.legendItems.set(this.distribution.map(d => ({
+            label: d.category,
+            color: d.color,
+            value: d.value
+        })));
 
         this.pieData = {
             labels: labels,
@@ -99,6 +133,7 @@ export class AllExpensesProgression {
             ]
         };
 
+        const cs = this.cs;
         this.pieOptions = {
             plugins: {
                 legend: {
@@ -115,7 +150,7 @@ export class AllExpensesProgression {
                     displayColors: true,
                     callbacks: {
                         label: function(context: any) {
-                            return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(context.raw);
+                            return cs.format(context.raw, 0);
                         }
                     }
                 }
@@ -124,6 +159,20 @@ export class AllExpensesProgression {
             maintainAspectRatio: true,
             responsive: true
         };
+    }
+
+    private lightenColor(hex: string, percent: number): string {
+        const num = parseInt(hex.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = (num >> 16) + amt;
+        const G = (num >> 8 & 0x00FF) + amt;
+        const B = (num & 0x0000FF) + amt;
+        return '#' + (
+            0x1000000 +
+            (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+            (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+            (B < 255 ? (B < 1 ? 0 : B) : 255)
+        ).toString(16).slice(1);
     }
 
     ngOnDestroy() {

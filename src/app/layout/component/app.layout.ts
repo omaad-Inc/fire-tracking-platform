@@ -1,17 +1,21 @@
-import { Component, Renderer2, ViewChild } from '@angular/core';
+import { Component, Renderer2, ViewChild, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { AppMobileNav } from './app.mobile-nav';
+import { AppFab } from './app.fab';
 import { LayoutService } from '../service/layout.service';
 import { PwaPromptComponent } from './pwa-prompt.component';
+import { PinLockComponent } from '../../core/components/pin-lock.component';
+import { PinService } from '../../core/services/pin.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, RouterModule, PwaPromptComponent],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, RouterModule, PwaPromptComponent, PinLockComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
@@ -22,17 +26,33 @@ import { PwaPromptComponent } from './pwa-prompt.component';
         </div>
         <div class="layout-mask animate-fadein"></div>
         <app-mobile-nav></app-mobile-nav>
+        <app-fab (addAsset)="onAddAsset()"></app-fab>
         <app-pwa-prompt></app-pwa-prompt>
+
+        <!-- PIN Lock Screen — covers everything when locked -->
+        @if (pinService.locked()) {
+            <app-pin-lock />
+        }
     </div> `
 })
-export class AppLayout {
+export class AppLayout implements OnInit, OnDestroy {
     overlayMenuOpenSubscription: Subscription;
 
     menuOutsideClickListener: any;
 
     @ViewChild(AppSidebar) appSidebar!: AppSidebar;
-
     @ViewChild(AppTopbar) appTopBar!: AppTopbar;
+
+    pinService     = inject(PinService);
+    private authService = inject(AuthService);
+
+    private visibilityHandler = () => {
+        if (document.hidden) {
+            this.pinService.onBackground();
+        } else {
+            this.pinService.onForeground();
+        }
+    };
 
     constructor(
         public layoutService: LayoutService,
@@ -101,6 +121,23 @@ export class AppLayout {
         };
     }
 
+    ngOnInit(): void {
+        // Lock on startup if PIN is configured
+        this.pinService.initLockOnStartup();
+
+        // Wire forced logout (after 5 failed PIN attempts)
+        this.pinService.onForcedLogout = () => this.authService.logout();
+
+        // Auto-lock when app goes to background and returns
+        document.addEventListener('visibilitychange', this.visibilityHandler);
+    }
+
+    onAddAsset(): void {
+        if (this.appTopBar) {
+            this.appTopBar.openAddAssetDialog();
+        }
+    }
+
     ngOnDestroy() {
         if (this.overlayMenuOpenSubscription) {
             this.overlayMenuOpenSubscription.unsubscribe();
@@ -109,5 +146,7 @@ export class AppLayout {
         if (this.menuOutsideClickListener) {
             this.menuOutsideClickListener();
         }
+
+        document.removeEventListener('visibilitychange', this.visibilityHandler);
     }
 }

@@ -146,6 +146,13 @@ export class AppMenuitem {
         if (this.item.routerLink) {
             event.preventDefault(); // Empêche le comportement par défaut du lien
             this.router.navigate(Array.isArray(this.item.routerLink) ? this.item.routerLink : [this.item.routerLink]);
+            // Close the mobile sidebar after navigation so the content is fully visible
+            this.layoutService.layoutState.update((prev) => ({
+                ...prev,
+                staticMenuMobileActive: false,
+                overlayMenuActive: false,
+                menuHoverActive: false,
+            }));
         }
 
         // toggle active state

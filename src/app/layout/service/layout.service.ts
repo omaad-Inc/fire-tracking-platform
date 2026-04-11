@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { updateSurfacePalette } from '@primeng/themes';
 
 // Storage key for preferences
-const STORAGE_KEY = 'afrin-nexus-layout-config';
+const STORAGE_KEY = 'omaad-layout-config';
 
 // Surface palettes
 const SURFACE_PALETTES: Record<string, Record<string, string>> = {
@@ -43,6 +43,7 @@ export interface layoutConfig {
     primary?: string;
     surface?: string | undefined | null;
     darkTheme?: boolean;
+    themeMode?: 'light' | 'dark' | 'system'; // Track theme preference mode
     menuMode?: string;
 }
 
@@ -71,8 +72,11 @@ export class LayoutService {
         primary: 'emerald',
         surface: 'slate',
         darkTheme: true,
+        themeMode: 'dark', // Default to dark mode for consistent Finary-like aesthetic
         menuMode: 'static'
     };
+
+    private systemPreferenceListener: MediaQueryList | null = null;
 
     // Initialize config from localStorage or defaults
     _config: layoutConfig = this.getInitialConfig();
@@ -121,7 +125,23 @@ export class LayoutService {
     constructor() {
         // Apply dark mode immediately (this works without PrimeNG being fully ready)
         if (isPlatformBrowser(this.platformId)) {
-            this.toggleDarkMode(this._config);
+            // Initialize theme mode if not set (for backward compatibility)
+            if (!this._config.themeMode) {
+                // If darkTheme is explicitly set, infer theme mode
+                // Otherwise default to system mode
+                this._config.themeMode = this._config.darkTheme !== undefined 
+                    ? (this._config.darkTheme ? 'dark' : 'light')
+                    : 'system';
+            }
+            
+            // Update the signal with themeMode
+            this.layoutConfig.set({ ...this._config });
+            
+            // Apply theme based on mode
+            this.applyThemeFromMode(this._config);
+            
+            // Setup system preference listener if in system mode
+            this.setupSystemPreferenceListener();
             
             // Apply surface palette after a brief delay to ensure PrimeNG is initialized
             // This is necessary because updateSurfacePalette needs the theme system to be ready
@@ -150,6 +170,8 @@ export class LayoutService {
                 return;
             }
 
+            // Setup system preference listener when theme mode changes
+            this.setupSystemPreferenceListener();
             this.handleDarkModeTransition(config);
         });
     }
@@ -269,4 +291,55 @@ export class LayoutService {
     reset() {
         this.resetSource.next(true);
     }
+
+    /**
+     * Apply theme based on theme mode (light/dark/system)
+     */
+    private applyThemeFromMode(config: layoutConfig): void {
+        if (config.themeMode === 'system') {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            config.darkTheme = prefersDark;
+        } else if (config.themeMode === 'dark') {
+            config.darkTheme = true;
+        } else {
+            config.darkTheme = false;
+        }
+        this.toggleDarkMode(config);
+    }
+
+    /**
+     * Setup listener for system preference changes when in system mode
+     */
+    private setupSystemPreferenceListener(): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+
+        // Remove existing listener if any
+        if (this.systemPreferenceListener) {
+            this.systemPreferenceListener.removeEventListener('change', this.handleSystemPreferenceChange);
+            this.systemPreferenceListener = null;
+        }
+
+        const config = this.layoutConfig();
+        if (config?.themeMode === 'system') {
+            // Listen for system preference changes
+            this.systemPreferenceListener = window.matchMedia('(prefers-color-scheme: dark)');
+            this.systemPreferenceListener.addEventListener('change', this.handleSystemPreferenceChange);
+        }
+    }
+
+    /**
+     * Handle system preference change
+     */
+    private handleSystemPreferenceChange = (event: MediaQueryListEvent): void => {
+        const config = this.layoutConfig();
+        if (config?.themeMode === 'system') {
+            const newDarkTheme = event.matches;
+            if (config.darkTheme !== newDarkTheme) {
+                this.layoutConfig.update((state) => ({
+                    ...state,
+                    darkTheme: newDarkTheme
+                }));
+            }
+        }
+    };
 }

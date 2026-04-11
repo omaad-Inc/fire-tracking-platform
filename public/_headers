@@ -8,8 +8,11 @@
   cache-control: no-cache
 
 /ngsw-worker.js
-  cache-control: no-cache
+  cache-control: no-cache, no-store, must-revalidate
   Service-Worker-Allowed: /
+
+/ngsw.json
+  cache-control: no-cache, no-store, must-revalidate
 
 /**
   cache-control: public, max-age=0, must-revalidate

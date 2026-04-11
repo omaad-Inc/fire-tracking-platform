@@ -17,8 +17,8 @@ interface NavItem {
     imports: [CommonModule, RouterModule],
     template: `
         <nav class="mobile-bottom-nav">
-            <a 
-                *ngFor="let item of navItems" 
+            <a
+                *ngFor="let item of navItems"
                 [routerLink]="item.route"
                 routerLinkActive="active"
                 [routerLinkActiveOptions]="{ exact: item.route.length <= 2 }"
@@ -28,6 +28,8 @@ interface NavItem {
                     <i [class]="item.icon"></i>
                 </div>
                 <span class="nav-label">{{ item.label }}</span>
+                <!-- Active dot indicator -->
+                <span class="nav-dot" [class.active]="isActive(item.route)"></span>
             </a>
         </nav>
     `,
@@ -85,12 +87,14 @@ interface NavItem {
         }
 
         .nav-icon-wrapper i {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             transition: all 0.3s ease;
+            opacity: 0.5; /* Muted when inactive — high contrast with active */
         }
 
         .nav-icon-wrapper.active {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+            transform: scale(1.05);
         }
 
         .nav-icon-wrapper.active i {
@@ -98,10 +102,12 @@ interface NavItem {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            opacity: 1; /* Full opacity when active */
+            font-size: 1.3rem; /* Slightly larger active icon */
         }
 
         .nav-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 500;
             transition: color 0.3s ease;
         }
@@ -109,6 +115,22 @@ interface NavItem {
         .nav-item.active .nav-label,
         .nav-item:hover .nav-label {
             color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Active dot indicator below the label */
+        .nav-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: transparent;
+            transition: background 0.3s ease, transform 0.3s ease;
+            margin-top: 2px;
+        }
+
+        .nav-dot.active {
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            transform: scale(1);
         }
 
         /* Dark mode adjustments */

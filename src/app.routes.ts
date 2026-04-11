@@ -1,4 +1,5 @@
-import { Routes } from '@angular/router';
+import { Routes, Router, CanActivateFn } from '@angular/router';
+import { inject } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeEn from '@angular/common/locales/en';
@@ -7,6 +8,27 @@ import { AppLayout } from './app/layout/component/app.layout';
 import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
+import { authGuard } from './app/core/guards/auth.guard';
+import { AdvisoryPage } from './app/pages/landing/components/advisory';
+import { AdvisoryAuditPage } from './app/pages/landing/components/advisory-audit';
+import { AdvisoryMissionPage } from './app/pages/landing/components/advisory-mission';
+import { AdvisoryFormationPage } from './app/pages/landing/components/advisory-formation';
+
+// Guard to redirect OAuth tokens from root to callback handler
+const oauthTokenRedirect: CanActivateFn = () => {
+    if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('token')) {
+            const router = inject(Router);
+            router.navigate(['/auth/callback'], { 
+                queryParams: { token: urlParams.get('token'), new_user: urlParams.get('new_user') },
+                replaceUrl: true 
+            });
+            return false;
+        }
+    }
+    return true;
+};
 
 const localeResolver = () => {
     const url = window.location.pathname;
@@ -18,14 +40,27 @@ const localeResolver = () => {
 };
 
 export const appRoutes: Routes = [
-    // Landing page as the first route (home)
-    { path: '', pathMatch: 'full', component: Landing },
-    { path: ':lang/landing', component: Landing },
+    // OAuth callback route without lang prefix (must be before root route to catch /auth/callback)
+    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
     
-    // Main app with layout
+    // Landing page as the first route (home) - but check for OAuth token first
+    { 
+        path: '', 
+        pathMatch: 'full', 
+        component: Landing,
+        canActivate: [oauthTokenRedirect]
+    },
+    { path: ':lang/landing', component: Landing },
+    { path: ':lang/advisory', component: AdvisoryPage },
+    { path: ':lang/advisory/audit', component: AdvisoryAuditPage },
+    { path: ':lang/advisory/mission', component: AdvisoryMissionPage },
+    { path: ':lang/advisory/formation', component: AdvisoryFormationPage },
+    
+    // Main app with layout (protected routes)
     {
         path: ':lang',
         component: AppLayout,
+        canActivate: [authGuard],
         providers: [
             {
                 provide: LOCALE_ID,

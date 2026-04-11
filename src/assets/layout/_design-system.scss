@@ -1,0 +1,213 @@
+// ═══════════════════════════════════════════════════════════════════
+// OMAAD WEALTH — Design System Tokens
+// ═══════════════════════════════════════════════════════════════════
+//
+// 4 accent colors:  brand (indigo-cyan), positive (emerald), negative (rose), attention (amber)
+// 3 shadow levels:  rest, hover, elevated
+// 1 border radius:  16px (2xl) for cards, 12px (xl) for buttons/inputs
+//
+// Usage: @use 'assets/layout/design-system' in styles.scss
+
+// ── Standardized Shadows ────────────────────────────────────────────
+// Level 0: nothing (inline elements)
+// Level 1: cards at rest — very subtle
+// Level 2: cards on hover / elevated dialogs
+
+:root {
+  --omaad-shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --omaad-shadow-hover: 0 4px 12px rgba(99, 102, 241, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --omaad-shadow-elevated: 0 8px 24px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --omaad-radius-card: 1rem;         // 16px
+  --omaad-radius-input: 0.75rem;     // 12px
+  --omaad-radius-badge: 9999px;      // pill
+}
+
+.app-dark {
+  --omaad-shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --omaad-shadow-hover: 0 4px 12px rgba(99, 102, 241, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+  --omaad-shadow-elevated: 0 8px 24px rgba(99, 102, 241, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// ── Global card upgrade ─────────────────────────────────────────────
+// Override the PrimeNG/Sakai default .card to use our standardized tokens
+.card {
+  border-radius: var(--omaad-radius-card) !important;
+  box-shadow: var(--omaad-shadow-rest);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+// Hoverable cards (used via .card-hover or group-hover patterns)
+.card-hover:hover,
+.card:has(> [role="link"]:hover) {
+  box-shadow: var(--omaad-shadow-hover);
+}
+
+// ── Standardized button radius ──────────────────────────────────────
+.p-button {
+  border-radius: var(--omaad-radius-input) !important;
+}
+
+// ── Dialog radius ───────────────────────────────────────────────────
+.p-dialog {
+  border-radius: var(--omaad-radius-card) !important;
+  box-shadow: var(--omaad-shadow-elevated);
+}
+
+// ── Input radius (p-inputtext, p-select, p-inputnumber) ─────────────
+.p-inputtext,
+.p-select,
+.p-datepicker-input {
+  border-radius: var(--omaad-radius-input) !important;
+}
+
+// ── Tabular numbers for financial data ───────────────────────────────
+// Forces all digits to the same width so columns of numbers align perfectly.
+// Applied to any element with the .tnum class, or globally via app-amount.
+app-amount,
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+// ── Primary gradient — reserved for the SINGLE main CTA per screen ──
+// Apply with class="omaad-cta" on the primary button
+.omaad-cta {
+  background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ── Secondary action buttons — flat indigo, no gradient ─────────────
+.omaad-secondary {
+  background: transparent !important;
+  border: 1.5px solid var(--p-surface-300) !important;
+  color: var(--p-text-color) !important;
+  font-weight: 600 !important;
+
+  &:hover {
+    border-color: #6366f1 !important;
+    color: #6366f1 !important;
+    background: rgba(99, 102, 241, 0.05) !important;
+  }
+}
+
+.app-dark .omaad-secondary {
+  border-color: var(--p-surface-600) !important;
+
+  &:hover {
+    border-color: #818cf8 !important;
+    color: #818cf8 !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SHIMMER SKELETONS
+// Replace Tailwind's flat animate-pulse with a sweeping light gradient.
+// Usage: replace `animate-pulse` with `shimmer` on any skeleton element.
+// ═══════════════════════════════════════════════════════════════════
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--p-surface-100, #f1f5f9);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    animation: shimmer-sweep 1.5s ease-in-out infinite;
+  }
+}
+
+.app-dark .shimmer {
+  background: var(--p-surface-800, #1e293b);
+
+  &::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 100%
+    );
+  }
+}
+
+// Also override Tailwind's animate-pulse globally so existing skeletons upgrade
+// without touching every component template.
+.animate-pulse {
+  animation: none !important;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 100%
+    );
+    animation: shimmer-sweep 1.5s ease-in-out infinite;
+  }
+}
+
+.app-dark .animate-pulse::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PAGE FADE-IN
+// Subtle opacity + translateY animation on route content.
+// Applied globally to the router-outlet's direct child.
+// ═══════════════════════════════════════════════════════════════════
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// The layout-main holds the <router-outlet>; animate its direct child
+.layout-main > *:not(router-outlet) {
+  animation: page-enter 0.25s ease-out;
+}
+
+// Also animate settings child routes
+.flex-1 > *:not(router-outlet) {
+  animation: page-enter 0.2s ease-out;
+}
+

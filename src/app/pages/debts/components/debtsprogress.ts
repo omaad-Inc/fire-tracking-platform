@@ -1,146 +1,167 @@
-import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import { TagModule } from 'primeng/tag';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
-
-interface Column {
-    field: string;
-    header: string;
-    customExportHeader?: string;
-}
-
-interface ExportColumn {
-    title: string;
-    dataKey: string;
-}
-
-// DebtRecord type imported from DebtsService
+import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     standalone: true,
     selector: 'app-debts-progress',
     imports: [
-        CommonModule,
-        TableModule,
-        FormsModule,
-        ButtonModule,
-        ToastModule,
-        ToolbarModule,
-        InputTextModule,
-        TextareaModule,
-        SelectModule,
-        InputNumberModule,
-        DialogModule,
-        TagModule,
-        InputIconModule,
-        IconFieldModule,
-        ConfirmDialogModule,
-        DatePickerModule
+        CommonModule, FormsModule, ButtonModule, ToastModule,
+        InputTextModule, SelectModule, InputNumberModule,
+        DialogModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent
     ],
+    providers: [MessageService, ConfirmationService],
     template: `
-     <p-toolbar styleClass="mb-6">
-            <ng-template #start>
-                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
-                <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length" />
-            </ng-template>
+        <p-toast position="top-center" />
+        <p-confirmDialog />
 
-            <ng-template #end>
-                <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
-            </ng-template>
-        </p-toolbar>
-
-        <p-table
-            #dt
-            [value]="records()"
-            [rows]="10"
-            [columns]="cols"
-            [paginator]="true"
-            [globalFilterFields]="['date', 'type', 'name']"
-            [tableStyle]="{ 'min-width': '75rem' }"
-            [(selection)]="selectedRecords"
-            [rowHover]="true"
-            dataKey="id"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} records"
-            [showCurrentPageReport]="true"
-            [rowsPerPageOptions]="[10, 20, 30]"
-        >
-            <ng-template #caption>
-                <div class="flex items-center justify-between">
-                    <h5 class="m-0">Gestion des Dettes</h5>
-                    <p-iconfield>
-                        <p-inputicon styleClass="pi pi-search" />
-                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
-                    </p-iconfield>
+        <!-- ── Top bar ── -->
+        <div class="flex flex-col gap-2 mb-5">
+            <div class="flex items-center gap-2">
+                <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0 flex-1">Dettes & Créances</h2>
+                <button pButton icon="pi pi-plus" label="Nouveau"
+                        class="!bg-gradient-to-r !from-rose-600 !to-indigo-500 !border-0 !text-white !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
+                        (click)="openNew()"></button>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1 min-w-0">
+                    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
+                    <input pInputText [(ngModel)]="search" placeholder="Rechercher..."
+                           class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
                 </div>
-            </ng-template>
-            <ng-template #header>
-                <tr>
-                    <th style="width: 3rem">
-                        <p-tableHeaderCheckbox />
-                    </th>
-                    <th style="min-width: 16rem">Name</th>
-                    <th style="min-width: 10rem">Type</th>
-                    <th style="min-width: 10rem">Total</th>
-                    <th style="min-width: 10rem">Payé/Reçu</th>
-                    <th style="min-width: 10rem">Taux d'intérêt</th>
-                    <th style="min-width: 10rem">Fréquence</th>
-                    <th style="min-width: 10rem">Progression</th>
-                    <th style="min-width: 12rem"></th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-record let-i="rowIndex">
-                <tr>
-                    <td style="width: 3rem">
-                        <p-tableCheckbox [value]="record" />
-                    </td>
-                    <td>{{ record.name }}</td>
-                    <td>
-                        <p-tag [value]="record.type" [severity]="getSeverityType(record.type)" />
-                    </td>
-                    <td>{{ record.total | currency:'EUR' }}</td>
-                    <td>{{ record.paid | currency:'EUR' }}</td>
-                    <td>{{ record.interestRate }}%</td>
-                    <td>{{ record.frequency }}</td>
-                    <td>
-                        <div class="flex items-center gap-2">
-                            <div class="bg-surface-200 dark:bg-surface-700 w-full max-w-xs rounded-full overflow-hidden" style="height: 8px">
-                                <div class="h-full rounded-full transition-all duration-500" 
-                                     [ngClass]="record.type === 'Debt' ? 'bg-gradient-to-r from-indigo-600 to-indigo-400' : 'bg-gradient-to-r from-emerald-600 to-emerald-400'" 
-                                     [ngStyle]="{ width: getPercent(record) + '%' }"></div>
-                            </div>
-                            <span [ngClass]="record.type === 'Debt' ? 'text-indigo-500' : 'text-emerald-500'" class="font-semibold">{{ getPercent(record) }}%</span>
-                        </div>
-                    </td>
-                    <td>
-                        <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editRecord(record)" />
-                        <p-button icon="pi pi-plus" class="mr-2" [rounded]="true" severity="success" [outlined]="true" (click)="openAddPaymentDialog(i)" />
-                        <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteRecord(record)" />
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+                <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
+                    @for (f of typeFilters; track f.value) {
+                        <button (click)="typeFilter.set(f.value)"
+                                class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap"
+                                [class]="typeFilter() === f.value
+                                    ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
+                                    : 'text-surface-500 dark:text-surface-400'">
+                            {{ f.label }}
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
 
-        <p-dialog [(visible)]="productDialog" 
-                  [style]="{ width: '95vw', maxWidth: '650px' }" 
-                  [breakpoints]="{ '768px': '95vw' }"
-                  [modal]="true"
-                  [draggable]="false"
-                  [resizable]="false"
+        <!-- ── Loading ── -->
+        @if (loading()) {
+            <div class="space-y-3">
+                @for (i of [1,2,3]; track i) {
+                    <div class="h-[110px] bg-surface-100 dark:bg-surface-800 rounded-2xl animate-pulse"></div>
+                }
+            </div>
+        }
+
+        <!-- ── Empty ── -->
+        @else if (filteredRecords().length === 0) {
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+                <div class="w-14 h-14 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
+                    <i class="pi pi-credit-card text-xl text-surface-400"></i>
+                </div>
+                <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
+                    {{ search || typeFilter() !== 'all' ? 'Aucun résultat' : 'Aucune dette ou créance enregistrée' }}
+                </p>
+                @if (!search && typeFilter() === 'all') {
+                    <button pButton icon="pi pi-plus" label="Ajouter"
+                            [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
+                }
+            </div>
+        }
+
+        <!-- ── Cards list ── -->
+        @else {
+            <div class="space-y-3">
+                @for (rec of filteredRecords(); track rec.id) {
+                    <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 p-4">
+                        <!-- Header row -->
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                                 [ngClass]="rec.type === 'Debt' ? 'bg-rose-500/10' : 'bg-emerald-500/10'">
+                                <i class="pi text-lg"
+                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-rose-500' : 'pi-arrow-down-left text-emerald-500'"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ rec.name }}</span>
+                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                          [ngClass]="rec.type === 'Debt'
+                                              ? 'bg-rose-500/10 text-rose-500'
+                                              : 'bg-emerald-500/10 text-emerald-500'">
+                                        {{ rec.type === 'Debt' ? 'Dette' : 'Créance' }}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-3 mt-0.5 text-xs text-surface-400 flex-wrap">
+                                    @if (rec.interestRate > 0) { <span>{{ rec.interestRate }}% intérêt</span> }
+                                    @if (rec.frequency) { <span>· {{ rec.frequency }}</span> }
+                                    @if (rec.date) { <span>· {{ rec.date }}</span> }
+                                </div>
+                            </div>
+                            <!-- Actions: always visible on mobile, hover on desktop -->
+                            <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                        (click)="editRecord(rec)" title="Modifier">
+                                    <i class="pi pi-pencil text-xs text-surface-500"></i>
+                                </button>
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                                        (click)="openAddPaymentDialog(rec)" title="Ajouter un paiement">
+                                    <i class="pi pi-plus text-xs text-emerald-500"></i>
+                                </button>
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                                        (click)="deleteRecord(rec)" title="Supprimer">
+                                    <i class="pi pi-trash text-xs text-surface-500"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Amounts row -->
+                        <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+                            <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
+                                <div class="text-[10px] text-surface-400 mb-0.5">Total</div>
+                                <div class="text-sm font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="rec.total" /></div>
+                            </div>
+                            <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
+                                <div class="text-[10px] text-surface-400 mb-0.5">{{ rec.type === 'Debt' ? 'Payé' : 'Reçu' }}</div>
+                                <div class="text-sm font-bold text-emerald-500"><app-amount [value]="rec.paid" /></div>
+                            </div>
+                            <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
+                                <div class="text-[10px] text-surface-400 mb-0.5">Reste</div>
+                                <div class="text-sm font-bold text-rose-500"><app-amount [value]="rec.total - rec.paid" /></div>
+                            </div>
+                        </div>
+
+                        <!-- Progress bar -->
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-500"
+                                     [ngClass]="rec.type === 'Debt' ? 'bg-gradient-to-r from-indigo-600 to-indigo-400' : 'bg-gradient-to-r from-emerald-600 to-emerald-400'"
+                                     [style.width]="getPercent(rec) + '%'"></div>
+                            </div>
+                            <span class="text-xs font-semibold shrink-0"
+                                  [ngClass]="rec.type === 'Debt' ? 'text-indigo-500' : 'text-emerald-500'">
+                                {{ getPercent(rec) }}%
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- ── Add / Edit dialog ── -->
+        <p-dialog [(visible)]="productDialog"
+                  [style]="{ width: '95vw', maxWidth: '650px' }"
+                  [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
@@ -148,300 +169,234 @@ interface ExportColumn {
                         <i class="pi pi-credit-card text-white text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
-                            {{ isEdit ? 'Modifier la dette/créance' : 'Nouvelle dette/créance' }}
+                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">
+                            {{ isEdit ? 'Modifier' : 'Nouvelle dette / créance' }}
                         </h3>
                         <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Gérez vos dettes et créances</p>
                     </div>
                 </div>
             </ng-template>
-            
+
             <ng-template #content>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-4">
-                    <!-- Date -->
-                    <div class="flex flex-col gap-2">
-                        <label for="date" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-calendar text-rose-500"></i>
-                            Date
-                        </label>
-                        <p-datepicker id="date" [(ngModel)]="record.date" [showIcon]="true" [showButtonBar]="true" 
-                                      inputId="date" dateFormat="yy-mm-dd" required 
-                                      styleClass="w-full"
-                                      inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-rose-500" />
-                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.date">
-                            <i class="pi pi-exclamation-circle mr-1"></i>La date est requise
-                        </small>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+                    <!-- Type toggle -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Type</label>
+                        <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl">
+                            <button (click)="record.type = 'Debt'"
+                                    class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                                    [ngClass]="record.type === 'Debt' ? 'bg-white dark:bg-surface-700 text-rose-500 shadow-sm' : 'text-surface-500'">
+                                Dette (je dois)
+                            </button>
+                            <button (click)="record.type = 'Receivable'"
+                                    class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                                    [ngClass]="record.type === 'Receivable' ? 'bg-white dark:bg-surface-700 text-emerald-500 shadow-sm' : 'text-surface-500'">
+                                Créance (on me doit)
+                            </button>
+                        </div>
                     </div>
-                    
-                    <!-- Type -->
-                    <div class="flex flex-col gap-2">
-                        <label for="type" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-arrows-h text-indigo-500"></i>
-                            Type
-                        </label>
-                        <p-select [(ngModel)]="record.type" inputId="type" [options]="types" 
-                                  optionLabel="label" optionValue="value" placeholder="Sélectionner un type" 
-                                  styleClass="w-full !rounded-xl" />
-                    </div>
-                    
+
                     <!-- Name -->
                     <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label for="name" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-tag text-cyan-500"></i>
-                            Nom
-                        </label>
-                        <input pInputText id="name" [(ngModel)]="record.name" required 
-                               class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-rose-500"
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nom <span class="text-rose-400">*</span></label>
+                        <input pInputText [(ngModel)]="record.name" required
+                               class="w-full !py-3 !rounded-xl"
                                placeholder="Ex: Prêt immobilier, Ami..." />
-                        <small class="text-rose-500 text-xs" *ngIf="submitted && !record.name">
-                            <i class="pi pi-exclamation-circle mr-1"></i>Le nom est requis
-                        </small>
+                        @if (submitted && !record.name) {
+                            <small class="text-rose-500 text-xs">Le nom est requis</small>
+                        }
                     </div>
-                    
+
                     <!-- Total -->
                     <div class="flex flex-col gap-2">
-                        <label for="total" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-euro text-amber-500"></i>
-                            Montant total
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            Montant total <span class="text-rose-400">*</span>
+                            <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
-                        <p-inputnumber id="total" [(ngModel)]="record.total" mode="currency" currency="EUR" locale="fr-FR" 
+                        <p-inputnumber [(ngModel)]="record.total" mode="decimal"
+                                       [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-rose-500" />
+                                       inputStyleClass="!py-3 !rounded-xl" />
                     </div>
-                    
+
                     <!-- Paid -->
                     <div class="flex flex-col gap-2">
-                        <label for="paid" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-check-circle text-emerald-500"></i>
-                            Payé/Reçu
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                            {{ record.type === 'Debt' ? 'Déjà payé' : 'Déjà reçu' }}
+                            <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
-                        <p-inputnumber id="paid" [(ngModel)]="record.paid" mode="currency" currency="EUR" locale="fr-FR" 
+                        <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
+                                       [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500" />
+                                       inputStyleClass="!py-3 !rounded-xl" />
                     </div>
-                    
+
                     <!-- Interest Rate -->
                     <div class="flex flex-col gap-2">
-                        <label for="interestRate" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-percentage text-violet-500"></i>
-                            Taux d'intérêt
-                        </label>
-                        <p-inputnumber id="interestRate" [(ngModel)]="record.interestRate" mode="decimal" 
-                                       minFractionDigits="2" maxFractionDigits="2" suffix=" %" 
-                                       styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-violet-500" />
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Taux d'intérêt</label>
+                        <p-inputnumber [(ngModel)]="record.interestRate" mode="decimal"
+                                       [minFractionDigits]="2" [maxFractionDigits]="2" suffix=" %"
+                                       styleClass="w-full" inputStyleClass="!py-3 !rounded-xl" />
                     </div>
-                    
+
                     <!-- Frequency -->
                     <div class="flex flex-col gap-2">
-                        <label for="frequency" class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-sync text-surface-400"></i>
-                            Fréquence
-                        </label>
-                        <p-select [(ngModel)]="record.frequency" inputId="frequency" [options]="frequencies" 
-                                  optionLabel="label" optionValue="value" placeholder="Choisir une fréquence" 
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Fréquence</label>
+                        <p-select [(ngModel)]="record.frequency" [options]="frequencies"
+                                  optionLabel="label" optionValue="value"
+                                  placeholder="Choisir une fréquence"
                                   styleClass="w-full !rounded-xl" />
+                    </div>
+
+                    <!-- Date -->
+                    <div class="flex flex-col gap-2 sm:col-span-2">
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date</label>
+                        <input type="date" pInputText [(ngModel)]="record.date"
+                               class="w-full !py-3 !rounded-xl" />
                     </div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" 
-                              [outlined]="true" 
-                              (click)="hideDialog()" 
-                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
-                    <p-button label="Enregistrer" icon="pi pi-check" 
-                              (click)="saveRecord()" 
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-rose-600 !to-indigo-500 hover:!from-rose-700 hover:!to-indigo-600 !border-0" />
+                <div class="flex gap-3 pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="hideDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                    <p-button [label]="isEdit ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
+                              [loading]="isSaving()"
+                              (click)="saveRecord()"
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-rose-600 !to-indigo-500 !border-0" />
                 </div>
             </ng-template>
         </p-dialog>
 
-        <!-- Add Payment Dialog -->
-        <p-dialog [(visible)]="addPaymentDialog" 
-                  [style]="{ width: '95vw', maxWidth: '420px' }" 
-                  [breakpoints]="{ '768px': '95vw' }"
-                  [modal]="true"
-                  [draggable]="false"
-                  [resizable]="false"
+        <!-- ── Add Payment dialog ── -->
+        <p-dialog [(visible)]="addPaymentDialog"
+                  [style]="{ width: '95vw', maxWidth: '420px' }"
+                  [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
                         <i class="pi pi-plus text-white text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">Ajouter un paiement</h3>
-                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Enregistrer un remboursement</p>
+                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Ajouter un paiement</h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">{{ paymentRecord?.name }}</p>
                     </div>
                 </div>
             </ng-template>
-            
+
             <ng-template #content>
-                <div *ngIf="addPaymentIndex !== null">
-                    <ng-container *ngIf="records()[addPaymentIndex] as rec">
-                        <div class="flex flex-col gap-5 pt-4">
-                            <!-- Summary Card -->
-                            <div class="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-4 space-y-3">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-                                        <i class="pi pi-info-circle text-indigo-500"></i>
-                                    </div>
-                                    <span class="font-semibold text-lg text-surface-900 dark:text-surface-0">{{ rec.name }}</span>
-                                </div>
-                                <div class="grid grid-cols-3 gap-3 text-center">
-                                    <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
-                                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Total</div>
-                                        <div class="font-bold text-surface-900 dark:text-surface-0">{{ rec.total | currency:'EUR':'symbol':'1.0-0' }}</div>
-                                    </div>
-                                    <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
-                                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Payé</div>
-                                        <div class="font-bold text-emerald-500">{{ rec.paid | currency:'EUR':'symbol':'1.0-0' }}</div>
-                                    </div>
-                                    <div class="bg-surface-0 dark:bg-surface-900 rounded-lg p-3">
-                                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-1">Reste</div>
-                                        <div class="font-bold text-rose-500">{{ (rec.total - rec.paid) | currency:'EUR':'symbol':'1.0-0' }}</div>
-                                    </div>
-                                </div>
+                @if (paymentRecord) {
+                    <div class="flex flex-col gap-5 pt-3">
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
+                                <div class="text-[10px] text-surface-400 mb-1">Total</div>
+                                <div class="text-sm font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="paymentRecord.total" /></div>
                             </div>
-                            
-                            <!-- Amount Input -->
-                            <div class="flex flex-col gap-2">
-                                <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                    <i class="pi pi-euro text-emerald-500"></i>
-                                    Montant à ajouter
-                                </label>
-                                <p-inputnumber [(ngModel)]="addPaymentAmount" mode="currency" currency="EUR" locale="fr-FR" 
-                                               [min]="1" [max]="getMaxAddPayment()" autofocus 
-                                               styleClass="w-full"
-                                               inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500 !text-lg" />
-                                <small class="text-rose-500 text-xs" *ngIf="addPaymentSubmitted && (!addPaymentAmount || addPaymentAmount <= 0)">
-                                    <i class="pi pi-exclamation-circle mr-1"></i>Veuillez saisir un montant valide
-                                </small>
+                            <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
+                                <div class="text-[10px] text-surface-400 mb-1">Payé</div>
+                                <div class="text-sm font-bold text-emerald-500"><app-amount [value]="paymentRecord.paid" /></div>
+                            </div>
+                            <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
+                                <div class="text-[10px] text-surface-400 mb-1">Reste</div>
+                                <div class="text-sm font-bold text-rose-500"><app-amount [value]="paymentRecord.total - paymentRecord.paid" /></div>
                             </div>
                         </div>
-                    </ng-container>
-                </div>
+                        <div class="flex flex-col gap-2">
+                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                                Montant à ajouter <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
+                            </label>
+                            <p-inputnumber [(ngModel)]="addPaymentAmount" mode="decimal"
+                                           [minFractionDigits]="0" [maxFractionDigits]="0"
+                                           [min]="1" [max]="paymentRecord.total - paymentRecord.paid"
+                                           styleClass="w-full"
+                                           inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
+                            @if (addPaymentSubmitted && !(addPaymentAmount! > 0)) {
+                                <small class="text-rose-500 text-xs">Montant requis</small>
+                            }
+                        </div>
+                    </div>
+                }
             </ng-template>
-            
+
             <ng-template #footer>
-                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" 
-                              [outlined]="true" 
-                              (click)="closeAddPaymentDialog()" 
-                              styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600 hover:!bg-surface-100 dark:hover:!bg-surface-800" />
-                    <p-button label="Valider" icon="pi pi-check" 
-                              (click)="confirmAddPayment()" 
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 hover:!from-emerald-700 hover:!to-cyan-600 !border-0" />
+                <div class="flex gap-3 pt-2">
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="closeAddPaymentDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                    <p-button label="Valider" icon="pi pi-check"
+                              (click)="confirmAddPayment()"
+                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 !border-0" />
                 </div>
             </ng-template>
         </p-dialog>
-
-        <p-confirmdialog [style]="{ width: '450px' }" />
-    `,
-    providers: [MessageService, ConfirmationService]
+    `
 })
 export class DebtsProgress implements OnInit {
-    productDialog: boolean = false;
-    addPaymentDialog = false;
-    addPaymentIndex: number | null = null;
+    private debtsService        = inject(DebtsService);
+    cs = inject(CurrencyService);
+    private messageService      = inject(MessageService);
+    private confirmationService = inject(ConfirmationService);
+
+    productDialog      = false;
+    addPaymentDialog   = false;
     addPaymentAmount: number | null = null;
     addPaymentSubmitted = false;
-    isEdit = false;
+    paymentRecord: DebtRecord | null = null;
+    isEdit   = false;
+    loading  = signal(true);
+    isSaving = signal(false);
+    submitted = false;
 
-    records = signal<DebtRecord[]>([]);
-
+    private allRecords = signal<DebtRecord[]>([]);
     record!: DebtRecord;
 
-    selectedRecords!: DebtRecord[] | null;
+    search     = '';
+    typeFilter = signal<'all' | 'Debt' | 'Receivable'>('all');
 
-    submitted: boolean = false;
-
-    types = [
-        { label: 'Debt', value: 'Debt' },
-        { label: 'Receivable', value: 'Receivable' }
+    typeFilters = [
+        { label: 'Tous',      value: 'all'         as const },
+        { label: 'Dettes',    value: 'Debt'        as const },
+        { label: 'Créances',  value: 'Receivable'  as const },
     ];
 
     frequencies = [
         { label: 'Mensuel', value: 'Mensuel' },
-        { label: 'Unique', value: 'Unique' },
-        { label: 'Libre', value: 'Libre' }
+        { label: 'Unique',  value: 'Unique'  },
+        { label: 'Libre',   value: 'Libre'   },
     ];
 
-    @ViewChild('dt') dt!: Table;
-
-    exportColumns!: ExportColumn[];
-
-    cols!: Column[];
-
-    constructor(
-        private messageService: MessageService,
-        private confirmationService: ConfirmationService,
-        private debtsService: DebtsService
-    ) {}
-
-    exportCSV() {
-        this.dt.exportCSV();
-    }
+    readonly filteredRecords = computed(() => {
+        const filter = this.typeFilter();
+        const q      = this.search.toLowerCase().trim();
+        return this.allRecords()
+            .filter(r => filter === 'all' || r.type === filter)
+            .filter(r => !q || (r.name || '').toLowerCase().includes(q));
+    });
 
     ngOnInit() {
         this.loadFromService();
     }
 
     loadFromService() {
-        this.debtsService.getRecords().then((data) => {
-            this.records.set(data);
-            this.cols = [
-                { field: 'name', header: 'Name' },
-                { field: 'type', header: 'Type' },
-                { field: 'total', header: 'Total' },
-                { field: 'paid', header: 'Payé/Reçu' },
-                { field: 'interestRate', header: "Taux d'intérêt" },
-                { field: 'frequency', header: 'Fréquence' },
-                { field: 'progression', header: 'Progression' },
-                { field: 'note', header: 'Note' }
-            ];
-            this.exportColumns = this.cols.map((col) => ({ title: col.header, dataKey: col.field }));
-        });
-    }
-
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+        this.loading.set(true);
+        this.debtsService.getRecords()
+            .then(data => this.allRecords.set(data))
+            .finally(() => this.loading.set(false));
     }
 
     openNew() {
-        this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+        this.record = { date: new Date().toISOString().split('T')[0], type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
         this.submitted = false;
-        this.productDialog = true;
         this.isEdit = false;
+        this.productDialog = true;
     }
 
     editRecord(record: DebtRecord) {
         this.record = { ...record };
-        this.productDialog = true;
+        this.submitted = false;
         this.isEdit = true;
-    }
-
-    deleteSelectedRecords() {
-        this.confirmationService.confirm({
-            message: 'Are you sure you want to delete the selected records?',
-            header: 'Confirm',
-            icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                const ids = (this.selectedRecords || []).map((r) => r.id!).filter(Boolean);
-                this.debtsService.deleteRecords(ids).then(() => {
-                    this.records.set(this.records().filter((val) => !ids.includes(val.id!)));
-                    this.selectedRecords = null;
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Records Deleted',
-                        life: 3000
-                    });
-                });
-            }
-        });
+        this.productDialog = true;
     }
 
     hideDialog() {
@@ -452,118 +407,77 @@ export class DebtsProgress implements OnInit {
 
     deleteRecord(record: DebtRecord) {
         this.confirmationService.confirm({
-            message: 'Are you sure you want to delete ' + record.name + '?',
-            header: 'Confirm',
+            message: `Supprimer "${record.name}" ?`,
+            header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => {
+            acceptLabel: 'Supprimer',
+            rejectLabel: 'Annuler',
+            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            accept: async () => {
                 if (!record.id) return;
-                this.debtsService.deleteRecords([record.id]).then(() => {
-                    this.records.set(this.records().filter((val) => val.id !== record.id));
-                    this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Deleted',
-                        life: 3000
-                    });
-                });
+                try {
+                    await this.debtsService.deleteRecords([record.id]);
+                    this.allRecords.update(rs => rs.filter(r => r.id !== record.id));
+                    this.messageService.add({ severity: 'success', summary: 'Supprimé', detail: 'Enregistrement supprimé.', life: 3000 });
+                } catch {
+                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Suppression impossible.', life: 4000 });
+                }
             }
         });
     }
 
-    findIndexById(id: string): number {
-        let index = -1;
-        for (let i = 0; i < this.records().length; i++) {
-            if (this.records()[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-        return index;
-    }
-
-    saveRecord() {
+    async saveRecord() {
         this.submitted = true;
-        let _records = this.records();
-        if (this.record.name?.trim()) {
+        if (!this.record.name?.trim()) return;
+
+        this.isSaving.set(true);
+        try {
             if (this.record.id) {
-                this.debtsService.updateRecord(this.record).then((updated) => {
-                    _records[this.findIndexById(updated.id!)] = updated;
-                    this.records.set([..._records]);
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Updated',
-                        life: 3000
-                    });
-                });
+                const updated = await this.debtsService.updateRecord(this.record);
+                this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
+                this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Enregistrement mis à jour.', life: 3000 });
             } else {
-                this.debtsService.addRecord(this.record).then((created) => {
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Successful',
-                        detail: 'Record Created',
-                        life: 3000
-                    });
-                    this.records.set([..._records, created]);
-                });
+                const created = await this.debtsService.addRecord(this.record);
+                this.allRecords.update(rs => [...rs, created]);
+                this.messageService.add({ severity: 'success', summary: 'Créé', detail: 'Enregistrement ajouté.', life: 3000 });
             }
             this.productDialog = false;
-            this.record = { date: '', type: 'Debt', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+        } catch (err: any) {
+            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: err?.message || 'Impossible d\'enregistrer.', life: 5000 });
+        } finally {
+            this.isSaving.set(false);
         }
     }
 
     getPercent(record: DebtRecord): number {
         if (!record.total) return 0;
-        return Math.round((record.paid / record.total) * 100);
+        return Math.min(100, Math.round((record.paid / record.total) * 100));
     }
 
-    getSeverityType(type: string) {
-        switch (type) {
-            case 'Debt':
-                return 'danger';
-            case 'Receivable':
-                return 'success';
-            default:
-                return 'info';
-        }
-    }
-
-    openAddPaymentDialog(index: number) {
-        this.addPaymentIndex = index;
-        this.addPaymentAmount = null;
+    openAddPaymentDialog(record: DebtRecord) {
+        this.paymentRecord     = record;
+        this.addPaymentAmount  = null;
         this.addPaymentSubmitted = false;
-        this.addPaymentDialog = true;
+        this.addPaymentDialog  = true;
     }
 
     closeAddPaymentDialog() {
-        this.addPaymentDialog = false;
-        this.addPaymentIndex = null;
-        this.addPaymentAmount = null;
+        this.addPaymentDialog  = false;
+        this.paymentRecord     = null;
+        this.addPaymentAmount  = null;
         this.addPaymentSubmitted = false;
     }
 
-    getMaxAddPayment(): number {
-        if (this.addPaymentIndex === null) return 1000000;
-        const rec = this.records()[this.addPaymentIndex];
-        return rec ? rec.total - rec.paid : 1000000;
-    }
-
-    confirmAddPayment() {
+    async confirmAddPayment() {
         this.addPaymentSubmitted = true;
-        if (this.addPaymentIndex !== null && this.addPaymentAmount && this.addPaymentAmount > 0) {
-            const rec = this.records()[this.addPaymentIndex];
-            if (!rec?.id) {
-                this.closeAddPaymentDialog();
-                return;
-            }
-            this.debtsService.addPayment(rec.id, this.addPaymentAmount).then((updated) => {
-                const current = [...this.records()];
-                const idx = this.findIndexById(updated.id!);
-                if (idx !== -1) current[idx] = updated;
-                this.records.set(current);
-                this.closeAddPaymentDialog();
-            });
+        if (!this.paymentRecord?.id || !(this.addPaymentAmount! > 0)) return;
+        try {
+            const updated = await this.debtsService.addPayment(this.paymentRecord.id, this.addPaymentAmount!);
+            this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
+            this.messageService.add({ severity: 'success', summary: 'Paiement ajouté', detail: 'Remboursement enregistré.', life: 3000 });
+            this.closeAddPaymentDialog();
+        } catch {
+            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible d\'ajouter le paiement.', life: 4000 });
         }
     }
 }
