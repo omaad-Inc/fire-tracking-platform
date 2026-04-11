@@ -68,7 +68,7 @@ import { RippleModule } from 'primeng/ripple';
 
                 <!-- Brand footer -->
                 <div class="mt-16 flex items-center justify-center gap-2 opacity-40">
-                    <img src="assets/afrin-nexus-logo.svg" alt="Omaad" class="w-6 h-6">
+                    <img src="assets/omaad-logo.svg" alt="Omaad" class="w-6 h-6">
                     <span class="text-surface-500 text-sm font-medium">Omaad Wealth</span>
                 </div>
             </div>

@@ -2,12 +2,13 @@
 
 .layout-topbar {
     position: fixed;
-    height: 4rem;
+    height: calc(4rem + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
     z-index: 997;
     left: 0;
     top: 0;
     width: 100%;
-    padding: 0 2rem 0 0;
+    padding-right: 2rem;
     border-bottom: 1px solid var(--surface-border);
     background-color: var(--surface-card);
     transition: left var(--layout-section-transition-duration);

@@ -92,7 +92,7 @@ interface CategoryCard {
 
             <!-- Desktop: Logo + text (hidden on mobile) -->
             <div class="layout-topbar-logo hidden lg:flex items-center gap-2">
-                <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo" class="w-12 h-12">
+                <img src="assets/omaad-logo.svg" alt="Omaad Logo" class="w-12 h-12">
                 <span class="whitespace-nowrap">Omaad</span>
             </div>
         </div>

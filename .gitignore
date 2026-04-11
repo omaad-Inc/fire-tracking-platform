@@ -46,3 +46,8 @@ Thumbs.db
 /backend/
 .claude/
 CLAUDE.md
+# Capacitor native projects (regenerable via `npx cap add ios/android`)
+# Uncomment the lines below if you want to track the native projects in git
+# (recommended if you customize native code, splash screens, or app icons)
+ios/
+android/

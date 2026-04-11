@@ -39,7 +39,7 @@ import { PwaService } from '../service/pwa.service';
                             shadow-xl shadow-indigo-500/10 p-4">
                     <div class="flex items-start gap-3">
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/25">
-                            <img src="assets/afrin-nexus-logo.svg" alt="Omaad" class="w-7 h-7">
+                            <img src="assets/omaad-logo.svg" alt="Omaad" class="w-7 h-7">
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm leading-tight">Installer Omaad</p>
