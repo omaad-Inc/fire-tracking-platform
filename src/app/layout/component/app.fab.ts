@@ -8,6 +8,7 @@ const HIDE_FAB_PATTERNS = [
     '/patrimoine/assets/',
     '/patrimoine/category/',
     '/settings/',
+    '/pages/plans',
 ];
 
 @Component({
