@@ -112,6 +112,11 @@ export class DashboardService {
         this._cache = {};
     }
 
+    /** Check synchronously whether a specific cache key has data (avoids skeleton flash) */
+    hasCached(key: string): boolean {
+        return this._cache[key]?.data != null;
+    }
+
     // Reactive state
     private _loading = signal(false);
     private _error = signal<string | null>(null);

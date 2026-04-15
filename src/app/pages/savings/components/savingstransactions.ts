@@ -144,7 +144,7 @@ interface SavingRecordWithGoal extends SavingRecord {
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">
-                            {{ record?.id ? 'Modifier le mouvement' : 'Nouveau mouvement' }}
+                            {{ record.id ? 'Modifier le mouvement' : 'Nouveau mouvement' }}
                         </h3>
                         <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Enregistrer un mouvement d'épargne</p>
                     </div>
@@ -225,7 +225,7 @@ interface SavingRecordWithGoal extends SavingRecord {
                 <div class="flex gap-3 pt-2">
                     <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
                               (click)="hideDialog()" styleClass="flex-1 !rounded-xl !py-3" />
-                    <p-button [label]="record?.id ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
+                    <p-button [label]="record.id ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
                               styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 !border-0" />

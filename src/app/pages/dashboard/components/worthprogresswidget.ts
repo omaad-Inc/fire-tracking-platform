@@ -63,7 +63,7 @@ export class WorthProgress implements OnInit {
         try {
             const progression = await this.dashboardService.getWorthProgression(0); // 0 = all-time
             this.dataPoints.set(progression);
-            
+
             if (progression.length > 0) {
                 this.initChart();
             }

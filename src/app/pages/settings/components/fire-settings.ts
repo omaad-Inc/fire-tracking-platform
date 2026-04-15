@@ -12,13 +12,13 @@ import { ApiService, FIRESettings } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { TokenService } from '../../../core/services/token.service';
 import { DashboardService } from '../../service/dashboard.service';
-import { AppAmountComponent } from '../../../core/components/app-amount.component';
+
 import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     selector: 'app-fire-settings',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputNumberModule, DatePickerModule, ToastModule, DividerModule, AppAmountComponent],
+    imports: [CommonModule, FormsModule, ButtonModule, InputNumberModule, DatePickerModule, ToastModule, DividerModule],
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>

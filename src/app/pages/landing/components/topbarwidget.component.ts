@@ -14,9 +14,9 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
     template: `
         <!-- Logo -->
         <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
-            <img src="assets/omaad-logo.svg" alt="Omaad Logo"
+            <img src="assets/omaad-icon.png" alt="Omaad Logo"
                      class="w-10 h-10 md:w-12 md:h-12 transition-transform duration-300 group-hover:scale-110">
-            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad Wealth</span>
+            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">{{ isAdvisory() ? 'Omaad Advisory' : 'Omaad Wealth' }}</span>
         </a>
 
         <!-- Desktop Navigation -->
@@ -186,6 +186,8 @@ export class TopbarWidget {
 
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
+
+    isAdvisory(): boolean { return this.router.url.includes('/advisory'); }
 
     navigateTo(fragment: string) {
         this.mobileMenuOpen.set(false);

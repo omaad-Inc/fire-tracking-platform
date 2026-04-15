@@ -286,6 +286,21 @@ export class PatrimoineService {
     }
     
     /**
+     * Check synchronously whether cached asset data exists (avoids skeleton flash on re-entry)
+     */
+    hasCachedAssets(): boolean {
+        return this.assetsCache !== null && this.assetsCache.data.length > 0;
+    }
+
+    /**
+     * Return cached assets synchronously (or empty array if no cache).
+     * Use this to pre-populate signals before async fetch to avoid skeleton flash.
+     */
+    getCachedAssets(): PatrimoineAssetItemDto[] {
+        return this.assetsCache?.data ?? [];
+    }
+
+    /**
      * Clear all caches (useful for logout or manual refresh)
      */
     clearCache(): void {
