@@ -133,9 +133,9 @@ export class AppLayout implements OnInit, OnDestroy {
     }
 
     onAddAsset(): void {
-        if (this.appTopBar) {
-            this.appTopBar.openAddAssetDialog();
-        }
+        const match = this.router.url.match(/^\/(fr|en)\//);
+        const lang = match ? match[1] : 'fr';
+        this.router.navigate(['/', lang, 'pages', 'patrimoine', 'add-asset']);
     }
 
     ngOnDestroy() {

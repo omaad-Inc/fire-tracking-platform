@@ -6,8 +6,8 @@ import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
 import { TopMoversWidget } from './components/topmoverswidget';
 import { OnboardingComponent } from './components/onboarding';
+import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
-import { LayoutService } from '../../layout/service/layout.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -51,7 +51,7 @@ import { LayoutService } from '../../layout/service/layout.service';
 })
 export class Dashboard implements OnInit {
     private patrimoineService = inject(PatrimoineService);
-    private layoutService     = inject(LayoutService);
+    private router = inject(Router);
 
     showOnboarding = signal(false);
 
@@ -69,10 +69,8 @@ export class Dashboard implements OnInit {
     }
 
     openAddAsset() {
-        // Trigger the topbar's add asset dialog via LayoutService
-        this.layoutService.onMenuToggle();
-        // The topbar listens for this and opens the dialog
-        // For a direct approach, dispatch a custom event
-        window.dispatchEvent(new CustomEvent('omaad:open-add-asset'));
+        const match = this.router.url.match(/^\/(fr|en)\//);
+        const lang = match ? match[1] : 'fr';
+        this.router.navigate(['/', lang, 'pages', 'patrimoine', 'add-asset']);
     }
 }

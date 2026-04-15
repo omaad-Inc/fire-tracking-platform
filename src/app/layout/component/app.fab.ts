@@ -7,6 +7,7 @@ import { filter } from 'rxjs/operators';
 const HIDE_FAB_PATTERNS = [
     '/patrimoine/assets/',
     '/patrimoine/category/',
+    '/patrimoine/add-asset',
     '/settings/',
     '/pages/plans',
 ];
