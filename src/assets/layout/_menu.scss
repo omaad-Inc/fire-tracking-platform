@@ -3,37 +3,208 @@
 .layout-sidebar {
     position: fixed;
     width: 17rem;
-    height: calc(100vh - 4rem);
+    height: 100vh;
     z-index: 999;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: hidden;
     user-select: none;
-    top: 4rem;
+    top: 0;
     left: 0;
     transition:
-        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: var(--surface-card);
     border-radius: 0;
-    padding: 1.25rem 0.75rem;
+    padding: 0;
     border: none;
     border-right: 1px solid var(--surface-border);
     box-shadow: none;
-    
-    // Custom scrollbar
+    display: flex;
+    flex-direction: column;
+}
+
+// Logo header — clickable button that swaps to a hamburger on hover
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: calc(1rem + env(safe-area-inset-top, 0px)) 1.25rem 1rem 1.25rem;
+    height: calc(4rem + env(safe-area-inset-top, 0px));
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--surface-border);
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-color);
+    width: 100%;
+    text-align: left;
+    position: relative;
+    transition: background 0.15s;
+
+    &:hover {
+        background: var(--surface-hover);
+
+        .sidebar-logo-img {
+            opacity: 0;
+        }
+
+        .sidebar-logo-toggle {
+            opacity: 1;
+        }
+    }
+
+    .sidebar-logo-img {
+        width: 2.25rem;
+        height: 2.25rem;
+        object-fit: contain;
+        flex-shrink: 0;
+        transition: opacity 0.15s;
+    }
+
+    .sidebar-logo-toggle {
+        position: absolute;
+        left: 1.25rem;
+        top: calc(50% + env(safe-area-inset-top, 0px) / 2);
+        transform: translateY(-50%);
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0.25rem;
+        opacity: 0;
+        transition: opacity 0.15s;
+        color: var(--text-color);
+        pointer-events: none;
+    }
+
+    .sidebar-logo-text {
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+// Menu wrapper (scrollable)
+.sidebar-menu-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.75rem;
+
     &::-webkit-scrollbar {
         width: 4px;
     }
-    
+
     &::-webkit-scrollbar-track {
         background: transparent;
     }
-    
+
     &::-webkit-scrollbar-thumb {
         background: var(--surface-border);
         border-radius: 4px;
-        
+
         &:hover {
             background: var(--primary-color);
+        }
+    }
+}
+
+// User footer
+.sidebar-user-footer {
+    flex-shrink: 0;
+    padding: 0.75rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.sidebar-user-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: left;
+
+    &:hover {
+        background: var(--surface-hover);
+    }
+
+    .sidebar-avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .sidebar-user-info {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .sidebar-user-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user-email {
+        font-size: 0.75rem;
+        color: var(--text-color-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user-toggle {
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+        flex-shrink: 0;
+    }
+}
+
+.sidebar-user-dropdown {
+    position: absolute;
+    bottom: calc(100% - 0.5rem);
+    left: 0.75rem;
+    right: 0.75rem;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    z-index: 1000;
+    padding: 0.5rem 0;
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 1rem;
+        cursor: pointer;
+        transition: background 0.15s;
+        background: transparent;
+        border: none;
+        color: var(--text-color);
+        font-size: 0.875rem;
+        text-decoration: none;
+
+        &:hover {
+            background: var(--surface-hover);
+        }
+
+        i {
+            font-size: 0.95rem;
+            flex-shrink: 0;
         }
     }
 }

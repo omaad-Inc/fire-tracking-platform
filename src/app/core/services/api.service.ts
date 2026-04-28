@@ -145,38 +145,86 @@ export type SavingStatus = 'active' | 'paused' | 'completed' | 'cancelled';
 
 export interface SavingGoal {
     id: number;
+    owner_id?: number;
     name: string;
+    description: string | null;
+    icon: string | null;
+    color: string | null;
     target_amount: number;
     current_amount: number;
-    currency: string;
+    monthly_contribution: number | null;
     target_date: string | null;
-    status: SavingStatus;
+    start_date: string | null;
     priority: number;
+    is_completed: boolean;
+    is_active: boolean;
+    progress_percentage?: number;
+    remaining_amount?: number;
+    template_key: string | null;
+    image_url: string | null;
+    created_at: string;
+    updated_at: string;
+    // Legacy/optional — not returned by the backend, kept for compat with older callers
+    currency?: string;
+    status?: SavingStatus;
+    notes?: string | null;
+}
+
+export interface SavingGoalCreate {
+    name: string;
+    description?: string;
+    target_amount: number;
+    current_amount?: number;
+    target_date?: string;
+    priority?: number;
+    template_key?: string;
+    image_url?: string;
+}
+
+export interface SavingGoalUpdate {
+    name?: string;
+    description?: string;
+    target_amount?: number;
+    current_amount?: number;
+    target_date?: string;
+    priority?: number;
+    template_key?: string;
+    image_url?: string;
+}
+
+// ============================================
+// GOAL CONTRIBUTION INTERFACES
+// ============================================
+export type GoalContributionType = 'contribution' | 'deallocation';
+
+export interface GoalContribution {
+    id: number;
+    goal_id: number;
+    asset_id: number | null;
+    asset_name: string | null;
+    asset_category: string | null;
+    type: GoalContributionType;
+    amount: number;
+    date: string;          // ISO YYYY-MM-DD
     notes: string | null;
     created_at: string;
     updated_at: string;
 }
 
-export interface SavingGoalCreate {
-    name: string;
-    target_amount: number;
-    current_amount?: number;
-    currency?: string;
-    target_date?: string;
-    status?: SavingStatus;
-    priority?: number;
+export interface GoalContributionCreate {
+    asset_id: number;
+    amount: number;        // always positive
+    date?: string;         // ISO YYYY-MM-DD; defaults to today
     notes?: string;
 }
 
-export interface SavingGoalUpdate {
-    name?: string;
-    target_amount?: number;
-    current_amount?: number;
-    currency?: string;
-    target_date?: string;
-    status?: SavingStatus;
-    priority?: number;
-    notes?: string;
+export interface LiquidAsset {
+    id: number;
+    name: string;
+    category: string;
+    current_value: number;
+    currency: string;
+    institution: string | null;
 }
 
 // ============================================
@@ -392,8 +440,40 @@ export class ApiService {
         return this.http.delete<void>(`${this.apiUrl}/savings/${id}`);
     }
 
-    addContribution(goalId: number, amount: number): Observable<SavingGoal> {
-        return this.http.post<SavingGoal>(`${this.apiUrl}/savings/${goalId}/contribute`, { amount });
+    /** @deprecated — use `contributeToGoal` (with asset_id) */
+    addContribution(goalId: number, amount: number): Observable<GoalContribution> {
+        return this.http.post<GoalContribution>(
+            `${this.apiUrl}/savings/${goalId}/contribute`,
+            { amount },
+        );
+    }
+
+    listLiquidAssets(): Observable<LiquidAsset[]> {
+        return this.http.get<LiquidAsset[]>(`${this.apiUrl}/savings/liquid-assets`);
+    }
+
+    listGoalContributions(goalId: number): Observable<GoalContribution[]> {
+        return this.http.get<GoalContribution[]>(`${this.apiUrl}/savings/${goalId}/contributions`);
+    }
+
+    contributeToGoal(goalId: number, data: GoalContributionCreate): Observable<GoalContribution> {
+        return this.http.post<GoalContribution>(
+            `${this.apiUrl}/savings/${goalId}/contribute`,
+            data,
+        );
+    }
+
+    deallocateFromGoal(goalId: number, data: GoalContributionCreate): Observable<GoalContribution> {
+        return this.http.post<GoalContribution>(
+            `${this.apiUrl}/savings/${goalId}/deallocate`,
+            data,
+        );
+    }
+
+    deleteGoalContribution(goalId: number, contributionId: number): Observable<void> {
+        return this.http.delete<void>(
+            `${this.apiUrl}/savings/${goalId}/contributions/${contributionId}`,
+        );
     }
 
     // ========== DEBTS ==========

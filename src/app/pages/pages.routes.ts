@@ -2,17 +2,21 @@ import { Routes } from '@angular/router';
 import { Empty } from './empty/empty';
 import { Transaction } from './transaction/transaction';
 import { Patrimoine } from './patrimoine/patrimoine';
-import { SavingsDashboard } from './savings/savingsdashboard';
 import { DebtsDashboard } from './debts/debtsdashboard';
 import { AssetDetailPage } from './patrimoine/components/asset-detail';
 import { PatrimoineCategoryDetailPage } from './patrimoine/components/patrimoine-category-detail';
 import { AddAssetPage } from './patrimoine/components/add-asset-page';
 import { PlansSettings } from './settings/components/plans';
+import { FireDashboardPage } from './fire/fire-dashboard';
+import { GoalsDashboardPage } from './goals/goals-dashboard';
+import { GoalDetailPage } from './goals/goal-detail-page';
 export default [
     { path: 'plans', component: PlansSettings },       // Standalone — no settings sidebar
     { path: 'transaction', component: Transaction },
-    { path: 'savings', component: SavingsDashboard },
     { path: 'patrimoine', component: Patrimoine },
+    { path: 'fire', component: FireDashboardPage },
+    { path: 'goals', component: GoalsDashboardPage },
+    { path: 'goals/:id', component: GoalDetailPage },
     { path: 'patrimoine/add-asset', component: AddAssetPage },
     { path: 'patrimoine/category/:categoryId', component: PatrimoineCategoryDetailPage },
     { path: 'patrimoine/assets/:id', component: AssetDetailPage },

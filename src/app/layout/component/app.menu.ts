@@ -42,9 +42,9 @@ export class AppMenu {
                 label: this.t('menu.navigation'),
                 items: [
                     {
-                        label: this.t('menu.dashboard'), 
-                        icon: 'pi pi-fw pi-home', 
-                        routerLink: this.link() 
+                        label: this.t('menu.dashboard'),
+                        icon: 'pi pi-fw pi-home',
+                        routerLink: this.link()
                     },
                     {
                         label: this.t('menu.patrimony'),
@@ -60,51 +60,35 @@ export class AppMenu {
             },
             // Separator
             { separator: true },
+            // Financial Goal (flagship feature)
+            {
+                label: this.t('menu.fireSection'),
+                items: [
+                    {
+                        label: this.t('menu.financialGoal'),
+                        icon: 'pi pi-fw pi-flag',
+                        routerLink: this.link('pages', 'fire')
+                    },
+                    {
+                        label: this.t('menu.myGoals'),
+                        icon: 'pi pi-fw pi-bullseye',
+                        routerLink: this.link('pages', 'goals')
+                    }
+                ]
+            },
+            // Separator
+            { separator: true },
             // Finance
             {
                 label: this.t('menu.finances'),
                 items: [
                     {
-                        label: this.t('menu.savings'), 
-                        icon: 'pi pi-fw pi-dollar', 
-                        routerLink: this.link('pages', 'savings')
-                    },
-                    {
-                        label: this.t('menu.debts'), 
-                        icon: 'pi pi-fw pi-credit-card', 
+                        label: this.t('menu.debts'),
+                        icon: 'pi pi-fw pi-credit-card',
                         routerLink: this.link('pages', 'debts')
                     },
                 ]
-            },
-            // Separator
-            { separator: true },
-            // Settings
-            {
-                label: this.t('menu.account'),
-                items: [
-                    {
-                        label: this.t('menu.settings'),
-                        icon: 'pi pi-fw pi-cog',
-                        items: [
-                            {
-                                label: this.t('menu.myAccount'),
-                                icon: 'pi pi-fw pi-user',
-                                routerLink: this.link('pages', 'settings', 'account')
-                            },
-                            {
-                                label: this.t('menu.security'),
-                                icon: 'pi pi-fw pi-shield',
-                                routerLink: this.link('pages', 'settings', 'security')
-                            },
-                            {
-                                label: this.t('menu.preferences'),
-                                icon: 'pi pi-fw pi-sliders-h',
-                                routerLink: this.link('pages', 'settings', 'preferences')
-                            }
-                        ]
-                    },
-                ]
-            },
+            }
         ];
     }
 

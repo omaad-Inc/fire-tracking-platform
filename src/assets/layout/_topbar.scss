@@ -16,34 +16,11 @@
     align-items: center;
 
     .layout-topbar-logo-container {
-        width: 17rem;
-        min-width: 17rem;
         display: flex;
         align-items: center;
         height: 100%;
-        padding-left: 1.5rem;
-        padding-right: 1rem;
-        border-right: 1px solid var(--surface-border);
-        margin-right: 1.5rem;
+        padding-left: 1rem;
         flex-shrink: 0;
-    }
-
-    .layout-topbar-logo {
-        display: inline-flex;
-        align-items: center;
-        font-size: 1.5rem;
-        border-radius: var(--content-border-radius);
-        color: var(--text-color);
-        font-weight: 500;
-        gap: 0.5rem;
-
-        svg {
-            width: 3rem;
-        }
-
-        &:focus-visible {
-            @include focused();
-        }
     }
 
     .layout-topbar-action {
