@@ -25,7 +25,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <!-- Logo -->
                 <div class="mb-12">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="assets/omaad-icon.png" alt="Omaad Logo"
+                        <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
                              class="w-10 h-10 transition-transform duration-300 group-hover:scale-110">
                         <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad Wealth</span>
                     </a>
@@ -38,7 +38,7 @@ import { AuthService } from '../../core/services/auth.service';
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
                         Pas encore de compte ?
-                        <a [routerLink]="[currentLang, 'auth', 'register']" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium cursor-pointer">
+                        <a [routerLink]="[currentLang, 'auth', 'register']" class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-300 font-medium cursor-pointer">
                             S'inscrire <i class="pi pi-chevron-right text-xs"></i>
                         </a>
                     </p>
@@ -48,7 +48,7 @@ import { AuthService } from '../../core/services/auth.service';
                         <button pButton pRipple
                                 (click)="loginWithGoogle()"
                                 [loading]="isGoogleLoading()"
-                                class="w-full !bg-blue-600 hover:!bg-blue-700 !border-0 !py-3 !text-base !font-medium flex items-center justify-center gap-3">
+                                class="w-full !bg-brand-700 hover:!bg-brand-800 !border-0 !py-3 !text-base !font-medium flex items-center justify-center gap-3">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff"/>
@@ -73,7 +73,7 @@ import { AuthService } from '../../core/services/auth.service';
                             <input pInputText id="email" type="email"
                                    placeholder="Votre adresse email"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
-                                          focus:!border-indigo-500 focus:!shadow-none"
+                                          focus:!border-brand-700 focus:!shadow-none"
                                    [(ngModel)]="email" name="email" required 
                                    [disabled]="isLoading()" />
                         </div>
@@ -88,7 +88,7 @@ import { AuthService } from '../../core/services/auth.service';
                                         [feedback]="false"
                                         [disabled]="isLoading()"
                                         styleClass="w-full"
-                                        inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-indigo-500 focus:!shadow-none">
+                                        inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none">
                             </p-password>
                         </div>
 
@@ -97,13 +97,13 @@ import { AuthService } from '../../core/services/auth.service';
                                 [loading]="isLoading()"
                                 class="w-full !py-3 !text-base !font-semibold !bg-surface-300 dark:!bg-surface-700 
                                        !text-surface-500 dark:!text-surface-400 !border-0 
-                                       hover:!bg-indigo-600 hover:!text-white transition-all duration-300
+                                       hover:!bg-brand-700 hover:!text-white transition-all duration-300
                                        disabled:opacity-50"
                                 [disabled]="!email || !password || isLoading()">
                         </button>
 
                         <div class="text-center">
-                            <a class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium cursor-pointer text-sm">
+                            <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-300 font-medium cursor-pointer text-sm">
                                 Mot de passe oublié ?
                             </a>
                         </div>
@@ -112,14 +112,14 @@ import { AuthService } from '../../core/services/auth.service';
             </div>
 
             <!-- Right Side - Showcase Image -->
-            <div class="hidden lg:flex w-1/2 bg-slate-900 relative overflow-hidden">
+            <div class="hidden lg:flex w-1/2 bg-warm-900 relative overflow-hidden">
                 <!-- Background Effects -->
                 <div class="absolute inset-0">
                     <div class="absolute inset-0 opacity-10" 
                          style="background-image: linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px); background-size: 40px 40px;">
                     </div>
-                    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
-                    <div class="absolute bottom-1/4 left-1/4 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl"></div>
+                    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-brand-700/20 dark:bg-brand-300/20 rounded-full blur-3xl"></div>
+                    <div class="absolute bottom-1/4 left-1/4 w-80 h-80 bg-brand-700/15 dark:bg-brand-300/20 rounded-full blur-3xl"></div>
                 </div>
 
                 <!-- Content -->
@@ -127,17 +127,17 @@ import { AuthService } from '../../core/services/auth.service';
                     <!-- Dashboard Mockups -->
                     <div class="relative w-full max-w-2xl">
                         <!-- Desktop Mockup -->
-                        <div class="bg-slate-800/80 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 shadow-2xl transform rotate-1">
+                        <div class="bg-warm-800/80 backdrop-blur-sm rounded-xl border border-warm-700/50 p-4 shadow-2xl transform rotate-1">
                             <!-- Browser Header -->
-                            <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-700/50">
+                            <div class="flex items-center gap-2 mb-4 pb-3 border-b border-warm-700/50">
                                 <div class="flex gap-1.5">
-                                    <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
-                                    <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-                                    <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                    <div class="w-3 h-3 rounded-full bg-negative/80"></div>
+                                    <div class="w-3 h-3 rounded-full bg-ochre-500/80"></div>
+                                    <div class="w-3 h-3 rounded-full bg-positive/80"></div>
                                 </div>
                                 <div class="flex-1 flex justify-center">
-                                    <div class="bg-slate-700/50 rounded-lg px-4 py-1 text-slate-400 text-xs flex items-center gap-2">
-                                        <i class="pi pi-lock text-emerald-400"></i>
+                                    <div class="bg-warm-700/50 rounded-lg px-4 py-1 text-warm-400 text-xs flex items-center gap-2">
+                                        <i class="pi pi-lock text-positive-400"></i>
                                         omaad.app
                                     </div>
                                 </div>
@@ -146,56 +146,56 @@ import { AuthService } from '../../core/services/auth.service';
                             <!-- Dashboard Content -->
                             <div class="grid grid-cols-3 gap-3 mb-4">
                                 <div class="col-span-1 space-y-2">
-                                    <div class="bg-slate-700/50 rounded-lg p-3">
-                                        <div class="text-slate-400 text-xs mb-1">Dashboard</div>
-                                        <div class="h-2 bg-indigo-500/30 rounded"></div>
+                                    <div class="bg-warm-700/50 rounded-lg p-3">
+                                        <div class="text-warm-400 text-xs mb-1">Dashboard</div>
+                                        <div class="h-2 bg-brand-700/25 dark:bg-brand-300/25 rounded"></div>
                                     </div>
-                                    <div class="bg-slate-700/50 rounded-lg p-3">
-                                        <div class="text-slate-400 text-xs mb-1">Portfolio</div>
-                                        <div class="h-2 bg-slate-600 rounded"></div>
+                                    <div class="bg-warm-700/50 rounded-lg p-3">
+                                        <div class="text-warm-400 text-xs mb-1">Portfolio</div>
+                                        <div class="h-2 bg-warm-600 rounded"></div>
                                     </div>
-                                    <div class="bg-slate-700/50 rounded-lg p-3">
-                                        <div class="text-slate-400 text-xs mb-1">Insights</div>
-                                        <div class="h-2 bg-slate-600 rounded"></div>
+                                    <div class="bg-warm-700/50 rounded-lg p-3">
+                                        <div class="text-warm-400 text-xs mb-1">Insights</div>
+                                        <div class="h-2 bg-warm-600 rounded"></div>
                                     </div>
                                 </div>
-                                <div class="col-span-2 bg-slate-700/30 rounded-lg p-4">
-                                    <div class="text-slate-400 text-xs mb-1">Patrimoine Net</div>
+                                <div class="col-span-2 bg-warm-700/30 rounded-lg p-4">
+                                    <div class="text-warm-400 text-xs mb-1">Patrimoine Net</div>
                                     <div class="text-2xl font-bold text-white mb-3">85,6M FCFA</div>
                                     <div class="flex items-center gap-2 text-xs mb-4">
-                                        <span class="text-emerald-400">+5,2M</span>
-                                        <span class="text-emerald-400">+12.5%</span>
+                                        <span class="text-positive-400">+5,2M</span>
+                                        <span class="text-positive-400">+12.5%</span>
                                     </div>
                                     <!-- Mini Chart -->
                                     <div class="flex items-end justify-between h-16 gap-1">
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-indigo-400/50 rounded-t" style="height: 40%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-indigo-400/50 rounded-t" style="height: 55%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-indigo-400/50 rounded-t" style="height: 45%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-indigo-600/50 to-cyan-400/50 rounded-t" style="height: 65%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600/50 to-cyan-400/50 rounded-t" style="height: 75%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-cyan-600/50 to-emerald-400/50 rounded-t" style="height: 85%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-emerald-600/50 to-emerald-400/50 rounded-t" style="height: 100%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-300/50 rounded-t" style="height: 40%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-300/50 rounded-t" style="height: 55%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-300/50 rounded-t" style="height: 45%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-400/50 rounded-t" style="height: 65%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-400/50 rounded-t" style="height: 75%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-positive-400/50 rounded-t" style="height: 85%"></div>
+                                        <div class="flex-1 bg-gradient-to-t from-positive-600/50 to-positive-400/50 rounded-t" style="height: 100%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Mobile Mockup -->
-                        <div class="absolute -bottom-8 -left-8 w-40 bg-slate-800/90 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-3 shadow-2xl transform -rotate-6">
+                        <div class="absolute -bottom-8 -left-8 w-40 bg-warm-800/90 backdrop-blur-sm rounded-2xl border border-warm-700/50 p-3 shadow-2xl transform -rotate-6">
                             <div class="flex items-center justify-between mb-3">
-                                <div class="w-6 h-6 rounded-full bg-slate-700"></div>
-                                <div class="w-4 h-4 rounded-full bg-slate-700"></div>
+                                <div class="w-6 h-6 rounded-full bg-warm-700"></div>
+                                <div class="w-4 h-4 rounded-full bg-warm-700"></div>
                             </div>
                             <div class="text-white font-bold text-lg mb-1">85,6M FCFA</div>
                             <div class="flex items-center gap-1 text-xs mb-3">
-                                <span class="text-emerald-400">+5,2M</span>
-                                <span class="text-emerald-400">+12.5%</span>
+                                <span class="text-positive-400">+5,2M</span>
+                                <span class="text-positive-400">+12.5%</span>
                             </div>
                             <div class="space-y-2">
                                 <div class="flex justify-between text-xs">
-                                    <span class="text-slate-400">Total</span>
-                                    <span class="text-slate-400">Net</span>
-                                    <span class="text-slate-400">Financial</span>
+                                    <span class="text-warm-400">Total</span>
+                                    <span class="text-warm-400">Net</span>
+                                    <span class="text-warm-400">Financial</span>
                                 </div>
                             </div>
                         </div>
@@ -203,29 +203,29 @@ import { AuthService } from '../../core/services/auth.service';
 
                     <!-- Text Content -->
                     <div class="text-center mt-16">
-                        <p class="text-xs font-semibold tracking-[0.15em] uppercase text-indigo-400 mb-4">
+                        <p class="text-xs font-semibold tracking-[0.15em] uppercase text-brand-700 dark:text-brand-300 mb-4">
                             Construis. Protège. Règne.
                         </p>
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
                             Devenez le roi<br>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">de votre patrimoine</span>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">de votre patrimoine</span>
                         </h2>
-                        <p class="text-slate-400 max-w-md mx-auto mb-10 leading-relaxed">
+                        <p class="text-warm-400 max-w-md mx-auto mb-10 leading-relaxed">
                             Patrimoine, épargne, dettes, objectif FIRE — tout est centralisé pour que vous preniez les bonnes décisions.
                         </p>
 
                         <!-- Value Props -->
-                        <div class="flex items-center justify-center gap-6 text-slate-400 text-xs">
+                        <div class="flex items-center justify-center gap-6 text-warm-400 text-xs">
                             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                                <i class="pi pi-lock text-indigo-400"></i>
+                                <i class="pi pi-lock text-brand-700 dark:text-brand-300"></i>
                                 <span>Sécurisé</span>
                             </div>
                             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                                <i class="pi pi-heart text-emerald-400"></i>
-                                <span>Gratuit</span>
+                                <i class="pi pi-bookmark text-ochre-400"></i>
+                                <span>Sans engagement</span>
                             </div>
                             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                                <i class="pi pi-globe text-cyan-400"></i>
+                                <i class="pi pi-globe text-brand-700 dark:text-brand-300"></i>
                                 <span>Multi-devises</span>
                             </div>
                         </div>

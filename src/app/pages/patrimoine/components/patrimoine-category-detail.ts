@@ -16,14 +16,18 @@ interface GroupConfig {
     categories: string[];
 }
 
+// Brand-tokenized: every group gets the same navy gradient. Icon glyph differentiates.
+const BRAND_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
+const BRAND_COLOR = '#1A2740';
+
 const GROUPS: GroupConfig[] = [
-    { id: 'real_estate',    label: 'Immobilier',       icon: 'pi pi-building',   bg: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#6366f1', categories: ['real_estate'] },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)', color: '#06b6d4', categories: ['stocks', 'bonds'] },
-    { id: 'savings',        label: 'Épargne',          icon: 'pi pi-dollar',     bg: 'linear-gradient(135deg, #10b981, #059669)', color: '#10b981', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
-    { id: 'crypto',         label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#f59e0b', categories: ['crypto'] },
-    { id: 'tontine',        label: 'Tontine',          icon: 'pi pi-users',      bg: 'linear-gradient(135deg, #e11d48, #be123c)', color: '#e11d48', categories: ['tontine'] },
-    { id: 'mobile_money',   label: 'Mobile Money',     icon: 'pi pi-mobile',     bg: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: '#0ea5e9', categories: ['mobile_money'] },
-    { id: 'other',          label: 'Autres',           icon: 'pi pi-box',        bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', color: '#8b5cf6', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
+    { id: 'real_estate',    label: 'Immobilier',       icon: 'pi pi-building',   bg: BRAND_BG, color: BRAND_COLOR, categories: ['real_estate'] },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks', 'bonds'] },
+    { id: 'savings',        label: 'Épargne',          icon: 'pi pi-dollar',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
+    { id: 'crypto',         label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: BRAND_BG, color: BRAND_COLOR, categories: ['crypto'] },
+    { id: 'tontine',        label: 'Tontine',          icon: 'pi pi-users',      bg: BRAND_BG, color: BRAND_COLOR, categories: ['tontine'] },
+    { id: 'mobile_money',   label: 'Mobile Money',     icon: 'pi pi-mobile',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['mobile_money'] },
+    { id: 'other',          label: 'Autres',           icon: 'pi pi-box',        bg: BRAND_BG, color: BRAND_COLOR, categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -34,21 +38,22 @@ const CATEGORY_ICONS: Record<string, string> = {
     collectibles: 'pi pi-star', commodities: 'pi pi-box', other: 'pi pi-box',
 };
 
+// Every category gets the same navy gradient — icon glyph differentiates.
 const CATEGORY_BGS: Record<string, string> = {
-    real_estate:     'linear-gradient(135deg, #6366f1, #4f46e5)',
-    stocks:          'linear-gradient(135deg, #06b6d4, #0891b2)',
-    bonds:           'linear-gradient(135deg, #06b6d4, #0891b2)',
-    crypto:          'linear-gradient(135deg, #f59e0b, #d97706)',
-    cash:            'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-    retirement:      'linear-gradient(135deg, #14b8a6, #0d9488)',
-    life_insurance:  'linear-gradient(135deg, #ec4899, #db2777)',
-    savings_account: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-    business:        'linear-gradient(135deg, #f97316, #ea580c)',
-    vehicle:         'linear-gradient(135deg, #64748b, #475569)',
-    tontine:         'linear-gradient(135deg, #e11d48, #be123c)',
-    mobile_money:    'linear-gradient(135deg, #0ea5e9, #0284c7)',
-    collectibles:    'linear-gradient(135deg, #a855f7, #9333ea)',
-    other:           'linear-gradient(135deg, #94a3b8, #64748b)',
+    real_estate:     BRAND_BG,
+    stocks:          BRAND_BG,
+    bonds:           BRAND_BG,
+    crypto:          BRAND_BG,
+    cash:            BRAND_BG,
+    retirement:      BRAND_BG,
+    life_insurance:  BRAND_BG,
+    savings_account: BRAND_BG,
+    business:        BRAND_BG,
+    vehicle:         BRAND_BG,
+    tontine:         BRAND_BG,
+    mobile_money:    BRAND_BG,
+    collectibles:    BRAND_BG,
+    other:           BRAND_BG,
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -60,7 +65,10 @@ const CATEGORY_LABELS: Record<string, string> = {
     collectibles: 'Collections', commodities: 'Matières premières', other: 'Autres',
 };
 
-const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899', '#f97316', '#14b8a6', '#64748b', '#a855f7'];
+// Donut palette — brand navy + ochre + warm-grays. Same scale as
+// `chartTheme.categorical` in core/theme/chart-theme.ts.
+// Light theme; dark mode swaps via the chartTheme helper if needed.
+const DONUT_COLORS = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1', '#08111E', '#71421C'];
 
 @Component({
     selector: 'app-patrimoine-category-detail',
@@ -108,7 +116,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                             <app-amount [value]="totalValue" class="text-3xl font-bold text-surface-900 dark:text-surface-0" />
                             @if (totalDeltaAbs !== 0) {
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"
-                                      [ngClass]="totalDeltaAbs >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                      [ngClass]="totalDeltaAbs >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                     <i class="pi text-xs" [ngClass]="totalDeltaAbs >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                     <app-amount [value]="totalDeltaAbs" [prefix]="totalDeltaAbs >= 0 ? '+' : '-'" />
                                     &nbsp;{{ totalDeltaPct | number:'1.2-2' }}%
@@ -131,7 +139,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                                 <button (click)="changeRange(r.months)"
                                         class="px-2.5 py-1 text-xs rounded-lg transition-colors"
                                         [ngClass]="selectedMonths === r.months
-                                            ? 'bg-indigo-500 text-white'
+                                            ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
                                             : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                     {{ r.label }}
                                 </button>
@@ -213,7 +221,7 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                     <div class="space-y-3">
                         @for (item of items; track item.id) {
                             <a [routerLink]="assetLink(item.id)"
-                               class="flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group no-underline border border-surface-200 dark:border-surface-700 hover:border-indigo-500/30 shadow-sm">
+                               class="flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group no-underline border border-surface-200 dark:border-surface-700 hover:border-brand-300/40 dark:hover:border-brand-700/50 shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
                                          [style.background]="getCategoryBg(item.category)">
@@ -229,15 +237,15 @@ const DONUT_COLORS = ['#6366f1', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b', '#e
                                         <div class="font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="item.value" /></div>
                                         @if (item.deltaPct != null) {
                                             <div class="flex items-center justify-end gap-1 mt-0.5">
-                                                <i class="pi text-xs" [ngClass]="(item.deltaPct) >= 0 ? 'pi-arrow-up text-emerald-500' : 'pi-arrow-down text-rose-500'"></i>
-                                                <span class="text-sm font-medium" [ngClass]="item.deltaPct >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                                                <i class="pi text-xs" [ngClass]="(item.deltaPct) >= 0 ? 'pi-arrow-up text-positive' : 'pi-arrow-down text-negative'"></i>
+                                                <span class="text-sm font-medium" [ngClass]="item.deltaPct >= 0 ? 'text-positive' : 'text-negative'">
                                                     <app-amount [value]="item.deltaAbs ?? 0" [prefix]="(item.deltaAbs ?? 0) >= 0 ? '+' : '-'" />
                                                     &nbsp;{{ item.deltaPct | number:'1.2-2' }}%
                                                 </span>
                                             </div>
                                         }
                                     </div>
-                                    <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-indigo-400 transition-colors"></i>
+                                    <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
                                 </div>
                             </a>
                         }
@@ -337,8 +345,10 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     }
 
     private buildLineChart(points: ChartDataPoint[]) {
-        const color = this.currentGroup?.color ?? '#6366f1';
-        const textMuted = '#94a3b8';
+        // Brand-tokenized chart line — same in light + dark, switching shade.
+        const isDark = document.documentElement.classList.contains('app-dark');
+        const color = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
+        const textMuted = isDark ? '#9C988C' : '#6E6A60';   // warm-400 / warm-500
         const cs = this.cs;
 
         this.lineData = {
@@ -362,10 +372,10 @@ export class PatrimoineCategoryDetailPage implements OnInit {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(15,23,42,0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#94a3b8',
-                    borderColor: color + '80',
+                    backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                    titleColor: '#FAF8F4',
+                    bodyColor: '#DEDAD0',
+                    borderColor: 'rgba(199, 123, 60, 0.30)',
                     borderWidth: 1,
                     cornerRadius: 8,
                     padding: 10,

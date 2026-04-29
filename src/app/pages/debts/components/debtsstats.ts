@@ -12,13 +12,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     template: `
         <!-- Card 1 - Dette Totale (Sum of all debts with type "Debt") -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 group hover:shadow-lg hover:shadow-rose-500/10 transition-all duration-300 border border-transparent hover:border-rose-500/20">
+            <div class="card mb-0 group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dette Totale</span>
                         <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="totalDebt" /></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 shadow-lg shadow-rose-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-negative shadow-card group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-credit-card text-white text-xl"></i>
                     </div>
                 </div>
@@ -30,13 +30,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
         
         <!-- Card 2 - Dernier Paiement -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20">
+            <div class="card mb-0 group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dernier Paiement</span>
                         <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="paidAmount" /></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-positive shadow-card group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-check-circle text-white text-xl"></i>
                     </div>
                 </div>
@@ -52,13 +52,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
         
         <!-- Card 3 - Montant des Créances (Sum of all debts with type "Receivable") -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="card mb-0 group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20">
+            <div class="card mb-0 group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Montant des Créances</span>
                         <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="receivables" /></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-brand-700 dark:bg-brand-300 shadow-card group-hover:scale-110 transition-transform duration-300">
                         <i class="pi pi-arrow-right text-white text-xl"></i>
                     </div>
                 </div>

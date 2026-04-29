@@ -21,20 +21,20 @@ interface OnboardingStep {
     template: `
         <div class="card !p-0 overflow-hidden mb-12 sm:mb-8">
             <!-- Header with gradient -->
-            <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 px-6 py-8 sm:px-8 sm:py-10 text-center relative overflow-hidden">
+            <div class="bg-brand-900 px-6 py-8 sm:px-8 sm:py-10 text-center relative overflow-hidden">
                 <!-- Background decoration -->
-                <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 w-32 h-32 bg-indigo-400/10 rounded-full blur-3xl"></div>
+                <div class="absolute top-0 right-0 w-40 h-40 bg-ochre-500/15 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-brand-300/10 rounded-full blur-3xl"></div>
 
                 <div class="relative">
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 mb-4">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="w-2 h-2 rounded-full bg-ochre-400 animate-pulse"></span>
                         <span class="text-white/80 text-xs font-medium">Bienvenue sur Omaad</span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">
                         Bonjour {{ firstName() }} !
                     </h2>
-                    <p class="text-indigo-200 text-sm sm:text-base max-w-md mx-auto">
+                    <p class="text-brand-100 text-sm sm:text-base max-w-md mx-auto">
                         Construis. Protège. Règne. — Commencez par ces 3 étapes pour prendre le contrôle de votre patrimoine.
                     </p>
                 </div>
@@ -46,15 +46,15 @@ interface OnboardingStep {
                     @for (step of steps; track step.title; let i = $index) {
                         <div class="relative flex flex-col items-center text-center p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer group"
                              [ngClass]="completedSteps().has(i)
-                                 ? 'border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20'
-                                 : 'border-surface-200 dark:border-surface-700 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/10'"
+                                 ? 'border-positive-100 dark:border-positive-700/40 bg-positive-50 dark:bg-positive-700/10'
+                                 : 'border-surface-200 dark:border-surface-700 hover:border-brand-200 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20'"
                              (click)="step.action()">
 
                             <!-- Step number badge -->
                             <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
                                  [ngClass]="completedSteps().has(i)
-                                     ? 'bg-emerald-500 text-white'
-                                     : 'bg-gradient-to-br from-indigo-500 to-cyan-500 text-white'">
+                                     ? 'bg-positive text-white'
+                                     : 'bg-brand-700 dark:bg-brand-300 text-white dark:text-brand-900'">
                                 @if (completedSteps().has(i)) {
                                     <i class="pi pi-check text-[10px]"></i>
                                 } @else {
@@ -71,11 +71,11 @@ interface OnboardingStep {
                             <p class="text-surface-500 dark:text-surface-400 text-xs leading-relaxed mb-3">{{ step.desc }}</p>
 
                             @if (!completedSteps().has(i)) {
-                                <span class="text-xs font-semibold text-indigo-500 group-hover:text-indigo-600 transition-colors">
+                                <span class="text-xs font-semibold text-brand-700 dark:text-brand-300 group-hover:text-brand-500 dark:group-hover:text-brand-200 transition-colors">
                                     {{ step.cta }} <i class="pi pi-arrow-right text-[10px] ml-0.5"></i>
                                 </span>
                             } @else {
-                                <span class="text-xs font-semibold text-emerald-500">Fait !</span>
+                                <span class="text-xs font-semibold text-positive">Fait !</span>
                             }
                         </div>
                     }
@@ -114,7 +114,7 @@ export class OnboardingComponent {
     steps: OnboardingStep[] = [
         {
             icon: 'pi-plus',
-            iconBg: 'bg-gradient-to-br from-indigo-500 to-indigo-600',
+            iconBg: 'bg-brand-700 dark:bg-brand-300',
             title: 'Ajoutez un actif',
             desc: 'Immobilier, épargne, actions, tontine — commencez par ajouter votre premier actif.',
             cta: 'Ajouter',
@@ -122,7 +122,7 @@ export class OnboardingComponent {
         },
         {
             icon: 'pi-arrow-right-arrow-left',
-            iconBg: 'bg-gradient-to-br from-cyan-500 to-cyan-600',
+            iconBg: 'bg-brand-700 dark:bg-brand-300',
             title: 'Enregistrez une transaction',
             desc: 'Salaire, loyer, courses — suivez vos revenus et dépenses.',
             cta: 'Commencer',
@@ -130,7 +130,7 @@ export class OnboardingComponent {
         },
         {
             icon: 'pi-flag',
-            iconBg: 'bg-gradient-to-br from-emerald-500 to-emerald-600',
+            iconBg: 'bg-ochre-500',
             title: 'Définissez votre objectif',
             desc: 'Configurez votre objectif FIRE pour savoir où vous allez.',
             cta: 'Configurer',

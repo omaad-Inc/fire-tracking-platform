@@ -35,8 +35,8 @@ import { progressPercent } from './goal-utils';
             <!-- Header -->
             <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                        <i class="pi pi-flag-fill text-white text-xl"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-card">
+                        <i class="pi pi-flag-fill text-white dark:text-brand-900 text-xl"></i>
                     </div>
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -51,7 +51,7 @@ import { progressPercent } from './goal-utils';
                     icon="pi pi-plus"
                     [label]="i18n.t('goals.add')"
                     (onClick)="openAdd()"
-                    styleClass="!rounded-xl !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0"
+                    styleClass="omaad-cta !rounded-xl"
                 />
             </div>
 
@@ -62,8 +62,8 @@ import { progressPercent } from './goal-utils';
             @if (!loading() && goals().length > 0) {
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
                     <div class="card !p-5 flex items-center gap-4 h-full min-h-[88px]">
-                        <div class="w-11 h-11 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                            <i class="pi pi-wallet text-emerald-500 text-lg"></i>
+                        <div class="w-11 h-11 rounded-xl bg-brand-700/10 dark:bg-brand-300/10 flex items-center justify-center shrink-0">
+                            <i class="pi pi-wallet text-brand-700 dark:text-brand-300 text-lg"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ i18n.t('goals.kpi.totalSaved') }}</div>
@@ -73,8 +73,8 @@ import { progressPercent } from './goal-utils';
                         </div>
                     </div>
                     <div class="card !p-5 flex items-center gap-4 h-full min-h-[88px]">
-                        <div class="w-11 h-11 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0">
-                            <i class="pi pi-flag text-cyan-500 text-lg"></i>
+                        <div class="w-11 h-11 rounded-xl bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-flag text-ochre-600 dark:text-ochre-400 text-lg"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ i18n.t('goals.kpi.totalTarget') }}</div>
@@ -84,8 +84,8 @@ import { progressPercent } from './goal-utils';
                         </div>
                     </div>
                     <div class="card !p-5 flex items-center gap-4 h-full min-h-[88px]">
-                        <div class="w-11 h-11 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                            <i class="pi pi-chart-line text-indigo-500 text-lg"></i>
+                        <div class="w-11 h-11 rounded-xl bg-brand-700/10 dark:bg-brand-300/10 flex items-center justify-center shrink-0">
+                            <i class="pi pi-chart-line text-brand-700 dark:text-brand-300 text-lg"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ i18n.t('goals.kpi.overallProgress') }}</div>
@@ -111,8 +111,8 @@ import { progressPercent } from './goal-utils';
                 </div>
             } @else if (goals().length === 0) {
                 <div class="card text-center py-12 px-6">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 flex items-center justify-center mb-4">
-                        <i class="pi pi-flag text-3xl text-emerald-500"></i>
+                    <div class="w-20 h-20 mx-auto rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center mb-4">
+                        <i class="pi pi-flag text-3xl text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 mb-2">
                         {{ i18n.t('goals.empty.title') }}
@@ -124,7 +124,7 @@ import { progressPercent } from './goal-utils';
                         icon="pi pi-plus"
                         [label]="i18n.t('goals.empty.cta')"
                         (onClick)="openAdd()"
-                        styleClass="!rounded-xl !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0"
+                        styleClass="omaad-cta !rounded-xl"
                     />
                 </div>
             } @else {

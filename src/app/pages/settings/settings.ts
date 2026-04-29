@@ -55,10 +55,10 @@ import { environment } from '../../../environments/environment';
 
                 <!-- PRO upgrade banner -->
                 <a [routerLink]="['/', lang, 'pages', 'plans']"
-                   class="block mb-8 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-amber-600/10
-                          border border-amber-500/20 hover:border-amber-500/40 transition-all">
+                   class="block mb-8 p-4 rounded-2xl bg-gradient-to-r from-ochre-100 to-ochre-200/60
+                          border border-ochre-300/50 hover:border-ochre-400/60 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-600 flex items-center justify-center shrink-0">
                             <i class="pi pi-crown text-white"></i>
                         </div>
                         <div class="flex-1 min-w-0">
@@ -76,7 +76,7 @@ import { environment } from '../../../environments/environment';
                         <a [routerLink]="item.route"
                            class="flex items-center gap-4 py-4 px-2 cursor-pointer
                                   hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors rounded-lg">
-                            <i class="pi {{ item.icon }} text-amber-500 w-5 text-center"></i>
+                            <i class="pi {{ item.icon }} text-ochre-500 w-5 text-center"></i>
                             <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ item.label }}</span>
                             <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
                         </a>
@@ -89,7 +89,7 @@ import { environment } from '../../../environments/environment';
                     <a routerLink="help"
                        class="flex items-center gap-4 py-4 px-2 cursor-pointer
                               hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors rounded-lg">
-                        <i class="pi pi-question-circle text-amber-500 w-5 text-center"></i>
+                        <i class="pi pi-question-circle text-ochre-500 w-5 text-center"></i>
                         <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ t('settings.getHelp') }}</span>
                         <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
                     </a>
@@ -108,7 +108,7 @@ import { environment } from '../../../environments/environment';
                 <!-- Version -->
                 <div class="text-center pb-8">
                     <p class="text-xs text-surface-400 dark:text-surface-500">
-                        Omaad Wealth · v1.0.0 · <span class="text-emerald-500">●</span> production
+                        Omaad Wealth · v1.0.0 · <span class="text-positive">●</span> production
                     </p>
                 </div>
             }
@@ -131,7 +131,7 @@ import { environment } from '../../../environments/environment';
                     <button (click)="goBack()"
                             class="w-10 h-10 flex items-center justify-center rounded-full
                                    bg-surface-100 dark:bg-surface-800
-                                   hover:bg-red-100 dark:hover:bg-red-900/30 transition-all shrink-0"
+                                   hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-all shrink-0"
                             title="Fermer">
                         <i class="pi pi-times text-surface-600 dark:text-surface-300"></i>
                     </button>

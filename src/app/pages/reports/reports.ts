@@ -71,12 +71,12 @@ const trunc = (s: string, len = 12) =>
                 <div class="card !p-5 h-[110px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
-                        <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-down-left text-emerald-500 text-xs"></i>
+                        <div class="w-8 h-8 rounded-xl bg-positive/10 flex items-center justify-center">
+                            <i class="pi pi-arrow-down-left text-positive text-xs"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold text-emerald-500">+<app-amount [value]="summary()!.income" /></div>
+                        <div class="text-xl font-bold text-positive">+<app-amount [value]="summary()!.income" /></div>
                         <p class="text-xs text-surface-400 mt-0.5">{{ incomeCount() }} opération{{ incomeCount() !== 1 ? 's' : '' }}</p>
                     </div>
                 </div>
@@ -84,12 +84,12 @@ const trunc = (s: string, len = 12) =>
                 <div class="card !p-5 h-[110px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
-                        <div class="w-8 h-8 rounded-xl bg-rose-500/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-up-right text-rose-500 text-xs"></i>
+                        <div class="w-8 h-8 rounded-xl bg-negative/10 flex items-center justify-center">
+                            <i class="pi pi-arrow-up-right text-negative text-xs"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold text-rose-500">−<app-amount [value]="summary()!.expenses" /></div>
+                        <div class="text-xl font-bold text-negative">−<app-amount [value]="summary()!.expenses" /></div>
                         <p class="text-xs text-surface-400 mt-0.5">{{ summary()!.count - incomeCount() }} opération{{ (summary()!.count - incomeCount()) !== 1 ? 's' : '' }}</p>
                     </div>
                 </div>
@@ -98,12 +98,12 @@ const trunc = (s: string, len = 12) =>
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
                         <div class="w-8 h-8 rounded-xl flex items-center justify-center"
-                             [ngClass]="summary()!.net >= 0 ? 'bg-indigo-500/10' : 'bg-rose-500/10'">
-                            <i class="pi text-xs" [ngClass]="summary()!.net >= 0 ? 'pi-trending-up text-indigo-500' : 'pi-trending-down text-rose-500'"></i>
+                             [ngClass]="summary()!.net >= 0 ? 'bg-brand-700/10 dark:bg-brand-300/15' : 'bg-negative/10'">
+                            <i class="pi text-xs" [ngClass]="summary()!.net >= 0 ? 'pi-trending-up text-brand-700 dark:text-brand-300' : 'pi-trending-down text-negative'"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold" [ngClass]="summary()!.net >= 0 ? 'text-indigo-500' : 'text-rose-500'">
+                        <div class="text-xl font-bold" [ngClass]="summary()!.net >= 0 ? 'text-brand-700 dark:text-brand-300' : 'text-negative'">
                             {{ summary()!.net >= 0 ? '+' : '−' }}<app-amount [value]="summary()!.net" />
                         </div>
                         <p class="text-xs text-surface-400 mt-0.5">{{ summary()!.net >= 0 ? 'Bilan positif' : 'Bilan négatif' }}</p>
@@ -113,14 +113,14 @@ const trunc = (s: string, len = 12) =>
                 <div class="card !p-5 h-[110px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
-                        <div class="w-8 h-8 rounded-xl bg-cyan-500/10 flex items-center justify-center">
-                            <i class="pi pi-percentage text-cyan-500 text-xs"></i>
+                        <div class="w-8 h-8 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center">
+                            <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-xs"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold text-cyan-500">{{ savingsRate() }}%</div>
+                        <div class="text-xl font-bold text-brand-700 dark:text-brand-300">{{ savingsRate() }}%</div>
                         <div class="h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mt-2 overflow-hidden">
-                            <div class="h-full bg-cyan-500 rounded-full" [style.width]="savingsRate() + '%'"></div>
+                            <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full" [style.width]="savingsRate() + '%'"></div>
                         </div>
                     </div>
                 </div>

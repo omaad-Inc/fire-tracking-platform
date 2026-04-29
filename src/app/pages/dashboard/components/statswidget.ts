@@ -54,18 +54,18 @@ import { CurrencyService } from '../../../core/services/currency.service';
         } @else {
             <!-- KPI Card 1 - Patrimoine -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20"
+                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60"
                      [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
                             <div class="font-bold text-3xl md:text-4xl leading-tight"
-                                 [ngClass]="realNetWorth() >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-rose-500'">
+                                 [ngClass]="realNetWorth() >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-negative'">
                                 <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" />
                             </div>
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
-                            <i class="pi pi-wallet text-white text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-700 dark:bg-brand-300 shadow-card group-hover:scale-110 transition-transform duration-300">
+                            <i class="pi pi-wallet text-white dark:text-brand-900 text-2xl"></i>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 mt-auto">
@@ -74,12 +74,12 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 —
                             </span>
                         } @else if ((stats()?.netWorthChangePct ?? 0) > 0) {
-                            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-positive/10 text-positive text-sm font-semibold">
                                 <i class="pi pi-arrow-up text-xs mr-1"></i>
                                 +{{ stats()?.netWorthChangePct | number:'1.1-1' }}%
                             </span>
                         } @else {
-                            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-500/10 text-red-500 text-sm font-semibold">
+                            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-negative/10 text-negative text-sm font-semibold">
                                 <i class="pi pi-arrow-down text-xs mr-1"></i>
                                 {{ stats()?.netWorthChangePct | number:'1.1-1' }}%
                             </span>
@@ -89,60 +89,48 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 </div>
             </div>
 
-            <!-- KPI Card 2 - Flux Mensuel -->
+            <!-- KPI Card 2 - Flux Mensuel (mirrors Objectif Financier card structure) -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20"
+                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60"
                      [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les transactions" tabindex="0">
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlyFlux') }}</span>
                             @if ((stats()?.monthlyIncome ?? 0) > 0 || (stats()?.monthlyExpenses ?? 0) > 0) {
-                                <div class="font-bold text-2xl leading-tight"
-                                     [ngClass]="monthlySavings() >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                                <div class="font-bold text-2xl leading-tight text-surface-900 dark:text-surface-0">
                                     {{ monthlySavings() >= 0 ? '+' : '-' }}{{ cs.formatNumber(abs(monthlySavings())) }}<span class="text-sm font-semibold ml-1 opacity-70">{{ cs.config().symbol }}</span>
                                 </div>
-                                <div class="text-surface-500 dark:text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.monthlyFluxNet') }}</div>
+                                <div class="text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.monthlyFluxNet') }} · {{ t('dashboard.kpi.thisMonthLabel') }}</div>
                             } @else {
                                 <div class="text-surface-400 dark:text-surface-500 font-medium text-lg">{{ t('dashboard.kpi.noData') }}</div>
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.thisMonthLabel') }}</div>
                             }
                         </div>
-                        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300 shrink-0">
-                            <i class="pi pi-arrow-right-arrow-left text-white text-xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-700 dark:bg-brand-300 shadow-card group-hover:scale-110 transition-transform duration-300 shrink-0">
+                            <i class="pi pi-arrow-right-arrow-left text-white dark:text-brand-900 text-2xl"></i>
                         </div>
                     </div>
                     <div class="mt-auto">
                         @if ((stats()?.monthlyIncome ?? 0) > 0 || (stats()?.monthlyExpenses ?? 0) > 0) {
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-1.5">
-                                        <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('dashboard.kpi.monthlyFluxRevenues') }}</span>
-                                    </div>
-                                    <span class="text-emerald-500 text-xs font-semibold"><app-amount [value]="stats()?.monthlyIncome ?? 0" prefix="+" /></span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-1.5">
-                                        <div class="w-2 h-2 rounded-full bg-rose-500"></div>
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('dashboard.kpi.monthlyFluxExpenses') }}</span>
-                                    </div>
-                                    <span class="text-rose-500 text-xs font-semibold"><app-amount [value]="stats()?.monthlyExpenses ?? 0" prefix="-" /></span>
-                                </div>
-                                @if ((stats()?.monthlyIncome ?? 0) > 0) {
-                                    <div class="w-full h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden mt-1">
-                                        <div class="h-full rounded-full transition-all duration-500"
-                                             [ngClass]="monthlySavings() >= 0 ? 'bg-gradient-to-r from-emerald-500 to-cyan-500' : 'bg-gradient-to-r from-rose-500 to-orange-500'"
-                                             [style.width]="savingsRatePct() + '%'"></div>
-                                    </div>
-                                }
+                            <!-- Progress bar (income vs expenses ratio) -->
+                            <div class="w-full h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mb-3 overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-500"
+                                     [ngClass]="monthlySavings() >= 0 ? 'bg-gradient-to-r from-positive-500 to-positive-400' : 'bg-gradient-to-r from-negative-500 to-negative-400'"
+                                     [style.width]="savingsRatePct() + '%'"></div>
                             </div>
-                        } @else {
+                            <!-- Single insight chip — savings rate -->
                             <div class="flex items-center gap-2">
-                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-500/10 text-indigo-500 text-xs font-semibold">
-                                    <i class="pi pi-plus text-xs"></i>
-                                    {{ t('dashboard.kpi.addTransaction') }}
+                                <span class="inline-flex items-center px-2 py-1 rounded-lg text-sm font-semibold"
+                                      [ngClass]="monthlySavings() >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
+                                    <i class="pi text-xs mr-1" [ngClass]="monthlySavings() >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
+                                    {{ savingsRatePct() | number:'1.0-0' }}% {{ t('dashboard.kpi.monthlySavingsRate') }}
                                 </span>
                             </div>
+                        } @else {
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300 text-sm font-semibold">
+                                <i class="pi pi-plus text-xs"></i>
+                                {{ t('dashboard.kpi.addTransaction') }}
+                            </span>
                         }
                     </div>
                 </div>
@@ -150,7 +138,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <!-- KPI Card 3 - Objectif FIRE -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20"
+                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60"
                      [routerLink]="fireProgress() && (fireProgress()!.targetAmount) > 0 ? link('pages','goals') : link('pages','fire')"
                      role="link" aria-label="Voir l'objectif financier" tabindex="0">
                     <div class="flex justify-between items-start mb-3">
@@ -164,7 +152,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.fireGoalUndefined') }}</div>
                             }
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300 shrink-0">
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-ochre-500 shadow-card group-hover:scale-110 transition-transform duration-300 shrink-0">
                             <i class="pi pi-flag text-white text-2xl"></i>
                         </div>
                     </div>
@@ -172,22 +160,22 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         @if (fireProgress() && (fireProgress()!.targetAmount) > 0) {
                             <!-- Progress bar -->
                             <div class="w-full h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mb-3 overflow-hidden">
-                                <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500"
+                                <div class="h-full rounded-full bg-gradient-to-r from-positive-500 to-positive-400 transition-all duration-500"
                                      [style.width]="(fireProgress()!.progressPct! > 100 ? 100 : fireProgress()!.progressPct!) + '%'"></div>
                             </div>
                             <div class="flex items-center gap-2">
                                 @if (fireProgress()?.yearsToFire !== null && fireProgress()!.yearsToFire! > 0) {
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-positive/10 text-positive text-sm font-semibold">
                                         {{ fireProgress()!.yearsToFire! | number:'1.0-0' }} {{ t('dashboard.kpi.fireYearsLeft') }}
                                     </span>
                                 } @else {
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-sm font-semibold">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-positive/10 text-positive text-sm font-semibold">
                                         🎯 {{ t('dashboard.kpi.fireReached') }}
                                     </span>
                                 }
                             </div>
                         } @else {
-                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-500/10 text-indigo-500 text-sm font-semibold">
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300 text-sm font-semibold">
                                 <i class="pi pi-arrow-right text-xs"></i>
                                 {{ t('dashboard.kpi.fireConfigure') }}
                             </span>

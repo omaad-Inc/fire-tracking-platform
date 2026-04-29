@@ -129,11 +129,14 @@ export class GoalCardComponent {
 
     get badgeClass(): string {
         switch (this.status) {
-            case 'completed': return 'bg-emerald-500/95 text-white';
-            case 'on_track': return 'bg-emerald-500/95 text-white';
-            case 'at_risk': return 'bg-amber-500/95 text-white';
-            case 'no_deadline': return 'bg-slate-700/85 text-white';
-            case 'no_target': return 'bg-slate-700/85 text-white';
+            // "Completed" = achieved → semantic green (the celebratory moment).
+            // "On track" = still navigating → brand navy (active progress, not yet a win).
+            // Reserves green for the rare "you made it" moment, keeping the page calmer.
+            case 'completed': return 'bg-positive text-white';
+            case 'on_track': return 'bg-brand-700 dark:bg-brand-300 text-white dark:text-brand-900';
+            case 'at_risk': return 'bg-warning text-white';
+            case 'no_deadline': return 'bg-warm-700 text-white';
+            case 'no_target': return 'bg-warm-700 text-white';
         }
     }
 
@@ -150,12 +153,13 @@ export class GoalCardComponent {
     get barClass(): string {
         switch (this.status) {
             case 'completed':
+                return 'from-positive-500 to-positive-400';
             case 'on_track':
-                return 'from-emerald-500 to-emerald-400';
+                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
             case 'at_risk':
-                return 'from-amber-500 to-amber-400';
+                return 'from-warning-500 to-warning-400';
             default:
-                return 'from-indigo-500 to-cyan-500';
+                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
         }
     }
 

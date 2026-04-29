@@ -21,10 +21,10 @@ interface AssetGroup {
 }
 
 const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
-    { id: 'liquidity',    label: 'Liquidités & Épargne', icon: 'pi pi-wallet',      gradient: 'from-emerald-500 to-emerald-600', categories: ['cash', 'savings_account', 'mobile_money'] },
-    { id: 'investments',  label: 'Investissements',       icon: 'pi pi-chart-line',  gradient: 'from-cyan-500 to-cyan-600',     categories: ['stocks', 'bonds', 'crypto', 'retirement', 'life_insurance'] },
-    { id: 'real_estate',  label: 'Immobilier',            icon: 'pi pi-building',    gradient: 'from-indigo-500 to-indigo-600', categories: ['real_estate'] },
-    { id: 'business',     label: 'Autres actifs',         icon: 'pi pi-briefcase',   gradient: 'from-violet-500 to-violet-600', categories: ['business', 'vehicle', 'tontine', 'collectibles', 'commodities', 'other'] },
+    { id: 'liquidity',    label: 'Liquidités & Épargne', icon: 'pi pi-wallet',      gradient: 'from-positive-500 to-positive-700', categories: ['cash', 'savings_account', 'mobile_money'] },
+    { id: 'investments',  label: 'Investissements',       icon: 'pi pi-chart-line',  gradient: 'from-brand-700 to-brand-600',     categories: ['stocks', 'bonds', 'crypto', 'retirement', 'life_insurance'] },
+    { id: 'real_estate',  label: 'Immobilier',            icon: 'pi pi-building',    gradient: 'from-brand-700 to-brand-500', categories: ['real_estate'] },
+    { id: 'business',     label: 'Autres actifs',         icon: 'pi pi-briefcase',   gradient: 'from-brand-700 to-brand-500', categories: ['business', 'vehicle', 'tontine', 'collectibles', 'commodities', 'other'] },
 ];
 
 @Component({
@@ -46,8 +46,8 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold"
                                       [ngClass]="netWorthChange()! >= 0
-                                          ? 'bg-emerald-500/10 text-emerald-500'
-                                          : 'bg-rose-500/10 text-rose-500'">
+                                          ? 'bg-positive/10 text-positive'
+                                          : 'bg-negative/10 text-negative'">
                                     <i class="pi text-xs"
                                        [ngClass]="netWorthChange()! >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                     <app-amount [value]="netWorthChange()!" [prefix]="netWorthChange()! >= 0 ? '+' : '-'" />
@@ -62,12 +62,12 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
                     <div class="flex items-center gap-6 shrink-0">
                         <div class="text-right">
                             <p class="text-surface-400 text-xs mb-0.5">Actifs</p>
-                            <p class="font-semibold text-emerald-500"><app-amount [value]="totalAssets()" /></p>
+                            <p class="font-semibold text-positive"><app-amount [value]="totalAssets()" /></p>
                         </div>
                         <div class="w-px h-8 bg-surface-200 dark:bg-surface-700"></div>
                         <div class="text-right">
                             <p class="text-surface-400 text-xs mb-0.5">Passifs</p>
-                            <p class="font-semibold text-rose-500">−<app-amount [value]="totalDebts()" /></p>
+                            <p class="font-semibold text-negative">−<app-amount [value]="totalDebts()" /></p>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
                                                     </p>
                                                     @if (asset.deltaAbs && asset.deltaAbs !== 0) {
                                                         <p class="text-xs"
-                                                           [ngClass]="asset.deltaAbs >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                                                           [ngClass]="asset.deltaAbs >= 0 ? 'text-positive' : 'text-negative'">
                                                             {{ asset.deltaAbs >= 0 ? '+' : '−' }}<app-amount [value]="asset.deltaAbs" />
                                                             @if (asset.deltaPct) {
                                                                 ({{ asset.deltaPct | number:'1.1-1' }}%)

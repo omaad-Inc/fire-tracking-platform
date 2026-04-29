@@ -44,8 +44,8 @@ import { PrivacyService } from '../../core/services/privacy.service';
             <!-- UPGRADE PRO pill — visible on all sizes -->
             <a [routerLink]="['/'+lang, 'pages', 'plans']"
                class="flex items-center gap-1 px-2.5 py-1.5 rounded-full
-                      bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] lg:text-xs font-bold
-                      tracking-wider transition-all hover:scale-105 hover:shadow-lg hover:shadow-amber-500/30">
+                      bg-gradient-to-r from-ochre-500 to-ochre-600 text-white text-[10px] lg:text-xs font-bold
+                      tracking-wider transition-all hover:scale-105 hover:shadow-lg hover:shadow-card">
                 <i class="pi pi-crown" style="font-size:9px"></i>
                 PRO
             </a>
@@ -53,7 +53,7 @@ import { PrivacyService } from '../../core/services/privacy.service';
             <!-- Add Assets Button - Desktop Only -->
             <button
                 type="button"
-                class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/30"
+                class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-card"
                 (click)="navigateToAddAsset()"
             >
                 <i class="pi pi-plus"></i>

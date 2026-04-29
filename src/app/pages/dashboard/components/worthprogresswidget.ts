@@ -12,7 +12,7 @@ import { I18nService } from '../../../i18n/i18n.service';
             <div class="flex items-center justify-between mb-4">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.worthEvolution') }}</div>
                 @if (!loading()) {
-                    <span class="text-cyan-500 text-sm font-medium">{{ dataPoints().length }} {{ i18n.t('dashboard.months') }}</span>
+                    <span class="text-brand-700 dark:text-brand-300 text-sm font-medium">{{ dataPoints().length }} {{ i18n.t('dashboard.months') }}</span>
                 }
             </div>
 
@@ -78,11 +78,12 @@ export class WorthProgress implements OnInit {
     initChart() {
         if (isPlatformBrowser(this.platformId)) {
             const documentStyle = getComputedStyle(document.documentElement);
-            const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
+            const isDark = document.documentElement.classList.contains('app-dark');
+            const textColorSecondary = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
             const cs = this.cs;
             
             // Couleurs harmonieuses avec le thème (cyan)
-            const borderColor = '#06b6d4';
+            const borderColor = isDark ? '#8A98AE' : '#1A2740'; // brand-300 / brand-700
 
             const points = this.dataPoints();
             
@@ -114,10 +115,10 @@ export class WorthProgress implements OnInit {
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                        titleColor: '#fff',
-                        bodyColor: '#94a3b8',
-                        borderColor: 'rgba(6, 182, 212, 0.5)',
+                        backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                        titleColor: '#FAF8F4',
+                        bodyColor: '#DEDAD0',
+                        borderColor: 'rgba(199, 123, 60, 0.30)',
                         borderWidth: 1,
                         cornerRadius: 8,
                         padding: 12,

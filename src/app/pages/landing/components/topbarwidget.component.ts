@@ -14,7 +14,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
     template: `
         <!-- Logo -->
         <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
-            <img src="assets/omaad-icon.png" alt="Omaad Logo"
+            <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
                      class="w-10 h-10 md:w-12 md:h-12 transition-transform duration-300 group-hover:scale-110">
             <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">{{ isAdvisory() ? 'Omaad Advisory' : 'Omaad Wealth' }}</span>
         </a>
@@ -23,32 +23,32 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <nav class="hidden lg:flex items-center gap-2 mx-auto">
             <a (click)="navigateTo('home')" pRipple
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
+                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.home') }}
             </a>
             <a (click)="navigateTo('features')" pRipple
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
+                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.features') }}
             </a>
             <a (click)="navigateTo('highlights')" pRipple
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
+                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.highlights') }}
             </a>
             <a [routerLink]="[currentLang, 'advisory']" pRipple
                class="flex items-center px-4 py-2 rounded-lg font-medium text-base
-                      text-indigo-600 dark:text-indigo-400
-                      hover:bg-indigo-50 dark:hover:bg-indigo-900/30
+                      text-brand-700 dark:text-brand-300
+                      hover:bg-brand-50 dark:hover:bg-brand-700/30 hover:text-brand-900 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.advisory') }}
             </a>
             <a (click)="navigateTo('pricing')" pRipple
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-indigo-600 dark:hover:text-indigo-400
+                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
             </a>
@@ -76,13 +76,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <button pButton pRipple [label]="t('landing.nav.login')"
                     [routerLink]="[currentLang, 'auth', 'login']"
                     [rounded]="true" [text]="true"
-                    class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-indigo-600 dark:hover:!text-indigo-400">
+                    class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:text-brand-300 dark:hover:!text-brand-700 dark:text-brand-300">
             </button>
             <button pButton pRipple [label]="t('landing.nav.register')"
                     [routerLink]="[currentLang, 'auth', 'register']"
                     [rounded]="true"
-                    class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold
-                           hover:!shadow-lg hover:!shadow-indigo-500/25 transition-all duration-300">
+                    class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
+                           hover:!shadow-lg hover:!shadow-card transition-all duration-300">
             </button>
         </div>
 
@@ -123,8 +123,9 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <li>
                     <a [routerLink]="[currentLang, 'advisory']" pRipple
                        class="flex items-center px-4 py-3 rounded-lg font-medium text-base
-                              text-indigo-600 dark:text-indigo-400
-                              hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all duration-200 cursor-pointer">
+                              text-brand-700 dark:text-brand-300
+                              hover:bg-brand-50 dark:hover:bg-brand-700/30 hover:text-brand-900 dark:hover:text-brand-200
+                              transition-all duration-200 cursor-pointer">
                         <i class="pi pi-briefcase mr-2"></i><span>{{ t('landing.nav.advisory') }}</span>
                     </a>
                 </li>
@@ -156,13 +157,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <button pButton pRipple [label]="t('landing.nav.login')"
                         [routerLink]="[currentLang, 'auth', 'login']"
                         [rounded]="true" [text]="true"
-                        class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-indigo-600 w-full justify-center">
+                        class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:text-brand-300 w-full justify-center">
                 </button>
                 <button pButton pRipple [label]="t('landing.nav.register')"
                         [routerLink]="[currentLang, 'auth', 'register']"
                         [rounded]="true"
-                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold
-                               hover:!shadow-lg hover:!shadow-indigo-500/25 transition-all duration-300 w-full justify-center">
+                        class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
+                               hover:!shadow-lg hover:!shadow-card transition-all duration-300 w-full justify-center">
                 </button>
             </div>
         </div>

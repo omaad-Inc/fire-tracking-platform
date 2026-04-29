@@ -39,7 +39,7 @@ interface FaqItem {
                 @for (link of quickLinks; track link.label) {
                     <button (click)="searchQuery = link.tag"
                             class="flex flex-col items-center gap-2 p-4 rounded-2xl border border-surface-200 dark:border-surface-700
-                                   hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-500/5
+                                   hover:border-brand-300 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20
                                    transition-all text-center group">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center {{ link.bg }} group-hover:scale-110 transition-transform">
                             <i class="pi {{ link.icon }} {{ link.color }} text-lg"></i>
@@ -52,8 +52,8 @@ interface FaqItem {
             <!-- ── FAQ ──────────────────────────────────────────── -->
             <section class="card !p-0 overflow-hidden">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-question-circle text-indigo-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                        <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Questions fréquentes</h2>
                 </div>
@@ -63,11 +63,11 @@ interface FaqItem {
                         <div class="px-5">
                             <button (click)="item.open = !item.open"
                                     class="w-full flex items-center justify-between py-4 text-left group">
-                                <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-indigo-500 transition-colors">
+                                <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-brand-700 dark:text-brand-300 transition-colors">
                                     {{ item.question }}
                                 </span>
                                 <i class="pi shrink-0 transition-transform duration-200 text-surface-400"
-                                   [ngClass]="item.open ? 'pi-chevron-up text-indigo-500' : 'pi-chevron-down'"></i>
+                                   [ngClass]="item.open ? 'pi-chevron-up text-brand-700 dark:text-brand-300' : 'pi-chevron-down'"></i>
                             </button>
                             @if (item.open) {
                                 <div class="pb-4 text-sm text-surface-600 dark:text-surface-300 leading-relaxed">
@@ -87,8 +87,8 @@ interface FaqItem {
             <!-- ── Contact ──────────────────────────────────────── -->
             <section class="card !p-0 overflow-hidden">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-envelope text-cyan-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                        <i class="pi pi-envelope text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div>
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Nous contacter</h2>
@@ -112,14 +112,14 @@ interface FaqItem {
                         </div>
                         <div class="flex items-center justify-between gap-4 flex-wrap">
                             <p class="text-xs text-surface-400 flex items-center gap-1.5">
-                                <i class="pi pi-shield text-indigo-400"></i>
+                                <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
                                 Vos données restent confidentielles.
                             </p>
                             <p-button label="Envoyer le message" icon="pi pi-send"
                                       [loading]="isSending()"
                                       [disabled]="!contactForm.subject || !contactForm.message"
                                       (click)="sendMessage()"
-                                      styleClass="!rounded-xl !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0" />
+                                      styleClass="omaad-cta !rounded-xl" />
                         </div>
                     </div>
                 </div>
@@ -128,8 +128,8 @@ interface FaqItem {
             <!-- ── Other resources ──────────────────────────────── -->
             <section class="card !p-0 overflow-hidden">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-link text-emerald-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-link text-positive"></i>
                     </div>
                     <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Ressources utiles</h2>
                 </div>
@@ -141,7 +141,7 @@ interface FaqItem {
                                 <i class="pi {{ res.icon }} {{ res.color }}"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 group-hover:text-indigo-500 transition-colors">{{ res.label }}</p>
+                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 group-hover:text-brand-700 dark:text-brand-300 transition-colors">{{ res.label }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400">{{ res.desc }}</p>
                             </div>
                             <i class="pi pi-external-link text-xs text-surface-400 shrink-0"></i>
@@ -153,7 +153,7 @@ interface FaqItem {
             <!-- ── Version info ─────────────────────────────────── -->
             <div class="text-center py-2">
                 <p class="text-xs text-surface-400 dark:text-surface-500">
-                    Omaad Wealth · v1.0.0 · <span class="text-emerald-500">●</span> Opérationnel
+                    Omaad Wealth · v1.0.0 · <span class="text-positive">●</span> Opérationnel
                 </p>
             </div>
         </div>
@@ -167,10 +167,10 @@ export class HelpSettings {
     constructor(private messageService: MessageService) {}
 
     readonly quickLinks = [
-        { label: 'Compte & Profil',  tag: 'compte',    icon: 'pi-user',          color: 'text-indigo-500',  bg: 'bg-indigo-500/10'  },
-        { label: 'Devises & FCFA',   tag: 'devise',    icon: 'pi-wallet',        color: 'text-cyan-500',    bg: 'bg-cyan-500/10'    },
-        { label: 'Objectif FIRE',    tag: 'fire',      icon: 'pi-flag',          color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-        { label: 'Sécurité',         tag: 'sécurité',  icon: 'pi-shield',        color: 'text-amber-500',   bg: 'bg-amber-500/10'   },
+        { label: 'Compte & Profil',  tag: 'compte',    icon: 'pi-user',          color: 'text-brand-700 dark:text-brand-300',  bg: 'bg-brand-700/10 dark:bg-brand-300/15'  },
+        { label: 'Devises & FCFA',   tag: 'devise',    icon: 'pi-wallet',        color: 'text-brand-700 dark:text-brand-300',    bg: 'bg-brand-700/10 dark:bg-brand-300/15'    },
+        { label: 'Objectif FIRE',    tag: 'fire',      icon: 'pi-flag',          color: 'text-positive', bg: 'bg-positive/10' },
+        { label: 'Sécurité',         tag: 'sécurité',  icon: 'pi-shield',        color: 'text-ochre-500',   bg: 'bg-ochre-100'   },
     ];
 
     readonly resources = [
@@ -178,7 +178,7 @@ export class HelpSettings {
             label: 'Centre d\'aide en ligne',
             desc:  'Documentation complète et tutoriels vidéo',
             url:   'https://help.omaad.app',
-            icon:  'pi-book',  color: 'text-indigo-500', bg: 'bg-indigo-500/10',
+            icon:  'pi-book',  color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15',
         },
         {
             label: 'Signaler un bug',
@@ -190,7 +190,7 @@ export class HelpSettings {
             label: 'Règle des 4% — SWR',
             desc:  'Comprendre la base du calcul FIRE',
             url:   'https://www.investopedia.com/terms/f/four-percent-rule.asp',
-            icon:  'pi-percentage', color: 'text-emerald-500', bg: 'bg-emerald-500/10',
+            icon:  'pi-percentage', color: 'text-positive', bg: 'bg-positive/10',
         },
     ];
 

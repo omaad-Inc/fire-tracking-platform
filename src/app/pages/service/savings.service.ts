@@ -35,14 +35,11 @@ export interface SavingsGoalDisplay {
     status?: string;
 }
 
-// Color palette for goals
+// Legacy color palette — no longer applied (the Goals UI uses photos +
+// uniform navy chrome). Kept here only so existing widget code that still
+// reads `colorClass` / `textColorClass` doesn't crash.
 const GOAL_COLORS = [
-    { bg: 'bg-blue-700', text: 'text-blue-700' },
-    { bg: 'bg-green-600', text: 'text-green-600' },
-    { bg: 'bg-orange-600', text: 'text-orange-600' },
-    { bg: 'bg-purple-600', text: 'text-purple-600' },
-    { bg: 'bg-cyan-600', text: 'text-cyan-600' },
-    { bg: 'bg-pink-600', text: 'text-pink-600' },
+    { bg: 'bg-brand-700', text: 'text-brand-700 dark:text-brand-300' },
 ];
 
 interface CacheEntry<T> {

@@ -24,16 +24,16 @@ import { AssetsStateService } from '../../service/assets-state.service';
     standalone: true,
     imports: [CommonModule, ButtonModule, AppAmountComponent],
     template: `
-        <div class="card !p-5 sm:!p-6 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 border-emerald-500/30">
+        <div class="card !p-5 sm:!p-6 border-brand-100 dark:border-brand-800">
 
-            <!-- Header / badge -->
+            <!-- Header / badge — ochre = "premium accent", reserved for FIRE -->
             <div class="flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                    <span class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-700 dark:bg-ochre-700/20 dark:text-ochre-300">
                         <i class="pi pi-flag text-[10px]"></i>
                         {{ i18n.t('goals.fire.badge') }}
                     </span>
-                    <h2 class="text-base sm:text-lg font-bold text-surface-900 dark:text-surface-0 m-0">
+                    <h2 class="text-base sm:text-lg font-bold text-warm-900 dark:text-warm-50 m-0">
                         {{ i18n.t('goals.fire.title') }}
                     </h2>
                 </div>
@@ -41,20 +41,20 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
             <!-- Loading -->
             @if (loading()) {
-                <div class="animate-pulse h-32 bg-surface-100 dark:bg-surface-800 rounded-xl"></div>
+                <div class="animate-pulse h-32 bg-warm-100 dark:bg-warm-800 rounded-xl"></div>
             }
 
             <!-- Not configured -->
             @if (!loading() && !isConfigured()) {
                 <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-4">
-                    <div class="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-flag text-2xl text-emerald-500"></i>
+                    <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center shrink-0">
+                        <i class="pi pi-flag text-2xl text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 text-center sm:text-left">
-                        <h3 class="text-sm sm:text-base font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">
+                        <h3 class="text-sm sm:text-base font-semibold text-warm-900 dark:text-warm-50 m-0 mb-1">
                             {{ i18n.t('goals.fire.notConfiguredTitle') }}
                         </h3>
-                        <p class="text-xs sm:text-sm text-surface-500 dark:text-surface-400 m-0">
+                        <p class="text-xs sm:text-sm text-warm-500 dark:text-warm-400 m-0">
                             {{ i18n.t('goals.fire.notConfiguredDesc') }}
                         </p>
                     </div>
@@ -62,7 +62,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                         icon="pi pi-cog"
                         [label]="i18n.t('goals.fire.configureCta')"
                         (onClick)="goConfigure()"
-                        styleClass="!rounded-xl !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0 shrink-0"
+                        styleClass="omaad-cta !rounded-xl shrink-0"
                     />
                 </div>
             }
@@ -74,22 +74,23 @@ import { AssetsStateService } from '../../service/assets-state.service';
                     <div class="relative shrink-0 self-center">
                         <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="'0 0 ' + size + ' ' + size" class="-rotate-90">
                             <circle [attr.cx]="size/2" [attr.cy]="size/2" [attr.r]="radius" fill="none"
-                                class="stroke-surface-200 dark:stroke-surface-700" [attr.stroke-width]="strokeWidth" />
+                                class="stroke-warm-200 dark:stroke-warm-700" [attr.stroke-width]="strokeWidth" />
                             <circle [attr.cx]="size/2" [attr.cy]="size/2" [attr.r]="radius" fill="none"
                                 stroke="url(#fire-hero-grad)" [attr.stroke-width]="strokeWidth" stroke-linecap="round"
                                 [attr.stroke-dasharray]="circumference"
                                 [attr.stroke-dashoffset]="dashOffset()"
                                 style="transition: stroke-dashoffset 1s ease-out;" />
                             <defs>
+                                <!-- The ONE intentional gradient on this card: navy → ochre, the FIRE "lifetime journey" -->
                                 <linearGradient id="fire-hero-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#10b981" />
-                                    <stop offset="100%" stop-color="#06b6d4" />
+                                    <stop offset="0%" stop-color="#1A2740" />
+                                    <stop offset="100%" stop-color="#C77B3C" />
                                 </linearGradient>
                             </defs>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0">{{ progressPct() | number:'1.1-1' }}%</span>
-                            <span class="text-surface-500 text-[10px] sm:text-xs mt-0.5">{{ i18n.t('goals.fire.towardsFire') }}</span>
+                            <span class="text-2xl sm:text-3xl font-bold text-warm-900 dark:text-warm-50">{{ progressPct() | number:'1.1-1' }}%</span>
+                            <span class="text-warm-500 dark:text-warm-400 text-[10px] sm:text-xs mt-0.5">{{ i18n.t('goals.fire.towardsFire') }}</span>
                         </div>
                     </div>
 
@@ -97,18 +98,18 @@ import { AssetsStateService } from '../../service/assets-state.service';
                     <div class="flex-1 min-w-0 w-full flex flex-col justify-center gap-3 text-center lg:text-left">
                         <div class="flex flex-wrap items-end justify-center lg:justify-start gap-x-8 gap-y-3">
                             <div class="min-w-0">
-                                <div class="text-[11px] uppercase tracking-wide text-surface-500 dark:text-surface-400">
+                                <div class="text-[11px] uppercase tracking-wide text-warm-500 dark:text-warm-400">
                                     {{ i18n.t('goals.fire.netWorth') }}
                                 </div>
-                                <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
+                                <div class="text-2xl sm:text-3xl font-bold text-warm-900 dark:text-warm-50 leading-tight">
                                     <app-amount [value]="f.currentNetWorth" />
                                 </div>
                             </div>
                             <div class="min-w-0">
-                                <div class="text-[11px] uppercase tracking-wide text-surface-500 dark:text-surface-400">
+                                <div class="text-[11px] uppercase tracking-wide text-warm-500 dark:text-warm-400">
                                     {{ i18n.t('goals.fire.target') }}
                                 </div>
-                                <div class="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400 leading-tight">
+                                <div class="text-2xl sm:text-3xl font-bold text-ochre-600 dark:text-ochre-400 leading-tight">
                                     <app-amount [value]="f.targetAmount" />
                                 </div>
                             </div>
@@ -116,7 +117,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
                         @if (f.yearsToFire != null) {
                             <div class="flex justify-center lg:justify-start">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-warm-100 text-warm-700 dark:bg-warm-800 dark:text-warm-200">
                                     <i class="pi pi-clock text-[10px]"></i>
                                     {{ f.yearsToFire | number:'1.0-1' }}
                                     {{ f.yearsToFire === 1 ? i18n.t('goals.fire.yearSingular') : i18n.t('goals.fire.yearPlural') }}
@@ -167,7 +168,7 @@ export class FireHeroCardComponent implements OnInit, OnDestroy {
 
     /** Inline class string is cleaner than reading it inline in the template. */
     readonly ctaButtonClass =
-        '!rounded-xl !py-3 !px-5 !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0 w-full lg:w-auto';
+        'omaad-cta !rounded-xl !py-3 !px-5 w-full lg:w-auto';
 
     private sub?: Subscription;
 

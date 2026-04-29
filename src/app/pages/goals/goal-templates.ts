@@ -21,7 +21,13 @@ export interface GoalTemplate {
     /** Wide hero image for the detail page. Falls back to `image` when absent. */
     imageFull: string;
     icon: string;
-    /** Tailwind gradient classes used for accents. */
+    /**
+     * Tailwind gradient classes used for the template's icon-tile accent.
+     *
+     * In the redesigned (Midnight + Ochre) identity all templates share the
+     * same brand-tone gradient — the template's photo is what visually
+     * distinguishes one goal type from another, NOT the icon-tile color.
+     */
     gradient: string;
     /** i18n key resolving to the localized template label. */
     nameKey: string;
@@ -35,7 +41,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/emergency.jpeg',
         imageFull: 'assets/goals/emergency-full.jpeg',
         icon: 'pi pi-shield',
-        gradient: 'from-rose-500 to-red-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.emergency',
         defaultNameKey: 'goals.defaultName.emergency',
     },
@@ -44,7 +50,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/down_payment.jpeg',
         imageFull: 'assets/goals/down_payment.jpeg',
         icon: 'pi pi-home',
-        gradient: 'from-amber-500 to-orange-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.down_payment',
         defaultNameKey: 'goals.defaultName.down_payment',
     },
@@ -53,7 +59,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/vacation.jpeg',
         imageFull: 'assets/goals/vacation-full.jpeg',
         icon: 'pi pi-sun',
-        gradient: 'from-sky-500 to-cyan-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.vacation',
         defaultNameKey: 'goals.defaultName.vacation',
     },
@@ -62,7 +68,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/wedding.jpeg',
         imageFull: 'assets/goals/wedding-full.jpeg',
         icon: 'pi pi-heart-fill',
-        gradient: 'from-pink-500 to-rose-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.wedding',
         defaultNameKey: 'goals.defaultName.wedding',
     },
@@ -71,7 +77,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/education.jpeg',
         imageFull: 'assets/goals/education-full.jpeg',
         icon: 'pi pi-book',
-        gradient: 'from-indigo-500 to-violet-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.education',
         defaultNameKey: 'goals.defaultName.education',
     },
@@ -80,7 +86,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/retirement.jpeg',
         imageFull: 'assets/goals/retirement-full.jpeg',
         icon: 'pi pi-clock',
-        gradient: 'from-emerald-500 to-teal-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.retirement',
         defaultNameKey: 'goals.defaultName.retirement',
     },
@@ -89,7 +95,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/car.jpeg',
         imageFull: 'assets/goals/car-full.jpeg',
         icon: 'pi pi-car',
-        gradient: 'from-blue-500 to-indigo-500',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.car',
         defaultNameKey: 'goals.defaultName.car',
     },
@@ -98,7 +104,7 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         image: 'assets/goals/savings.jpeg',
         imageFull: 'assets/goals/savings-full.jpeg',
         icon: 'pi pi-flag',
-        gradient: 'from-slate-500 to-slate-600',
+        gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.custom',
         defaultNameKey: 'goals.defaultName.custom',
     },

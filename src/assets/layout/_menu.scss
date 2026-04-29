@@ -277,9 +277,17 @@
                 align-items: center;
                 justify-content: center;
                 border-radius: 0.5rem;
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.1));
-                color: var(--primary-color);
+                // Brand-tokenized: subtle navy tint for the resting icon tile.
+                background: var(--omaad-brand-50);
+                color: var(--omaad-brand-700);
                 transition: all 0.2s ease;
+            }
+
+            // Dark mode: navy tile inverts to a soft brand-300 tint
+            :host-context(.app-dark) & .layout-menuitem-icon,
+            .app-dark & .layout-menuitem-icon {
+                background: rgba(138, 152, 174, 0.12); // brand-300 at 12%
+                color: var(--omaad-brand-300);
             }
 
             .layout-submenu-toggler {
@@ -291,13 +299,28 @@
 
             &.active-route {
                 font-weight: 600;
-                color: var(--primary-color);
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.05));
-                
+                // Hard-pin the active label to navy; PrimeNG Aura's runtime
+                // CSS injects --primary-color as emerald-500 which beats our
+                // SCSS variable override, so we reference the omaad token directly.
+                color: var(--omaad-brand-700);
+                background: var(--omaad-brand-50);
+
                 .layout-menuitem-icon {
-                    background: linear-gradient(135deg, #6366f1, #06b6d4);
+                    background: var(--omaad-brand-700);
                     color: white;
-                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                    box-shadow: 0 4px 12px rgba(15, 26, 46, 0.20);
+                }
+            }
+
+            :host-context(.app-dark) &.active-route,
+            .app-dark &.active-route {
+                color: var(--omaad-brand-300);
+                background: rgba(138, 152, 174, 0.10);
+
+                .layout-menuitem-icon {
+                    background: var(--omaad-brand-300);
+                    color: var(--omaad-brand-900);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
                 }
             }
 

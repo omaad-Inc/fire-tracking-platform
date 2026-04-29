@@ -25,7 +25,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
         <div class="card">
             <!-- Header -->
             <div class="flex items-center gap-4 mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                <div class="w-12 h-12 rounded-2xl bg-positive flex items-center justify-center shadow-card">
                     <i class="pi pi-flag text-white text-xl"></i>
                 </div>
                 <div>
@@ -35,10 +35,10 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
 
             <!-- Explainer card -->
-            <div class="flex items-start gap-3 p-4 mb-6 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
-                <i class="pi pi-info-circle text-indigo-500 mt-0.5 flex-shrink-0"></i>
+            <div class="flex items-start gap-3 p-4 mb-6 bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800 rounded-xl">
+                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 flex-shrink-0"></i>
                 <div class="text-sm text-surface-700 dark:text-surface-300 leading-relaxed">
-                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">À quoi ça sert ?</span>
+                    <span class="font-semibold text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300">À quoi ça sert ?</span>
                     <span class="ml-1">C'est simplement un cap que vous vous fixez : le montant total d'épargne et d'investissements à partir duquel vos revenus passifs (loyers, dividendes, intérêts…) couvrent vos dépenses de vie. Une fois ce cap atteint, vous n'êtes plus obligé de travailler pour vivre.</span>
                     <br/>
                     <span class="text-surface-500 dark:text-surface-500 text-xs mt-1 block">Cet objectif est facultatif. L'appli fonctionne parfaitement sans.</span>
@@ -92,9 +92,9 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 <!-- autoTarget() returns a display-currency value (annualExpenses is in display currency)
                      — format directly, do NOT use app-amount which expects EUR and would double-convert -->
                 @if (autoTarget() > 0) {
-                    <div class="mt-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
+                    <div class="mt-4 p-4 bg-positive/10 border border-positive-100 dark:border-positive-700/40 rounded-xl flex items-center justify-between">
                         <span class="text-surface-700 dark:text-surface-300 text-sm">Capital calculé automatiquement</span>
-                        <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                        <span class="text-2xl font-bold text-positive dark:text-positive-400">
                             {{ cs.formatNumber(autoTarget()) }} {{ cs.config().symbol }}
                         </span>
                     </div>
@@ -124,7 +124,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <p class="text-xs text-surface-400 dark:text-surface-500 mt-2">
                         Votre objectif actuel :
                         <!-- fireTarget is already in display currency — format directly, do NOT use app-amount which would double-convert -->
-                        <span class="font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span class="font-semibold text-positive dark:text-positive-400">
                             {{ cs.formatNumber(fireTarget) }} {{ cs.config().symbol }}
                         </span>
                     </p>
@@ -158,7 +158,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         icon="pi pi-check"
                         [loading]="isSaving()"
                         (click)="save()"
-                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 !px-8 !py-3 !font-semibold hover:!opacity-90"
+                        class="omaad-cta !px-8 !py-3 !font-semibold hover:!opacity-90"
                 ></button>
                 @if (hasExistingTarget) {
                     <button pButton

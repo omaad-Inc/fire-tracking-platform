@@ -62,22 +62,16 @@ export class PatrimoineRepartitionComponent implements OnDestroy {
     }
 
     initCharts() {
-        // Couleurs harmonieuses avec le thème
-        this.colors = [
-            '#6366f1', // indigo
-            '#06b6d4', // cyan
-            '#10b981', // emerald
-            '#8b5cf6', // violet
-            '#f59e0b'  // amber
-        ];
+        // Donut palette: brand-tone scale (navy + warm-grays + ochre) so the
+        // *data* is the hero — slice sizes carry the meaning, not the colors.
+        // Same scale as `chartTheme.categorical` in core/theme/chart-theme.ts.
+        const isDark = document.documentElement.classList.contains('app-dark');
+        this.colors = isDark
+            ? ['#8A98AE', '#D8A369', '#B6BFCD', '#EBD0B0', '#C2BDB1', '#9C988C', '#6E6A60', '#52504A']
+            : ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1'];
 
-        const hoverColors = [
-            '#818cf8', // indigo-400
-            '#22d3ee', // cyan-400
-            '#34d399', // emerald-400
-            '#a78bfa', // violet-400
-            '#fbbf24'  // amber-400
-        ];
+        // Hover = same hue, slightly lifted opacity (handled via Chart.js)
+        const hoverColors = this.colors.map(c => c);
 
         const values = (this._items || []).map((i) => i.value);
         const labels = (this._items || []).map((i) => i.name);
@@ -99,10 +93,10 @@ export class PatrimoineRepartitionComponent implements OnDestroy {
             plugins: { 
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                    titleColor: '#fff',
-                    bodyColor: '#94a3b8',
-                    borderColor: 'rgba(99, 102, 241, 0.3)',
+                    backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                    titleColor: '#FAF8F4',
+                    bodyColor: '#DEDAD0',
+                    borderColor: 'rgba(199, 123, 60, 0.25)',
                     borderWidth: 1,
                     cornerRadius: 8,
                     padding: 12,

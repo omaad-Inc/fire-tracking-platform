@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
         <div class="layout-sidebar">
             <!-- Logo header — click to toggle sidebar; hover swaps logo for hamburger -->
             <button type="button" class="sidebar-logo" (click)="layoutService.onMenuToggle()" aria-label="Toggle sidebar">
-                <img src="assets/omaad-icon.png" alt="Omaad" class="sidebar-logo-img" />
+                <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="sidebar-logo-img" />
                 <svg class="sidebar-logo-toggle" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="4" y1="7" x2="20" y2="7"/>
                     <line x1="4" y1="12" x2="20" y2="12"/>
@@ -43,7 +43,7 @@ import { environment } from '../../../environments/environment';
                             <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover rounded-full">
                         } @else {
                             <p-avatar [label]="userInitials" shape="circle"
-                                [style]="{ 'background': 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)', 'color': 'white', 'font-weight': '600', 'font-size': '0.75rem', 'width': '100%', 'height': '100%' }" />
+                                [style]="{ 'background': 'linear-gradient(135deg, #1A2740 0%, #C77B3C 100%)', 'color': 'white', 'font-weight': '600', 'font-size': '0.75rem', 'width': '100%', 'height': '100%' }" />
                         }
                     </div>
                     <div class="sidebar-user-info">
@@ -57,35 +57,35 @@ import { environment } from '../../../environments/environment';
                      class="sidebar-user-dropdown">
                     <a [routerLink]="['/'+lang, 'pages', 'settings', 'account']" (click)="userMenuOpen.set(false)"
                        class="dropdown-item">
-                        <i class="pi pi-user text-indigo-500"></i>
+                        <i class="pi pi-user text-brand-700 dark:text-brand-300"></i>
                         <span>{{ t('menu.myAccount') }}</span>
                     </a>
                     <a [routerLink]="['/'+lang, 'pages', 'settings', 'security']" (click)="userMenuOpen.set(false)"
                        class="dropdown-item">
-                        <i class="pi pi-shield text-cyan-500"></i>
+                        <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
                         <span>{{ t('menu.security') }}</span>
                     </a>
                     <a [routerLink]="['/'+lang, 'pages', 'settings', 'preferences']" (click)="userMenuOpen.set(false)"
                        class="dropdown-item">
-                        <i class="pi pi-cog text-emerald-500"></i>
+                        <i class="pi pi-cog text-brand-700 dark:text-brand-300"></i>
                         <span>{{ t('menu.preferences') }}</span>
                     </a>
                     <a [routerLink]="['/'+lang, 'pages', 'fire']" (click)="userMenuOpen.set(false)"
                        class="dropdown-item">
-                        <i class="pi pi-flag text-emerald-600"></i>
+                        <i class="pi pi-flag text-brand-700 dark:text-brand-300"></i>
                         <span>{{ t('menu.financialGoal') }}</span>
                     </a>
                     <p-divider styleClass="!my-0" />
                     <a [routerLink]="['/'+lang, 'pages', 'settings', 'help']" (click)="userMenuOpen.set(false)"
                        class="dropdown-item">
-                        <i class="pi pi-question-circle text-amber-500"></i>
+                        <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
                         <span>{{ t('settings.getHelp') }}</span>
                     </a>
                     <p-divider styleClass="!my-0" />
                     <button type="button" (click)="logout(); userMenuOpen.set(false)"
                             class="dropdown-item w-full text-left group">
-                        <i class="pi pi-sign-out text-red-500"></i>
-                        <span class="text-red-500 group-hover:text-red-600">{{ t('topbar.logout') }}</span>
+                        <i class="pi pi-sign-out text-negative"></i>
+                        <span class="text-negative group-hover:text-negative">{{ t('topbar.logout') }}</span>
                     </button>
                 </div>
             </div>

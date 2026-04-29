@@ -52,7 +52,7 @@ interface DayGroup {
                 </div>
                 <div class="flex-1"></div>
                 <button pButton icon="pi pi-plus" label="Ajouter"
-                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
+                        class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
             <!-- Row 2: search + type filter -->
@@ -83,34 +83,34 @@ interface DayGroup {
                 <div class="card !p-4 h-[86px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
-                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-down-left text-emerald-500 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-positive/10 flex items-center justify-center">
+                            <i class="pi pi-arrow-down-left text-positive text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold text-emerald-500 truncate">+<app-amount [value]="monthSummary().income" /></div>
+                    <div class="text-base font-bold text-positive truncate">+<app-amount [value]="monthSummary().income" /></div>
                 </div>
                 <!-- Dépenses -->
                 <div class="card !p-4 h-[86px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
-                        <div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-up-right text-rose-500 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-negative/10 flex items-center justify-center">
+                            <i class="pi pi-arrow-up-right text-negative text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold text-rose-500 truncate">−<app-amount [value]="monthSummary().expenses" /></div>
+                    <div class="text-base font-bold text-negative truncate">−<app-amount [value]="monthSummary().expenses" /></div>
                 </div>
                 <!-- Solde net -->
                 <div class="card !p-4 h-[86px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center"
-                             [ngClass]="monthSummary().net >= 0 ? 'bg-indigo-500/10' : 'bg-rose-500/10'">
+                             [ngClass]="monthSummary().net >= 0 ? 'bg-brand-700/10 dark:bg-brand-300/15' : 'bg-negative/10'">
                             <i class="pi text-xs"
-                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-indigo-500' : 'pi-trending-down text-rose-500'"></i>
+                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-brand-700 dark:text-brand-300' : 'pi-trending-down text-negative'"></i>
                         </div>
                     </div>
                     <div class="text-base font-bold truncate"
-                         [ngClass]="monthSummary().net >= 0 ? 'text-indigo-500' : 'text-rose-500'">
+                         [ngClass]="monthSummary().net >= 0 ? 'text-brand-700 dark:text-brand-300' : 'text-negative'">
                         {{ monthSummary().net >= 0 ? '+' : '−' }}<app-amount [value]="monthSummary().net" />
                     </div>
                 </div>
@@ -118,14 +118,14 @@ interface DayGroup {
                 <div class="card !p-4 h-[86px] flex flex-col justify-between">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
-                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                            <i class="pi pi-percentage text-cyan-500 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center">
+                            <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-xs"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-base font-bold text-cyan-500 mb-1">{{ monthSummary().savingsRate }}%</div>
+                        <div class="text-base font-bold text-brand-700 dark:text-brand-300 mb-1">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                            <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
                                  [style.width]="monthSummary().savingsRate + '%'"></div>
                         </div>
                     </div>
@@ -191,16 +191,16 @@ interface DayGroup {
                                     </div>
                                     <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
-                                         [ngClass]="rec.type === 'Income' ? 'text-emerald-500' : 'text-rose-500'">
+                                         [ngClass]="rec.type === 'Income' ? 'text-positive' : 'text-negative'">
                                         {{ rec.type === 'Income' ? '+' : '−' }}<app-amount [value]="rec.amount" />
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
                                     <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                                 (click)="editRecord(rec)">
                                             <i class="pi pi-pencil text-xs text-surface-500"></i>
                                         </button>
-                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
                                                 (click)="deleteRecord(rec)">
                                             <i class="pi pi-trash text-xs text-surface-500"></i>
                                         </button>
@@ -222,8 +222,8 @@ interface DayGroup {
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg"
                          [ngClass]="formType() === 'Income'
-                             ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-500/30'
-                             : 'bg-gradient-to-br from-rose-500 to-rose-600 shadow-rose-500/30'">
+                             ? 'bg-positive shadow-card'
+                             : 'bg-negative shadow-card'">
                         <i class="pi text-white text-lg"
                            [ngClass]="formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right'"></i>
                     </div>
@@ -246,14 +246,14 @@ interface DayGroup {
                         <button (click)="setType('Expense')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Expense'
-                                    ? 'bg-white dark:bg-surface-700 text-rose-500 shadow-sm'
+                                    ? 'bg-white dark:bg-surface-700 text-negative shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
                             <i class="pi pi-arrow-up-right text-xs"></i> Dépense
                         </button>
                         <button (click)="setType('Income')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Income'
-                                    ? 'bg-white dark:bg-surface-700 text-emerald-500 shadow-sm'
+                                    ? 'bg-white dark:bg-surface-700 text-positive shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
                             <i class="pi pi-arrow-down-left text-xs"></i> Revenu
                         </button>
@@ -270,7 +270,7 @@ interface DayGroup {
                                            styleClass="w-full"
                                            inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
                             @if (submitted && !(form.amount > 0)) {
-                                <small class="text-rose-500 text-xs">Montant requis</small>
+                                <small class="text-negative text-xs">Montant requis</small>
                             }
                         </div>
                         <div class="flex flex-col gap-2">
@@ -279,7 +279,7 @@ interface DayGroup {
                                           dateFormat="yy-mm-dd" styleClass="w-full"
                                           inputStyleClass="!py-3 !rounded-xl" />
                             @if (submitted && !editDate) {
-                                <small class="text-rose-500 text-xs">Date requise</small>
+                                <small class="text-negative text-xs">Date requise</small>
                             }
                         </div>
                     </div>
@@ -299,7 +299,7 @@ interface DayGroup {
                         <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
                             Catégorie
                             @if (submitted && !form.category) {
-                                <span class="text-rose-500 ml-2 text-xs">Requise</span>
+                                <span class="text-negative ml-2 text-xs">Requise</span>
                             }
                         </label>
                         <div class="grid grid-cols-3 gap-2">
@@ -337,8 +337,8 @@ interface DayGroup {
                               (click)="saveRecord()"
                               styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !border-0"
                               [ngClass]="formType() === 'Income'
-                                  ? '!from-emerald-600 !to-teal-500'
-                                  : '!from-indigo-600 !to-cyan-500'" />
+                                  ? '!bg-positive'
+                                  : '!bg-brand-700 dark:!bg-brand-300'" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -566,7 +566,7 @@ export class TransactionLogs implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Supprimer',
             rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 if (!rec.id) return;
                 try {
@@ -583,7 +583,7 @@ export class TransactionLogs implements OnInit {
     // ── Helpers ───────────────────────────────────────────────────
     getCategoryConfig(rec: TransactionRecord) {
         const cat = rec.category || (rec.type === 'Income' ? 'other_income' : 'other_expense');
-        return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-slate-500/10' };
+        return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-warm-500/10' };
     }
 
     private formatDayLabel(dateStr: string): string {

@@ -28,7 +28,7 @@ interface DebtDisplay {
         <div class="card h-full">
             <div class="flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.debtsOverview') }}</div>
-                <a [routerLink]="link('pages', 'debts')" class="text-indigo-500 hover:text-indigo-400 font-medium text-sm transition-colors">
+                <a [routerLink]="link('pages', 'debts')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
                     {{ t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
                 </a>
             </div>
@@ -53,11 +53,11 @@ interface DebtDisplay {
                 </div>
             } @else if (debts().length === 0) {
                 <div class="flex flex-col items-center justify-center py-8 text-center">
-                    <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
-                        <i class="pi pi-check-circle text-2xl text-emerald-500"></i>
+                    <div class="w-16 h-16 rounded-full bg-positive/10 flex items-center justify-center mb-4">
+                        <i class="pi pi-check-circle text-2xl text-positive"></i>
                     </div>
                     <p class="text-surface-600 dark:text-surface-400 mb-2">{{ t('dashboard.noDebts') }}</p>
-                    <p class="text-emerald-500 text-sm">{{ t('dashboard.noDebtsCongrats') }}</p>
+                    <p class="text-positive text-sm">{{ t('dashboard.noDebtsCongrats') }}</p>
                 </div>
             } @else {
                 <ul class="list-none p-0 m-0 space-y-5">
@@ -117,12 +117,20 @@ export class DebtsOverview implements OnInit, OnDestroy {
             const records = await this.debtsService.getRecords();
             
             if (records.length > 0) {
+                // All debts share the same neutral chrome — only the icon glyph
+                // differentiates the category. Progress bar uses the brand color.
+                const sharedChrome = {
+                    bgClass: 'bg-warm-100 dark:bg-warm-800',
+                    iconClass: 'text-warm-700 dark:text-warm-300',
+                    progressClass: 'bg-gradient-to-r from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200',
+                    textClass: 'text-brand-700 dark:text-brand-300',
+                };
                 const colorConfigs = [
-                    { icon: 'pi pi-home', bgClass: 'bg-indigo-500/10', iconClass: 'text-indigo-500', progressClass: 'bg-gradient-to-r from-indigo-600 to-indigo-400', textClass: 'text-indigo-500' },
-                    { icon: 'pi pi-users', bgClass: 'bg-emerald-500/10', iconClass: 'text-emerald-500', progressClass: 'bg-gradient-to-r from-emerald-600 to-emerald-400', textClass: 'text-emerald-500' },
-                    { icon: 'pi pi-car', bgClass: 'bg-cyan-500/10', iconClass: 'text-cyan-500', progressClass: 'bg-gradient-to-r from-cyan-600 to-cyan-400', textClass: 'text-cyan-500' },
-                    { icon: 'pi pi-credit-card', bgClass: 'bg-amber-500/10', iconClass: 'text-amber-500', progressClass: 'bg-gradient-to-r from-amber-600 to-amber-400', textClass: 'text-amber-500' },
-                    { icon: 'pi pi-book', bgClass: 'bg-violet-500/10', iconClass: 'text-violet-500', progressClass: 'bg-gradient-to-r from-violet-600 to-violet-400', textClass: 'text-violet-500' }
+                    { icon: 'pi pi-home',        ...sharedChrome },
+                    { icon: 'pi pi-users',       ...sharedChrome },
+                    { icon: 'pi pi-car',         ...sharedChrome },
+                    { icon: 'pi pi-credit-card', ...sharedChrome },
+                    { icon: 'pi pi-book',        ...sharedChrome }
                 ];
 
                 // Filter only active debts and sort by remaining amount

@@ -38,8 +38,8 @@ import { environment } from '../../../../environments/environment';
         >
             <ng-template pTemplate="header">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                        <i class="pi pi-exclamation-triangle text-red-500 text-lg"></i>
+                    <div class="w-10 h-10 rounded-full bg-negative-50 dark:bg-negative-700/30 flex items-center justify-center">
+                        <i class="pi pi-exclamation-triangle text-negative text-lg"></i>
                     </div>
                     <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.account.deleteConfirmTitle') }}</span>
                 </div>
@@ -52,7 +52,7 @@ import { environment } from '../../../../environments/environment';
                 <ul class="mb-6 space-y-2">
                     @for (item of deleteConfirmItems; track item) {
                         <li class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
-                            <i class="pi pi-times-circle text-red-400 text-xs"></i>
+                            <i class="pi pi-times-circle text-negative text-xs"></i>
                             {{ item }}
                         </li>
                     }
@@ -60,7 +60,7 @@ import { environment } from '../../../../environments/environment';
                 <div>
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                         {{ t('settings.account.deleteConfirmType') }}
-                        <span class="font-mono font-bold text-red-500 ml-1">{{ t('settings.account.deleteConfirmKeyword') }}</span>
+                        <span class="font-mono font-bold text-negative ml-1">{{ t('settings.account.deleteConfirmKeyword') }}</span>
                     </label>
                     <input
                         pInputText
@@ -221,7 +221,7 @@ import { environment } from '../../../../environments/environment';
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-ochre-500 to-ochre-600 flex items-center justify-center">
                             <i class="pi pi-sign-out text-white text-xl"></i>
                         </div>
                         <div>
@@ -243,7 +243,7 @@ import { environment } from '../../../../environments/environment';
 
             <!-- Danger Zone -->
             <div class="mt-8">
-                <h2 class="text-2xl font-semibold text-red-500 mb-4">{{ t('settings.account.deleteAccount') }}</h2>
+                <h2 class="text-2xl font-semibold text-negative mb-4">{{ t('settings.account.deleteAccount') }}</h2>
                 <p class="text-surface-500 dark:text-surface-400 mb-4">
                     {{ t('settings.account.deleteAccountDesc') }}
                 </p>
@@ -404,7 +404,7 @@ export class AccountSettings implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Supprimer',
             rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: () => {
                 this.apiService.deleteAvatar().subscribe({
                     next: () => {

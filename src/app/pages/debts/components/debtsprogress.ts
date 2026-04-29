@@ -32,7 +32,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <div class="flex items-center gap-2">
                 <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0 flex-1">Dettes & Créances</h2>
                 <button pButton icon="pi pi-plus" label="Nouveau"
-                        class="!bg-gradient-to-r !from-rose-600 !to-indigo-500 !border-0 !text-white !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
+                        class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
             <div class="flex items-center gap-2">
@@ -88,17 +88,17 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <!-- Header row -->
                         <div class="flex items-start gap-3 mb-3">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                                 [ngClass]="rec.type === 'Debt' ? 'bg-rose-500/10' : 'bg-emerald-500/10'">
+                                 [ngClass]="rec.type === 'Debt' ? 'bg-negative/10' : 'bg-positive/10'">
                                 <i class="pi text-lg"
-                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-rose-500' : 'pi-arrow-down-left text-emerald-500'"></i>
+                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-negative' : 'pi-arrow-down-left text-positive'"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ rec.name }}</span>
                                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                                           [ngClass]="rec.type === 'Debt'
-                                              ? 'bg-rose-500/10 text-rose-500'
-                                              : 'bg-emerald-500/10 text-emerald-500'">
+                                              ? 'bg-negative/10 text-negative'
+                                              : 'bg-positive/10 text-positive'">
                                         {{ rec.type === 'Debt' ? 'Dette' : 'Créance' }}
                                     </span>
                                 </div>
@@ -110,15 +110,15 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             </div>
                             <!-- Actions: always visible on mobile, hover on desktop -->
                             <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                         (click)="editRecord(rec)" title="Modifier">
                                     <i class="pi pi-pencil text-xs text-surface-500"></i>
                                 </button>
-                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-positive-50 dark:hover:bg-positive-700/30 transition-colors"
                                         (click)="openAddPaymentDialog(rec)" title="Ajouter un paiement">
-                                    <i class="pi pi-plus text-xs text-emerald-500"></i>
+                                    <i class="pi pi-plus text-xs text-positive"></i>
                                 </button>
-                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
                                         (click)="deleteRecord(rec)" title="Supprimer">
                                     <i class="pi pi-trash text-xs text-surface-500"></i>
                                 </button>
@@ -133,11 +133,11 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             </div>
                             <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
                                 <div class="text-[10px] text-surface-400 mb-0.5">{{ rec.type === 'Debt' ? 'Payé' : 'Reçu' }}</div>
-                                <div class="text-sm font-bold text-emerald-500"><app-amount [value]="rec.paid" /></div>
+                                <div class="text-sm font-bold text-positive"><app-amount [value]="rec.paid" /></div>
                             </div>
                             <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
                                 <div class="text-[10px] text-surface-400 mb-0.5">Reste</div>
-                                <div class="text-sm font-bold text-rose-500"><app-amount [value]="rec.total - rec.paid" /></div>
+                                <div class="text-sm font-bold text-negative"><app-amount [value]="rec.total - rec.paid" /></div>
                             </div>
                         </div>
 
@@ -145,11 +145,11 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <div class="flex items-center gap-2">
                             <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                                 <div class="h-full rounded-full transition-all duration-500"
-                                     [ngClass]="rec.type === 'Debt' ? 'bg-gradient-to-r from-indigo-600 to-indigo-400' : 'bg-gradient-to-r from-emerald-600 to-emerald-400'"
+                                     [ngClass]="rec.type === 'Debt' ? 'bg-gradient-to-r from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200' : 'bg-gradient-to-r from-positive-500 to-positive-400'"
                                      [style.width]="getPercent(rec) + '%'"></div>
                             </div>
                             <span class="text-xs font-semibold shrink-0"
-                                  [ngClass]="rec.type === 'Debt' ? 'text-indigo-500' : 'text-emerald-500'">
+                                  [ngClass]="rec.type === 'Debt' ? 'text-brand-700 dark:text-brand-300' : 'text-positive'">
                                 {{ getPercent(rec) }}%
                             </span>
                         </div>
@@ -165,7 +165,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-lg shadow-rose-500/30">
+                    <div class="w-10 h-10 rounded-xl bg-negative flex items-center justify-center shadow-card">
                         <i class="pi pi-credit-card text-white text-lg"></i>
                     </div>
                     <div>
@@ -185,12 +185,12 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl">
                             <button (click)="record.type = 'Debt'"
                                     class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
-                                    [ngClass]="record.type === 'Debt' ? 'bg-white dark:bg-surface-700 text-rose-500 shadow-sm' : 'text-surface-500'">
+                                    [ngClass]="record.type === 'Debt' ? 'bg-white dark:bg-surface-700 text-negative shadow-sm' : 'text-surface-500'">
                                 Dette (je dois)
                             </button>
                             <button (click)="record.type = 'Receivable'"
                                     class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
-                                    [ngClass]="record.type === 'Receivable' ? 'bg-white dark:bg-surface-700 text-emerald-500 shadow-sm' : 'text-surface-500'">
+                                    [ngClass]="record.type === 'Receivable' ? 'bg-white dark:bg-surface-700 text-positive shadow-sm' : 'text-surface-500'">
                                 Créance (on me doit)
                             </button>
                         </div>
@@ -198,19 +198,19 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
                     <!-- Name -->
                     <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nom <span class="text-rose-400">*</span></label>
+                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nom <span class="text-negative">*</span></label>
                         <input pInputText [(ngModel)]="record.name" required
                                class="w-full !py-3 !rounded-xl"
                                placeholder="Ex: Prêt immobilier, Ami..." />
                         @if (submitted && !record.name) {
-                            <small class="text-rose-500 text-xs">Le nom est requis</small>
+                            <small class="text-negative text-xs">Le nom est requis</small>
                         }
                     </div>
 
                     <!-- Total -->
                     <div class="flex flex-col gap-2">
                         <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            Montant total <span class="text-rose-400">*</span>
+                            Montant total <span class="text-negative">*</span>
                             <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
@@ -264,7 +264,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <p-button [label]="isEdit ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-rose-600 !to-indigo-500 !border-0" />
+                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -276,7 +276,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-positive flex items-center justify-center">
                         <i class="pi pi-plus text-white text-lg"></i>
                     </div>
                     <div>
@@ -296,11 +296,11 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             </div>
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
                                 <div class="text-[10px] text-surface-400 mb-1">Payé</div>
-                                <div class="text-sm font-bold text-emerald-500"><app-amount [value]="paymentRecord.paid" /></div>
+                                <div class="text-sm font-bold text-positive"><app-amount [value]="paymentRecord.paid" /></div>
                             </div>
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
                                 <div class="text-[10px] text-surface-400 mb-1">Reste</div>
-                                <div class="text-sm font-bold text-rose-500"><app-amount [value]="paymentRecord.total - paymentRecord.paid" /></div>
+                                <div class="text-sm font-bold text-negative"><app-amount [value]="paymentRecord.total - paymentRecord.paid" /></div>
                             </div>
                         </div>
                         <div class="flex flex-col gap-2">
@@ -313,7 +313,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                            styleClass="w-full"
                                            inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
                             @if (addPaymentSubmitted && !(addPaymentAmount! > 0)) {
-                                <small class="text-rose-500 text-xs">Montant requis</small>
+                                <small class="text-negative text-xs">Montant requis</small>
                             }
                         </div>
                     </div>
@@ -326,7 +326,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                               (click)="closeAddPaymentDialog()" styleClass="flex-1 !rounded-xl !py-3" />
                     <p-button label="Valider" icon="pi pi-check"
                               (click)="confirmAddPayment()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-600 !to-cyan-500 !border-0" />
+                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -412,7 +412,7 @@ export class DebtsProgress implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Supprimer',
             rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 if (!record.id) return;
                 try {

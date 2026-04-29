@@ -140,10 +140,10 @@ export class AllExpensesProgression implements OnInit, OnDestroy {
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    backgroundColor: 'rgba(20, 19, 15, 0.95)',
                     titleColor: '#fff',
-                    bodyColor: '#94a3b8',
-                    borderColor: 'rgba(99, 102, 241, 0.3)',
+                    bodyColor: '#9C988C',
+                    borderColor: 'rgba(199, 123, 60, 0.30)',
                     borderWidth: 1,
                     cornerRadius: 8,
                     padding: 12,

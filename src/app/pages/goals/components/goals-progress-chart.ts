@@ -20,7 +20,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             <button (click)="setRange(r.months)"
                                 class="px-3 py-1 text-xs rounded-lg transition-colors"
                                 [ngClass]="selectedMonths() === r.months
-                                    ? 'bg-emerald-500 text-white'
+                                    ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                 {{ r.label }}
                             </button>
@@ -142,7 +142,9 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
         const cs = this.cs;
 
-        const borderColor = '#10b981';
+        // Brand-700 (light) / brand-300 (dark) — matches the chart-theme primary series.
+        const isDark = document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark');
+        const borderColor = isDark ? '#8A98AE' : '#1A2740';
 
         const points = this.getVisiblePoints();
 

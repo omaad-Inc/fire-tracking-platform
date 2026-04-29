@@ -37,23 +37,23 @@ import { FireSettings } from '../settings/components/fire-settings';
 
             <!-- Header -->
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                    <i class="pi pi-flag text-white text-xl"></i>
+                <div class="w-12 h-12 rounded-2xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-card">
+                    <i class="pi pi-flag text-white dark:text-brand-900 text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('menu.financialGoal') }}</h1>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Construis. Protège. Règne.</p>
+                    <h1 class="text-2xl md:text-3xl font-bold text-warm-900 dark:text-warm-50 m-0">{{ i18n.t('menu.financialGoal') }}</h1>
+                    <p class="text-warm-500 dark:text-warm-400 text-sm m-0">Construis. Protège. Règne.</p>
                 </div>
             </div>
 
             <!-- No FIRE target configured -->
             @if (!loading() && (!fire() || (fire()!.targetAmount) === 0)) {
                 <div class="card text-center py-12">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-emerald-500/10 flex items-center justify-center mb-4">
-                        <i class="pi pi-flag text-3xl text-emerald-500"></i>
+                    <div class="w-20 h-20 mx-auto rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center mb-4">
+                        <i class="pi pi-flag text-3xl text-brand-700 dark:text-brand-300"></i>
                     </div>
-                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
-                    <p class="text-surface-500 text-sm max-w-md mx-auto mb-6">
+                    <h2 class="text-xl font-semibold text-warm-900 dark:text-warm-50 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
+                    <p class="text-warm-500 dark:text-warm-400 text-sm max-w-md mx-auto mb-6">
                         Le capital à atteindre pour que vos revenus passifs couvrent vos dépenses — et que vous ayez le choix de travailler ou non.
                     </p>
                 </div>
@@ -62,13 +62,13 @@ import { FireSettings } from '../settings/components/fire-settings';
             <!-- FIRE configured: show progress hero -->
             @if (!loading() && fire() && (fire()!.targetAmount) > 0) {
                 <!-- Hero progress card -->
-                <div class="card !p-8 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 border-emerald-500/20">
+                <div class="card !p-8 border-brand-100 dark:border-brand-800">
                     <div class="flex flex-col lg:flex-row items-center gap-8">
-                        <!-- Circular progress -->
+                        <!-- Circular progress — navy → ochre, the lifetime journey -->
                         <div class="relative shrink-0">
                             <svg width="180" height="180" viewBox="0 0 180 180" class="-rotate-90">
                                 <circle cx="90" cy="90" r="78" fill="none"
-                                    class="stroke-surface-200 dark:stroke-surface-700" stroke-width="12" />
+                                    class="stroke-warm-200 dark:stroke-warm-700" stroke-width="12" />
                                 <circle cx="90" cy="90" r="78" fill="none"
                                     stroke="url(#fire-grad)" stroke-width="12" stroke-linecap="round"
                                     [attr.stroke-dasharray]="circumference"
@@ -76,32 +76,32 @@ import { FireSettings } from '../settings/components/fire-settings';
                                     style="transition: stroke-dashoffset 1s ease-out;" />
                                 <defs>
                                     <linearGradient id="fire-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                        <stop offset="0%" stop-color="#10b981" />
-                                        <stop offset="100%" stop-color="#06b6d4" />
+                                        <stop offset="0%" stop-color="#1A2740" />
+                                        <stop offset="100%" stop-color="#C77B3C" />
                                     </linearGradient>
                                 </defs>
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ progressPct() | number:'1.1-1' }}%</span>
-                                <span class="text-surface-500 text-xs mt-1">vers FIRE</span>
+                                <span class="text-4xl font-bold text-warm-900 dark:text-warm-50">{{ progressPct() | number:'1.1-1' }}%</span>
+                                <span class="text-warm-500 dark:text-warm-400 text-xs mt-1">vers FIRE</span>
                             </div>
                         </div>
 
                         <!-- Main numbers -->
                         <div class="flex-1 text-center lg:text-left">
-                            <p class="text-surface-500 dark:text-surface-400 text-sm mb-1">Patrimoine net actuel</p>
-                            <div class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3">
+                            <p class="text-warm-500 dark:text-warm-400 text-sm mb-1">Patrimoine net actuel</p>
+                            <div class="text-3xl md:text-4xl font-bold text-warm-900 dark:text-warm-50 mb-3">
                                 <app-amount [value]="fire()!.currentNetWorth" />
                             </div>
-                            <p class="text-surface-500 dark:text-surface-400 text-sm">
+                            <p class="text-warm-500 dark:text-warm-400 text-sm">
                                 sur un objectif de
-                                <span class="font-semibold text-emerald-600 dark:text-emerald-400">
+                                <span class="font-semibold text-ochre-600 dark:text-ochre-400">
                                     <app-amount [value]="fire()!.targetAmount!" />
                                 </span>
                             </p>
                             @if (remaining() > 0) {
-                                <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">
-                                    Encore <span class="font-semibold text-surface-900 dark:text-surface-0">
+                                <p class="text-warm-500 dark:text-warm-400 text-sm mt-1">
+                                    Encore <span class="font-semibold text-warm-900 dark:text-warm-50">
                                         <app-amount [value]="remaining()" />
                                     </span> à constituer
                                 </p>
@@ -144,22 +144,22 @@ import { FireSettings } from '../settings/components/fire-settings';
 
                     <!-- Savings rate -->
                     <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
+                        <p class="text-warm-500 dark:text-warm-400 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
                         @if ((fire()!.savingsRate) > 0) {
                             <div class="text-3xl font-bold truncate"
-                                 [class.text-emerald-500]="(fire()!.savingsRate) >= 20"
-                                 [class.text-amber-500]="(fire()!.savingsRate) < 20 && (fire()!.savingsRate) >= 10"
-                                 [class.text-rose-500]="(fire()!.savingsRate) < 10">
+                                 [class.text-positive]="(fire()!.savingsRate) >= 20"
+                                 [class.text-warning]="(fire()!.savingsRate) < 20 && (fire()!.savingsRate) >= 10"
+                                 [class.text-negative]="(fire()!.savingsRate) < 10">
                                 {{ fire()!.savingsRate | number:'1.0-1' }}%
                             </div>
-                            <p class="text-surface-400 text-xs mt-1 truncate">
+                            <p class="text-warm-400 text-xs mt-1 truncate">
                                 @if ((fire()!.savingsRate) >= 20) { Excellent rythme }
                                 @else if ((fire()!.savingsRate) >= 10) { Bon rythme }
                                 @else { À améliorer }
                             </p>
                         } @else {
-                            <div class="text-2xl text-surface-400">—</div>
-                            <p class="text-surface-400 text-xs mt-1">Ajoutez des transactions</p>
+                            <div class="text-2xl text-warm-400">—</div>
+                            <p class="text-warm-400 text-xs mt-1">Ajoutez des transactions</p>
                         }
                     </div>
                 </div>

@@ -80,7 +80,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         @if (gainLoss() !== null) {
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-semibold"
-                                      [ngClass]="(gainLoss()! >= 0) ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                      [ngClass]="(gainLoss()! >= 0) ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                     <i class="pi text-xs" [ngClass]="gainLoss()! >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                     <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                                     @if (gainLossPct() !== null) {
@@ -96,14 +96,14 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         <svg viewBox="0 0 180 60" width="180" height="60" preserveAspectRatio="none">
                             <defs>
                                 <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" [attr.stop-color]="gainLoss() !== null && gainLoss()! >= 0 ? '#10b981' : '#f43f5e'" stop-opacity="0.3"/>
+                                    <stop offset="0%" [attr.stop-color]="gainLoss() !== null && gainLoss()! >= 0 ? '#2F8F6E' : '#B0463E'" stop-opacity="0.3"/>
                                     <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
                                 </linearGradient>
                             </defs>
                             <path [attr.d]="sparklinePath()" fill="url(#sparkGrad)" />
                             <polyline [attr.points]="sparklinePoints()"
                                       fill="none"
-                                      [attr.stroke]="gainLoss() !== null && gainLoss()! >= 0 ? '#10b981' : '#f43f5e'"
+                                      [attr.stroke]="gainLoss() !== null && gainLoss()! >= 0 ? '#2F8F6E' : '#B0463E'"
                                       stroke-width="2.5"
                                       stroke-linecap="round"
                                       stroke-linejoin="round" />
@@ -121,7 +121,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">P&amp;L</p>
                     @if (gainLoss() !== null) {
                         <div class="text-xl font-bold leading-7"
-                             [ngClass]="gainLoss()! >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                             [ngClass]="gainLoss()! >= 0 ? 'text-positive' : 'text-negative'">
                             <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                         </div>
                         <p class="text-surface-400 text-xs mt-1">Basé sur le prix d'achat</p>
@@ -205,13 +205,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         @if (isQuantityBased() && displayQuantity() != null && displayQuantity()! > 0) {
                             <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                 <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
-                                <span class="text-cyan-500 text-sm font-medium">{{ asset()!.current_value / displayQuantity()! | number:'1.2-2' }} €</span>
+                                <span class="text-warm-700 dark:text-warm-300 text-sm font-medium">{{ asset()!.current_value / displayQuantity()! | number:'1.2-2' }} €</span>
                             </div>
                         }
                         @if (asset()!.annual_return) {
                             <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                 <span class="text-surface-500 text-sm">Rendement annuel estimé</span>
-                                <span class="text-emerald-500 text-sm font-medium">{{ asset()!.annual_return }}%</span>
+                                <span class="text-positive text-sm font-medium">{{ asset()!.annual_return }}%</span>
                             </div>
                         }
                         @if (asset()!.description) {
@@ -243,7 +243,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             @if (asset()!.surface_m2 && asset()!.current_value) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Prix/m² actuel (estimé)</span>
-                                    <span class="text-indigo-500 text-sm font-medium"><app-amount [value]="asset()!.current_value / asset()!.surface_m2!" />/m²</span>
+                                    <span class="text-brand-700 dark:text-brand-300 text-sm font-medium"><app-amount [value]="asset()!.current_value / asset()!.surface_m2!" />/m²</span>
                                 </div>
                             }
                             @if (asset()!.construction_date) {
@@ -255,7 +255,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             @if (asset()!.rental_income) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Revenus locatifs/mois</span>
-                                    <span class="text-emerald-500 text-sm font-medium"><app-amount [value]="asset()!.rental_income!" /></span>
+                                    <span class="text-positive text-sm font-medium"><app-amount [value]="asset()!.rental_income!" /></span>
                                 </div>
                             }
                         </div>
@@ -301,7 +301,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             @if (gainLoss() !== null) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Gain/Perte total</span>
-                                    <span class="text-sm font-medium" [ngClass]="gainLoss()! >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                                    <span class="text-sm font-medium" [ngClass]="gainLoss()! >= 0 ? 'text-positive' : 'text-negative'">
                                         <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
                                     </span>
                                 </div>
@@ -309,7 +309,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             @if (gainLossPct() !== null) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Performance totale</span>
-                                    <span class="text-sm font-medium" [ngClass]="gainLossPct()! >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                                    <span class="text-sm font-medium" [ngClass]="gainLossPct()! >= 0 ? 'text-positive' : 'text-negative'">
                                         {{ gainLossPct()! >= 0 ? '+' : '' }}{{ gainLossPct() | number:'1.1-1' }}%
                                     </span>
                                 </div>
@@ -351,7 +351,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Statut</span>
                                     <span class="text-sm font-medium px-2 py-0.5 rounded-full"
-                                          [ngClass]="td.statut === 'mise_recue' ? 'bg-emerald-500/10 text-emerald-500' : td.statut === 'termine' ? 'bg-surface-500/10 text-surface-500' : 'bg-indigo-500/10 text-indigo-500'">
+                                          [ngClass]="td.statut === 'mise_recue' ? 'bg-positive/10 text-positive' : td.statut === 'termine' ? 'bg-surface-500/10 text-surface-500' : 'bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300'">
                                         {{ td.statut === 'mise_recue' ? 'Mise reçue ✓' : td.statut === 'termine' ? 'Terminée' : 'En cours' }}
                                     </span>
                                 </div>
@@ -374,11 +374,11 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             @if (asset()!.institution) {
                                 <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                     <span class="text-surface-500 text-sm">Opérateur</span>
-                                    <span class="text-sky-500 text-sm font-semibold">{{ asset()!.institution }}</span>
+                                    <span class="text-brand-700 dark:text-brand-300 text-sm font-semibold">{{ asset()!.institution }}</span>
                                 </div>
                             }
-                            <div class="p-3 rounded-xl bg-sky-500/5 border border-sky-500/20 flex items-center gap-2 text-xs text-surface-400">
-                                <i class="pi pi-info-circle text-sky-400"></i>
+                            <div class="p-3 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 flex items-center gap-2 text-xs text-surface-400">
+                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300"></i>
                                 Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
                             </div>
                         </div>
@@ -392,7 +392,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         <div class="space-y-3">
                             <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                 <span class="text-surface-500 text-sm">Taux de dépréciation annuel</span>
-                                <span class="text-rose-500 text-sm font-medium">~15%/an</span>
+                                <span class="text-negative text-sm font-medium">~15%/an</span>
                             </div>
                             <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
                                 <span class="text-surface-500 text-sm">Valeur estimée dans 5 ans</span>
@@ -436,7 +436,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Values section -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle <span class="text-red-400">*</span></label>
+                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle <span class="text-negative">*</span></label>
                             <div class="relative">
                                 <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                [min]="0" [maxFractionDigits]="2"
@@ -493,9 +493,9 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             </div>
                         </div>
                         @if ((editForm.surfaceM2 ?? 0) > 0 && editForm.currentValue > 0) {
-                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                                 <span class="text-surface-500 text-sm">Prix au m² actuel</span>
-                                <span class="text-indigo-400 font-semibold">
+                                <span class="text-brand-700 dark:text-brand-300 font-semibold">
                                     {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ cs.config().symbol }}/m²
                                 </span>
                             </div>
@@ -511,9 +511,9 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                         </div>
                         @if ((editForm.quantity ?? 0) > 0 && editForm.currentValue > 0) {
-                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
+                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                                 <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
-                                <span class="text-cyan-400 font-semibold">
+                                <span class="text-brand-700 dark:text-brand-300 font-semibold">
                                     {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ cs.config().symbol }}/part
                                 </span>
                             </div>
@@ -529,7 +529,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <p-button label="Enregistrer" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveEdit()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0" />
+                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -621,20 +621,22 @@ export class AssetDetailPage implements OnInit {
     };
 
     private readonly CATEGORY_BGS: Record<string, string> = {
-        real_estate:     'linear-gradient(135deg, #6366f1, #4f46e5)',
-        stocks:          'linear-gradient(135deg, #06b6d4, #0891b2)',
-        bonds:           'linear-gradient(135deg, #10b981, #059669)',
-        crypto:          'linear-gradient(135deg, #f59e0b, #d97706)',
-        cash:            'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-        retirement:      'linear-gradient(135deg, #14b8a6, #0d9488)',
-        life_insurance:  'linear-gradient(135deg, #ec4899, #db2777)',
-        savings_account: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-        business:        'linear-gradient(135deg, #f97316, #ea580c)',
-        vehicle:         'linear-gradient(135deg, #64748b, #475569)',
-        tontine:         'linear-gradient(135deg, #e11d48, #be123c)',
-        mobile_money:    'linear-gradient(135deg, #0ea5e9, #0284c7)',
-        collectibles:    'linear-gradient(135deg, #a855f7, #9333ea)',
-        other:           'linear-gradient(135deg, #94a3b8, #64748b)',
+        // Brand-tokenized: every asset category shares the navy gradient.
+        // The icon glyph (CATEGORY_ICONS) carries the visual identity.
+        real_estate:     'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        stocks:          'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        bonds:           'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        crypto:          'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        cash:            'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        retirement:      'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        life_insurance:  'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        savings_account: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        business:        'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        vehicle:         'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        tontine:         'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        mobile_money:    'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        collectibles:    'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        other:           'linear-gradient(135deg, #1A2740, #2C3E5E)',
     };
 
     private readonly CATEGORY_LABELS: Record<string, string> = {
@@ -656,7 +658,7 @@ export class AssetDetailPage implements OnInit {
     };
 
     categoryIcon = computed(() => this.CATEGORY_ICONS[this.asset()?.category ?? ''] ?? 'pi pi-box');
-    categoryBg = computed(() => this.CATEGORY_BGS[this.asset()?.category ?? ''] ?? 'linear-gradient(135deg, #94a3b8, #64748b)');
+    categoryBg = computed(() => this.CATEGORY_BGS[this.asset()?.category ?? ''] ?? 'linear-gradient(135deg, #1A2740, #2C3E5E)');
     categoryLabel = computed(() => this.CATEGORY_LABELS[this.asset()?.category ?? ''] ?? this.asset()?.category ?? '');
 
     tontineData = computed(() => {
@@ -830,7 +832,7 @@ export class AssetDetailPage implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Supprimer',
             rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-red-500 !border-red-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: () => this.deleteAsset()
         });
     }

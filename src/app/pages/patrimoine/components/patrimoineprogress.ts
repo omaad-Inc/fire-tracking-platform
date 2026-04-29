@@ -24,7 +24,7 @@ import { ApiService } from '../../../core/services/api.service';
                             <button (click)="setRange(r.months)"
                                 class="px-3 py-1 text-xs rounded-lg transition-colors"
                                 [ngClass]="selectedMonths() === r.months
-                                    ? 'bg-indigo-500 text-white'
+                                    ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                 {{ r.label }}
                             </button>
@@ -144,15 +144,17 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
 
     initChart() {
         if (isPlatformBrowser(this.platformId)) {
-            const documentStyle = getComputedStyle(document.documentElement);
-            const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
             const cs = this.cs;
+            const isDark = document.documentElement.classList.contains('app-dark');
 
-            // Couleurs indigo/cyan Finary-style
-            const borderColor = '#6366f1'; // Indigo-500
+            // Brand-tokenized chart palette — single source of truth in
+            // core/theme/chart-theme.ts. Inlined here to avoid breaking the
+            // build dependency graph.
+            const borderColor = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
+            const textColorSecondary = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
 
             const points = this.dataPoints();
-            
+
             this.data = {
                 labels: points.map(p => p.label),
                 datasets: [
@@ -163,12 +165,12 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         borderColor: borderColor,
                         tension: 0.4,
                         borderWidth: 3,
-                        pointRadius: 0, // Pas de points par défaut
-                        pointBackgroundColor: '#6366f1',
+                        pointRadius: 0,
+                        pointBackgroundColor: borderColor,
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointHoverRadius: 6,
-                        pointHoverBackgroundColor: '#6366f1',
+                        pointHoverBackgroundColor: borderColor,
                         pointHoverBorderColor: '#fff',
                         pointHoverBorderWidth: 2
                     }
@@ -183,10 +185,10 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        titleColor: '#fff',
-                        bodyColor: '#94a3b8',
-                        borderColor: 'rgba(99, 102, 241, 0.5)',
+                        backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                        titleColor: '#FAF8F4',
+                        bodyColor: '#DEDAD0',
+                        borderColor: 'rgba(199, 123, 60, 0.30)',
                         borderWidth: 1,
                         cornerRadius: 8,
                         padding: 12,

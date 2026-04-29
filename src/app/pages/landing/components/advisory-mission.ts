@@ -14,42 +14,42 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <div class="min-h-screen">
 
             <!-- Fixed topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/90 dark:bg-slate-950/90 backdrop-blur-lg border-b border-surface-200/50 dark:border-white/10">
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/90 dark:bg-brand-900/90 backdrop-blur-lg border-b border-surface-200/50 dark:border-white/10">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>
             <div class="h-20"></div>
 
             <!-- ══════════ HERO ══════════ -->
-            <section class="relative overflow-hidden bg-slate-950 py-28 px-6 lg:px-20">
+            <section class="relative overflow-hidden bg-brand-900 py-28 px-6 lg:px-20">
                 <div class="absolute inset-0 pointer-events-none overflow-hidden">
                     <div class="absolute -top-32 right-1/4 w-[500px] h-[500px] rounded-full opacity-20"
-                         style="background: radial-gradient(circle, #06b6d4 0%, transparent 70%)"></div>
+                         style="background: radial-gradient(circle, #1A2740 0%, transparent 70%)"></div>
                     <div class="absolute bottom-0 left-1/3 w-96 h-96 rounded-full opacity-10"
-                         style="background: radial-gradient(circle, #6366f1 0%, transparent 70%)"></div>
+                         style="background: radial-gradient(circle, #1A2740 0%, transparent 70%)"></div>
                 </div>
                 <div class="relative max-w-4xl mx-auto">
-                    <div class="flex items-center gap-2 text-sm text-slate-500 mb-8">
-                        <a [routerLink]="[currentLang + '/advisory']" class="hover:text-indigo-400 transition-colors cursor-pointer">Advisory</a>
+                    <div class="flex items-center gap-2 text-sm text-warm-500 mb-8">
+                        <a [routerLink]="[currentLang + '/advisory']" class="hover:text-brand-700 dark:text-brand-300 transition-colors cursor-pointer">Advisory</a>
                         <i class="pi pi-chevron-right text-xs"></i>
-                        <span class="text-slate-400">{{ _('Mission Data Engineering / IA', 'Data Engineering / AI Mission') }}</span>
+                        <span class="text-warm-400">{{ _('Mission Data Engineering / IA', 'Data Engineering / AI Mission') }}</span>
                     </div>
 
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">EXPERTISE</span></div>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">EXPERTISE</span></div>
                     <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
                         {{ heroTitle() }}<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-brand-300">
                             {{ heroTitleHighlight() }}
                         </span>
                     </h1>
-                    <p class="text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
+                    <p class="text-xl text-warm-400 max-w-2xl mb-10 leading-relaxed">
                         {{ heroDesc() }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <button pButton pRipple [label]="ctaDiscussProject()"
                                 [routerLink]="[currentLang + '/advisory']" [fragment]="'contact'"
-                                class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
+                                class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
                                        !tracking-wide !px-8 !py-3 !rounded-lg
-                                       hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
+                                       hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                         </button>
                         <button pButton pRipple [label]="_('VOIR NOTRE APPROCHE', 'SEE OUR APPROACH')"
                                 (click)="scrollTo('approche')"
@@ -61,22 +61,22 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ QUAND FAIRE APPEL ? ══════════ -->
-            <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('VOUS RECONNAISSEZ-VOUS ?', 'SOUND FAMILIAR?') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ whenToCallTitle() }}</h2>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ _('VOUS RECONNAISSEZ-VOUS ?', 'SOUND FAMILIAR?') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">{{ whenToCallTitle() }}</h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         @for (pain of painPoints; track pain.title) {
-                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8 flex gap-5">
+                            <div class="rounded-2xl bg-warm-100 dark:bg-warm-800 p-8 flex gap-5">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-1"
                                      [style.background]="pain.iconBg">
                                     <i [class]="pain.icon + ' text-white text-sm'"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-slate-900 dark:text-white mb-2">{{ pain.title }}</h4>
-                                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{{ pain.desc }}</p>
+                                    <h4 class="font-bold text-warm-900 dark:text-white mb-2">{{ pain.title }}</h4>
+                                    <p class="text-warm-500 dark:text-warm-400 text-sm leading-relaxed">{{ pain.desc }}</p>
                                 </div>
                             </div>
                         }
@@ -85,15 +85,15 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ CAS D'USAGES ══════════ -->
-            <section class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
+            <section class="bg-warm-100 dark:bg-warm-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('CE QUE NOUS CONSTRUISONS', 'WHAT WE BUILD') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ usecasesTitle() }}</h2>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ _('CE QUE NOUS CONSTRUISONS', 'WHAT WE BUILD') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">{{ usecasesTitle() }}</h2>
                     </div>
                     <div class="space-y-5">
                         @for (usecase of usecases; track usecase.title) {
-                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row">
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-brand-900 flex flex-col lg:flex-row">
                                 <div class="lg:w-64 flex-shrink-0 flex items-center justify-center p-10 min-h-[120px]"
                                      [style.background]="usecase.illustrationBg">
                                     <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center">
@@ -101,12 +101,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                     </div>
                                 </div>
                                 <div class="flex-1 p-8 flex flex-col justify-center">
-                                    <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{{ usecase.title }}</h4>
-                                    <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">{{ usecase.desc }}</p>
+                                    <h4 class="text-lg font-bold text-warm-900 dark:text-white mb-2">{{ usecase.title }}</h4>
+                                    <p class="text-warm-500 dark:text-warm-400 text-sm leading-relaxed mb-4">{{ usecase.desc }}</p>
                                     <div class="flex flex-wrap gap-2">
                                         @for (tag of usecase.tags; track tag) {
-                                            <span class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800
-                                                         text-slate-700 dark:text-slate-300 text-xs font-semibold tracking-wide">
+                                            <span class="px-3 py-1.5 rounded-lg bg-warm-100 dark:bg-warm-800
+                                                         text-warm-700 dark:text-warm-300 text-xs font-semibold tracking-wide">
                                                 {{ tag }}
                                             </span>
                                         }
@@ -119,42 +119,42 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ AVANT / APRÈS ══════════ -->
-            <section class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">{{ _('AVANT / APRES', 'BEFORE / AFTER') }}</span></div>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">{{ _('AVANT / APRES', 'BEFORE / AFTER') }}</span></div>
                         <h2 class="text-4xl font-bold text-white">{{ _('Debloquez le potentiel de vos donnees', 'Unlock the full potential of your data') }}</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Avant -->
                         <div class="rounded-2xl bg-white/5 border border-white/10 p-8">
                             <div class="flex items-center gap-3 mb-6">
-                                <div class="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center">
-                                    <i class="pi pi-times text-rose-400 text-sm"></i>
+                                <div class="w-8 h-8 rounded-lg bg-negative/20 flex items-center justify-center">
+                                    <i class="pi pi-times text-negative text-sm"></i>
                                 </div>
                                 <h4 class="font-bold text-white text-lg">{{ _('Avant', 'Before') }}</h4>
                             </div>
                             <ul class="space-y-4">
                                 @for (item of beforeItems; track item) {
-                                    <li class="flex items-start gap-3 text-slate-400">
-                                        <i class="pi pi-minus-circle text-rose-500/60 mt-0.5 shrink-0"></i>
+                                    <li class="flex items-start gap-3 text-warm-400">
+                                        <i class="pi pi-minus-circle text-negative/60 mt-0.5 shrink-0"></i>
                                         <span class="text-sm leading-relaxed">{{ item }}</span>
                                     </li>
                                 }
                             </ul>
                         </div>
                         <!-- Après -->
-                        <div class="rounded-2xl bg-indigo-500/10 border border-indigo-500/30 p-8">
+                        <div class="rounded-2xl bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 p-8">
                             <div class="flex items-center gap-3 mb-6">
-                                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                                    <i class="pi pi-check text-emerald-400 text-sm"></i>
+                                <div class="w-8 h-8 rounded-lg bg-positive/20 flex items-center justify-center">
+                                    <i class="pi pi-check text-positive-400 text-sm"></i>
                                 </div>
                                 <h4 class="font-bold text-white text-lg">{{ afterColumnTitle() }}</h4>
                             </div>
                             <ul class="space-y-4">
                                 @for (item of afterItems; track item) {
-                                    <li class="flex items-start gap-3 text-slate-300">
-                                        <i class="pi pi-check-circle text-emerald-400 mt-0.5 shrink-0"></i>
+                                    <li class="flex items-start gap-3 text-warm-300">
+                                        <i class="pi pi-check-circle text-positive-400 mt-0.5 shrink-0"></i>
                                         <span class="text-sm leading-relaxed">{{ item }}</span>
                                     </li>
                                 }
@@ -165,20 +165,20 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ MÉTHODOLOGIE 5 PHASES ══════════ -->
-            <section id="approche" class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section id="approche" class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('METHODE STRUCTUREE', 'STRUCTURED METHODOLOGY') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ _('METHODE STRUCTUREE', 'STRUCTURED METHODOLOGY') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">
                             {{ phasesTitle() }}
                         </h2>
-                        <p class="text-slate-500 dark:text-slate-400 mt-4 max-w-2xl text-lg">
+                        <p class="text-warm-500 dark:text-warm-400 mt-4 max-w-2xl text-lg">
                             {{ phasesSubtitle() }}
                         </p>
                     </div>
                     <div class="space-y-5">
                         @for (phase of phases; track phase.num) {
-                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                            <div class="rounded-2xl bg-warm-100 dark:bg-warm-800 overflow-hidden">
                                 <div class="flex flex-col lg:flex-row">
                                     <!-- Phase number + title -->
                                     <div class="lg:w-72 flex-shrink-0 p-8 flex gap-5 items-start"
@@ -189,18 +189,18 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                         </div>
                                         <div>
                                             <p class="text-xs font-bold tracking-widest uppercase mb-1" [style.color]="phase.color">Phase {{ phase.num }}</p>
-                                            <h4 class="font-bold text-slate-900 dark:text-white">{{ phase.title }}</h4>
-                                            <p class="text-slate-500 dark:text-slate-400 text-xs mt-1 leading-relaxed">{{ phase.summary }}</p>
+                                            <h4 class="font-bold text-warm-900 dark:text-white">{{ phase.title }}</h4>
+                                            <p class="text-warm-500 dark:text-warm-400 text-xs mt-1 leading-relaxed">{{ phase.summary }}</p>
                                         </div>
                                     </div>
                                     <!-- Description + deliverables -->
-                                    <div class="flex-1 p-8 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-700">
-                                        <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-5">{{ phase.desc }}</p>
-                                        <p class="text-xs font-bold tracking-widest uppercase text-slate-400 mb-3">{{ _('Livrables', 'Deliverables') }}</p>
+                                    <div class="flex-1 p-8 border-t lg:border-t-0 lg:border-l border-warm-200 dark:border-warm-700">
+                                        <p class="text-warm-600 dark:text-warm-300 text-sm leading-relaxed mb-5">{{ phase.desc }}</p>
+                                        <p class="text-xs font-bold tracking-widest uppercase text-warm-400 mb-3">{{ _('Livrables', 'Deliverables') }}</p>
                                         <ul class="space-y-2">
                                             @for (d of phase.deliverables; track d) {
-                                                <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-slate-400">
-                                                    <i class="pi pi-check-circle text-indigo-400 mt-0.5 shrink-0 text-xs"></i>
+                                                <li class="flex items-start gap-2 text-sm text-warm-500 dark:text-warm-400">
+                                                    <i class="pi pi-check-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0 text-xs"></i>
                                                     <span>{{ d }}</span>
                                                 </li>
                                             }
@@ -214,12 +214,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ MODERN DATA STACK (layers) ══════════ -->
-            <section class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">{{ _('ARCHITECTURE OUVERTE', 'OPEN ARCHITECTURE') }}</span></div>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">{{ _('ARCHITECTURE OUVERTE', 'OPEN ARCHITECTURE') }}</span></div>
                         <h2 class="text-4xl font-bold text-white max-w-2xl">{{ _('Passez a la Modern Data Platform', 'Embrace the Modern Data Platform') }}</h2>
-                        <p class="text-slate-400 mt-4 max-w-2xl text-lg">
+                        <p class="text-warm-400 mt-4 max-w-2xl text-lg">
                             {{ stackDesc() }}
                         </p>
                     </div>
@@ -231,10 +231,10 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                     <i [class]="layer.icon + ' text-white text-sm'"></i>
                                 </div>
                                 <h4 class="font-bold text-white mb-2">{{ layer.name }}</h4>
-                                <p class="text-slate-400 text-sm leading-relaxed mb-4">{{ layer.desc }}</p>
+                                <p class="text-warm-400 text-sm leading-relaxed mb-4">{{ layer.desc }}</p>
                                 <div class="flex flex-wrap gap-1.5">
                                     @for (tool of layer.tools; track tool) {
-                                        <span class="px-2 py-1 rounded bg-white/10 text-slate-300 text-xs font-medium">{{ tool }}</span>
+                                        <span class="px-2 py-1 rounded bg-white/10 text-warm-300 text-xs font-medium">{{ tool }}</span>
                                     }
                                 </div>
                             </div>
@@ -244,21 +244,21 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ BÉNÉFICES ══════════ -->
-            <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ _('CE QUE VOUS GAGNEZ', 'WHAT YOU GAIN') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Un impact business mesurable', 'Measurable business impact') }}</h2>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ _('CE QUE VOUS GAGNEZ', 'WHAT YOU GAIN') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">{{ _('Un impact business mesurable', 'Measurable business impact') }}</h2>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         @for (benefit of benefits; track benefit.title) {
-                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="rounded-2xl bg-warm-100 dark:bg-warm-800 p-8">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
                                      [style.background]="benefit.iconBg">
                                     <i [class]="benefit.icon + ' text-white'"></i>
                                 </div>
-                                <h4 class="font-bold text-slate-900 dark:text-white mb-3 text-lg">{{ benefit.title }}</h4>
-                                <p class="text-slate-500 dark:text-slate-400 leading-relaxed text-sm">{{ benefit.desc }}</p>
+                                <h4 class="font-bold text-warm-900 dark:text-white mb-3 text-lg">{{ benefit.title }}</h4>
+                                <p class="text-warm-500 dark:text-warm-400 leading-relaxed text-sm">{{ benefit.desc }}</p>
                             </div>
                         }
                     </div>
@@ -266,10 +266,10 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ FAQ ══════════ -->
-            <section class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto">
                     <div class="mb-14 text-center">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">FAQ</span></div>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">FAQ</span></div>
                         <h2 class="text-4xl font-bold text-white">{{ _('Questions frequentes', 'Frequently asked questions') }}</h2>
                     </div>
                     <div class="space-y-4">
@@ -278,11 +278,11 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 <button (click)="toggleFaq(i)"
                                         class="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors">
                                     <span class="font-semibold text-white pr-4">{{ faq.q }}</span>
-                                    <i class="shrink-0 text-slate-400 transition-transform duration-200"
+                                    <i class="shrink-0 text-warm-400 transition-transform duration-200"
                                        [class]="openFaq === i ? 'pi pi-minus' : 'pi pi-plus'"></i>
                                 </button>
                                 @if (openFaq === i) {
-                                    <div class="px-6 pb-6 text-slate-400 leading-relaxed text-sm border-t border-white/10 pt-4">
+                                    <div class="px-6 pb-6 text-warm-400 leading-relaxed text-sm border-t border-white/10 pt-4">
                                         {{ faq.a }}
                                     </div>
                                 }
@@ -293,20 +293,20 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ CTA FINAL ══════════ -->
-            <section class="bg-gradient-to-br from-indigo-950 via-slate-900 to-cyan-950 py-24 px-6 lg:px-20">
+            <section class="bg-gradient-to-br from-brand-950 via-warm-900 to-brand-950 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">{{ ctaReadyLabel() }}</span></div>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">{{ ctaReadyLabel() }}</span></div>
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
                         {{ ctaTitle() }}
                     </h2>
-                    <p class="text-slate-400 text-lg mb-10">
+                    <p class="text-warm-400 text-lg mb-10">
                         {{ ctaDesc() }}
                     </p>
                     <button pButton pRipple [label]="ctaContactExpert()"
                             [routerLink]="[currentLang + '/advisory']" [fragment]="'contact'"
-                            class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
+                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
                                    !tracking-wide !px-10 !py-4 !rounded-lg !text-base
-                                   hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
+                                   hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                     </button>
                 </div>
             </section>
@@ -381,7 +381,7 @@ export class AdvisoryMissionPage {
         return [
             {
                 icon: 'pi pi-chart-line',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'D\u00e9cisions sans donn\u00e9es fiables' : 'Decisions without reliable data',
                 desc: fr
                     ? 'Vos \u00e9quipes m\u00e9tier prennent des d\u00e9cisions bas\u00e9es sur des rapports manuels ou des exports Excel contradictoires. La donn\u00e9e n\u2019est pas encore un atout strat\u00e9gique.'
@@ -389,7 +389,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-bolt',
-                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
                 title: fr ? 'Vous voulez int\u00e9grer l\u2019IA \u00e0 vos processus' : 'You want to integrate AI into your workflows',
                 desc: fr
                     ? 'Agents IA, automatisation, copilotes \u2014 vous voyez le potentiel mais vous n\u2019avez pas encore l\u2019infrastructure data qui le rend possible.'
@@ -397,7 +397,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-box',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Un produit data \u00e0 construire' : 'A data product to build',
                 desc: fr
                     ? 'Dashboard op\u00e9rationnel, API data, application analytique \u2014 vous avez le besoin m\u00e9tier mais pas les ressources internes pour le d\u00e9ployer industriellement.'
@@ -405,7 +405,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-sitemap',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Sources de donn\u00e9es \u00e0 centraliser' : 'Data sources to consolidate',
                 desc: fr
                     ? 'ERP, CRM, API tierces, bases SQL \u2014 vos donn\u00e9es sont partout et personne ne les a encore unifi\u00e9es dans une source de v\u00e9rit\u00e9 unique.'
@@ -419,7 +419,7 @@ export class AdvisoryMissionPage {
         return [
             {
                 icon: 'pi pi-play',
-                illustrationBg: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: fr ? 'Construction d\u2019un premier POC data' : 'Building your first data POC',
                 desc: fr
                     ? 'Nous vous accompagnons pour poser les bases de votre stack data modulaire et construire vos premiers cas d\u2019usages rapidement.'
@@ -428,7 +428,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-server',
-                illustrationBg: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #4D5F80 100%)',
                 title: fr ? 'Modernisation de votre Data Platform' : 'Modernizing your Data Platform',
                 desc: fr
                     ? 'Mise \u00e0 niveau de votre plateforme data pour r\u00e9duire votre time-to-insight, fiabiliser vos donn\u00e9es et scaler avec vos besoins.'
@@ -437,7 +437,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-sparkles',
-                illustrationBg: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: fr ? 'Int\u00e9gration de briques IA & GenAI' : 'AI & GenAI integration',
                 desc: fr
                     ? 'Nous construisons l\u2019infrastructure data adapt\u00e9e pour d\u00e9ployer vos mod\u00e8les IA et GenAI en production de mani\u00e8re fiable.'
@@ -446,7 +446,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-shield',
-                illustrationBg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: 'DataOps & Governance',
                 desc: fr
                     ? 'Structurez vos workflows data pour un delivery fiable, document\u00e9 et automatis\u00e9 avec CI/CD, tests et observabilit\u00e9.'
@@ -457,7 +457,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-chart-bar',
-                illustrationBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: fr ? 'D\u00e9veloppement de produits data & analytics' : 'Data & analytics product development',
                 desc: fr
                     ? 'Dashboards, copilotes IA, APIs analytiques \u2014 nous concevons des produits data robustes qui g\u00e9n\u00e8rent un impact business mesurable.'
@@ -506,8 +506,8 @@ export class AdvisoryMissionPage {
         return [
             {
                 num: '1',
-                color: '#6366f1',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                color: '#1A2740',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Audit & Cartographie' : 'Audit & Mapping',
                 summary: fr
                     ? 'Analyser votre contexte et contraintes pour concevoir la stack optimale.'
@@ -527,8 +527,8 @@ export class AdvisoryMissionPage {
             },
             {
                 num: '2',
-                color: '#06b6d4',
-                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                color: '#1A2740',
+                iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
                 title: fr ? 'Architecture Cible & Plan de Migration' : 'Target Architecture & Migration Plan',
                 summary: fr
                     ? 'D\u00e9finir une architecture moderne adapt\u00e9e \u00e0 vos besoins actuels et futurs.'
@@ -548,8 +548,8 @@ export class AdvisoryMissionPage {
             },
             {
                 num: '3',
-                color: '#10b981',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                color: '#2F8F6E',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Mise en place du socle (MVP)' : 'Foundation setup (MVP)',
                 summary: fr
                     ? 'Construction du socle Data Platform sur votre environnement Cloud ou On-Premise.'
@@ -569,8 +569,8 @@ export class AdvisoryMissionPage {
             },
             {
                 num: '4',
-                color: '#f59e0b',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                color: '#C77B3C',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Industrialisation & Gouvernance' : 'Industrialization & Governance',
                 summary: fr
                     ? 'Finaliser la migration et mettre en place la gouvernance data.'
@@ -590,8 +590,8 @@ export class AdvisoryMissionPage {
             },
             {
                 num: '5',
-                color: '#8b5cf6',
-                iconBg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                color: '#4D5F80',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Adoption & Roadmap d\u2019Extension' : 'Adoption & Expansion Roadmap',
                 summary: fr
                     ? 'Assurer l\u2019adoption par vos \u00e9quipes et pr\u00e9parer les prochaines \u00e9tapes.'
@@ -617,7 +617,7 @@ export class AdvisoryMissionPage {
         return [
             {
                 icon: 'pi pi-arrow-right-arrow-left',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 name: 'Ingestion',
                 desc: fr
                     ? 'Pipelines robustes collectant et synchronisant vos donn\u00e9es depuis toutes les sources en continu.'
@@ -626,7 +626,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-server',
-                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
                 name: fr ? 'Stockage' : 'Storage',
                 desc: fr
                     ? 'Architecture moderne (Warehouse, Lakehouse) constituant un socle durable pour toute la plateforme.'
@@ -635,7 +635,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-code',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 name: 'Transformation',
                 desc: fr
                     ? 'Mod\u00e8les Bronze/Silver/Gold \u2014 donn\u00e9es nettoy\u00e9es, structur\u00e9es et document\u00e9es automatiquement.'
@@ -644,7 +644,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-cog',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 name: 'Orchestration',
                 desc: fr
                     ? 'Workflows automatis\u00e9s et coordonn\u00e9s pour des traitements performants et une disponibilit\u00e9 maximale.'
@@ -653,7 +653,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-chart-bar',
-                iconBg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 name: 'Activation',
                 desc: fr
                     ? 'Dashboards BI, analyses avanc\u00e9es, APIs data et mod\u00e8les ML directement int\u00e9gr\u00e9s aux outils m\u00e9tier.'
@@ -662,7 +662,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-shield',
-                iconBg: 'linear-gradient(135deg, #ec4899, #db2777)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 name: fr ? 'Observabilit\u00e9 & Gouvernance' : 'Observability & Governance',
                 desc: fr
                     ? 'Surveillance continue, tra\u00e7abilit\u00e9 compl\u00e8te, tests automatis\u00e9s et conformit\u00e9 assur\u00e9s en permanence.'
@@ -677,7 +677,7 @@ export class AdvisoryMissionPage {
         return [
             {
                 icon: 'pi pi-bolt',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Time-to-value r\u00e9duit' : 'Reduced time-to-value',
                 desc: fr
                     ? 'D\u00e9ploiement de vos projets cl\u00e9s en quelques semaines, pas en plusieurs mois. Les premiers r\u00e9sultats arrivent rapidement et cr\u00e9ent de la confiance en interne.'
@@ -685,7 +685,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-chart-line',
-                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
                 title: fr ? '\u00c9volutivit\u00e9 garantie' : 'Guaranteed scalability',
                 desc: fr
                     ? 'Une architecture pens\u00e9e pour scaler avec vos besoins. Vos volumes x10, vos nouveaux cas d\u2019usage, votre croissance \u2014 la plateforme suit sans refonte majeure.'
@@ -693,7 +693,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-users',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Adoption par vos \u00e9quipes' : 'Team adoption',
                 desc: fr
                     ? 'Des produits con\u00e7us avec et pour vos \u00e9quipes m\u00e9tier. Formation incluse pour garantir que la technologie serve les usages \u2014 et non l\u2019inverse.'
@@ -701,7 +701,7 @@ export class AdvisoryMissionPage {
             },
             {
                 icon: 'pi pi-star',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: fr ? 'Impact business mesurable' : 'Measurable business impact',
                 desc: fr
                     ? 'Chaque projet r\u00e9pond \u00e0 un besoin m\u00e9tier pr\u00e9cis. Nous d\u00e9finissons en amont les KPIs de succ\u00e8s et nous mesurons l\u2019impact r\u00e9el de nos interventions.'

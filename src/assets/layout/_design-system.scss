@@ -1,213 +1,456 @@
 // ═══════════════════════════════════════════════════════════════════
-// OMAAD WEALTH — Design System Tokens
+// OMAAD WEALTH — Design System Tokens (Phase 0 — Midnight + Ochre)
 // ═══════════════════════════════════════════════════════════════════
 //
-// 4 accent colors:  brand (indigo-cyan), positive (emerald), negative (rose), attention (amber)
-// 3 shadow levels:  rest, hover, elevated
-// 1 border radius:  16px (2xl) for cards, 12px (xl) for buttons/inputs
+// Two brand hues: Midnight Navy + Savanna Ochre.
+// Plus a warm-neutral scale and three semantic data colors.
 //
-// Usage: @use 'assets/layout/design-system' in styles.scss
+// Tokens are exposed both as Tailwind colors (see tailwind.config.js)
+// and as CSS custom properties (this file) so PrimeNG components and
+// any non-Tailwind CSS can reference them.
+//
+// We also override the PrimeNG `--p-primary-*` cascade so every
+// `<p-button>`, focus ring, slider, etc. inherits the navy palette
+// without touching individual components.
 
-// ── Standardized Shadows ────────────────────────────────────────────
-// Level 0: nothing (inline elements)
-// Level 1: cards at rest — very subtle
-// Level 2: cards on hover / elevated dialogs
-
+// ─────────────────────────────────────────────────────────────────────
+// Light theme (default)
+// ─────────────────────────────────────────────────────────────────────
 :root {
-  --omaad-shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --omaad-shadow-hover: 0 4px 12px rgba(99, 102, 241, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-  --omaad-shadow-elevated: 0 8px 24px rgba(99, 102, 241, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
-  --omaad-radius-card: 1rem;         // 16px
-  --omaad-radius-input: 0.75rem;     // 12px
-  --omaad-radius-badge: 9999px;      // pill
+    // Brand — Midnight Navy
+    --omaad-brand-50:  #EFF2F7;
+    --omaad-brand-100: #D8DFEC;
+    --omaad-brand-200: #B6BFCD;
+    --omaad-brand-300: #8A98AE;
+    --omaad-brand-400: #4D5F80;
+    --omaad-brand-500: #2C3E5E;
+    --omaad-brand-600: #233356;
+    --omaad-brand-700: #1A2740;
+    --omaad-brand-800: #14203A;
+    --omaad-brand-900: #0F1A2E;
+    --omaad-brand-950: #08111E;
+    --omaad-brand:     #1A2740;
+
+    // Accent — Savanna Ochre
+    --omaad-ochre-50:  #FBF4E9;
+    --omaad-ochre-100: #F4E5D2;
+    --omaad-ochre-200: #EBD0B0;
+    --omaad-ochre-300: #DFB78A;
+    --omaad-ochre-400: #D8A369;
+    --omaad-ochre-500: #C77B3C;
+    --omaad-ochre-600: #AB6630;
+    --omaad-ochre-700: #95541F;
+    --omaad-ochre:     #C77B3C;
+
+    // Warm-neutral scale
+    --omaad-warm-0:   #FFFFFF;
+    --omaad-warm-50:  #FAF8F4;
+    --omaad-warm-100: #F1EDE5;
+    --omaad-warm-200: #DEDAD0;
+    --omaad-warm-300: #C2BDB1;
+    --omaad-warm-400: #9C988C;
+    --omaad-warm-500: #6E6A60;
+    --omaad-warm-600: #52504A;
+    --omaad-warm-700: #3D3B35;
+    --omaad-warm-800: #26241F;
+    --omaad-warm-900: #14130F;
+
+    // Semantic — for data only
+    --omaad-positive: #2F8F6E;
+    --omaad-warning:  #C68A2E;
+    --omaad-negative: #B0463E;
+
+    // Geometry tokens
+    --omaad-radius-input:  0.75rem;   // 12px — buttons, inputs, small chips
+    --omaad-radius-card:   1rem;      // 16px — cards, dialogs
+    --omaad-radius-hero:   1.25rem;   // 20px — hero / feature cards
+    --omaad-radius-pill:   9999px;
+
+    // Shadows — restrained, warm-tinted
+    --omaad-shadow-rest:     0 1px 3px rgba(20, 19, 15, 0.05), 0 1px 2px rgba(20, 19, 15, 0.04);
+    --omaad-shadow-hover:    0 4px 12px rgba(15, 26, 46, 0.08), 0 2px 6px rgba(20, 19, 15, 0.04);
+    --omaad-shadow-elevated: 0 8px 24px rgba(15, 26, 46, 0.10), 0 4px 12px rgba(20, 19, 15, 0.04);
+
+    // Backwards-compat aliases (referenced by older inline styles)
+    --omaad-shadow-rest-legacy: var(--omaad-shadow-rest);
+
+    // ── PrimeNG primary override → adopts the navy scale ──
+    // PrimeNG's Aura preset reads --p-primary-* for buttons, focus rings, sliders.
+    --p-primary-50:  var(--omaad-brand-50);
+    --p-primary-100: var(--omaad-brand-100);
+    --p-primary-200: var(--omaad-brand-200);
+    --p-primary-300: var(--omaad-brand-300);
+    --p-primary-400: var(--omaad-brand-400);
+    --p-primary-500: var(--omaad-brand-700);   // intentional: 500 → 700 (deeper "primary")
+    --p-primary-600: var(--omaad-brand-800);
+    --p-primary-700: var(--omaad-brand-900);
+    --p-primary-800: var(--omaad-brand-900);
+    --p-primary-900: var(--omaad-brand-950);
+    --p-primary-950: var(--omaad-brand-950);
+    --p-primary-color: var(--omaad-brand-700);
+    --p-primary-contrast-color: #FFFFFF;
+    --p-primary-hover-color: var(--omaad-brand-800);
+    --p-primary-active-color: var(--omaad-brand-900);
+
+    // ── PrimeNG surface override → adopts the WARM-neutral scale ──
+    // This is the big lever: every Tailwind/PrimeUI utility like
+    // `text-surface-500`, `bg-surface-100`, `border-surface-200` (scattered
+    // across hundreds of components) automatically becomes warm-tinted
+    // without touching a single template.
+    --p-surface-0:   var(--omaad-warm-0);
+    --p-surface-50:  var(--omaad-warm-50);
+    --p-surface-100: var(--omaad-warm-100);
+    --p-surface-200: var(--omaad-warm-200);
+    --p-surface-300: var(--omaad-warm-300);
+    --p-surface-400: var(--omaad-warm-400);
+    --p-surface-500: var(--omaad-warm-500);
+    --p-surface-600: var(--omaad-warm-600);
+    --p-surface-700: var(--omaad-warm-700);
+    --p-surface-800: var(--omaad-warm-800);
+    --p-surface-900: var(--omaad-warm-900);
+    --p-surface-950: #0A0907;
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// Dark theme
+// ─────────────────────────────────────────────────────────────────────
 .app-dark {
-  --omaad-shadow-rest: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --omaad-shadow-hover: 0 4px 12px rgba(99, 102, 241, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
-  --omaad-shadow-elevated: 0 8px 24px rgba(99, 102, 241, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+    // In dark mode the brand is *lighter* (more contrast on dark bg)
+    --p-primary-50:  var(--omaad-brand-950);
+    --p-primary-100: var(--omaad-brand-900);
+    --p-primary-200: var(--omaad-brand-800);
+    --p-primary-300: var(--omaad-brand-700);
+    --p-primary-400: var(--omaad-brand-500);
+    --p-primary-500: var(--omaad-brand-300);
+    --p-primary-600: var(--omaad-brand-200);
+    --p-primary-700: var(--omaad-brand-100);
+    --p-primary-800: var(--omaad-brand-50);
+    --p-primary-900: #FFFFFF;
+    --p-primary-color: var(--omaad-brand-300);
+    --p-primary-contrast-color: var(--omaad-brand-900);
+    --p-primary-hover-color: var(--omaad-brand-200);
+    --p-primary-active-color: var(--omaad-brand-100);
+
+    // Surface scale flipped for dark mode (so 0=darkest bg, 950=lightest).
+    // Every `text-surface-*` / `bg-surface-*` utility re-tints automatically.
+    --p-surface-0:   var(--omaad-warm-900);
+    --p-surface-50:  var(--omaad-warm-800);
+    --p-surface-100: var(--omaad-warm-700);
+    --p-surface-200: var(--omaad-warm-600);
+    --p-surface-300: var(--omaad-warm-500);
+    --p-surface-400: var(--omaad-warm-400);
+    --p-surface-500: var(--omaad-warm-300);
+    --p-surface-600: var(--omaad-warm-200);
+    --p-surface-700: var(--omaad-warm-100);
+    --p-surface-800: var(--omaad-warm-50);
+    --p-surface-900: var(--omaad-warm-0);
+    --p-surface-950: #FFFFFF;
+
+    // Dark shadows — denser, no warm tint (looks better on warm-dark bg)
+    --omaad-shadow-rest:     0 1px 3px rgba(0, 0, 0, 0.30);
+    --omaad-shadow-hover:    0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.20);
+    --omaad-shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.40), 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-// ── Global card upgrade ─────────────────────────────────────────────
-// Override the PrimeNG/Sakai default .card to use our standardized tokens
+// ═══════════════════════════════════════════════════════════════════
+// PRIMITIVE STYLES (set in Phase 0 so existing components benefit
+// without per-page edits)
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Card baseline ───────────────────────────────────────────────────
+// Softer shadow, normalized radius. Color comes from PrimeNG
+// (--p-content-background) so it reacts to dark mode correctly.
 .card {
-  border-radius: var(--omaad-radius-card) !important;
-  box-shadow: var(--omaad-shadow-rest);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+    border-radius: var(--omaad-radius-card) !important;
+    box-shadow: var(--omaad-shadow-rest);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-// Hoverable cards (used via .card-hover or group-hover patterns)
 .card-hover:hover,
 .card:has(> [role="link"]:hover) {
-  box-shadow: var(--omaad-shadow-hover);
+    box-shadow: var(--omaad-shadow-hover);
 }
 
-// ── Standardized button radius ──────────────────────────────────────
+// ── Button + dialog + input radius ──────────────────────────────────
 .p-button {
-  border-radius: var(--omaad-radius-input) !important;
+    border-radius: var(--omaad-radius-input) !important;
 }
-
-// ── Dialog radius ───────────────────────────────────────────────────
 .p-dialog {
-  border-radius: var(--omaad-radius-card) !important;
-  box-shadow: var(--omaad-shadow-elevated);
+    border-radius: var(--omaad-radius-card) !important;
+    box-shadow: var(--omaad-shadow-elevated);
 }
-
-// ── Input radius (p-inputtext, p-select, p-inputnumber) ─────────────
 .p-inputtext,
 .p-select,
 .p-datepicker-input {
-  border-radius: var(--omaad-radius-input) !important;
+    border-radius: var(--omaad-radius-input) !important;
 }
 
-// ── Tabular numbers for financial data ───────────────────────────────
-// Forces all digits to the same width so columns of numbers align perfectly.
-// Applied to any element with the .tnum class, or globally via app-amount.
+// ── Tabular numbers for monetary values ─────────────────────────────
 app-amount,
 .tnum {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
 }
 
-// ── Primary gradient — reserved for the SINGLE main CTA per screen ──
-// Apply with class="omaad-cta" on the primary button
+// ═══════════════════════════════════════════════════════════════════
+// BRAND BUTTON CLASSES
+// `.omaad-cta` and `.omaad-secondary` are referenced from many pages.
+// They now resolve to the new palette: SOLID navy, no gradients.
+// Gradient is reserved for the FireHero / hero cards only.
+// ═══════════════════════════════════════════════════════════════════
 .omaad-cta {
-  background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%) !important;
-  border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+    background: var(--omaad-brand-700) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 
-  &:hover {
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
-    transform: translateY(-1px);
-  }
+    &:hover {
+        background: var(--omaad-brand-800) !important;
+        box-shadow: 0 4px 14px rgba(15, 26, 46, 0.25);
+    }
 
-  &:active {
-    transform: translateY(0);
-  }
+    &:active {
+        background: var(--omaad-brand-900) !important;
+        transform: translateY(1px);
+    }
 }
 
-// ── Secondary action buttons — flat indigo, no gradient ─────────────
-.omaad-secondary {
-  background: transparent !important;
-  border: 1.5px solid var(--p-surface-300) !important;
-  color: var(--p-text-color) !important;
-  font-weight: 600 !important;
+.app-dark .omaad-cta {
+    background: var(--omaad-brand-300) !important;
+    color: var(--omaad-brand-900) !important;
 
-  &:hover {
-    border-color: #6366f1 !important;
-    color: #6366f1 !important;
-    background: rgba(99, 102, 241, 0.05) !important;
-  }
+    &:hover {
+        background: var(--omaad-brand-200) !important;
+    }
+    &:active {
+        background: var(--omaad-brand-100) !important;
+    }
+}
+
+.omaad-secondary {
+    background: transparent !important;
+    border: 1.5px solid var(--p-surface-300) !important;
+    color: var(--p-text-color) !important;
+    font-weight: 600 !important;
+
+    &:hover {
+        border-color: var(--omaad-brand-700) !important;
+        color: var(--omaad-brand-700) !important;
+        background: var(--omaad-brand-50) !important;
+    }
 }
 
 .app-dark .omaad-secondary {
-  border-color: var(--p-surface-600) !important;
+    border-color: var(--p-surface-600) !important;
 
-  &:hover {
-    border-color: #818cf8 !important;
-    color: #818cf8 !important;
-    background: rgba(99, 102, 241, 0.1) !important;
-  }
+    &:hover {
+        border-color: var(--omaad-brand-300) !important;
+        color: var(--omaad-brand-300) !important;
+        background: rgba(216, 223, 236, 0.06) !important;
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// SHIMMER SKELETONS
-// Replace Tailwind's flat animate-pulse with a sweeping light gradient.
-// Usage: replace `animate-pulse` with `shimmer` on any skeleton element.
+// ACCENT BUTTON — for the rare "premium moment" actions (Pro upsell,
+// advisory contact). Solid ochre, warm.
+// ═══════════════════════════════════════════════════════════════════
+.omaad-accent {
+    background: var(--omaad-ochre-500) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        background: var(--omaad-ochre-600) !important;
+        box-shadow: 0 4px 14px rgba(199, 123, 60, 0.30);
+    }
+
+    &:active {
+        background: var(--omaad-ochre-700) !important;
+        transform: translateY(1px);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PHASE 1 — Legacy gradient overrides (transitional)
+// ═══════════════════════════════════════════════════════════════════
+//
+// Many components hardcode multi-stop Tailwind gradients
+// (`from-emerald-500 to-cyan-500`, etc.) for primary CTAs and chrome
+// icons. Rather than sweep 100+ template strings in one pass, we
+// neutralize them here so the new identity lands immediately.
+//
+// Templates will migrate to clean tokens (`bg-brand-700`, etc.) in Phase 2.
+// Once migration is complete, this whole block can be deleted.
+//
+// Rules:
+//  - Brand chrome gradients (emerald-cyan, emerald-emerald, indigo-cyan,
+//    indigo-violet) → solid navy (--omaad-brand-700).
+//  - Premium-accent gradients (amber-orange, ochre-like)        → solid ochre.
+//  - Status / hero "atmospheric" gradients (very low alpha, e.g.
+//    `from-emerald-500/5 via-transparent to-cyan-500/5`) are
+//    deliberately NOT touched; those backgrounds stay decorative.
+
+// — Brand chrome (icon containers, primary buttons) → solid navy —
+// Two patterns to neutralize:
+//   1. Hue-mixing gradients like emerald-cyan, indigo-cyan, sky-cyan
+//   2. Same-hue light-to-dark gradients like cyan-500 → cyan-600
+[class*="from-emerald-500"][class*="to-cyan-500"]:not([class*="/"]),
+[class*="from-emerald-500"][class*="to-emerald-600"]:not([class*="/"]),
+[class*="from-emerald-500"][class*="to-cyan-600"]:not([class*="/"]),
+[class*="from-indigo-500"][class*="to-cyan-500"]:not([class*="/"]),
+[class*="from-indigo-500"][class*="to-indigo-600"]:not([class*="/"]),
+[class*="from-indigo-500"][class*="to-violet-500"]:not([class*="/"]),
+[class*="from-indigo-600"][class*="to-cyan-500"]:not([class*="/"]),
+[class*="from-emerald-600"][class*="to-cyan-600"]:not([class*="/"]),
+[class*="from-cyan-500"][class*="to-cyan-600"]:not([class*="/"]),
+[class*="from-cyan-500"][class*="to-blue-500"]:not([class*="/"]),
+[class*="from-violet-500"][class*="to-violet-600"]:not([class*="/"]),
+[class*="from-pink-500"][class*="to-rose-500"]:not([class*="/"]),
+[class*="from-sky-500"][class*="to-cyan-500"]:not([class*="/"]),
+[class*="from-blue-500"][class*="to-indigo-500"]:not([class*="/"]) {
+    background-color: var(--omaad-brand-700) !important;
+    background-image: none !important;
+    color: #FFFFFF !important;
+}
+
+.app-dark {
+    [class*="from-emerald-500"][class*="to-cyan-500"]:not([class*="/"]),
+    [class*="from-emerald-500"][class*="to-emerald-600"]:not([class*="/"]),
+    [class*="from-emerald-500"][class*="to-cyan-600"]:not([class*="/"]),
+    [class*="from-indigo-500"][class*="to-cyan-500"]:not([class*="/"]),
+    [class*="from-indigo-500"][class*="to-indigo-600"]:not([class*="/"]),
+    [class*="from-indigo-500"][class*="to-violet-500"]:not([class*="/"]),
+    [class*="from-indigo-600"][class*="to-cyan-500"]:not([class*="/"]),
+    [class*="from-emerald-600"][class*="to-cyan-600"]:not([class*="/"]),
+    [class*="from-cyan-500"][class*="to-cyan-600"]:not([class*="/"]),
+    [class*="from-cyan-500"][class*="to-blue-500"]:not([class*="/"]),
+    [class*="from-violet-500"][class*="to-violet-600"]:not([class*="/"]),
+    [class*="from-pink-500"][class*="to-rose-500"]:not([class*="/"]),
+    [class*="from-sky-500"][class*="to-cyan-500"]:not([class*="/"]),
+    [class*="from-blue-500"][class*="to-indigo-500"]:not([class*="/"]) {
+        background-color: var(--omaad-brand-300) !important;
+        color: var(--omaad-brand-900) !important;
+    }
+}
+
+// — Destructive gradients (rose-red etc.) → solid negative —
+[class*="from-rose-500"][class*="to-red-500"]:not([class*="/"]),
+[class*="from-red-500"][class*="to-rose-500"]:not([class*="/"]),
+[class*="from-rose-500"][class*="to-orange-500"]:not([class*="/"]) {
+    background-color: var(--omaad-negative) !important;
+    background-image: none !important;
+    color: #FFFFFF !important;
+}
+
+// — Premium accent gradients (warm tones) → solid ochre —
+[class*="from-amber-500"][class*="to-orange-500"]:not([class*="/"]),
+[class*="from-amber-400"][class*="to-orange-500"]:not([class*="/"]),
+[class*="from-orange-500"][class*="to-amber-500"]:not([class*="/"]) {
+    background-color: var(--omaad-ochre-500) !important;
+    background-image: none !important;
+    color: #FFFFFF !important;
+}
+
+// — PrimeNG button hover/active default ring colors fix —
+// PrimeNG's Aura sometimes paints a faint indigo focus ring; we want navy.
+.p-button:focus-visible {
+    outline-color: var(--omaad-brand-500) !important;
+    box-shadow: 0 0 0 3px var(--omaad-brand-100) !important;
+}
+
+.app-dark .p-button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(138, 152, 174, 0.20) !important;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SHIMMER SKELETONS (unchanged from before)
 // ═══════════════════════════════════════════════════════════════════
 @keyframes shimmer-sweep {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
 .shimmer {
-  position: relative;
-  overflow: hidden;
-  background: var(--p-surface-100, #f1f5f9);
+    position: relative;
+    overflow: hidden;
+    background: var(--p-surface-100, #f1f5f9);
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      transparent 100%
-    );
-    animation: shimmer-sweep 1.5s ease-in-out infinite;
-  }
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 100%
+        );
+        animation: shimmer-sweep 1.5s ease-in-out infinite;
+    }
 }
 
 .app-dark .shimmer {
-  background: var(--p-surface-800, #1e293b);
+    background: var(--p-surface-800, #1e293b);
 
-  &::after {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.06) 50%,
-      transparent 100%
-    );
-  }
+    &::after {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.06) 50%,
+            transparent 100%
+        );
+    }
 }
 
-// Also override Tailwind's animate-pulse globally so existing skeletons upgrade
-// without touching every component template.
 .animate-pulse {
-  animation: none !important;
-  position: relative;
-  overflow: hidden;
+    animation: none !important;
+    position: relative;
+    overflow: hidden;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.35) 50%,
-      transparent 100%
-    );
-    animation: shimmer-sweep 1.5s ease-in-out infinite;
-  }
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.35) 50%,
+            transparent 100%
+        );
+        animation: shimmer-sweep 1.5s ease-in-out infinite;
+    }
 }
 
 .app-dark .animate-pulse::after {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    transparent 100%
-  );
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        transparent 100%
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════════
 // PAGE FADE-IN
-// Subtle opacity + translateY animation on route content.
-// Applied globally to the router-outlet's direct child.
 // ═══════════════════════════════════════════════════════════════════
 @keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-// The layout-main holds the <router-outlet>; animate its direct child
 .layout-main > *:not(router-outlet) {
-  animation: page-enter 0.25s ease-out;
+    animation: page-enter 0.25s ease-out;
 }
 
-// Also animate settings child routes
 .flex-1 > *:not(router-outlet) {
-  animation: page-enter 0.2s ease-out;
+    animation: page-enter 0.2s ease-out;
 }
-

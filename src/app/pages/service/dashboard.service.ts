@@ -36,23 +36,26 @@ export interface AssetAllocation {
     color: string;
 }
 
-// Color mapping for asset categories
+// Brand-tokenized chart palette — navy + ochre + warm-grays.
+// The CATEGORY_COLORS map gives each category a distinct shade from the
+// `chartTheme.categorical` scale so distribution donuts can still tell
+// slices apart, but the whole palette stays within the brand identity.
 const CATEGORY_COLORS: Record<string, string> = {
-    'real_estate':  '#6366f1', // Indigo
-    'stocks':       '#06b6d4', // Cyan
-    'bonds':        '#10b981', // Emerald
-    'crypto':       '#f59e0b', // Amber
-    'cash':         '#8b5cf6', // Violet
-    'retirement':   '#3b82f6', // Blue
-    'life_insurance':'#14b8a6',// Teal
-    'savings_account':'#a855f7',// Purple
-    'business':     '#f97316', // Orange
-    'vehicle':      '#64748b', // Slate
-    'tontine':      '#e11d48', // Rose
-    'mobile_money': '#0ea5e9', // Sky
-    'collectibles': '#84cc16', // Lime
-    'commodities':  '#ec4899', // Pink
-    'other':        '#94a3b8'  // Gray
+    'real_estate':    '#1A2740', // brand-700 (anchor)
+    'stocks':         '#C77B3C', // ochre-500 (accent)
+    'bonds':          '#4D5F80', // brand-400
+    'crypto':         '#D8A369', // ochre-400
+    'cash':           '#3D3B35', // warm-700
+    'retirement':     '#6E6A60', // warm-500
+    'life_insurance': '#9C988C', // warm-400
+    'savings_account':'#C2BDB1', // warm-300
+    'business':       '#08111E', // brand-950
+    'vehicle':        '#71421C', // ochre-800
+    'tontine':        '#2C3E5E', // brand-500
+    'mobile_money':   '#EBD0B0', // ochre-200
+    'collectibles':   '#52504A', // warm-600
+    'commodities':    '#8A98AE', // brand-300
+    'other':          '#B6BFCD'  // brand-200
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -73,18 +76,18 @@ const CATEGORY_LABELS: Record<string, string> = {
     'other':         'Autres'
 };
 
-// Color palette for expense categories
+// Brand-tokenized expense palette — same scale as `chartTheme.categorical`.
 const EXPENSE_COLORS: string[] = [
-    '#6366f1', // indigo
-    '#8b5cf6', // violet
-    '#06b6d4', // cyan
-    '#14b8a6', // teal
-    '#10b981', // emerald
-    '#f59e0b', // amber
-    '#ef4444', // red
-    '#ec4899', // pink
-    '#84cc16', // lime
-    '#64748b'  // slate
+    '#1A2740', // brand-700
+    '#C77B3C', // ochre-500
+    '#4D5F80', // brand-400
+    '#D8A369', // ochre-400
+    '#3D3B35', // warm-700
+    '#6E6A60', // warm-500
+    '#9C988C', // warm-400
+    '#C2BDB1', // warm-300
+    '#71421C', // ochre-800
+    '#08111E'  // brand-950
 ];
 
 @Injectable({ providedIn: 'root' })

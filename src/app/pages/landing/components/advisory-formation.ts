@@ -14,42 +14,42 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <div class="min-h-screen">
 
             <!-- Fixed topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/90 dark:bg-slate-950/90 backdrop-blur-lg border-b border-surface-200/50 dark:border-white/10">
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/90 dark:bg-brand-900/90 backdrop-blur-lg border-b border-surface-200/50 dark:border-white/10">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>
             <div class="h-20"></div>
 
             <!-- ══════════ HERO ══════════ -->
-            <section class="relative overflow-hidden bg-slate-950 py-28 px-6 lg:px-20">
+            <section class="relative overflow-hidden bg-brand-900 py-28 px-6 lg:px-20">
                 <div class="absolute inset-0 pointer-events-none overflow-hidden">
                     <div class="absolute -top-32 left-1/3 w-[500px] h-[500px] rounded-full opacity-20"
-                         style="background: radial-gradient(circle, #10b981 0%, transparent 70%)"></div>
+                         style="background: radial-gradient(circle, #2F8F6E 0%, transparent 70%)"></div>
                     <div class="absolute bottom-0 right-1/4 w-80 h-80 rounded-full opacity-10"
-                         style="background: radial-gradient(circle, #6366f1 0%, transparent 70%)"></div>
+                         style="background: radial-gradient(circle, #1A2740 0%, transparent 70%)"></div>
                 </div>
                 <div class="relative max-w-4xl mx-auto">
-                    <div class="flex items-center gap-2 text-sm text-slate-500 mb-8">
-                        <a [routerLink]="[currentLang + '/advisory']" class="hover:text-indigo-400 transition-colors cursor-pointer">Advisory</a>
+                    <div class="flex items-center gap-2 text-sm text-warm-500 mb-8">
+                        <a [routerLink]="[currentLang + '/advisory']" class="hover:text-brand-700 dark:text-brand-300 transition-colors cursor-pointer">Advisory</a>
                         <i class="pi pi-chevron-right text-xs"></i>
-                        <span class="text-slate-400">{{ _('Formation & Transfert de Comp\u00e9tences', 'Training & Skills Transfer') }}</span>
+                        <span class="text-warm-400">{{ _('Formation & Transfert de Comp\u00e9tences', 'Training & Skills Transfer') }}</span>
                     </div>
 
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">EXPERTISE</span></div>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive-400 text-xs"></i><span class="text-positive-100 text-sm font-medium">EXPERTISE</span></div>
                     <h1 class="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
                         {{ heroTitle1() }}<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-positive-400 to-brand-400">
                             {{ _('aux r\u00e9alit\u00e9s du terrain', 'with real-world expertise') }}
                         </span>
                     </h1>
-                    <p class="text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
+                    <p class="text-xl text-warm-400 max-w-2xl mb-10 leading-relaxed">
                         {{ heroDesc() }}
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <button pButton pRipple [label]="btnPlanLabel()"
                                 [routerLink]="[currentLang + '/advisory']" [fragment]="'contact'"
-                                class="!bg-gradient-to-r !from-emerald-600 !to-cyan-500 !border-0 !font-bold
+                                class="!bg-gradient-to-r !from-positive-600 !to-brand-500 !border-0 !font-bold
                                        !tracking-wide !px-8 !py-3 !rounded-lg
-                                       hover:!shadow-xl hover:!shadow-emerald-500/30 transition-all duration-300">
+                                       hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                         </button>
                         <button pButton pRipple [label]="_('VOIR LES FORMATIONS', 'VIEW TRAINING PROGRAMS')"
                                 (click)="scrollTo('formations')"
@@ -61,30 +61,30 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ POUR QUI ? ══════════ -->
-            <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-500 text-xs"></i><span class="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{{ _('POUR QUI ?', 'WHO IS IT FOR?') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 dark:bg-positive/20 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive text-xs"></i><span class="text-positive dark:text-positive-400 text-sm font-medium">{{ _('POUR QUI ?', 'WHO IS IT FOR?') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">
                             {{ _('Des formations pens\u00e9es pour votre contexte', 'Training programs designed for your context') }}
                         </h2>
-                        <p class="text-slate-500 dark:text-slate-400 mt-4 max-w-xl text-lg">
+                        <p class="text-warm-500 dark:text-warm-400 mt-4 max-w-xl text-lg">
                             {{ audienceSubtitle() }}
                         </p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @for (audience of audiences; track audience.title) {
-                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="rounded-2xl bg-warm-100 dark:bg-warm-800 p-8">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
                                      [style.background]="audience.iconBg">
                                     <i [class]="audience.icon + ' text-white'"></i>
                                 </div>
-                                <h4 class="font-bold text-slate-900 dark:text-white mb-3 text-lg">{{ audience.title }}</h4>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">{{ audience.desc }}</p>
+                                <h4 class="font-bold text-warm-900 dark:text-white mb-3 text-lg">{{ audience.title }}</h4>
+                                <p class="text-warm-500 dark:text-warm-400 text-sm leading-relaxed mb-4">{{ audience.desc }}</p>
                                 <ul class="space-y-2">
                                     @for (profile of audience.profiles; track profile) {
-                                        <li class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                                            <i class="pi pi-check-circle text-emerald-500 text-xs"></i>
+                                        <li class="flex items-center gap-2 text-sm text-warm-600 dark:text-warm-300">
+                                            <i class="pi pi-check-circle text-positive text-xs"></i>
                                             {{ profile }}
                                         </li>
                                     }
@@ -96,19 +96,19 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ NOS FORMATIONS ══════════ -->
-            <section id="formations" class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
+            <section id="formations" class="bg-warm-100 dark:bg-warm-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-500 text-xs"></i><span class="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{{ _('NOS PROGRAMMES', 'OUR PROGRAMS') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">{{ _('Catalogue de formations', 'Training Catalog') }}</h2>
-                        <p class="text-slate-500 dark:text-slate-400 mt-4 max-w-xl text-lg">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 dark:bg-positive/20 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive text-xs"></i><span class="text-positive dark:text-positive-400 text-sm font-medium">{{ _('NOS PROGRAMMES', 'OUR PROGRAMS') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">{{ _('Catalogue de formations', 'Training Catalog') }}</h2>
+                        <p class="text-warm-500 dark:text-warm-400 mt-4 max-w-xl text-lg">
                             {{ catalogDesc() }}
                         </p>
                     </div>
 
                     <div class="space-y-6">
                         @for (formation of formations; track formation.title) {
-                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row">
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-brand-900 flex flex-col lg:flex-row">
                                 <!-- Left -->
                                 <div class="lg:w-72 flex-shrink-0 flex flex-col justify-center p-10 min-h-[200px]"
                                      [style.background]="formation.illustrationBg">
@@ -119,17 +119,17 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 </div>
                                 <!-- Right -->
                                 <div class="flex-1 p-8 lg:p-10">
-                                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-emerald-500 mb-3 block">
+                                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-positive mb-3 block">
                                         {{ _('FORMATION', 'TRAINING') }}
                                     </span>
-                                    <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-3">{{ formation.title }}</h3>
-                                    <p class="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">{{ formation.desc }}</p>
+                                    <h3 class="text-2xl font-bold text-warm-900 dark:text-white mb-3">{{ formation.title }}</h3>
+                                    <p class="text-warm-500 dark:text-warm-400 leading-relaxed mb-6">{{ formation.desc }}</p>
                                     <!-- Programme -->
-                                    <p class="text-xs font-bold tracking-widest uppercase text-slate-400 mb-3">{{ _('AU PROGRAMME', 'CURRICULUM') }}</p>
+                                    <p class="text-xs font-bold tracking-widest uppercase text-warm-400 mb-3">{{ _('AU PROGRAMME', 'CURRICULUM') }}</p>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 mb-6">
                                         @for (module of formation.modules; track module) {
-                                            <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                                                <i class="pi pi-check-circle text-emerald-500 text-xs shrink-0"></i>
+                                            <div class="flex items-center gap-2 text-sm text-warm-600 dark:text-warm-300">
+                                                <i class="pi pi-check-circle text-positive text-xs shrink-0"></i>
                                                 {{ module }}
                                             </div>
                                         }
@@ -137,8 +137,8 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                     <!-- Tags -->
                                     <div class="flex flex-wrap gap-2">
                                         @for (tag of formation.tags; track tag) {
-                                            <span class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800
-                                                         text-slate-700 dark:text-slate-300 text-xs font-semibold tracking-wide">
+                                            <span class="px-3 py-1.5 rounded-lg bg-warm-100 dark:bg-warm-800
+                                                         text-warm-700 dark:text-warm-300 text-xs font-semibold tracking-wide">
                                                 {{ tag }}
                                             </span>
                                         }
@@ -151,12 +151,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ APPROCHE PÉDAGOGIQUE ══════════ -->
-            <section class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">{{ _('COMMENT ON FORME', 'HOW WE TRAIN') }}</span></div>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive-400 text-xs"></i><span class="text-positive-100 text-sm font-medium">{{ _('COMMENT ON FORME', 'HOW WE TRAIN') }}</span></div>
                         <h2 class="text-4xl font-bold text-white max-w-2xl">{{ _('Notre approche p\u00e9dagogique', 'Our training methodology') }}</h2>
-                        <p class="text-slate-400 mt-4 max-w-xl text-lg">
+                        <p class="text-warm-400 mt-4 max-w-xl text-lg">
                             {{ pedagogySubtitle() }}
                         </p>
                     </div>
@@ -169,7 +169,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-white mb-2">{{ step.title }}</h4>
-                                    <p class="text-slate-400 text-sm leading-relaxed">{{ step.desc }}</p>
+                                    <p class="text-warm-400 text-sm leading-relaxed">{{ step.desc }}</p>
                                 </div>
                             </div>
                         }
@@ -178,23 +178,23 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ CE QUI NOUS DIFFÉRENCIE ══════════ -->
-            <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-500 text-xs"></i><span class="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}</span></div>
-                        <h2 class="text-4xl font-bold text-slate-900 dark:text-white max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 dark:bg-positive/20 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive text-xs"></i><span class="text-positive dark:text-positive-400 text-sm font-medium">{{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}</span></div>
+                        <h2 class="text-4xl font-bold text-warm-900 dark:text-white max-w-2xl">
                             {{ _('Pas une formation g\u00e9n\u00e9rique', 'Not a generic training program') }}
                         </h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @for (diff of differentiators; track diff.title) {
-                            <div class="rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="rounded-2xl bg-warm-100 dark:bg-warm-800 p-8">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5"
                                      [style.background]="diff.iconBg">
                                     <i [class]="diff.icon + ' text-white'"></i>
                                 </div>
-                                <h4 class="font-bold text-slate-900 dark:text-white mb-3">{{ diff.title }}</h4>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{{ diff.desc }}</p>
+                                <h4 class="font-bold text-warm-900 dark:text-white mb-3">{{ diff.title }}</h4>
+                                <p class="text-warm-500 dark:text-warm-400 text-sm leading-relaxed">{{ diff.desc }}</p>
                             </div>
                         }
                     </div>
@@ -202,10 +202,10 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ FAQ ══════════ -->
-            <section class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto">
                     <div class="mb-14 text-center">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">FAQ</span></div>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive-400 text-xs"></i><span class="text-positive-100 text-sm font-medium">FAQ</span></div>
                         <h2 class="text-4xl font-bold text-white">{{ _('Questions fr\u00e9quentes', 'Frequently Asked Questions') }}</h2>
                     </div>
                     <div class="space-y-4">
@@ -214,11 +214,11 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 <button (click)="toggleFaq(i)"
                                         class="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors">
                                     <span class="font-semibold text-white pr-4">{{ faq.q }}</span>
-                                    <i class="shrink-0 text-slate-400"
+                                    <i class="shrink-0 text-warm-400"
                                        [class]="openFaq === i ? 'pi pi-minus' : 'pi pi-plus'"></i>
                                 </button>
                                 @if (openFaq === i) {
-                                    <div class="px-6 pb-6 text-slate-400 leading-relaxed text-sm border-t border-white/10 pt-4">
+                                    <div class="px-6 pb-6 text-warm-400 leading-relaxed text-sm border-t border-white/10 pt-4">
                                         {{ faq.a }}
                                     </div>
                                 }
@@ -229,20 +229,20 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ══════════ CTA FINAL ══════════ -->
-            <section class="bg-gradient-to-br from-emerald-950 via-slate-900 to-cyan-950 py-24 px-6 lg:px-20">
+            <section class="bg-gradient-to-br from-positive-700 via-warm-900 to-brand-950 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 mb-4"><i class="pi pi-sparkles text-emerald-400 text-xs"></i><span class="text-emerald-300 text-sm font-medium">{{ ctaReady() }}</span></div>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-positive/10 border border-positive-100 dark:border-positive-700/40 mb-4"><i class="pi pi-sparkles text-positive-400 text-xs"></i><span class="text-positive-100 text-sm font-medium">{{ ctaReady() }}</span></div>
                     <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
                         {{ ctaHeadline() }}
                     </h2>
-                    <p class="text-slate-400 text-lg mb-10">
+                    <p class="text-warm-400 text-lg mb-10">
                         {{ ctaDesc() }}
                     </p>
                     <button pButton pRipple [label]="btnPlanLabel()"
                             [routerLink]="[currentLang + '/advisory']" [fragment]="'contact'"
-                            class="!bg-gradient-to-r !from-emerald-600 !to-cyan-500 !border-0 !font-bold
+                            class="!bg-gradient-to-r !from-positive-600 !to-brand-500 !border-0 !font-bold
                                    !tracking-wide !px-10 !py-4 !rounded-lg !text-base
-                                   hover:!shadow-xl hover:!shadow-emerald-500/30 transition-all duration-300">
+                                   hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                     </button>
                 </div>
             </section>
@@ -322,7 +322,7 @@ export class AdvisoryFormationPage {
         return [
             {
                 icon: 'pi pi-code',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? '\u00c9quipes techniques' : 'Technical Teams',
                 desc: f ? 'D\u00e9veloppeurs, data engineers et architectes qui veulent ma\u00eetriser les outils de la Modern Data Stack.'
                        : 'Developers, data engineers and architects looking to master Modern Data Stack tooling.',
@@ -332,7 +332,7 @@ export class AdvisoryFormationPage {
             },
             {
                 icon: 'pi pi-chart-bar',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? '\u00c9quipes analytics' : 'Analytics Teams',
                 desc: f ? 'Data analysts et business analysts qui veulent gagner en autonomie sur les donn\u00e9es.'
                        : 'Data analysts and business analysts seeking greater autonomy over their data.',
@@ -342,7 +342,7 @@ export class AdvisoryFormationPage {
             },
             {
                 icon: 'pi pi-briefcase',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Managers & D\u00e9cideurs' : 'Managers & Decision-Makers',
                 desc: f ? 'DSI, CDOs et directeurs qui veulent comprendre les enjeux data pour piloter leurs \u00e9quipes.'
                        : 'CIOs, CDOs and directors who need to understand data challenges to lead their teams.',
@@ -358,7 +358,7 @@ export class AdvisoryFormationPage {
         return [
             {
                 icon: 'pi pi-server',
-                illustrationBg: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: f ? 'Data Engineering avec la Modern Data Stack' : 'Data Engineering with the Modern Data Stack',
                 duration: f ? '2 \u00e0 3 jours' : '2 to 3 days',
                 desc: f ? 'Formation pratique sur les outils qui font la Modern Data Stack africaine : ingestion, transformation avec dbt, orchestration avec Airflow, stockage cloud. Chaque exercice s\u2019appuie sur des cas r\u00e9els de votre secteur.'
@@ -388,7 +388,7 @@ export class AdvisoryFormationPage {
             },
             {
                 icon: 'pi pi-chart-line',
-                illustrationBg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: 'Analytics & BI Self-Service',
                 duration: f ? '1 \u00e0 2 jours' : '1 to 2 days',
                 desc: f ? 'Atelier intensif pour rendre vos \u00e9quipes analytiques totalement autonomes : cr\u00e9ation de dashboards, r\u00e9daction de requ\u00eates SQL robustes, et bonnes pratiques pour produire des KPIs fiables.'
@@ -414,7 +414,7 @@ export class AdvisoryFormationPage {
             },
             {
                 icon: 'pi pi-sparkles',
-                illustrationBg: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
                 title: f ? 'IA & LLMs en production' : 'AI & LLMs in Production',
                 duration: f ? '2 \u00e0 3 jours' : '2 to 3 days',
                 desc: f ? 'Formation pratique sur l\u2019int\u00e9gration de l\u2019IA dans vos pipelines data : RAG, agents LLMs, fine-tuning et bonnes pratiques pour passer du POC \u00e0 la production de fa\u00e7on fiable.'
@@ -450,28 +450,28 @@ export class AdvisoryFormationPage {
         return [
             {
                 icon: 'pi pi-database',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Vos donn\u00e9es, pas des exemples fictifs' : 'Your data, not fictional examples',
                 desc: f ? 'Chaque exercice pratique s\u2019appuie sur vos donn\u00e9es r\u00e9elles ou des jeux de donn\u00e9es repr\u00e9sentatifs de votre secteur. Ce que vous apprenez le matin, vous pouvez l\u2019appliquer l\u2019apr\u00e8s-midi.'
                        : 'Every hands-on exercise uses your actual data or datasets representative of your industry. What you learn in the morning, you can apply in the afternoon.'
             },
             {
                 icon: 'pi pi-users',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Sessions en petit groupe (max 8)' : 'Small group sessions (max 8)',
                 desc: f ? 'Pas d\u2019amphith\u00e9\u00e2tre. Des sessions limit\u00e9es \u00e0 8 participants pour garantir une attention individuelle, des \u00e9changes riches et un rythme adapt\u00e9 au niveau de chaque apprenant.'
                        : 'No lecture halls. Sessions limited to 8 participants to ensure individual attention, rich interaction, and a pace adapted to each learner\u2019s level.'
             },
             {
                 icon: 'pi pi-book',
-                iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
                 title: f ? 'Ressources compl\u00e8tes remises' : 'Comprehensive resources provided',
                 desc: f ? '\u00c0 l\u2019issue de chaque formation : slides annot\u00e9es, notebooks Jupyter, scripts r\u00e9utilisables, biblioth\u00e8que de requ\u00eates SQL type et acc\u00e8s \u00e0 un espace de ressources en ligne.'
                        : 'After each training: annotated slides, Jupyter notebooks, reusable scripts, SQL query library, and access to an online resource hub.'
             },
             {
                 icon: 'pi pi-headphones',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Support post-formation (30 jours)' : 'Post-training support (30 days)',
                 desc: f ? 'Un canal Slack d\u00e9di\u00e9 pendant 30 jours pour poser vos questions, d\u00e9bloquer des cas concrets rencontr\u00e9s sur votre propre stack et solidifier les apprentissages.'
                        : 'A dedicated Slack channel for 30 days to ask questions, unblock real cases encountered on your own stack, and reinforce what you learned.'
@@ -484,21 +484,21 @@ export class AdvisoryFormationPage {
         return [
             {
                 icon: 'pi pi-globe',
-                iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Formateurs praticiens' : 'Practitioner trainers',
                 desc: f ? 'Nos formateurs d\u00e9ployent ces outils en production tous les jours. Ils connaissent les pi\u00e8ges r\u00e9els, les workarounds qui fonctionnent, et les contextes africains o\u00f9 ces solutions ont \u00e9t\u00e9 mises en \u0153uvre.'
                        : 'Our trainers deploy these tools in production every day. They know the real pitfalls, the workarounds that work, and the local contexts where these solutions have been implemented.'
             },
             {
                 icon: 'pi pi-wrench',
-                iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Programme sur mesure' : 'Tailored program',
                 desc: f ? 'Le catalogue est un point de d\u00e9part. Chaque formation est ajust\u00e9e selon le niveau actuel de vos \u00e9quipes, vos outils en production, et les cas d\u2019usage que vous voulez adresser en priorit\u00e9.'
                        : 'The catalog is a starting point. Every program is adjusted based on your teams\u2019 current level, your production tools, and the use cases you want to address first.'
             },
             {
                 icon: 'pi pi-chart-line',
-                iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
                 title: f ? 'Autonomie durable' : 'Lasting autonomy',
                 desc: f ? 'Notre objectif n\u2019est pas de cr\u00e9er une d\u00e9pendance. Chaque formation vise l\u2019autonomie compl\u00e8te de vos \u00e9quipes sur les sujets couverts, avec les ressources pour continuer \u00e0 progresser seuls.'
                        : 'Our goal is not to create dependency. Every training program targets full autonomy for your teams on the topics covered, with the resources to keep progressing on their own.'

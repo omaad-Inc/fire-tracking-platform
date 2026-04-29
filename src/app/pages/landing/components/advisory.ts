@@ -32,7 +32,7 @@ interface ContactForm {
         <div class="min-h-screen">
 
             <!-- Fixed topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/90 dark:bg-slate-950/90 backdrop-blur-lg border-b border-surface-200/50 dark:border-white/10"
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/90 dark:bg-brand-900/90 backdrop-blur-lg border-b border-surface-200/50 dark:border-white/10"
                  style="padding-top: env(safe-area-inset-top, 0px)">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>
@@ -41,29 +41,29 @@ interface ContactForm {
             <!-- ══════════════════════════════════════════
                  BLOC 1 — HERO (dark navy)
             ══════════════════════════════════════════ -->
-            <section class="relative overflow-hidden bg-slate-950 py-28 px-6 lg:px-20">
+            <section class="relative overflow-hidden bg-brand-900 py-28 px-6 lg:px-20">
                 <!-- Background glow -->
                 <div class="absolute inset-0 pointer-events-none overflow-hidden">
                     <div class="absolute -top-32 left-1/3 w-[600px] h-[600px] rounded-full opacity-20"
-                         style="background: radial-gradient(circle, #6366f1 0%, transparent 70%)"></div>
+                         style="background: radial-gradient(circle, #1A2740 0%, transparent 70%)"></div>
                     <div class="absolute top-1/2 right-0 w-96 h-96 rounded-full opacity-10"
-                         style="background: radial-gradient(circle, #06b6d4 0%, transparent 70%)"></div>
+                         style="background: radial-gradient(circle, #1A2740 0%, transparent 70%)"></div>
                 </div>
 
                 <div class="relative max-w-5xl mx-auto text-center">
                     <!-- Overline -->
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-6"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-6"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
                         {{ _('Cabinet de conseil Data & IA', 'Data & AI Consulting Firm') }}
                     </span></div>
 
                     <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
                         {{ _('Partenaire de votre', 'Partner for your') }}<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">
                             {{ _('transformation Data & IA', 'Data & AI transformation') }}
                         </span>
                     </h1>
 
-                    <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    <p class="text-lg md:text-xl text-warm-400 max-w-2xl mx-auto mb-10 leading-relaxed">
                         {{ _('De la stratégie à la mise en œuvre, nous concevons des plateformes data modernes', 'From strategy to implementation, we design modern data platforms') }}
                         {{ heroDesc2() }}
                     </p>
@@ -71,9 +71,9 @@ interface ContactForm {
                     <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                         <button pButton pRipple [label]="ctaProject()"
                                 (click)="scrollTo('contact')"
-                                class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold
+                                class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
                                        !tracking-wide !px-8 !py-3 !rounded-lg
-                                       hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
+                                       hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                         </button>
                         <button pButton pRipple [label]="_('NOS OFFRES', 'OUR SERVICES')"
                                 (click)="scrollTo('offres')"
@@ -87,8 +87,8 @@ interface ContactForm {
                     <div class="flex flex-wrap items-center justify-center gap-3">
                         @for (tag of heroTags; track tag) {
                             <span class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10
-                                         text-slate-300 text-sm font-medium tracking-wide">
-                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                                         text-warm-300 text-sm font-medium tracking-wide">
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-300"></span>
                                 {{ tag }}
                             </span>
                         }
@@ -100,26 +100,26 @@ interface ContactForm {
                  BLOC 2 — {{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }} (white)
                  Modeo-style: 5 interactive tabs
             ══════════════════════════════════════════ -->
-            <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <!-- Section header -->
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
                             {{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}
                         </span></div>
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight max-w-2xl">
+                        <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white leading-tight max-w-2xl">
                             {{ _('Pourquoi nos clients nous font confiance', 'Why our clients trust us') }}
                         </h2>
                     </div>
 
                     <!-- Tab navigation -->
-                    <div class="flex flex-wrap gap-2 mb-10 border-b border-slate-200 dark:border-slate-700 pb-0">
+                    <div class="flex flex-wrap gap-2 mb-10 border-b border-warm-200 dark:border-warm-700 pb-0">
                         @for (diff of differentiators; track diff.id; let i = $index) {
                             <button (click)="activeTab.set(i)"
                                     class="px-5 py-3 text-sm font-semibold tracking-wide rounded-t-lg transition-all duration-200 border-b-2 -mb-px"
                                     [class]="activeTab() === i
-                                        ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
-                                        : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300'">
+                                        ? 'border-brand-700 text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-700/20'
+                                        : 'border-transparent text-warm-500 dark:text-warm-400 hover:text-warm-800 dark:hover:text-warm-200 hover:border-warm-300'">
                                 {{ diff.tab }}
                             </button>
                         }
@@ -130,21 +130,21 @@ interface ContactForm {
                         @if (activeTab() === i) {
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                                 <div>
-                                    <h3 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-5">
+                                    <h3 class="text-2xl md:text-3xl font-bold text-warm-900 dark:text-white mb-5">
                                         {{ diff.title }}
                                     </h3>
-                                    <p class="text-slate-500 dark:text-slate-400 text-lg leading-relaxed mb-8">
+                                    <p class="text-warm-500 dark:text-warm-400 text-lg leading-relaxed mb-8">
                                         {{ diff.desc }}
                                     </p>
                                     <button pButton pRipple [label]="ctaProject()"
                                             (click)="scrollTo('contact')"
-                                            class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-semibold
+                                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
                                                    !tracking-wide !px-8 !py-3 !rounded-lg
-                                                   hover:!shadow-lg hover:!shadow-indigo-500/30 transition-all duration-300">
+                                                   hover:!shadow-lg hover:!shadow-card transition-all duration-300">
                                     </button>
                                 </div>
                                 <!-- Visual card -->
-                                <div class="relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 p-10 flex items-center justify-center min-h-[280px]">
+                                <div class="relative rounded-2xl overflow-hidden bg-warm-100 dark:bg-warm-800 p-10 flex items-center justify-center min-h-[280px]">
                                     <div class="text-center">
                                         <div class="w-20 h-20 rounded-2xl mx-auto mb-5 flex items-center justify-center"
                                              [style.background]="diff.iconBg">
@@ -152,7 +152,7 @@ interface ContactForm {
                                         </div>
                                         <div class="flex flex-wrap gap-2 justify-center">
                                             @for (kw of diff.keywords; track kw) {
-                                                <span class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200
+                                                <span class="px-3 py-1.5 rounded-lg bg-white dark:bg-warm-700 text-warm-700 dark:text-warm-200
                                                              text-sm font-semibold tracking-wide shadow-sm">
                                                     {{ kw }}
                                                 </span>
@@ -169,23 +169,23 @@ interface ContactForm {
             <!-- ══════════════════════════════════════════
                  BLOC 3 — NOS OFFRES (light grey)
             ══════════════════════════════════════════ -->
-            <section id="offres" class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
+            <section id="offres" class="bg-warm-100 dark:bg-warm-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
                             {{ _('CONSTRUIRE VOS FONDATIONS DATA', 'BUILD YOUR DATA FOUNDATIONS') }}
                         </span></div>
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight max-w-2xl">
+                        <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white leading-tight max-w-2xl">
                             {{ _('Ce que nous faisons', 'What we do') }}
                         </h2>
-                        <p class="text-slate-500 dark:text-slate-400 mt-4 text-lg max-w-xl">
+                        <p class="text-warm-500 dark:text-warm-400 mt-4 text-lg max-w-xl">
                             {{ _('Des missions calibrées selon vos besoins. Chaque engagement commence par un appel de cadrage gratuit.', 'Engagements tailored to your needs. Every project starts with a free scoping call.') }}
                         </p>
                     </div>
 
                     <div class="space-y-6">
                         @for (offer of offers; track offer.title) {
-                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col lg:flex-row"
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-brand-900 flex flex-col lg:flex-row"
                                  [class.ring-2]="offer.featured"
                                  [class.ring-indigo-500]="offer.featured">
 
@@ -205,18 +205,18 @@ interface ContactForm {
                                 <!-- Right — white content area -->
                                 <div class="flex-1 p-8 lg:p-10 flex flex-col justify-between">
                                     <div>
-                                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-indigo-500 mb-3 block">
+                                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-brand-700 dark:text-brand-300 mb-3 block">
                                             {{ offer.eyebrow }}
                                         </span>
-                                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">{{ offer.title }}</h3>
-                                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-1 font-medium">{{ offer.duration }}</p>
-                                        <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">{{ offer.desc }}</p>
+                                        <h3 class="text-2xl font-bold text-warm-900 dark:text-white mb-2">{{ offer.title }}</h3>
+                                        <p class="text-warm-500 dark:text-warm-400 text-sm mb-1 font-medium">{{ offer.duration }}</p>
+                                        <p class="text-warm-600 dark:text-warm-300 leading-relaxed mb-6">{{ offer.desc }}</p>
 
                                         <!-- Tags -->
                                         <div class="flex flex-wrap gap-2 mb-8">
                                             @for (tag of offer.tags; track tag) {
-                                                <span class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800
-                                                             text-slate-700 dark:text-slate-300 text-xs font-semibold tracking-wide">
+                                                <span class="px-3 py-1.5 rounded-lg bg-warm-100 dark:bg-warm-800
+                                                             text-warm-700 dark:text-warm-300 text-xs font-semibold tracking-wide">
                                                     {{ tag }}
                                                 </span>
                                             }
@@ -225,10 +225,10 @@ interface ContactForm {
 
                                     <button pButton pRipple [label]="offer.cta"
                                             [routerLink]="[currentLang, 'advisory', offer.route]"
-                                            class="self-start !bg-transparent !border !border-slate-300 dark:!border-slate-600
-                                                   !text-slate-700 dark:!text-slate-200 !font-semibold !tracking-wide
-                                                   !rounded-lg hover:!border-indigo-500 hover:!text-indigo-600
-                                                   dark:hover:!text-indigo-400 transition-all duration-200">
+                                            class="self-start !bg-transparent !border !border-warm-300 dark:!border-warm-600
+                                                   !text-warm-700 dark:!text-warm-200 !font-semibold !tracking-wide
+                                                   !rounded-lg hover:!border-brand-700 hover:!text-brand-700 dark:text-brand-300
+                                                   dark:hover:!text-brand-700 dark:text-brand-300 transition-all duration-200">
                                     </button>
                                 </div>
                             </div>
@@ -240,9 +240,9 @@ interface ContactForm {
             <!-- ══════════════════════════════════════════
                  BLOC 4 — MID-PAGE CTA PUSH (dark navy)
             ══════════════════════════════════════════ -->
-            <section class="bg-slate-950 py-20 px-6 lg:px-20">
+            <section class="bg-brand-900 py-20 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
                         {{ _('UN PROJET EN TÊTE ?', 'HAVE A PROJECT IN MIND?') }}
                     </span></div>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
@@ -250,9 +250,9 @@ interface ContactForm {
                     </h2>
                     <button pButton pRipple [label]="ctaContact()"
                             (click)="scrollTo('contact')"
-                            class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
+                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
                                    !tracking-wide !px-10 !py-4 !rounded-lg !text-base
-                                   hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
+                                   hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                     </button>
                 </div>
             </section>
@@ -261,23 +261,23 @@ interface ContactForm {
                  BLOC 5 — NOS ENJEUX / SECTEURS CLIENTS (light grey)
                  Modeo-style split cards with tags
             ══════════════════════════════════════════ -->
-            <section class="bg-slate-100 dark:bg-slate-800/50 py-24 px-6 lg:px-20">
+            <section class="bg-warm-100 dark:bg-warm-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
                             {{ _('CHAQUE MARCHÉ A SES RÉALITÉS', 'EVERY MARKET HAS ITS REALITIES') }}
                         </span></div>
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight max-w-2xl">
+                        <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white leading-tight max-w-2xl">
                             {{ _('Nos secteurs cibles', 'Our target sectors') }}
                         </h2>
-                        <p class="text-slate-500 dark:text-slate-400 mt-4 text-lg max-w-xl">
+                        <p class="text-warm-500 dark:text-warm-400 mt-4 text-lg max-w-xl">
                             {{ sectorSubtitle() }}
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         @for (sector of sectors; track sector.title) {
-                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-slate-900 flex flex-col">
+                            <div class="rounded-2xl overflow-hidden bg-white dark:bg-brand-900 flex flex-col">
                                 <!-- Top — colored icon area -->
                                 <div class="flex items-center justify-center py-10 min-h-[140px]"
                                      [style.background]="sector.illustrationBg">
@@ -288,13 +288,13 @@ interface ContactForm {
 
                                 <!-- Bottom — content area -->
                                 <div class="flex-1 p-6 flex flex-col">
-                                    <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1">{{ sector.title }}</h4>
-                                    <p class="text-slate-400 text-xs mb-4 leading-relaxed">{{ sector.examples }}</p>
+                                    <h4 class="text-base font-bold text-warm-900 dark:text-white mb-1">{{ sector.title }}</h4>
+                                    <p class="text-warm-400 text-xs mb-4 leading-relaxed">{{ sector.examples }}</p>
                                     <!-- Need tags -->
                                     <div class="flex flex-wrap gap-2 mt-auto">
                                         @for (need of sector.needs; track need) {
-                                            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800
-                                                         text-slate-700 dark:text-slate-300 text-xs font-semibold tracking-wide">
+                                            <span class="px-2.5 py-1 rounded-lg bg-warm-100 dark:bg-warm-800
+                                                         text-warm-700 dark:text-warm-300 text-xs font-semibold tracking-wide">
                                                 {{ need }}
                                             </span>
                                         }
@@ -309,10 +309,10 @@ interface ContactForm {
             <!-- ══════════════════════════════════════════
                  BLOC 6 — EXPERTISE TECHNIQUE (dark navy)
             ══════════════════════════════════════════ -->
-            <section class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
                             MODERN DATA STACK
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight max-w-2xl">
@@ -323,13 +323,13 @@ interface ContactForm {
                     <div class="space-y-8">
                         @for (group of expertiseGroups; track group.label) {
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                                <span class="text-xs font-bold tracking-[0.15em] uppercase text-slate-500 w-44 shrink-0">
+                                <span class="text-xs font-bold tracking-[0.15em] uppercase text-warm-500 w-44 shrink-0">
                                     {{ group.label }}
                                 </span>
                                 <div class="flex flex-wrap gap-2">
                                     @for (tech of group.techs; track tech) {
                                         <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/5 border border-white/10
-                                                     text-slate-300 text-sm font-medium">
+                                                     text-warm-300 text-sm font-medium">
                                             <span class="w-1.5 h-1.5 rounded-full shrink-0" [class]="group.dotClass"></span>
                                             {{ tech }}
                                         </span>
@@ -344,35 +344,35 @@ interface ContactForm {
             <!-- ══════════════════════════════════════════
                  BLOC 7 — PROCESSUS (white)
             ══════════════════════════════════════════ -->
-            <section class="bg-white dark:bg-slate-900 py-24 px-6 lg:px-20">
+            <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-16">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-500 text-xs"></i><span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
                             {{ _('SIMPLE ET TRANSPARENT', 'SIMPLE AND TRANSPARENT') }}
                         </span></div>
-                        <h2 class="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+                        <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white mb-4">
                             {{ _('Comment ça marche', 'How it works') }}
                         </h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-lg">
+                        <p class="text-warm-500 dark:text-warm-400 text-lg">
                             {{ _('De la prise de contact au démarrage de mission en 4 étapes.', 'From first contact to mission kickoff in 4 steps.') }}
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         @for (step of steps; track step.num) {
-                            <div class="relative rounded-2xl bg-slate-100 dark:bg-slate-800 p-8">
+                            <div class="relative rounded-2xl bg-warm-100 dark:bg-warm-800 p-8">
                                 <!-- Step number badge -->
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6 font-bold text-xl text-white"
-                                     style="background: linear-gradient(135deg, #6366f1, #06b6d4)">
+                                     style="background: linear-gradient(135deg, #1A2740, #1A2740)">
                                     {{ step.num }}
                                 </div>
-                                <h4 class="font-bold text-slate-900 dark:text-white mb-3 text-lg">{{ step.title }}</h4>
-                                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">{{ step.desc }}</p>
+                                <h4 class="font-bold text-warm-900 dark:text-white mb-3 text-lg">{{ step.title }}</h4>
+                                <p class="text-warm-500 dark:text-warm-400 text-sm leading-relaxed">{{ step.desc }}</p>
 
                                 <!-- Connector arrow (desktop only) -->
                                 @if (step.num !== '4') {
                                     <div class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                                        <div class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center">
+                                        <div class="w-6 h-6 rounded-full bg-brand-700 flex items-center justify-center">
                                             <i class="pi pi-arrow-right text-white text-xs"></i>
                                         </div>
                                     </div>
@@ -384,9 +384,9 @@ interface ContactForm {
                     <div class="text-center mt-14">
                         <button pButton pRipple [label]="ctaContactShort()"
                                 (click)="scrollTo('contact')"
-                                class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
+                                class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
                                        !tracking-wide !px-10 !py-4 !rounded-lg !text-base
-                                       hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300">
+                                       hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                         </button>
                     </div>
                 </div>
@@ -395,16 +395,16 @@ interface ContactForm {
             <!-- ══════════════════════════════════════════
                  BLOC 8 — FORMULAIRE CONTACT (dark navy)
             ══════════════════════════════════════════ -->
-            <section id="contact" class="bg-slate-950 py-24 px-6 lg:px-20">
+            <section id="contact" class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto">
                     <div class="text-center mb-12">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/30 mb-4"><i class="pi pi-sparkles text-indigo-400 text-xs"></i><span class="text-indigo-300 text-sm font-medium">
-                            {{ _('DÉMARRONS ENSEMBLE', 'LET'S START TOGETHER') }}
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
+                            {{ _('DÉMARRONS ENSEMBLE', 'LET’S START TOGETHER') }}
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                            {{ _('Discutons de votre projet', 'Let's discuss your project') }}
+                            {{ _('Discutons de votre projet', 'Let’s discuss your project') }}
                         </h2>
-                        <p class="text-slate-400 text-lg">
+                        <p class="text-warm-400 text-lg">
                             {{ _('Décrivez votre besoin — nous vous revenons sous 24h pour un appel de cadrage gratuit.', 'Describe your need — we get back to you within 24h for a free scoping call.') }}
                         </p>
                     </div>
@@ -412,11 +412,11 @@ interface ContactForm {
                     @if (submitted()) {
                         <div class="flex flex-col items-center justify-center py-20 text-center rounded-2xl
                                     bg-white/5 border border-white/10">
-                            <div class="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-6">
-                                <i class="pi pi-check text-3xl text-emerald-400"></i>
+                            <div class="w-20 h-20 rounded-full bg-positive/20 flex items-center justify-center mb-6">
+                                <i class="pi pi-check text-3xl text-positive-400"></i>
                             </div>
                             <h3 class="text-2xl font-bold text-white mb-3">{{ _('Message envoyé !', 'Message sent!') }}</h3>
-                            <p class="text-slate-400 max-w-sm text-lg">
+                            <p class="text-warm-400 max-w-sm text-lg">
                                 {{ _('Merci pour votre intérêt. Un expert vous contactera dans les 24 heures.', 'Thank you for your interest. An expert will contact you within 24 hours.') }}
                             </p>
                         </div>
@@ -427,46 +427,46 @@ interface ContactForm {
                             <!-- Nom + Email -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-slate-300 tracking-wide">
-                                        {{ _('Prénom & Nom', 'Full Name') }} <span class="text-rose-400">*</span>
+                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                        {{ _('Prénom & Nom', 'Full Name') }} <span class="text-negative">*</span>
                                     </label>
                                     <input pInputText name="fullName" [(ngModel)]="form.fullName" required
                                            placeholder="Amadou Diallo"
-                                           class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-slate-500" />
+                                           class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500" />
                                 </div>
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-slate-300 tracking-wide">
-                                        {{ _('Email professionnel', 'Professional email') }} <span class="text-rose-400">*</span>
+                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                        {{ _('Email professionnel', 'Professional email') }} <span class="text-negative">*</span>
                                     </label>
                                     <input pInputText name="email" [(ngModel)]="form.email" required type="email"
                                            placeholder="vous@entreprise.com"
-                                           class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-slate-500" />
+                                           class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500" />
                                 </div>
                             </div>
 
                             <!-- Entreprise -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-sm font-semibold text-slate-300 tracking-wide">
-                                    {{ _('Entreprise / Organisation', 'Company / Organisation') }} <span class="text-rose-400">*</span>
+                                <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                    {{ _('Entreprise / Organisation', 'Company / Organisation') }} <span class="text-negative">*</span>
                                 </label>
                                 <input pInputText name="company" [(ngModel)]="form.company" required
                                        placeholder="{{ _('Nom de votre organisation', 'Your organisation name') }}"
-                                       class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-slate-500" />
+                                       class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500" />
                             </div>
 
                             <!-- Secteur + Type besoin -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-slate-300 tracking-wide">
-                                        {{ sectorLabel() }} <span class="text-rose-400">*</span>
+                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                        {{ sectorLabel() }} <span class="text-negative">*</span>
                                     </label>
                                     <p-select name="sector" [(ngModel)]="form.sector" required
                                               [options]="sectorOptions" optionLabel="label" optionValue="value"
                                               placeholder="Sélectionner…" styleClass="w-full" />
                                 </div>
                                 <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-slate-300 tracking-wide">
-                                        {{ _('Type de besoin', 'Type of need') }} <span class="text-rose-400">*</span>
+                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                        {{ _('Type de besoin', 'Type of need') }} <span class="text-negative">*</span>
                                     </label>
                                     <p-select name="needType" [(ngModel)]="form.needType" required
                                               [options]="needOptions" optionLabel="label" optionValue="value"
@@ -476,17 +476,17 @@ interface ContactForm {
 
                             <!-- Description -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-sm font-semibold text-slate-300 tracking-wide">
+                                <label class="text-sm font-semibold text-warm-300 tracking-wide">
                                     {{ _('Description du projet', 'Project description') }}
                                 </label>
                                 <textarea pTextarea name="description" [(ngModel)]="form.description"
-                                          rows="4" class="w-full resize-none !bg-white/5 !border-white/20 !text-white placeholder:!text-slate-500"
+                                          rows="4" class="w-full resize-none !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500"
                                           placeholder="Décrivez brièvement votre enjeu ou besoin data…"></textarea>
                             </div>
 
                             <!-- Source -->
                             <div class="flex flex-col gap-2">
-                                <label class="text-sm font-semibold text-slate-300 tracking-wide">
+                                <label class="text-sm font-semibold text-warm-300 tracking-wide">
                                     {{ howFoundUs() }}
                                 </label>
                                 <p-select name="source" [(ngModel)]="form.source"
@@ -495,9 +495,9 @@ interface ContactForm {
                             </div>
 
                             <!-- Social proof note -->
-                            <div class="flex items-start gap-3 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                                <i class="pi pi-info-circle text-indigo-400 mt-0.5 shrink-0"></i>
-                                <p class="text-sm text-slate-400">
+                            <div class="flex items-start gap-3 p-4 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800">
+                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
+                                <p class="text-sm text-warm-400">
                                     {{ socialProof1() }}
                                     {{ socialProof2() }}
                                 </p>
@@ -508,9 +508,9 @@ interface ContactForm {
                                     icon="pi pi-send"
                                     [loading]="submitting()"
                                     [disabled]="contactForm.invalid || submitting()"
-                                    class="w-full !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !font-bold
+                                    class="w-full !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
                                            !tracking-wide !py-4 !rounded-lg !text-base
-                                           hover:!shadow-xl hover:!shadow-indigo-500/30 transition-all duration-300
+                                           hover:!shadow-xl hover:!shadow-card transition-all duration-300
                                            disabled:!opacity-50 disabled:!cursor-not-allowed">
                             </button>
                         </form>
@@ -567,31 +567,31 @@ export class AdvisoryPage {
               title: f ? 'Expertise en Data Engineering' : 'Data Engineering Expertise',
               desc: f ? 'Conçue par des praticiens pour des praticiens, notre approche repose sur une maîtrise approfondie des architectures data modernes. Nous concevons des plateformes fiables, performantes et durables, adaptées aux contraintes réelles des entreprises.'
                      : 'Built by practitioners for practitioners, our approach relies on deep mastery of modern data architectures. We design reliable, performant and sustainable platforms adapted to the real constraints of businesses.',
-              icon: 'pi pi-server', iconBg: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+              icon: 'pi pi-server', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
               keywords: ['Snowflake', 'dbt', 'Airflow', 'Kafka', 'Spark'] },
             { id: 1, tab: f ? 'CONNAISSANCE LOCALE' : 'LOCAL EXPERTISE',
               title: f ? 'Connaissance de votre marché' : 'Deep knowledge of your market',
               desc: f ? 'Nous connaissons les infrastructures bancaires, les opérateurs télécoms, les contraintes réglementaires et les réalités opérationnelles du terrain. Pas de boîte noire importée — des solutions pensées pour votre contexte.'
                      : 'We understand banking infrastructure, telecom operators, regulatory constraints and operational realities on the ground. No imported black box — solutions designed for your context.',
-              icon: 'pi pi-globe', iconBg: 'linear-gradient(135deg, #10b981, #059669)',
+              icon: 'pi pi-globe', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
               keywords: f ? ['Sénégal', 'UEMOA', 'Banques', 'Télécoms', 'Microfinance'] : ['Senegal', 'WAEMU', 'Banking', 'Telecoms', 'Microfinance'] },
             { id: 2, tab: f ? 'STACK MONDIALE' : 'WORLD-CLASS STACK',
               title: f ? 'Pionniers de la Modern Data Stack' : 'Modern Data Stack pioneers',
               desc: f ? 'Notre expertise couvre l\'ensemble des technologies de la Modern Data Stack — de la collecte à l\'activation. Nous aidons nos clients à tirer le meilleur parti d\'un écosystème en constante évolution, tout en assurant cohérence et gouvernance.'
                      : 'Our expertise covers the entire Modern Data Stack — from ingestion to activation. We help clients leverage an ever-evolving ecosystem while ensuring consistency and governance.',
-              icon: 'pi pi-bolt', iconBg: 'linear-gradient(135deg, #06b6d4, #0891b2)',
+              icon: 'pi pi-bolt', iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
               keywords: ['dbt', 'Airbyte', 'Terraform', 'AWS', 'Kubernetes'] },
             { id: 3, tab: f ? 'FLEXIBILITÉ' : 'FLEXIBILITY',
               title: f ? 'Flexibilité et adaptation' : 'Flexibility and adaptation',
               desc: f ? 'Chaque organisation est unique. Nous adaptons notre accompagnement à votre contexte — des solutions clé en main pour les structures agiles, aux méthodologies DataOps à grande échelle pour les environnements complexes et les grands groupes.'
                      : 'Every organisation is unique. We adapt our approach to your context — turnkey solutions for agile structures, to large-scale DataOps methodologies for complex environments and enterprise groups.',
-              icon: 'pi pi-sliders-h', iconBg: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              icon: 'pi pi-sliders-h', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
               keywords: ['Audit', 'Mission', f ? 'Formation' : 'Training', 'Embedded', 'Staff Aug'] },
             { id: 4, tab: f ? 'TRANSFERT' : 'KNOWLEDGE TRANSFER',
               title: f ? 'Transfert de compétences' : 'Knowledge transfer',
               desc: f ? 'Chaque mission forme vos équipes. Nous documentons, formons et outillons vos collaborateurs pour qu\'ils maîtrisent les solutions déployées après notre départ. L\'expertise reste en interne — c\'est notre engagement.'
                      : 'Every engagement upskills your team. We document, train and equip your staff to fully own the solutions we deploy. The expertise stays in-house — that\'s our commitment.',
-              icon: 'pi pi-users', iconBg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+              icon: 'pi pi-users', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
               keywords: f ? ['Ateliers', 'Documentation', 'Coaching', 'Autonomie', 'KT'] : ['Workshops', 'Documentation', 'Coaching', 'Autonomy', 'KT'] }
         ];
     }
@@ -600,7 +600,7 @@ export class AdvisoryPage {
         const f = this.isFr();
         return [
             { icon: 'pi pi-search', eyebrow: 'EXPERTISE',
-              illustrationBg: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+              illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Audit & Diagnostic Data' : 'Data Audit & Diagnostic',
               duration: f ? '3 à 5 jours' : '3 to 5 days',
               desc: f ? 'Évaluez votre maturité data, identifiez les quick wins et obtenez une feuille de route priorisée pour structurer votre organisation autour de la donnée.'
@@ -608,7 +608,7 @@ export class AdvisoryPage {
               tags: f ? ['CARTOGRAPHIE DATA', 'GAPS CRITIQUES', 'FEUILLE DE ROUTE', 'RAPPORT EXÉCUTIF'] : ['DATA MAPPING', 'CRITICAL GAPS', 'ROADMAP', 'EXECUTIVE REPORT'],
               cta: f ? 'EN SAVOIR PLUS' : 'LEARN MORE', route: 'audit', featured: false },
             { icon: 'pi pi-server', eyebrow: 'EXPERTISE',
-              illustrationBg: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+              illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #4D5F80 100%)',
               title: f ? 'Mission Data Engineering / IA' : 'Data Engineering / AI Mission',
               duration: f ? '1 à 6 mois' : '1 to 6 months',
               desc: f ? 'Conception et déploiement de vos pipelines, plateformes data et modèles IA en production. Des livrables concrets, documentés, semaine après semaine.'
@@ -616,7 +616,7 @@ export class AdvisoryPage {
               tags: ['DATA PIPELINES', 'DATA PLATFORM', f ? 'MODÈLES IA' : 'AI MODELS', 'DATAOPS'],
               cta: f ? 'EN SAVOIR PLUS' : 'LEARN MORE', route: 'mission', featured: true },
             { icon: 'pi pi-book', eyebrow: 'EXPERTISE',
-              illustrationBg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Formation & Transfert de Compétences' : 'Training & Knowledge Transfer',
               duration: f ? '1 à 5 jours' : '1 to 5 days',
               desc: f ? 'Ateliers techniques sur mesure pour monter en compétences vos équipes data sur la Modern Data Stack et les pratiques DataOps.'
@@ -628,37 +628,37 @@ export class AdvisoryPage {
     }
 
     expertiseGroups = [
-        { label: 'Data Engineering', techs: ['Snowflake', 'dbt', 'Apache Airflow', 'Debezium', 'Kafka', 'Spark', 'Airbyte'], dotClass: 'bg-indigo-400' },
-        { label: 'Cloud & Infra', techs: ['AWS S3', 'Redshift', 'Glue', 'Lambda', 'Terraform', 'Docker', 'Kubernetes'], dotClass: 'bg-cyan-400' },
-        { label: 'AI & ML', techs: ['Python', 'scikit-learn', 'LLMs', 'RAG', 'NLP', 'Predictive Models'], dotClass: 'bg-emerald-400' },
-        { label: 'Analytics & Viz', techs: ['dbt Metrics', 'Metabase', 'Superset', 'Power BI', 'Looker'], dotClass: 'bg-violet-400' },
-        { label: 'DataOps', techs: ['CI/CD', 'Great Expectations', 'Elementary', 'dbt tests', 'Observability'], dotClass: 'bg-amber-400' }
+        { label: 'Data Engineering', techs: ['Snowflake', 'dbt', 'Apache Airflow', 'Debezium', 'Kafka', 'Spark', 'Airbyte'], dotClass: 'bg-brand-300' },
+        { label: 'Cloud & Infra', techs: ['AWS S3', 'Redshift', 'Glue', 'Lambda', 'Terraform', 'Docker', 'Kubernetes'], dotClass: 'bg-brand-300' },
+        { label: 'AI & ML', techs: ['Python', 'scikit-learn', 'LLMs', 'RAG', 'NLP', 'Predictive Models'], dotClass: 'bg-positive-400' },
+        { label: 'Analytics & Viz', techs: ['dbt Metrics', 'Metabase', 'Superset', 'Power BI', 'Looker'], dotClass: 'bg-brand-300' },
+        { label: 'DataOps', techs: ['CI/CD', 'Great Expectations', 'Elementary', 'dbt tests', 'Observability'], dotClass: 'bg-ochre-400' }
     ];
 
     get sectors() {
         const f = this.isFr();
         return [
-            { icon: 'pi pi-building-columns', illustrationBg: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            { icon: 'pi pi-building-columns', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Banques & Institutions financières' : 'Banks & Financial Institutions',
               examples: 'SGBS, Ecobank, BNDE, BICIS, CNCAS',
               needs: f ? ['DATA WAREHOUSE', 'REPORTING RÉGLEMENTAIRE', 'SCORING CRÉDIT', 'SURVEILLANCE FRAUDE'] : ['DATA WAREHOUSE', 'REGULATORY REPORTING', 'CREDIT SCORING', 'FRAUD DETECTION'] },
-            { icon: 'pi pi-wifi', illustrationBg: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+            { icon: 'pi pi-wifi', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #4D5F80 100%)',
               title: f ? 'Télécommunications' : 'Telecommunications',
               examples: 'Sonatel/Orange, Free, Expresso',
               needs: f ? ['ANALYTICS CLIENT', 'CHURN PREDICTION', 'MONÉTISATION DONNÉES', 'NETWORK ANALYTICS'] : ['CUSTOMER ANALYTICS', 'CHURN PREDICTION', 'DATA MONETISATION', 'NETWORK ANALYTICS'] },
-            { icon: 'pi pi-landmark', illustrationBg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            { icon: 'pi pi-landmark', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Administration publique' : 'Public Administration',
               examples: f ? 'Ministères, APIX, DER/FJ, Agences d\'État' : 'Ministries, APIX, DER/FJ, State Agencies',
               needs: f ? ['TABLEAUX DE BORD', 'OPEN DATA', 'MODERNISATION SI', 'REPORTING'] : ['DASHBOARDS', 'OPEN DATA', 'IT MODERNISATION', 'REPORTING'] },
-            { icon: 'pi pi-money-bill', illustrationBg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            { icon: 'pi pi-money-bill', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Microfinance & Coopératives' : 'Microfinance & Cooperatives',
               examples: 'ACEP, PAMECAS, CMS, CEC, Advans',
               needs: f ? ['SCORING CRÉDIT', 'SUIVI PORTEFEUILLE', 'REPORTING IMPACT', 'DIGITAL LENDING'] : ['CREDIT SCORING', 'PORTFOLIO TRACKING', 'IMPACT REPORTING', 'DIGITAL LENDING'] },
-            { icon: 'pi pi-rocket', illustrationBg: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+            { icon: 'pi pi-rocket', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Startups & Scaleups africaines' : 'African Startups & Scaleups',
               examples: f ? 'Fintech, Agritech, Healthtech locales' : 'Local Fintech, Agritech, Healthtech',
               needs: ['STACK DATA FROM SCRATCH', 'DATA PRODUCT', 'ML EN PRODUCTION', 'ANALYTICS'] },
-            { icon: 'pi pi-chart-bar', illustrationBg: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+            { icon: 'pi pi-chart-bar', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
               title: f ? 'Grandes PME & Groupes' : 'Large SMEs & Groups',
               examples: f ? 'Groupe Mimran, CFAO, filiales de groupes internationaux' : 'Mimran Group, CFAO, international subsidiaries',
               needs: f ? ['ANALYTICS DÉCISIONNEL', 'MIGRATION CLOUD', 'GOUVERNANCE', 'DATA MESH'] : ['DECISION ANALYTICS', 'CLOUD MIGRATION', 'GOVERNANCE', 'DATA MESH'] }

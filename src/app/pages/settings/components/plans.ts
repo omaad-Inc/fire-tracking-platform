@@ -19,9 +19,9 @@ interface PlanFeature {
 
             <!-- Header -->
             <div class="text-center mb-2">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 mb-4">
-                    <i class="pi pi-crown text-amber-500 text-xs"></i>
-                    <span class="text-amber-600 dark:text-amber-400 text-sm font-semibold">Omaad Pro</span>
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ochre-100 border border-ochre-300/60 mb-4">
+                    <i class="pi pi-crown text-ochre-500 text-xs"></i>
+                    <span class="text-ochre-600 dark:text-ochre-300 text-sm font-semibold">Omaad Pro</span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
                     {{ isFr() ? 'Choisissez votre plan' : 'Choose your plan' }}
@@ -58,7 +58,7 @@ interface PlanFeature {
                     <ul class="space-y-3 flex-1">
                         @for (f of freeFeatures(); track f) {
                             <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300">
-                                <i class="pi pi-check text-xs text-emerald-500 shrink-0"></i>
+                                <i class="pi pi-check text-xs text-positive shrink-0"></i>
                                 {{ f }}
                             </li>
                         }
@@ -66,15 +66,15 @@ interface PlanFeature {
                 </div>
 
                 <!-- Pro -->
-                <div class="relative card !p-6 flex flex-col border-2 border-amber-400 dark:border-amber-500/50 shadow-lg shadow-amber-500/10">
+                <div class="relative card !p-6 flex flex-col border-2 border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
                     <!-- Badge -->
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">
+                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-ochre-500 to-ochre-600 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">
                             {{ isFr() ? 'Bientôt disponible' : 'Coming soon' }}
                         </span>
                     </div>
                     <div class="mb-5 pt-1">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center mb-3 shadow-lg shadow-amber-500/25">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-600 flex items-center justify-center mb-3 shadow-lg shadow-card">
                             <i class="pi pi-crown text-white text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">Pro</h3>
@@ -83,21 +83,21 @@ interface PlanFeature {
                         </p>
                     </div>
                     <div class="flex items-baseline gap-1.5 mb-5">
-                        <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-600">9€</span>
+                        <span class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-ochre-500 to-ochre-600">9€</span>
                         <span class="text-surface-500 text-sm">{{ isFr() ? '/ mois' : '/ month' }}</span>
                     </div>
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
-                            class="w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-amber-500 !to-amber-600 !border-0 !text-white opacity-60"></button>
+                            class="w-full mb-6 !rounded-xl !py-2.5 !font-semibold omaad-accent !text-white opacity-60"></button>
                     <ul class="space-y-3 flex-1">
                         <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
-                            <i class="pi pi-check text-xs text-amber-500 shrink-0"></i>
+                            <i class="pi pi-check text-xs text-ochre-500 shrink-0"></i>
                             {{ isFr() ? 'Tout le plan Essentiel, plus :' : 'Everything in Essential, plus:' }}
                         </li>
                         @for (f of proFeatures(); track f) {
                             <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300">
-                                <i class="pi pi-check text-xs text-amber-500 shrink-0"></i>
+                                <i class="pi pi-check text-xs text-ochre-500 shrink-0"></i>
                                 {{ f }}
                             </li>
                         }
@@ -119,7 +119,7 @@ interface PlanFeature {
                                 <th class="text-left px-5 py-3 text-surface-500 font-medium">{{ isFr() ? 'Fonctionnalité' : 'Feature' }}</th>
                                 <th class="text-center px-4 py-3 text-surface-500 font-medium w-24">Essentiel</th>
                                 <th class="text-center px-4 py-3 font-medium w-24">
-                                    <span class="text-amber-500">Pro</span>
+                                    <span class="text-ochre-500">Pro</span>
                                 </th>
                             </tr>
                         </thead>
@@ -129,7 +129,7 @@ interface PlanFeature {
                                     <td class="px-5 py-3 text-surface-700 dark:text-surface-300">{{ row.label }}</td>
                                     <td class="text-center px-4 py-3">
                                         @if (row.free === true) {
-                                            <i class="pi pi-check text-emerald-500 text-xs"></i>
+                                            <i class="pi pi-check text-positive text-xs"></i>
                                         } @else if (row.free === false) {
                                             <span class="text-surface-400">—</span>
                                         } @else {
@@ -138,11 +138,11 @@ interface PlanFeature {
                                     </td>
                                     <td class="text-center px-4 py-3">
                                         @if (row.pro === true) {
-                                            <i class="pi pi-check text-amber-500 text-xs"></i>
+                                            <i class="pi pi-check text-ochre-500 text-xs"></i>
                                         } @else if (row.pro === false) {
                                             <span class="text-surface-400">—</span>
                                         } @else {
-                                            <span class="text-amber-500 text-xs font-medium">{{ row.pro }}</span>
+                                            <span class="text-ochre-500 text-xs font-medium">{{ row.pro }}</span>
                                         }
                                     </td>
                                 </tr>
@@ -155,7 +155,7 @@ interface PlanFeature {
             <!-- Trust note -->
             <div class="text-center">
                 <p class="text-xs text-surface-400 flex items-center justify-center gap-1.5">
-                    <i class="pi pi-lock text-indigo-400"></i>
+                    <i class="pi pi-lock text-brand-700 dark:text-brand-300"></i>
                     {{ isFr()
                         ? 'Zéro carte bancaire requise. Le plan Essentiel reste gratuit pour toujours.'
                         : 'No credit card required. The Essential plan stays free forever.' }}

@@ -86,7 +86,7 @@ interface CategoryCard {
                 <div class="flex items-center gap-1.5 shrink-0">
                     @for (s of [0, 1, 2]; track s) {
                         <div class="w-2 h-2 rounded-full transition-all"
-                             [ngClass]="currentStep() >= s ? 'bg-indigo-500 w-5' : 'bg-surface-300 dark:bg-surface-600'"></div>
+                             [ngClass]="currentStep() >= s ? 'bg-brand-700 dark:bg-brand-300 w-5' : 'bg-surface-300 dark:bg-surface-600'"></div>
                     }
                 </div>
             </div>
@@ -113,7 +113,7 @@ interface CategoryCard {
                             @for (cat of filteredCategories(); track cat.value) {
                                 <button type="button"
                                         (click)="selectCategory(cat.value)"
-                                        class="flex items-center gap-4 p-4 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-500/5 transition-all text-left group">
+                                        class="flex items-center gap-4 p-4 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20 transition-all text-left group">
                                     <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 {{ cat.bgClass }} transition-transform group-hover:scale-110">
                                         <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl"></i>
                                     </div>
@@ -121,7 +121,7 @@ interface CategoryCard {
                                         <div class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ cat.label }}</div>
                                         <div class="text-surface-400 text-xs mt-0.5">{{ cat.desc }}</div>
                                     </div>
-                                    <i class="pi pi-chevron-right text-surface-300 text-xs group-hover:text-indigo-400 transition-colors"></i>
+                                    <i class="pi pi-chevron-right text-surface-300 text-xs group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
                                 </button>
                             }
                         </div>
@@ -186,7 +186,7 @@ interface CategoryCard {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <!-- Name (always) -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nom de l'actif <span class="text-red-400">*</span></label>
+                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nom de l'actif <span class="text-negative">*</span></label>
                                             <input pInputText [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                         </div>
@@ -194,7 +194,7 @@ interface CategoryCard {
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Mise mensuelle <span class="text-red-400">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Mise mensuelle <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -202,12 +202,12 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nombre de participants <span class="text-red-400">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nombre de participants <span class="text-negative">*</span></label>
                                                 <p-inputnumber [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date de début <span class="text-red-400">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date de début <span class="text-negative">*</span></label>
                                                 <input pInputText type="date" [(ngModel)]="assetForm.tontineStartDate"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
@@ -222,11 +222,11 @@ interface CategoryCard {
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
-                                                <div class="md:col-span-2 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center gap-3">
-                                                    <i class="pi pi-calculator text-indigo-400"></i>
+                                                <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
+                                                    <i class="pi pi-calculator text-brand-700 dark:text-brand-300"></i>
                                                     <div>
                                                         <p class="text-xs text-surface-400 mb-0.5">Valeur accumulée estimée</p>
-                                                        <p class="font-bold text-indigo-400">
+                                                        <p class="font-bold text-brand-700 dark:text-brand-300">
                                                             {{ tontineCurrentValue() | number:'1.0-0' }} {{ cs.config().symbol }}
                                                             <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} mois × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
@@ -238,13 +238,13 @@ interface CategoryCard {
                                         <!-- MOBILE MONEY -->
                                         @if (assetForm.category === 'mobile_money') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Opérateur <span class="text-red-400">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Opérateur <span class="text-negative">*</span></label>
                                                 <p-select [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
                                                     placeholder="Sélectionner l'opérateur"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Solde actuel <span class="text-red-400">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Solde actuel <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -252,7 +252,7 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
-                                                <i class="pi pi-info-circle text-cyan-400"></i>
+                                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300"></i>
                                                 Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
                                             </div>
                                         }
@@ -266,7 +266,7 @@ interface CategoryCard {
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat unitaire <span class="text-red-400">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat unitaire <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -287,7 +287,7 @@ interface CategoryCard {
                                         @if (assetForm.category === 'cash' || assetForm.category === 'savings_account') {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    {{ assetForm.category === 'cash' ? 'Solde actuel' : 'Montant de l\\'épargne' }} <span class="text-red-400">*</span>
+                                                    {{ assetForm.category === 'cash' ? 'Solde actuel' : 'Montant de l\\'épargne' }} <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
@@ -309,7 +309,7 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     Valeur d'achat / initiale
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
-                                                        <span class="text-red-400">*</span>
+                                                        <span class="text-negative">*</span>
                                                     }
                                                 </label>
                                                 <div class="relative">
@@ -324,7 +324,7 @@ interface CategoryCard {
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
                                                         <span class="text-surface-400 text-xs">(optionnel)</span>
                                                     } @else {
-                                                        <span class="text-red-400">*</span>
+                                                        <span class="text-negative">*</span>
                                                     }
                                                 </label>
                                                 <div class="relative">
@@ -361,9 +361,9 @@ interface CategoryCard {
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
-                                                <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
+                                                <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                                                     <span class="text-surface-500 dark:text-surface-400 text-xs">Prix au m² (achat)</span>
-                                                    <span class="text-indigo-500 font-semibold text-sm">
+                                                    <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
                                                         {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ cs.config().symbol }}/m²
                                                     </span>
                                                 </div>
@@ -398,7 +398,7 @@ interface CategoryCard {
                                                 @for (owner of assetForm.owners; track owner.name) {
                                                     <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
                                                         <div class="flex items-center gap-3">
-                                                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                                                            <div class="w-10 h-10 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center">
                                                                 <span class="text-white font-semibold text-sm">{{ owner.initials }}</span>
                                                             </div>
                                                             <div>
@@ -439,12 +439,14 @@ interface CategoryCard {
             @if (currentStep() >= 1) {
                 <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-surface-200 dark:border-surface-700">
                     @if (currentStep() === 1) {
-                        <button pButton type="button" label="Suivant" class="px-8"
+                        <button pButton type="button" label="Suivant" class="omaad-cta !rounded-xl px-8"
                                 [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
                     } @else {
-                        <button pButton type="button" label="Retour" [outlined]="true" (click)="previousStep()"></button>
+                        <button pButton type="button" label="Retour" [outlined]="true"
+                                class="!rounded-xl !border-surface-300 dark:!border-surface-600"
+                                (click)="previousStep()"></button>
                         <button pButton type="button" label="Enregistrer"
-                                class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 hover:!opacity-90"
+                                class="omaad-cta !rounded-xl"
                                 [loading]="isSubmitting()" (click)="submitAsset()"></button>
                     }
                 </div>
@@ -474,20 +476,24 @@ export class AddAssetPage implements OnInit {
         surfaceM2: 0, region: ''
     };
 
+    // Uniform chrome — icon glyph differentiates the asset type, not the color.
+    private static readonly CARD_BG = 'bg-warm-100 dark:bg-warm-800';
+    private static readonly CARD_FG = 'text-warm-700 dark:text-warm-300';
+
     categoryCards: CategoryCard[] = [
-        { value: 'real_estate',     label: 'Immobilier',      desc: 'Appartement, terrain...', icon: 'pi-home',        bgClass: 'bg-indigo-500/10',  textClass: 'text-indigo-400' },
-        { value: 'stocks',          label: 'Actions / Bourse', desc: 'BRVM, ETF, fonds...',    icon: 'pi-chart-line',  bgClass: 'bg-cyan-500/10',    textClass: 'text-cyan-400' },
-        { value: 'bonds',           label: 'Obligations',     desc: 'Bons du trésor...',        icon: 'pi-percentage',  bgClass: 'bg-blue-500/10',    textClass: 'text-blue-400' },
-        { value: 'crypto',          label: 'Crypto',          desc: 'Bitcoin, USDT...',          icon: 'pi-bolt',        bgClass: 'bg-orange-500/10',  textClass: 'text-orange-400' },
-        { value: 'cash',            label: 'Compte bancaire', desc: 'Compte courant, compte chèque', icon: 'pi-wallet',   bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-400' },
-        { value: 'life_insurance',  label: 'Assurance vie',   desc: 'Contrats vie...',           icon: 'pi-shield',      bgClass: 'bg-teal-500/10',    textClass: 'text-teal-400' },
-        { value: 'savings_account', label: 'Livret épargne',  desc: 'Livret A, CEL...',          icon: 'pi-book',        bgClass: 'bg-green-500/10',   textClass: 'text-green-400' },
-        { value: 'vehicle',         label: 'Véhicule',        desc: 'Voiture, moto...',          icon: 'pi-car',         bgClass: 'bg-slate-500/10',   textClass: 'text-slate-400' },
-        { value: 'tontine',         label: 'Tontine',         desc: 'Épargne collective',        icon: 'pi-users',       bgClass: 'bg-pink-500/10',    textClass: 'text-pink-400' },
-        { value: 'mobile_money',    label: 'Mobile Money',    desc: 'Wave, Orange Money...',     icon: 'pi-mobile',      bgClass: 'bg-sky-500/10',     textClass: 'text-sky-400' },
-        { value: 'collectibles',    label: 'Collections',     desc: 'Art, bijoux, montres...',   icon: 'pi-star',        bgClass: 'bg-yellow-500/10',  textClass: 'text-yellow-500' },
-        { value: 'commodities',     label: 'Matières prem.',  desc: 'Or, café, pétrole...',      icon: 'pi-box',         bgClass: 'bg-amber-600/10',   textClass: 'text-amber-500' },
-        { value: 'other',           label: 'Autres',          desc: 'Tout autre actif',          icon: 'pi-ellipsis-h',  bgClass: 'bg-surface-500/10', textClass: 'text-surface-400' },
+        { value: 'real_estate',     label: 'Immobilier',      desc: 'Appartement, terrain...', icon: 'pi-home',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'stocks',          label: 'Actions / Bourse', desc: 'BRVM, ETF, fonds...',    icon: 'pi-chart-line',  bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'bonds',           label: 'Obligations',     desc: 'Bons du trésor...',        icon: 'pi-percentage',  bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'crypto',          label: 'Crypto',          desc: 'Bitcoin, USDT...',          icon: 'pi-bolt',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'cash',            label: 'Compte bancaire', desc: 'Compte courant, compte chèque', icon: 'pi-wallet',   bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'life_insurance',  label: 'Assurance vie',   desc: 'Contrats vie...',           icon: 'pi-shield',      bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'savings_account', label: 'Livret épargne',  desc: 'Livret A, CEL...',          icon: 'pi-book',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'vehicle',         label: 'Véhicule',        desc: 'Voiture, moto...',          icon: 'pi-car',         bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'tontine',         label: 'Tontine',         desc: 'Épargne collective',        icon: 'pi-users',       bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'mobile_money',    label: 'Mobile Money',    desc: 'Wave, Orange Money...',     icon: 'pi-mobile',      bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'collectibles',    label: 'Collections',     desc: 'Art, bijoux, montres...',   icon: 'pi-star',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'commodities',     label: 'Matières prem.',  desc: 'Or, café, pétrole...',      icon: 'pi-box',         bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
+        { value: 'other',           label: 'Autres',          desc: 'Tout autre actif',          icon: 'pi-ellipsis-h',  bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
     ];
 
     mobileMoneyProviders = [

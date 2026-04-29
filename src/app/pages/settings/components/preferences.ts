@@ -63,13 +63,13 @@ import { TokenService } from '../../../core/services/token.service';
                         >
                             <ng-template #selectedItem let-selected>
                                 <div class="flex items-center gap-2" *ngIf="selected">
-                                    <span class="font-mono font-bold text-indigo-500">{{ selected.symbol }}</span>
+                                    <span class="font-mono font-bold text-brand-700 dark:text-brand-300">{{ selected.symbol }}</span>
                                     <span>{{ selected.name }}</span>
                                 </div>
                             </ng-template>
                             <ng-template #item let-currency>
                                 <div class="flex items-center gap-2">
-                                    <span class="font-mono font-bold text-indigo-500">{{ currency.symbol }}</span>
+                                    <span class="font-mono font-bold text-brand-700 dark:text-brand-300">{{ currency.symbol }}</span>
                                     <span>{{ currency.name }}</span>
                                 </div>
                             </ng-template>
@@ -93,7 +93,7 @@ import { TokenService } from '../../../core/services/token.service';
                             (isLightMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
                     >
                         <div class="w-full h-20 bg-white border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
-                            <i class="pi pi-sun text-2xl text-amber-500"></i>
+                            <i class="pi pi-sun text-2xl text-ochre-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.lightMode') }}</span>
@@ -109,8 +109,8 @@ import { TokenService } from '../../../core/services/token.service';
                         [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' +
                             (isDarkModeSelected ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
                     >
-                        <div class="w-full h-20 bg-slate-900 border border-slate-700 rounded-lg mb-3 flex items-center justify-center">
-                            <i class="pi pi-moon text-2xl text-indigo-400"></i>
+                        <div class="w-full h-20 bg-warm-900 border border-warm-700 rounded-lg mb-3 flex items-center justify-center">
+                            <i class="pi pi-moon text-2xl text-brand-700 dark:text-brand-300"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.darkMode') }}</span>
@@ -126,7 +126,7 @@ import { TokenService } from '../../../core/services/token.service';
                         [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' +
                             (isSystemMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
                     >
-                        <div class="w-full h-20 bg-gradient-to-r from-white to-slate-900 border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
+                        <div class="w-full h-20 bg-gradient-to-r from-warm-0 to-warm-900 border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
                             <i class="pi pi-desktop text-2xl text-surface-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
@@ -145,7 +145,7 @@ import { TokenService } from '../../../core/services/token.service';
             <div class="mb-8">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.notifications') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
+                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
                 </div>
 
                 <div class="space-y-3 opacity-50 pointer-events-none select-none" title="Bientôt disponible">
@@ -176,12 +176,12 @@ import { TokenService } from '../../../core/services/token.service';
             <div>
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.data') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
+                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
                 </div>
 
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl opacity-50">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center">
                             <i class="pi pi-download text-white text-xl"></i>
                         </div>
                         <div>
@@ -222,10 +222,10 @@ export class PreferencesSettings implements OnInit {
 
     // Notification items — disabled/coming soon (no backend support yet)
     readonly notificationItems = [
-        { key: 'email',   label: 'settings.preferences.emailNotifications',  desc: 'settings.preferences.emailNotificationsDesc',  icon: 'pi-envelope',              bg: 'bg-gradient-to-br from-indigo-500 to-cyan-500'   },
-        { key: 'push',    label: 'settings.preferences.pushNotifications',   desc: 'settings.preferences.pushNotificationsDesc',   icon: 'pi-bell',                  bg: 'bg-gradient-to-br from-emerald-500 to-teal-500'  },
-        { key: 'monthly', label: 'settings.preferences.monthlyReports',      desc: 'settings.preferences.monthlyReportsDesc',      icon: 'pi-chart-line',            bg: 'bg-gradient-to-br from-amber-500 to-orange-500'  },
-        { key: 'alert',   label: 'settings.preferences.expenseAlerts',       desc: 'settings.preferences.expenseAlertsDesc',       icon: 'pi-exclamation-triangle',  bg: 'bg-gradient-to-br from-rose-500 to-pink-500'     },
+        { key: 'email',   label: 'settings.preferences.emailNotifications',  desc: 'settings.preferences.emailNotificationsDesc',  icon: 'pi-envelope',              bg: 'bg-brand-700 dark:bg-brand-300'   },
+        { key: 'push',    label: 'settings.preferences.pushNotifications',   desc: 'settings.preferences.pushNotificationsDesc',   icon: 'pi-bell',                  bg: 'bg-positive'  },
+        { key: 'monthly', label: 'settings.preferences.monthlyReports',      desc: 'settings.preferences.monthlyReportsDesc',      icon: 'pi-chart-line',            bg: 'bg-gradient-to-br from-ochre-500 to-ochre-600'  },
+        { key: 'alert',   label: 'settings.preferences.expenseAlerts',       desc: 'settings.preferences.expenseAlertsDesc',       icon: 'pi-exclamation-triangle',  bg: 'bg-negative'     },
     ];
 
     ngOnInit() {

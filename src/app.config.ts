@@ -5,17 +5,45 @@ import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
 import Aura from '@primeng/themes/aura';
+import { definePreset } from '@primeng/themes';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+
+/**
+ * Custom Omaad preset built on top of Aura.
+ *
+ * Aura defaults primary to emerald-500 and injects that at runtime via JS,
+ * which beats any `:root { --p-primary-color: ... }` override we set in SCSS.
+ * Defining the preset's primary palette is the only reliable way to make
+ * every PrimeNG component (buttons, focus rings, links, sliders, the active
+ * sidebar menu item) inherit our Midnight Navy.
+ */
+const OmaadPreset = definePreset(Aura, {
+    semantic: {
+        primary: {
+            50:  '#EFF2F7',
+            100: '#D8DFEC',
+            200: '#B6BFCD',
+            300: '#8A98AE',
+            400: '#4D5F80',
+            500: '#1A2740', // brand-700 — the canonical "primary"
+            600: '#14203A',
+            700: '#0F1A2E',
+            800: '#0F1A2E',
+            900: '#08111E',
+            950: '#08111E',
+        },
+    },
+});
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideRouter(appRoutes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }), withEnabledBlockingInitialNavigation()),
         provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
         provideAnimationsAsync(),
-        providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
+        providePrimeNG({ theme: { preset: OmaadPreset, options: { darkModeSelector: '.app-dark' } } }),
         { provide: LOCALE_ID, useValue: 'fr-FR' },
         { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' },
         provideServiceWorker('ngsw-worker.js', {
@@ -34,15 +62,17 @@ registerLocaleData(localeFr);
 // PrimeNG's <p-chart> registers the required Chart.js components.
 import('chart.js').then(({ Chart }) => {
     Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+    // Brand-tokenized tooltip — warm-black bg + cream text + ochre border.
+    // Matches `chartTheme.tooltip` in core/theme/chart-theme.ts.
     Object.assign(Chart.defaults.plugins.tooltip, {
-        backgroundColor: 'rgba(15, 23, 42, 0.92)',
-        titleColor: '#f8fafc',
-        bodyColor: '#cbd5e1',
+        backgroundColor: 'rgba(20, 19, 15, 0.95)',
+        titleColor: '#FAF8F4',
+        bodyColor: '#DEDAD0',
         titleFont: { weight: 'bold' as const, size: 13 },
         bodyFont: { size: 12 },
         padding: { top: 10, bottom: 10, left: 14, right: 14 },
         cornerRadius: 10,
-        borderColor: 'rgba(99, 102, 241, 0.15)',
+        borderColor: 'rgba(199, 123, 60, 0.25)',
         borderWidth: 1,
         displayColors: true,
         boxWidth: 8,

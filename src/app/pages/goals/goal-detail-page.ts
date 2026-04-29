@@ -53,7 +53,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             [label]="i18n.t('goals.detail.allocateFunds')"
                             icon="pi pi-arrow-right-arrow-left"
                             (onClick)="openAllocate()"
-                            styleClass="!rounded-xl !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0"
+                            styleClass="omaad-cta !rounded-xl"
                         />
                         <p-button
                             [label]="i18n.t('common.edit')"
@@ -67,7 +67,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             [outlined]="true"
                             severity="danger"
                             (onClick)="confirmDelete()"
-                            styleClass="!rounded-xl !border-rose-300 dark:!border-rose-800"
+                            styleClass="!rounded-xl !border-negative-100 dark:!border-negative-700"
                         />
                     </div>
                 }
@@ -145,7 +145,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                 <!-- KPI strip -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-stretch">
                     <div class="card !p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="text-xl sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 truncate">
+                        <div class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             <app-amount [value]="g.current_amount" />
                         </div>
                         <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.totalSaved') }}</div>
@@ -192,7 +192,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         <div class="card !p-5">
                             <div class="flex items-center justify-between gap-2 mb-4">
                                 <div class="flex items-center gap-2">
-                                    <i class="pi pi-history text-indigo-500"></i>
+                                    <i class="pi pi-history text-brand-700 dark:text-brand-300"></i>
                                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.activity.title') }}</h3>
                                 </div>
                                 @if (contributions().length > 0) {
@@ -228,15 +228,15 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                     @for (c of contributions(); track c.id) {
                                         <li class="py-3 flex items-center gap-3">
                                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                                                 [ngClass]="c.type === 'contribution' ? 'bg-emerald-500/10' : 'bg-amber-500/10'">
+                                                 [ngClass]="c.type === 'contribution' ? 'bg-positive/10' : 'bg-warning/10'">
                                                 <i class="pi text-sm"
-                                                   [ngClass]="c.type === 'contribution' ? 'pi-arrow-down text-emerald-600' : 'pi-arrow-up text-amber-600'"></i>
+                                                   [ngClass]="c.type === 'contribution' ? 'pi-arrow-down text-positive' : 'pi-arrow-up text-warning'"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-2 text-sm font-medium text-surface-900 dark:text-surface-0">
                                                     <span class="truncate">{{ c.asset_name || i18n.t('goals.activity.unknownSource') }}</span>
                                                     <span class="text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded"
-                                                          [ngClass]="c.type === 'contribution' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'">
+                                                          [ngClass]="c.type === 'contribution' ? 'bg-positive-50 text-positive-700' : 'bg-warning-50 text-warning-700'">
                                                         {{ c.type === 'contribution' ? i18n.t('goals.activity.tagContribution') : i18n.t('goals.activity.tagDeallocation') }}
                                                     </span>
                                                 </div>
@@ -248,12 +248,12 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                                 </div>
                                             </div>
                                             <div class="text-sm font-bold shrink-0"
-                                                 [ngClass]="c.type === 'contribution' ? 'text-emerald-600' : 'text-amber-600'">
+                                                 [ngClass]="c.type === 'contribution' ? 'text-positive' : 'text-warning'">
                                                 {{ c.type === 'contribution' ? '+' : '−' }}<app-amount [value]="c.amount" />
                                             </div>
                                             <button
                                                 type="button"
-                                                class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors shrink-0"
+                                                class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/40 transition-colors shrink-0"
                                                 [title]="i18n.t('common.delete')"
                                                 (click)="confirmDeleteContribution(c)"
                                             >
@@ -269,7 +269,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         @if (userNote()) {
                             <div class="card !p-5">
                                 <div class="flex items-center gap-2 mb-2">
-                                    <i class="pi pi-comment text-amber-500"></i>
+                                    <i class="pi pi-comment text-ochre-500"></i>
                                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.fields.note') }}</h3>
                                 </div>
                                 <p class="text-sm text-surface-700 dark:text-surface-300 whitespace-pre-wrap m-0">{{ userNote() }}</p>
@@ -405,12 +405,13 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         const status = g ? computeStatus(g) : 'no_target';
         switch (status) {
             case 'completed':
+                return 'bg-positive text-white';
             case 'on_track':
-                return 'bg-emerald-500/95 text-white';
+                return 'bg-brand-700 dark:bg-brand-300 text-white dark:text-brand-900';
             case 'at_risk':
-                return 'bg-amber-500/95 text-white';
+                return 'bg-warning text-white';
             default:
-                return 'bg-slate-700/85 text-white';
+                return 'bg-warm-700 text-white';
         }
     });
 
@@ -430,12 +431,13 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         const status = g ? computeStatus(g) : 'no_target';
         switch (status) {
             case 'completed':
+                return 'from-positive-500 to-positive-400';
             case 'on_track':
-                return 'from-emerald-500 to-emerald-400';
+                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
             case 'at_risk':
-                return 'from-amber-500 to-amber-400';
+                return 'from-warning-500 to-warning-400';
             default:
-                return 'from-indigo-500 to-cyan-500';
+                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
         }
     });
 
@@ -530,7 +532,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: this.i18n.t('common.delete'),
             rejectLabel: this.i18n.t('common.cancel'),
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 try {
                     await firstValueFrom(this.api.deleteSavingGoal(g.id));
@@ -554,7 +556,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: this.i18n.t('common.delete'),
             rejectLabel: this.i18n.t('common.cancel'),
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 try {
                     await firstValueFrom(this.api.deleteGoalContribution(g.id, c.id));

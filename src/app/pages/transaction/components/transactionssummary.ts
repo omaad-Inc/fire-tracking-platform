@@ -24,13 +24,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             } @else if (summary()) {
                 <!-- Net flow pill -->
                 <div class="flex items-center justify-between p-3 rounded-xl"
-                     [ngClass]="(summary()!.net >= 0) ? 'bg-emerald-500/10' : 'bg-rose-500/10'">
+                     [ngClass]="(summary()!.net >= 0) ? 'bg-positive/10' : 'bg-negative/10'">
                     <span class="text-sm font-medium"
-                          [ngClass]="(summary()!.net >= 0) ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                          [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
                         {{ summary()!.net >= 0 ? 'Solde positif' : 'Solde négatif' }}
                     </span>
                     <span class="text-lg font-bold"
-                          [ngClass]="(summary()!.net >= 0) ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                          [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
                         {{ summary()!.net >= 0 ? '+' : '−' }}<app-amount [value]="summary()!.net" />
                     </span>
                 </div>
@@ -40,24 +40,24 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Income -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                <i class="pi pi-arrow-down-left text-emerald-500 text-xs"></i>
+                            <div class="w-7 h-7 rounded-lg bg-positive/10 flex items-center justify-center">
+                                <i class="pi pi-arrow-down-left text-positive text-xs"></i>
                             </div>
                             <span class="text-sm text-surface-600 dark:text-surface-400">Revenus</span>
                         </div>
-                        <span class="text-sm font-semibold text-emerald-500">
+                        <span class="text-sm font-semibold text-positive">
                             +<app-amount [value]="summary()!.income" />
                         </span>
                     </div>
                     <!-- Expense -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                                <i class="pi pi-arrow-up-right text-rose-500 text-xs"></i>
+                            <div class="w-7 h-7 rounded-lg bg-negative/10 flex items-center justify-center">
+                                <i class="pi pi-arrow-up-right text-negative text-xs"></i>
                             </div>
                             <span class="text-sm text-surface-600 dark:text-surface-400">Dépenses</span>
                         </div>
-                        <span class="text-sm font-semibold text-rose-500">
+                        <span class="text-sm font-semibold text-negative">
                             −<app-amount [value]="summary()!.expenses" />
                         </span>
                     </div>

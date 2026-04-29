@@ -14,13 +14,13 @@ import { I18nService } from '../../../i18n/i18n.service';
         <div id="pricing" class="py-20 px-6 lg:px-20 bg-surface-0 dark:bg-surface-900">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/30 mb-6">
-                        <i class="pi pi-tag text-indigo-500"></i>
-                        <span class="text-indigo-600 dark:text-indigo-400 text-sm font-medium">{{ t('landing.pricing.badge') }}</span>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-6">
+                        <i class="pi pi-tag text-brand-700 dark:text-brand-300"></i>
+                        <span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ t('landing.pricing.badge') }}</span>
                     </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         {{ t('landing.pricing.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">{{ t('landing.pricing.h2b') }}</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-brand-500">{{ t('landing.pricing.h2b') }}</span>
                     </h2>
                     <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">{{ t('landing.pricing.description') }}</p>
                 </div>
@@ -61,40 +61,40 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <!-- Pro Plan -->
                     <div class="col-span-12 md:col-span-6">
                         <div class="relative h-full">
-                            <div class="absolute -inset-0.5 bg-gradient-to-r from-indigo-600 via-cyan-500 to-emerald-500 rounded-2xl blur opacity-60"></div>
+                            <div class="absolute -inset-0.5 bg-gradient-to-r from-brand-700 via-cyan-500 to-positive-500 rounded-2xl blur opacity-60"></div>
                             <div class="relative h-full bg-surface-0 dark:bg-surface-800 rounded-2xl p-8 border border-surface-200 dark:border-surface-700 shadow-xl">
                                 <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2">
-                                    <div class="px-4 py-1 rounded-full bg-gradient-to-r from-indigo-600 to-cyan-500 text-white text-xs font-semibold whitespace-nowrap">
+                                    <div class="px-4 py-1 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white text-xs font-semibold whitespace-nowrap">
                                         {{ t('landing.pricing.proBadge') }}
                                     </div>
                                 </div>
                                 <div class="mb-6 pt-2">
-                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-cyan-500 flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center mb-4 shadow-lg shadow-card">
                                         <i class="pi pi-crown text-white text-xl"></i>
                                     </div>
                                     <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('landing.pricing.proName') }}</h3>
                                     <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.proTagline') }}</p>
                                 </div>
                                 <div class="flex items-baseline gap-2 mb-6">
-                                    <span class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">€9</span>
+                                    <span class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-brand-500">€9</span>
                                     <span class="text-surface-500 dark:text-surface-400">/mois</span>
                                 </div>
                                 <button pButton pRipple [rounded]="true" disabled
-                                    class="w-full !py-3 !font-semibold !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white opacity-70 cursor-not-allowed mb-8">
+                                    class="w-full !py-3 !font-semibold !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !text-white opacity-70 cursor-not-allowed mb-8">
                                     <i class="pi pi-clock mr-2"></i>{{ t('landing.pricing.proCta') }}
                                 </button>
                                 <p-divider />
                                 <ul class="space-y-3 mt-6">
                                     <li class="flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0">
-                                            <i class="pi pi-check text-indigo-600 dark:text-indigo-400 text-xs"></i>
+                                        <div class="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-700/40 flex items-center justify-center flex-shrink-0">
+                                            <i class="pi pi-check text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-xs"></i>
                                         </div>
                                         <span class="text-surface-700 dark:text-surface-300 text-sm font-medium">{{ t('landing.pricing.proIncludes') }}</span>
                                     </li>
                                     @for (f of proFeatures(); track f) {
                                         <li class="flex items-center gap-3">
-                                            <div class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center flex-shrink-0">
-                                                <i class="pi pi-check text-indigo-600 dark:text-indigo-400 text-xs"></i>
+                                            <div class="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-700/40 flex items-center justify-center flex-shrink-0">
+                                                <i class="pi pi-check text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-xs"></i>
                                             </div>
                                             <span class="text-surface-700 dark:text-surface-300 text-sm">{{ f }}</span>
                                         </li>
@@ -107,7 +107,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                 <div class="max-w-2xl mx-auto text-center mb-16">
                     <p class="text-surface-500 dark:text-surface-400 text-sm">
-                        <i class="pi pi-lock text-indigo-500 mr-1"></i>{{ t('landing.pricing.trustNote') }}
+                        <i class="pi pi-lock text-brand-700 dark:text-brand-300 mr-1"></i>{{ t('landing.pricing.trustNote') }}
                     </p>
                 </div>
 
@@ -118,7 +118,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                         @for (q of faqItems(); track q.q) {
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-6 border border-surface-200 dark:border-surface-700">
                                 <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-2 flex items-center gap-2">
-                                    <i class="pi pi-question-circle text-indigo-500"></i>{{ q.q }}
+                                    <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>{{ q.q }}
                                 </h4>
                                 <p class="text-surface-600 dark:text-surface-300">{{ q.a }}</p>
                             </div>

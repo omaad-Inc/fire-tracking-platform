@@ -44,8 +44,8 @@ export interface GoalSavePayload {
         >
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                        <i class="pi pi-flag text-white text-lg"></i>
+                    <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-card">
+                        <i class="pi pi-flag text-white dark:text-brand-900 text-lg"></i>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -67,7 +67,8 @@ export interface GoalSavePayload {
                                 type="button"
                                 (click)="pickTemplate(tpl)"
                                 class="group rounded-xl overflow-hidden border-2 transition-all duration-200 text-left bg-white dark:bg-surface-800 hover:shadow-lg"
-                                [class.border-emerald-500]="form.templateKey === tpl.key"
+                                [class.border-brand-700]="form.templateKey === tpl.key"
+                                [class.dark:border-brand-300]="form.templateKey === tpl.key"
                                 [class.border-surface-200]="form.templateKey !== tpl.key"
                                 [class.dark:border-surface-700]="form.templateKey !== tpl.key"
                             >
@@ -75,7 +76,7 @@ export interface GoalSavePayload {
                                     <img [src]="tpl.image" [alt]="i18n.t(tpl.nameKey)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                     @if (form.templateKey === tpl.key) {
-                                        <div class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shadow-md">
+                                        <div class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-md">
                                             <i class="pi pi-check text-white text-[10px]"></i>
                                         </div>
                                     }
@@ -125,7 +126,7 @@ export interface GoalSavePayload {
                                 @if (form.imageUrl) {
                                     <button
                                         type="button"
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-rose-600 hover:bg-white dark:hover:bg-surface-800 shadow-md"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-negative hover:bg-white dark:hover:bg-surface-800 shadow-md"
                                         (click)="clearCustomImage()"
                                         [title]="i18n.t('goals.dialog.removeCustomImage')"
                                     >
@@ -144,7 +145,7 @@ export interface GoalSavePayload {
                         </div>
 
                         @if (uploadError()) {
-                            <small class="text-rose-500 text-xs -mt-2">
+                            <small class="text-negative text-xs -mt-2">
                                 <i class="pi pi-exclamation-circle mr-1"></i>{{ uploadError() }}
                             </small>
                         }
@@ -152,17 +153,17 @@ export interface GoalSavePayload {
                         <!-- Name -->
                         <div class="flex flex-col gap-2">
                             <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-tag text-indigo-500"></i>
-                                {{ i18n.t('goals.fields.name') }} <span class="text-rose-500">*</span>
+                                <i class="pi pi-tag text-warm-500"></i>
+                                {{ i18n.t('goals.fields.name') }} <span class="text-negative">*</span>
                             </label>
                             <input
                                 pInputText
                                 [(ngModel)]="form.name"
                                 [placeholder]="i18n.t('goals.fields.namePlaceholder')"
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-indigo-500"
+                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
                             />
                             @if (submitted() && !form.name.trim()) {
-                                <small class="text-rose-500 text-xs">
+                                <small class="text-negative text-xs">
                                     <i class="pi pi-exclamation-circle mr-1"></i>{{ i18n.t('goals.fields.nameRequired') }}
                                 </small>
                             }
@@ -171,7 +172,7 @@ export interface GoalSavePayload {
                         <!-- Target amount -->
                         <div class="flex flex-col gap-2">
                             <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-wallet text-emerald-500"></i>
+                                <i class="pi pi-wallet text-warm-500"></i>
                                 {{ i18n.t('goals.fields.targetAmount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber
@@ -179,14 +180,14 @@ export interface GoalSavePayload {
                                 mode="decimal"
                                 [minFractionDigits]="0" [maxFractionDigits]="0"
                                 styleClass="w-full"
-                                inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-emerald-500"
+                                inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
                             />
                         </div>
 
                         <!-- Current amount -->
                         <div class="flex flex-col gap-2">
                             <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-chart-line text-cyan-500"></i>
+                                <i class="pi pi-chart-line text-warm-500"></i>
                                 {{ i18n.t('goals.fields.currentAmount') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }} · {{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber
@@ -194,14 +195,14 @@ export interface GoalSavePayload {
                                 mode="decimal"
                                 [minFractionDigits]="0" [maxFractionDigits]="0"
                                 styleClass="w-full"
-                                inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-cyan-500"
+                                inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
                             />
                         </div>
 
                         <!-- Target date -->
                         <div class="flex flex-col gap-2">
                             <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-calendar text-amber-500"></i>
+                                <i class="pi pi-calendar text-warm-500"></i>
                                 {{ i18n.t('goals.fields.targetDate') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                             </label>
                             <input
@@ -209,21 +210,21 @@ export interface GoalSavePayload {
                                 pInputText
                                 [ngModel]="form.target_date"
                                 (ngModelChange)="form.target_date = $event"
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-amber-500"
+                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
                             />
                         </div>
 
                         <!-- Custom image URL (alternative to upload) -->
                         <div class="flex flex-col gap-2">
                             <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-link text-pink-500"></i>
+                                <i class="pi pi-link text-warm-500"></i>
                                 {{ i18n.t('goals.fields.imageUrl') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                             </label>
                             <input
                                 pInputText
                                 [(ngModel)]="form.imageUrl"
                                 placeholder="https://..."
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-pink-500"
+                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
                             />
                             <small class="text-surface-400 text-xs">{{ i18n.t('goals.fields.imageUrlHint') }}</small>
                         </div>
@@ -231,14 +232,14 @@ export interface GoalSavePayload {
                         <!-- Note -->
                         <div class="flex flex-col gap-2">
                             <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-comment text-slate-500"></i>
+                                <i class="pi pi-comment text-warm-500"></i>
                                 {{ i18n.t('goals.fields.note') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                             </label>
                             <textarea
                                 pTextarea
                                 [(ngModel)]="form.description"
                                 rows="2"
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-slate-500"
+                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
                             ></textarea>
                         </div>
                     </div>
@@ -261,7 +262,7 @@ export interface GoalSavePayload {
                             iconPos="right"
                             (onClick)="step.set(2)"
                             [disabled]="!form.templateKey"
-                            styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0"
+                            styleClass="omaad-cta flex-1 !rounded-xl !py-3"
                         />
                     } @else {
                         <p-button
@@ -276,7 +277,7 @@ export interface GoalSavePayload {
                             icon="pi pi-check"
                             (onClick)="onSave()"
                             [loading]="saving"
-                            styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0"
+                            styleClass="omaad-cta flex-1 !rounded-xl !py-3"
                         />
                     }
                 </div>

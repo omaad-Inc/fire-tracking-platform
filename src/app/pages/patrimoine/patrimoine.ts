@@ -21,14 +21,18 @@ interface CategoryGroupCard {
     assetCount: number;
 }
 
+// All asset groups share the same brand gradient — the icon glyph
+// differentiates the category, not the color. (Phase 2 identity rule.)
+const GROUP_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
+
 const GROUPS = [
-    { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: 'linear-gradient(135deg, #6366f1, #4f46e5)', categories: ['real_estate'] },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)', categories: ['stocks', 'bonds'] },
-    { id: 'savings',        label: 'Épargne',           icon: 'pi pi-dollar',     bg: 'linear-gradient(135deg, #10b981, #059669)', categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
-    { id: 'crypto',         label: 'Crypto',            icon: 'pi pi-bitcoin',    bg: 'linear-gradient(135deg, #f59e0b, #d97706)', categories: ['crypto'] },
-    { id: 'tontine',        label: 'Tontine',           icon: 'pi pi-users',      bg: 'linear-gradient(135deg, #e11d48, #be123c)', categories: ['tontine'] },
-    { id: 'mobile_money',   label: 'Mobile Money',      icon: 'pi pi-mobile',     bg: 'linear-gradient(135deg, #0ea5e9, #0284c7)', categories: ['mobile_money'] },
-    { id: 'other',          label: 'Autres',            icon: 'pi pi-box',        bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
+    { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks', 'bonds'] },
+    { id: 'savings',        label: 'Épargne',           icon: 'pi pi-dollar',     bg: GROUP_BG, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
+    { id: 'crypto',         label: 'Crypto',            icon: 'pi pi-bitcoin',    bg: GROUP_BG, categories: ['crypto'] },
+    { id: 'tontine',        label: 'Tontine',           icon: 'pi pi-users',      bg: GROUP_BG, categories: ['tontine'] },
+    { id: 'mobile_money',   label: 'Mobile Money',      icon: 'pi pi-mobile',     bg: GROUP_BG, categories: ['mobile_money'] },
+    { id: 'other',          label: 'Autres',            icon: 'pi pi-box',        bg: GROUP_BG, categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
 ];
 
 @Component({
@@ -74,7 +78,7 @@ const GROUPS = [
                     <div class="space-y-3">
                         @for (group of categoryGroups(); track group.id) {
                             <button (click)="navigateToCategory(group.id)"
-                                    class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-indigo-500/30 text-left shadow-sm">
+                                    class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-brand-300/40 dark:hover:border-brand-700/50 text-left shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
                                          [style.background]="group.bg">
@@ -95,16 +99,16 @@ const GROUPS = [
                                         @if (group.totalDeltaAbs !== 0) {
                                             <div class="flex items-center justify-end gap-1 mt-0.5">
                                                 <i class="pi text-xs"
-                                                   [ngClass]="group.totalDeltaAbs >= 0 ? 'pi-arrow-up text-emerald-500' : 'pi-arrow-down text-rose-500'"></i>
+                                                   [ngClass]="group.totalDeltaAbs >= 0 ? 'pi-arrow-up text-positive' : 'pi-arrow-down text-negative'"></i>
                                                 <span class="text-sm font-medium"
-                                                      [ngClass]="group.totalDeltaAbs >= 0 ? 'text-emerald-500' : 'text-rose-500'">
+                                                      [ngClass]="group.totalDeltaAbs >= 0 ? 'text-positive' : 'text-negative'">
                                                     <app-amount [value]="group.totalDeltaAbs" [prefix]="group.totalDeltaAbs >= 0 ? '+' : '-'" />
                                                     &nbsp;{{ group.totalDeltaPct | number:'1.2-2' }}%
                                                 </span>
                                             </div>
                                         }
                                     </div>
-                                    <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-indigo-400 transition-colors"></i>
+                                    <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
                                 </div>
                             </button>
                         }
@@ -117,7 +121,7 @@ const GROUPS = [
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Passifs</h2>
                     @if (!loadingDebts() && totalDebts() > 0) {
-                        <span class="text-rose-500 text-sm font-medium">
+                        <span class="text-negative text-sm font-medium">
                             <app-amount [value]="totalDebts()" prefix="-" />
                         </span>
                     }
@@ -131,10 +135,10 @@ const GROUPS = [
                     </div>
                 } @else {
                     <button (click)="navigateToDebts()"
-                            class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-rose-500/30 text-left shadow-sm">
+                            class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-negative/30 text-left shadow-sm">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
-                                 style="background: linear-gradient(135deg, #f43f5e, #e11d48)">
+                                 style="background: linear-gradient(135deg, #B0463E, #933832)">
                                 <i class="pi pi-credit-card text-white text-lg"></i>
                             </div>
                             <div>
@@ -145,10 +149,10 @@ const GROUPS = [
                             </div>
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
-                            <div class="font-bold text-rose-500 text-base">
+                            <div class="font-bold text-negative text-base">
                                 <app-amount [value]="totalDebts()" prefix="-" />
                             </div>
-                            <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-rose-400 transition-colors"></i>
+                            <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-negative transition-colors"></i>
                         </div>
                     </button>
                 }

@@ -27,7 +27,7 @@ interface GoalDisplay {
         <div class="card h-full">
             <div class="flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.savingsProgress') }}</div>
-                <a [routerLink]="link('pages', 'savings')" class="text-indigo-500 hover:text-indigo-400 font-medium text-sm transition-colors">
+                <a [routerLink]="link('pages', 'goals')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
                     {{ i18n.t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
                 </a>
             </div>
@@ -56,7 +56,7 @@ interface GoalDisplay {
                         <i class="pi pi-wallet text-2xl text-surface-400"></i>
                     </div>
                     <p class="text-surface-600 dark:text-surface-400 mb-2">{{ i18n.t('dashboard.savingsNoGoal') }}</p>
-                    <a [routerLink]="link('pages', 'savings')" class="text-indigo-500 hover:text-indigo-400 text-sm">
+                    <a [routerLink]="link('pages', 'goals')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 text-sm">
                         {{ i18n.t('dashboard.savingsCreateGoal') }} <i class="pi pi-arrow-right text-xs ml-1"></i>
                     </a>
                 </div>
@@ -116,12 +116,19 @@ export class SavingsProgress implements OnInit, OnDestroy {
         this.loading.set(true);
         try {
             const gs = await this.savingsService.getGoals();
+            // Uniform chrome — icon glyph differentiates the goal, not the color.
+            const sharedChrome = {
+                bgClass: 'bg-warm-100 dark:bg-warm-800',
+                iconClass: 'text-warm-700 dark:text-warm-300',
+                progressClass: 'bg-gradient-to-r from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200',
+                textColorClass: 'text-brand-700 dark:text-brand-300',
+            };
             const colorConfigs = [
-                { bgClass: 'bg-indigo-500/10', iconClass: 'text-indigo-500', progressClass: 'bg-gradient-to-r from-indigo-600 to-indigo-400', textColorClass: 'text-indigo-500', icon: 'pi pi-shield' },
-                { bgClass: 'bg-emerald-500/10', iconClass: 'text-emerald-500', progressClass: 'bg-gradient-to-r from-emerald-600 to-emerald-400', textColorClass: 'text-emerald-500', icon: 'pi pi-building' },
-                { bgClass: 'bg-cyan-500/10', iconClass: 'text-cyan-500', progressClass: 'bg-gradient-to-r from-cyan-600 to-cyan-400', textColorClass: 'text-cyan-500', icon: 'pi pi-sun' },
-                { bgClass: 'bg-violet-500/10', iconClass: 'text-violet-500', progressClass: 'bg-gradient-to-r from-violet-600 to-violet-400', textColorClass: 'text-violet-500', icon: 'pi pi-star' },
-                { bgClass: 'bg-amber-500/10', iconClass: 'text-amber-500', progressClass: 'bg-gradient-to-r from-amber-600 to-amber-400', textColorClass: 'text-amber-500', icon: 'pi pi-flag' }
+                { ...sharedChrome, icon: 'pi pi-shield' },
+                { ...sharedChrome, icon: 'pi pi-building' },
+                { ...sharedChrome, icon: 'pi pi-sun' },
+                { ...sharedChrome, icon: 'pi pi-star' },
+                { ...sharedChrome, icon: 'pi pi-flag' },
             ];
 
             const mapped = gs

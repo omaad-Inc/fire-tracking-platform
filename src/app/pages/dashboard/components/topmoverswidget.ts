@@ -16,7 +16,7 @@ interface MoverItem extends PatrimoineAssetItemDto {
         <div class="card h-full">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                    <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shadow-card">
                         <i class="pi pi-bolt text-white"></i>
                     </div>
                     <div>
@@ -62,14 +62,14 @@ interface MoverItem extends PatrimoineAssetItemDto {
                                     <polyline
                                         [attr.points]="getSparkline(item, i)"
                                         fill="none"
-                                        [attr.stroke]="item.gainPct >= 0 ? '#10b981' : '#f43f5e'"
+                                        [attr.stroke]="item.gainPct >= 0 ? '#2F8F6E' : '#B0463E'"
                                         stroke-width="2"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                     />
                                 </svg>
                                 <span class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-bold shrink-0"
-                                      [ngClass]="item.gainPct >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                      [ngClass]="item.gainPct >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                     <i class="pi text-xs mr-1" [ngClass]="item.gainPct >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                     {{ item.gainPct >= 0 ? '+' : '' }}{{ item.gainPct | number:'1.1-1' }}%
                                 </span>
@@ -88,12 +88,14 @@ export class TopMoversWidget implements OnInit {
     loading = signal(true);
     movers = signal<MoverItem[]>([]);
 
+    // All movers share the same brand gradient — the icon glyph differentiates.
+    private static readonly ICON_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
     private iconBgs = [
-        'linear-gradient(135deg, #6366f1, #4f46e5)',
-        'linear-gradient(135deg, #06b6d4, #0891b2)',
-        'linear-gradient(135deg, #10b981, #059669)',
-        'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-        'linear-gradient(135deg, #f59e0b, #d97706)'
+        TopMoversWidget.ICON_BG,
+        TopMoversWidget.ICON_BG,
+        TopMoversWidget.ICON_BG,
+        TopMoversWidget.ICON_BG,
+        TopMoversWidget.ICON_BG,
     ];
 
     async ngOnInit() {
