@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+
+
 import { Subscription } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
@@ -18,6 +20,20 @@ import { FireSettings } from '../settings/components/fire-settings';
     imports: [CommonModule, ButtonModule, DividerModule, AppAmountComponent, FireSettings],
     template: `
         <div class="flex flex-col gap-6">
+
+            <!-- Breadcrumb / back -->
+            <div class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
+                <button
+                    type="button"
+                    (click)="back()"
+                    class="inline-flex items-center gap-1.5 hover:text-surface-900 dark:hover:text-surface-0 transition-colors"
+                >
+                    <i class="pi pi-arrow-left text-xs"></i>
+                    {{ i18n.t('goals.title') }}
+                </button>
+                <i class="pi pi-angle-right text-[10px]"></i>
+                <span class="text-surface-900 dark:text-surface-0 font-medium truncate">{{ i18n.t('menu.financialGoal') }}</span>
+            </div>
 
             <!-- Header -->
             <div class="flex items-center gap-4">
@@ -95,17 +111,17 @@ import { FireSettings } from '../settings/components/fire-settings';
                 </div>
 
                 <!-- KPI Row -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
                     <!-- Years to FIRE -->
-                    <div class="card text-center !py-6">
-                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2">Années restantes</p>
+                    <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
+                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Années restantes</p>
                         @if (fire()!.yearsToFire != null) {
-                            <div class="text-3xl font-bold text-surface-900 dark:text-surface-0">
+                            <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
                                 {{ fire()!.yearsToFire | number:'1.0-1' }}
                                 <span class="text-surface-400 text-base font-normal ml-1">{{ fire()!.yearsToFire === 1 ? 'an' : 'ans' }}</span>
                             </div>
                             @if (fire()!.estimatedDate) {
-                                <p class="text-surface-400 text-xs mt-1">~ {{ formatDate(fire()!.estimatedDate!) }}</p>
+                                <p class="text-surface-400 text-xs mt-1 truncate">~ {{ formatDate(fire()!.estimatedDate!) }}</p>
                             }
                         } @else {
                             <div class="text-2xl text-surface-400">—</div>
@@ -114,29 +130,29 @@ import { FireSettings } from '../settings/components/fire-settings';
                     </div>
 
                     <!-- Monthly passive income at FIRE -->
-                    <div class="card text-center !py-6">
-                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2">Revenus passifs visés</p>
+                    <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
+                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Revenus passifs visés</p>
                         @if ((fire()!.monthlyPassiveIncomeNeeded) > 0) {
-                            <div class="text-3xl font-bold text-surface-900 dark:text-surface-0">
+                            <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
                                 <app-amount [value]="fire()!.monthlyPassiveIncomeNeeded!" />
                             </div>
-                            <p class="text-surface-400 text-xs mt-1">par mois (estimé)</p>
+                            <p class="text-surface-400 text-xs mt-1 truncate">par mois (estimé)</p>
                         } @else {
                             <div class="text-2xl text-surface-400">—</div>
                         }
                     </div>
 
                     <!-- Savings rate -->
-                    <div class="card text-center !py-6">
-                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2">Taux d'épargne</p>
+                    <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
+                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
                         @if ((fire()!.savingsRate) > 0) {
-                            <div class="text-3xl font-bold"
+                            <div class="text-3xl font-bold truncate"
                                  [class.text-emerald-500]="(fire()!.savingsRate) >= 20"
                                  [class.text-amber-500]="(fire()!.savingsRate) < 20 && (fire()!.savingsRate) >= 10"
                                  [class.text-rose-500]="(fire()!.savingsRate) < 10">
                                 {{ fire()!.savingsRate | number:'1.0-1' }}%
                             </div>
-                            <p class="text-surface-400 text-xs mt-1">
+                            <p class="text-surface-400 text-xs mt-1 truncate">
                                 @if ((fire()!.savingsRate) >= 20) { Excellent rythme }
                                 @else if ((fire()!.savingsRate) >= 10) { Bon rythme }
                                 @else { À améliorer }
@@ -165,8 +181,13 @@ export class FireDashboardPage implements OnInit, OnDestroy {
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
     private tokenService = inject(TokenService);
+    private router = inject(Router);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
+
+    back() {
+        this.router.navigate(['/', this.i18n.lang(), 'pages', 'goals']);
+    }
 
     readonly circumference = 2 * Math.PI * 78; // r=78
 

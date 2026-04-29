@@ -187,9 +187,9 @@ export class AppMobileNav implements OnInit {
                 route: ['/', this.lang, 'pages', 'transaction']
             },
             {
-                label: this.t('menu.savings'),
-                icon: 'pi pi-dollar',
-                route: ['/', this.lang, 'pages', 'savings']
+                label: this.t('menu.myGoals'),
+                icon: 'pi pi-bullseye',
+                route: ['/', this.lang, 'pages', 'goals']
             },
             {
                 label: this.t('menu.debts'),

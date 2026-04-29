@@ -134,7 +134,7 @@ export class OnboardingComponent {
             title: 'Définissez votre objectif',
             desc: 'Configurez votre objectif FIRE pour savoir où vous allez.',
             cta: 'Configurer',
-            action: () => this.router.navigate(['/', this.lang, 'pages', 'settings', 'fire']),
+            action: () => this.router.navigate(['/', this.lang, 'pages', 'fire']),
         },
     ];
 

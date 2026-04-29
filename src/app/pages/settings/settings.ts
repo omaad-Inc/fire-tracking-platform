@@ -83,18 +83,6 @@ import { environment } from '../../../environments/environment';
                     }
                 </div>
 
-                <!-- Section: FIRE -->
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-3 px-1">FIRE</h3>
-                <div class="divide-y divide-surface-200 dark:divide-surface-700 mb-8">
-                    <a routerLink="fire"
-                       class="flex items-center gap-4 py-4 px-2 cursor-pointer
-                              hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors rounded-lg">
-                        <i class="pi pi-flag text-amber-500 w-5 text-center"></i>
-                        <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">Objectif Financier</span>
-                        <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
-                    </a>
-                </div>
-
                 <!-- Section: Aide -->
                 <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-3 px-1">{{ t('settings.help') }}</h3>
                 <div class="divide-y divide-surface-200 dark:divide-surface-700 mb-8">

@@ -60,15 +60,10 @@ export class AppMenu {
             },
             // Separator
             { separator: true },
-            // Financial Goal (flagship feature)
+            // Goals — both lifetime (FIRE) and short-term goals merged here
             {
                 label: this.t('menu.fireSection'),
                 items: [
-                    {
-                        label: this.t('menu.financialGoal'),
-                        icon: 'pi pi-fw pi-flag',
-                        routerLink: this.link('pages', 'fire')
-                    },
                     {
                         label: this.t('menu.myGoals'),
                         icon: 'pi pi-fw pi-bullseye',

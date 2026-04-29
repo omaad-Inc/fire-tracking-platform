@@ -3,9 +3,12 @@ import { Settings } from './settings';
 import { AccountSettings } from './components/account';
 import { SecuritySettings } from './components/security';
 import { PreferencesSettings } from './components/preferences';
-import { FireSettings } from './components/fire-settings';
 import { HelpSettings } from './components/help';
 import { PlansSettings } from './components/plans';
+
+// FireSettings is still imported by /pages/fire (the deep-dive page); we just
+// no longer expose it as a /settings/fire route — FIRE configuration happens
+// inline on /pages/fire to avoid two surfaces for the same thing.
 
 export default [
     {
@@ -16,7 +19,6 @@ export default [
             { path: 'account',     component: AccountSettings     },
             { path: 'security',    component: SecuritySettings    },
             { path: 'preferences', component: PreferencesSettings },
-            { path: 'fire',        component: FireSettings        },
             { path: 'help',        component: HelpSettings        },
             { path: 'plans',       component: PlansSettings       },
         ]

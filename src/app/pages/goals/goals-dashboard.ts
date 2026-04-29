@@ -12,6 +12,7 @@ import { SavingsService } from '../service/savings.service';
 import { AssetsStateService } from '../service/assets-state.service';
 import { GoalCardComponent } from './components/goal-card';
 import { GoalAddDialogComponent, GoalSavePayload } from './components/goal-add-dialog';
+import { FireHeroCardComponent } from './components/fire-hero-card';
 import { SavingsProgress } from './components/goals-progress-chart';
 import { progressPercent } from './goal-utils';
 
@@ -25,6 +26,7 @@ import { progressPercent } from './goal-utils';
         AppAmountComponent,
         GoalCardComponent,
         GoalAddDialogComponent,
+        FireHeroCardComponent,
         SavingsProgress,
     ],
     providers: [MessageService, ConfirmationService],
@@ -52,6 +54,9 @@ import { progressPercent } from './goal-utils';
                     styleClass="!rounded-xl !bg-gradient-to-r !from-emerald-500 !to-cyan-500 !border-0"
                 />
             </div>
+
+            <!-- FIRE hero (lifetime goal — always visible) -->
+            <app-fire-hero-card />
 
             <!-- KPIs -->
             @if (!loading() && goals().length > 0) {
