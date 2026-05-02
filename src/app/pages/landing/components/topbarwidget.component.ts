@@ -52,6 +52,45 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
             </a>
+            <!-- Tools dropdown -->
+            <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
+                <a pRipple
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                          hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
+                          transition-all duration-200 cursor-pointer">
+                    {{ _('Outils', 'Tools') }}
+                    <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
+                       [class.rotate-180]="toolsOpen()"></i>
+                </a>
+                <div [class.hidden]="!toolsOpen()"
+                     class="absolute top-full left-0 mt-1 w-72 rounded-xl
+                            bg-surface-0 dark:bg-surface-800
+                            shadow-lg border border-surface-200 dark:border-surface-700
+                            p-2 z-30">
+                    <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
+                            <span class="text-base">🔥</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Calcule ton objectif d\u2019indépendance financière', 'Calculate your financial independence goal') }}</div>
+                        </div>
+                    </a>
+                    <a [routerLink]="[currentLang, 'tools', 'compound-interest']" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-chart-bar text-brand-700 dark:text-brand-300 text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Intérêts composés', 'Compound Interest') }}</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Visualise la puissance des intérêts composés', 'Visualize the power of compound interest') }}</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </nav>
 
         <!-- Desktop CTA -->
@@ -136,6 +175,26 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                         <i class="pi pi-tag mr-2"></i><span>{{ t('landing.nav.pricing') }}</span>
                     </a>
                 </li>
+                <!-- Tools (mobile) -->
+                <li class="border-t border-surface-200 dark:border-surface-700 pt-2 mt-1">
+                    <span class="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
+                        {{ _('Outils', 'Tools') }}
+                    </span>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <span class="mr-2">🔥</span><span>{{ _('Simulateur FIRE', 'FIRE Simulator') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, 'tools', 'compound-interest']" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-chart-bar mr-2"></i><span>{{ _('Intérêts composés', 'Compound Interest') }}</span>
+                    </a>
+                </li>
             </ul>
             <div class="flex flex-col gap-2 border-t border-surface-200 dark:border-surface-700 pt-4 mt-4">
                 <!-- Language toggle (mobile) -->
@@ -176,6 +235,7 @@ export class TopbarWidget {
     currentLang = '/fr';
     private lang: Lang = 'fr';
     mobileMenuOpen = signal(false);
+    toolsOpen = signal(false);
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);

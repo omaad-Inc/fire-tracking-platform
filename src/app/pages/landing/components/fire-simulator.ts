@@ -45,8 +45,8 @@ interface YearProjection {
                 <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 group cursor-pointer">
                         <img [src]="isDark() ? 'assets/brand/omaad-icon-inverse.svg' : 'assets/brand/omaad-icon.svg'"
-                             alt="Omaad" class="w-9 h-9 transition-transform group-hover:scale-110">
-                        <span class="font-bold text-lg text-surface-900 dark:text-surface-0 tracking-tight">Omaad</span>
+                             alt="Omaad" class="w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-110">
+                        <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad</span>
                     </a>
                     <div class="flex items-center gap-3">
                         <button (click)="toggleCurrency()"
@@ -157,7 +157,7 @@ interface YearProjection {
                             <!-- Inflation -->
                             <div class="space-y-2">
                                 <label class="flex justify-between text-sm">
-                                    <span class="text-surface-600 dark:text-surface-300">{{ isFr ? 'Taux d\'inflation' : 'Inflation rate' }}</span>
+                                    <span class="text-surface-600 dark:text-surface-300">{{ isFr ? 'Taux d\u2019inflation' : 'Inflation rate' }}</span>
                                     <span class="font-semibold text-surface-900 dark:text-surface-0">{{ inflationRate() }}%</span>
                                 </label>
                                 <input type="range" [min]="0" [max]="10" [step]="0.5"
@@ -192,14 +192,69 @@ interface YearProjection {
 
                         </div>
 
+                        <!-- Formulas -->
+                        <div class="mt-4 rounded-xl p-5
+                                    bg-surface-50 dark:bg-surface-800
+                                    border border-surface-200 dark:border-surface-700">
+                            <h3 class="text-xs font-semibold uppercase tracking-wider mb-3 text-brand-700 dark:text-brand-300">
+                                {{ isFr ? 'D\u00e9tail des calculs' : 'Calculation details' }}
+                            </h3>
+
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="text-xs font-medium mb-1 text-surface-700 dark:text-surface-200">FIRE Number</div>
+                                    <div class="text-center py-2 px-2 rounded-lg bg-surface-100 dark:bg-surface-700/50">
+                                        <span class="font-mono text-xs text-surface-900 dark:text-surface-0">
+                                            {{ isFr ? 'D\u00e9penses annuelles' : 'Annual expenses' }} / {{ isFr ? 'Taux de retrait' : 'Withdrawal rate' }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs mt-1 text-surface-500 dark:text-surface-400">
+                                        = {{ formatAmount(monthlyExpenses()) }} \u00d7 12 / {{ withdrawalRate() }}% = <strong class="text-ochre-600 dark:text-ochre-400">{{ formatAmount(fireNumber()) }}</strong>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <div class="text-xs font-medium mb-1 text-surface-700 dark:text-surface-200">{{ isFr ? 'Ann\u00e9es restantes' : 'Years to FIRE' }}</div>
+                                    <div class="text-center py-2 px-2 rounded-lg bg-surface-100 dark:bg-surface-700/50">
+                                        <span class="font-mono text-xs text-surface-900 dark:text-surface-0">
+                                            {{ isFr ? 'Ann\u00e9e o\u00f9 Patrimoine \u2265 FIRE Number' : 'Year where Wealth \u2265 FIRE Number' }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs mt-1 text-surface-500 dark:text-surface-400">
+                                        {{ isFr ? 'Patrimoine projet\u00e9 chaque ann\u00e9e' : 'Projected wealth each year' }}: W<sub>t</sub> = W<sub>t-1</sub> \u00d7 (1 + r/12)<sup>12</sup> + PMT \u00d7 12
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <div class="text-xs font-medium mb-1 text-surface-700 dark:text-surface-200">{{ isFr ? 'Revenu passif mensuel' : 'Monthly passive income' }}</div>
+                                    <div class="text-center py-2 px-2 rounded-lg bg-surface-100 dark:bg-surface-700/50">
+                                        <span class="font-mono text-xs text-surface-900 dark:text-surface-0">
+                                            {{ isFr ? 'Patrimoine futur' : 'Future wealth' }} \u00d7 (r - i) / 12
+                                        </span>
+                                    </div>
+                                    <p class="text-xs mt-1 text-surface-500 dark:text-surface-400">
+                                        {{ isFr ? 'o\u00f9' : 'where' }} r = {{ expectedReturn() }}%, i = {{ inflationRate() }}% \u2192
+                                        <strong class="text-ochre-600 dark:text-ochre-400">{{ formatAmount(monthlyPassiveIncome()) }}/{{ isFr ? 'mois' : 'mo' }}</strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <ul class="mt-4 space-y-1 text-xs text-surface-500 dark:text-surface-400 border-t border-surface-200 dark:border-surface-700 pt-3">
+                                <li><strong class="text-surface-700 dark:text-surface-200">W</strong> = {{ isFr ? 'Patrimoine' : 'Wealth' }}</li>
+                                <li><strong class="text-surface-700 dark:text-surface-200">PMT</strong> = {{ isFr ? '\u00c9pargne mensuelle' : 'Monthly savings' }} ({{ formatAmount(monthlySavings()) }})</li>
+                                <li><strong class="text-surface-700 dark:text-surface-200">r</strong> = {{ isFr ? 'Rendement annuel' : 'Annual return' }} ({{ expectedReturn() }}%)</li>
+                                <li><strong class="text-surface-700 dark:text-surface-200">i</strong> = {{ isFr ? 'Inflation' : 'Inflation' }} ({{ inflationRate() }}%)</li>
+                            </ul>
+                        </div>
+
                         <!-- Disclaimer -->
                         <div class="mt-4 px-4 py-3 rounded-xl
                                     bg-surface-100 dark:bg-surface-800/60
                                     border border-surface-200 dark:border-surface-700/50">
                             <p class="text-xs leading-relaxed text-surface-500 dark:text-surface-400">
                                 {{ isFr
-                                    ? '⚠️ Cet outil est fourni à titre informatif uniquement. Il ne constitue pas un conseil en investissement. Les performances passées ne garantissent pas les performances futures.'
-                                    : '⚠️ This tool is for informational purposes only. It does not constitute investment advice. Past performance does not guarantee future results.' }}
+                                    ? '\u26a0\ufe0f Cet outil est fourni \u00e0 titre informatif uniquement. Il ne constitue pas un conseil en investissement. Les performances pass\u00e9es ne garantissent pas les performances futures.'
+                                    : '\u26a0\ufe0f This tool is for informational purposes only. It does not constitute investment advice. Past performance does not guarantee future results.' }}
                             </p>
                         </div>
                     </div>
@@ -275,7 +330,7 @@ interface YearProjection {
                             </div>
                             @if (chartData) {
                                 <p-chart type="bar" [data]="chartData" [options]="chartOptions"
-                                         class="w-full" [style]="{ height: '440px' }" />
+                                         class="w-full" [style]="{ height: '520px' }" />
                             }
                         </div>
 
@@ -501,9 +556,18 @@ export class FireSimulator {
 
     yearsToFire = computed(() => {
         const target = this.fireNumber();
-        const proj = this.projections();
-        for (const p of proj) {
-            if (p.total >= target) return p.year;
+        if (this.currentWealth() >= target) return 0;
+
+        const monthlyRate = this.expectedReturn() / 100 / 12;
+        const monthly = this.monthlySavings();
+        if (monthlyRate <= 0 && monthly <= 0) return Infinity;
+
+        let total = this.currentWealth();
+        for (let y = 1; y <= 100; y++) {
+            for (let m = 0; m < 12; m++) {
+                total = total * (1 + monthlyRate) + monthly;
+            }
+            if (total >= target) return y;
         }
         return Infinity;
     });
@@ -633,7 +697,7 @@ export class FireSimulator {
                         title: (ctx: any) => {
                             const yr = ctx[0]?.label;
                             return yr === (isFr ? 'Auj.' : 'Now')
-                                ? (isFr ? 'Aujourd\'hui' : 'Today')
+                                ? (isFr ? 'Aujourd\u2019hui' : 'Today')
                                 : (isFr ? `Année ${yr}` : `Year ${yr}`);
                         },
                         label: (ctx: any) => `${ctx.dataset.label}: ${formatFn(ctx.raw)}`
