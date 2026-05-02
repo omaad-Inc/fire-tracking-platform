@@ -14,6 +14,7 @@ import { AdvisoryAuditPage } from './app/pages/landing/components/advisory-audit
 import { AdvisoryMissionPage } from './app/pages/landing/components/advisory-mission';
 import { AdvisoryFormationPage } from './app/pages/landing/components/advisory-formation';
 import { FireAfricaWelcome } from './app/pages/landing/components/fire-africa-welcome';
+import { FireSimulator } from './app/pages/landing/components/fire-simulator';
 
 // Guard to redirect OAuth tokens from root to callback handler
 const oauthTokenRedirect: CanActivateFn = () => {
@@ -57,6 +58,7 @@ export const appRoutes: Routes = [
     { path: ':lang/advisory/mission', component: AdvisoryMissionPage },
     { path: ':lang/advisory/formation', component: AdvisoryFormationPage },
     { path: ':lang/fire-africa/welcome', component: FireAfricaWelcome },
+    { path: ':lang/tools/fire-simulator', component: FireSimulator },
     
     // Main app with layout (protected routes)
     {
