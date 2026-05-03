@@ -292,7 +292,7 @@ export class Login {
                     // The dashboard will fetch user data if needed
                     this.isLoading.set(false);
                     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                    this.router.navigate([returnUrl]);
+                    this.router.navigate([returnUrl], { replaceUrl: true });
                     
                     // Fetch user info in background (optional)
                     this.authService.getCurrentUser().subscribe({
@@ -327,12 +327,12 @@ export class Login {
                     next: () => {
                         this.isGoogleLoading.set(false);
                         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                        this.router.navigate([returnUrl]);
+                        this.router.navigate([returnUrl], { replaceUrl: true });
                     },
                     error: () => {
                         this.isGoogleLoading.set(false);
                         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                        this.router.navigate([returnUrl]);
+                        this.router.navigate([returnUrl], { replaceUrl: true });
                     }
                 });
             },

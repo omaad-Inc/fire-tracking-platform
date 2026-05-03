@@ -334,11 +334,11 @@ export class Register {
                 this.authService.getCurrentUser().subscribe({
                     next: () => {
                         this.isGoogleLoading.set(false);
-                        this.router.navigate([this.currentLang]);
+                        this.router.navigate([this.currentLang], { replaceUrl: true });
                     },
                     error: () => {
                         this.isGoogleLoading.set(false);
-                        this.router.navigate([this.currentLang]);
+                        this.router.navigate([this.currentLang], { replaceUrl: true });
                     }
                 });
             },

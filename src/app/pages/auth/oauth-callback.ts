@@ -67,7 +67,7 @@ export class OAuthCallback implements OnInit {
                 this.message = 'Success! Redirecting...';
                 const lang = this.getLang();
                 setTimeout(() => {
-                    this.router.navigate([`/${lang}`]);
+                    this.router.navigate([`/${lang}`], { replaceUrl: true });
                 }, 500);
             },
             error: (err) => {
