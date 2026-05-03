@@ -38,8 +38,8 @@ import { RippleModule } from 'primeng/ripple';
                 <!-- Confirmation -->
                 <p class="text-lg mb-8 leading-relaxed" style="color: #8A98AE;">
                     {{ isFr
-                        ? 'Ton inscription est confirmée. Première édition : 1er juin 2026.'
-                        : 'Your subscription is confirmed. First edition: June 1, 2026.' }}
+                        ? 'Ton inscription est confirmée. Tu recevras la prochaine édition directement dans ta boîte mail.'
+                        : 'Your subscription is confirmed. You will receive the next edition straight to your inbox.' }}
                 </p>
 
                 <!-- Ochre accent line -->
@@ -47,31 +47,24 @@ import { RippleModule } from 'primeng/ripple';
                     <div class="w-16 h-0.5 rounded-full" style="background-color: #C77B3C;"></div>
                 </div>
 
-                <!-- Omaad pitch -->
+                <!-- Beta teaser -->
                 <div class="rounded-2xl px-8 py-6 mb-10 text-left"
                      style="background-color: rgba(26, 39, 64, 0.6); border: 1px solid rgba(138, 152, 174, 0.15);">
                     <p class="text-base leading-relaxed" style="color: #C2BDB1;">
                         {{ isFr
-                            ? 'En attendant, découvre Omaad — la plateforme de gestion patrimoniale pensée pour la diaspora africaine et la zone UEMOA. Patrimoine, épargne, FIRE, multi-devises FCFA/EUR — tout dans un seul tableau de bord.'
-                            : 'In the meantime, discover Omaad — the wealth management platform built for the African diaspora and the WAEMU zone. Assets, savings, FIRE, multi-currency FCFA/EUR — all in one dashboard.' }}
+                            ? 'On construit aussi une plateforme de gestion patrimoniale pour la diaspora africaine et la zone UEMOA. La bêta privée arrive bientôt — les abonnés FIRE Africa seront les premiers informés.'
+                            : 'We are also building a wealth management platform for the African diaspora and the WAEMU zone. Private beta is coming soon — FIRE Africa subscribers will be the first to know.' }}
                     </p>
                 </div>
 
-                <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                    <a href="https://omaad.africa" target="_blank" pButton pRipple
+                <!-- CTA Button -->
+                <div class="flex justify-center mb-12">
+                    <a href="https://www.linkedin.com/company/omaad" target="_blank" pButton pRipple
                        class="!font-semibold !rounded-xl !px-8 !py-3.5 !text-base !border-0 !text-white
                               inline-flex items-center justify-center gap-2"
                        style="background: linear-gradient(135deg, #C77B3C 0%, #AB6630 100%);">
-                        <i class="pi pi-external-link text-sm"></i>
-                        {{ isFr ? 'Découvrir Omaad' : 'Discover Omaad' }}
-                    </a>
-                    <a href="https://www.linkedin.com/company/omaad" target="_blank" pButton pRipple
-                       class="!font-semibold !rounded-xl !px-8 !py-3.5 !text-base
-                              inline-flex items-center justify-center gap-2"
-                       style="background: transparent; border: 1.5px solid rgba(138, 152, 174, 0.3); color: #8A98AE;">
                         <i class="pi pi-linkedin text-sm"></i>
-                        {{ isFr ? 'Suivre sur LinkedIn' : 'Follow on LinkedIn' }}
+                        {{ isFr ? 'Suivre Omaad sur LinkedIn' : 'Follow Omaad on LinkedIn' }}
                     </a>
                 </div>
 
