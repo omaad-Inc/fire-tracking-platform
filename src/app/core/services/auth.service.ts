@@ -138,19 +138,48 @@ export class AuthService {
     }
 
     /**
-     * Initiate Google OAuth login
-     * Redirects to backend which then redirects to Google
+     * Initiate Google OAuth login via Google Identity Services.
+     * Uses a client-side popup instead of a full-page redirect so
+     * the PWA standalone window is preserved.
      */
-    loginWithGoogle(): void {
-        window.location.href = `${this.apiUrl}/auth/google/login`;
+    loginWithGoogle(): Observable<AuthResponse> {
+        return new Observable<AuthResponse>(subscriber => {
+            if (typeof google === 'undefined' || !google?.accounts?.id) {
+                subscriber.error(new Error('Google Identity Services not loaded. Please try again.'));
+                return;
+            }
+
+            google.accounts.id.initialize({
+                client_id: environment.googleClientId,
+                callback: (response: GoogleCredentialResponse) => {
+                    this.exchangeGoogleToken(response.credential).subscribe({
+                        next: result => {
+                            subscriber.next(result);
+                            subscriber.complete();
+                        },
+                        error: err => subscriber.error(err)
+                    });
+                },
+                context: 'signin',
+                cancel_on_tap_outside: true,
+            });
+
+            google.accounts.id.prompt((notification) => {
+                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                    subscriber.error(new Error(
+                        'Google sign-in popup was blocked. Please allow popups or try again.'
+                    ));
+                }
+            });
+        });
     }
 
     /**
-     * Exchange Google ID token for app token (SPA flow)
+     * Exchange Google ID token for app token (SPA/PWA flow).
      */
     exchangeGoogleToken(idToken: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/google/token`, null, {
-            params: { id_token: idToken }
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/google/token`, {
+            id_token: idToken
         }).pipe(
             tap(response => {
                 this.clearAllCaches();

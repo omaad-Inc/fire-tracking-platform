@@ -329,6 +329,28 @@ export class Register {
 
     registerWithGoogle(): void {
         this.isGoogleLoading.set(true);
-        this.authService.loginWithGoogle();
+        this.authService.loginWithGoogle().subscribe({
+            next: () => {
+                this.authService.getCurrentUser().subscribe({
+                    next: () => {
+                        this.isGoogleLoading.set(false);
+                        this.router.navigate([this.currentLang]);
+                    },
+                    error: () => {
+                        this.isGoogleLoading.set(false);
+                        this.router.navigate([this.currentLang]);
+                    }
+                });
+            },
+            error: (error) => {
+                this.isGoogleLoading.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Google Sign-Up Failed',
+                    detail: error.message || 'Could not sign up with Google',
+                    life: 5000
+                });
+            }
+        });
     }
 }

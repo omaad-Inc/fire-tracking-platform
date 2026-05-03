@@ -321,6 +321,30 @@ export class Login {
 
     loginWithGoogle(): void {
         this.isGoogleLoading.set(true);
-        this.authService.loginWithGoogle();
+        this.authService.loginWithGoogle().subscribe({
+            next: () => {
+                this.authService.getCurrentUser().subscribe({
+                    next: () => {
+                        this.isGoogleLoading.set(false);
+                        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                        this.router.navigate([returnUrl]);
+                    },
+                    error: () => {
+                        this.isGoogleLoading.set(false);
+                        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                        this.router.navigate([returnUrl]);
+                    }
+                });
+            },
+            error: (error) => {
+                this.isGoogleLoading.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Google Login Failed',
+                    detail: error.message || 'Could not sign in with Google',
+                    life: 5000
+                });
+            }
+        });
     }
 }
