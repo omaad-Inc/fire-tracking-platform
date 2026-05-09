@@ -38,7 +38,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <div class="flex items-start gap-3 p-4 mb-6 bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800 rounded-xl">
                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 flex-shrink-0"></i>
                 <div class="text-sm text-surface-700 dark:text-surface-300 leading-relaxed">
-                    <span class="font-semibold text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300">À quoi ça sert ?</span>
+                    <span class="font-semibold text-brand-700 dark:text-ochre-400">À quoi ça sert ?</span>
                     <span class="ml-1">C'est simplement un cap que vous vous fixez : le montant total d'épargne et d'investissements à partir duquel vos revenus passifs (loyers, dividendes, intérêts…) couvrent vos dépenses de vie. Une fois ce cap atteint, vous n'êtes plus obligé de travailler pour vivre.</span>
                     <br/>
                     <span class="text-surface-500 dark:text-surface-500 text-xs mt-1 block">Cet objectif est facultatif. L'appli fonctionne parfaitement sans.</span>

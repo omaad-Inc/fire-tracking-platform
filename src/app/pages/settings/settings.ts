@@ -56,16 +56,18 @@ import { environment } from '../../../environments/environment';
                 <!-- PRO upgrade banner -->
                 <a [routerLink]="['/', lang, 'pages', 'plans']"
                    class="block mb-8 p-4 rounded-2xl bg-gradient-to-r from-ochre-100 to-ochre-200/60
-                          border border-ochre-300/50 hover:border-ochre-400/60 transition-all">
+                          dark:from-ochre-900/40 dark:to-ochre-800/30
+                          border border-ochre-300/50 dark:border-ochre-600/40
+                          hover:border-ochre-400/60 dark:hover:border-ochre-500/50 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-600 flex items-center justify-center shrink-0">
-                            <i class="pi pi-crown text-white"></i>
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-400 flex items-center justify-center shrink-0">
+                            <i class="pi pi-crown text-warm-900"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Passer à Omaad Pro</p>
-                            <p class="text-xs text-surface-500 dark:text-surface-400">Débloquez les fonctionnalités avancées</p>
+                            <p class="font-semibold text-surface-900 dark:text-ochre-300 text-sm">Passer à Omaad Pro</p>
+                            <p class="text-xs text-surface-500 dark:text-ochre-400/70">Débloquez les fonctionnalités avancées</p>
                         </div>
-                        <i class="pi pi-chevron-right text-surface-400 text-xs shrink-0"></i>
+                        <i class="pi pi-chevron-right text-ochre-400 dark:text-ochre-500 text-xs shrink-0"></i>
                     </div>
                 </a>
 

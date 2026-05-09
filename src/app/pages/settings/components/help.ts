@@ -1,11 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { environment } from '../../../../environments/environment';
+import { TokenService } from '../../../core/services/token.service';
 
 interface FaqItem {
     question: string;
@@ -63,7 +66,7 @@ interface FaqItem {
                         <div class="px-5">
                             <button (click)="item.open = !item.open"
                                     class="w-full flex items-center justify-between py-4 text-left group">
-                                <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-brand-700 dark:text-brand-300 transition-colors">
+                                <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-ochre-600 dark:group-hover:text-ochre-400 transition-colors">
                                     {{ item.question }}
                                 </span>
                                 <i class="pi shrink-0 transition-transform duration-200 text-surface-400"
@@ -141,7 +144,7 @@ interface FaqItem {
                                 <i class="pi {{ res.icon }} {{ res.color }}"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 group-hover:text-brand-700 dark:text-brand-300 transition-colors">{{ res.label }}</p>
+                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 group-hover:text-ochre-600 dark:group-hover:text-ochre-400 transition-colors">{{ res.label }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400">{{ res.desc }}</p>
                             </div>
                             <i class="pi pi-external-link text-xs text-surface-400 shrink-0"></i>
@@ -160,11 +163,13 @@ interface FaqItem {
     `
 })
 export class HelpSettings {
+    private http = inject(HttpClient);
+    private tokenService = inject(TokenService);
+    private messageService = inject(MessageService);
+
     searchQuery = '';
     isSending   = signal(false);
     contactForm = { subject: '', message: '' };
-
-    constructor(private messageService: MessageService) {}
 
     readonly quickLinks = [
         { label: 'Compte & Profil',  tag: 'compte',    icon: 'pi-user',          color: 'text-brand-700 dark:text-brand-300',  bg: 'bg-brand-700/10 dark:bg-brand-300/15'  },
@@ -259,16 +264,36 @@ export class HelpSettings {
     sendMessage() {
         if (!this.contactForm.subject || !this.contactForm.message) return;
         this.isSending.set(true);
-        // Simulate send (no real email API yet)
-        setTimeout(() => {
-            this.isSending.set(false);
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Message envoyé',
-                detail: 'Nous vous répondrons dans les 24–48 h. Merci !',
-                life: 5000
-            });
-            this.contactForm = { subject: '', message: '' };
-        }, 1200);
+
+        const user = this.tokenService.user();
+        const payload = {
+            fullName: user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] : 'Utilisateur',
+            email: user?.email || 'no-reply@omaad.app',
+            company: 'Omaad Wealth (Support)',
+            needType: this.contactForm.subject,
+            message: this.contactForm.message
+        };
+
+        this.http.post(`${environment.apiUrl}/contact`, payload).subscribe({
+            next: () => {
+                this.isSending.set(false);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Message envoyé',
+                    detail: 'Nous vous répondrons dans les 24–48 h. Merci !',
+                    life: 5000
+                });
+                this.contactForm = { subject: '', message: '' };
+            },
+            error: () => {
+                this.isSending.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: 'Impossible d\'envoyer le message. Réessayez plus tard.',
+                    life: 5000
+                });
+            }
+        });
     }
 }

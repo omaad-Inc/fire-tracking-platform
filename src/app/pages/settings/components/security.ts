@@ -89,7 +89,7 @@ import { firstValueFrom } from 'rxjs';
                                     </div>
                                 </div>
                                 <button pButton label="Modifier" [outlined]="true" size="small"
-                                        class="shrink-0" (click)="openPasswordDialog()"></button>
+                                        class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500" (click)="openPasswordDialog()"></button>
                             </div>
                         </div>
                     }
@@ -171,7 +171,7 @@ import { firstValueFrom } from 'rxjs';
                                     </div>
                                 </div>
                                 <button pButton label="Configurer" size="small" [outlined]="true"
-                                        (click)="startPinSetup()" class="shrink-0"></button>
+                                        (click)="startPinSetup()" class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500"></button>
                             </div>
                         } @else {
                             <!-- PIN entry UI -->
