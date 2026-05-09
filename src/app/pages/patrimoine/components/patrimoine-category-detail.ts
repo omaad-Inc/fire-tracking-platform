@@ -65,10 +65,14 @@ const CATEGORY_LABELS: Record<string, string> = {
     collectibles: 'Collections', commodities: 'Matières premières', other: 'Autres',
 };
 
-// Donut palette — brand navy + ochre + warm-grays. Same scale as
-// `chartTheme.categorical` in core/theme/chart-theme.ts.
-// Light theme; dark mode swaps via the chartTheme helper if needed.
-const DONUT_COLORS = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1', '#08111E', '#71421C'];
+const DONUT_COLORS_LIGHT = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1', '#08111E', '#71421C'];
+const DONUT_COLORS_DARK  = ['#8A98AE', '#D8A369', '#B6BFCD', '#EBD0B0', '#9C988C', '#C2BDB1', '#DEDAD0', '#F1EDE5', '#4D5F80', '#F4E5D2'];
+
+function getDonutColors(): string[] {
+    const isDark = typeof document !== 'undefined' &&
+        (document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark'));
+    return isDark ? DONUT_COLORS_DARK : DONUT_COLORS_LIGHT;
+}
 
 @Component({
     selector: 'app-patrimoine-category-detail',
@@ -399,7 +403,8 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     }
 
     private buildDonut() {
-        const colors = this.items.map((_, i) => DONUT_COLORS[i % DONUT_COLORS.length]);
+        const donutColors = getDonutColors();
+        const colors = this.items.map((_, i) => donutColors[i % donutColors.length]);
         const tv = this.totalValue;
         const cs = this.cs;
 
@@ -442,7 +447,8 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     }
 
     donutColor(index: number): string {
-        return DONUT_COLORS[index % DONUT_COLORS.length];
+        const colors = getDonutColors();
+        return colors[index % colors.length];
     }
 
     getCategoryIcon(cat?: string): string  { return CATEGORY_ICONS[cat ?? ''] ?? 'pi pi-box'; }

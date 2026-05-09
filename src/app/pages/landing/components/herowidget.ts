@@ -62,7 +62,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <div class="flex flex-wrap justify-center lg:justify-start gap-4">
                             <button pButton pRipple [rounded]="true" [routerLink]="currentLang"
-                                class="!text-lg !px-8 !py-3 !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold hover:!shadow-lg hover:!shadow-card transition-all duration-300">
+                                class="!text-lg !px-8 !py-3 !bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !font-semibold !text-warm-900 hover:!shadow-lg hover:!shadow-card transition-all duration-300">
                                 <i class="pi pi-chart-line mr-2"></i>
                                 {{ t('landing.hero.ctaDashboard') }}
                             </button>

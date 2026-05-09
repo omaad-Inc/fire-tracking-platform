@@ -38,7 +38,7 @@ import { AuthService } from '../../core/services/auth.service';
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
                         Pas encore de compte ?
-                        <a [routerLink]="[currentLang, 'auth', 'register']" class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-300 font-medium cursor-pointer">
+                        <a [routerLink]="[currentLang, 'auth', 'register']" class="text-brand-700 dark:text-ochre-400 hover:text-brand-500 dark:hover:text-ochre-300 font-medium cursor-pointer">
                             S'inscrire <i class="pi pi-chevron-right text-xs"></i>
                         </a>
                     </p>

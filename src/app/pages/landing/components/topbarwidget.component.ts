@@ -120,8 +120,8 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <button pButton pRipple [label]="t('landing.nav.register')"
                     [routerLink]="[currentLang, 'auth', 'register']"
                     [rounded]="true"
-                    class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
-                           hover:!shadow-lg hover:!shadow-card transition-all duration-300">
+                    class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
+                           dark:!text-warm-900 hover:!shadow-lg hover:!shadow-card transition-all duration-300">
             </button>
         </div>
 
@@ -221,8 +221,8 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <button pButton pRipple [label]="t('landing.nav.register')"
                         [routerLink]="[currentLang, 'auth', 'register']"
                         [rounded]="true"
-                        class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
-                               hover:!shadow-lg hover:!shadow-card transition-all duration-300 w-full justify-center">
+                        class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
+                               dark:!text-warm-900 hover:!shadow-lg hover:!shadow-card transition-all duration-300 w-full justify-center">
                 </button>
             </div>
         </div>

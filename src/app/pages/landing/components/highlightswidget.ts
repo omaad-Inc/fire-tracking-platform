@@ -16,7 +16,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         {{ t('landing.highlights.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-positive-500">{{ t('landing.highlights.h2b') }}</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-positive-500 dark:from-ochre-400 dark:to-positive-400">{{ t('landing.highlights.h2b') }}</span>
                     </h2>
                     <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">{{ t('landing.highlights.description') }}</p>
                 </div>

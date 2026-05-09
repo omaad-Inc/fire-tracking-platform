@@ -71,8 +71,8 @@ export class LayoutService {
         preset: 'Aura',
         primary: 'emerald',
         surface: 'slate',
-        darkTheme: true,
-        themeMode: 'dark', // Default to dark mode for consistent Finary-like aesthetic
+        darkTheme: false,
+        themeMode: 'light',
         menuMode: 'static'
     };
 

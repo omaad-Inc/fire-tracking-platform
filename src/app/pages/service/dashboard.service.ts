@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
 import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
+import { isDarkMode } from '../../core/theme/chart-theme';
 
 export interface DashboardStats {
     netWorth: number;
@@ -37,10 +38,8 @@ export interface AssetAllocation {
 }
 
 // Brand-tokenized chart palette — navy + ochre + warm-grays.
-// The CATEGORY_COLORS map gives each category a distinct shade from the
-// `chartTheme.categorical` scale so distribution donuts can still tell
-// slices apart, but the whole palette stays within the brand identity.
-const CATEGORY_COLORS: Record<string, string> = {
+// Light and dark variants so donut slices remain visible on both backgrounds.
+const CATEGORY_COLORS_LIGHT: Record<string, string> = {
     'real_estate':    '#1A2740', // brand-700 (anchor)
     'stocks':         '#C77B3C', // ochre-500 (accent)
     'bonds':          '#4D5F80', // brand-400
@@ -57,6 +56,28 @@ const CATEGORY_COLORS: Record<string, string> = {
     'commodities':    '#8A98AE', // brand-300
     'other':          '#B6BFCD'  // brand-200
 };
+
+const CATEGORY_COLORS_DARK: Record<string, string> = {
+    'real_estate':    '#8A98AE', // brand-300
+    'stocks':         '#D8A369', // ochre-400
+    'bonds':          '#B6BFCD', // brand-200
+    'crypto':         '#EBD0B0', // ochre-200
+    'cash':           '#9C988C', // warm-400
+    'retirement':     '#C2BDB1', // warm-300
+    'life_insurance': '#DEDAD0', // warm-200
+    'savings_account':'#F1EDE5', // warm-100
+    'business':       '#4D5F80', // brand-400
+    'vehicle':        '#D8A369', // ochre-400
+    'tontine':        '#B6BFCD', // brand-200
+    'mobile_money':   '#F4E5D2', // ochre-100
+    'collectibles':   '#C2BDB1', // warm-300
+    'commodities':    '#EBD0B0', // ochre-200
+    'other':          '#DEDAD0'  // warm-200
+};
+
+function getCategoryColors(): Record<string, string> {
+    return isDarkMode() ? CATEGORY_COLORS_DARK : CATEGORY_COLORS_LIGHT;
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
     'real_estate':   'Immobilier',
@@ -76,8 +97,7 @@ const CATEGORY_LABELS: Record<string, string> = {
     'other':         'Autres'
 };
 
-// Brand-tokenized expense palette — same scale as `chartTheme.categorical`.
-const EXPENSE_COLORS: string[] = [
+const EXPENSE_COLORS_LIGHT: string[] = [
     '#1A2740', // brand-700
     '#C77B3C', // ochre-500
     '#4D5F80', // brand-400
@@ -89,6 +109,23 @@ const EXPENSE_COLORS: string[] = [
     '#71421C', // ochre-800
     '#08111E'  // brand-950
 ];
+
+const EXPENSE_COLORS_DARK: string[] = [
+    '#8A98AE', // brand-300
+    '#D8A369', // ochre-400
+    '#B6BFCD', // brand-200
+    '#EBD0B0', // ochre-200
+    '#9C988C', // warm-400
+    '#C2BDB1', // warm-300
+    '#DEDAD0', // warm-200
+    '#F1EDE5', // warm-100
+    '#F4E5D2', // ochre-100
+    '#4D5F80'  // brand-400
+];
+
+function getExpenseColors(): string[] {
+    return isDarkMode() ? EXPENSE_COLORS_DARK : EXPENSE_COLORS_LIGHT;
+}
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -284,7 +321,7 @@ export class DashboardService {
                 category: CATEGORY_LABELS[d.category] || d.category,
                 value: d.value,
                 percentage: d.percentage,
-                color: CATEGORY_COLORS[d.category] || CATEGORY_COLORS['other']
+                color: getCategoryColors()[d.category] || getCategoryColors()['other']
             }));
         } catch (error) {
             console.error('Error fetching asset distribution:', error);
@@ -302,7 +339,7 @@ export class DashboardService {
                 category: d.category,
                 value: d.value,
                 percentage: d.percentage,
-                color: EXPENSE_COLORS[index % EXPENSE_COLORS.length]
+                color: getExpenseColors()[index % getExpenseColors().length]
             }));
         } catch (error) {
             console.error('Error fetching expense distribution:', error);

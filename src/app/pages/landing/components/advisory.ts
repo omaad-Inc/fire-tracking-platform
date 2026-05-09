@@ -2,6 +2,7 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,6 +11,7 @@ import { SelectModule } from 'primeng/select';
 import { TopbarWidget } from './topbarwidget.component';
 import { FooterWidget } from './footerwidget';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { environment } from '../../../../environments/environment';
 
 interface ContactForm {
     fullName: string;
@@ -52,13 +54,13 @@ interface ContactForm {
 
                 <div class="relative max-w-5xl mx-auto text-center">
                     <!-- Overline -->
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-6"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-6"><i class="pi pi-sparkles text-ochre-300 text-xs"></i><span class="text-ochre-300 text-sm font-medium">
                         {{ _('Cabinet de conseil Data & IA', 'Data & AI Consulting Firm') }}
                     </span></div>
 
                     <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
                         {{ _('Partenaire de votre', 'Partner for your') }}<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-ochre-300 to-ochre-400">
                             {{ _('transformation Data & IA', 'Data & AI transformation') }}
                         </span>
                     </h1>
@@ -71,7 +73,7 @@ interface ContactForm {
                     <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                         <button pButton pRipple [label]="ctaProject()"
                                 (click)="scrollTo('contact')"
-                                class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
+                                class="!bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !font-semibold !text-warm-900
                                        !tracking-wide !px-8 !py-3 !rounded-lg
                                        hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                         </button>
@@ -104,7 +106,7 @@ interface ContactForm {
                 <div class="max-w-6xl mx-auto">
                     <!-- Section header -->
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-ochre-400/15 border border-brand-200 dark:border-ochre-700/40 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-ochre-400 text-xs"></i><span class="text-brand-700 dark:text-ochre-400 text-sm font-medium">
                             {{ _('CE QUI NOUS DISTINGUE', 'WHAT SETS US APART') }}
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white leading-tight max-w-2xl">
@@ -118,7 +120,7 @@ interface ContactForm {
                             <button (click)="activeTab.set(i)"
                                     class="px-5 py-3 text-sm font-semibold tracking-wide rounded-t-lg transition-all duration-200 border-b-2 -mb-px"
                                     [class]="activeTab() === i
-                                        ? 'border-brand-700 text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-700/20'
+                                        ? 'border-brand-700 dark:border-ochre-400 text-brand-700 dark:text-ochre-400 bg-brand-50 dark:bg-ochre-400/10'
                                         : 'border-transparent text-warm-500 dark:text-warm-400 hover:text-warm-800 dark:hover:text-warm-200 hover:border-warm-300'">
                                 {{ diff.tab }}
                             </button>
@@ -138,8 +140,8 @@ interface ContactForm {
                                     </p>
                                     <button pButton pRipple [label]="ctaProject()"
                                             (click)="scrollTo('contact')"
-                                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-semibold
-                                                   !tracking-wide !px-8 !py-3 !rounded-lg
+                                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
+                                                   dark:!text-warm-900 !tracking-wide !px-8 !py-3 !rounded-lg
                                                    hover:!shadow-lg hover:!shadow-card transition-all duration-300">
                                     </button>
                                 </div>
@@ -172,7 +174,7 @@ interface ContactForm {
             <section id="offres" class="bg-warm-100 dark:bg-warm-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-ochre-400/15 border border-brand-200 dark:border-ochre-700/40 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-ochre-400 text-xs"></i><span class="text-brand-700 dark:text-ochre-400 text-sm font-medium">
                             {{ _('CONSTRUIRE VOS FONDATIONS DATA', 'BUILD YOUR DATA FOUNDATIONS') }}
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white leading-tight max-w-2xl">
@@ -205,7 +207,7 @@ interface ContactForm {
                                 <!-- Right — white content area -->
                                 <div class="flex-1 p-8 lg:p-10 flex flex-col justify-between">
                                     <div>
-                                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-brand-700 dark:text-brand-300 mb-3 block">
+                                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-brand-700 dark:text-ochre-400 mb-3 block">
                                             {{ offer.eyebrow }}
                                         </span>
                                         <h3 class="text-2xl font-bold text-warm-900 dark:text-white mb-2">{{ offer.title }}</h3>
@@ -227,8 +229,8 @@ interface ContactForm {
                                             [routerLink]="[currentLang, 'advisory', offer.route]"
                                             class="self-start !bg-transparent !border !border-warm-300 dark:!border-warm-600
                                                    !text-warm-700 dark:!text-warm-200 !font-semibold !tracking-wide
-                                                   !rounded-lg hover:!border-brand-700 hover:!text-brand-700 dark:text-brand-300
-                                                   dark:hover:!text-brand-700 dark:text-brand-300 transition-all duration-200">
+                                                   !rounded-lg hover:!border-brand-700 hover:!text-brand-700
+                                                   dark:hover:!border-ochre-400 dark:hover:!text-ochre-400 transition-all duration-200">
                                     </button>
                                 </div>
                             </div>
@@ -242,7 +244,7 @@ interface ContactForm {
             ══════════════════════════════════════════ -->
             <section class="bg-brand-900 py-20 px-6 lg:px-20">
                 <div class="max-w-4xl mx-auto text-center">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-4"><i class="pi pi-sparkles text-ochre-300 text-xs"></i><span class="text-ochre-300 text-sm font-medium">
                         {{ _('UN PROJET EN TÊTE ?', 'HAVE A PROJECT IN MIND?') }}
                     </span></div>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
@@ -250,7 +252,7 @@ interface ContactForm {
                     </h2>
                     <button pButton pRipple [label]="ctaContact()"
                             (click)="scrollTo('contact')"
-                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
+                            class="!bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !font-bold !text-warm-900
                                    !tracking-wide !px-10 !py-4 !rounded-lg !text-base
                                    hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                     </button>
@@ -264,7 +266,7 @@ interface ContactForm {
             <section class="bg-warm-100 dark:bg-warm-800/50 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-ochre-400/15 border border-brand-200 dark:border-ochre-700/40 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-ochre-400 text-xs"></i><span class="text-brand-700 dark:text-ochre-400 text-sm font-medium">
                             {{ _('CHAQUE MARCHÉ A SES RÉALITÉS', 'EVERY MARKET HAS ITS REALITIES') }}
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white leading-tight max-w-2xl">
@@ -312,7 +314,7 @@ interface ContactForm {
             <section class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="mb-14">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-4"><i class="pi pi-sparkles text-ochre-300 text-xs"></i><span class="text-ochre-300 text-sm font-medium">
                             MODERN DATA STACK
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-white leading-tight max-w-2xl">
@@ -347,7 +349,7 @@ interface ContactForm {
             <section class="bg-white dark:bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center mb-16">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-ochre-400/15 border border-brand-200 dark:border-ochre-700/40 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-ochre-400 text-xs"></i><span class="text-brand-700 dark:text-ochre-400 text-sm font-medium">
                             {{ _('SIMPLE ET TRANSPARENT', 'SIMPLE AND TRANSPARENT') }}
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-warm-900 dark:text-white mb-4">
@@ -362,8 +364,8 @@ interface ContactForm {
                         @for (step of steps; track step.num) {
                             <div class="relative rounded-2xl bg-warm-100 dark:bg-warm-800 p-8">
                                 <!-- Step number badge -->
-                                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6 font-bold text-xl text-white"
-                                     style="background: linear-gradient(135deg, #1A2740, #1A2740)">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6 font-bold text-xl text-white
+                                            bg-gradient-to-br from-brand-700 to-brand-500 dark:from-ochre-500 dark:to-ochre-400 dark:text-warm-900">
                                     {{ step.num }}
                                 </div>
                                 <h4 class="font-bold text-warm-900 dark:text-white mb-3 text-lg">{{ step.title }}</h4>
@@ -372,8 +374,8 @@ interface ContactForm {
                                 <!-- Connector arrow (desktop only) -->
                                 @if (step.num !== '4') {
                                     <div class="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                                        <div class="w-6 h-6 rounded-full bg-brand-700 flex items-center justify-center">
-                                            <i class="pi pi-arrow-right text-white text-xs"></i>
+                                        <div class="w-6 h-6 rounded-full bg-brand-700 dark:bg-ochre-500 flex items-center justify-center">
+                                            <i class="pi pi-arrow-right text-white dark:text-warm-900 text-xs"></i>
                                         </div>
                                     </div>
                                 }
@@ -384,8 +386,8 @@ interface ContactForm {
                     <div class="text-center mt-14">
                         <button pButton pRipple [label]="ctaContactShort()"
                                 (click)="scrollTo('contact')"
-                                class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
-                                       !tracking-wide !px-10 !py-4 !rounded-lg !text-base
+                                class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-bold
+                                       dark:!text-warm-900 !tracking-wide !px-10 !py-4 !rounded-lg !text-base
                                        hover:!shadow-xl hover:!shadow-card transition-all duration-300">
                         </button>
                     </div>
@@ -398,7 +400,7 @@ interface ContactForm {
             <section id="contact" class="bg-brand-900 py-24 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto">
                     <div class="text-center mb-12">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 border border-brand-200 dark:border-brand-700 mb-4"><i class="pi pi-sparkles text-brand-700 dark:text-brand-300 text-xs"></i><span class="text-brand-300 text-sm font-medium">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-4"><i class="pi pi-sparkles text-ochre-300 text-xs"></i><span class="text-ochre-300 text-sm font-medium">
                             {{ _('DÉMARRONS ENSEMBLE', 'LET’S START TOGETHER') }}
                         </span></div>
                         <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
@@ -495,8 +497,8 @@ interface ContactForm {
                             </div>
 
                             <!-- Social proof note -->
-                            <div class="flex items-start gap-3 p-4 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800">
-                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
+                            <div class="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10">
+                                <i class="pi pi-info-circle text-ochre-400 mt-0.5 shrink-0"></i>
                                 <p class="text-sm text-warm-400">
                                     {{ socialProof1() }}
                                     {{ socialProof2() }}
@@ -508,8 +510,8 @@ interface ContactForm {
                                     icon="pi pi-send"
                                     [loading]="submitting()"
                                     [disabled]="contactForm.invalid || submitting()"
-                                    class="w-full !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !font-bold
-                                           !tracking-wide !py-4 !rounded-lg !text-base
+                                    class="w-full !bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-bold
+                                           dark:!text-warm-900 !tracking-wide !py-4 !rounded-lg !text-base
                                            hover:!shadow-xl hover:!shadow-card transition-all duration-300
                                            disabled:!opacity-50 disabled:!cursor-not-allowed">
                             </button>
@@ -525,6 +527,7 @@ interface ContactForm {
 export class AdvisoryPage {
     private router = inject(Router);
     private i18n   = inject(I18nService);
+    private http   = inject(HttpClient);
     currentLang = '/fr';
 
     /** True when display language is French */
@@ -567,31 +570,31 @@ export class AdvisoryPage {
               title: f ? 'Expertise en Data Engineering' : 'Data Engineering Expertise',
               desc: f ? 'Conçue par des praticiens pour des praticiens, notre approche repose sur une maîtrise approfondie des architectures data modernes. Nous concevons des plateformes fiables, performantes et durables, adaptées aux contraintes réelles des entreprises.'
                      : 'Built by practitioners for practitioners, our approach relies on deep mastery of modern data architectures. We design reliable, performant and sustainable platforms adapted to the real constraints of businesses.',
-              icon: 'pi pi-server', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
+              icon: 'pi pi-server', iconBg: 'linear-gradient(135deg, #4D5F80, #8A98AE)',
               keywords: ['Snowflake', 'dbt', 'Airflow', 'Kafka', 'Spark'] },
             { id: 1, tab: f ? 'CONNAISSANCE LOCALE' : 'LOCAL EXPERTISE',
               title: f ? 'Connaissance de votre marché' : 'Deep knowledge of your market',
               desc: f ? 'Nous connaissons les infrastructures bancaires, les opérateurs télécoms, les contraintes réglementaires et les réalités opérationnelles du terrain. Pas de boîte noire importée — des solutions pensées pour votre contexte.'
                      : 'We understand banking infrastructure, telecom operators, regulatory constraints and operational realities on the ground. No imported black box — solutions designed for your context.',
-              icon: 'pi pi-globe', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
+              icon: 'pi pi-globe', iconBg: 'linear-gradient(135deg, #95541F, #C77B3C)',
               keywords: f ? ['Sénégal', 'UEMOA', 'Banques', 'Télécoms', 'Microfinance'] : ['Senegal', 'WAEMU', 'Banking', 'Telecoms', 'Microfinance'] },
             { id: 2, tab: f ? 'STACK MONDIALE' : 'WORLD-CLASS STACK',
               title: f ? 'Pionniers de la Modern Data Stack' : 'Modern Data Stack pioneers',
               desc: f ? 'Notre expertise couvre l\'ensemble des technologies de la Modern Data Stack — de la collecte à l\'activation. Nous aidons nos clients à tirer le meilleur parti d\'un écosystème en constante évolution, tout en assurant cohérence et gouvernance.'
                      : 'Our expertise covers the entire Modern Data Stack — from ingestion to activation. We help clients leverage an ever-evolving ecosystem while ensuring consistency and governance.',
-              icon: 'pi pi-bolt', iconBg: 'linear-gradient(135deg, #1A2740, #4D5F80)',
+              icon: 'pi pi-bolt', iconBg: 'linear-gradient(135deg, #233356, #4D5F80)',
               keywords: ['dbt', 'Airbyte', 'Terraform', 'AWS', 'Kubernetes'] },
             { id: 3, tab: f ? 'FLEXIBILITÉ' : 'FLEXIBILITY',
               title: f ? 'Flexibilité et adaptation' : 'Flexibility and adaptation',
               desc: f ? 'Chaque organisation est unique. Nous adaptons notre accompagnement à votre contexte — des solutions clé en main pour les structures agiles, aux méthodologies DataOps à grande échelle pour les environnements complexes et les grands groupes.'
                      : 'Every organisation is unique. We adapt our approach to your context — turnkey solutions for agile structures, to large-scale DataOps methodologies for complex environments and enterprise groups.',
-              icon: 'pi pi-sliders-h', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
+              icon: 'pi pi-sliders-h', iconBg: 'linear-gradient(135deg, #1F6249, #3FA886)',
               keywords: ['Audit', 'Mission', f ? 'Formation' : 'Training', 'Embedded', 'Staff Aug'] },
             { id: 4, tab: f ? 'TRANSFERT' : 'KNOWLEDGE TRANSFER',
               title: f ? 'Transfert de compétences' : 'Knowledge transfer',
               desc: f ? 'Chaque mission forme vos équipes. Nous documentons, formons et outillons vos collaborateurs pour qu\'ils maîtrisent les solutions déployées après notre départ. L\'expertise reste en interne — c\'est notre engagement.'
                      : 'Every engagement upskills your team. We document, train and equip your staff to fully own the solutions we deploy. The expertise stays in-house — that\'s our commitment.',
-              icon: 'pi pi-users', iconBg: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
+              icon: 'pi pi-users', iconBg: 'linear-gradient(135deg, #AB6630, #D8A369)',
               keywords: f ? ['Ateliers', 'Documentation', 'Coaching', 'Autonomie', 'KT'] : ['Workshops', 'Documentation', 'Coaching', 'Autonomy', 'KT'] }
         ];
     }
@@ -638,27 +641,27 @@ export class AdvisoryPage {
     get sectors() {
         const f = this.isFr();
         return [
-            { icon: 'pi pi-building-columns', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
+            { icon: 'pi pi-building-columns', illustrationBg: 'linear-gradient(135deg, #4D5F80 0%, #8A98AE 100%)',
               title: f ? 'Banques & Institutions financières' : 'Banks & Financial Institutions',
               examples: 'SGBS, Ecobank, BNDE, BICIS, CNCAS',
               needs: f ? ['DATA WAREHOUSE', 'REPORTING RÉGLEMENTAIRE', 'SCORING CRÉDIT', 'SURVEILLANCE FRAUDE'] : ['DATA WAREHOUSE', 'REGULATORY REPORTING', 'CREDIT SCORING', 'FRAUD DETECTION'] },
-            { icon: 'pi pi-wifi', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #4D5F80 100%)',
+            { icon: 'pi pi-wifi', illustrationBg: 'linear-gradient(135deg, #95541F 0%, #D8A369 100%)',
               title: f ? 'Télécommunications' : 'Telecommunications',
               examples: 'Sonatel/Orange, Free, Expresso',
               needs: f ? ['ANALYTICS CLIENT', 'CHURN PREDICTION', 'MONÉTISATION DONNÉES', 'NETWORK ANALYTICS'] : ['CUSTOMER ANALYTICS', 'CHURN PREDICTION', 'DATA MONETISATION', 'NETWORK ANALYTICS'] },
-            { icon: 'pi pi-landmark', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
+            { icon: 'pi pi-building', illustrationBg: 'linear-gradient(135deg, #233356 0%, #4D5F80 100%)',
               title: f ? 'Administration publique' : 'Public Administration',
               examples: f ? 'Ministères, APIX, DER/FJ, Agences d\'État' : 'Ministries, APIX, DER/FJ, State Agencies',
               needs: f ? ['TABLEAUX DE BORD', 'OPEN DATA', 'MODERNISATION SI', 'REPORTING'] : ['DASHBOARDS', 'OPEN DATA', 'IT MODERNISATION', 'REPORTING'] },
-            { icon: 'pi pi-money-bill', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
+            { icon: 'pi pi-money-bill', illustrationBg: 'linear-gradient(135deg, #1F6249 0%, #3FA886 100%)',
               title: f ? 'Microfinance & Coopératives' : 'Microfinance & Cooperatives',
               examples: 'ACEP, PAMECAS, CMS, CEC, Advans',
               needs: f ? ['SCORING CRÉDIT', 'SUIVI PORTEFEUILLE', 'REPORTING IMPACT', 'DIGITAL LENDING'] : ['CREDIT SCORING', 'PORTFOLIO TRACKING', 'IMPACT REPORTING', 'DIGITAL LENDING'] },
-            { icon: 'pi pi-rocket', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
+            { icon: 'pi pi-bolt', illustrationBg: 'linear-gradient(135deg, #AB6630 0%, #D8A369 100%)',
               title: f ? 'Startups & Scaleups africaines' : 'African Startups & Scaleups',
               examples: f ? 'Fintech, Agritech, Healthtech locales' : 'Local Fintech, Agritech, Healthtech',
               needs: ['STACK DATA FROM SCRATCH', 'DATA PRODUCT', 'ML EN PRODUCTION', 'ANALYTICS'] },
-            { icon: 'pi pi-chart-bar', illustrationBg: 'linear-gradient(135deg, #1A2740 0%, #2C3E5E 100%)',
+            { icon: 'pi pi-chart-bar', illustrationBg: 'linear-gradient(135deg, #4D5F80 0%, #8A98AE 100%)',
               title: f ? 'Grandes PME & Groupes' : 'Large SMEs & Groups',
               examples: f ? 'Groupe Mimran, CFAO, filiales de groupes internationaux' : 'Mimran Group, CFAO, international subsidiaries',
               needs: f ? ['ANALYTICS DÉCISIONNEL', 'MIGRATION CLOUD', 'GOUVERNANCE', 'DATA MESH'] : ['DECISION ANALYTICS', 'CLOUD MIGRATION', 'GOVERNANCE', 'DATA MESH'] }
@@ -712,11 +715,17 @@ export class AdvisoryPage {
         document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    async onSubmit(form: NgForm) {
+    onSubmit(form: NgForm) {
         if (form.invalid) return;
         this.submitting.set(true);
-        await new Promise(r => setTimeout(r, 1200));
-        this.submitting.set(false);
-        this.submitted.set(true);
+        this.http.post(`${environment.apiUrl}/contact`, this.form).subscribe({
+            next: () => {
+                this.submitting.set(false);
+                this.submitted.set(true);
+            },
+            error: () => {
+                this.submitting.set(false);
+            }
+        });
     }
 }

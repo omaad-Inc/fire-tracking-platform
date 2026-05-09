@@ -12,11 +12,11 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <div class="text-center mb-16">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/20 dark:bg-brand-300/20 border border-brand-200 dark:border-brand-700 mb-6">
                         <i class="pi pi-sparkles text-brand-700 dark:text-brand-300"></i>
-                        <span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ t('landing.features.badge') }}</span>
+                        <span class="text-brand-700 dark:text-ochre-400 text-sm font-medium">{{ t('landing.features.badge') }}</span>
                     </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         {{ t('landing.features.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-brand-500">{{ t('landing.features.h2b') }}</span>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-brand-500 dark:from-ochre-400 dark:to-ochre-300">{{ t('landing.features.h2b') }}</span>
                     </h2>
                     <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">{{ t('landing.features.description') }}</p>
                 </div>
@@ -101,9 +101,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <div class="col-span-12 md:col-span-8 text-center md:text-left">
                                 <blockquote class="text-2xl md:text-3xl text-surface-700 dark:text-surface-200 font-light leading-relaxed mb-4">
                                     {{ t('landing.features.quoteText') }}
-                                    <span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 font-medium">{{ t('landing.features.quotePlan') }}</span>
+                                    <span class="text-brand-700 dark:text-ochre-400 font-medium">{{ t('landing.features.quotePlan') }}</span>
                                     {{ t('landing.features.quoteText2') }}
-                                    <span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 font-medium">{{ t('landing.features.quoteReality') }}</span>{{ t('landing.features.quoteText3') }}
+                                    <span class="text-brand-700 dark:text-ochre-400 font-medium">{{ t('landing.features.quoteReality') }}</span>{{ t('landing.features.quoteText3') }}
                                 </blockquote>
                                 <div class="font-semibold text-surface-900 dark:text-surface-0">{{ t('landing.features.quoteAuthor') }}</div>
                                 <div class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.features.quoteSubtitle') }}</div>
