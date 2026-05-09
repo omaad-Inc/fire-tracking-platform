@@ -25,14 +25,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                             </a>
                             <p class="text-warm-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
                             <div class="flex gap-3">
-                                <a href="#" class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300 hover:scale-110">
-                                    <i class="pi pi-twitter text-lg"></i>
-                                </a>
-                                <a href="#" class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer"
+                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300 hover:scale-110">
                                     <i class="pi pi-linkedin text-lg"></i>
-                                </a>
-                                <a href="#" class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300 hover:scale-110">
-                                    <i class="pi pi-discord text-lg"></i>
                                 </a>
                             </div>
                         </div>
@@ -42,9 +37,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">{{ t('landing.footer.productTitle') }}</h4>
                             <ul class="space-y-3">
                                 <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productFeatures') }}</a></li>
-                                <li><a [routerLink]="[currentLang]" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'pages', 'patrimoine']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productPatrimony') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'pages', 'savings']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productSavings') }}</a></li>
+                                <li><a (click)="navigateTo('highlights')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
+                                <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productPatrimony') }}</a></li>
+                                <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productSavings') }}</a></li>
                             </ul>
                         </div>
 
@@ -52,10 +47,10 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
                             <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-positive-400">{{ t('landing.footer.resourcesTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a href="#" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesGuide') }}</a></li>
-                                <li><a href="#" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
+                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesGuide') }}</a></li>
+                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
                                 <li><a (click)="navigateTo('pricing')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
-                                <li><a href="#" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesCalc') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesCalc') }}</a></li>
                             </ul>
                         </div>
 
