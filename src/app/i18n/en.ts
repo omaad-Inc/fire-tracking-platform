@@ -569,7 +569,7 @@ export const EN = {
       h2MockupTitle: 'Asset allocation',
       h3Title: 'Your data, your kingdom',
       h3Desc: 'Your finances are your most intimate data. Omaad sells nothing, shares nothing, monetises nothing. Zero ads. Zero tracking. You are the customer, not the product.',
-      h3Item1: 'Secure hosting in Europe',
+      h3Item1: 'Secure hosting',
       h3Item2: 'Zero ads, zero tracking',
       h3Item3: 'Full deletion on request',
       h3S1Title: 'End-to-end encryption',

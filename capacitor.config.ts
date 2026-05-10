@@ -12,6 +12,9 @@ const config: CapacitorConfig = {
     ios: {
         // Allow scrolling (required for the app to work!)
         scrollEnabled: true,
+        // Prevent native WKWebView from adding its own safe-area content insets;
+        // CSS env(safe-area-inset-*) handles all spacing.
+        contentInset: 'never',
         // Content mode
         preferredContentMode: 'mobile',
         // Background color behind the WebView

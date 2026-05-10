@@ -569,7 +569,7 @@ export const FR = {
       h2MockupTitle: 'Répartition des actifs',
       h3Title: 'Vos données, votre royaume',
       h3Desc: 'Vos finances sont ce que vous avez de plus intime. Omaad ne vend rien, ne partage rien, ne monétise pas vos données. Zéro pub. Zéro tracking. Vous êtes le client, pas le produit.',
-      h3Item1: 'Hébergement sécurisé en Europe',
+      h3Item1: 'Hébergement sécurisé',
       h3Item2: 'Zéro publicité, zéro tracking',
       h3Item3: 'Suppression totale sur demande',
       h3S1Title: 'Chiffrement bout-en-bout',
