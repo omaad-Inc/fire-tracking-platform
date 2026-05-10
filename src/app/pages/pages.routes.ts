@@ -10,6 +10,7 @@ import { PlansSettings } from './settings/components/plans';
 import { FireDashboardPage } from './fire/fire-dashboard';
 import { GoalsDashboardPage } from './goals/goals-dashboard';
 import { GoalDetailPage } from './goals/goal-detail-page';
+import { WealthScorePage } from './wealth-score/wealth-score';
 export default [
     { path: 'plans', component: PlansSettings },       // Standalone — no settings sidebar
     { path: 'transaction', component: Transaction },
@@ -17,6 +18,7 @@ export default [
     { path: 'fire', component: FireDashboardPage },
     { path: 'goals', component: GoalsDashboardPage },
     { path: 'goals/:id', component: GoalDetailPage },
+    { path: 'wealth-score', component: WealthScorePage },
     { path: 'patrimoine/add-asset', component: AddAssetPage },
     { path: 'patrimoine/category/:categoryId', component: PatrimoineCategoryDetailPage },
     { path: 'patrimoine/assets/:id', component: AssetDetailPage },

@@ -5,6 +5,7 @@ import { RecentTransactionsWidget } from './components/recenttransactionswidget'
 import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
 import { TopMoversWidget } from './components/topmoverswidget';
+import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
@@ -14,7 +15,7 @@ import { PatrimoineService } from '../service/patrimoine.service';
     standalone: true,
     imports: [
         CommonModule, StatsWidget, SavingsProgress, DebtsOverview,
-        RecentTransactionsWidget, TopMoversWidget, OnboardingComponent
+        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
     ],
     template: `
         <!-- Onboarding for new users: shown when no assets and not dismissed -->
@@ -39,12 +40,17 @@ import { PatrimoineService } from '../service/patrimoine.service';
                 <app-debts-overview />
             </div>
 
-            <!-- Third row: Recent Transactions + Top Movers -->
-            <div class="col-span-12 xl:col-span-6">
-                <app-recent-transactions-widget />
+            <!-- Third row: Wealth Score + Top Movers -->
+            <div class="col-span-12 md:col-span-6 xl:col-span-6">
+                <app-wealth-score-widget />
             </div>
-            <div class="col-span-12 xl:col-span-6">
+            <div class="col-span-12 md:col-span-6 xl:col-span-6">
                 <app-top-movers-widget />
+            </div>
+
+            <!-- Fourth row: Recent Transactions -->
+            <div class="col-span-12">
+                <app-recent-transactions-widget />
             </div>
         </div>
     `

@@ -355,6 +355,27 @@ export interface FIRESettings {
     withdrawal_rate?: number;
 }
 
+export interface SubScore {
+    label: string;
+    score: number;
+    max_score: number;
+    raw_value: number;
+}
+
+export interface AxisScore {
+    axis: string;
+    score: number;
+    max_score: number;
+    sub_scores: SubScore[];
+    insight_key: string;
+}
+
+export interface WealthScoreResponse {
+    total_score: number;
+    axes: AxisScore[];
+    computed_at: string;
+}
+
 // ============================================
 // API SERVICE
 // ============================================
@@ -551,6 +572,11 @@ export class ApiService {
 
     deleteAccount(): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/users/me`);
+    }
+
+    // ========== WEALTH SCORE ==========
+    getWealthScore(): Observable<WealthScoreResponse> {
+        return this.http.get<WealthScoreResponse>(`${this.apiUrl}/wealth-score`);
     }
 }
 
