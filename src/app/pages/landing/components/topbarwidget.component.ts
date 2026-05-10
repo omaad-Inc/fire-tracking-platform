@@ -33,12 +33,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.features') }}
             </a>
-            <a (click)="navigateTo('highlights')" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                      transition-all duration-200 cursor-pointer">
-                {{ t('landing.nav.highlights') }}
-            </a>
             <a [routerLink]="[currentLang, 'advisory']" pRipple
                class="flex items-center px-4 py-2 rounded-lg font-medium text-base
                       text-brand-700 dark:text-brand-300
@@ -51,6 +45,12 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
+            </a>
+            <a [routerLink]="[currentLang, aboutSlug]" pRipple
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
+                      transition-all duration-200 cursor-pointer">
+                {{ t('landing.nav.about') }}
             </a>
             <!-- Tools dropdown -->
             <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
@@ -153,13 +153,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     </a>
                 </li>
                 <li>
-                    <a (click)="navigateTo('highlights')" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-bolt mr-2"></i><span>{{ t('landing.nav.highlights') }}</span>
-                    </a>
-                </li>
-                <li>
                     <a [routerLink]="[currentLang, 'advisory']" pRipple
                        class="flex items-center px-4 py-3 rounded-lg font-medium text-base
                               text-brand-700 dark:text-brand-300
@@ -173,6 +166,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                        class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <i class="pi pi-tag mr-2"></i><span>{{ t('landing.nav.pricing') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, aboutSlug]" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-info-circle mr-2"></i><span>{{ t('landing.nav.about') }}</span>
                     </a>
                 </li>
                 <!-- Tools (mobile) -->
@@ -247,6 +247,7 @@ export class TopbarWidget {
 
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
+    get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
 
     isAdvisory(): boolean { return this.router.url.includes('/advisory'); }
 

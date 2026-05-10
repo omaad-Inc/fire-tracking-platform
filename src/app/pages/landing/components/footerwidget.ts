@@ -61,6 +61,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                 <li><a [routerLink]="[currentLang, 'advisory']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryOffers') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'advisory']" [fragment]="'offres'" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryServices') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'advisory']" [fragment]="'contact'" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryContact') }}</a></li>
+                                <li><a [routerLink]="[currentLang, aboutSlug]" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.nav.about') }}</a></li>
                             </ul>
                         </div>
 
@@ -119,6 +120,7 @@ export class FooterWidget {
 
     t(key: string): string { return this.i18n.t(key); }
     isAdvisory(): boolean { return this.router.url.includes('/advisory'); }
+    get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
 
     navigateTo(fragment: string) {
         this.router.navigate([this.currentLang + '/landing'], { fragment });

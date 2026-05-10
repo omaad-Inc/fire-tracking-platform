@@ -10,12 +10,14 @@ import { FeaturesWidget } from './components/featureswidget';
 import { HighlightsWidget } from './components/highlightswidget';
 import { PricingWidget } from './components/pricingwidget';
 import { FooterWidget } from './components/footerwidget';
+import { FireProjectionWidget } from './components/fireprojectionwidget';
+import { PainCalculatorWidget } from './components/paincalculatorwidget';
 import { I18nService, Lang } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
+    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, FireProjectionWidget, PainCalculatorWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
     template: `
         <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
             <div id="home" class="landing-wrapper overflow-hidden">
@@ -30,7 +32,9 @@ import { I18nService, Lang } from '../../i18n/i18n.service';
 
                 <!-- Main content -->
                 <hero-widget />
+                <fire-projection-widget />
                 <features-widget />
+                <pain-calculator-widget />
                 <highlights-widget />
                 <pricing-widget />
 
