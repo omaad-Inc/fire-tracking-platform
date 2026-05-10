@@ -40,11 +40,11 @@ interface NavItem {
             bottom: 0;
             left: 0;
             right: 0;
-            height: 70px;
+            height: calc(70px + env(safe-area-inset-bottom, 0px));
             background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid var(--surface-border);
             padding: 0 0.5rem;
-            padding-bottom: env(safe-area-inset-bottom, 0);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
             z-index: 999;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);

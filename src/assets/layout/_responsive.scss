@@ -134,7 +134,7 @@
 
         // Simplify topbar on mobile — Finary-style: [👤 avatar] ... [👁] [PRO]
         .layout-topbar {
-            padding: 0 0.75rem;
+            padding: env(safe-area-inset-top, 0px) 0.75rem 0 0.75rem;
             border-bottom: 1px solid var(--surface-border);
 
             .layout-topbar-logo-container {

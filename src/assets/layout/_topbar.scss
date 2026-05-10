@@ -95,7 +95,7 @@
 
 @media (max-width: 991px) {
     .layout-topbar {
-        padding: 0 1rem;
+        padding: env(safe-area-inset-top, 0px) 1rem 0 1rem;
 
         .layout-topbar-logo-container {
             width: auto;
