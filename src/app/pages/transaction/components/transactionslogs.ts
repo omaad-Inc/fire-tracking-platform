@@ -80,28 +80,31 @@ interface DayGroup {
         @if (!loading()) {
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                 <!-- Revenus -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-positive/5 dark:from-surface-800 dark:to-surface-900"></div>
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
                         <div class="w-7 h-7 rounded-lg bg-positive/10 flex items-center justify-center">
                             <i class="pi pi-arrow-down-left text-positive text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold text-positive truncate">+<app-amount [value]="monthSummary().income" /></div>
+                    <div class="relative text-base font-bold text-positive truncate">+<app-amount [value]="monthSummary().income" /></div>
                 </div>
                 <!-- Dépenses -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-negative/5 dark:from-surface-800 dark:to-surface-900"></div>
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
                         <div class="w-7 h-7 rounded-lg bg-negative/10 flex items-center justify-center">
                             <i class="pi pi-arrow-up-right text-negative text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold text-negative truncate">−<app-amount [value]="monthSummary().expenses" /></div>
+                    <div class="relative text-base font-bold text-negative truncate">−<app-amount [value]="monthSummary().expenses" /></div>
                 </div>
                 <!-- Solde net -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-brand-50/30 dark:from-surface-800 dark:to-surface-900"></div>
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center"
                              [ngClass]="monthSummary().net >= 0 ? 'bg-brand-700/10 dark:bg-brand-300/15' : 'bg-negative/10'">
@@ -109,20 +112,21 @@ interface DayGroup {
                                [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-brand-700 dark:text-brand-300' : 'pi-trending-down text-negative'"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold truncate"
+                    <div class="relative text-base font-bold truncate"
                          [ngClass]="monthSummary().net >= 0 ? 'text-brand-700 dark:text-brand-300' : 'text-negative'">
                         {{ monthSummary().net >= 0 ? '+' : '−' }}<app-amount [value]="monthSummary().net" />
                     </div>
                 </div>
-                <!-- Taux d'épargne — value + bar grouped as one bottom block to match other cards -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <!-- Taux d'épargne -->
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-brand-50/20 dark:from-surface-800 dark:to-surface-900"></div>
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
                         <div class="w-7 h-7 rounded-lg bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center">
                             <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-xs"></i>
                         </div>
                     </div>
-                    <div>
+                    <div class="relative">
                         <div class="text-base font-bold text-brand-700 dark:text-brand-300 mb-1">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
@@ -260,43 +264,43 @@ interface DayGroup {
                     </div>
 
                     <!-- Amount + Date row -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 Montant <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="form.amount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
                                            styleClass="w-full"
-                                           inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
+                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
                             @if (submitted && !(form.amount > 0)) {
-                                <small class="text-negative text-xs">Montant requis</small>
+                                <small class="text-negative text-xs mt-1">Montant requis</small>
                             }
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date</label>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Date</label>
                             <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="yy-mm-dd" styleClass="w-full"
-                                          inputStyleClass="!py-3 !rounded-xl" />
+                                          inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                             @if (submitted && !editDate) {
-                                <small class="text-negative text-xs">Date requise</small>
+                                <small class="text-negative text-xs mt-1">Date requise</small>
                             }
                         </div>
                     </div>
 
                     <!-- Description -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Description <span class="text-surface-400 font-normal">(optionnel)</span>
                         </label>
                         <input pInputText [(ngModel)]="form.remarks"
                                placeholder="Ex : Salaire avril, Courses Auchan..."
-                               class="w-full !py-3 !rounded-xl" />
+                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
                     <!-- Category grid -->
                     <div class="flex flex-col gap-3">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Catégorie
                             @if (submitted && !form.category) {
                                 <span class="text-negative ml-2 text-xs">Requise</span>
@@ -328,17 +332,14 @@ interface DayGroup {
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="hideDialog()"
-                              styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button [label]="editingRecord ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !border-0"
-                              [ngClass]="formType() === 'Income'
-                                  ? '!bg-positive'
-                                  : '!bg-brand-700 dark:!bg-brand-300'" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="hideDialog()"
+                              styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>

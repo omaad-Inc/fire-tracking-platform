@@ -59,7 +59,7 @@ export interface AllocatePayload {
             </ng-template>
 
             <ng-template #content>
-                <div class="flex flex-col gap-5 pt-2">
+                <div class="flex flex-col gap-6 pt-2">
 
                     <!-- Mode toggle -->
                     <div class="flex bg-surface-100 dark:bg-surface-800 p-1 rounded-xl">
@@ -94,9 +94,8 @@ export interface AllocatePayload {
                     </div>
 
                     <!-- Source / destination asset -->
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-credit-card text-warm-500"></i>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ mode() === 'contribute' ? i18n.t('goals.allocate.fromAsset') : i18n.t('goals.allocate.toAsset') }}
                             <span class="text-negative">*</span>
                         </label>
@@ -112,7 +111,7 @@ export interface AllocatePayload {
                                 optionValue="id"
                                 [(ngModel)]="form.assetId"
                                 [placeholder]="i18n.t('goals.allocate.pickAsset')"
-                                styleClass="w-full !rounded-xl"
+                                styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
                             >
                                 <ng-template let-a #item>
                                     <div class="flex items-center justify-between gap-3 w-full">
@@ -130,7 +129,7 @@ export interface AllocatePayload {
                                 </ng-template>
                             </p-select>
                             @if (submitted() && !form.assetId) {
-                                <small class="text-negative text-xs">
+                                <small class="text-negative text-xs mt-1">
                                     <i class="pi pi-exclamation-circle mr-1"></i>{{ i18n.t('goals.allocate.assetRequired') }}
                                 </small>
                             }
@@ -138,9 +137,8 @@ export interface AllocatePayload {
                     </div>
 
                     <!-- Amount -->
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-wallet text-warm-500"></i>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ i18n.t('goals.fields.amount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             <span class="text-negative">*</span>
                         </label>
@@ -151,59 +149,50 @@ export interface AllocatePayload {
                             [min]="0"
                             [max]="mode() === 'deallocate' && goal ? goal.current_amount : undefined"
                             styleClass="w-full"
-                            inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                         @if (mode() === 'deallocate' && goal) {
-                            <small class="text-surface-500 text-xs">
+                            <small class="text-surface-500 text-xs mt-1">
                                 {{ i18n.t('goals.allocate.maxAvailable') }}: {{ formatCurrency(goal.current_amount) }}
                             </small>
                         }
                         @if (submitted() && (!form.amount || form.amount <= 0)) {
-                            <small class="text-negative text-xs">
+                            <small class="text-negative text-xs mt-1">
                                 <i class="pi pi-exclamation-circle mr-1"></i>{{ i18n.t('goals.allocate.amountRequired') }}
                             </small>
                         }
                     </div>
 
                     <!-- Date -->
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-calendar text-warm-500"></i>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ i18n.t('common.date') }}
                         </label>
                         <input
                             type="date"
                             pInputText
                             [(ngModel)]="form.date"
-                            class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
 
                     <!-- Notes -->
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            <i class="pi pi-comment text-warm-500"></i>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ i18n.t('goals.fields.note') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                         </label>
                         <textarea
                             pTextarea
                             [(ngModel)]="form.notes"
                             rows="2"
-                            class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"
                         ></textarea>
                     </div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
-                    <p-button
-                        [label]="i18n.t('common.cancel')"
-                        icon="pi pi-times"
-                        [outlined]="true"
-                        (onClick)="close()"
-                        styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600"
-                    />
+                <div class="flex flex-col gap-2 w-full pt-2">
                     <p-button
                         [label]="mode() === 'contribute' ? i18n.t('goals.allocate.confirmContribute') : i18n.t('goals.allocate.confirmDeallocate')"
                         icon="pi pi-check"
@@ -211,6 +200,13 @@ export interface AllocatePayload {
                         [loading]="busy"
                         [disabled]="assets.length === 0"
                         [styleClass]="footerBtnClass()"
+                    />
+                    <p-button
+                        [label]="i18n.t('common.cancel')"
+                        icon="pi pi-times"
+                        [outlined]="true"
+                        (onClick)="close()"
+                        styleClass="w-full !rounded-full !py-3"
                     />
                 </div>
             </ng-template>
@@ -241,8 +237,8 @@ export class GoalAllocateDialogComponent {
 
     footerBtnClass = computed(() =>
         this.mode() === 'contribute'
-            ? 'omaad-cta flex-1 !rounded-xl !py-3'
-            : 'omaad-accent flex-1 !rounded-xl !py-3'
+            ? 'w-full omaad-cta !rounded-full !py-3'
+            : 'w-full omaad-accent !rounded-full !py-3'
     );
 
     private resetForm() {

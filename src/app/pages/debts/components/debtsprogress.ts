@@ -178,10 +178,10 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </ng-template>
 
             <ng-template #content>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-3">
                     <!-- Type toggle -->
-                    <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Type</label>
+                    <div class="flex flex-col gap-1 sm:col-span-2">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Type</label>
                         <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl">
                             <button (click)="record.type = 'Debt'"
                                     class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
@@ -197,74 +197,75 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     </div>
 
                     <!-- Name -->
-                    <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Nom <span class="text-negative">*</span></label>
+                    <div class="flex flex-col gap-1 sm:col-span-2">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Nom <span class="text-negative">*</span></label>
                         <input pInputText [(ngModel)]="record.name" required
-                               class="w-full !py-3 !rounded-xl"
+                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                                placeholder="Ex: Prêt immobilier, Ami..." />
                         @if (submitted && !record.name) {
-                            <small class="text-negative text-xs">Le nom est requis</small>
+                            <small class="text-negative text-xs mt-1">Le nom est requis</small>
                         }
                     </div>
 
                     <!-- Total -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Montant total <span class="text-negative">*</span>
                             <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl" />
+                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
                     <!-- Paid -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ record.type === 'Debt' ? 'Déjà payé' : 'Déjà reçu' }}
                             <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
-                                       inputStyleClass="!py-3 !rounded-xl" />
+                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
                     <!-- Interest Rate -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Taux d'intérêt</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Taux d'intérêt</label>
                         <p-inputnumber [(ngModel)]="record.interestRate" mode="decimal"
                                        [minFractionDigits]="2" [maxFractionDigits]="2" suffix=" %"
-                                       styleClass="w-full" inputStyleClass="!py-3 !rounded-xl" />
+                                       styleClass="w-full"
+                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
                     <!-- Frequency -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Fréquence</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Fréquence</label>
                         <p-select [(ngModel)]="record.frequency" [options]="frequencies"
                                   optionLabel="label" optionValue="value"
                                   placeholder="Choisir une fréquence"
-                                  styleClass="w-full !rounded-xl" />
+                                  styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                     </div>
 
                     <!-- Date -->
-                    <div class="flex flex-col gap-2 sm:col-span-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date</label>
+                    <div class="flex flex-col gap-1 sm:col-span-2">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Date</label>
                         <input type="date" pInputText [(ngModel)]="record.date"
-                               class="w-full !py-3 !rounded-xl" />
+                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="hideDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button [label]="isEdit ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
-                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="hideDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -288,7 +289,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <ng-template #content>
                 @if (paymentRecord) {
-                    <div class="flex flex-col gap-5 pt-3">
+                    <div class="flex flex-col gap-6 pt-3">
                         <div class="grid grid-cols-3 gap-2 text-center">
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
                                 <div class="text-[10px] text-surface-400 mb-1">Total</div>
@@ -303,17 +304,17 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="text-sm font-bold text-negative"><app-amount [value]="paymentRecord.total - paymentRecord.paid" /></div>
                             </div>
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 Montant à ajouter <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="addPaymentAmount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
                                            [min]="1" [max]="paymentRecord.total - paymentRecord.paid"
                                            styleClass="w-full"
-                                           inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
+                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
                             @if (addPaymentSubmitted && !(addPaymentAmount! > 0)) {
-                                <small class="text-negative text-xs">Montant requis</small>
+                                <small class="text-negative text-xs mt-1">Montant requis</small>
                             }
                         </div>
                     </div>
@@ -321,12 +322,12 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="closeAddPaymentDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button label="Valider" icon="pi pi-check"
                               (click)="confirmAddPayment()"
-                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="closeAddPaymentDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>

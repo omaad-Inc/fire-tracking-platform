@@ -91,9 +91,11 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </ng-template>
         </p-dialog>
-        <div class="card">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute top-4 right-4 w-20 h-20 rounded-full bg-brand-100/20 dark:bg-brand-800/10 blur-lg"></div>
             <!-- Mon Profil Section -->
-            <div class="mb-8">
+            <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
                 
                 <!-- Avatar Section -->
@@ -217,7 +219,7 @@ import { environment } from '../../../../environments/environment';
             <p-divider />
 
             <!-- Logout Section -->
-            <div class="my-8">
+            <div class="relative my-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
@@ -242,7 +244,7 @@ import { environment } from '../../../../environments/environment';
             <p-divider />
 
             <!-- Danger Zone -->
-            <div class="mt-8">
+            <div class="relative mt-8">
                 <h2 class="text-2xl font-semibold text-negative mb-4">{{ t('settings.account.deleteAccount') }}</h2>
                 <p class="text-surface-500 dark:text-surface-400 mb-4">
                     {{ t('settings.account.deleteAccountDesc') }}

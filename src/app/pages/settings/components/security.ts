@@ -28,7 +28,7 @@ import { firstValueFrom } from 'rxjs';
         <div class="flex flex-col gap-4 md:gap-6">
 
             <!-- ── 1. Méthode de connexion ──────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <!-- Section header -->
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
@@ -97,7 +97,7 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 2. Sécurité avancée (2FA) ────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
                         <i class="pi pi-shield text-positive"></i>
@@ -147,7 +147,7 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 3. Code PIN ────────────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
                         <i class="pi pi-lock text-ochre-500"></i>
@@ -252,7 +252,7 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 4. Session actuelle ──────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-desktop text-brand-700 dark:text-brand-300"></i>
@@ -305,7 +305,7 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 4. Activité récente ──────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
                         <i class="pi pi-history text-ochre-500"></i>
@@ -374,37 +374,37 @@ import { firstValueFrom } from 'rxjs';
             </ng-template>
 
             <ng-template #content>
-                <div class="flex flex-col gap-5 pt-3">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                <div class="flex flex-col gap-6 pt-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Mot de passe actuel <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.current" [feedback]="false" [toggleMask]="true"
-                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl" />
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         @if (pwSubmitted && !pwForm.current) {
-                            <small class="text-negative text-xs">Requis</small>
+                            <small class="text-negative text-xs mt-1">Requis</small>
                         }
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Nouveau mot de passe <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.newPw" [toggleMask]="true"
-                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl"
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                                     promptLabel="Choisissez un mot de passe"
                                     weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort" />
                         @if (pwSubmitted && !pwForm.newPw) {
-                            <small class="text-negative text-xs">Requis</small>
+                            <small class="text-negative text-xs mt-1">Requis</small>
                         }
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Confirmer le nouveau mot de passe <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.confirm" [feedback]="false" [toggleMask]="true"
-                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl" />
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         @if (pwSubmitted && pwForm.confirm && pwForm.confirm !== pwForm.newPw) {
-                            <small class="text-negative text-xs">Les mots de passe ne correspondent pas</small>
+                            <small class="text-negative text-xs mt-1">Les mots de passe ne correspondent pas</small>
                         }
                     </div>
 
@@ -422,13 +422,13 @@ import { firstValueFrom } from 'rxjs';
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="closePasswordDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button label="Enregistrer" icon="pi pi-check"
                               [loading]="savingPassword()"
                               (click)="savePassword()"
-                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="closePasswordDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>

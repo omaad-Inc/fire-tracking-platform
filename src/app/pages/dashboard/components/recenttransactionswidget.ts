@@ -21,8 +21,10 @@ interface TransactionDisplay {
     selector: 'app-recent-transactions-widget',
     imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
-        <div class="card !mb-0 h-full">
-            <div class="flex justify-between items-center mb-6">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800/90 dark:to-surface-900"></div>
+            <div class="absolute bottom-3 left-3 w-14 h-14 rounded-full bg-surface-200/30 dark:bg-surface-700/15 blur-md"></div>
+            <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.recentTransactions') }}</div>
                 <a [routerLink]="link('pages', 'transaction')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
                     {{ t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
@@ -30,7 +32,7 @@ interface TransactionDisplay {
             </div>
             
             @if (loading()) {
-                <div class="space-y-4">
+                <div class="relative space-y-4">
                     @for (i of [1,2,3,4,5,6]; track i) {
                         <div class="flex items-center p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 animate-pulse">
                             <div class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700 mr-4"></div>
@@ -45,7 +47,7 @@ interface TransactionDisplay {
                     }
                 </div>
             } @else if (transactions().length === 0) {
-                <div class="flex flex-col items-center justify-center py-8 text-center">
+                <div class="relative flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-list text-2xl text-surface-400"></i>
                     </div>
@@ -55,7 +57,7 @@ interface TransactionDisplay {
                     </a>
                 </div>
             } @else {
-                <div class="space-y-4">
+                <div class="relative space-y-4">
                     @for (tx of transactions(); track tx.id) {
                         <div class="flex items-center p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-4" [ngClass]="tx.bgClass">

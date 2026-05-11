@@ -48,12 +48,14 @@ import { FireSettings } from '../settings/components/fire-settings';
 
             <!-- No FIRE target configured -->
             @if (!loading() && (!fire() || (fire()!.targetAmount) === 0)) {
-                <div class="card text-center py-12">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center mb-4">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center py-12">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-ochre-50/20 dark:from-brand-900/15 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                    <div class="absolute top-4 right-4 w-20 h-20 rounded-full bg-brand-100/30 dark:bg-brand-800/10 blur-lg"></div>
+                    <div class="relative w-20 h-20 mx-auto rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center mb-4">
                         <i class="pi pi-flag text-3xl text-brand-700 dark:text-brand-300"></i>
                     </div>
-                    <h2 class="text-xl font-semibold text-warm-900 dark:text-warm-50 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
-                    <p class="text-warm-500 dark:text-warm-400 text-sm max-w-md mx-auto mb-6">
+                    <h2 class="relative text-xl font-semibold text-warm-900 dark:text-warm-50 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
+                    <p class="relative text-warm-500 dark:text-warm-400 text-sm max-w-md mx-auto mb-6">
                         Le capital à atteindre pour que vos revenus passifs couvrent vos dépenses — et que vous ayez le choix de travailler ou non.
                     </p>
                 </div>
@@ -62,8 +64,11 @@ import { FireSettings } from '../settings/components/fire-settings';
             <!-- FIRE configured: show progress hero -->
             @if (!loading() && fire() && (fire()!.targetAmount) > 0) {
                 <!-- Hero progress card -->
-                <div class="card !p-8 border-brand-100 dark:border-brand-800">
-                    <div class="flex flex-col lg:flex-row items-center gap-8">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-8">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface-50 to-ochre-50/30 dark:from-brand-900/20 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                    <div class="absolute top-4 right-4 w-24 h-24 rounded-full bg-brand-100/30 dark:bg-brand-800/10 blur-lg"></div>
+                    <div class="absolute bottom-4 left-4 w-16 h-16 rounded-full bg-ochre-100/30 dark:bg-ochre-800/10 blur-md"></div>
+                    <div class="relative flex flex-col lg:flex-row items-center gap-8">
                         <!-- Circular progress — navy → ochre, the lifetime journey -->
                         <div class="relative shrink-0">
                             <svg width="180" height="180" viewBox="0 0 180 180" class="-rotate-90">
@@ -113,53 +118,56 @@ import { FireSettings } from '../settings/components/fire-settings';
                 <!-- KPI Row -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
                     <!-- Years to FIRE -->
-                    <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Années restantes</p>
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
+                        <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Années restantes</p>
                         @if (fire()!.yearsToFire != null) {
-                            <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
+                            <div class="relative text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
                                 {{ fire()!.yearsToFire | number:'1.0-1' }}
                                 <span class="text-surface-400 text-base font-normal ml-1">{{ fire()!.yearsToFire === 1 ? 'an' : 'ans' }}</span>
                             </div>
                             @if (fire()!.estimatedDate) {
-                                <p class="text-surface-400 text-xs mt-1 truncate">~ {{ formatDate(fire()!.estimatedDate!) }}</p>
+                                <p class="relative text-surface-400 text-xs mt-1 truncate">~ {{ formatDate(fire()!.estimatedDate!) }}</p>
                             }
                         } @else {
-                            <div class="text-2xl text-surface-400">—</div>
-                            <p class="text-surface-400 text-xs mt-1">Augmentez votre épargne pour estimer</p>
+                            <div class="relative text-2xl text-surface-400">—</div>
+                            <p class="relative text-surface-400 text-xs mt-1">Augmentez votre épargne pour estimer</p>
                         }
                     </div>
 
                     <!-- Monthly passive income at FIRE -->
-                    <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Revenus passifs visés</p>
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/30 dark:from-surface-800 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                        <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Revenus passifs visés</p>
                         @if ((fire()!.monthlyPassiveIncomeNeeded) > 0) {
-                            <div class="text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
+                            <div class="relative text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
                                 <app-amount [value]="fire()!.monthlyPassiveIncomeNeeded!" />
                             </div>
-                            <p class="text-surface-400 text-xs mt-1 truncate">par mois (estimé)</p>
+                            <p class="relative text-surface-400 text-xs mt-1 truncate">par mois (estimé)</p>
                         } @else {
-                            <div class="text-2xl text-surface-400">—</div>
+                            <div class="relative text-2xl text-surface-400">—</div>
                         }
                     </div>
 
                     <!-- Savings rate -->
-                    <div class="card text-center !py-6 h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="text-warm-500 dark:text-warm-400 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800 dark:to-brand-900/10"></div>
+                        <p class="relative text-warm-500 dark:text-warm-400 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
                         @if ((fire()!.savingsRate) > 0) {
-                            <div class="text-3xl font-bold truncate"
+                            <div class="relative text-3xl font-bold truncate"
                                  [class.text-positive]="(fire()!.savingsRate) >= 20"
                                  [class.text-warning]="(fire()!.savingsRate) < 20 && (fire()!.savingsRate) >= 10"
                                  [class.text-negative]="(fire()!.savingsRate) < 10">
                                 {{ fire()!.savingsRate | number:'1.0-1' }}%
                             </div>
-                            <p class="text-warm-400 text-xs mt-1 truncate">
+                            <p class="relative text-warm-400 text-xs mt-1 truncate">
                                 @if ((fire()!.savingsRate) >= 20) { Excellent rythme }
                                 @else if ((fire()!.savingsRate) >= 10) { Bon rythme }
                                 @else { À améliorer }
                             </p>
                         } @else {
-                            <div class="text-2xl text-warm-400">—</div>
-                            <p class="text-warm-400 text-xs mt-1">Ajoutez des transactions</p>
+                            <div class="relative text-2xl text-warm-400">—</div>
+                            <p class="relative text-warm-400 text-xs mt-1">Ajoutez des transactions</p>
                         }
                     </div>
                 </div>
@@ -167,7 +175,7 @@ import { FireSettings } from '../settings/components/fire-settings';
 
             <!-- Loading skeleton -->
             @if (loading()) {
-                <div class="card animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
                     <div class="h-32 bg-surface-200 dark:bg-surface-700 rounded-xl"></div>
                 </div>
             }

@@ -135,8 +135,9 @@ function getDonutColors(): string[] {
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
 
                 <!-- Progression chart -->
-                <div class="card !mb-0">
-                    <div class="flex items-center justify-between mb-4">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+                    <div class="relative flex items-center justify-between mb-4">
                         <span class="font-semibold text-surface-900 dark:text-surface-0">Progression</span>
                         <div class="flex items-center gap-1">
                             @for (r of ranges; track r.months) {
@@ -152,26 +153,29 @@ function getDonutColors(): string[] {
                     </div>
 
                     @if (loadingChart) {
-                        <div class="flex items-center justify-center h-52">
+                        <div class="relative flex items-center justify-center h-52">
                             <i class="pi pi-spin pi-spinner text-2xl text-surface-400"></i>
                         </div>
                     } @else if (!lineData) {
-                        <div class="flex flex-col items-center justify-center h-52 text-center">
+                        <div class="relative flex flex-col items-center justify-center h-52 text-center">
                             <i class="pi pi-chart-line text-3xl text-surface-400 mb-3"></i>
                             <p class="text-surface-500 text-sm">Pas encore de données</p>
                         </div>
                     } @else {
-                        <div class="mb-3">
+                        <div class="relative mb-3">
                             <div class="text-surface-500 dark:text-surface-400 text-xs">{{ todayLabel }}</div>
                             <div class="text-surface-900 dark:text-surface-0 font-bold text-xl"><app-amount [value]="totalValue" /></div>
                         </div>
-                        <p-chart type="line" [data]="lineData" [options]="lineOptions" styleClass="w-full" [height]="'200px'" />
+                        <div class="relative">
+                            <p-chart type="line" [data]="lineData" [options]="lineOptions" styleClass="w-full" [height]="'200px'" />
+                        </div>
                     }
                 </div>
 
                 <!-- Donut chart -->
-                <div class="card !mb-0">
-                    <div class="flex items-center justify-between mb-4">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-ochre-900/10"></div>
+                    <div class="relative flex items-center justify-between mb-4">
                         <span class="font-semibold text-surface-900 dark:text-surface-0">Répartition</span>
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
                     </div>

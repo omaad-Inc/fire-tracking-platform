@@ -27,13 +27,15 @@ interface FaqItem {
         <div class="flex flex-col gap-5">
 
             <!-- ── Search bar ────────────────────────────────────── -->
-            <div class="card !p-5">
-                <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">Comment pouvons-nous vous aider ?</h2>
-                <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">Parcourez les questions fréquentes ou contactez notre équipe.</p>
+            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-ochre-50/20 dark:from-brand-900/15 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-lg"></div>
+                <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">Comment pouvons-nous vous aider ?</h2>
+                <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">Parcourez les questions fréquentes ou contactez notre équipe.</p>
                 <div class="relative">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"></i>
                     <input pInputText [(ngModel)]="searchQuery" placeholder="Rechercher une question..."
-                           class="w-full !pl-10 !py-3 !rounded-xl" />
+                           class="w-full !pl-10 !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                 </div>
             </div>
 
@@ -53,7 +55,7 @@ interface FaqItem {
             </div>
 
             <!-- ── FAQ ──────────────────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
@@ -88,7 +90,7 @@ interface FaqItem {
             </section>
 
             <!-- ── Contact ──────────────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-envelope text-brand-700 dark:text-brand-300"></i>
@@ -100,18 +102,18 @@ interface FaqItem {
                 </div>
 
                 <div class="p-5">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Sujet</label>
+                    <div class="flex flex-col gap-6">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Sujet</label>
                             <input pInputText [(ngModel)]="contactForm.subject"
                                    placeholder="Ex : Problème de connexion, question sur les devises…"
-                                   class="w-full !py-3 !rounded-xl" />
+                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Message</label>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Message</label>
                             <textarea pTextarea [(ngModel)]="contactForm.message" rows="4"
                                       placeholder="Décrivez votre problème ou question en détail…"
-                                      class="w-full !rounded-xl resize-none"></textarea>
+                                      class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"></textarea>
                         </div>
                         <div class="flex items-center justify-between gap-4 flex-wrap">
                             <p class="text-xs text-surface-400 flex items-center gap-1.5">
@@ -122,14 +124,14 @@ interface FaqItem {
                                       [loading]="isSending()"
                                       [disabled]="!contactForm.subject || !contactForm.message"
                                       (click)="sendMessage()"
-                                      styleClass="omaad-cta !rounded-xl" />
+                                      styleClass="omaad-cta !rounded-full" />
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- ── Other resources ──────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
                         <i class="pi pi-link text-positive"></i>

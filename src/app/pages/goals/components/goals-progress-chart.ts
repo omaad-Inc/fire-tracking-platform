@@ -11,8 +11,10 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 @Component({
     selector: 'app-savings-progress',
     template: `
-        <div class="card h-full">
-            <div class="flex items-center justify-between mb-4">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute top-3 left-3 w-12 h-12 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-md"></div>
+            <div class="relative flex items-center justify-between mb-4">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('savings.evolution') }}</div>
                 @if (!loading()) {
                     <div class="flex items-center gap-1">
@@ -30,24 +32,26 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             </div>
 
             @if (loading()) {
-                <div class="animate-pulse">
+                <div class="relative animate-pulse">
                     <div class="h-6 w-32 bg-surface-200 dark:bg-surface-700 rounded mb-1"></div>
                     <div class="h-9 w-48 bg-surface-200 dark:bg-surface-700 rounded mb-4"></div>
                     <div class="h-[250px] bg-surface-200 dark:bg-surface-700 rounded"></div>
                 </div>
             } @else if (allPoints().length === 0) {
-                <div class="flex flex-col items-center justify-center h-[300px] text-center">
+                <div class="relative flex flex-col items-center justify-center h-[300px] text-center">
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-line text-xl text-surface-400"></i>
                     </div>
                     <p class="text-surface-500 dark:text-surface-400 text-sm">{{ i18n.t('savings.noDataYet') }}</p>
                 </div>
             } @else {
-                <div class="mb-4">
+                <div class="relative mb-4">
                     <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ currentDate() }}</div>
                     <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl"><app-amount [value]="currentValue()" /></div>
                 </div>
-                <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[250px]" />
+                <div class="relative">
+                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[250px]" />
+                </div>
             }
         </div>
     `,

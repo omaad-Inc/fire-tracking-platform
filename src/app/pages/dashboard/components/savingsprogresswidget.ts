@@ -24,8 +24,10 @@ interface GoalDisplay {
     selector: 'app-savings-progress',
     imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
-        <div class="card h-full">
-            <div class="flex justify-between items-center mb-6">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/50 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute top-2 right-2 w-16 h-16 rounded-full bg-brand-100/30 dark:bg-brand-800/15 blur-md"></div>
+            <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.savingsProgress') }}</div>
                 <a [routerLink]="link('pages', 'goals')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
                     {{ i18n.t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
@@ -33,7 +35,7 @@ interface GoalDisplay {
             </div>
             
             @if (loading()) {
-                <div class="space-y-5">
+                <div class="relative space-y-5">
                     @for (i of [1,2,3]; track i) {
                         <div class="animate-pulse">
                             <div class="flex items-center justify-between mb-2">
@@ -51,7 +53,7 @@ interface GoalDisplay {
                     }
                 </div>
             } @else if (goals().length === 0) {
-                <div class="flex flex-col items-center justify-center py-8 text-center">
+                <div class="relative flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-wallet text-2xl text-surface-400"></i>
                     </div>
@@ -61,26 +63,33 @@ interface GoalDisplay {
                     </a>
                 </div>
             } @else {
-                <ul class="list-none p-0 m-0 space-y-5">
+                <ul class="relative list-none p-0 m-0 space-y-4">
                     @for (g of goals(); track g.label) {
-                        <li class="group">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center" [ngClass]="g.bgClass">
-                                        <i [class]="g.icon" [ngClass]="g.iconClass"></i>
-                                    </div>
-                                    <div>
-                                        <span class="text-surface-900 dark:text-surface-0 font-medium block">{{ g.label }}</span>
-                                        <span class="text-surface-500 dark:text-surface-400 text-sm"><app-amount [value]="g.current" /> / <app-amount [value]="g.target" /></span>
-                                    </div>
-                                </div>
-                                <span class="font-bold text-lg" [ngClass]="g.textColorClass">{{ g.percent }}%</span>
+                        <li class="flex items-center gap-4 p-2 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
+                            <!-- Circular ring -->
+                            <div class="relative w-12 h-12 shrink-0">
+                                <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
+                                    <circle cx="18" cy="18" r="15.5" fill="none"
+                                            stroke="currentColor" stroke-width="3"
+                                            class="text-surface-200 dark:text-surface-700" />
+                                    <circle cx="18" cy="18" r="15.5" fill="none"
+                                            stroke-width="3" stroke-linecap="round"
+                                            class="text-brand-700 dark:text-brand-300"
+                                            [attr.stroke-dasharray]="ringDash(g.percent)"
+                                            stroke="currentColor" />
+                                </svg>
+                                <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-surface-700 dark:text-surface-200">
+                                    {{ g.percent }}%
+                                </span>
                             </div>
-                            <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                <div class="absolute inset-y-0 left-0 rounded-full transition-all duration-500" 
-                                     [ngClass]="g.progressClass" 
-                                     [ngStyle]="{ width: g.percent + '%' }">
-                                </div>
+                            <!-- Details -->
+                            <div class="flex-1 min-w-0">
+                                <span class="text-surface-900 dark:text-surface-0 font-medium text-sm block truncate">{{ g.label }}</span>
+                                <span class="text-surface-500 dark:text-surface-400 text-xs"><app-amount [value]="g.current" /> / <app-amount [value]="g.target" /></span>
+                            </div>
+                            <!-- Icon -->
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" [ngClass]="g.bgClass">
+                                <i [class]="g.icon" [ngClass]="g.iconClass" class="text-sm"></i>
                             </div>
                         </li>
                     }
@@ -149,6 +158,12 @@ export class SavingsProgress implements OnInit, OnDestroy {
         } finally {
             this.loading.set(false);
         }
+    }
+
+    ringDash(percent: number): string {
+        const circumference = 2 * Math.PI * 15.5;
+        const filled = (Math.min(100, percent) / 100) * circumference;
+        return `${filled} ${circumference}`;
     }
 
     link(...segments: string[]): any[] {

@@ -14,13 +14,15 @@ import { I18nService } from '../../../i18n/i18n.service';
     selector: 'app-worth-distribution-widget',
     imports: [CommonModule, ChartModule, FluidModule],
     template: `
-        <div class="card !mb-0 h-full flex flex-col">
-            <div class="mb-6">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full flex flex-col">
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800/90"></div>
+            <div class="absolute top-3 left-3 w-14 h-14 rounded-full bg-brand-100/30 dark:bg-brand-800/10 blur-md"></div>
+            <div class="relative mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.distribution') }}</div>
             </div>
             
             @if (loading()) {
-                <div class="flex-1 flex flex-col items-center justify-center animate-pulse">
+                <div class="relative flex-1 flex flex-col items-center justify-center animate-pulse">
                     <div class="w-[200px] h-[200px] rounded-full bg-surface-200 dark:bg-surface-700 mb-6"></div>
                     <div class="grid grid-cols-2 gap-4 w-full">
                         @for (i of [1,2,3,4]; track i) {
@@ -29,7 +31,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </div>
                 </div>
             } @else if (legendItems().length === 0) {
-                <div class="flex-1 flex flex-col items-center justify-center text-center">
+                <div class="relative flex-1 flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-chart-pie text-2xl text-surface-400"></i>
                     </div>
@@ -37,7 +39,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <p class="text-surface-400 dark:text-surface-500 text-sm">{{ i18n.t('dashboard.noAssetsDesc') }}</p>
                 </div>
             } @else {
-                <div class="flex-1 flex flex-col items-center justify-center">
+                <div class="relative flex-1 flex flex-col items-center justify-center">
                     <div class="relative w-full max-w-[280px] mb-6">
                         <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
                         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">

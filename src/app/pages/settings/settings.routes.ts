@@ -5,6 +5,7 @@ import { SecuritySettings } from './components/security';
 import { PreferencesSettings } from './components/preferences';
 import { HelpSettings } from './components/help';
 import { PlansSettings } from './components/plans';
+import { ConnectionsSettings } from './components/connections';
 
 // FireSettings is still imported by /pages/fire (the deep-dive page); we just
 // no longer expose it as a /settings/fire route — FIRE configuration happens
@@ -19,6 +20,7 @@ export default [
             { path: 'account',     component: AccountSettings     },
             { path: 'security',    component: SecuritySettings    },
             { path: 'preferences', component: PreferencesSettings },
+            { path: 'connections', component: ConnectionsSettings },
             { path: 'help',        component: HelpSettings        },
             { path: 'plans',       component: PlansSettings       },
         ]

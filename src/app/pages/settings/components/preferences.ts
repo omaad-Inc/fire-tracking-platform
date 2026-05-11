@@ -16,22 +16,24 @@ import { TokenService } from '../../../core/services/token.service';
     standalone: true,
     imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule],
     template: `
-        <div class="card">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute top-4 right-4 w-16 h-16 rounded-full bg-brand-100/20 dark:bg-brand-800/10 blur-lg"></div>
             <!-- Language & Region -->
-            <div class="mb-8">
+            <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.title') }}</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Language -->
-                    <div>
-                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.preferences.language') }}</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.language') }}</label>
                         <p-select
                             [(ngModel)]="selectedLanguage"
                             [options]="languages"
                             optionLabel="name"
                             optionValue="code"
                             class="w-full"
-                            styleClass="!py-1"
+                            styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
                             (onChange)="onLanguageChange($event.value)"
                         >
                             <ng-template #selectedItem let-selected>
@@ -50,15 +52,15 @@ import { TokenService } from '../../../core/services/token.service';
                     </div>
 
                     <!-- Currency -->
-                    <div>
-                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.preferences.currency') }}</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.currency') }}</label>
                         <p-select
                             [(ngModel)]="selectedCurrency"
                             [options]="currencies"
                             optionLabel="name"
                             optionValue="code"
                             class="w-full"
-                            styleClass="!py-1"
+                            styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
                             (onChange)="onCurrencyChange($event.value)"
                         >
                             <ng-template #selectedItem let-selected>
@@ -82,7 +84,7 @@ import { TokenService } from '../../../core/services/token.service';
             <p-divider />
 
             <!-- Theme -->
-            <div class="mb-8">
+            <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.theme') }}</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -142,7 +144,7 @@ import { TokenService } from '../../../core/services/token.service';
             <p-divider />
 
             <!-- Notifications -->
-            <div class="mb-8">
+            <div class="relative mb-8">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.notifications') }}</h2>
                     <span class="px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
@@ -173,7 +175,7 @@ import { TokenService } from '../../../core/services/token.service';
             <p-divider />
 
             <!-- Data Export -->
-            <div>
+            <div class="relative">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.data') }}</h2>
                     <span class="px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-xs font-semibold uppercase tracking-wide">Bientôt</span>

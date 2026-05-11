@@ -12,8 +12,10 @@ import { ApiService } from '../../../core/services/api.service';
 @Component({
     selector: 'app-patrimoine-progress',
     template: `
-        <div class="card h-full">
-            <div class="flex items-center justify-between mb-4">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute top-3 left-3 w-14 h-14 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-md"></div>
+            <div class="relative flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
                     <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Patrimoine Brut</div>
                     <i class="pi pi-chevron-down text-surface-500 text-sm cursor-pointer"></i>
@@ -34,22 +36,24 @@ import { ApiService } from '../../../core/services/api.service';
             </div>
             
             @if (loading()) {
-                <div class="animate-pulse">
+                <div class="relative animate-pulse">
                     <div class="h-[200px] md:h-[300px] bg-surface-200 dark:bg-surface-700 rounded"></div>
                 </div>
             } @else if (dataPoints().length === 0) {
-                <div class="flex flex-col items-center justify-center h-[200px] md:h-[300px] text-center">
+                <div class="relative flex flex-col items-center justify-center h-[200px] md:h-[300px] text-center">
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-line text-xl text-surface-400"></i>
                     </div>
                     <p class="text-surface-500 dark:text-surface-400 text-sm">Pas encore de données</p>
                 </div>
             } @else {
-                <div class="mb-4">
+                <div class="relative mb-4">
                     <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ currentDate() }}</div>
                     <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl"><app-amount [value]="currentValue()" /></div>
                 </div>
-                <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[180px] md:min-h-[250px]" />
+                <div class="relative">
+                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[180px] md:min-h-[250px]" />
+                </div>
             }
         </div>
     `,

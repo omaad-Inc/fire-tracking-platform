@@ -85,12 +85,13 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
             <!-- Not found -->
             @if (!loading() && !goal()) {
-                <div class="card text-center py-12">
-                    <div class="w-16 h-16 mx-auto rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center py-12">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800/90 dark:to-surface-900"></div>
+                    <div class="relative w-16 h-16 mx-auto rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-flag text-2xl text-surface-400"></i>
                     </div>
-                    <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ i18n.t('goals.detail.notFound') }}</h2>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ i18n.t('goals.detail.notFoundDesc') }}</p>
+                    <h2 class="relative text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ i18n.t('goals.detail.notFound') }}</h2>
+                    <p class="relative text-surface-500 dark:text-surface-400 text-sm mb-4">{{ i18n.t('goals.detail.notFoundDesc') }}</p>
                     <p-button
                         [label]="i18n.t('goals.detail.backToList')"
                         icon="pi pi-arrow-left"
@@ -144,41 +145,45 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
                 <!-- KPI strip -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-stretch">
-                    <div class="card !p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
+                        <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             <app-amount [value]="g.current_amount" />
                         </div>
-                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.totalSaved') }}</div>
+                        <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.totalSaved') }}</div>
                     </div>
-                    <div class="card !p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
+                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/30 dark:from-surface-800 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                        <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (remaining() != null) {
                                 <app-amount [value]="remaining()!" />
                             } @else {
                                 —
                             }
                         </div>
-                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.leftToSave') }}</div>
+                        <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.leftToSave') }}</div>
                     </div>
-                    <div class="card !p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
+                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800 dark:to-brand-900/10"></div>
+                        <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (monthlyNeeded() != null) {
                                 <app-amount [value]="monthlyNeeded()!" />
                             } @else {
                                 —
                             }
                         </div>
-                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthlyNeeded') }}</div>
+                        <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthlyNeeded') }}</div>
                     </div>
-                    <div class="card !p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
+                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800 dark:to-surface-900"></div>
+                        <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (monthsLeft() != null) {
                                 {{ monthsLeft() }}
                             } @else {
                                 —
                             }
                         </div>
-                        <div class="text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthsLeft') }}</div>
+                        <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthsLeft') }}</div>
                     </div>
                 </div>
 
@@ -189,8 +194,9 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                     <div class="lg:col-span-2 flex flex-col gap-4">
 
                         <!-- Activity log -->
-                        <div class="card !p-5">
-                            <div class="flex items-center justify-between gap-2 mb-4">
+                        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800/90 dark:to-surface-900"></div>
+                            <div class="relative flex items-center justify-between gap-2 mb-4">
                                 <div class="flex items-center gap-2">
                                     <i class="pi pi-history text-brand-700 dark:text-brand-300"></i>
                                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.activity.title') }}</h3>
@@ -204,13 +210,13 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             </div>
 
                             @if (loadingContributions()) {
-                                <div class="flex flex-col gap-2">
+                                <div class="relative flex flex-col gap-2">
                                     @for (i of [1,2,3]; track i) {
                                         <div class="animate-pulse bg-surface-100 dark:bg-surface-800 rounded-xl h-14"></div>
                                     }
                                 </div>
                             } @else if (contributions().length === 0) {
-                                <div class="flex flex-col items-center justify-center py-8 text-center">
+                                <div class="relative flex flex-col items-center justify-center py-8 text-center">
                                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                                         <i class="pi pi-history text-surface-400"></i>
                                     </div>
@@ -224,7 +230,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                     />
                                 </div>
                             } @else {
-                                <ul class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+                                <ul class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
                                     @for (c of contributions(); track c.id) {
                                         <li class="py-3 flex items-center gap-3">
                                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
@@ -267,22 +273,24 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
                         <!-- Note -->
                         @if (userNote()) {
-                            <div class="card !p-5">
-                                <div class="flex items-center gap-2 mb-2">
+                            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                                <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/30 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-900"></div>
+                                <div class="relative flex items-center gap-2 mb-2">
                                     <i class="pi pi-comment text-ochre-500"></i>
                                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.fields.note') }}</h3>
                                 </div>
-                                <p class="text-sm text-surface-700 dark:text-surface-300 whitespace-pre-wrap m-0">{{ userNote() }}</p>
+                                <p class="relative text-sm text-surface-700 dark:text-surface-300 whitespace-pre-wrap m-0">{{ userNote() }}</p>
                             </div>
                         }
                     </div>
 
                     <!-- RIGHT — details panel -->
-                    <div class="card !p-5 self-start">
-                        <h3 class="font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
+                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 self-start">
+                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+                        <h3 class="relative font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
                             {{ i18n.t('goals.detail.details') }}
                         </h3>
-                        <dl class="flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+                        <dl class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
                             <div class="flex items-center justify-between py-3">
                                 <dt class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('goals.detail.status') }}</dt>
                                 <dd class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ i18n.t('goals.status.' + statusKey()) }}</dd>

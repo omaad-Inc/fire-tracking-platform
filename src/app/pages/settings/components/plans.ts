@@ -39,9 +39,10 @@ interface PlanFeature {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
 
                 <!-- Gratuit -->
-                <div class="card !p-6 flex flex-col border-2 border-surface-200 dark:border-surface-700">
-                    <div class="mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-surface-200 dark:border-surface-700">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100/50 dark:from-surface-800 dark:via-surface-800 dark:to-surface-700/30"></div>
+                    <div class="relative mb-5">
+                        <div class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center mb-3">
                             <i class="pi pi-chart-line text-surface-500 text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">
@@ -51,16 +52,16 @@ interface PlanFeature {
                             {{ isFr() ? 'Tout pour commencer' : 'Everything to start' }}
                         </p>
                     </div>
-                    <div class="flex items-baseline gap-1.5 mb-2">
+                    <div class="relative flex items-baseline gap-1.5 mb-2">
                         <span class="text-3xl font-bold text-surface-900 dark:text-surface-0">0</span>
                         <span class="text-surface-500 text-sm">FCFA/{{ isFr() ? 'mois' : 'month' }}</span>
                     </div>
-                    <p class="text-surface-400 text-xs mb-5">{{ isFr() ? 'Gratuit pour toujours' : 'Free forever' }}</p>
+                    <p class="relative text-surface-400 text-xs mb-5">{{ isFr() ? 'Gratuit pour toujours' : 'Free forever' }}</p>
                     <button pButton
                             [label]="isFr() ? 'Plan actuel' : 'Current plan'"
                             [outlined]="true" [disabled]="true"
-                            class="w-full mb-6 !rounded-xl !py-2.5 !font-semibold"></button>
-                    <ul class="space-y-3 flex-1">
+                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold"></button>
+                    <ul class="relative space-y-3 flex-1">
                         @for (f of freeFeatures(); track f) {
                             <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300">
                                 <i class="pi pi-check text-xs text-positive shrink-0"></i>
@@ -71,14 +72,15 @@ interface PlanFeature {
                 </div>
 
                 <!-- Pro -->
-                <div class="relative card !p-6 flex flex-col border-2 border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
+                    <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/30 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-800"></div>
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2">
                         <span class="px-3 py-1 rounded-full bg-gradient-to-r from-ochre-500 to-ochre-400 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap flex items-center gap-1">
                             <i class="pi pi-star-fill text-[8px]"></i>
                             {{ isFr() ? 'Populaire' : 'Popular' }}
                         </span>
                     </div>
-                    <div class="mb-5 pt-1">
+                    <div class="relative mb-5 pt-1">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-400 flex items-center justify-center mb-3 shadow-lg shadow-card">
                             <i class="pi pi-crown text-warm-900 text-lg"></i>
                         </div>
@@ -87,16 +89,16 @@ interface PlanFeature {
                             {{ isFr() ? 'Pour ceux qui veulent régner' : 'For those who want to reign' }}
                         </p>
                     </div>
-                    <div class="flex items-baseline gap-1.5 mb-2">
+                    <div class="relative flex items-baseline gap-1.5 mb-2">
                         <span class="text-3xl font-bold text-ochre-500 dark:text-ochre-400">6 000</span>
                         <span class="text-surface-500 text-sm">FCFA/{{ isFr() ? 'mois' : 'month' }}</span>
                     </div>
-                    <p class="text-surface-400 text-xs mb-5">{{ isFr() ? '~72 000 FCFA/an' : '~72,000 FCFA/year' }}</p>
+                    <p class="relative text-surface-400 text-xs mb-5">{{ isFr() ? '~72 000 FCFA/an' : '~72,000 FCFA/year' }}</p>
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
-                            class="w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
-                    <ul class="space-y-3 flex-1">
+                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
+                    <ul class="relative space-y-3 flex-1">
                         <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
                             <i class="pi pi-check text-xs text-ochre-500 shrink-0"></i>
                             {{ isFr() ? 'Tout le plan Gratuit, plus :' : 'Everything in Free, plus:' }}
@@ -111,13 +113,14 @@ interface PlanFeature {
                 </div>
 
                 <!-- Premium -->
-                <div class="relative card !p-6 flex flex-col border-2 border-brand-300 dark:border-brand-500/40">
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-brand-300 dark:border-brand-500/40">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2">
                         <span class="px-3 py-1 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">
                             {{ isFr() ? 'Bientôt disponible' : 'Coming soon' }}
                         </span>
                     </div>
-                    <div class="mb-5 pt-1">
+                    <div class="relative mb-5 pt-1">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 dark:from-brand-400 dark:to-brand-300 flex items-center justify-center mb-3">
                             <i class="pi pi-bolt text-white dark:text-warm-900 text-lg"></i>
                         </div>
@@ -126,16 +129,16 @@ interface PlanFeature {
                             {{ isFr() ? 'Le sommet de la souveraineté' : 'The pinnacle of sovereignty' }}
                         </p>
                     </div>
-                    <div class="flex items-baseline gap-1.5 mb-2">
+                    <div class="relative flex items-baseline gap-1.5 mb-2">
                         <span class="text-3xl font-bold text-brand-700 dark:text-brand-300">10 000</span>
                         <span class="text-surface-500 text-sm">FCFA/{{ isFr() ? 'mois' : 'month' }}</span>
                     </div>
-                    <p class="text-surface-400 text-xs mb-5">{{ isFr() ? '~120 000 FCFA/an' : '~120,000 FCFA/year' }}</p>
+                    <p class="relative text-surface-400 text-xs mb-5">{{ isFr() ? '~120 000 FCFA/an' : '~120,000 FCFA/year' }}</p>
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
-                            class="w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !text-white opacity-60"></button>
-                    <ul class="space-y-3 flex-1">
+                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !text-white opacity-60"></button>
+                    <ul class="relative space-y-3 flex-1">
                         <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
                             <i class="pi pi-check text-xs text-brand-700 dark:text-brand-300 shrink-0"></i>
                             {{ isFr() ? 'Tout le plan Pro, plus :' : 'Everything in Pro, plus:' }}
@@ -151,7 +154,7 @@ interface PlanFeature {
             </div>
 
             <!-- Feature comparison table -->
-            <div class="card !p-0 overflow-hidden max-w-4xl mx-auto w-full">
+            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 max-w-4xl mx-auto w-full">
                 <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">
                         {{ isFr() ? 'Comparaison détaillée' : 'Detailed comparison' }}

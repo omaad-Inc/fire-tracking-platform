@@ -22,11 +22,13 @@ import { CurrencyService } from '../../../core/services/currency.service';
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
-        <div class="card">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-ochre-900/10"></div>
+            <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-ochre-100/25 dark:bg-ochre-800/10 blur-lg"></div>
             <!-- Header -->
-            <div class="flex items-center gap-4 mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-positive flex items-center justify-center shadow-card">
-                    <i class="pi pi-flag text-white text-xl"></i>
+            <div class="relative flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center">
+                    <i class="pi pi-flag text-positive text-xl"></i>
                 </div>
                 <div>
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">Mon objectif financier</h2>
@@ -35,7 +37,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
 
             <!-- Explainer card -->
-            <div class="flex items-start gap-3 p-4 mb-6 bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800 rounded-xl">
+            <div class="relative flex items-start gap-3 p-4 mb-6 bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800 rounded-xl">
                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 flex-shrink-0"></i>
                 <div class="text-sm text-surface-700 dark:text-surface-300 leading-relaxed">
                     <span class="font-semibold text-brand-700 dark:text-ochre-400">À quoi ça sert ?</span>
@@ -46,7 +48,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
 
             <!-- Auto-calculation section -->
-            <div class="mb-6">
+            <div class="relative mb-6">
                 <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Calculer mon objectif automatiquement</h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
                     Renseignez vos dépenses annuelles et nous calculerons le capital à atteindre.
@@ -54,8 +56,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     pour que les rendements couvrent vos frais de vie sans puiser dans le capital.
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Dépenses annuelles <span class="text-surface-400">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber
@@ -64,14 +66,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             mode="decimal"
                             [minFractionDigits]="0" [maxFractionDigits]="0"
                             placeholder="Ex : 15 000 000"
-                            inputStyleClass="w-full !py-3 !rounded-xl"
+                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             styleClass="w-full"
                             (ngModelChange)="onCalcChange()"
                         />
-                        <p class="text-xs text-surface-400 dark:text-surface-500">Logement, alimentation, transport, loisirs… sur 12 mois</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Logement, alimentation, transport, loisirs… sur 12 mois</p>
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Taux de rendement attendu (%)</label>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Taux de rendement attendu (%)</label>
                         <p-inputnumber
                             [(ngModel)]="withdrawalRate"
                             [min]="1"
@@ -80,11 +82,11 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             [maxFractionDigits]="1"
                             suffix="%"
                             placeholder="4.0"
-                            inputStyleClass="w-full !py-3 !rounded-xl"
+                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             styleClass="w-full"
                             (ngModelChange)="onCalcChange()"
                         />
-                        <p class="text-xs text-surface-400 dark:text-surface-500">Le rendement annuel moyen que vous espérez de vos placements (4 % est une référence prudente)</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Le rendement annuel moyen que vous espérez de vos placements (4 % est une référence prudente)</p>
                     </div>
                 </div>
 
@@ -104,7 +106,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <p-divider />
 
             <!-- Manual target -->
-            <div class="mb-6">
+            <div class="relative mb-6">
                 <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">
                     Capital cible <span class="text-surface-400 font-normal text-base">({{ cs.config().symbol }})</span>
                 </h3>
@@ -117,7 +119,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     mode="decimal"
                     [minFractionDigits]="0" [maxFractionDigits]="0"
                     placeholder="Ex : 375 000 000"
-                    inputStyleClass="w-full !py-3 !rounded-xl"
+                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                     styleClass="w-full md:w-1/2"
                 />
                 @if (fireTarget && fireTarget > 0) {
@@ -134,7 +136,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <p-divider />
 
             <!-- Target date (optional) -->
-            <div class="mb-8">
+            <div class="relative mb-8">
                 <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Date cible <span class="text-sm font-normal text-surface-400">(facultatif)</span></h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
                     La date à laquelle vous aimeriez atteindre cet objectif. Laissez vide si vous ne vous êtes pas fixé d'échéance.
@@ -146,19 +148,19 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     dateFormat="dd/mm/yy"
                     placeholder="Sélectionner une date"
                     styleClass="w-full md:w-1/2"
-                    inputStyleClass="!py-3 !rounded-xl"
+                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                 />
             </div>
 
             <!-- Actions -->
-            <div class="flex items-center gap-4 flex-wrap">
+            <div class="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <button pButton
                         type="button"
                         label="Enregistrer"
                         icon="pi pi-check"
                         [loading]="isSaving()"
                         (click)="save()"
-                        class="omaad-cta !px-8 !py-3 !font-semibold hover:!opacity-90"
+                        class="omaad-cta !rounded-full !px-8 !py-3 !font-semibold"
                 ></button>
                 @if (hasExistingTarget) {
                     <button pButton
@@ -169,7 +171,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             [outlined]="true"
                             [loading]="isClearing()"
                             (click)="clearTarget()"
-                            class="!py-3"
+                            class="!rounded-full !py-3"
                     ></button>
                 }
             </div>

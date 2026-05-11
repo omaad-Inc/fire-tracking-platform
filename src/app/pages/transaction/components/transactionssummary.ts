@@ -8,22 +8,24 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <div class="card h-full flex flex-col gap-5">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full flex flex-col gap-5">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute bottom-3 right-3 w-14 h-14 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-md"></div>
             <!-- Header -->
-            <div>
+            <div class="relative">
                 <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ monthTitle }}</h3>
                 <p class="text-surface-400 text-xs mt-0.5">Résumé financier</p>
             </div>
 
             @if (loading()) {
-                <div class="space-y-3">
+                <div class="relative space-y-3">
                     @for (i of [1,2,3]; track i) {
                         <div class="h-10 bg-surface-100 dark:bg-surface-800 rounded-xl animate-pulse"></div>
                     }
                 </div>
             } @else if (summary()) {
                 <!-- Net flow pill -->
-                <div class="flex items-center justify-between p-3 rounded-xl"
+                <div class="relative flex items-center justify-between p-3 rounded-xl"
                      [ngClass]="(summary()!.net >= 0) ? 'bg-positive/10' : 'bg-negative/10'">
                     <span class="text-sm font-medium"
                           [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">

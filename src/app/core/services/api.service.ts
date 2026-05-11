@@ -377,6 +377,33 @@ export interface WealthScoreResponse {
 }
 
 // ============================================
+// BROKER CONNECTION INTERFACES
+// ============================================
+export type BrokerProvider = 'jokko_fi' | 'cgf_bourse' | 'bridge_securities';
+export type ConnectionStatus = 'pending' | 'connected' | 'error' | 'disabled';
+
+export interface BrokerConnectionCreate {
+    provider: BrokerProvider;
+    login: string;
+    password: string;
+}
+
+export interface BrokerConnectionUpdate {
+    login?: string;
+    password?: string;
+}
+
+export interface BrokerConnection {
+    id: number;
+    provider: BrokerProvider;
+    login: string;
+    status: ConnectionStatus;
+    last_sync: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+// ============================================
 // API SERVICE
 // ============================================
 @Injectable({
@@ -577,6 +604,27 @@ export class ApiService {
     // ========== WEALTH SCORE ==========
     getWealthScore(): Observable<WealthScoreResponse> {
         return this.http.get<WealthScoreResponse>(`${this.apiUrl}/wealth-score`);
+    }
+
+    // ========== BROKER CONNECTIONS ==========
+    createBrokerConnection(data: BrokerConnectionCreate): Observable<BrokerConnection> {
+        return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections`, data);
+    }
+
+    getBrokerConnections(): Observable<BrokerConnection[]> {
+        return this.http.get<BrokerConnection[]>(`${this.apiUrl}/broker/connections`);
+    }
+
+    updateBrokerConnection(id: number, data: BrokerConnectionUpdate): Observable<BrokerConnection> {
+        return this.http.patch<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}`, data);
+    }
+
+    deleteBrokerConnection(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/broker/connections/${id}`);
+    }
+
+    syncBrokerConnection(id: number): Observable<BrokerConnection> {
+        return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}/sync`, {});
     }
 }
 

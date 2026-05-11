@@ -16,7 +16,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
         <!-- Loading State -->
         @if (loading()) {
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="card mb-0 animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
@@ -28,7 +28,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 </div>
             </div>
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="card mb-0 animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
@@ -40,7 +40,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 </div>
             </div>
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="card mb-0 animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
@@ -54,9 +54,12 @@ import { CurrencyService } from '../../../core/services/currency.service';
         } @else {
             <!-- KPI Card 1 - Patrimoine -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60"
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer group transition-all duration-300"
                      [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
-                    <div class="flex justify-between items-start mb-4">
+                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface-50 to-surface-100 dark:from-brand-900/20 dark:via-surface-800 dark:to-surface-900"></div>
+                    <div class="absolute top-3 right-3 w-20 h-20 rounded-full bg-brand-100/50 dark:bg-brand-800/20 blur-md"></div>
+                    <div class="absolute top-10 right-10 w-12 h-12 rounded-full bg-brand-200/40 dark:bg-brand-700/20 blur-sm"></div>
+                    <div class="relative flex justify-between items-start mb-4">
                         <div>
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
                             <div class="font-bold text-3xl md:text-4xl leading-tight"
@@ -64,11 +67,11 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" />
                             </div>
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-700 dark:bg-brand-300 shadow-card group-hover:scale-110 transition-transform duration-300">
-                            <i class="pi pi-wallet text-white dark:text-brand-900 text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm group-hover:scale-110 transition-transform duration-300">
+                            <i class="pi pi-wallet text-brand-700 dark:text-brand-300 text-2xl"></i>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 mt-auto">
+                    <div class="relative flex items-center gap-2 mt-auto">
                         @if ((stats()?.netWorthChangePct ?? 0) === 0) {
                             <span class="inline-flex items-center px-2 py-1 rounded-lg bg-surface-500/10 text-surface-500 text-sm font-semibold">
                                 —
@@ -89,11 +92,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 </div>
             </div>
 
-            <!-- KPI Card 2 - Flux Mensuel (mirrors Objectif Financier card structure) -->
+            <!-- KPI Card 2 - Flux Mensuel -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60"
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer group transition-all duration-300"
                      [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les transactions" tabindex="0">
-                    <div class="flex justify-between items-start mb-3">
+                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-100 to-brand-50 dark:from-surface-800 dark:via-surface-800/80 dark:to-brand-900/15"></div>
+                    <div class="absolute top-4 right-4 w-18 h-18 rounded-full bg-surface-200/50 dark:bg-surface-700/30 blur-md"></div>
+                    <div class="absolute top-12 right-12 w-10 h-10 rounded-full bg-brand-100/40 dark:bg-brand-800/20 blur-sm"></div>
+                    <div class="relative flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlyFlux') }}</span>
                             @if ((stats()?.monthlyIncome ?? 0) > 0 || (stats()?.monthlyExpenses ?? 0) > 0) {
@@ -106,19 +112,29 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.thisMonthLabel') }}</div>
                             }
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-700 dark:bg-brand-300 shadow-card group-hover:scale-110 transition-transform duration-300 shrink-0">
-                            <i class="pi pi-arrow-right-arrow-left text-white dark:text-brand-900 text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm group-hover:scale-110 transition-transform duration-300 shrink-0">
+                            <i class="pi pi-arrow-right-arrow-left text-brand-700 dark:text-brand-300 text-2xl"></i>
                         </div>
                     </div>
-                    <div class="mt-auto">
+                    <div class="relative mt-auto">
                         @if ((stats()?.monthlyIncome ?? 0) > 0 || (stats()?.monthlyExpenses ?? 0) > 0) {
-                            <!-- Progress bar (income vs expenses ratio) -->
-                            <div class="w-full h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mb-3 overflow-hidden">
-                                <div class="h-full rounded-full transition-all duration-500"
-                                     [ngClass]="monthlySavings() >= 0 ? 'bg-gradient-to-r from-positive-500 to-positive-400' : 'bg-gradient-to-r from-negative-500 to-negative-400'"
-                                     [style.width]="savingsRatePct() + '%'"></div>
+                            <!-- Income vs Expenses dual segment -->
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-positive"></div>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ cs.formatNumber(stats()?.monthlyIncome ?? 0) }}</span>
+                                </div>
+                                <div class="flex-1 h-2 rounded-full overflow-hidden flex">
+                                    <div class="h-full bg-positive/80 rounded-l-full transition-all duration-500"
+                                         [style.width]="incomeRatio() + '%'"></div>
+                                    <div class="h-full bg-negative/60 rounded-r-full transition-all duration-500"
+                                         [style.width]="(100 - incomeRatio()) + '%'"></div>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-negative/60"></div>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400">{{ cs.formatNumber(stats()?.monthlyExpenses ?? 0) }}</span>
+                                </div>
                             </div>
-                            <!-- Single insight chip — savings rate -->
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center px-2 py-1 rounded-lg text-sm font-semibold"
                                       [ngClass]="monthlySavings() >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
@@ -138,10 +154,13 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <!-- KPI Card 3 - Objectif FIRE -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="card mb-0 h-full flex flex-col cursor-pointer group hover:shadow-lifted transition-all duration-300 border border-transparent hover:border-brand-200/60 dark:hover:border-brand-700/60"
+                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer group transition-all duration-300"
                      [routerLink]="fireProgress() && (fireProgress()!.targetAmount) > 0 ? link('pages','goals') : link('pages','fire')"
                      role="link" aria-label="Voir l'objectif financier" tabindex="0">
-                    <div class="flex justify-between items-start mb-3">
+                    <div class="absolute inset-0 bg-gradient-to-br from-ochre-50 via-surface-50 to-surface-100 dark:from-ochre-900/20 dark:via-surface-800 dark:to-surface-900"></div>
+                    <div class="absolute top-3 right-3 w-20 h-20 rounded-full bg-ochre-100/50 dark:bg-ochre-800/20 blur-md"></div>
+                    <div class="absolute top-10 right-10 w-12 h-12 rounded-full bg-ochre-200/40 dark:bg-ochre-700/20 blur-sm"></div>
+                    <div class="relative flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>
                             @if (fireProgress() && (fireProgress()!.targetAmount) > 0) {
@@ -152,27 +171,39 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.fireGoalUndefined') }}</div>
                             }
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-ochre-500 shadow-card group-hover:scale-110 transition-transform duration-300 shrink-0">
-                            <i class="pi pi-flag text-white text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm group-hover:scale-110 transition-transform duration-300 shrink-0">
+                            <i class="pi pi-flag text-ochre-600 dark:text-ochre-300 text-2xl"></i>
                         </div>
                     </div>
-                    <div class="mt-auto">
+                    <div class="relative mt-auto">
                         @if (fireProgress() && (fireProgress()!.targetAmount) > 0) {
-                            <!-- Progress bar -->
-                            <div class="w-full h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mb-3 overflow-hidden">
-                                <div class="h-full rounded-full bg-gradient-to-r from-positive-500 to-positive-400 transition-all duration-500"
-                                     [style.width]="(fireProgress()!.progressPct! > 100 ? 100 : fireProgress()!.progressPct!) + '%'"></div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                @if (fireProgress()?.yearsToFire !== null && fireProgress()!.yearsToFire! > 0) {
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-positive/10 text-positive text-sm font-semibold">
-                                        {{ fireProgress()!.yearsToFire! | number:'1.0-0' }} {{ t('dashboard.kpi.fireYearsLeft') }}
+                            <!-- Arc gauge -->
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="relative w-12 h-12 shrink-0">
+                                    <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
+                                        <circle cx="18" cy="18" r="15.5" fill="none"
+                                                stroke="currentColor" stroke-width="3"
+                                                class="text-surface-200 dark:text-surface-700" />
+                                        <circle cx="18" cy="18" r="15.5" fill="none"
+                                                stroke-width="3" stroke-linecap="round"
+                                                class="text-positive"
+                                                [attr.stroke-dasharray]="fireArcDash()"
+                                                stroke="currentColor" />
+                                    </svg>
+                                    <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-surface-700 dark:text-surface-200">
+                                        {{ fireProgress()?.progressPct | number:'1.0-0' }}%
                                     </span>
-                                } @else {
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-positive/10 text-positive text-sm font-semibold">
-                                        🎯 {{ t('dashboard.kpi.fireReached') }}
-                                    </span>
-                                }
+                                </div>
+                                <div class="flex flex-col">
+                                    @if (fireProgress()?.yearsToFire !== null && fireProgress()!.yearsToFire! > 0) {
+                                        <span class="text-sm font-semibold text-surface-700 dark:text-surface-200">
+                                            {{ fireProgress()!.yearsToFire! | number:'1.0-0' }} {{ t('dashboard.kpi.fireYearsLeft') }}
+                                        </span>
+                                        <span class="text-xs text-surface-400">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></span>
+                                    } @else {
+                                        <span class="text-sm font-semibold text-positive">{{ t('dashboard.kpi.fireReached') }}</span>
+                                    }
+                                </div>
                             </div>
                         } @else {
                             <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300 text-sm font-semibold">
@@ -215,6 +246,21 @@ export class StatsWidget implements OnInit, OnDestroy {
     
     monthlySavings = signal(0);
     savingsRatePct = signal(0);
+
+    readonly incomeRatio = computed(() => {
+        const s = this.stats();
+        if (!s) return 50;
+        const total = (s.monthlyIncome ?? 0) + (s.monthlyExpenses ?? 0);
+        if (total === 0) return 50;
+        return Math.round(((s.monthlyIncome ?? 0) / total) * 100);
+    });
+
+    readonly fireArcDash = computed(() => {
+        const pct = Math.min(100, this.fireProgress()?.progressPct ?? 0);
+        const circumference = 2 * Math.PI * 15.5;
+        const filled = (pct / 100) * circumference;
+        return `${filled} ${circumference}`;
+    });
 
     async ngOnInit() {
         await this.loadStats();

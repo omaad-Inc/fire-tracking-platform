@@ -70,8 +70,10 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             </div>
 
             <!-- Value + date -->
-            <div class="card mb-6">
-                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 mb-6">
+                <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface-50 to-surface-100 dark:from-brand-900/15 dark:via-surface-800 dark:to-surface-900"></div>
+                <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-brand-100/30 dark:bg-brand-800/15 blur-md"></div>
+                <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div>
                         <p class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ formatDate(asset()!.updated_at) }}</p>
                         <div class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0">
@@ -427,7 +429,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 <div class="space-y-6 pt-2">
                     <!-- Name -->
                     <div class="flex flex-col gap-1.5">
-                        <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nom de l'actif</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Nom de l'actif</label>
                         <input pInputText [(ngModel)]="editForm.name"
                                placeholder="Nom de l'actif"
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
@@ -436,7 +438,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Values section -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle <span class="text-negative">*</span></label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Valeur actuelle <span class="text-negative">*</span></label>
                             <div class="relative">
                                 <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                [min]="0" [maxFractionDigits]="2"
@@ -445,7 +447,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             </div>
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Prix d'achat</label>
                             <div class="relative">
                                 <p-inputnumber [(ngModel)]="editForm.purchaseValue"
                                                [min]="0" [maxFractionDigits]="2"
@@ -458,7 +460,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Date & Institution -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date d'achat</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Date d'achat</label>
                             <p-datepicker [(ngModel)]="editForm.purchaseDate"
                                           [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy"
@@ -466,7 +468,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                           inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Institution / Opérateur</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Institution / Opérateur</label>
                             <input pInputText [(ngModel)]="editForm.institution"
                                    placeholder="Banque, plateforme..."
                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
@@ -477,13 +479,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         <!-- Real estate fields -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Surface (m²)</label>
+                                <label class="text-sm text-surface-500 dark:text-surface-400">Surface (m²)</label>
                                 <p-inputnumber [(ngModel)]="editForm.surfaceM2"
                                                [min]="0" [maxFractionDigits]="1" suffix=" m²"
                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                             </div>
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Revenus locatifs/mois</label>
+                                <label class="text-sm text-surface-500 dark:text-surface-400">Revenus locatifs/mois</label>
                                 <div class="relative">
                                     <p-inputnumber [(ngModel)]="editForm.rentalIncome"
                                                    [min]="0" [maxFractionDigits]="2"
@@ -504,7 +506,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 
                     @if (isQuantityBased()) {
                         <div class="flex flex-col gap-1.5">
-                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nombre de parts / Quantité</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Nombre de parts / Quantité</label>
                             <p-inputnumber [(ngModel)]="editForm.quantity"
                                            [min]="0" [maxFractionDigits]="6"
                                            placeholder="Ex : 10, 0.5..."
@@ -522,14 +524,14 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </div>
             </ng-template>
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="editDialog = false"
-                              styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button label="Enregistrer" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveEdit()"
-                              styleClass="omaad-cta flex-1 !rounded-xl !py-3" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="editDialog = false"
+                              styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>

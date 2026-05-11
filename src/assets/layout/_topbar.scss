@@ -10,7 +10,7 @@
     width: 100%;
     padding-right: 2rem;
     border-bottom: 1px solid var(--surface-border);
-    background-color: var(--surface-card);
+    background: linear-gradient(to bottom right, var(--surface-ground), var(--surface-card));
     transition: left var(--layout-section-transition-duration);
     display: flex;
     align-items: center;

@@ -10,8 +10,10 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [CommonModule, RouterModule, ChartModule],
     template: `
-        <div class="card !mb-0 h-full flex flex-col">
-            <div class="flex items-center justify-between mb-4">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full flex flex-col">
+            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+            <div class="absolute bottom-2 left-2 w-20 h-20 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-lg"></div>
+            <div class="relative flex items-center justify-between mb-4">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">
                     {{ t('landing.wealthScore.eyebrow') }}
                 </div>
@@ -22,14 +24,14 @@ import { I18nService } from '../../../i18n/i18n.service';
             </div>
 
             @if (scoreService.loading()) {
-                <div class="flex-1 flex items-center justify-center">
+                <div class="relative flex-1 flex items-center justify-center">
                     <div class="animate-pulse flex flex-col items-center gap-4">
                         <div class="w-32 h-32 rounded-full bg-surface-200 dark:bg-surface-700"></div>
                         <div class="h-4 w-20 rounded bg-surface-200 dark:bg-surface-700"></div>
                     </div>
                 </div>
             } @else if (!scoreService.hasData()) {
-                <div class="flex-1 flex flex-col items-center justify-center text-center py-8">
+                <div class="relative flex-1 flex flex-col items-center justify-center text-center py-8">
                     <div class="w-14 h-14 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-gauge text-2xl text-surface-400"></i>
                     </div>
@@ -37,7 +39,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <p class="text-surface-400 dark:text-surface-500 text-xs mt-1">{{ t('landing.wealthScore.noDataDesc') }}</p>
                 </div>
             } @else {
-                <div class="flex-1 flex flex-col items-center justify-center">
+                <div class="relative flex-1 flex flex-col items-center justify-center">
                     <!-- Score number -->
                     <div class="text-center mb-2">
                         <span class="text-5xl font-black tabular-nums" [class]="scoreColor()">

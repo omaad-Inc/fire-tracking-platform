@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule, DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -67,8 +67,9 @@ interface CategoryCard {
                     <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
                 </button>
                 <div class="flex-1 min-w-0">
-                    <h1 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
-                        @if (currentStep() === 0) { Ajouter un actif }
+                    <h1 class="font-bold text-surface-900 dark:text-surface-0 m-0"
+                        [ngClass]="currentStep() === 0 ? 'text-2xl' : 'text-xl'">
+                        @if (currentStep() === 0) { Compléter mon patrimoine }
                         @if (currentStep() === 1) {
                             <span class="flex items-center gap-2">
                                 @if (selectedCard()) {
@@ -82,63 +83,55 @@ interface CategoryCard {
                         @if (currentStep() === 2) { Répartition }
                     </h1>
                 </div>
-                <!-- Step dots -->
-                <div class="flex items-center gap-1.5 shrink-0">
-                    @for (s of [0, 1, 2]; track s) {
-                        <div class="w-2 h-2 rounded-full transition-all"
-                             [ngClass]="currentStep() >= s ? 'bg-brand-700 dark:bg-brand-300 w-5' : 'bg-surface-300 dark:bg-surface-600'"></div>
-                    }
-                </div>
+                <!-- Step dots (only on form steps) -->
+                @if (currentStep() >= 1) {
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        @for (s of [1, 2]; track s) {
+                            <div class="w-2 h-2 rounded-full transition-all"
+                                 [ngClass]="currentStep() >= s ? 'bg-brand-700 dark:bg-brand-300 w-5' : 'bg-surface-300 dark:bg-surface-600'"></div>
+                        }
+                    </div>
+                }
             </div>
 
             <!-- Content -->
             <div class="flex-1">
 
-                <!-- ===== STEP 0: Category Picker (Full-page, Finary-style) ===== -->
+                <!-- ===== STEP 0: Category Picker (Finary-style premium cards) ===== -->
                 @if (currentStep() === 0) {
-                    <div class="max-w-3xl mx-auto">
-                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-5">Sélectionnez le type d'actif à ajouter à votre patrimoine</p>
-
+                    <div class="max-w-4xl mx-auto">
                         <!-- Search -->
-                        <div class="relative mb-6">
+                        <div class="relative mb-8">
                             <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
                             <input pInputText
                                    [(ngModel)]="searchQuery"
                                    placeholder="Rechercher un type d'actif..."
-                                   class="w-full !pl-11 !py-3 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl" />
+                                   class="w-full !pl-11 !py-3.5 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-sm" />
                         </div>
 
-                        <!-- Desktop: 2-column card grid -->
-                        <div class="hidden md:grid grid-cols-2 gap-3">
+                        <!-- 2-column Finary-style card grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @for (cat of filteredCategories(); track cat.value) {
                                 <button type="button"
                                         (click)="selectCategory(cat.value)"
-                                        class="flex items-center gap-4 p-4 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20 transition-all text-left group">
-                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 {{ cat.bgClass }} transition-transform group-hover:scale-110">
+                                        class="relative flex items-start gap-0 p-5 rounded-2xl border border-surface-200 dark:border-surface-700
+                                               hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-md
+                                               transition-all text-left group overflow-hidden min-h-[7.5rem]">
+                                    <!-- Background decorative icon (large, faded, top-right) -->
+                                    <div class="absolute -top-2 -right-2 w-20 h-20 rounded-full opacity-[0.07] dark:opacity-[0.1]
+                                                flex items-center justify-center {{ cat.bgClass }}">
+                                        <i class="pi {{ cat.icon }} text-5xl {{ cat.textClass }}"></i>
+                                    </div>
+                                    <!-- Content -->
+                                    <div class="relative flex-1 pr-10">
+                                        <h3 class="font-bold text-surface-900 dark:text-surface-0 text-[15px] mb-1.5">{{ cat.label }}</h3>
+                                        <p class="text-surface-400 dark:text-surface-500 text-sm leading-relaxed">{{ cat.desc }}</p>
+                                    </div>
+                                    <!-- Decorative illustration area (right) -->
+                                    <div class="absolute top-1/2 -translate-y-1/2 right-4 w-14 h-14 rounded-xl {{ cat.bgClass }}
+                                                flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
                                         <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl"></i>
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ cat.label }}</div>
-                                        <div class="text-surface-400 text-xs mt-0.5">{{ cat.desc }}</div>
-                                    </div>
-                                    <i class="pi pi-chevron-right text-surface-300 text-xs group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
-                                </button>
-                            }
-                        </div>
-
-                        <!-- Mobile: vertical list -->
-                        <div class="md:hidden divide-y divide-surface-200 dark:divide-surface-700">
-                            @for (cat of filteredCategories(); track cat.value) {
-                                <button type="button"
-                                        (click)="selectCategory(cat.value)"
-                                        class="w-full flex items-center gap-4 py-4 px-1 text-left group">
-                                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 {{ cat.bgClass }}">
-                                        <i class="pi {{ cat.icon }} {{ cat.textClass }} text-lg"></i>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ cat.label }}</div>
-                                    </div>
-                                    <i class="pi pi-chevron-right text-surface-300 text-xs"></i>
                                 </button>
                             }
                         </div>
@@ -439,14 +432,14 @@ interface CategoryCard {
             @if (currentStep() >= 1) {
                 <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-surface-200 dark:border-surface-700">
                     @if (currentStep() === 1) {
-                        <button pButton type="button" label="Suivant" class="omaad-cta !rounded-xl px-8"
+                        <button pButton type="button" label="Suivant" class="omaad-cta !rounded-full px-8"
                                 [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
                     } @else {
                         <button pButton type="button" label="Retour" [outlined]="true"
-                                class="!rounded-xl !border-surface-300 dark:!border-surface-600"
+                                class="!rounded-full !border-surface-300 dark:!border-surface-600"
                                 (click)="previousStep()"></button>
                         <button pButton type="button" label="Enregistrer"
-                                class="omaad-cta !rounded-xl"
+                                class="omaad-cta !rounded-full"
                                 [loading]="isSubmitting()" (click)="submitAsset()"></button>
                     }
                 </div>
@@ -456,6 +449,7 @@ interface CategoryCard {
 })
 export class AddAssetPage implements OnInit {
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
     private location = inject(Location);
     private patrimoineService = inject(PatrimoineService);
     private messageService = inject(MessageService);
@@ -540,6 +534,11 @@ export class AddAssetPage implements OnInit {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.resetForm();
+
+        const cat = this.route.snapshot.queryParamMap.get('category');
+        if (cat && this.categoryCards.some(c => c.value === cat)) {
+            this.selectCategory(cat as AssetCategory);
+        }
     }
 
     goBack(): void {
@@ -566,7 +565,11 @@ export class AddAssetPage implements OnInit {
     selectCategory(value: AssetCategory): void {
         this.assetForm.category = value;
         this.selectedCategory.set(value);
-        this.currentStep.set(1);
+        if (value === 'stocks' && !this.route.snapshot.queryParamMap.has('category')) {
+            this.router.navigate(['/', this.lang, 'pages', 'patrimoine', 'connect-broker']);
+        } else {
+            this.currentStep.set(1);
+        }
     }
 
     isQuantityBased(): boolean {

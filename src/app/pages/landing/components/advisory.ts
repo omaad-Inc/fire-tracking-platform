@@ -428,72 +428,72 @@ interface ContactForm {
 
                             <!-- Nom + Email -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-sm text-warm-400">
                                         {{ _('Prénom & Nom', 'Full Name') }} <span class="text-negative">*</span>
                                     </label>
                                     <input pInputText name="fullName" [(ngModel)]="form.fullName" required
                                            placeholder="Amadou Diallo"
-                                           class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500" />
+                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-white/20 !rounded-none !text-white placeholder:!text-warm-500 focus:!border-ochre-400" />
                                 </div>
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-sm text-warm-400">
                                         {{ _('Email professionnel', 'Professional email') }} <span class="text-negative">*</span>
                                     </label>
                                     <input pInputText name="email" [(ngModel)]="form.email" required type="email"
                                            placeholder="vous@entreprise.com"
-                                           class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500" />
+                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-white/20 !rounded-none !text-white placeholder:!text-warm-500 focus:!border-ochre-400" />
                                 </div>
                             </div>
 
                             <!-- Entreprise -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-warm-400">
                                     {{ _('Entreprise / Organisation', 'Company / Organisation') }} <span class="text-negative">*</span>
                                 </label>
                                 <input pInputText name="company" [(ngModel)]="form.company" required
                                        placeholder="{{ _('Nom de votre organisation', 'Your organisation name') }}"
-                                       class="w-full !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500" />
+                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-white/20 !rounded-none !text-white placeholder:!text-warm-500 focus:!border-ochre-400" />
                             </div>
 
                             <!-- Secteur + Type besoin -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-sm text-warm-400">
                                         {{ sectorLabel() }} <span class="text-negative">*</span>
                                     </label>
                                     <p-select name="sector" [(ngModel)]="form.sector" required
                                               [options]="sectorOptions" optionLabel="label" optionValue="value"
-                                              placeholder="Sélectionner…" styleClass="w-full" />
+                                              placeholder="Sélectionner…" styleClass="w-full !border-0 !border-b !border-white/20 !rounded-none !shadow-none" />
                                 </div>
-                                <div class="flex flex-col gap-2">
-                                    <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-sm text-warm-400">
                                         {{ _('Type de besoin', 'Type of need') }} <span class="text-negative">*</span>
                                     </label>
                                     <p-select name="needType" [(ngModel)]="form.needType" required
                                               [options]="needOptions" optionLabel="label" optionValue="value"
-                                              placeholder="Sélectionner…" styleClass="w-full" />
+                                              placeholder="Sélectionner…" styleClass="w-full !border-0 !border-b !border-white/20 !rounded-none !shadow-none" />
                                 </div>
                             </div>
 
                             <!-- Description -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-warm-400">
                                     {{ _('Description du projet', 'Project description') }}
                                 </label>
                                 <textarea pTextarea name="description" [(ngModel)]="form.description"
-                                          rows="4" class="w-full resize-none !bg-white/5 !border-white/20 !text-white placeholder:!text-warm-500"
+                                          rows="4" class="w-full !py-3 !bg-transparent !border-0 !border-b !border-white/20 !rounded-none !text-white placeholder:!text-warm-500 focus:!border-ochre-400 resize-none"
                                           placeholder="Décrivez brièvement votre enjeu ou besoin data…"></textarea>
                             </div>
 
                             <!-- Source -->
-                            <div class="flex flex-col gap-2">
-                                <label class="text-sm font-semibold text-warm-300 tracking-wide">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-warm-400">
                                     {{ howFoundUs() }}
                                 </label>
                                 <p-select name="source" [(ngModel)]="form.source"
                                           [options]="sourceOptions" optionLabel="label" optionValue="value"
-                                          placeholder="Sélectionner…" styleClass="w-full" />
+                                          placeholder="Sélectionner…" styleClass="w-full !border-0 !border-b !border-white/20 !rounded-none !shadow-none" />
                             </div>
 
                             <!-- Social proof note -->
@@ -510,8 +510,8 @@ interface ContactForm {
                                     icon="pi pi-send"
                                     [loading]="submitting()"
                                     [disabled]="contactForm.invalid || submitting()"
-                                    class="w-full !bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-bold
-                                           dark:!text-warm-900 !tracking-wide !py-4 !rounded-lg !text-base
+                                    class="w-full !rounded-full !bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-bold
+                                           dark:!text-warm-900 !tracking-wide !py-4 !text-base
                                            hover:!shadow-xl hover:!shadow-card transition-all duration-300
                                            disabled:!opacity-50 disabled:!cursor-not-allowed">
                             </button>

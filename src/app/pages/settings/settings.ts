@@ -192,6 +192,7 @@ export class Settings implements OnInit {
     mainMenuItems = [
         { route: 'account',     icon: 'pi-user',   label: 'Mon compte' },
         { route: 'security',    icon: 'pi-shield',  label: 'Sécurité' },
+        { route: 'connections', icon: 'pi-link',    label: 'Mes connexions' },
         { route: 'preferences', icon: 'pi-cog',     label: 'Préférences' },
     ];
 
@@ -213,6 +214,7 @@ export class Settings implements OnInit {
         const url = this.router.url;
         if (url.includes('/security'))    return this.t('menu.security');
         if (url.includes('/account'))     return this.t('menu.myAccount');
+        if (url.includes('/connections')) return 'Mes connexions';
         if (url.includes('/preferences')) return this.t('menu.preferences');
         if (url.includes('/fire'))        return 'Objectif Financier';
         if (url.includes('/plans'))       return 'Omaad Pro';

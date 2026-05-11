@@ -92,7 +92,7 @@ export interface GoalSavePayload {
 
                 <!-- STEP 2: configure -->
                 @if (step() === 2) {
-                    <div class="flex flex-col gap-4 pt-2">
+                    <div class="flex flex-col gap-6 pt-2">
 
                         <!-- Image preview banner with replace button -->
                         <div class="relative h-32 rounded-xl overflow-hidden bg-surface-100 dark:bg-surface-900">
@@ -151,28 +151,26 @@ export interface GoalSavePayload {
                         }
 
                         <!-- Name -->
-                        <div class="flex flex-col gap-2">
-                            <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-tag text-warm-500"></i>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.name') }} <span class="text-negative">*</span>
                             </label>
                             <input
                                 pInputText
                                 [(ngModel)]="form.name"
                                 [placeholder]="i18n.t('goals.fields.namePlaceholder')"
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />
                             @if (submitted() && !form.name.trim()) {
-                                <small class="text-negative text-xs">
+                                <small class="text-negative text-xs mt-1">
                                     <i class="pi pi-exclamation-circle mr-1"></i>{{ i18n.t('goals.fields.nameRequired') }}
                                 </small>
                             }
                         </div>
 
                         <!-- Target amount -->
-                        <div class="flex flex-col gap-2">
-                            <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-wallet text-warm-500"></i>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.targetAmount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber
@@ -180,14 +178,13 @@ export interface GoalSavePayload {
                                 mode="decimal"
                                 [minFractionDigits]="0" [maxFractionDigits]="0"
                                 styleClass="w-full"
-                                inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />
                         </div>
 
                         <!-- Current amount -->
-                        <div class="flex flex-col gap-2">
-                            <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-chart-line text-warm-500"></i>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.currentAmount') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }} · {{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber
@@ -195,14 +192,13 @@ export interface GoalSavePayload {
                                 mode="decimal"
                                 [minFractionDigits]="0" [maxFractionDigits]="0"
                                 styleClass="w-full"
-                                inputStyleClass="!py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />
                         </div>
 
                         <!-- Target date -->
-                        <div class="flex flex-col gap-2">
-                            <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-calendar text-warm-500"></i>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.targetDate') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                             </label>
                             <input
@@ -210,36 +206,34 @@ export interface GoalSavePayload {
                                 pInputText
                                 [ngModel]="form.target_date"
                                 (ngModelChange)="form.target_date = $event"
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />
                         </div>
 
                         <!-- Custom image URL (alternative to upload) -->
-                        <div class="flex flex-col gap-2">
-                            <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-link text-warm-500"></i>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.imageUrl') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                             </label>
                             <input
                                 pInputText
                                 [(ngModel)]="form.imageUrl"
                                 placeholder="https://..."
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />
-                            <small class="text-surface-400 text-xs">{{ i18n.t('goals.fields.imageUrlHint') }}</small>
+                            <small class="text-surface-400 text-xs mt-1">{{ i18n.t('goals.fields.imageUrlHint') }}</small>
                         </div>
 
                         <!-- Note -->
-                        <div class="flex flex-col gap-2">
-                            <label class="flex items-center gap-2 text-surface-700 dark:text-surface-300 font-medium text-sm">
-                                <i class="pi pi-comment text-warm-500"></i>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.note') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }})</span>
                             </label>
                             <textarea
                                 pTextarea
                                 [(ngModel)]="form.description"
                                 rows="2"
-                                class="w-full !py-3 !rounded-xl !border-surface-300 dark:!border-surface-600 focus:!border-brand-700"
+                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"
                             ></textarea>
                         </div>
                     </div>
@@ -247,37 +241,37 @@ export interface GoalSavePayload {
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex flex-col sm:flex-row gap-3 w-full pt-2">
+                <div class="flex flex-col gap-2 w-full pt-2">
                     @if (step() === 1) {
-                        <p-button
-                            [label]="i18n.t('common.cancel')"
-                            icon="pi pi-times"
-                            [outlined]="true"
-                            (onClick)="close()"
-                            styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600"
-                        />
                         <p-button
                             [label]="i18n.t('goals.dialog.next')"
                             icon="pi pi-arrow-right"
                             iconPos="right"
                             (onClick)="step.set(2)"
                             [disabled]="!form.templateKey"
-                            styleClass="omaad-cta flex-1 !rounded-xl !py-3"
+                            styleClass="w-full omaad-cta !rounded-full !py-3"
+                        />
+                        <p-button
+                            [label]="i18n.t('common.cancel')"
+                            icon="pi pi-times"
+                            [outlined]="true"
+                            (onClick)="close()"
+                            styleClass="w-full !rounded-full !py-3"
                         />
                     } @else {
-                        <p-button
-                            [label]="editing ? i18n.t('common.cancel') : i18n.t('goals.dialog.back')"
-                            [icon]="editing ? 'pi pi-times' : 'pi pi-arrow-left'"
-                            [outlined]="true"
-                            (onClick)="editing ? close() : step.set(1)"
-                            styleClass="flex-1 !rounded-xl !py-3 !border-surface-300 dark:!border-surface-600"
-                        />
                         <p-button
                             [label]="editing ? i18n.t('common.save') : i18n.t('goals.dialog.create')"
                             icon="pi pi-check"
                             (onClick)="onSave()"
                             [loading]="saving"
-                            styleClass="omaad-cta flex-1 !rounded-xl !py-3"
+                            styleClass="w-full omaad-cta !rounded-full !py-3"
+                        />
+                        <p-button
+                            [label]="editing ? i18n.t('common.cancel') : i18n.t('goals.dialog.back')"
+                            [icon]="editing ? 'pi pi-times' : 'pi pi-arrow-left'"
+                            [outlined]="true"
+                            (onClick)="editing ? close() : step.set(1)"
+                            styleClass="w-full !rounded-full !py-3"
                         />
                     }
                 </div>

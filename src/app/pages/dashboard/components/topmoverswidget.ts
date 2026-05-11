@@ -13,11 +13,13 @@ interface MoverItem extends PatrimoineAssetItemDto {
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <div class="card h-full">
-            <div class="flex items-center justify-between mb-6">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
+            <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/50 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-800/90"></div>
+            <div class="absolute top-2 left-2 w-14 h-14 rounded-full bg-ochre-100/40 dark:bg-ochre-800/15 blur-md"></div>
+            <div class="relative flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shadow-card">
-                        <i class="pi pi-bolt text-white"></i>
+                    <div class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur flex items-center justify-center shadow-sm">
+                        <i class="pi pi-bolt text-ochre-600 dark:text-ochre-300"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('dashboard.topMovers') }}</h3>
@@ -27,7 +29,7 @@ interface MoverItem extends PatrimoineAssetItemDto {
             </div>
 
             @if (loading()) {
-                <div class="flex flex-col gap-4">
+                <div class="relative flex flex-col gap-4">
                     @for (i of [1,2,3]; track i) {
                         <div class="animate-pulse flex items-center gap-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
                             <div class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700"></div>
@@ -39,14 +41,14 @@ interface MoverItem extends PatrimoineAssetItemDto {
                     }
                 </div>
             } @else if (movers().length === 0) {
-                <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="relative flex flex-col items-center justify-center py-12 text-center">
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-bar text-surface-400 text-xl"></i>
                     </div>
                     <p class="text-surface-500 dark:text-surface-400 text-sm">{{ i18n.t('dashboard.noMovers') }}</p>
                 </div>
             } @else {
-                <div class="flex flex-col gap-3">
+                <div class="relative flex flex-col gap-3">
                     @for (item of movers(); track item.name; let i = $index) {
                         <div class="flex items-center gap-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"

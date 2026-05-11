@@ -24,10 +24,12 @@ import { AssetsStateService } from '../../service/assets-state.service';
     standalone: true,
     imports: [CommonModule, ButtonModule, AppAmountComponent],
     template: `
-        <div class="card !p-5 sm:!p-6 border-brand-100 dark:border-brand-800">
+        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
+            <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/40 via-surface-50 to-brand-50/20 dark:from-ochre-900/10 dark:via-surface-800 dark:to-brand-900/10"></div>
+            <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-ochre-100/30 dark:bg-ochre-800/10 blur-md"></div>
 
             <!-- Header / badge — ochre = "premium accent", reserved for FIRE -->
-            <div class="flex items-center justify-between gap-3 mb-4">
+            <div class="relative flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-700 dark:bg-ochre-700/20 dark:text-ochre-300">
                         <i class="pi pi-flag text-[10px]"></i>
@@ -41,12 +43,12 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
             <!-- Loading -->
             @if (loading()) {
-                <div class="animate-pulse h-32 bg-warm-100 dark:bg-warm-800 rounded-xl"></div>
+                <div class="relative animate-pulse h-32 bg-warm-100 dark:bg-warm-800 rounded-xl"></div>
             }
 
             <!-- Not configured -->
             @if (!loading() && !isConfigured()) {
-                <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-4">
+                <div class="relative flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-4">
                     <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center shrink-0">
                         <i class="pi pi-flag text-2xl text-brand-700 dark:text-brand-300"></i>
                     </div>
@@ -69,7 +71,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
             <!-- Configured -->
             @if (!loading() && isConfigured() && fire(); as f) {
-                <div class="flex flex-col lg:flex-row items-center lg:items-stretch gap-5 lg:gap-7">
+                <div class="relative flex flex-col lg:flex-row items-center lg:items-stretch gap-5 lg:gap-7">
                     <!-- Circular progress -->
                     <div class="relative shrink-0 self-center">
                         <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="'0 0 ' + size + ' ' + size" class="-rotate-90">
