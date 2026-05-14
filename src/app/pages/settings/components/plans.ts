@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -35,6 +35,31 @@ interface PlanFeature {
                 </p>
             </div>
 
+            <!-- Billing cadence toggle -->
+            <div class="flex items-center justify-center gap-3">
+                <div class="inline-flex items-center gap-1 p-1 rounded-xl bg-surface-100 dark:bg-surface-800">
+                    <button type="button"
+                            (click)="billing.set('monthly')"
+                            class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
+                            [ngClass]="billing() === 'monthly'
+                                ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
+                                : 'text-surface-500 dark:text-surface-400'">
+                        {{ isFr() ? 'Mensuel' : 'Monthly' }}
+                    </button>
+                    <button type="button"
+                            (click)="billing.set('annual')"
+                            class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
+                            [ngClass]="billing() === 'annual'
+                                ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
+                                : 'text-surface-500 dark:text-surface-400'">
+                        {{ isFr() ? 'Annuel' : 'Annual' }}
+                    </button>
+                </div>
+                <span class="px-2 py-1 rounded-md bg-positive/15 text-positive text-xs font-bold">
+                    −33%
+                </span>
+            </div>
+
             <!-- Plan cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
 
@@ -53,10 +78,10 @@ interface PlanFeature {
                         </p>
                     </div>
                     <div class="relative flex items-baseline gap-1.5 mb-2">
-                        <span class="text-3xl font-bold text-surface-900 dark:text-surface-0">0</span>
-                        <span class="text-surface-500 text-sm">FCFA/{{ isFr() ? 'mois' : 'month' }}</span>
+                        <span class="text-3xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().free.amount }}</span>
+                        <span class="text-surface-500 text-sm">FCFA{{ pricing().free.period }}</span>
                     </div>
-                    <p class="relative text-surface-400 text-xs mb-5">{{ isFr() ? 'Gratuit pour toujours' : 'Free forever' }}</p>
+                    <p class="relative text-surface-400 text-xs mb-5">{{ pricing().free.sub }}</p>
                     <button pButton
                             [label]="isFr() ? 'Plan actuel' : 'Current plan'"
                             [outlined]="true" [disabled]="true"
@@ -74,13 +99,13 @@ interface PlanFeature {
                 <!-- Pro -->
                 <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
                     <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/30 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-800"></div>
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-ochre-500 to-ochre-400 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap flex items-center gap-1">
+                    <div class="absolute top-3 right-3">
+                        <span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-ochre-500 to-ochre-400 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
                             <i class="pi pi-star-fill text-[8px]"></i>
                             {{ isFr() ? 'Populaire' : 'Popular' }}
                         </span>
                     </div>
-                    <div class="relative mb-5 pt-1">
+                    <div class="relative mb-5">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-400 flex items-center justify-center mb-3 shadow-lg shadow-card">
                             <i class="pi pi-crown text-warm-900 text-lg"></i>
                         </div>
@@ -90,10 +115,10 @@ interface PlanFeature {
                         </p>
                     </div>
                     <div class="relative flex items-baseline gap-1.5 mb-2">
-                        <span class="text-3xl font-bold text-ochre-500 dark:text-ochre-400">6 000</span>
-                        <span class="text-surface-500 text-sm">FCFA/{{ isFr() ? 'mois' : 'month' }}</span>
+                        <span class="text-3xl font-bold text-ochre-500 dark:text-ochre-400">{{ pricing().pro.amount }}</span>
+                        <span class="text-surface-500 text-sm">FCFA{{ pricing().pro.period }}</span>
                     </div>
-                    <p class="relative text-surface-400 text-xs mb-5">{{ isFr() ? '~72 000 FCFA/an' : '~72,000 FCFA/year' }}</p>
+                    <p class="relative text-surface-400 text-xs mb-5">{{ pricing().pro.sub }}</p>
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
@@ -115,12 +140,13 @@ interface PlanFeature {
                 <!-- Premium -->
                 <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-brand-300 dark:border-brand-500/40">
                     <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap">
-                            {{ isFr() ? 'Bientôt disponible' : 'Coming soon' }}
+                    <div class="absolute top-3 right-3">
+                        <span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
+                            <i class="pi pi-bolt text-[8px]"></i>
+                            {{ isFr() ? 'Meilleure valeur' : 'Best value' }}
                         </span>
                     </div>
-                    <div class="relative mb-5 pt-1">
+                    <div class="relative mb-5">
                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 dark:from-brand-400 dark:to-brand-300 flex items-center justify-center mb-3">
                             <i class="pi pi-bolt text-white dark:text-warm-900 text-lg"></i>
                         </div>
@@ -130,10 +156,10 @@ interface PlanFeature {
                         </p>
                     </div>
                     <div class="relative flex items-baseline gap-1.5 mb-2">
-                        <span class="text-3xl font-bold text-brand-700 dark:text-brand-300">10 000</span>
-                        <span class="text-surface-500 text-sm">FCFA/{{ isFr() ? 'mois' : 'month' }}</span>
+                        <span class="text-3xl font-bold text-brand-700 dark:text-brand-300">{{ pricing().premium.amount }}</span>
+                        <span class="text-surface-500 text-sm">FCFA{{ pricing().premium.period }}</span>
                     </div>
-                    <p class="relative text-surface-400 text-xs mb-5">{{ isFr() ? '~120 000 FCFA/an' : '~120,000 FCFA/year' }}</p>
+                    <p class="relative text-surface-400 text-xs mb-5">{{ pricing().premium.sub }}</p>
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
@@ -225,6 +251,35 @@ export class PlansSettings {
     private router = inject(Router);
 
     readonly isFr = computed(() => this.i18n.lang() === 'fr');
+
+    billing = signal<'monthly' | 'annual'>('annual');
+
+    pricing = computed(() => {
+        const annual = this.billing() === 'annual';
+        const fr = this.isFr();
+        const period = annual ? (fr ? '/an' : '/year') : (fr ? '/mois' : '/month');
+        return {
+            free: {
+                amount: '0',
+                period,
+                sub: fr ? 'Gratuit pour toujours' : 'Free forever',
+            },
+            pro: {
+                amount: annual ? '48 000' : '6 000',
+                period,
+                sub: annual
+                    ? (fr ? 'soit 4 000 FCFA/mois' : '= 4,000 FCFA/month')
+                    : (fr ? '72 000 FCFA/an au total' : '72,000 FCFA/year total'),
+            },
+            premium: {
+                amount: annual ? '80 000' : '10 000',
+                period,
+                sub: annual
+                    ? (fr ? 'soit 6 667 FCFA/mois' : '= 6,667 FCFA/month')
+                    : (fr ? '120 000 FCFA/an au total' : '120,000 FCFA/year total'),
+            },
+        };
+    });
 
     freeFeatures = computed(() => this.isFr() ? [
         'Dashboard & indicateurs clés',

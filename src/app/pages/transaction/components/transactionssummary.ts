@@ -38,7 +38,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </div>
 
                 <!-- Income / Expense rows -->
-                <div class="space-y-3">
+                <div class="relative space-y-3">
                     <!-- Income -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -66,11 +66,11 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </div>
 
                 <!-- Divider -->
-                <div class="h-px bg-surface-200 dark:bg-surface-700"></div>
+                <div class="relative h-px bg-surface-200 dark:bg-surface-700"></div>
 
                 <!-- By category -->
                 @if (summary()!.byCategory.length > 0) {
-                    <div>
+                    <div class="relative">
                         <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">
                             Répartition des dépenses
                         </p>
@@ -98,13 +98,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         </div>
                     </div>
                 } @else {
-                    <p class="text-xs text-surface-400 dark:text-surface-500 text-center py-4">
+                    <p class="relative text-xs text-surface-400 dark:text-surface-500 text-center py-4">
                         Aucune dépense ce mois-ci
                     </p>
                 }
 
                 <!-- Transaction count -->
-                <div class="mt-auto pt-2 border-t border-surface-200 dark:border-surface-700">
+                <div class="relative mt-auto pt-2 border-t border-surface-200 dark:border-surface-700">
                     <p class="text-xs text-surface-400 text-center">
                         {{ summary()!.count }} transaction{{ summary()!.count > 1 ? 's' : '' }} ce mois
                     </p>

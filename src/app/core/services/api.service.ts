@@ -8,7 +8,8 @@ import { environment } from '../../../environments/environment';
 // ============================================
 export type AssetCategory =
     | 'real_estate'
-    | 'stocks'
+    | 'stocks_brvm'
+    | 'stocks_intl'
     | 'bonds'
     | 'crypto'
     | 'cash'
@@ -379,7 +380,9 @@ export interface WealthScoreResponse {
 // ============================================
 // BROKER CONNECTION INTERFACES
 // ============================================
-export type BrokerProvider = 'jokko_fi' | 'cgf_bourse' | 'bridge_securities';
+export type BrokerProvider =
+    | 'jokko_fi' | 'cgf_bourse' | 'bridge_securities'
+    | 'credit_agricole' | 'boursobank' | 'credit_mutuel' | 'trade_republic' | 'fortuneo';
 export type ConnectionStatus = 'pending' | 'connected' | 'error' | 'disabled';
 
 export interface BrokerConnectionCreate {

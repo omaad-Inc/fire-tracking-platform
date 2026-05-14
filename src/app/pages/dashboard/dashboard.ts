@@ -9,6 +9,8 @@ import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
+import { TransactionsService } from '../service/transactions.service';
+import { TokenService } from '../../core/services/token.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -18,10 +20,13 @@ import { PatrimoineService } from '../service/patrimoine.service';
         RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
     ],
     template: `
-        <!-- Onboarding for new users: shown when no assets and not dismissed -->
+        <!-- Onboarding: shown until all 3 steps are done, or dismissed -->
         @if (showOnboarding()) {
             <div class="pb-6">
                 <app-onboarding
+                    [hasAssets]="hasAssets()"
+                    [hasTransactions]="hasTransactions()"
+                    [hasFireGoal]="hasFireGoal()"
                     (addAsset)="openAddAsset()"
                     (dismissed)="showOnboarding.set(false)"
                 />
@@ -56,22 +61,32 @@ import { PatrimoineService } from '../service/patrimoine.service';
     `
 })
 export class Dashboard implements OnInit {
-    private patrimoineService = inject(PatrimoineService);
-    private router = inject(Router);
+    private patrimoineService   = inject(PatrimoineService);
+    private transactionsService = inject(TransactionsService);
+    private tokenService        = inject(TokenService);
+    private router              = inject(Router);
 
-    showOnboarding = signal(false);
+    showOnboarding  = signal(false);
+    hasAssets       = signal(false);
+    hasTransactions = signal(false);
+    hasFireGoal     = signal(false);
 
     async ngOnInit() {
-        // Show onboarding if user has no assets and hasn't dismissed it before
-        const dismissed = localStorage.getItem('omaad_onboarding_dismissed') === 'true';
-        if (!dismissed) {
-            try {
-                const assets = await this.patrimoineService.getAssets();
-                this.showOnboarding.set(assets.length === 0);
-            } catch {
-                // If API fails, don't show onboarding
-            }
-        }
+        if (localStorage.getItem('omaad_onboarding_dismissed') === 'true') return;
+
+        const [assets, transactions] = await Promise.all([
+            this.patrimoineService.getAssets().catch(() => [] as unknown[]),
+            this.transactionsService.getRecords().catch(() => [] as unknown[]),
+        ]);
+
+        const fireTarget = this.tokenService.user()?.fire_target_amount ?? 0;
+
+        this.hasAssets.set(assets.length > 0);
+        this.hasTransactions.set(transactions.length > 0);
+        this.hasFireGoal.set(fireTarget > 0);
+
+        const allDone = this.hasAssets() && this.hasTransactions() && this.hasFireGoal();
+        this.showOnboarding.set(!allDone);
     }
 
     openAddAsset() {

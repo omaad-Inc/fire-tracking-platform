@@ -22,7 +22,7 @@ interface AssetGroup {
 
 const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
     { id: 'liquidity',    label: 'Liquidités & Épargne', icon: 'pi pi-wallet',      gradient: 'from-positive-500 to-positive-700', categories: ['cash', 'savings_account', 'mobile_money'] },
-    { id: 'investments',  label: 'Investissements',       icon: 'pi pi-chart-line',  gradient: 'from-brand-700 to-brand-600',     categories: ['stocks', 'bonds', 'crypto', 'retirement', 'life_insurance'] },
+    { id: 'investments',  label: 'Investissements',       icon: 'pi pi-chart-line',  gradient: 'from-brand-700 to-brand-600',     categories: ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'retirement', 'life_insurance'] },
     { id: 'real_estate',  label: 'Immobilier',            icon: 'pi pi-building',    gradient: 'from-brand-700 to-brand-500', categories: ['real_estate'] },
     { id: 'business',     label: 'Autres actifs',         icon: 'pi pi-briefcase',   gradient: 'from-brand-700 to-brand-500', categories: ['business', 'vehicle', 'tontine', 'collectibles', 'commodities', 'other'] },
 ];

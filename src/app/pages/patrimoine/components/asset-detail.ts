@@ -296,7 +296,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 }
 
                 <!-- Stocks / Bonds specific -->
-                @if (asset()!.category === 'stocks' || asset()!.category === 'bonds') {
+                @if (asset()!.category === 'stocks_brvm' || asset()!.category === 'stocks_intl' || asset()!.category === 'bonds') {
                     <div>
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Performance</h3>
                         <div class="space-y-3">
@@ -554,7 +554,7 @@ export class AssetDetailPage implements OnInit {
     editDialog = false;
     editForm = { name: '', currentValue: 0, purchaseValue: <number|null>null, purchaseDate: <Date|null>null, institution: '', surfaceM2: <number|null>null, rentalIncome: <number|null>null, quantity: <number|null>null };
 
-    readonly QUANTITY_CATEGORIES = ['stocks', 'bonds', 'crypto', 'collectibles', 'commodities'];
+    readonly QUANTITY_CATEGORIES = ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'collectibles', 'commodities'];
     isQuantityBased = computed(() => this.QUANTITY_CATEGORIES.includes(this.asset()?.category ?? ''));
 
     /**
@@ -728,7 +728,7 @@ export class AssetDetailPage implements OnInit {
         const cat = this.asset()?.category;
         const catToGroup: Record<string, string> = {
             real_estate: 'real_estate',
-            stocks: 'stocks_bonds', bonds: 'stocks_bonds',
+            stocks_brvm: 'stocks_bonds', stocks_intl: 'stocks_bonds', bonds: 'stocks_bonds',
             savings_account: 'savings', cash: 'savings', life_insurance: 'savings', retirement: 'savings',
             crypto: 'crypto',
             business: 'other', vehicle: 'other', collectibles: 'other', commodities: 'other', other: 'other',

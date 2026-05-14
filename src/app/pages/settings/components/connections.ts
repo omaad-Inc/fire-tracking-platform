@@ -13,6 +13,11 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
     jokko_fi: { name: 'Jokko FI', flag: '🇸🇳' },
     cgf_bourse: { name: 'CGF Bourse', flag: '🇸🇳' },
     bridge_securities: { name: 'Bridge Securities', flag: '🇨🇮' },
+    credit_agricole: { name: 'Crédit Agricole', flag: '🇫🇷' },
+    boursobank: { name: 'BoursoBank', flag: '🇫🇷' },
+    credit_mutuel: { name: 'Crédit Mutuel', flag: '🇫🇷' },
+    trade_republic: { name: 'Trade Republic', flag: '🇩🇪' },
+    fortuneo: { name: 'Fortuneo', flag: '🇫🇷' },
 };
 
 @Component({

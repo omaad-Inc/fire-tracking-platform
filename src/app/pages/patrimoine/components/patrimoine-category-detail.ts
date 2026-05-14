@@ -22,7 +22,7 @@ const BRAND_COLOR = '#1A2740';
 
 const GROUPS: GroupConfig[] = [
     { id: 'real_estate',    label: 'Immobilier',       icon: 'pi pi-building',   bg: BRAND_BG, color: BRAND_COLOR, categories: ['real_estate'] },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks', 'bonds'] },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
     { id: 'savings',        label: 'Épargne',          icon: 'pi pi-dollar',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
     { id: 'crypto',         label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: BRAND_BG, color: BRAND_COLOR, categories: ['crypto'] },
     { id: 'tontine',        label: 'Tontine',          icon: 'pi pi-users',      bg: BRAND_BG, color: BRAND_COLOR, categories: ['tontine'] },

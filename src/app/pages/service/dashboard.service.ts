@@ -41,7 +41,8 @@ export interface AssetAllocation {
 // Light and dark variants so donut slices remain visible on both backgrounds.
 const CATEGORY_COLORS_LIGHT: Record<string, string> = {
     'real_estate':    '#1A2740', // brand-700 (anchor)
-    'stocks':         '#C77B3C', // ochre-500 (accent)
+    'stocks_brvm':    '#C77B3C', // ochre-500 (accent — BRVM identity)
+    'stocks_intl':    '#8B4F26', // deep ochre — international stocks
     'bonds':          '#4D5F80', // brand-400
     'crypto':         '#D8A369', // ochre-400
     'cash':           '#3D3B35', // warm-700
@@ -59,7 +60,8 @@ const CATEGORY_COLORS_LIGHT: Record<string, string> = {
 
 const CATEGORY_COLORS_DARK: Record<string, string> = {
     'real_estate':    '#8A98AE', // brand-300
-    'stocks':         '#D8A369', // ochre-400
+    'stocks_brvm':    '#D8A369', // ochre-400 — BRVM identity
+    'stocks_intl':    '#B98856', // mid-ochre — international stocks
     'bonds':          '#B6BFCD', // brand-200
     'crypto':         '#EBD0B0', // ochre-200
     'cash':           '#9C988C', // warm-400
@@ -81,7 +83,8 @@ function getCategoryColors(): Record<string, string> {
 
 const CATEGORY_LABELS: Record<string, string> = {
     'real_estate':   'Immobilier',
-    'stocks':        'Actions / Bourse',
+    'stocks_brvm':   'Actions BRVM',
+    'stocks_intl':   'Actions internationales',
     'bonds':         'Obligations',
     'crypto':        'Cryptomonnaies',
     'cash':          'Compte bancaire',

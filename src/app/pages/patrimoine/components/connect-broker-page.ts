@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
@@ -9,6 +9,8 @@ import { MessageService } from 'primeng/api';
 import { ApiService, BrokerProvider } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
+
+type Market = 'brvm' | 'intl';
 
 interface BrokerInstitution {
     id: BrokerProvider;
@@ -41,9 +43,9 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                         @if (step() === 'method') {
                             <span class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-warm-100 dark:bg-warm-800">
-                                    <i class="pi pi-chart-line text-warm-700 dark:text-warm-300 text-sm"></i>
+                                    <i [class]="'pi ' + marketIcon() + ' text-warm-700 dark:text-warm-300 text-sm'"></i>
                                 </span>
-                                Actions / Bourse
+                                {{ marketTitle() }}
                             </span>
                         }
                         @if (step() === 'institutions') { {{ t('addAssets.institutionList.title') }} }
@@ -239,12 +241,14 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
 })
 export class ConnectBrokerPage implements OnInit {
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
     private apiService = inject(ApiService);
     private i18n = inject(I18nService);
     private messageService = inject(MessageService);
 
     lang = 'fr';
     step = signal<FlowStep>('method');
+    market = signal<Market>('brvm');
     selectedInstitution = signal<BrokerInstitution | null>(null);
     institutionSearch = '';
     brokerLogin = '';
@@ -252,16 +256,45 @@ export class ConnectBrokerPage implements OnInit {
     showPassword = signal(false);
     isSaving = signal(false);
 
-    institutions: BrokerInstitution[] = [
-        { id: 'jokko_fi', name: 'Jokko FI', subtitle: 'BRVM — Actions UEMOA', region: 'Sénégal', type: 'SGI', flag: '🇸🇳' },
-        { id: 'cgf_bourse', name: 'CGF Bourse', subtitle: 'BRVM — Actions UEMOA', region: 'Sénégal', type: 'SGI', flag: '🇸🇳' },
-        { id: 'bridge_securities', name: 'Bridge Securities', subtitle: 'BRVM — Actions UEMOA', region: 'Côte d\'Ivoire', type: 'SGI', flag: '🇨🇮' },
+    private readonly BRVM_INSTITUTIONS: { id: BrokerProvider; type: string; flag: string }[] = [
+        { id: 'jokko_fi',          type: 'SGI', flag: '🇸🇳' },
+        { id: 'cgf_bourse',        type: 'SGI', flag: '🇸🇳' },
+        { id: 'bridge_securities', type: 'SGI', flag: '🇨🇮' },
     ];
+
+    private readonly INTL_INSTITUTIONS: { id: BrokerProvider; type: string; flag: string }[] = [
+        { id: 'credit_agricole', type: 'Bank',   flag: '🇫🇷' },
+        { id: 'boursobank',      type: 'Bank',   flag: '🇫🇷' },
+        { id: 'credit_mutuel',   type: 'Bank',   flag: '🇫🇷' },
+        { id: 'trade_republic',  type: 'Broker', flag: '🇩🇪' },
+        { id: 'fortuneo',        type: 'Bank',   flag: '🇫🇷' },
+    ];
+
+    institutions = computed<BrokerInstitution[]>(() => {
+        const source = this.market() === 'intl' ? this.INTL_INSTITUTIONS : this.BRVM_INSTITUTIONS;
+        return source.map(i => ({
+            id: i.id,
+            name: this.t(`broker.providers.${i.id}`),
+            subtitle: this.t(`broker.providerSubtitle.${i.id}`),
+            region: this.t(`broker.providerRegion.${i.id}`),
+            type: i.type,
+            flag: i.flag,
+        }));
+    });
+
+    marketTitle = computed(() =>
+        this.t(this.market() === 'intl' ? 'addAssets.markets.intl' : 'addAssets.markets.brvm')
+    );
+
+    marketIcon = computed(() =>
+        this.market() === 'intl' ? 'pi-globe' : 'pi-chart-line'
+    );
 
     filteredInstitutions = computed(() => {
         const q = this.institutionSearch.toLowerCase().trim();
-        if (!q) return this.institutions;
-        return this.institutions.filter(i =>
+        const list = this.institutions();
+        if (!q) return list;
+        return list.filter(i =>
             i.name.toLowerCase().includes(q) || i.subtitle.toLowerCase().includes(q) || i.region.toLowerCase().includes(q)
         );
     });
@@ -270,6 +303,11 @@ export class ConnectBrokerPage implements OnInit {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.i18n.setLang(this.lang as 'fr' | 'en');
+
+        const m = this.route.snapshot.queryParamMap.get('market');
+        if (m === 'intl' || m === 'brvm') {
+            this.market.set(m);
+        }
     }
 
     goBack(): void {
@@ -286,8 +324,9 @@ export class ConnectBrokerPage implements OnInit {
     }
 
     chooseManual(): void {
+        const category = this.market() === 'intl' ? 'stocks_intl' : 'stocks_brvm';
         this.router.navigate(['/', this.lang, 'pages', 'patrimoine', 'add-asset'], {
-            queryParams: { category: 'stocks' }
+            queryParams: { category }
         });
     }
 
@@ -305,6 +344,16 @@ export class ConnectBrokerPage implements OnInit {
     async submitCredentials(): Promise<void> {
         const inst = this.selectedInstitution();
         if (!inst || !this.brokerLogin || !this.brokerPassword) return;
+
+        if (this.market() === 'intl') {
+            this.messageService.add({
+                severity: 'info',
+                summary: this.t('addAssets.intl.notAvailableTitle'),
+                detail: this.t('addAssets.intl.notAvailableDetail'),
+                life: 6000,
+            });
+            return;
+        }
 
         this.isSaving.set(true);
         try {

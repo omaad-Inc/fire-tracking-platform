@@ -27,7 +27,7 @@ const GROUP_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
 
 const GROUPS = [
     { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks', 'bonds'] },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
     { id: 'savings',        label: 'Épargne',           icon: 'pi pi-dollar',     bg: GROUP_BG, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
     { id: 'crypto',         label: 'Crypto',            icon: 'pi pi-bitcoin',    bg: GROUP_BG, categories: ['crypto'] },
     { id: 'tontine',        label: 'Tontine',           icon: 'pi pi-users',      bg: GROUP_BG, categories: ['tontine'] },

@@ -16,6 +16,7 @@ import {
 } from '../../service/transactions.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { LayoutService } from '../../../layout/service/layout.service';
 
 interface DayGroup {
     dateKey: string;
@@ -178,9 +179,9 @@ interface DayGroup {
                                 <div class="flex items-center gap-3 px-3 py-3 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-700/40 transition-colors group">
                                     <!-- Category icon -->
                                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0"
-                                         [style.background]="getCategoryConfig(rec).color + '1a'">
+                                         [style.background]="categoryBg(rec)">
                                         <i [class]="getCategoryConfig(rec).icon + ' text-xs sm:text-sm'"
-                                           [style.color]="getCategoryConfig(rec).color"></i>
+                                           [style.color]="categoryFg(rec)"></i>
                                     </div>
                                     <!-- Name + category -->
                                     <div class="flex-1 min-w-0">
@@ -188,8 +189,8 @@ interface DayGroup {
                                             {{ rec.remarks || rec.name }}
                                         </div>
                                         <span class="inline-flex items-center text-[10px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
-                                              [style.color]="getCategoryConfig(rec).color"
-                                              [style.background]="getCategoryConfig(rec).color + '1a'">
+                                              [style.color]="categoryFg(rec)"
+                                              [style.background]="categoryBg(rec)">
                                             {{ getCategoryConfig(rec).label }}
                                         </span>
                                     </div>
@@ -349,6 +350,7 @@ export class TransactionLogs implements OnInit {
     private transactionsService = inject(TransactionsService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
+    private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
 
     @Output() monthChanged = new EventEmitter<string>();
@@ -585,6 +587,20 @@ export class TransactionLogs implements OnInit {
     getCategoryConfig(rec: TransactionRecord) {
         const cat = rec.category || (rec.type === 'Income' ? 'other_income' : 'other_expense');
         return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-warm-500/10' };
+    }
+
+    categoryFg(rec: TransactionRecord): string {
+        const c = this.getCategoryConfig(rec).color;
+        return this.layoutService.isDarkTheme()
+            ? `color-mix(in srgb, ${c} 30%, white)`
+            : c;
+    }
+
+    categoryBg(rec: TransactionRecord): string {
+        const c = this.getCategoryConfig(rec).color;
+        return this.layoutService.isDarkTheme()
+            ? `color-mix(in srgb, ${c} 35%, transparent)`
+            : `${c}1a`;
     }
 
     private formatDayLabel(dateStr: string): string {

@@ -13,6 +13,7 @@ import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 interface Owner {
     name: string;
@@ -454,7 +455,10 @@ export class AddAssetPage implements OnInit {
     private patrimoineService = inject(PatrimoineService);
     private messageService = inject(MessageService);
     private tokenService = inject(TokenService);
+    private i18n = inject(I18nService);
     cs = inject(CurrencyService);
+
+    readonly isFr = computed(() => this.i18n.lang() === 'fr');
 
     lang = 'fr';
     currentStep = signal(0);
@@ -474,21 +478,27 @@ export class AddAssetPage implements OnInit {
     private static readonly CARD_BG = 'bg-warm-100 dark:bg-warm-800';
     private static readonly CARD_FG = 'text-warm-700 dark:text-warm-300';
 
-    categoryCards: CategoryCard[] = [
-        { value: 'real_estate',     label: 'Immobilier',      desc: 'Appartement, terrain...', icon: 'pi-home',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'stocks',          label: 'Actions / Bourse', desc: 'BRVM, ETF, fonds...',    icon: 'pi-chart-line',  bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'bonds',           label: 'Obligations',     desc: 'Bons du trésor...',        icon: 'pi-percentage',  bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'crypto',          label: 'Crypto',          desc: 'Bitcoin, USDT...',          icon: 'pi-bolt',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'cash',            label: 'Compte bancaire', desc: 'Compte courant, compte chèque', icon: 'pi-wallet',   bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'life_insurance',  label: 'Assurance vie',   desc: 'Contrats vie...',           icon: 'pi-shield',      bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'savings_account', label: 'Livret épargne',  desc: 'Livret A, CEL...',          icon: 'pi-book',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'vehicle',         label: 'Véhicule',        desc: 'Voiture, moto...',          icon: 'pi-car',         bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'tontine',         label: 'Tontine',         desc: 'Épargne collective',        icon: 'pi-users',       bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'mobile_money',    label: 'Mobile Money',    desc: 'Wave, Orange Money...',     icon: 'pi-mobile',      bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'collectibles',    label: 'Collections',     desc: 'Art, bijoux, montres...',   icon: 'pi-star',        bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'commodities',     label: 'Matières prem.',  desc: 'Or, café, pétrole...',      icon: 'pi-box',         bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-        { value: 'other',           label: 'Autres',          desc: 'Tout autre actif',          icon: 'pi-ellipsis-h',  bgClass: AddAssetPage.CARD_BG, textClass: AddAssetPage.CARD_FG },
-    ];
+    categoryCards = computed<CategoryCard[]>(() => {
+        const fr = this.isFr();
+        const bg = AddAssetPage.CARD_BG;
+        const fg = AddAssetPage.CARD_FG;
+        return [
+            { value: 'real_estate',     label: fr ? 'Immobilier'              : 'Real estate',          desc: fr ? 'Appartement, terrain...'        : 'Apartment, land...',        icon: 'pi-home',       bgClass: bg, textClass: fg },
+            { value: 'stocks_brvm',     label: fr ? 'Actions BRVM'            : 'BRVM stocks',          desc: fr ? 'Marchés UEMOA, SGI...'          : 'WAEMU markets, SGI...',     icon: 'pi-chart-line', bgClass: bg, textClass: fg },
+            { value: 'stocks_intl',     label: fr ? 'Actions internationales' : 'International stocks', desc: fr ? 'Bourses européennes, ETF...'    : 'European markets, ETFs...', icon: 'pi-globe',      bgClass: bg, textClass: fg },
+            { value: 'bonds',           label: fr ? 'Obligations'             : 'Bonds',                desc: fr ? 'Bons du trésor...'              : 'Treasury bonds...',         icon: 'pi-percentage', bgClass: bg, textClass: fg },
+            { value: 'crypto',          label: fr ? 'Crypto'                  : 'Crypto',               desc: fr ? 'Bitcoin, USDT...'               : 'Bitcoin, USDT...',          icon: 'pi-bolt',       bgClass: bg, textClass: fg },
+            { value: 'cash',            label: fr ? 'Compte bancaire'         : 'Bank account',         desc: fr ? 'Compte courant, compte chèque'  : 'Checking account',          icon: 'pi-wallet',     bgClass: bg, textClass: fg },
+            { value: 'life_insurance',  label: fr ? 'Assurance vie'           : 'Life insurance',       desc: fr ? 'Contrats vie...'                : 'Life policies...',          icon: 'pi-shield',     bgClass: bg, textClass: fg },
+            { value: 'savings_account', label: fr ? 'Livret épargne'          : 'Savings account',      desc: fr ? 'Livret A, CEL...'               : 'Savings, CEL...',           icon: 'pi-book',       bgClass: bg, textClass: fg },
+            { value: 'vehicle',         label: fr ? 'Véhicule'                : 'Vehicle',              desc: fr ? 'Voiture, moto...'               : 'Car, motorcycle...',        icon: 'pi-car',        bgClass: bg, textClass: fg },
+            { value: 'tontine',         label: fr ? 'Tontine'                 : 'Tontine',              desc: fr ? 'Épargne collective'             : 'Collective savings',        icon: 'pi-users',      bgClass: bg, textClass: fg },
+            { value: 'mobile_money',    label: 'Mobile Money',                                          desc: fr ? 'Wave, Orange Money...'          : 'Wave, Orange Money...',     icon: 'pi-mobile',     bgClass: bg, textClass: fg },
+            { value: 'collectibles',    label: fr ? 'Collections'             : 'Collectibles',         desc: fr ? 'Art, bijoux, montres...'        : 'Art, jewelry, watches...',  icon: 'pi-star',       bgClass: bg, textClass: fg },
+            { value: 'commodities',     label: fr ? 'Matières prem.'          : 'Commodities',          desc: fr ? 'Or, café, pétrole...'           : 'Gold, coffee, oil...',      icon: 'pi-box',        bgClass: bg, textClass: fg },
+            { value: 'other',           label: fr ? 'Autres'                  : 'Other',                desc: fr ? 'Tout autre actif'               : 'Any other asset',           icon: 'pi-ellipsis-h', bgClass: bg, textClass: fg },
+        ];
+    });
 
     mobileMoneyProviders = [
         { label: 'Wave', value: 'Wave' },
@@ -504,12 +514,13 @@ export class AddAssetPage implements OnInit {
         { label: 'Terminée', value: 'termine' }
     ];
 
-    selectedCard = computed(() => this.categoryCards.find(c => c.value === this.selectedCategory()) ?? null);
+    selectedCard = computed(() => this.categoryCards().find(c => c.value === this.selectedCategory()) ?? null);
 
     filteredCategories = computed(() => {
         const q = this.searchQuery.toLowerCase().trim();
-        if (!q) return this.categoryCards;
-        return this.categoryCards.filter(c =>
+        const cards = this.categoryCards();
+        if (!q) return cards;
+        return cards.filter(c =>
             c.label.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q)
         );
     });
@@ -536,7 +547,7 @@ export class AddAssetPage implements OnInit {
         this.resetForm();
 
         const cat = this.route.snapshot.queryParamMap.get('category');
-        if (cat && this.categoryCards.some(c => c.value === cat)) {
+        if (cat && this.categoryCards().some(c => c.value === cat)) {
             this.selectCategory(cat as AssetCategory);
         }
     }
@@ -565,15 +576,19 @@ export class AddAssetPage implements OnInit {
     selectCategory(value: AssetCategory): void {
         this.assetForm.category = value;
         this.selectedCategory.set(value);
-        if (value === 'stocks' && !this.route.snapshot.queryParamMap.has('category')) {
-            this.router.navigate(['/', this.lang, 'pages', 'patrimoine', 'connect-broker']);
+        const isStocks = value === 'stocks_brvm' || value === 'stocks_intl';
+        if (isStocks && !this.route.snapshot.queryParamMap.has('category')) {
+            const market = value === 'stocks_brvm' ? 'brvm' : 'intl';
+            this.router.navigate(['/', this.lang, 'pages', 'patrimoine', 'connect-broker'], {
+                queryParams: { market }
+            });
         } else {
             this.currentStep.set(1);
         }
     }
 
     isQuantityBased(): boolean {
-        return ['stocks', 'bonds', 'crypto', 'collectibles', 'commodities'].includes(this.assetForm.category);
+        return ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'collectibles', 'commodities'].includes(this.assetForm.category);
     }
 
     isSimpleBalanceCategory(): boolean {
@@ -581,31 +596,53 @@ export class AddAssetPage implements OnInit {
     }
 
     isInstitutionBased(): boolean {
-        return ['stocks', 'bonds', 'crypto', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
+        return ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
     }
 
     namePlaceholder(): string {
-        const p: Partial<Record<AssetCategory, string>> = {
+        const fr = this.isFr();
+        const p: Partial<Record<AssetCategory, string>> = fr ? {
             tontine: 'Ex: Tontine Famille Diallo', mobile_money: 'Ex: Compte Wave',
-            real_estate: 'Ex: Appartement Dakar', stocks: 'Ex: Actions SONATEL',
+            real_estate: 'Ex: Appartement Dakar',
+            stocks_brvm: 'Ex: Actions SONATEL', stocks_intl: 'Ex: ETF MSCI World, Apple',
+            crypto: 'Ex: Bitcoin', vehicle: 'Ex: Toyota Hilux 2021',
+        } : {
+            tontine: 'Ex: Diallo family tontine', mobile_money: 'Ex: Wave account',
+            real_estate: 'Ex: Dakar apartment',
+            stocks_brvm: 'Ex: SONATEL shares', stocks_intl: 'Ex: MSCI World ETF, Apple',
             crypto: 'Ex: Bitcoin', vehicle: 'Ex: Toyota Hilux 2021',
         };
-        return p[this.assetForm.category as AssetCategory] ?? 'Ex: Nom de l\'actif';
+        return p[this.assetForm.category as AssetCategory] ?? (fr ? 'Ex: Nom de l\'actif' : 'Ex: Asset name');
     }
 
     institutionLabel(): string {
-        const l: Partial<Record<AssetCategory, string>> = {
-            stocks: 'Courtier / Plateforme', bonds: 'Émetteur / Banque', crypto: 'Plateforme / Exchange',
+        const fr = this.isFr();
+        const l: Partial<Record<AssetCategory, string>> = fr ? {
+            stocks_brvm: 'SGI / Courtier', stocks_intl: 'Courtier / Banque',
+            bonds: 'Émetteur / Banque', crypto: 'Plateforme / Exchange',
             savings_account: 'Banque', cash: 'Banque', life_insurance: 'Assureur', real_estate: 'Agence / Notaire',
+        } : {
+            stocks_brvm: 'SGI / Broker', stocks_intl: 'Broker / Bank',
+            bonds: 'Issuer / Bank', crypto: 'Platform / Exchange',
+            savings_account: 'Bank', cash: 'Bank', life_insurance: 'Insurer', real_estate: 'Agency / Notary',
         };
-        return l[this.assetForm.category as AssetCategory] ?? 'Institution';
+        return l[this.assetForm.category as AssetCategory] ?? (fr ? 'Institution' : 'Institution');
     }
 
     institutionPlaceholder(): string {
-        const p: Partial<Record<AssetCategory, string>> = {
-            stocks: 'Ex: SGI BRVM, Binance...', crypto: 'Ex: Binance, Coinbase...',
+        const fr = this.isFr();
+        const p: Partial<Record<AssetCategory, string>> = fr ? {
+            stocks_brvm: 'Ex: SGI Jokko FI, CGF Bourse...',
+            stocks_intl: 'Ex: Trade Republic, BoursoBank...',
+            crypto: 'Ex: Binance, Coinbase...',
             savings_account: 'Ex: CBAO, BHS...', cash: 'Ex: SGBS, Ecobank...',
             life_insurance: 'Ex: AXA, SANLAM...', real_estate: 'Ex: Cabinet Tall Immobilier',
+        } : {
+            stocks_brvm: 'Ex: Jokko FI, CGF Bourse...',
+            stocks_intl: 'Ex: Trade Republic, BoursoBank...',
+            crypto: 'Ex: Binance, Coinbase...',
+            savings_account: 'Ex: CBAO, BHS...', cash: 'Ex: SGBS, Ecobank...',
+            life_insurance: 'Ex: AXA, SANLAM...', real_estate: 'Ex: Tall Real Estate',
         };
         return p[this.assetForm.category as AssetCategory] ?? '';
     }

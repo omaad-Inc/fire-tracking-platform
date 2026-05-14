@@ -20,7 +20,7 @@ const GROUP_COLOR = '#1A2740'; // brand-700
 const GROUPS: GroupConfig[] = [
     { id: 'all',            label: 'Tous',            icon: 'pi pi-th-large',   categories: [],                                                                    color: GROUP_COLOR },
     { id: 'real_estate',    label: 'Immobilier',      icon: 'pi pi-building',   categories: ['real_estate'],                                                       color: GROUP_COLOR },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds', icon: 'pi pi-chart-line', categories: ['stocks', 'bonds'],                                                    color: GROUP_COLOR },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds', icon: 'pi pi-chart-line', categories: ['stocks_brvm', 'stocks_intl', 'bonds'],                                color: GROUP_COLOR },
     { id: 'savings',        label: 'Épargne',         icon: 'pi pi-dollar',     categories: ['savings_account', 'cash', 'life_insurance', 'retirement'],            color: GROUP_COLOR },
     { id: 'crypto',         label: 'Crypto',          icon: 'pi pi-bitcoin',    categories: ['crypto'],                                                            color: GROUP_COLOR },
     { id: 'tontine',        label: 'Tontine',         icon: 'pi pi-users',      categories: ['tontine'],                                                           color: GROUP_COLOR },
