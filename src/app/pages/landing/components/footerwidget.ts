@@ -38,8 +38,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <ul class="space-y-3">
                                 <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productFeatures') }}</a></li>
                                 <li><a (click)="navigateTo('highlights')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
-                                <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productPatrimony') }}</a></li>
-                                <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productSavings') }}</a></li>
+                                <li><a (click)="navigateTo('projection')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Projection patrimoniale', 'Wealth projection') }}</a></li>
+                                <li><a (click)="navigateTo('pricing')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Tarifs', 'Pricing') }}</a></li>
                             </ul>
                         </div>
 
@@ -47,21 +47,22 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
                             <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-positive-400">{{ t('landing.footer.resourcesTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesGuide') }}</a></li>
-                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
-                                <li><a (click)="navigateTo('pricing')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesCalc') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'blog']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
+                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">{{ _('Newsletter FIRE Africa', 'FIRE Africa newsletter') }}<i class="pi pi-external-link text-[9px]"></i></a></li>
+                                <li><a [routerLink]="[currentLang, 'faq']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>
                             </ul>
                         </div>
 
-                        <!-- Advisory -->
+                        <!-- Company / Advisory -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-200">{{ t('landing.footer.advisoryTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-200">{{ _('Entreprise', 'Company') }}</h4>
                             <ul class="space-y-3">
-                                <li><a [routerLink]="[currentLang, 'advisory']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryOffers') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'advisory']" [fragment]="'offres'" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryServices') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'advisory']" [fragment]="'contact'" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryContact') }}</a></li>
                                 <li><a [routerLink]="[currentLang, aboutSlug]" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.nav.about') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'advisory']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryOffers') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'advisory']" fragment="contact" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryContact') }}</a></li>
+                                <li><a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">LinkedIn<i class="pi pi-external-link text-[9px]"></i></a></li>
                             </ul>
                         </div>
 
@@ -69,9 +70,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
                             <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-brand-300">{{ t('landing.footer.legalTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a href="#" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
-                                <li><a href="#" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
-                                <li><a href="#" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalMentions') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'legal', 'privacy']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'legal', 'terms']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'legal', 'mentions']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalMentions') }}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -119,6 +120,7 @@ export class FooterWidget {
     }
 
     t(key: string): string { return this.i18n.t(key); }
+    _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
     isAdvisory(): boolean { return this.router.url.includes('/advisory'); }
     get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
 

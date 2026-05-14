@@ -19,6 +19,10 @@ import { CompoundCalculator } from './app/pages/landing/components/compound-calc
 import { QuiSommesNousPage } from './app/pages/landing/components/qui-sommes-nous';
 import { BlogList } from './app/pages/landing/blog/blog-list';
 import { BlogArticle } from './app/pages/landing/blog/blog-article';
+import { FaqPage } from './app/pages/landing/components/faq';
+import { LegalMentionsPage } from './app/pages/landing/components/legal-mentions';
+import { LegalPrivacyPage } from './app/pages/landing/components/legal-privacy';
+import { LegalTermsPage } from './app/pages/landing/components/legal-terms';
 
 // Guard to redirect OAuth tokens from root to callback handler
 const oauthTokenRedirect: CanActivateFn = () => {
@@ -66,6 +70,10 @@ export const appRoutes: Routes = [
     { path: ':lang/tools/compound-interest', component: CompoundCalculator },
     { path: ':lang/blog', component: BlogList },
     { path: ':lang/blog/:slug', component: BlogArticle },
+    { path: ':lang/faq', component: FaqPage },
+    { path: ':lang/legal/mentions', component: LegalMentionsPage },
+    { path: ':lang/legal/privacy', component: LegalPrivacyPage },
+    { path: ':lang/legal/terms', component: LegalTermsPage },
     { path: ':lang/qui-sommes-nous', component: QuiSommesNousPage },
     { path: ':lang/about', component: QuiSommesNousPage },
     
