@@ -35,11 +35,13 @@ import { I18nService, Lang } from '../../i18n/i18n.service';
                 <!-- Main content -->
                 <hero-widget />
                 <how-it-works-widget />
+                <!-- Aspirational hook: "where could this take me?" -->
                 <fire-projection-widget />
                 <features-widget />
-                <pain-calculator-widget />
                 <wealth-score-widget />
                 <highlights-widget />
+                <!-- Urgency close: "what does waiting cost me?" — right before pricing -->
+                <pain-calculator-widget />
                 <pricing-widget />
 
                 <!-- Advisory Teaser -->

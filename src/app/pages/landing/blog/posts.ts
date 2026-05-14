@@ -14,7 +14,7 @@
  * monthly leading up to launch so the timeline looks coherent for previewing.
  */
 export interface BlogPost {
-    edition: string;              // "000".."014"
+    edition: string;              // "000".."015"
     slug: string;                 // URL slug, no leading "edition-NNN-"
     title: string;
     subtitle: string;
@@ -205,6 +205,17 @@ export const BLOG_POSTS: BlogPost[] = [
         excerpt: "On répète partout que la BRVM est « stable » et « sécurisée ». La régulation CREPMF est solide, mais ça ne veut pas dire ce que tu crois.",
         coverImage: cover(6),
         contentPath: 'assets/newsletters/edition-014-blocks.json',
+    },
+    {
+        edition: '015',
+        slug: 'gestion-mandat-vs-libre',
+        title: 'Gestion sous mandat ou gestion libre : qui bat l\'indice ?',
+        subtitle: 'Édition #015 — FIRE Africa par Omaad',
+        date: '2026-06-14',
+        tags: ['SPIVA', 'gestion sous mandat', 'SGI', 'BRVM', 'frais'],
+        excerpt: "L'étude SPIVA est sans appel : 9 fonds actifs sur 10 ne battent pas leur indice après 15 ans. Et à la BRVM, la gestion sous mandat te coûte 2 à 3 % par an. Mauvaise idée ?",
+        coverImage: cover(7),
+        contentPath: 'assets/newsletters/edition-015-blocks.json',
     },
 ];
 
