@@ -12,8 +12,8 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [RouterModule, StyleClassModule, ButtonModule, RippleModule, CommonModule],
     template: `
-        <!-- Logo -->
-        <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
+        <!-- Logo (pulled flush-left, Finary-style) -->
+        <a class="flex items-center gap-2 cursor-pointer group shrink-0 -ml-4 md:-ml-8 lg:-ml-16" [routerLink]="[currentLang, 'landing']" fragment="home">
             <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
                      class="w-10 h-10 md:w-12 md:h-12 transition-transform duration-300 group-hover:scale-110">
             <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">{{ isAdvisory() ? 'Omaad Advisory' : 'Omaad Wealth' }}</span>
@@ -52,13 +52,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.about') }}
             </a>
-            <!-- Tools dropdown -->
+            <!-- Resources dropdown -->
             <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
                 <a pRipple
                    class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                           hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                           transition-all duration-200 cursor-pointer">
-                    {{ _('Outils', 'Tools') }}
+                    {{ _('Ressources', 'Resources') }}
                     <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
                        [class.rotate-180]="toolsOpen()"></i>
                 </a>
@@ -67,6 +67,17 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             bg-surface-0 dark:bg-surface-800
                             shadow-lg border border-surface-200 dark:border-surface-700
                             p-2 z-30">
+                    <a [routerLink]="[currentLang, 'blog']" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-book text-brand-700 dark:text-brand-300 text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">Blog</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Toutes les éditions FIRE Africa', 'All FIRE Africa editions') }}</div>
+                        </div>
+                    </a>
                     <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" pRipple
                        class="flex items-center gap-3 px-4 py-3 rounded-lg
                               hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
@@ -103,14 +114,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     [title]="t('landing.lang.switchLabel')">
                 <i class="pi pi-globe text-xs"></i>
                 <span>{{ t('landing.lang.current') }}</span>
-            </button>
-            <!-- Theme toggle -->
-            <button (click)="toggleDarkMode()" pRipple
-                    class="w-9 h-9 rounded-full flex items-center justify-center
-                           text-surface-600 dark:text-surface-300
-                           hover:bg-surface-100 dark:hover:bg-surface-800
-                           transition-all duration-200">
-                <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun text-base' : 'pi pi-moon text-base'"></i>
             </button>
             <button pButton pRipple [label]="t('landing.nav.login')"
                     [routerLink]="[currentLang, 'auth', 'login']"
@@ -175,11 +178,18 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                         <i class="pi pi-info-circle mr-2"></i><span>{{ t('landing.nav.about') }}</span>
                     </a>
                 </li>
-                <!-- Tools (mobile) -->
+                <!-- Resources (mobile) -->
                 <li class="border-t border-surface-200 dark:border-surface-700 pt-2 mt-1">
                     <span class="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
-                        {{ _('Outils', 'Tools') }}
+                        {{ _('Ressources', 'Resources') }}
                     </span>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, 'blog']" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-book mr-2"></i><span>Blog</span>
+                    </a>
                 </li>
                 <li>
                     <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" (click)="mobileMenuOpen.set(false)" pRipple
@@ -204,14 +214,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                     <i class="pi pi-globe"></i>
                     <span class="font-medium text-base">{{ t('landing.lang.switchLabel') }}</span>
-                </button>
-                <!-- Theme toggle (mobile) -->
-                <button (click)="toggleDarkMode()" pRipple
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
-                               text-surface-700 dark:text-surface-200
-                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                    <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun' : 'pi pi-moon'"></i>
-                    <span class="font-medium text-base">{{ layoutService.isDarkTheme() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode') }}</span>
                 </button>
                 <button pButton pRipple [label]="t('landing.nav.login')"
                         [routerLink]="[currentLang, 'auth', 'login']"
@@ -243,6 +245,13 @@ export class TopbarWidget {
         this.currentLang = '/' + this.lang;
         // Ensure service lang matches URL (in case localStorage differs)
         this.i18n.setLang(this.lang);
+        // Public pages (landing, advisory, tools, blog...) are always light-themed —
+        // the dark/light selector lives inside the authenticated app's settings.
+        this.layoutService.layoutConfig.update((state) => ({
+            ...state,
+            themeMode: 'light',
+            darkTheme: false,
+        }));
     }
 
     t(key: string): string { return this.i18n.t(key); }
@@ -269,12 +278,4 @@ export class TopbarWidget {
         this.router.navigateByUrl(newUrl);
     }
 
-    toggleDarkMode() {
-        this.mobileMenuOpen.set(false);
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            themeMode: state.darkTheme ? 'light' : 'dark',
-            darkTheme: !state.darkTheme
-        }));
-    }
 }

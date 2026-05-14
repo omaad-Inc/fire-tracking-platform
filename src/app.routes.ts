@@ -17,6 +17,8 @@ import { FireAfricaWelcome } from './app/pages/landing/components/fire-africa-we
 import { FireSimulator } from './app/pages/landing/components/fire-simulator';
 import { CompoundCalculator } from './app/pages/landing/components/compound-calculator';
 import { QuiSommesNousPage } from './app/pages/landing/components/qui-sommes-nous';
+import { BlogList } from './app/pages/landing/blog/blog-list';
+import { BlogArticle } from './app/pages/landing/blog/blog-article';
 
 // Guard to redirect OAuth tokens from root to callback handler
 const oauthTokenRedirect: CanActivateFn = () => {
@@ -62,6 +64,8 @@ export const appRoutes: Routes = [
     { path: ':lang/fire-africa/welcome', component: FireAfricaWelcome },
     { path: ':lang/tools/fire-simulator', component: FireSimulator },
     { path: ':lang/tools/compound-interest', component: CompoundCalculator },
+    { path: ':lang/blog', component: BlogList },
+    { path: ':lang/blog/:slug', component: BlogArticle },
     { path: ':lang/qui-sommes-nous', component: QuiSommesNousPage },
     { path: ':lang/about', component: QuiSommesNousPage },
     

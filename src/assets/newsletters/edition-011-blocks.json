@@ -1,0 +1,57 @@
+{
+  "title": "100 000 FCFA à investir à la BRVM : par où commencer ?",
+  "subtitle": "Édition #011 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["BRVM", "investissement", "100000 FCFA", "débutant", "actions", "FCP", "SGI", "compte-titres"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Tu as 100 000 FCFA. La BRVM t'attend. Mais par quelle porte entrer ?"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "100 000 FCFA. C'est environ 152 euros. Pour beaucoup, c'est un dîner à deux à Paris ou une paire de baskets. Mais c'est aussi le montant minimum chez la plupart des SGI (Sociétés de Gestion et d'Intermédiation) pour ouvrir un compte-titres à la BRVM. La bourse régionale n'est pas réservée aux riches — elle est accessible, mais elle n'est pas simple quand on débute.\n\nLa première question, c'est le véhicule d'investissement. Aujourd'hui, deux options concrètes s'offrent à toi à la BRVM :\n\n**Option 1 : Les actions en direct.** Tu ouvres un compte-titres auprès d'une SGI agréée par l'AMF-UMOA, et tu achètes des titres individuels — Sonatel, Société Générale CI, Orange CI, Ecobank, BOA, etc. L'avantage : tu choisis exactement où va ton argent, les dividendes sont souvent généreux (rendements de 5-8% pour les blue chips BRVM — source : BRVM, Rapports annuels, https://www.brvm.org), et tu gardes le contrôle total. L'inconvénient : avec 100 000 FCFA, tu ne peux acheter que 1 à 3 titres selon leur cours. Zéro diversification. Et si tu choisis mal, tu concentres tout ton risque sur une seule entreprise.\n\n**Option 2 : Les FCP (Fonds Commun de Placement).** Tu investis dans un fonds géré par un professionnel qui place ton argent dans un panier d'actions BRVM. Tu obtiens une diversification immédiate, même avec un petit montant. Le gestionnaire sélectionne les titres, rééquilibre le portefeuille, et tu n'as rien à faire. C'est la solution idéale pour débuter si tu ne connais pas encore le marché. Le revers de la médaille : les frais. Les FCP actions de la BRVM affichent des frais de gestion entre 2,5% et 4,5% par an (source : prospectus publics des FCP BRVM visés par l'AMF-UMOA, https://www.amf-umoa.org). Sur 20 ans, un TER de 4% mange littéralement un tiers de tes gains composés. Il faut donc comparer les FCP entre eux et privilégier ceux avec les frais les plus bas et un historique de performance solide.\n\n**Le plan concret pour 100 000 FCFA/mois :**\n\n— Mois 1 : ouvre un compte-titres auprès d'une SGI agréée. Compare les frais de courtage (ils varient d'une SGI à l'autre). La liste des SGI agréées est disponible sur le site de l'AMF-UMOA (https://www.amf-umoa.org).\n— Mois 1 à 6 : commence par un FCP actions pour te diversifier dès le départ. Accumule pendant 6 mois pour construire une base solide tout en apprenant le fonctionnement du marché.\n— Mois 7 à 12 : quand tu as acquis une meilleure compréhension du marché, commence à allouer une partie de tes versements en actions directes sur 2-3 blue chips que tu as étudiées (Sonatel et Orange CI sont souvent citées pour la stabilité du dividende).\n— Année 2+ : rééquilibre vers un mix qui te correspond — par exemple 50% FCP / 50% actions directes. Tu as la diversification du FCP ET la conviction de tes propres choix.\n\nUne erreur fréquente : beaucoup de débutants achètent une seule action « parce que quelqu'un l'a recommandée ». Pas de diversification, pas de thèse d'investissement, pas de plan de sortie. C'est de la spéculation déguisée en investissement.\n\n**Le ticket d'entrée réel :** 100 000 FCFA pour ouvrir le compte, mais vise 50 000 à 100 000 FCFA par mois en investissement régulier. C'est la régularité qui crée la richesse, pas le montant initial."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "L'un des retours les plus fréquents qu'on reçoit : « je veux investir à la BRVM mais je ne sais pas par où commencer. » On travaille sur un parcours guidé dans Omaad Wealth — tu entres ton budget mensuel, ton horizon, ta tolérance au risque, et l'app te propose une allocation entre FCP et actions directes adaptée à ton profil. Pas de jargon, pas de formulaire de 40 pages. Juste un plan clair, avec un comparateur de FCP intégré pour que tu choisisses en connaissance de cause."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">~20%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">taux de bancarisation dans la zone UEMOA en 2024</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BCEAO — Rapport annuel sur les services financiers dans l'UEMOA, 2024</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 The Simple Path to Wealth</span> <span style=\"font-size:13px; color:#6E6A60;\">— JL Collins</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Collins explique comment investir simplement et régulièrement pour construire sa richesse. Sa philosophie — ne pas compliquer l'investissement — est directement applicable pour un investisseur qui débute à la BRVM. Le chapitre « Why you need F-you money » est un manifeste FIRE à lui seul.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. You can start investing on the BRVM with just 100,000 FCFA (~€152) through a securities account at an authorized SGI. Two vehicles are available: direct stocks (you pick individual companies — higher control but limited diversification with small amounts) and FCP mutual funds (instant diversification through professional management, but fees of 2.5-4.5% per year eat into long-term returns).\n\n2. A practical plan: start with an FCP for months 1-6 to build a diversified base while learning the market. From month 7, gradually add 2-3 blue chip direct stocks you've researched. By year 2, rebalance toward a 50/50 FCP and direct stocks mix.\n\n3. The most common beginner mistake is buying a single stock on someone's recommendation — no diversification, no thesis, no exit plan. That's speculation, not investing. Consistency matters more than the starting amount: 50,000 to 100,000 FCFA per month builds real wealth over time."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}

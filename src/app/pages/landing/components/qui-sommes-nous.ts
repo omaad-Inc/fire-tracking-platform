@@ -131,7 +131,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             {{ t('landing.about.teamSubtitle') }}
                         </p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
                         <!-- Founder card -->
                         <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 text-center">
                             <img src="assets/team/mbaye.jpeg" [alt]="t('landing.about.founderName')"
@@ -146,6 +146,22 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                class="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 dark:text-ochre-400 hover:underline">
                                 <i class="pi pi-linkedin text-xs"></i>
                                 {{ t('landing.about.founderLinkedIn') }}
+                            </a>
+                        </div>
+                        <!-- Bamba card -->
+                        <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 text-center">
+                            <img src="assets/team/bamba.jpeg" [alt]="t('landing.about.bambaName')"
+                                 class="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-brand-100 dark:ring-ochre-500/20"
+                                 loading="lazy" />
+                            <h3 class="text-xl font-bold text-surface-900 dark:text-white">{{ t('landing.about.bambaName') }}</h3>
+                            <p class="text-sm text-brand-700 dark:text-ochre-400 font-medium mb-3">{{ t('landing.about.bambaRole') }}</p>
+                            <p class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed mb-4">
+                                {{ t('landing.about.bambaBio') }}
+                            </p>
+                            <a href="https://www.linkedin.com/in/bamba" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 dark:text-ochre-400 hover:underline">
+                                <i class="pi pi-linkedin text-xs"></i>
+                                {{ t('landing.about.bambaLinkedIn') }}
                             </a>
                         </div>
                         <!-- Ghost card -->

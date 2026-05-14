@@ -1,0 +1,61 @@
+{
+  "title": "C'est quoi le mouvement FIRE ?",
+  "subtitle": "Édition #000 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["FIRE", "introduction", "histoire", "éducation"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "FIRE : le mouvement qui a changé la façon dont une génération pense à l'argent."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Les origines : un livre et une idée radicale\n\nTout commence en 1992 avec Your Money or Your Life de Vicki Robin et Joe Dominguez. Leur thèse est simple mais provocatrice : chaque heure de travail a un coût réel (transport, stress, vêtements de bureau…), et la vraie richesse, c'est le temps libre. Ils proposent de calculer son « taux horaire réel », de réduire ses dépenses au strict nécessaire et d'investir l'excédent pour vivre de ses rentes le plus tôt possible.\n\nEn parallèle, la Trinity Study (1998) de trois professeurs de l'université Trinity pose les bases mathématiques : en retirant 4 % de son portefeuille chaque année, un retraité a 95 % de chances de ne jamais épuiser son capital sur 30 ans. Cette « règle des 4 % » deviendra le pilier de tout le mouvement.\n\nL'explosion : Mr. Money Mustache et la communauté\n\nLe mouvement FIRE reste confidentiel jusqu'en 2011, quand Pete Adeney lance son blog Mr. Money Mustache (mrmoneymustache.com). Ingénieur logiciel, il prend sa retraite à 30 ans avec sa femme, grâce à un taux d'épargne de 60–70 %. Son ton provocateur et ses calculs limpides font exploser l'audience : des millions de lecteurs, des articles dans le New Yorker, le Washington Post et un documentaire Netflix (Playing with FIRE, 2019).\n\nD'autres voix émergent : JL Collins (The Simple Path to Wealth), qui simplifie l'investissement en un seul fonds indiciel ; ChooseFI, le podcast qui structure la communauté ; The Mad Fientist, qui optimise la fiscalité ; et des centaines de blogs personnels qui documentent leur parcours chiffres à l'appui.\n\nLes différents types de FIRE\n\nLe mouvement a mûri et il n'existe plus un seul FIRE, mais plusieurs approches selon ta personnalité et tes ambitions :\n\n🔥 Lean FIRE — Le mode minimaliste. Tu réduis tes dépenses au strict nécessaire (moins de 25 000 €/an ou ~16 millions FCFA) et tu vises un patrimoine modeste mais suffisant. Idéal si tu es prêt à vivre simplement, surtout dans un pays où le coût de la vie est bas. FIRE number cible : ~400 000 € / 260 millions FCFA.\n\n🔥 Fat FIRE — Le mode ambitieux. Tu veux maintenir un train de vie confortable voire luxueux après l'indépendance financière. Budget annuel de 80 000 à 120 000 € ou plus. Cela demande un patrimoine bien supérieur, mais la liberté est totale. FIRE number cible : 2 à 3 millions € / 1,3 à 2 milliards FCFA.\n\n🔥 Barista FIRE — Le mode hybride. Tu accumules assez pour couvrir l'essentiel de tes dépenses grâce à ton patrimoine, mais tu gardes un petit emploi flexible (à temps partiel, freelance, projet passion) pour le reste et la couverture sociale. C'est le plus réaliste pour beaucoup de gens dans la diaspora.\n\n🔥 Coast FIRE — Le mode « j'ai fait le plus dur ». Tu as déjà investi suffisamment tôt pour que les intérêts composés fassent le travail tout seuls d'ici ta retraite classique. Tu n'as plus besoin d'épargner agressivement — juste de couvrir tes dépenses courantes. C'est le premier palier FIRE à atteindre.\n\nPourquoi FIRE Africa ?\n\nLe mouvement FIRE a été pensé dans un contexte américain : accès aux ETFs à frais nuls, fiscalité du 401(k), marché immobilier US. Rien de tout ça ne s'applique directement quand tu vis entre Dakar, Abidjan et Paris, que tu investis en FCFA à la BRVM et que ta réalité financière est multi-devises.\n\nC'est pour ça qu'on a créé FIRE Africa : adapter les principes éprouvés du mouvement FIRE au contexte de la diaspora africaine et de la zone UEMOA. Chaque édition de cette newsletter décortique un concept, un chiffre ou une stratégie — toujours sourcé, toujours adapté à ta réalité."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "FIRE Africa, c'est la newsletter. Mais derrière, il y a Omaad Wealth — la plateforme qu'on construit pour te permettre de suivre ton patrimoine, tes investissements BRVM, ton épargne et ta progression vers l'indépendance financière. Le tout en FCFA et en euros, dans un seul tableau de bord.\n\nLa mission est simple : rendre les outils de gestion patrimoniale accessibles à ceux qui en ont le plus besoin — la diaspora africaine et les investisseurs de la zone UEMOA. Pas besoin d'un conseiller à 500 €/h. Pas besoin de parler « Wall Street ». Juste des outils clairs, adaptés à ta réalité.\n\nDécouvrir Omaad → https://omaad.africa"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">53%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">de la population de l'UEMOA a moins de 25 ans</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BCEAO — Rapport Zone Franc 2024</span></td></tr></table>"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Une population jeune, c'est un avantage énorme pour FIRE : le temps est le meilleur allié des intérêts composés. Commencer à 25 ans au lieu de 35, c'est potentiellement doubler son patrimoine à 55 ans."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 Your Money or Your Life</span> <span style=\"font-size:13px; color:#6E6A60;\">— Vicki Robin & Joe Dominguez</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le livre fondateur du mouvement FIRE. Publié en 1992 et mis à jour en 2018, il reste la meilleure introduction au concept de liberté financière. La méthode des 9 étapes vers l'indépendance est toujours d'actualité. Disponible en anglais.</span></td></tr></table>"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin-top:12px;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">🎬 Playing with FIRE</span> <span style=\"font-size:13px; color:#6E6A60;\">— Documentaire (2019)</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Un documentaire qui suit une famille américaine dans sa quête d'indépendance financière. Avec des interviews de Mr. Money Mustache, JL Collins et Vicki Robin. Parfait pour comprendre l'état d'esprit FIRE en 1h15. Disponible en streaming.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. FIRE (Financial Independence, Retire Early) started with Your Money or Your Life (1992) and the Trinity Study's 4% rule (1998). It exploded in 2011 when Mr. Money Mustache showed he retired at 30 with a 65% savings rate — spawning a global movement, a Netflix documentary, and millions of followers.\n\n2. There is no single FIRE — Lean FIRE (minimalist lifestyle), Fat FIRE (comfortable retirement), Barista FIRE (part-time work + portfolio income), and Coast FIRE (enough invested early to coast to retirement) each fit different goals and risk profiles.\n\n3. FIRE Africa adapts these proven principles to the African diaspora context: BRVM investing, FCFA/EUR dual-currency reality, and wealth-building tools that speak your language — not Wall Street's. This is edition zero: the foundation everything else builds on."
+    }
+  ]
+}

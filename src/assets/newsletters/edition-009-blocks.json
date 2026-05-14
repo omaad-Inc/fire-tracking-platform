@@ -1,0 +1,57 @@
+{
+  "title": "Quelle SGI choisir pour investir à la BRVM ? Le guide comparatif",
+  "subtitle": "Édition #009 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["SGI", "BRVM", "courtier", "frais", "comparaison", "compte-titres", "UEMOA"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Pour investir à la BRVM, il te faut une SGI. Mais les 39 ne se valent pas du tout."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Pour acheter une seule action à la BRVM, tu dois obligatoirement passer par une SGI (Société de Gestion et d'Intermédiation). C'est ton courtier, ton intermédiaire, ton point d'accès au marché. Pas de SGI, pas d'investissement. Et le choix de ta SGI a un impact direct sur la rentabilité de ton portefeuille à long terme.\n\nAujourd'hui, il existe 39 SGI agréées par l'AMF-UMOA, réparties dans les 8 pays de l'UEMOA (source : RichBourse, Liste des SGI, https://www.richbourse.com/common/apprendre/liste-sgi). Le problème : leurs tarifs, leurs services et leur accessibilité varient énormément. Et personne ne te fait le comparatif.\n\nVoici les 5 critères à regarder avant de choisir :\n\n**1. Le ticket d'entrée (montant minimum pour ouvrir un compte).** Certaines SGI acceptent l'ouverture de compte dès 100 000 FCFA. D'autres exigent 500 000 FCFA, voire 1 million. Pour un investisseur FIRE qui commence avec un petit budget mensuel, c'est le premier filtre. Demande systématiquement le montant minimum avant toute chose.\n\n**2. Les frais de courtage (commission sur chaque transaction).** À chaque ordre d'achat ou de vente, ta SGI prend une commission. En général, elle oscille entre 1% et 2% du montant de la transaction, avec parfois un minimum forfaitaire (par exemple 5 000 FCFA par ordre). Sur un achat de 100 000 FCFA, une commission de 1,5% te coûte 1 500 FCFA. Ça paraît peu, mais sur 20 ans d'investissement régulier, ça s'accumule. Cherche les SGI qui ont les commissions les plus basses.\n\n**3. Les frais de tenue de compte.** Certaines SGI facturent des frais annuels pour la simple tenue de ton compte-titres, même si tu ne fais aucune transaction. Ça peut aller de 0 FCFA (gratuité) à 25 000 FCFA ou plus par an. Si tu es un investisseur buy-and-hold qui achète et garde, ces frais fixes pèsent lourd. Privilégie les SGI sans frais de tenue de compte ou avec des frais minimes.\n\n**4. Les droits de garde.** Ce sont les frais facturés pour la conservation de tes titres. Ils sont souvent exprimés en pourcentage de la valeur de ton portefeuille (par exemple 0,2% à 0,5% par an). Plus ton portefeuille grossit, plus tu paies. C'est le critère le plus sous-estimé par les débutants.\n\n**5. L'accessibilité et le service client.** Est-ce que tu peux passer des ordres en ligne ou seulement par téléphone/email ? Est-ce que la SGI a une plateforme web ou mobile ? Est-ce que le service client répond rapidement ? Pour un investisseur de la diaspora, l'accessibilité numérique est cruciale — tu ne peux pas te déplacer dans une agence à Abidjan ou Dakar chaque fois que tu veux acheter.\n\n**Répartition par pays :**\n\nLa majorité des SGI sont basées en Côte d'Ivoire (~17 SGI), ce qui est logique puisque la BRVM est à Abidjan. Le Sénégal compte environ 6 SGI, le Burkina Faso 4, le Bénin 4, le Mali 3, et le Togo et le Niger 1 chacun. Mais bonne nouvelle : tu n'es pas obligé de choisir une SGI dans ton pays de résidence. Un Sénégalais peut ouvrir un compte chez une SGI ivoirienne et inversement — la BRVM est une bourse régionale.\n\n**Quelques SGI bien notées par la communauté d'investisseurs :**\n— CGF Bourse (Sénégal) — bien notée pour le service client et l'interface\n— BSIC Capital SA (Côte d'Ivoire) — bonne réputation\n— Phoenix Capital Management (Côte d'Ivoire) — appréciée des investisseurs actifs\n— Impaxis Securities (Sénégal) — connue dans la diaspora\n\n(Source : notes des internautes sur RichBourse, https://www.richbourse.com/common/apprendre/liste-sgi)\n\n**Le conseil FIRE Africa :** avant d'ouvrir un compte, contacte 2-3 SGI et demande explicitement leur grille tarifaire complète : ticket d'entrée, commission par transaction, frais de tenue de compte, droits de garde, et frais de transfert. Compare ligne par ligne. Les différences peuvent représenter des dizaines de milliers de FCFA par an — de l'argent qui devrait être dans ton portefeuille, pas dans les poches de ton courtier."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "L'un des projets qu'on aimerait porter avec Omaad Wealth : un comparateur de SGI transparent. Tu sélectionnes ton pays, ton budget mensuel, ta fréquence de transactions — et l'app te classe les SGI par coût total annuel réel. Parce qu'aujourd'hui, obtenir une grille tarifaire complète d'une SGI relève parfois du parcours du combattant."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">39</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">SGI agréées dans la zone UEMOA pour investir à la BRVM</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : RichBourse — Liste des SGI, 2026</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">🔗 RichBourse — Liste et tarifs des SGI</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">La référence francophone pour comparer les SGI de la BRVM. Le site liste les 39 sociétés agréées avec les notes attribuées par la communauté d'investisseurs, classées par pays. Tu peux y consulter les détails de chaque SGI et les avis des utilisateurs. C'est le point de départ indispensable avant d'ouvrir un compte-titres.</span><br><a href=\"https://www.richbourse.com/common/apprendre/liste-sgi\" style=\"color:#C77B3C; text-decoration:underline; font-size:13px; font-weight:600;\">richbourse.com/liste-sgi →</a></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. To invest on the BRVM, you must open an account with an SGI (Société de Gestion et d'Intermédiation) — a licensed brokerage firm. There are 39 SGI across the 8 UEMOA countries, mostly in Côte d'Ivoire (~17) and Senegal (~6). You can open an account at any SGI regardless of your country of residence.\n\n2. Five criteria matter when comparing SGI: minimum deposit (100K to 1M+ FCFA), brokerage fees per transaction (1-2%), annual account maintenance fees (0 to 25,000+ FCFA), custody fees (0.2-0.5% of portfolio value), and digital accessibility (online platform, mobile app, responsiveness for diaspora investors).\n\n3. Before opening an account, contact 2-3 SGI and request their full fee schedule. Compare line by line: entry ticket, commission per trade, account fees, custody fees, and transfer fees. The differences can amount to tens of thousands of FCFA per year — money that should be growing in your portfolio, not paying your broker."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}
