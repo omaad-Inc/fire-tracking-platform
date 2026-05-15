@@ -1,9 +1,10 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { I18nService } from '../../i18n/i18n.service';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { AiAssistantService } from '../../core/services/ai-assistant.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -20,6 +21,8 @@ import { filter } from 'rxjs/operators';
 export class AppMenu {
     model: MenuItem[] = [];
     lang = 'fr';
+
+    private aiAssistant = inject(AiAssistantService);
 
     constructor(private router: Router, private i18n: I18nService) {
         // Listen to route changes to update language
@@ -82,6 +85,20 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-credit-card',
                         routerLink: this.link('pages', 'debts')
                     },
+                ]
+            },
+            // Separator
+            { separator: true },
+            // AI Assistant
+            {
+                label: this.t('menu.assistant'),
+                items: [
+                    {
+                        label: this.t('menu.aiAssistant'),
+                        icon: 'pi pi-fw pi-sparkles',
+                        styleClass: 'menu-item-ai',
+                        command: () => this.aiAssistant.show(),
+                    }
                 ]
             }
         ];

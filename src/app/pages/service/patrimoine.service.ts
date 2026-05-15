@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, BehaviorSubject, shareReplay } from 'rxjs';
 import { ApiService, Asset, AssetCreate, AssetUpdate } from '../../core/services/api.service';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { AssetsStateService } from './assets-state.service';
 
 interface CacheEntry<T> {
@@ -25,6 +26,7 @@ export interface PatrimoineAssetItemDto {
 @Injectable({ providedIn: 'root' })
 export class PatrimoineService {
     private api = inject(ApiService);
+    private analytics = inject(AnalyticsService);
     private stateService = inject(AssetsStateService);
     
     // BehaviorSubject to hold the current assets list
@@ -164,6 +166,7 @@ export class PatrimoineService {
      */
     async createAsset(data: AssetCreate): Promise<PatrimoineAssetItemDto | null> {
         try {
+            const previousCount = this._assets$.getValue().length;
             const asset = await firstValueFrom(this.api.createAsset(data));
             const newAsset = this.mapAssetToDto(asset);
             // Add to current list and notify
@@ -172,6 +175,9 @@ export class PatrimoineService {
             // Invalidate cache
             this.invalidateAssetsCache();
             this.stateService.notifyAssetsUpdated();
+            if (previousCount === 0) {
+                this.analytics.track('first_asset_added', { category: asset.category });
+            }
             return newAsset;
         } catch (error) {
             console.error('Error creating asset:', error);

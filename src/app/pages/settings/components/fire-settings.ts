@@ -11,6 +11,7 @@ import { DividerModule } from 'primeng/divider';
 import { ApiService, FIRESettings } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { TokenService } from '../../../core/services/token.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { DashboardService } from '../../service/dashboard.service';
 
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -182,6 +183,7 @@ export class FireSettings implements OnInit {
     private apiService       = inject(ApiService);
     private authService      = inject(AuthService);
     private tokenService     = inject(TokenService);
+    private analytics        = inject(AnalyticsService);
     private dashboardService = inject(DashboardService);
     private messageService   = inject(MessageService);
     private router           = inject(Router);
@@ -259,6 +261,13 @@ export class FireSettings implements OnInit {
                 }
                 // Invalidate dashboard cache so it recomputes with the new target
                 this.dashboardService.invalidateCache();
+
+                this.analytics.track('fire_calculated', {
+                    has_target: payload.fire_target_amount != null,
+                    has_expenses: payload.annual_expenses != null,
+                    has_target_date: payload.fire_target_date != null,
+                    withdrawal_rate: payload.withdrawal_rate,
+                });
 
                 this.isSaving.set(false);
                 this.messageService.add({

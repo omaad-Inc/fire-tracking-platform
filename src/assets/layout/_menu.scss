@@ -419,3 +419,33 @@
     margin: 0.75rem 0;
     border-top: 1px solid var(--surface-border);
 }
+
+// AI Assistant menu item — ochre accent to mirror Monarch's treatment
+// (the only colored sidebar item, signaling "special / always available").
+.layout-menu ul a.menu-item-ai {
+    color: var(--omaad-ochre-500, #C77B3C);
+    font-weight: 600;
+
+    .layout-menuitem-icon {
+        background: rgba(199, 123, 60, 0.12);
+        color: var(--omaad-ochre-500, #C77B3C);
+    }
+
+    &:hover {
+        background: rgba(199, 123, 60, 0.08);
+
+        .layout-menuitem-icon {
+            background: rgba(199, 123, 60, 0.18);
+        }
+    }
+}
+
+:host-context(.app-dark) .layout-menu ul a.menu-item-ai,
+.app-dark .layout-menu ul a.menu-item-ai {
+    color: #D4945A;
+
+    .layout-menuitem-icon {
+        background: rgba(199, 123, 60, 0.18);
+        color: #D4945A;
+    }
+}

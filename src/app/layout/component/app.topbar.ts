@@ -7,6 +7,7 @@ import { filter } from 'rxjs/operators';
 import { TokenService } from '../../core/services/token.service';
 import { environment } from '../../../environments/environment';
 import { PrivacyService } from '../../core/services/privacy.service';
+import { AiAssistantService } from '../../core/services/ai-assistant.service';
 
 @Component({
     selector: 'app-topbar',
@@ -41,6 +42,15 @@ import { PrivacyService } from '../../core/services/privacy.service';
                 <i class="pi" [ngClass]="privacyService.hidden() ? 'pi-eye-slash' : 'pi-eye'"></i>
             </button>
 
+            <!-- AI Assistant — visible on all sizes, ochre accent -->
+            <button type="button"
+                    class="layout-topbar-action ai-topbar-btn"
+                    (click)="aiAssistant.show()"
+                    [attr.aria-label]="t('aiAssistant.title')"
+                    [title]="t('aiAssistant.title')">
+                <i class="pi pi-sparkles"></i>
+            </button>
+
             <!-- UPGRADE PRO pill — visible on all sizes -->
             <a [routerLink]="['/'+lang, 'pages', 'plans']"
                class="flex items-center gap-1 px-2.5 py-1.5 rounded-full
@@ -68,6 +78,7 @@ export class AppTopbar implements OnInit {
     private i18n = inject(I18nService);
     private tokenService = inject(TokenService);
     privacyService  = inject(PrivacyService);
+    aiAssistant     = inject(AiAssistantService);
 
     layoutService = inject(LayoutService);
 

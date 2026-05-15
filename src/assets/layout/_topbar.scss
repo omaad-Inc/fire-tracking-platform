@@ -56,6 +56,15 @@
             background-color: var(--primary-color);
             color: var(--primary-contrast-color);
         }
+
+        // AI Assistant sparkle — ochre accent to mirror the sidebar entry
+        &.ai-topbar-btn {
+            color: var(--omaad-ochre-500, #C77B3C);
+
+            &:hover {
+                background-color: rgba(199, 123, 60, 0.10);
+            }
+        }
     }
 
     .layout-menu-button {
