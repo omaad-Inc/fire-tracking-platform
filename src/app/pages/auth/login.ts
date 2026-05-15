@@ -101,7 +101,8 @@ import { AuthService } from '../../core/services/auth.service';
                         </button>
 
                         <div class="text-center">
-                            <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-300 font-medium cursor-pointer text-sm">
+                            <a [routerLink]="[currentLang, 'auth', 'forgot-password']"
+                               class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium cursor-pointer text-sm">
                                 Mot de passe oublié ?
                             </a>
                         </div>

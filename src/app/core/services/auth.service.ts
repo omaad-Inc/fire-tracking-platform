@@ -105,6 +105,28 @@ export class AuthService {
     }
 
     /**
+     * Request a password-reset email. Backend always returns 200 with a
+     * generic message to avoid leaking which emails are registered.
+     */
+    forgotPassword(email: string): Observable<{ message: string }> {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/auth/forgot-password`, { email }).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    /**
+     * Confirm a password reset using the token from the email.
+     */
+    resetPassword(token: string, newPassword: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/reset-password`, {
+            token,
+            new_password: newPassword,
+        }).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    /**
      * Get current user info
      */
     getCurrentUser(): Observable<User> {
