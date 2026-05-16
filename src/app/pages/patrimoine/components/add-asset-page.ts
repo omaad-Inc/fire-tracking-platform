@@ -718,22 +718,25 @@ export class AddAssetPage implements OnInit {
                 assetData = {
                     name: f.name, category: 'tontine',
                     current_value: this.toEur(f.tontineMonthlyContribution * months),
-                    purchase_value: this.toEur(f.tontineMonthlyContribution),
-                    purchase_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
-                    notes: JSON.stringify({ mise_mensuelle: f.tontineMonthlyContribution, participants: f.tontineParticipants, date_collecte: f.tontineCollectionDate, statut: f.tontineStatus, devise: this.cs.config().code })
+                    // New dedicated tontine columns — no more overloading purchase_*.
+                    tontine_monthly_contribution: this.toEur(f.tontineMonthlyContribution),
+                    tontine_participants: f.tontineParticipants,
+                    tontine_start_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
+                    tontine_collection_date: f.tontineCollectionDate || null,
+                    tontine_status: f.tontineStatus,
                 };
             } else if (f.category === 'mobile_money') {
                 assetData = {
                     name: f.name, category: 'mobile_money',
-                    current_value: this.toEur(f.currentPrice), purchase_value: this.toEur(f.currentPrice),
-                    purchase_date: new Date().toISOString().split('T')[0],
-                    institution: f.mobileMoneyProvider, is_liquid: true
+                    current_value: this.toEur(f.currentPrice),
+                    mobile_money_operator: f.mobileMoneyProvider,
+                    is_liquid: true,
                 };
             } else if (f.category === 'cash' || f.category === 'savings_account') {
+                // Simple-balance shape: no purchase event — current_value is THE value.
                 assetData = {
                     name: f.name, category: f.category as AssetCategory,
-                    current_value: this.toEur(f.currentPrice), purchase_value: this.toEur(f.currentPrice),
-                    purchase_date: new Date().toISOString().split('T')[0],
+                    current_value: this.toEur(f.currentPrice),
                     institution: f.institution || undefined, is_liquid: true
                 };
             } else {

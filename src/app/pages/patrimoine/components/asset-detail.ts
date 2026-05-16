@@ -11,19 +11,21 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatus } from '../asset-form-shape';
 
 @Component({
     selector: 'app-asset-detail',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule, ButtonModule, TagModule, DividerModule,
               ConfirmDialogModule, ToastModule, DialogModule, InputTextModule, InputNumberModule,
-              DatePickerModule, AppAmountComponent],
+              DatePickerModule, SelectModule, AppAmountComponent],
     providers: [ConfirmationService, MessageService],
     template: `
         <p-toast position="top-center" />
@@ -427,7 +429,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             </ng-template>
             <ng-template #content>
                 <div class="space-y-6 pt-2">
-                    <!-- Name -->
+                    <!-- Name (shared across all shapes) -->
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">Nom de l'actif</label>
                         <input pInputText [(ngModel)]="editForm.name"
@@ -435,54 +437,197 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                     </div>
 
-                    <!-- Values section -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Valeur actuelle <span class="text-negative">*</span></label>
-                            <div class="relative">
-                                <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                               [min]="0" [maxFractionDigits]="2"
-                                               inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                    @switch (formShape()) {
+                        <!-- ─────────────── TONTINE ─────────────── -->
+                        @case ('TONTINE') {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Mise mensuelle <span class="text-negative">*</span></label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.tontineMonthlyContribution"
+                                                       [min]="0" [maxFractionDigits]="0"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Nombre de participants <span class="text-negative">*</span></label>
+                                    <p-inputnumber [(ngModel)]="editForm.tontineParticipants"
+                                                   [min]="2" [max]="100"
+                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Prix d'achat</label>
-                            <div class="relative">
-                                <p-inputnumber [(ngModel)]="editForm.purchaseValue"
-                                               [min]="0" [maxFractionDigits]="2"
-                                               inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Date de début <span class="text-negative">*</span></label>
+                                    <p-datepicker [(ngModel)]="editForm.tontineStartDate"
+                                                  [showIcon]="true" [showButtonBar]="true"
+                                                  dateFormat="dd/mm/yy" styleClass="w-full"
+                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Date de collecte de ma mise</label>
+                                    <p-datepicker [(ngModel)]="editForm.tontineCollectionDate"
+                                                  [showIcon]="true" [showButtonBar]="true"
+                                                  dateFormat="dd/mm/yy" styleClass="w-full"
+                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Date & Institution -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Date d'achat</label>
-                            <p-datepicker [(ngModel)]="editForm.purchaseDate"
-                                          [showIcon]="true" [showButtonBar]="true"
-                                          dateFormat="dd/mm/yy"
-                                          styleClass="w-full"
-                                          inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Institution / Opérateur</label>
-                            <input pInputText [(ngModel)]="editForm.institution"
-                                   placeholder="Banque, plateforme..."
-                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
-                        </div>
-                    </div>
-
-                    @if (asset()!.category === 'real_estate') {
-                        <!-- Real estate fields -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div class="flex flex-col gap-1.5">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">Surface (m²)</label>
-                                <p-inputnumber [(ngModel)]="editForm.surfaceM2"
-                                               [min]="0" [maxFractionDigits]="1" suffix=" m²"
-                                               inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                <label class="text-sm text-surface-500 dark:text-surface-400">Statut</label>
+                                <p-select [(ngModel)]="editForm.tontineStatus"
+                                          [options]="tontineStatusOptions"
+                                          optionLabel="label" optionValue="value"
+                                          styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                            </div>
+
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">Valeur accumulée <span class="text-negative">*</span></label>
+                                <div class="relative">
+                                    <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                                   [min]="0" [maxFractionDigits]="2"
+                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- ─────────────── MOBILE MONEY ─────────────── -->
+                        @case ('MOBILE_MONEY') {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Opérateur <span class="text-negative">*</span></label>
+                                    <p-select [(ngModel)]="editForm.mobileMoneyOperator"
+                                              [options]="mobileMoneyOperatorOptions"
+                                              optionLabel="label" optionValue="value"
+                                              placeholder="Sélectionner l'opérateur"
+                                              styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Solde actuel <span class="text-negative">*</span></label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- ─────────────── SIMPLE BALANCE (cash, livret) ─────────────── -->
+                        @case ('SIMPLE_BALANCE') {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Institution</label>
+                                    <input pInputText [(ngModel)]="editForm.institution"
+                                           placeholder="Banque, livret..."
+                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Solde actuel <span class="text-negative">*</span></label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- ─────────────── QUANTITY-BASED (stocks, bonds, crypto, commodities) ─────────────── -->
+                        @case ('QUANTITY_BASED') {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Institution / Broker</label>
+                                    <input pInputText [(ngModel)]="editForm.institution"
+                                           placeholder="Broker, plateforme..."
+                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Quantité</label>
+                                    <p-inputnumber [(ngModel)]="editForm.quantity"
+                                                   [min]="0" [maxFractionDigits]="6"
+                                                   placeholder="Ex : 10, 0.5..."
+                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Valeur actuelle <span class="text-negative">*</span></label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Prix d'achat</label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">Date d'achat</label>
+                                <p-datepicker [(ngModel)]="editForm.purchaseDate"
+                                              [showIcon]="true" [showButtonBar]="true"
+                                              dateFormat="dd/mm/yy" styleClass="w-full"
+                                              inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                            </div>
+                            @if ((editForm.quantity ?? 0) > 0 && editForm.currentValue > 0) {
+                                <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
+                                    <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
+                                    <span class="text-brand-700 dark:text-brand-300 font-semibold">
+                                        {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ cs.config().symbol }}/part
+                                    </span>
+                                </div>
+                            }
+                        }
+
+                        <!-- ─────────────── REAL ESTATE ─────────────── -->
+                        @case ('REAL_ESTATE') {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Valeur actuelle <span class="text-negative">*</span></label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Prix d'achat</label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Date d'achat</label>
+                                    <p-datepicker [(ngModel)]="editForm.purchaseDate"
+                                                  [showIcon]="true" [showButtonBar]="true"
+                                                  dateFormat="dd/mm/yy" styleClass="w-full"
+                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Surface (m²)</label>
+                                    <p-inputnumber [(ngModel)]="editForm.surfaceM2"
+                                                   [min]="0" [maxFractionDigits]="1" suffix=" m²"
+                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
                             </div>
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-sm text-surface-500 dark:text-surface-400">Revenus locatifs/mois</label>
@@ -493,31 +638,52 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}/mois</span>
                                 </div>
                             </div>
-                        </div>
-                        @if ((editForm.surfaceM2 ?? 0) > 0 && editForm.currentValue > 0) {
-                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                <span class="text-surface-500 text-sm">Prix au m² actuel</span>
-                                <span class="text-brand-700 dark:text-brand-300 font-semibold">
-                                    {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ cs.config().symbol }}/m²
-                                </span>
-                            </div>
+                            @if ((editForm.surfaceM2 ?? 0) > 0 && editForm.currentValue > 0) {
+                                <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
+                                    <span class="text-surface-500 text-sm">Prix au m² actuel</span>
+                                    <span class="text-brand-700 dark:text-brand-300 font-semibold">
+                                        {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ cs.config().symbol }}/m²
+                                    </span>
+                                </div>
+                            }
                         }
-                    }
 
-                    @if (isQuantityBased()) {
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Nombre de parts / Quantité</label>
-                            <p-inputnumber [(ngModel)]="editForm.quantity"
-                                           [min]="0" [maxFractionDigits]="6"
-                                           placeholder="Ex : 10, 0.5..."
-                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
-                        </div>
-                        @if ((editForm.quantity ?? 0) > 0 && editForm.currentValue > 0) {
-                            <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
-                                <span class="text-brand-700 dark:text-brand-300 font-semibold">
-                                    {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ cs.config().symbol }}/part
-                                </span>
+                        <!-- ─────────────── TOTAL VALUE (retirement, life ins., business, vehicle, collectibles, other) ─────────────── -->
+                        @default {
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Valeur actuelle <span class="text-negative">*</span></label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Prix d'achat</label>
+                                    <div class="relative">
+                                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
+                                                       [min]="0" [maxFractionDigits]="2"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Date d'achat</label>
+                                    <p-datepicker [(ngModel)]="editForm.purchaseDate"
+                                                  [showIcon]="true" [showButtonBar]="true"
+                                                  dateFormat="dd/mm/yy" styleClass="w-full"
+                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Institution</label>
+                                    <input pInputText [(ngModel)]="editForm.institution"
+                                           placeholder="Compagnie, organisme..."
+                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                </div>
                             </div>
                         }
                     }
@@ -552,10 +718,41 @@ export class AssetDetailPage implements OnInit {
     asset = signal<Asset | null>(null);
     isSaving = signal(false);
     editDialog = false;
-    editForm = { name: '', currentValue: 0, purchaseValue: <number|null>null, purchaseDate: <Date|null>null, institution: '', surfaceM2: <number|null>null, rentalIncome: <number|null>null, quantity: <number|null>null };
+    editForm = {
+        name: '',
+        currentValue: 0,
+        purchaseValue: <number|null>null,
+        purchaseDate: <Date|null>null,
+        institution: '',
+        surfaceM2: <number|null>null,
+        rentalIncome: <number|null>null,
+        quantity: <number|null>null,
+        // Tontine
+        tontineMonthlyContribution: <number|null>null,
+        tontineParticipants: <number|null>null,
+        tontineStartDate: <Date|null>null,
+        tontineCollectionDate: <Date|null>null,
+        tontineStatus: <TontineStatus>'en_cours',
+        // Mobile Money
+        mobileMoneyOperator: '',
+    };
 
     readonly QUANTITY_CATEGORIES = ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'collectibles', 'commodities'];
     isQuantityBased = computed(() => this.QUANTITY_CATEGORIES.includes(this.asset()?.category ?? ''));
+
+    /** The form shape for the currently-loaded asset — drives the edit modal switch. */
+    formShape = computed<AssetFormShape>(() => {
+        const cat = this.asset()?.category;
+        return cat ? getAssetFormShape(cat) : 'TOTAL_VALUE';
+    });
+
+    readonly tontineStatusOptions = [
+        { value: 'en_cours',   label: 'En cours' },
+        { value: 'mise_recue', label: 'Mise reçue' },
+        { value: 'termine',    label: 'Terminée' },
+    ];
+
+    readonly mobileMoneyOperatorOptions = MOBILE_MONEY_OPERATORS.map(o => ({ value: o, label: o }));
 
     /**
      * Read quantity from asset.quantity (new schema) OR from asset.notes JSON
@@ -753,55 +950,99 @@ export class AssetDetailPage implements OnInit {
             surfaceM2: a.surface_m2 ?? null,
             rentalIncome: a.rental_income ?? null,
             quantity: this.readQuantity(a),
+            // Tontine
+            tontineMonthlyContribution: a.tontine_monthly_contribution ?? null,
+            tontineParticipants: a.tontine_participants ?? null,
+            tontineStartDate: a.tontine_start_date ? new Date(a.tontine_start_date) : null,
+            tontineCollectionDate: a.tontine_collection_date ? new Date(a.tontine_collection_date) : null,
+            tontineStatus: (a.tontine_status as TontineStatus) ?? 'en_cours',
+            // Mobile Money
+            mobileMoneyOperator: a.mobile_money_operator ?? '',
         };
         this.editDialog = true;
+    }
+
+    /** Convert a Date | string | null → ISO date string (YYYY-MM-DD) | null */
+    private toIsoDate(d: Date | string | null | undefined): string | null {
+        if (d == null) return null;
+        if (d instanceof Date) return d.toISOString().split('T')[0];
+        return d;
     }
 
     saveEdit() {
         const a = this.asset();
         if (!a || !this.editForm.name?.trim() || this.editForm.currentValue == null) return;
         this.isSaving.set(true);
+
+        const shape = this.formShape();
+        const f = this.editForm;
         const payload: any = {
-            name: this.editForm.name.trim(),
-            current_value: this.editForm.currentValue,
+            name: f.name.trim(),
+            current_value: f.currentValue,
         };
-        if (this.editForm.purchaseValue != null) payload.purchase_value = this.editForm.purchaseValue;
-        if (this.editForm.purchaseDate) {
-            payload.purchase_date = this.editForm.purchaseDate instanceof Date
-                ? this.editForm.purchaseDate.toISOString().split('T')[0]
-                : this.editForm.purchaseDate;
-        }
-        if (this.editForm.institution) payload.institution = this.editForm.institution;
-        if (this.editForm.surfaceM2 != null) payload.surface_m2 = this.editForm.surfaceM2;
-        if (this.editForm.rentalIncome != null) payload.rental_income = this.editForm.rentalIncome;
 
-        // Persist quantity in TWO ways so it works regardless of backend version:
-        // 1. quantity field — picked up by backends that have the DB column
-        // 2. notes JSON   — works on the current deployed backend with no column
-        if (this.isQuantityBased()) {
-            payload.quantity = this.editForm.quantity;
-            payload.notes = this.writeQuantityToNotes(a.notes, this.editForm.quantity);
+        // Per-shape payload: only send fields that make sense AND explicitly clear stale
+        // ones from the legacy schema (where everything was crammed into purchase_*).
+        if (shape === 'TONTINE') {
+            payload.tontine_monthly_contribution = f.tontineMonthlyContribution;
+            payload.tontine_participants         = f.tontineParticipants;
+            payload.tontine_start_date           = this.toIsoDate(f.tontineStartDate);
+            payload.tontine_collection_date      = this.toIsoDate(f.tontineCollectionDate);
+            payload.tontine_status               = f.tontineStatus;
+            // Clear any junk from legacy overloaded columns
+            payload.purchase_value = null;
+            payload.purchase_date  = null;
+            payload.institution    = null;
+            payload.notes          = null;
+        } else if (shape === 'MOBILE_MONEY') {
+            payload.mobile_money_operator = f.mobileMoneyOperator || null;
+            payload.purchase_value = null;
+            payload.purchase_date  = null;
+            payload.institution    = null;
+        } else if (shape === 'SIMPLE_BALANCE') {
+            payload.institution    = f.institution || null;
+            payload.purchase_value = null;
+            payload.purchase_date  = null;
+        } else if (shape === 'QUANTITY_BASED') {
+            payload.institution    = f.institution || null;
+            payload.purchase_value = f.purchaseValue;
+            payload.purchase_date  = this.toIsoDate(f.purchaseDate);
+            payload.quantity       = f.quantity;
+            payload.notes          = this.writeQuantityToNotes(a.notes, f.quantity);
+        } else if (shape === 'REAL_ESTATE') {
+            payload.purchase_value = f.purchaseValue;
+            payload.purchase_date  = this.toIsoDate(f.purchaseDate);
+            payload.surface_m2     = f.surfaceM2;
+            payload.rental_income  = f.rentalIncome;
+        } else {
+            // TOTAL_VALUE — retirement, life insurance, business, vehicle, collectibles, other
+            payload.institution    = f.institution || null;
+            payload.purchase_value = f.purchaseValue;
+            payload.purchase_date  = this.toIsoDate(f.purchaseDate);
         }
 
-        // Snapshot the quantity the user entered before the async call clears editForm
-        const savedQuantity = this.editForm.quantity;
+        const savedQuantity = f.quantity;
 
         this.apiService.updateAsset(a.id, payload).subscribe({
             next: () => {
-                // Optimistic update — apply all form values immediately so the UI
-                // never reverts while the re-fetch is in-flight.
+                // Optimistic update so the UI reflects the new values without waiting for re-fetch
                 this.asset.update(curr => curr ? {
                     ...curr,
-                    name: this.editForm.name.trim(),
-                    current_value: this.editForm.currentValue,
-                    purchase_value: this.editForm.purchaseValue ?? curr.purchase_value,
-                    institution: this.editForm.institution || curr.institution,
-                    surface_m2: this.editForm.surfaceM2 ?? curr.surface_m2,
-                    rental_income: this.editForm.rentalIncome ?? curr.rental_income,
-                    quantity: savedQuantity,
-                    notes: this.isQuantityBased()
-                        ? this.writeQuantityToNotes(curr.notes, savedQuantity)
-                        : curr.notes,
+                    name: f.name.trim(),
+                    current_value: f.currentValue,
+                    purchase_value: payload.purchase_value !== undefined ? payload.purchase_value : curr.purchase_value,
+                    purchase_date:  payload.purchase_date  !== undefined ? payload.purchase_date  : curr.purchase_date,
+                    institution:    payload.institution    !== undefined ? payload.institution    : curr.institution,
+                    surface_m2:     payload.surface_m2     !== undefined ? payload.surface_m2     : curr.surface_m2,
+                    rental_income:  payload.rental_income  !== undefined ? payload.rental_income  : curr.rental_income,
+                    quantity:       payload.quantity       !== undefined ? payload.quantity       : curr.quantity,
+                    notes:          payload.notes          !== undefined ? payload.notes          : curr.notes,
+                    tontine_monthly_contribution: payload.tontine_monthly_contribution !== undefined ? payload.tontine_monthly_contribution : curr.tontine_monthly_contribution,
+                    tontine_participants:         payload.tontine_participants         !== undefined ? payload.tontine_participants         : curr.tontine_participants,
+                    tontine_start_date:           payload.tontine_start_date           !== undefined ? payload.tontine_start_date           : curr.tontine_start_date,
+                    tontine_collection_date:      payload.tontine_collection_date      !== undefined ? payload.tontine_collection_date      : curr.tontine_collection_date,
+                    tontine_status:               payload.tontine_status               !== undefined ? payload.tontine_status               : curr.tontine_status,
+                    mobile_money_operator:        payload.mobile_money_operator        !== undefined ? payload.mobile_money_operator        : curr.mobile_money_operator,
                 } : null);
 
                 this.editDialog = false;
@@ -809,8 +1050,7 @@ export class AssetDetailPage implements OnInit {
                 this.stateService.notifyAssetsUpdated();
                 this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Actif mis à jour avec succès.', life: 3000 });
 
-                // Background re-fetch — keep the locally-saved quantity
-                // if the server response doesn't include it yet.
+                // Background re-fetch — keep locally-saved quantity if server hasn't propagated yet
                 this.apiService.getAsset(a.id).subscribe({
                     next: (fresh: Asset) => {
                         this.asset.set({

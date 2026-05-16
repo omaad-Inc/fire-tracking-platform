@@ -50,6 +50,14 @@ export interface Asset {
     notary_fees: number | null;
     renovation_fees: number | null;
     furnishing_costs: number | null;
+    // Tontine specific
+    tontine_monthly_contribution: number | null;
+    tontine_participants: number | null;
+    tontine_start_date: string | null;
+    tontine_collection_date: string | null;
+    tontine_status: string | null;
+    // Mobile Money specific
+    mobile_money_operator: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -58,32 +66,49 @@ export interface AssetCreate {
     name: string;
     category: AssetCategory;
     current_value: number;
-    purchase_value?: number;
-    purchase_date?: string;
+    purchase_value?: number | null;
+    purchase_date?: string | null;
     currency?: string;
-    notes?: string;
+    notes?: string | null;
     is_liquid?: boolean;
-    institution?: string;
+    institution?: string | null;
     location?: string;
     surface_m2?: number;
     price_per_m2_purchase?: number;
     quantity?: number;
+    // Tontine specific
+    tontine_monthly_contribution?: number | null;
+    tontine_participants?: number | null;
+    tontine_start_date?: string | null;
+    tontine_collection_date?: string | null;
+    tontine_status?: string | null;
+    // Mobile Money specific
+    mobile_money_operator?: string | null;
 }
 
 export interface AssetUpdate {
     name?: string;
     category?: AssetCategory;
     current_value?: number;
-    purchase_value?: number;
-    purchase_date?: string;
+    purchase_value?: number | null;
+    purchase_date?: string | null;
     currency?: string;
-    notes?: string;
+    notes?: string | null;
     is_liquid?: boolean;
-    institution?: string;
+    institution?: string | null;
     location?: string;
     surface_m2?: number;
     price_per_m2_purchase?: number;
     quantity?: number | null;
+    rental_income?: number | null;
+    // Tontine specific
+    tontine_monthly_contribution?: number | null;
+    tontine_participants?: number | null;
+    tontine_start_date?: string | null;
+    tontine_collection_date?: string | null;
+    tontine_status?: string | null;
+    // Mobile Money specific
+    mobile_money_operator?: string | null;
 }
 
 // ============================================
