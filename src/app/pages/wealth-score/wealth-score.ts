@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
@@ -29,6 +29,108 @@ import { AxisScore } from '../../core/services/api.service';
                         (click)="scoreService.refresh()"
                         class="!rounded-full !px-5 !py-2 !text-sm">
                 </button>
+            </div>
+
+            <!-- Explanation card — what the score means, what's a good score, how it updates -->
+            <div class="card !mb-6 !p-0 overflow-hidden border-l-4 border-ochre-500">
+                <button
+                    type="button"
+                    (click)="toggleHelp()"
+                    [attr.aria-expanded]="helpOpen()"
+                    class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-lg bg-ochre-100 dark:bg-ochre-900/30 flex items-center justify-center shrink-0">
+                            <i class="pi pi-info-circle text-ochre-600 dark:text-ochre-400"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 class="text-base md:text-lg font-bold text-surface-900 dark:text-white truncate">
+                                {{ t('landing.wealthScore.help.title') }}
+                            </h2>
+                            <p class="hidden sm:block text-xs md:text-sm text-surface-500 dark:text-surface-400 truncate">
+                                {{ t('landing.wealthScore.help.subtitle') }}
+                            </p>
+                        </div>
+                    </div>
+                    <i class="pi pi-chevron-down shrink-0 text-surface-500 transition-transform duration-200"
+                       [class.rotate-180]="helpOpen()"></i>
+                </button>
+
+                @if (helpOpen()) {
+                    <div class="px-5 pb-5 pt-1 space-y-6 border-t border-surface-200 dark:border-surface-700">
+                        <!-- Step 1: What is it -->
+                        <section class="pt-4">
+                            <h3 class="text-[11px] font-bold uppercase tracking-[0.08em] text-ochre-600 dark:text-ochre-400 mb-2">
+                                {{ t('landing.wealthScore.help.whatTitle') }}
+                            </h3>
+                            <p class="text-sm md:text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+                                {{ t('landing.wealthScore.help.whatBody') }}
+                            </p>
+                        </section>
+
+                        <!-- Step 2: The 5 axes -->
+                        <section>
+                            <h3 class="text-[11px] font-bold uppercase tracking-[0.08em] text-ochre-600 dark:text-ochre-400 mb-3">
+                                {{ t('landing.wealthScore.help.axesTitle') }}
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                @for (axis of axisInfo; track axis.key) {
+                                    <div class="flex items-start gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50/40 dark:bg-surface-800/30">
+                                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-900/20 flex items-center justify-center shrink-0">
+                                            <i class="pi text-ochre-600 dark:text-ochre-400" [ngClass]="axisIcon(axis.key)"></i>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <strong class="text-sm font-semibold text-surface-900 dark:text-white">
+                                                    {{ axisLabel(axis.key) }}
+                                                </strong>
+                                                <span class="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-ochre-500/10 text-ochre-600 dark:text-ochre-400">
+                                                    {{ axis.weight }}%
+                                                </span>
+                                            </div>
+                                            <p class="text-xs text-surface-600 dark:text-surface-400 mt-1 leading-snug">
+                                                {{ t('landing.wealthScore.help.axes.' + axis.key) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </section>
+
+                        <!-- Step 3: Score bands -->
+                        <section>
+                            <h3 class="text-[11px] font-bold uppercase tracking-[0.08em] text-ochre-600 dark:text-ochre-400 mb-3">
+                                {{ t('landing.wealthScore.help.bandsTitle') }}
+                            </h3>
+                            <div class="space-y-2">
+                                @for (band of scoreBands; track band.key) {
+                                    <div class="flex items-center gap-3 p-2.5 rounded-lg" [ngClass]="band.bg">
+                                        <span class="shrink-0 min-w-[70px] text-center text-[11px] font-bold tabular-nums px-2.5 py-1 rounded-md text-white" [ngClass]="band.pill">
+                                            {{ t('landing.wealthScore.help.bands.' + band.key + 'Range') }}
+                                        </span>
+                                        <div class="min-w-0 text-sm leading-snug">
+                                            <strong class="text-surface-900 dark:text-white">
+                                                {{ t('landing.wealthScore.help.bands.' + band.key + 'Label') }}
+                                            </strong>
+                                            <span class="text-surface-600 dark:text-surface-400">
+                                                — {{ t('landing.wealthScore.help.bands.' + band.key + 'Desc') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </section>
+
+                        <!-- Step 4: How it updates -->
+                        <section>
+                            <h3 class="text-[11px] font-bold uppercase tracking-[0.08em] text-ochre-600 dark:text-ochre-400 mb-2">
+                                {{ t('landing.wealthScore.help.updateTitle') }}
+                            </h3>
+                            <p class="text-sm md:text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+                                {{ t('landing.wealthScore.help.updateBody') }}
+                            </p>
+                        </section>
+                    </div>
+                }
             </div>
 
             @if (scoreService.loading() && !scoreService.hasData()) {
@@ -125,6 +227,38 @@ export class WealthScorePage implements OnInit {
 
     chartData: any = {};
     chartOptions: any = {};
+
+    // Help card — collapsible explanation panel, state persisted in localStorage
+    private readonly HELP_STORAGE_KEY = 'omaad_wealth_score_help_open';
+    helpOpen = signal(this.loadHelpState());
+
+    readonly axisInfo: ReadonlyArray<{ key: string; weight: number }> = [
+        { key: 'epargne',         weight: 25 },
+        { key: 'investissement',  weight: 20 },
+        { key: 'protection',      weight: 15 },
+        { key: 'planification',   weight: 25 },
+        { key: 'diversification', weight: 15 },
+    ];
+
+    readonly scoreBands: ReadonlyArray<{ key: string; bg: string; pill: string }> = [
+        { key: 'excellent', bg: 'bg-positive-50 dark:bg-positive-900/10', pill: 'bg-positive-500' },
+        { key: 'healthy',   bg: 'bg-ochre-50 dark:bg-ochre-900/10',       pill: 'bg-ochre-500'    },
+        { key: 'growing',   bg: 'bg-surface-100 dark:bg-surface-800/40',  pill: 'bg-surface-500'  },
+        { key: 'starting',  bg: 'bg-red-50 dark:bg-red-900/10',           pill: 'bg-red-500'      },
+    ];
+
+    toggleHelp(): void {
+        this.helpOpen.update(v => !v);
+        try { localStorage.setItem(this.HELP_STORAGE_KEY, String(this.helpOpen())); } catch {}
+    }
+
+    private loadHelpState(): boolean {
+        try {
+            const v = localStorage.getItem(this.HELP_STORAGE_KEY);
+            if (v === null) return true;
+            return v === 'true';
+        } catch { return true; }
+    }
 
     t(key: string): string { return this.i18n.t(key); }
 
