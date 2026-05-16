@@ -116,296 +116,424 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                 </div>
             </div>
 
-            <!-- KPI Row -->
-            <div class="grid gap-3 md:gap-4 mb-5"
-                 [ngClass]="isQuantityBased() ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'"
-                 style="grid-auto-rows: 1fr;">
-                <!-- P&L -->
-                <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center">
-                    <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">P&amp;L</p>
-                    @if (gainLoss() !== null) {
-                        <div class="text-xl font-bold leading-7"
-                             [ngClass]="gainLoss()! >= 0 ? 'text-positive' : 'text-negative'">
-                            <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
-                        </div>
-                        <p class="text-surface-400 text-xs mt-1">Basé sur le prix d'achat</p>
-                    } @else {
-                        <div class="text-xl font-bold leading-7 text-surface-400">—</div>
-                        <p class="text-surface-400 text-xs mt-1">&nbsp;</p>
-                    }
-                </div>
-                <!-- Prix d'achat -->
-                <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center">
-                    <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Prix d'achat</p>
-                    <div class="text-xl font-bold leading-7 text-surface-900 dark:text-surface-0">
-                        @if (asset()!.purchase_value) {
-                            <app-amount [value]="asset()!.purchase_value!" />
-                        } @else {
-                            <span class="text-surface-400">—</span>
-                        }
-                    </div>
-                    @if (asset()!.purchase_date) {
-                        <p class="text-surface-400 text-xs mt-1">{{ formatShortDate(asset()!.purchase_date!) }}</p>
-                    } @else {
-                        <p class="text-surface-400 text-xs mt-1">&nbsp;</p>
-                    }
-                </div>
-                <!-- Quantité (only for quantity-based assets) -->
-                @if (isQuantityBased()) {
-                    <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center">
-                        <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Quantité</p>
-                        @if (displayQuantity() != null) {
-                            <div class="text-xl font-bold leading-7 text-surface-900 dark:text-surface-0">
-                                {{ displayQuantity() | number:'1.0-6' }}
+            <!-- KPI Row — category-aware tiles, all on the standard card surface -->
+            <div class="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-3 mb-6" style="grid-auto-rows: 1fr;">
+                @switch (formShape()) {
+                    @case ('TONTINE') {
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Mise mensuelle</p>
+                            <div class="kpi-value">
+                                @if (asset()!.tontine_monthly_contribution != null) {
+                                    <app-amount [value]="asset()!.tontine_monthly_contribution!" />
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
                             </div>
-                            @if (displayQuantity()! > 0) {
-                                <p class="text-surface-400 text-xs mt-1">
-                                    {{ asset()!.current_value / displayQuantity()! | number:'1.2-2' }} €/part
-                                </p>
-                            }
-                        } @else {
-                            <div class="text-xl font-bold leading-7 text-surface-400">—</div>
-                            <p class="text-surface-400 text-xs mt-1">Non renseigné</p>
-                        }
-                    </div>
-                }
-                <!-- Institution -->
-                <div class="rounded-xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 p-4 text-center flex flex-col items-center justify-center overflow-hidden">
-                    <p class="text-surface-500 text-xs font-medium uppercase tracking-wide mb-1">Institution</p>
-                    <div class="text-xl font-bold leading-7 text-surface-900 dark:text-surface-0 truncate max-w-full">
-                        {{ asset()!.institution || '—' }}
-                    </div>
-                    @if (asset()!.location) {
-                        <p class="text-surface-400 text-xs mt-1 truncate max-w-full">{{ asset()!.location }}</p>
-                    } @else {
-                        <p class="text-surface-400 text-xs mt-1">&nbsp;</p>
+                            <p class="kpi-sub">par cycle</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Participants</p>
+                            <div class="kpi-value">
+                                {{ asset()!.tontine_participants ?? '—' }}
+                            </div>
+                            <p class="kpi-sub">membres du groupe</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Statut</p>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold mt-1"
+                                  [ngClass]="tontineStatusClass()">
+                                {{ tontineStatusLabel() }}
+                            </span>
+                            <p class="kpi-sub mt-1.5">cycle en cours</p>
+                        </div>
                     }
-                </div>
+                    @case ('MOBILE_MONEY') {
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Opérateur</p>
+                            <div class="kpi-value truncate max-w-full">
+                                {{ asset()!.mobile_money_operator || '—' }}
+                            </div>
+                            <p class="kpi-sub">portefeuille mobile</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Liquidité</p>
+                            <div class="kpi-value text-positive">Immédiate</div>
+                            <p class="kpi-sub">disponible à tout moment</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Dernière mise à jour</p>
+                            <div class="kpi-value text-base">{{ formatDate(asset()!.updated_at) }}</div>
+                            <p class="kpi-sub">solde renseigné</p>
+                        </div>
+                    }
+                    @case ('SIMPLE_BALANCE') {
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Institution</p>
+                            <div class="kpi-value truncate max-w-full">
+                                {{ asset()!.institution || '—' }}
+                            </div>
+                            <p class="kpi-sub">où sont vos fonds</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Liquidité</p>
+                            <div class="kpi-value text-positive">Immédiate</div>
+                            <p class="kpi-sub">retrait sans frais</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Devise</p>
+                            <div class="kpi-value">{{ asset()!.currency }}</div>
+                            <p class="kpi-sub">unité de compte</p>
+                        </div>
+                    }
+                    @case ('QUANTITY_BASED') {
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Quantité</p>
+                            <div class="kpi-value">
+                                @if (displayQuantity() != null) {
+                                    {{ displayQuantity() | number:'1.0-6' }}
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
+                            </div>
+                            <p class="kpi-sub">parts détenues</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Prix unitaire</p>
+                            <div class="kpi-value">
+                                @if (displayQuantity() != null && displayQuantity()! > 0) {
+                                    <app-amount [value]="asset()!.current_value / displayQuantity()!" />
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
+                            </div>
+                            <p class="kpi-sub">cours actuel estimé</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">P&amp;L</p>
+                            @if (gainLoss() !== null) {
+                                <div class="kpi-value" [ngClass]="gainLoss()! >= 0 ? 'text-positive' : 'text-negative'">
+                                    <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
+                                </div>
+                                <p class="kpi-sub">depuis l'achat</p>
+                            } @else {
+                                <div class="kpi-value text-surface-400">—</div>
+                                <p class="kpi-sub">renseignez le prix d'achat</p>
+                            }
+                        </div>
+                    }
+                    @case ('REAL_ESTATE') {
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Surface</p>
+                            <div class="kpi-value">
+                                @if (asset()!.surface_m2) {
+                                    {{ asset()!.surface_m2 }} m²
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
+                            </div>
+                            <p class="kpi-sub">surface habitable</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Prix au m²</p>
+                            <div class="kpi-value">
+                                @if (asset()!.surface_m2 && asset()!.surface_m2! > 0) {
+                                    <app-amount [value]="asset()!.current_value / asset()!.surface_m2!" />
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
+                            </div>
+                            <p class="kpi-sub">valeur courante estimée</p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Revenus locatifs</p>
+                            <div class="kpi-value">
+                                @if (asset()!.rental_income) {
+                                    <app-amount [value]="asset()!.rental_income!" />
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
+                            </div>
+                            <p class="kpi-sub">par mois</p>
+                        </div>
+                    }
+                    @default {
+                        <!-- TOTAL_VALUE — retirement, life insurance, business, vehicle, collectibles, other -->
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">P&amp;L</p>
+                            @if (gainLoss() !== null) {
+                                <div class="kpi-value" [ngClass]="gainLoss()! >= 0 ? 'text-positive' : 'text-negative'">
+                                    <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
+                                </div>
+                                <p class="kpi-sub">depuis l'achat</p>
+                            } @else {
+                                <div class="kpi-value text-surface-400">—</div>
+                                <p class="kpi-sub">renseignez le prix d'achat</p>
+                            }
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Prix d'achat</p>
+                            <div class="kpi-value">
+                                @if (asset()!.purchase_value) {
+                                    <app-amount [value]="asset()!.purchase_value!" />
+                                } @else {
+                                    <span class="text-surface-400">—</span>
+                                }
+                            </div>
+                            <p class="kpi-sub">
+                                @if (asset()!.purchase_date) { {{ formatShortDate(asset()!.purchase_date!) }} } @else { coût d'acquisition }
+                            </p>
+                        </div>
+                        <div class="detail-surface kpi-tile">
+                            <p class="kpi-label">Institution</p>
+                            <div class="kpi-value truncate max-w-full">
+                                {{ asset()!.institution || '—' }}
+                            </div>
+                            <p class="kpi-sub">où l'actif est détenu</p>
+                        </div>
+                    }
+                }
             </div>
 
-            <p-divider />
-
-            <!-- Specifications -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
-                <div>
-                    <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Informations générales</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                            <span class="text-surface-500 text-sm">Catégorie</span>
-                            <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ categoryLabel() }}</span>
-                        </div>
-                        @if (asset()!.purchase_date) {
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Date d'achat</span>
-                                <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ formatShortDate(asset()!.purchase_date!) }}</span>
-                            </div>
-                        }
-                        @if (isQuantityBased() && displayQuantity() != null) {
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Nombre de parts</span>
-                                <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ displayQuantity() | number:'1.0-6' }}</span>
-                            </div>
-                        }
-                        @if (isQuantityBased() && displayQuantity() != null && displayQuantity()! > 0) {
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
-                                <span class="text-warm-700 dark:text-warm-300 text-sm font-medium">{{ asset()!.current_value / displayQuantity()! | number:'1.2-2' }} €</span>
-                            </div>
-                        }
-                        @if (asset()!.annual_return) {
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Rendement annuel estimé</span>
-                                <span class="text-positive text-sm font-medium">{{ asset()!.annual_return }}%</span>
-                            </div>
-                        }
-                        @if (asset()!.description) {
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Description</span>
-                                <span class="text-surface-900 dark:text-surface-0 text-sm max-w-xs text-right">{{ asset()!.description }}</span>
+            <!-- Specifications — Informations générales (premium spec list) + per-category card -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <!-- Informations générales — premium icon-row layout -->
+                <div class="detail-surface">
+                    <div class="flex items-center justify-between px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                        <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">
+                            Informations générales
+                        </h3>
+                        <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-500">
+                            {{ categoryLabel() }}
+                        </span>
+                    </div>
+                    <div class="px-5 py-2">
+                        @for (row of generalInfoRows(); track row.label) {
+                            <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
+                                <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                    <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
+                                    <p class="text-sm font-semibold text-surface-900 dark:text-surface-0 truncate" [ngClass]="row.valueClass || ''">
+                                        {{ row.value }}
+                                    </p>
+                                </div>
                             </div>
                         }
                     </div>
                 </div>
 
-                <!-- Real estate specific -->
-                @if (asset()!.category === 'real_estate') {
-                    <div>
-                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Spécifications immobilières</h3>
-                        <div class="space-y-3">
-                            @if (asset()!.surface_m2) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Surface</span>
-                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ asset()!.surface_m2 }} m²</span>
-                                </div>
-                            }
-                            @if (asset()!.price_per_m2_purchase) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Prix/m² à l'achat</span>
-                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium"><app-amount [value]="asset()!.price_per_m2_purchase!" />/m²</span>
-                                </div>
-                            }
-                            @if (asset()!.surface_m2 && asset()!.current_value) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Prix/m² actuel (estimé)</span>
-                                    <span class="text-brand-700 dark:text-brand-300 text-sm font-medium"><app-amount [value]="asset()!.current_value / asset()!.surface_m2!" />/m²</span>
-                                </div>
-                            }
-                            @if (asset()!.construction_date) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Date de construction</span>
-                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ asset()!.construction_date }}</span>
-                                </div>
-                            }
-                            @if (asset()!.rental_income) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Revenus locatifs/mois</span>
-                                    <span class="text-positive text-sm font-medium"><app-amount [value]="asset()!.rental_income!" /></span>
-                                </div>
-                            }
-                        </div>
-
-                        <!-- Fees -->
-                        @if (asset()!.agency_fees || asset()!.notary_fees || asset()!.renovation_fees || asset()!.furnishing_costs) {
-                            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mt-6 mb-4">Frais</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
-                                    <p class="text-surface-500 text-xs mb-1">Frais d'agence</p>
-                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { — }
-                                    </p>
-                                </div>
-                                <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
-                                    <p class="text-surface-500 text-xs mb-1">Frais de notaire</p>
-                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { — }
-                                    </p>
-                                </div>
-                                <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
-                                    <p class="text-surface-500 text-xs mb-1">Frais de rénovation</p>
-                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { — }
-                                    </p>
-                                </div>
-                                <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
-                                    <p class="text-surface-500 text-xs mb-1">Ameublement</p>
-                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
-                                        @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { — }
-                                    </p>
-                                </div>
+                <!-- Per-category card -->
+                @switch (formShape()) {
+                    @case ('REAL_ESTATE') {
+                        <div class="detail-surface">
+                            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Spécifications immobilières</h3>
                             </div>
-                        }
-                    </div>
-                }
-
-                <!-- Stocks / Bonds specific -->
-                @if (asset()!.category === 'stocks_brvm' || asset()!.category === 'stocks_intl' || asset()!.category === 'bonds') {
-                    <div>
-                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Performance</h3>
-                        <div class="space-y-3">
-                            @if (gainLoss() !== null) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Gain/Perte total</span>
-                                    <span class="text-sm font-medium" [ngClass]="gainLoss()! >= 0 ? 'text-positive' : 'text-negative'">
-                                        <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
-                                    </span>
-                                </div>
-                            }
-                            @if (gainLossPct() !== null) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Performance totale</span>
-                                    <span class="text-sm font-medium" [ngClass]="gainLossPct()! >= 0 ? 'text-positive' : 'text-negative'">
-                                        {{ gainLossPct()! >= 0 ? '+' : '' }}{{ gainLossPct() | number:'1.1-1' }}%
-                                    </span>
-                                </div>
-                            }
-                            @if (asset()!.institution) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Courtier / Plateforme</span>
-                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ asset()!.institution }}</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-
-                <!-- Tontine specific -->
-                @if (asset()!.category === 'tontine') {
-                    <div>
-                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Détails de la tontine</h3>
-                        <div class="space-y-3">
-                            @if (tontineData(); as td) {
-                                @if (td.mise_mensuelle) {
-                                    <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                        <span class="text-surface-500 text-sm">Mise mensuelle</span>
-                                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ td.mise_mensuelle | number:'1.0-0' }} {{ td.devise || 'FCFA' }}</span>
+                            <div class="px-5 py-2">
+                                @for (row of realEstateRows(); track row.label) {
+                                    <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
+                                        <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                            <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
+                                            <p class="text-sm font-semibold text-surface-900 dark:text-surface-0" [ngClass]="row.valueClass || ''">
+                                                {{ row.value }}
+                                            </p>
+                                        </div>
                                     </div>
                                 }
-                                @if (td.participants) {
-                                    <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                        <span class="text-surface-500 text-sm">Nombre de participants</span>
-                                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ td.participants }}</span>
+                            </div>
+                            @if (asset()!.agency_fees || asset()!.notary_fees || asset()!.renovation_fees || asset()!.furnishing_costs) {
+                                <div class="px-5 py-4 border-t border-surface-200 dark:border-surface-700">
+                                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-surface-500 mb-3">Frais d'acquisition</h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                            <p class="text-[11px] text-surface-500 mb-1">Agence</p>
+                                            <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
+                                                @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { <span class="text-surface-400">—</span> }
+                                            </p>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                            <p class="text-[11px] text-surface-500 mb-1">Notaire</p>
+                                            <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
+                                                @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { <span class="text-surface-400">—</span> }
+                                            </p>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                            <p class="text-[11px] text-surface-500 mb-1">Rénovation</p>
+                                            <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
+                                                @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { <span class="text-surface-400">—</span> }
+                                            </p>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                            <p class="text-[11px] text-surface-500 mb-1">Ameublement</p>
+                                            <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
+                                                @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { <span class="text-surface-400">—</span> }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    @case ('QUANTITY_BASED') {
+                        <div class="detail-surface">
+                            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Performance</h3>
+                            </div>
+                            <div class="px-5 py-2">
+                                @for (row of performanceRows(); track row.label) {
+                                    <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
+                                        <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                            <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
+                                            <p class="text-sm font-semibold" [ngClass]="row.valueClass || 'text-surface-900 dark:text-surface-0'">
+                                                {{ row.value }}
+                                            </p>
+                                        </div>
                                     </div>
                                 }
-                                @if (td.date_collecte) {
-                                    <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                        <span class="text-surface-500 text-sm">Date de collecte de ma mise</span>
-                                        <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ td.date_collecte }}</span>
+                            </div>
+                        </div>
+                    }
+                    @case ('TONTINE') {
+                        <div class="detail-surface">
+                            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Détails de la tontine</h3>
+                            </div>
+                            <div class="px-5 py-2">
+                                @for (row of tontineRows(); track row.label) {
+                                    <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
+                                        <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                            <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
+                                            <p class="text-sm font-semibold" [ngClass]="row.valueClass || 'text-surface-900 dark:text-surface-0'">
+                                                {{ row.value }}
+                                            </p>
+                                        </div>
                                     </div>
                                 }
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Statut</span>
-                                    <span class="text-sm font-medium px-2 py-0.5 rounded-full"
-                                          [ngClass]="td.statut === 'mise_recue' ? 'bg-positive/10 text-positive' : td.statut === 'termine' ? 'bg-surface-500/10 text-surface-500' : 'bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300'">
-                                        {{ td.statut === 'mise_recue' ? 'Mise reçue ✓' : td.statut === 'termine' ? 'Terminée' : 'En cours' }}
-                                    </span>
-                                </div>
-                            }
-                            @if (asset()!.purchase_date) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Date de début</span>
-                                    <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">{{ asset()!.purchase_date }}</span>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-
-                <!-- Mobile Money specific -->
-                @if (asset()!.category === 'mobile_money') {
-                    <div>
-                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Compte Mobile Money</h3>
-                        <div class="space-y-3">
-                            @if (asset()!.institution) {
-                                <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                    <span class="text-surface-500 text-sm">Opérateur</span>
-                                    <span class="text-brand-700 dark:text-brand-300 text-sm font-semibold">{{ asset()!.institution }}</span>
-                                </div>
-                            }
-                            <div class="p-3 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 flex items-center gap-2 text-xs text-surface-400">
-                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300"></i>
-                                Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
                             </div>
                         </div>
-                    </div>
-                }
-
-                <!-- Vehicle specific -->
-                @if (asset()!.category === 'vehicle') {
-                    <div>
-                        <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">Dépréciation estimée</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Taux de dépréciation annuel</span>
-                                <span class="text-negative text-sm font-medium">~15%/an</span>
+                    }
+                    @case ('MOBILE_MONEY') {
+                        <div class="detail-surface">
+                            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Compte Mobile Money</h3>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-surface-100 dark:border-surface-800">
-                                <span class="text-surface-500 text-sm">Valeur estimée dans 5 ans</span>
-                                <span class="text-surface-900 dark:text-surface-0 text-sm font-medium">
-                                    <app-amount [value]="asset()!.current_value * Math.pow(0.85, 5)" />
-                                </span>
+                            <div class="px-5 py-2">
+                                <div class="flex items-center gap-3 py-3">
+                                    <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                                         style="background: rgba(199, 123, 60, 0.12);">
+                                        <i class="pi pi-mobile text-sm" style="color: #C77B3C;"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Opérateur</p>
+                                        <p class="text-sm font-bold text-brand-700 dark:text-brand-300">
+                                            {{ asset()!.mobile_money_operator || '—' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 py-3">
+                                    <div class="w-9 h-9 rounded-lg bg-positive/10 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-wave-pulse text-positive text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Liquidité</p>
+                                        <p class="text-sm font-semibold text-positive">Disponible immédiatement</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mx-5 mb-5 p-3 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 flex items-start gap-2 text-xs text-surface-500">
+                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5"></i>
+                                <span>Intégration API Wave / Orange Money prévue — synchronisations automatiques à venir.</span>
                             </div>
                         </div>
-                    </div>
+                    }
+                    @case ('SIMPLE_BALANCE') {
+                        <div class="detail-surface">
+                            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Compte</h3>
+                            </div>
+                            <div class="px-5 py-2">
+                                <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
+                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-building text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Institution</p>
+                                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ asset()!.institution || '—' }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
+                                    <div class="w-9 h-9 rounded-lg bg-positive/10 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-bolt text-positive text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Liquidité</p>
+                                        <p class="text-sm font-semibold text-positive">Immédiate — retrait sans préavis</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 py-3">
+                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-calendar text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Suivi depuis</p>
+                                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ formatDate(asset()!.created_at) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @default {
+                        <!-- TOTAL_VALUE — show a simple "Suivi" card so the right column is never empty -->
+                        <div class="detail-surface">
+                            <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                                <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">Suivi</h3>
+                            </div>
+                            <div class="px-5 py-2">
+                                <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
+                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-calendar text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Suivi depuis</p>
+                                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ formatDate(asset()!.created_at) }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
+                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-history text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Dernière mise à jour</p>
+                                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ formatDate(asset()!.updated_at) }}</p>
+                                    </div>
+                                </div>
+                                @if (asset()!.category === 'vehicle') {
+                                    <div class="flex items-center gap-3 py-3">
+                                        <div class="w-9 h-9 rounded-lg bg-negative/10 flex items-center justify-center shrink-0">
+                                            <i class="pi pi-chart-line text-negative text-sm" style="transform: scaleY(-1);"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Dépréciation estimée</p>
+                                            <p class="text-sm font-semibold text-negative">~15 % / an</p>
+                                            <p class="text-[11px] text-surface-500 mt-0.5">
+                                                Valeur dans 5 ans : <span class="font-semibold"><app-amount [value]="asset()!.current_value * Math.pow(0.85, 5)" /></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
                 }
             </div>
         }
@@ -701,7 +829,71 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                 </div>
             </ng-template>
         </p-dialog>
-    `
+    `,
+    styles: [`
+        :host { display: block; }
+
+        /* Matches the dashboard widget surface ("Progression de l'épargne", "Vue
+           globale des dettes"): subtle navy-tinted gradient with a thin border,
+           NO box-shadow. Implemented via CSS background-image so we don't need
+           the absolute-positioned overlay div the dashboard uses. */
+        .detail-surface {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;                              /* rounded-2xl */
+            border: 1px solid #e2e8f0;                        /* surface-200 */
+            background: linear-gradient(135deg,
+                #f8fafc 0%,                                   /* surface-50 */
+                #f8fafc 50%,                                  /* surface-50 (via) */
+                rgba(239, 242, 247, 0.5) 100%);               /* brand-50/50  */
+        }
+        :host-context(.app-dark) .detail-surface,
+        .app-dark .detail-surface {
+            border-color: #334155;                            /* surface-700 */
+            background: linear-gradient(135deg,
+                #1e293b 0%,                                   /* surface-800 */
+                rgba(30, 41, 59, 0.9) 50%,                    /* surface-800/90 */
+                rgba(15, 26, 46, 0.1) 100%);                  /* brand-900/10 */
+        }
+
+        /* KPI tile layout — flex column, centered, fixed padding */
+        .kpi-tile {
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .kpi-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--p-surface-500, #64748b);
+            margin: 0 0 0.35rem 0;
+        }
+        :host-context(.app-dark) .kpi-label,
+        .app-dark .kpi-label { color: var(--p-surface-400, #94a3b8); }
+
+        .kpi-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--p-surface-900, #0f1a2e);
+            font-variant-numeric: tabular-nums;
+            max-width: 100%;
+        }
+        :host-context(.app-dark) .kpi-value,
+        .app-dark .kpi-value { color: var(--p-surface-0, #ffffff); }
+
+        .kpi-sub {
+            font-size: 0.6875rem;
+            color: var(--p-surface-400, #94a3b8);
+            margin: 0.35rem 0 0 0;
+        }
+    `]
 })
 export class AssetDetailPage implements OnInit {
     private route = inject(ActivatedRoute);
@@ -860,10 +1052,150 @@ export class AssetDetailPage implements OnInit {
     categoryBg = computed(() => this.CATEGORY_BGS[this.asset()?.category ?? ''] ?? 'linear-gradient(135deg, #1A2740, #2C3E5E)');
     categoryLabel = computed(() => this.CATEGORY_LABELS[this.asset()?.category ?? ''] ?? this.asset()?.category ?? '');
 
-    tontineData = computed(() => {
-        const notes = this.asset()?.notes;
-        if (!notes) return null;
-        try { return JSON.parse(notes); } catch { return null; }
+    // ─── Tontine status helpers ─────────────────────────────────────────
+    tontineStatusLabel = computed(() => {
+        const s = this.asset()?.tontine_status;
+        switch (s) {
+            case 'mise_recue': return 'Mise reçue ✓';
+            case 'termine':    return 'Terminée';
+            case 'en_cours':   return 'En cours';
+            default:           return '—';
+        }
+    });
+
+    tontineStatusClass = computed(() => {
+        const s = this.asset()?.tontine_status;
+        switch (s) {
+            case 'mise_recue': return 'bg-positive/10 text-positive';
+            case 'termine':    return 'bg-surface-500/10 text-surface-500';
+            default:           return 'bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300';
+        }
+    });
+
+    // ─── Premium spec list rows — one source of truth per card ──────────
+    private liquidLabel(isLiquid: boolean | null | undefined): string {
+        return isLiquid ? 'Disponible immédiatement' : 'Différée';
+    }
+
+    /** Rows for the "Informations générales" card. Always at least 3 rows so the card is never sparse. */
+    generalInfoRows = computed<{ label: string; value: string; icon: string; valueClass?: string }[]>(() => {
+        const a = this.asset();
+        if (!a) return [];
+        const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
+
+        rows.push({ label: 'Catégorie',       value: this.categoryLabel(),         icon: 'pi-tag' });
+        rows.push({ label: 'Devise',          value: a.currency,                   icon: 'pi-money-bill' });
+        rows.push({ label: 'Suivi depuis',    value: this.formatDate(a.created_at), icon: 'pi-calendar-plus' });
+        rows.push({ label: 'Dernière mise à jour', value: this.formatDate(a.updated_at), icon: 'pi-history' });
+
+        if (a.is_liquid) {
+            rows.push({ label: 'Liquidité', value: 'Disponible immédiatement', icon: 'pi-bolt', valueClass: 'text-positive' });
+        }
+        if (a.annual_return != null) {
+            rows.push({ label: 'Rendement annuel estimé', value: `${a.annual_return} %`, icon: 'pi-chart-line', valueClass: 'text-positive' });
+        }
+        if (a.description) {
+            rows.push({ label: 'Description', value: a.description, icon: 'pi-align-left' });
+        }
+        return rows;
+    });
+
+    /** Real-estate-specific spec rows. */
+    realEstateRows = computed<{ label: string; value: string; icon: string; valueClass?: string }[]>(() => {
+        const a = this.asset();
+        if (!a) return [];
+        const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
+
+        if (a.surface_m2) {
+            rows.push({ label: 'Surface', value: `${a.surface_m2} m²`, icon: 'pi-arrows-alt' });
+        }
+        if (a.price_per_m2_purchase) {
+            rows.push({ label: 'Prix au m² à l\'achat', value: `${a.price_per_m2_purchase.toLocaleString('fr-FR')} ${a.currency}/m²`, icon: 'pi-shopping-cart' });
+        }
+        if (a.surface_m2 && a.surface_m2 > 0) {
+            const current = Math.round(a.current_value / a.surface_m2);
+            rows.push({ label: 'Prix au m² actuel', value: `${current.toLocaleString('fr-FR')} ${a.currency}/m²`, icon: 'pi-chart-line', valueClass: 'text-brand-700 dark:text-brand-300' });
+        }
+        if (a.purchase_date) {
+            rows.push({ label: 'Date d\'achat', value: this.formatShortDate(a.purchase_date), icon: 'pi-calendar' });
+        }
+        if (a.construction_date) {
+            rows.push({ label: 'Date de construction', value: a.construction_date, icon: 'pi-clock' });
+        }
+        if (a.location) {
+            rows.push({ label: 'Localisation', value: a.location, icon: 'pi-map-marker' });
+        }
+        if (a.rental_income) {
+            rows.push({ label: 'Revenus locatifs', value: `${a.rental_income.toLocaleString('fr-FR')} ${a.currency}/mois`, icon: 'pi-home', valueClass: 'text-positive' });
+        }
+        // Always have at least one row
+        if (!rows.length) {
+            rows.push({ label: 'Localisation', value: '—', icon: 'pi-map-marker' });
+        }
+        return rows;
+    });
+
+    /** Performance card rows for stocks / bonds / crypto / commodities. */
+    performanceRows = computed<{ label: string; value: string; icon: string; valueClass?: string }[]>(() => {
+        const a = this.asset();
+        if (!a) return [];
+        const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
+        const gain = this.gainLoss();
+        const pct = this.gainLossPct();
+
+        if (gain !== null) {
+            const sign = gain >= 0 ? '+' : '−';
+            rows.push({
+                label: 'Gain / Perte total',
+                value: `${sign} ${Math.abs(gain).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} ${a.currency}`,
+                icon: gain >= 0 ? 'pi-arrow-up' : 'pi-arrow-down',
+                valueClass: gain >= 0 ? 'text-positive' : 'text-negative',
+            });
+        }
+        if (pct !== null) {
+            rows.push({
+                label: 'Performance totale',
+                value: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)} %`,
+                icon: 'pi-percentage',
+                valueClass: pct >= 0 ? 'text-positive' : 'text-negative',
+            });
+        }
+        if (a.institution) {
+            rows.push({ label: 'Courtier / Plateforme', value: a.institution, icon: 'pi-briefcase' });
+        }
+        if (a.purchase_date) {
+            rows.push({ label: 'Date d\'achat', value: this.formatShortDate(a.purchase_date), icon: 'pi-calendar' });
+        }
+        if (!rows.length) {
+            rows.push({ label: 'Performance', value: 'Renseignez le prix d\'achat pour suivre la performance', icon: 'pi-info-circle' });
+        }
+        return rows;
+    });
+
+    /** Tontine-specific spec rows (reads new dedicated columns, not legacy `notes` JSON). */
+    tontineRows = computed<{ label: string; value: string; icon: string; valueClass?: string }[]>(() => {
+        const a = this.asset();
+        if (!a) return [];
+        const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
+
+        if (a.tontine_monthly_contribution != null) {
+            rows.push({
+                label: 'Mise mensuelle',
+                value: `${a.tontine_monthly_contribution.toLocaleString('fr-FR')} ${a.currency}`,
+                icon: 'pi-wallet',
+            });
+        }
+        if (a.tontine_participants) {
+            rows.push({ label: 'Participants', value: `${a.tontine_participants} membres`, icon: 'pi-users' });
+        }
+        if (a.tontine_start_date) {
+            rows.push({ label: 'Date de début', value: this.formatShortDate(a.tontine_start_date), icon: 'pi-calendar-plus' });
+        }
+        if (a.tontine_collection_date) {
+            rows.push({ label: 'Date de collecte', value: this.formatShortDate(a.tontine_collection_date), icon: 'pi-calendar' });
+        }
+        rows.push({ label: 'Statut', value: this.tontineStatusLabel(), icon: 'pi-flag' });
+        return rows;
     });
 
     async ngOnInit() {
