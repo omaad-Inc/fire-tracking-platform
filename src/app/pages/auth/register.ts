@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, inject, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -45,18 +46,22 @@ import { AuthService } from '../../core/services/auth.service';
 
                     <!-- Social Login Buttons -->
                     <div class="space-y-3 mb-6">
-                        <button pButton pRipple
-                                (click)="registerWithGoogle()"
-                                [loading]="isGoogleLoading()"
-                                class="w-full !rounded-full !bg-brand-700 hover:!bg-brand-800 !border-0 !py-3 !text-base !font-medium flex items-center justify-center gap-3">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff"/>
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff"/>
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff"/>
-                            </svg>
-                            Continuer avec Google
-                        </button>
+                        <!-- Branded visible button + invisible Google rendered button overlay (see AuthService.initGoogleSignInButton). -->
+                        <div #googleBtnHost class="relative w-full">
+                            <div [class.opacity-50]="isGoogleLoading()"
+                                 class="w-full rounded-full bg-brand-700 dark:bg-brand-700 hover:bg-brand-800 py-3 text-base font-medium text-white flex items-center justify-center gap-3 pointer-events-none select-none transition-opacity">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff"/>
+                                </svg>
+                                Continuer avec Google
+                            </div>
+                            <div #googleBtnContainer class="absolute inset-0 opacity-0 overflow-hidden rounded-full"
+                                 [style.pointerEvents]="isGoogleLoading() ? 'none' : 'auto'">
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Divider -->
@@ -257,10 +262,14 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
     `
 })
-export class Register {
+export class Register implements AfterViewInit, OnDestroy {
     private authService = inject(AuthService);
     private router = inject(Router);
     private messageService = inject(MessageService);
+
+    @ViewChild('googleBtnHost')      googleBtnHost!: ElementRef<HTMLDivElement>;
+    @ViewChild('googleBtnContainer') googleBtnContainer!: ElementRef<HTMLDivElement>;
+    private googleSub: Subscription | null = null;
 
     firstName = '';
     lastName = '';
@@ -276,6 +285,46 @@ export class Register {
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+    }
+
+    ngAfterViewInit(): void {
+        setTimeout(() => this.mountGoogleButton(), 0);
+    }
+
+    ngOnDestroy(): void {
+        this.googleSub?.unsubscribe();
+    }
+
+    private mountGoogleButton(): void {
+        if (!this.googleBtnContainer?.nativeElement || !this.googleBtnHost?.nativeElement) return;
+        const width = this.googleBtnHost.nativeElement.offsetWidth;
+        this.googleSub = this.authService
+            .initGoogleSignInButton(this.googleBtnContainer.nativeElement, width)
+            .subscribe({
+                next: () => this.onGoogleSignedIn(),
+                error: (err) => {
+                    this.isGoogleLoading.set(false);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Google Sign-Up Failed',
+                        detail: err?.message || 'Could not sign up with Google',
+                        life: 5000,
+                    });
+                },
+            });
+    }
+
+    private onGoogleSignedIn(): void {
+        this.isGoogleLoading.set(true);
+        this.authService.getCurrentUser().subscribe({
+            next: () => this.redirectAfterAuth(),
+            error: () => this.redirectAfterAuth(),
+        });
+    }
+
+    private redirectAfterAuth(): void {
+        this.isGoogleLoading.set(false);
+        this.router.navigate([this.currentLang], { replaceUrl: true });
     }
 
     get isFormValid(): boolean {
@@ -327,30 +376,4 @@ export class Register {
         });
     }
 
-    registerWithGoogle(): void {
-        this.isGoogleLoading.set(true);
-        this.authService.loginWithGoogle().subscribe({
-            next: () => {
-                this.authService.getCurrentUser().subscribe({
-                    next: () => {
-                        this.isGoogleLoading.set(false);
-                        this.router.navigate([this.currentLang], { replaceUrl: true });
-                    },
-                    error: () => {
-                        this.isGoogleLoading.set(false);
-                        this.router.navigate([this.currentLang], { replaceUrl: true });
-                    }
-                });
-            },
-            error: (error) => {
-                this.isGoogleLoading.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Google Sign-Up Failed',
-                    detail: error.message || 'Could not sign up with Google',
-                    life: 5000
-                });
-            }
-        });
-    }
 }

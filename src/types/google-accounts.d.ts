@@ -12,6 +12,8 @@ interface GoogleIdConfiguration {
     context?: 'signin' | 'signup' | 'use';
     itp_support?: boolean;
     use_fedcm_for_prompt?: boolean;
+    ux_mode?: 'popup' | 'redirect';
+    login_uri?: string;
 }
 
 interface Google {
