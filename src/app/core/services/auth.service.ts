@@ -160,14 +160,16 @@ export class AuthService {
     }
 
     /**
-     * Initiate Google OAuth login via a full-page redirect to the backend,
-     * which then redirects to Google's consent screen. On success the
-     * backend redirects back to `/auth/callback?token=...&new_user=...`,
-     * handled by OAuthCallback.
+     * URL that starts the Google OAuth flow on the backend. The backend
+     * redirects to Google's consent screen, then back to
+     * `/auth/callback?token=...&new_user=...`, handled by OAuthCallback.
+     *
+     * Bind this to a plain `<a [href]>` rather than `(click)` + `window.location` —
+     * an anchor lets the browser navigate synchronously, without racing Angular's
+     * change detection, and supports right-click → "open in new tab".
      */
-    loginWithGoogle(): void {
-        this.clearAllCaches();
-        window.location.href = `${this.apiUrl}/auth/google/login`;
+    get googleAuthUrl(): string {
+        return `${this.apiUrl}/auth/google/login`;
     }
 
     /**
