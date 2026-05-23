@@ -160,92 +160,14 @@ export class AuthService {
     }
 
     /**
-     * Render the official Google sign-in button into `container` and stream
-     * the resulting AuthResponse whenever the user completes sign-in.
-     *
-     * Why a rendered button instead of `google.accounts.id.prompt()`?
-     *   The One Tap prompt depends on third-party cookies and is suppressed
-     *   in Chrome 110+ / Brave by default — that's the misleading
-     *   "popup blocked" error we used to surface. The rendered button opens
-     *   a true OAuth popup (Google's window.open from its iframe) that
-     *   every browser respects because it's tied to a user gesture.
-     *
-     * FedCM (`use_fedcm_for_prompt`) is also enabled as a belt-and-braces
-     * fallback for browsers that still surface One Tap via FedCM.
-     *
-     * The visible "Continuer avec Google" button stays in the DOM; the
-     * caller overlays this rendered button on top with opacity:0 so the
-     * branded UI is preserved while the click goes to Google.
+     * Initiate Google OAuth login via a full-page redirect to the backend,
+     * which then redirects to Google's consent screen. On success the
+     * backend redirects back to `/auth/callback?token=...&new_user=...`,
+     * handled by OAuthCallback.
      */
-    initGoogleSignInButton(container: HTMLElement, width: number): Observable<AuthResponse> {
-        return new Observable<AuthResponse>(subscriber => {
-            const render = () => {
-                google.accounts.id.initialize({
-                    client_id: environment.googleClientId,
-                    callback: (response: GoogleCredentialResponse) => {
-                        this.exchangeGoogleToken(response.credential).subscribe({
-                            next: result => subscriber.next(result),
-                            error: err => subscriber.error(err),
-                            // Don't complete — keep the observable open in case
-                            // the user closes the popup and clicks again.
-                        });
-                    },
-                    use_fedcm_for_prompt: true,
-                    context: 'signin',
-                    ux_mode: 'popup',
-                    auto_select: false,
-                    cancel_on_tap_outside: true,
-                });
-
-                // Clear any previous render (e.g. when re-rendering on resize).
-                container.innerHTML = '';
-
-                google.accounts.id.renderButton(container, {
-                    type: 'standard',
-                    theme: 'filled_blue',
-                    size: 'large',
-                    shape: 'pill',
-                    text: 'continue_with',
-                    logo_alignment: 'left',
-                    width: Math.max(200, Math.min(width, 400)),
-                });
-            };
-
-            // GIS is loaded via <script async defer> in index.html, so it may
-            // still be loading when the component mounts. Poll briefly.
-            const ready = () => typeof google !== 'undefined' && !!google?.accounts?.id;
-            if (ready()) {
-                render();
-                return;
-            }
-            const start = Date.now();
-            const timer = setInterval(() => {
-                if (ready()) {
-                    clearInterval(timer);
-                    render();
-                } else if (Date.now() - start > 10000) {
-                    clearInterval(timer);
-                    subscriber.error(new Error('Google Identity Services failed to load. Please refresh the page.'));
-                }
-            }, 100);
-            // Teardown if the caller unsubscribes (component destroyed) before GIS arrives.
-            return () => clearInterval(timer);
-        });
-    }
-
-    /**
-     * Exchange Google ID token for app token (SPA/PWA flow).
-     */
-    exchangeGoogleToken(idToken: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/google/token`, {
-            id_token: idToken
-        }).pipe(
-            tap(response => {
-                this.clearAllCaches();
-                this.tokenService.setToken(response.access_token);
-            }),
-            catchError(this.handleError)
-        );
+    loginWithGoogle(): void {
+        this.clearAllCaches();
+        window.location.href = `${this.apiUrl}/auth/google/login`;
     }
 
     /**
