@@ -235,8 +235,8 @@ export class FaqPage {
                         id: 'f3',
                         question: fr ? 'Quand FIRE Africa sera-t-il lancé publiquement ?' : 'When will FIRE Africa launch publicly?',
                         answer: fr
-                            ? 'La newsletter FIRE Africa sera lancée publiquement le 1er juin 2026 sur Beehiiv. 15 éditions sont déjà rédigées en draft. Tu peux t\'inscrire dès maintenant sur fireafrica.beehiiv.com pour être notifié au lancement.'
-                            : 'The FIRE Africa newsletter will launch publicly on June 1, 2026 on Beehiiv. 15 editions are already drafted. You can subscribe now at fireafrica.beehiiv.com to be notified at launch.',
+                            ? 'La newsletter FIRE Africa sera lancée publiquement le 1er juin 2026 sur Beehiiv. 17 éditions sont déjà rédigées en draft. Tu peux t\'inscrire dès maintenant sur fireafrica.beehiiv.com pour être notifié au lancement.'
+                            : 'The FIRE Africa newsletter will launch publicly on June 1, 2026 on Beehiiv. 17 editions are already drafted. You can subscribe now at fireafrica.beehiiv.com to be notified at launch.',
                     },
                 ],
             },

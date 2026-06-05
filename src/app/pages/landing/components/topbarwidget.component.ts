@@ -16,7 +16,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <a class="flex items-center gap-2 cursor-pointer group shrink-0 -ml-4 md:-ml-8 lg:-ml-16" [routerLink]="[currentLang, 'landing']" fragment="home">
             <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
                      class="w-10 h-10 md:w-12 md:h-12 transition-transform duration-300 group-hover:scale-110">
-            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">{{ isAdvisory() ? 'Omaad Advisory' : 'Omaad Wealth' }}</span>
+            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad Wealth</span>
         </a>
 
         <!-- Desktop Navigation -->
@@ -33,25 +33,81 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.features') }}
             </a>
-            <a [routerLink]="[currentLang, 'advisory']" pRipple
-               class="flex items-center px-4 py-2 rounded-lg font-medium text-base
-                      text-brand-700 dark:text-brand-300
-                      hover:bg-brand-50 dark:hover:bg-brand-700/30 hover:text-brand-900 dark:hover:text-brand-200
-                      transition-all duration-200 cursor-pointer">
-                {{ t('landing.nav.advisory') }}
-            </a>
             <a (click)="navigateTo('pricing')" pRipple
                class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
             </a>
-            <a [routerLink]="[currentLang, aboutSlug]" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                      transition-all duration-200 cursor-pointer">
-                {{ t('landing.nav.about') }}
-            </a>
+            <!-- About dropdown -->
+            <div class="relative" (mouseenter)="aboutOpen.set(true)" (mouseleave)="aboutOpen.set(false)">
+                <a pRipple
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                          hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
+                          transition-all duration-200 cursor-pointer">
+                    {{ t('landing.nav.about') }}
+                    <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
+                       [class.rotate-180]="aboutOpen()"></i>
+                </a>
+                <div [class.hidden]="!aboutOpen()"
+                     class="absolute top-full left-0 mt-1 w-[36rem] rounded-2xl
+                            bg-surface-0 dark:bg-surface-800
+                            shadow-lg border border-surface-200 dark:border-surface-700
+                            p-3 z-30">
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- PART 1 — featured team card (generic placeholder, swap for real team photo later) -->
+                        <a [routerLink]="[currentLang, aboutSlug]" (click)="aboutOpen.set(false)" pRipple
+                           class="group block rounded-xl overflow-hidden border border-surface-200 dark:border-surface-700
+                                  hover:border-brand-500/50 dark:hover:border-ochre-500/50 transition-all duration-200">
+                            <div class="relative h-36 flex items-center justify-center bg-brand-50 dark:bg-surface-900 overflow-hidden">
+                                <div class="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-brand-500/10 blur-2xl"></div>
+                                <i class="pi pi-users text-5xl text-brand-700/60 dark:text-ochre-300/60 relative transition-transform duration-500 group-hover:scale-110"></i>
+                            </div>
+                            <div class="p-3">
+                                <div class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutTeam') }}</div>
+                                <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 leading-snug">{{ t('landing.nav.aboutTeamDesc') }}</div>
+                            </div>
+                        </a>
+
+                        <!-- PART 2 — links list -->
+                        <div class="flex flex-col">
+                            <span class="px-3 pt-1.5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
+                                {{ _('Découvrir', 'Discover') }}
+                            </span>
+                            <a [routerLink]="[currentLang, aboutSlug]" fragment="securite" (click)="aboutOpen.set(false)" pRipple
+                               class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                                <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-shield text-brand-700 dark:text-brand-300 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutSecurity') }}</div>
+                                    <div class="text-xs text-surface-500 dark:text-surface-400 leading-snug">{{ t('landing.nav.aboutSecurityDesc') }}</div>
+                                </div>
+                            </a>
+                            <a [routerLink]="[currentLang, aboutSlug]" fragment="principes" (click)="aboutOpen.set(false)" pRipple
+                               class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                                <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-compass text-brand-700 dark:text-brand-300 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutPrinciples') }}</div>
+                                    <div class="text-xs text-surface-500 dark:text-surface-400 leading-snug">{{ _('Ce qui guide nos décisions produit.', 'What guides our product decisions.') }}</div>
+                                </div>
+                            </a>
+                            <a [routerLink]="[currentLang, aboutSlug]" fragment="contact" (click)="aboutOpen.set(false)" pRipple
+                               class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                                <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-envelope text-brand-700 dark:text-brand-300 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutContact') }}</div>
+                                    <div class="text-xs text-surface-500 dark:text-surface-400 leading-snug">{{ _('Une question, une idée ? Écrivez-nous.', 'A question or idea? Reach out.') }}</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Resources dropdown -->
             <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
                 <a pRipple
@@ -105,7 +161,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         </nav>
 
         <!-- Desktop CTA -->
-        <div class="hidden lg:flex items-center gap-3 shrink-0">
+        <div class="hidden lg:flex items-center gap-3 shrink-0 -mr-6 md:-mr-12 lg:-mr-24">
             <!-- Language toggle -->
             <button (click)="switchLang()" pRipple
                     class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-surface-300 dark:border-surface-600
@@ -156,26 +212,44 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     </a>
                 </li>
                 <li>
-                    <a [routerLink]="[currentLang, 'advisory']" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg font-medium text-base
-                              text-brand-700 dark:text-brand-300
-                              hover:bg-brand-50 dark:hover:bg-brand-700/30 hover:text-brand-900 dark:hover:text-brand-200
-                              transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-briefcase mr-2"></i><span>{{ t('landing.nav.advisory') }}</span>
-                    </a>
-                </li>
-                <li>
                     <a (click)="navigateTo('pricing')" pRipple
                        class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <i class="pi pi-tag mr-2"></i><span>{{ t('landing.nav.pricing') }}</span>
                     </a>
                 </li>
+                <!-- About (mobile) -->
+                <li class="border-t border-surface-200 dark:border-surface-700 pt-2 mt-1">
+                    <span class="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
+                        {{ t('landing.nav.about') }}
+                    </span>
+                </li>
                 <li>
                     <a [routerLink]="[currentLang, aboutSlug]" (click)="mobileMenuOpen.set(false)" pRipple
                        class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-info-circle mr-2"></i><span>{{ t('landing.nav.about') }}</span>
+                        <i class="pi pi-users mr-2"></i><span>{{ t('landing.nav.aboutTeam') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, aboutSlug]" fragment="securite" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-shield mr-2"></i><span>{{ t('landing.nav.aboutSecurity') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, aboutSlug]" fragment="principes" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-compass mr-2"></i><span>{{ t('landing.nav.aboutPrinciples') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a [routerLink]="[currentLang, aboutSlug]" fragment="contact" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <i class="pi pi-envelope mr-2"></i><span>{{ t('landing.nav.aboutContact') }}</span>
                     </a>
                 </li>
                 <!-- Resources (mobile) -->
@@ -238,6 +312,7 @@ export class TopbarWidget {
     private lang: Lang = 'fr';
     mobileMenuOpen = signal(false);
     toolsOpen = signal(false);
+    aboutOpen = signal(false);
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -245,7 +320,7 @@ export class TopbarWidget {
         this.currentLang = '/' + this.lang;
         // Ensure service lang matches URL (in case localStorage differs)
         this.i18n.setLang(this.lang);
-        // Public pages (landing, advisory, tools, blog...) are always light-themed —
+        // Public pages (landing, tools, blog...) are always light-themed —
         // the dark/light selector lives inside the authenticated app's settings.
         this.layoutService.layoutConfig.update((state) => ({
             ...state,
@@ -257,8 +332,6 @@ export class TopbarWidget {
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
     get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
-
-    isAdvisory(): boolean { return this.router.url.includes('/advisory'); }
 
     navigateTo(fragment: string) {
         this.mobileMenuOpen.set(false);

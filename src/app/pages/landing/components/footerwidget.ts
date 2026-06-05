@@ -21,13 +21,17 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <a (click)="navigateTo('home')" class="flex items-center gap-3 cursor-pointer mb-6 group">
                                 <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
                                      class="w-12 h-12 transition-transform duration-300 group-hover:scale-110">
-                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">{{ isAdvisory() ? 'Omaad Advisory' : 'Omaad Wealth' }}</span>
+                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad Wealth</span>
                             </a>
                             <p class="text-warm-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
                             <div class="flex gap-3">
-                                <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer"
+                                <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
                                    class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300 hover:scale-110">
                                     <i class="pi pi-linkedin text-lg"></i>
+                                </a>
+                                <a href="https://www.youtube.com/@fire_africa" target="_blank" rel="noopener noreferrer" aria-label="YouTube FIRE Africa"
+                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-negative flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                    <i class="pi pi-youtube text-lg"></i>
                                 </a>
                             </div>
                         </div>
@@ -55,13 +59,11 @@ import { I18nService } from '../../../i18n/i18n.service';
                             </ul>
                         </div>
 
-                        <!-- Company / Advisory -->
+                        <!-- Company -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
                             <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-200">{{ _('Entreprise', 'Company') }}</h4>
                             <ul class="space-y-3">
                                 <li><a [routerLink]="[currentLang, aboutSlug]" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.nav.about') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'advisory']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryOffers') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'advisory']" fragment="contact" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryContact') }}</a></li>
                                 <li><a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">LinkedIn<i class="pi pi-external-link text-[9px]"></i></a></li>
                             </ul>
                         </div>
@@ -84,7 +86,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="text-warm-500 text-sm text-center md:text-left">
-                            © {{ currentYear }} {{ isAdvisory() ? 'Omaad Advisory' : 'Omaad Wealth' }}. {{ t('landing.footer.copyright') }}
+                            © {{ currentYear }} Omaad Wealth. {{ t('landing.footer.copyright') }}
                             <span class="text-warm-600">{{ t('landing.footer.madeWith') }}</span>
                             <i class="pi pi-heart-fill text-negative mx-1"></i>
                             <span class="text-warm-600">{{ t('landing.footer.forFreedom') }}</span>
@@ -121,7 +123,6 @@ export class FooterWidget {
 
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
-    isAdvisory(): boolean { return this.router.url.includes('/advisory'); }
     get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
 
     navigateTo(fragment: string) {

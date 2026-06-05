@@ -1,0 +1,57 @@
+{
+  "title": "Tu vis en France et tu n'as pas de PEA ? Tu laisses des milliers d'euros sur la table.",
+  "subtitle": "Édition #002 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["PEA", "diaspora", "France", "ETF", "MSCI World", "fiscalité", "investissement", "épargne"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Le PEA est le compte le plus puissant que la France met à ta disposition. Et la diaspora ne l'utilise presque pas."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Tu envoies de l'argent au pays. Tu épargnes sur un Livret A. Peut-être que tu as un compte courant qui dort avec 5 000 ou 10 000 euros dessus. Et pendant ce temps, il existe un compte d'investissement en France qui te permet d'investir dans l'économie mondiale — Apple, Microsoft, LVMH, Samsung, Toyota, tout — avec une fiscalité quasi nulle après 5 ans. Ce compte, c'est le PEA. Et la grande majorité de la diaspora africaine en France ne l'a pas.\n\nC'est quoi le PEA, concrètement ?\n\nLe PEA (Plan d'Épargne en Actions) est une enveloppe fiscale créée par l'État français pour encourager l'investissement en bourse. Tu ouvres un PEA auprès d'une banque ou d'un courtier en ligne (Boursorama, Fortuneo, Bourse Direct, Trade Republic…), tu y déposes de l'argent, et tu achètes des actions ou des fonds (ETF) à l'intérieur de cette enveloppe.\n\nLe plafond de versement est de 150 000 euros (source : Service-Public.fr — https://www.service-public.fr/particuliers/vosdroits/F2385). Tu ne peux pas dépasser ce montant en apports, mais ton portefeuille peut croître bien au-delà grâce aux plus-values.\n\nL'avantage fiscal qui change tout\n\nC'est là que le PEA devient une arme. La fiscalité fonctionne en deux temps :\n\n— Avant 5 ans : si tu retires ton argent, tes gains sont imposés au PFU (Prélèvement Forfaitaire Unique) de 30% — 12,8% d'impôt sur le revenu + 17,2% de prélèvements sociaux. De plus, tout retrait avant 5 ans entraîne la clôture du PEA (source : Bofip — https://bofip.impots.gouv.fr).\n\n— Après 5 ans : tes plus-values et dividendes sont exonérés d'impôt sur le revenu. Tu ne paies que les 17,2% de prélèvements sociaux. Sur un portefeuille de 50 000 euros de gains, ça représente 8 600 euros de prélèvements au lieu de 15 000 euros sans PEA. Tu économises 6 400 euros d'impôts — simplement en ayant ouvert un PEA et attendu 5 ans.\n\nC'est pourquoi la première règle est simple : ouvre ton PEA aujourd'hui, même avec 100 euros. Le compteur des 5 ans démarre à l'ouverture, pas au premier investissement. Chaque jour que tu attends, c'est un jour de plus avant d'atteindre l'exonération.\n\nInvestir dans le monde entier depuis un PEA : le secret des ETF synthétiques\n\n« Mais le PEA, c'est limité aux actions européennes, non ? » C'est ce que beaucoup croient. Et c'est faux — grâce aux ETF synthétiques.\n\nUn ETF (Exchange Traded Fund), c'est un fonds qui réplique un indice boursier. Au lieu d'acheter 500 actions une par une, tu achètes un seul ETF qui les contient toutes. Les frais sont minuscules (0,20 à 0,38% par an), et tu obtiens une diversification instantanée.\n\nLe PEA n'accepte en théorie que des actions de l'Espace Économique Européen. Mais certains ETF utilisent une réplication synthétique — ils sont domiciliés en Europe (donc éligibles PEA) mais répliquent la performance d'indices mondiaux via des contrats de swap. Résultat : tu peux investir dans l'économie mondiale depuis ton PEA.\n\nVoici les ETF les plus populaires pour la diaspora FIRE en France :\n\n— Amundi MSCI World (CW8) — Réplique l'indice MSCI World : ~1 500 entreprises de 23 pays développés. Apple, Microsoft, Nestlé, Toyota, LVMH — tout est dedans. TER : 0,38%. C'est le couteau suisse de l'investisseur passif. Un seul ETF et tu es diversifié sur le monde entier (source : Amundi — https://www.amundi.fr).\n\n— Amundi S&P 500 (PSP5 / PE500) — Réplique les 500 plus grandes entreprises américaines. TER : 0,15%. Si tu crois en la surperformance structurelle des États-Unis, c'est ton ETF.\n\n— Amundi MSCI Emerging Markets (PAEEM) — Les marchés émergents : Chine, Inde, Brésil, Afrique du Sud, Corée. TER : 0,20%. Pour compléter ton exposition mondiale avec les économies en croissance rapide.\n\nUn portefeuille PEA simple et redoutable : 80% MSCI World + 20% Emerging Markets. Deux ETF, deux lignes, et tu es investi dans plus de 2 000 entreprises à travers 50 pays. Frais totaux : environ 0,34% par an. C'est infiniment moins que n'importe quel FCP à la BRVM.\n\nLe plan concret : de 0 à investisseur mondial en 4 étapes\n\nÉtape 1 : Ouvre un PEA chez un courtier en ligne. Boursorama, Fortuneo ou Bourse Direct sont les plus recommandés pour les frais bas. L'ouverture est gratuite et prend 15 minutes. Verse ne serait-ce que 10 euros pour déclencher le compteur fiscal de 5 ans.\n\nÉtape 2 : Mets en place un virement automatique mensuel vers ton PEA. 50 euros, 100 euros, 200 euros — le montant n'est pas le plus important, c'est la régularité. C'est du DCA (Dollar Cost Averaging) appliqué au PEA.\n\nÉtape 3 : Achète un ETF MSCI World (CW8 chez Amundi) chaque mois, ou accumule 2-3 mois si le prix de la part est trop élevé pour ton budget mensuel. Ne regarde pas les cours tous les jours. Passe ton ordre et oublie.\n\nÉtape 4 : Ne touche à rien pendant au minimum 5 ans. Idéalement 10, 15, 20 ans. L'intérêt composé fait le reste. 200 euros par mois à 8% pendant 20 ans, c'est environ 118 000 euros — dont 70 000 euros de gains nets, quasiment exonérés d'impôts.\n\nPEA + BRVM : la stratégie bi-continentale\n\nLe PEA couvre ta vie européenne : croissance mondiale, fiscalité française optimisée, euros. La BRVM couvre ta vie africaine : dividendes en FCFA, ancrage dans l'économie régionale, zéro risque de change pour tes dépenses au pays. Les deux ensemble, c'est la souveraineté financière de la diaspora.\n\nNe laisse pas ton argent dormir sur un Livret A à 2,4% pendant que l'économie mondiale fait 8-10% par an. Le PEA est là, il est gratuit, il est puissant. Il ne te manque que la décision de l'ouvrir."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Omaad Wealth a vocation à centraliser l'ensemble de ton patrimoine — y compris ton PEA. L'objectif : voir sur un seul écran ton portefeuille BRVM en FCFA, ton PEA en euros, ton immobilier, ta tontine. Avec la conversion en temps réel et la performance nette de chaque poche. Parce que la diaspora vit entre deux mondes, et ses outils financiers doivent refléter cette réalité."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">5,5 M</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">de personnes nées en Afrique vivent en France en 2024</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : INSEE — Recensement de la population, 2024</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 Épargnant 3.0</span> <span style=\"font-size:13px; color:#6E6A60;\">— Edouard Petit</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le guide francophone de référence sur l'investissement en ETF via le PEA. Petit explique avec une clarté remarquable pourquoi l'investissement passif en ETF bat la gestion active, comment construire un portefeuille simple avec 2-3 ETF, et pourquoi le PEA est l'enveloppe fiscale la plus efficace pour un résident français. Disponible en français, moins de 15 euros. C'est le livre que chaque membre de la diaspora en France devrait lire avant d'ouvrir un PEA.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. The PEA (Plan d'Épargne en Actions) is France's most powerful tax-advantaged investment account. After 5 years, capital gains are exempt from income tax — you only pay 17.2% social contributions instead of the standard 30% flat tax. The contribution limit is €150,000, but your portfolio can grow beyond that. Open one today, even with €10, to start the 5-year tax clock.\n\n2. Despite being technically limited to European securities, the PEA gives access to the entire global economy through synthetic ETFs. An Amundi MSCI World ETF (CW8, 0.38% TER) inside a PEA gives you exposure to 1,500 companies across 23 countries — for a fraction of the cost of BRVM mutual funds.\n\n3. The optimal FIRE strategy for the African diaspora in France is bi-continental: PEA (MSCI World + Emerging Markets ETFs) for global euro-denominated growth, plus BRVM stocks for FCFA dividend income. Together, they cover both sides of your life. €200/month in a PEA at 8% for 20 years yields approximately €118,000 — with €70,000 in nearly tax-free gains."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}

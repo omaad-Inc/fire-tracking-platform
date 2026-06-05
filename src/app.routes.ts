@@ -9,10 +9,6 @@ import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 import { authGuard } from './app/core/guards/auth.guard';
-import { AdvisoryPage } from './app/pages/landing/components/advisory';
-import { AdvisoryAuditPage } from './app/pages/landing/components/advisory-audit';
-import { AdvisoryMissionPage } from './app/pages/landing/components/advisory-mission';
-import { AdvisoryFormationPage } from './app/pages/landing/components/advisory-formation';
 import { FireAfricaWelcome } from './app/pages/landing/components/fire-africa-welcome';
 import { FireSimulator } from './app/pages/landing/components/fire-simulator';
 import { CompoundCalculator } from './app/pages/landing/components/compound-calculator';
@@ -61,10 +57,6 @@ export const appRoutes: Routes = [
         canActivate: [oauthTokenRedirect]
     },
     { path: ':lang/landing', component: Landing },
-    { path: ':lang/advisory', component: AdvisoryPage },
-    { path: ':lang/advisory/audit', component: AdvisoryAuditPage },
-    { path: ':lang/advisory/mission', component: AdvisoryMissionPage },
-    { path: ':lang/advisory/formation', component: AdvisoryFormationPage },
     { path: ':lang/fire-africa/welcome', component: FireAfricaWelcome },
     { path: ':lang/tools/fire-simulator', component: FireSimulator },
     { path: ':lang/tools/compound-interest', component: CompoundCalculator },
