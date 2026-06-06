@@ -10,9 +10,7 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [CommonModule, RouterModule, ChartModule],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full flex flex-col">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute bottom-2 left-2 w-20 h-20 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-lg"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col">
             <div class="relative flex items-center justify-between mb-4">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">
                     {{ t('landing.wealthScore.eyebrow') }}

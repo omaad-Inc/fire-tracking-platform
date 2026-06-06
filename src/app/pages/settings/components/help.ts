@@ -27,9 +27,7 @@ interface FaqItem {
         <div class="flex flex-col gap-5">
 
             <!-- ── Search bar ────────────────────────────────────── -->
-            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-ochre-50/20 dark:from-brand-900/15 dark:via-surface-800 dark:to-ochre-900/10"></div>
-                <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-lg"></div>
+            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
                 <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">Comment pouvons-nous vous aider ?</h2>
                 <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">Parcourez les questions fréquentes ou contactez notre équipe.</p>
                 <div class="relative">
@@ -46,7 +44,7 @@ interface FaqItem {
                             class="flex flex-col items-center gap-2 p-4 rounded-2xl border border-surface-200 dark:border-surface-700
                                    hover:border-brand-300 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20
                                    transition-all text-center group">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center {{ link.bg }} group-hover:scale-110 transition-transform">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center {{ link.bg }}">
                             <i class="pi {{ link.icon }} {{ link.color }} text-lg"></i>
                         </div>
                         <span class="text-xs font-medium text-surface-700 dark:text-surface-200 leading-tight">{{ link.label }}</span>

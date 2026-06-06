@@ -88,17 +88,17 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <!-- Header row -->
                         <div class="flex items-start gap-3 mb-3">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                                 [ngClass]="rec.type === 'Debt' ? 'bg-negative/10' : 'bg-positive/10'">
+                                 [ngClass]="rec.type === 'Debt' ? 'bg-negative-50 dark:bg-negative-500/15' : 'bg-positive-50 dark:bg-positive-500/15'">
                                 <i class="pi text-lg"
-                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-negative' : 'pi-arrow-down-left text-positive'"></i>
+                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-negative-600 dark:text-negative-400' : 'pi-arrow-down-left text-positive-600 dark:text-positive-400'"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ rec.name }}</span>
                                     <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                                           [ngClass]="rec.type === 'Debt'
-                                              ? 'bg-negative/10 text-negative'
-                                              : 'bg-positive/10 text-positive'">
+                                              ? 'bg-negative-50 dark:bg-negative-500/15 text-negative-600 dark:text-negative-400'
+                                              : 'bg-positive-50 dark:bg-positive-500/15 text-positive-600 dark:text-positive-400'">
                                         {{ rec.type === 'Debt' ? 'Dette' : 'Créance' }}
                                     </span>
                                 </div>
@@ -145,7 +145,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <div class="flex items-center gap-2">
                             <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                                 <div class="h-full rounded-full transition-all duration-500"
-                                     [ngClass]="rec.type === 'Debt' ? 'bg-gradient-to-r from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200' : 'bg-gradient-to-r from-positive-500 to-positive-400'"
+                                     [ngClass]="rec.type === 'Debt' ? 'bg-brand-700 dark:bg-brand-300' : 'bg-positive-500'"
                                      [style.width]="getPercent(rec) + '%'"></div>
                             </div>
                             <span class="text-xs font-semibold shrink-0"

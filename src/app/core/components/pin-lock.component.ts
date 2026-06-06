@@ -49,10 +49,8 @@ import { PinService } from '../services/pin.service';
                 <div class="grid grid-cols-3 gap-4 w-full">
                     @for (key of numpadKeys; track key.value) {
                         @if (key.value === 'bio') {
-                            <!-- Biometric button placeholder (hidden on web, visible with Capacitor) -->
-                            <button class="numpad-btn opacity-20 cursor-default" disabled>
-                                <i class="pi pi-wave-pulse text-2xl text-white"></i>
-                            </button>
+                            <!-- Empty spacer (native biometric unlock will live in the Flutter mobile app) -->
+                            <div aria-hidden="true"></div>
                         } @else if (key.value === 'del') {
                             <button class="numpad-btn" (click)="onDelete()"
                                     [disabled]="enteredDigits().length === 0">

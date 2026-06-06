@@ -34,7 +34,7 @@ export interface PatrimoineAssetItem {
                         <!-- Name -->
                         <div class="md:col-span-4">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300"
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                      [style.background]="getIconBgColor(i)">
                                     <i [class]="getIcon(i)" class="text-white text-sm"></i>
                                 </div>
@@ -95,7 +95,7 @@ export class PatrimoineListComponent {
 
     // All asset rows share the same brand gradient — only the icon glyph
     // differentiates the asset type.
-    private static readonly ICON_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
+    private static readonly ICON_BG = '#1A2740';
     private iconConfigs = [
         { icon: 'pi pi-building',   bg: PatrimoineListComponent.ICON_BG },
         { icon: 'pi pi-chart-line', bg: PatrimoineListComponent.ICON_BG },

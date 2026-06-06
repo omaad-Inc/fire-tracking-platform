@@ -21,9 +21,7 @@ interface TransactionDisplay {
     selector: 'app-recent-transactions-widget',
     imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800/90 dark:to-surface-900"></div>
-            <div class="absolute bottom-3 left-3 w-14 h-14 rounded-full bg-surface-200/30 dark:bg-surface-700/15 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.recentTransactions') }}</div>
                 <a [routerLink]="link('pages', 'transaction')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">

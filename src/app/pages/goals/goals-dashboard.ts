@@ -61,10 +61,9 @@ import { progressPercent } from './goal-utils';
             <!-- KPIs -->
             @if (!loading() && goals().length > 0) {
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 flex items-center gap-4 h-full min-h-[88px]">
-                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/50 via-surface-50 to-surface-50 dark:from-brand-900/15 dark:via-surface-800 dark:to-surface-800/90"></div>
-                        <div class="relative w-11 h-11 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center shrink-0">
-                            <i class="pi pi-wallet text-brand-700 dark:text-brand-300 text-lg"></i>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 flex items-center gap-4 h-full min-h-[88px]">
+                        <div class="relative w-11 h-11 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-wallet text-brand-700 dark:text-ochre-400 text-lg"></i>
                         </div>
                         <div class="relative flex-1 min-w-0">
                             <div class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ i18n.t('goals.kpi.totalSaved') }}</div>
@@ -73,9 +72,8 @@ import { progressPercent } from './goal-utils';
                             </div>
                         </div>
                     </div>
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 flex items-center gap-4 h-full min-h-[88px]">
-                        <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/50 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-800/90"></div>
-                        <div class="relative w-11 h-11 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center shrink-0">
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 flex items-center gap-4 h-full min-h-[88px]">
+                        <div class="relative w-11 h-11 rounded-xl bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
                             <i class="pi pi-flag text-ochre-600 dark:text-ochre-400 text-lg"></i>
                         </div>
                         <div class="relative flex-1 min-w-0">
@@ -85,10 +83,9 @@ import { progressPercent } from './goal-utils';
                             </div>
                         </div>
                     </div>
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 flex items-center gap-4 h-full min-h-[88px]">
-                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800/90"></div>
-                        <div class="relative w-11 h-11 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center shrink-0">
-                            <i class="pi pi-chart-line text-brand-700 dark:text-brand-300 text-lg"></i>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 flex items-center gap-4 h-full min-h-[88px]">
+                        <div class="relative w-11 h-11 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-chart-line text-brand-700 dark:text-ochre-400 text-lg"></i>
                         </div>
                         <div class="relative flex-1 min-w-0">
                             <div class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ i18n.t('goals.kpi.overallProgress') }}</div>
@@ -113,10 +110,9 @@ import { progressPercent } from './goal-utils';
                     }
                 </div>
             } @else if (goals().length === 0) {
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center py-12">
-                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-surface-50 dark:from-brand-900/15 dark:via-surface-800 dark:to-surface-900"></div>
-                    <div class="relative w-20 h-20 mx-auto rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center mb-4">
-                        <i class="pi pi-flag text-3xl text-brand-700 dark:text-brand-300"></i>
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 text-center py-12">
+                    <div class="relative w-20 h-20 mx-auto rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
+                        <i class="pi pi-flag text-3xl text-brand-700 dark:text-ochre-400"></i>
                     </div>
                     <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-2">
                         {{ i18n.t('goals.empty.title') }}

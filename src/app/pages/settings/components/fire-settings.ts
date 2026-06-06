@@ -23,9 +23,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-ochre-900/10"></div>
-            <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-ochre-100/25 dark:bg-ochre-800/10 blur-lg"></div>
+        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
             <!-- Header -->
             <div class="relative flex items-center gap-4 mb-6">
                 <div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center">

@@ -19,7 +19,7 @@ const HIDE_FAB_PATTERNS = [
     template: `
         @if (showFab) {
             <button
-                class="fab-button lg:hidden fixed right-5 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-brand-700 to-brand-500 text-white shadow-xl shadow-card flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+                class="fab-button lg:hidden fixed right-5 z-50 w-14 h-14 rounded-full bg-brand-700 hover:bg-brand-800 text-white shadow-xl hover:shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95"
                 (click)="addAsset.emit()"
                 aria-label="Ajouter un actif"
             >

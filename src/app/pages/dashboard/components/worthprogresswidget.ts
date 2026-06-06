@@ -8,9 +8,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 @Component({
     selector: 'app-worth-progress',
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute top-4 left-4 w-14 h-14 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex items-center justify-between mb-4">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.worthEvolution') }}</div>
                 @if (!loading()) {

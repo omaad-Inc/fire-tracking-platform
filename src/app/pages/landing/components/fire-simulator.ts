@@ -45,7 +45,7 @@ interface YearProjection {
                 <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 group cursor-pointer">
                         <img [src]="isDark() ? 'assets/brand/omaad-icon-inverse.svg' : 'assets/brand/omaad-icon.svg'"
-                             alt="Omaad" class="w-10 h-10 md:w-12 md:h-12 transition-transform group-hover:scale-110">
+                             alt="Omaad" class="w-10 h-10 md:w-12 md:h-12">
                         <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad</span>
                     </a>
                     <div class="flex items-center gap-3">

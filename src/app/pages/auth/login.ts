@@ -26,7 +26,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <div class="mb-12">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
                         <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                             class="w-10 h-10 transition-transform duration-300 group-hover:scale-110">
+                             class="w-10 h-10">
                         <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad Wealth</span>
                     </a>
                 </div>
@@ -113,11 +113,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="hidden lg:flex w-1/2 bg-warm-900 relative overflow-hidden">
                 <!-- Background Effects -->
                 <div class="absolute inset-0">
-                    <div class="absolute inset-0 opacity-10" 
-                         style="background-image: linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px); background-size: 40px 40px;">
-                    </div>
-                    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-brand-700/20 dark:bg-brand-300/20 rounded-full blur-3xl"></div>
-                    <div class="absolute bottom-1/4 left-1/4 w-80 h-80 bg-brand-700/15 dark:bg-brand-300/20 rounded-full blur-3xl"></div>
+                    <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-ochre-500/10 rounded-full blur-3xl"></div>
                 </div>
 
                 <!-- Content -->
@@ -166,13 +162,13 @@ import { AuthService } from '../../core/services/auth.service';
                                     </div>
                                     <!-- Mini Chart -->
                                     <div class="flex items-end justify-between h-16 gap-1">
-                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-300/50 rounded-t" style="height: 40%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-300/50 rounded-t" style="height: 55%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-300/50 rounded-t" style="height: 45%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-400/50 rounded-t" style="height: 65%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-brand-400/50 rounded-t" style="height: 75%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-brand-700/50 to-positive-400/50 rounded-t" style="height: 85%"></div>
-                                        <div class="flex-1 bg-gradient-to-t from-positive-600/50 to-positive-400/50 rounded-t" style="height: 100%"></div>
+                                        <div class="flex-1 bg-brand-500/50 rounded-t" style="height: 40%"></div>
+                                        <div class="flex-1 bg-brand-500/50 rounded-t" style="height: 55%"></div>
+                                        <div class="flex-1 bg-brand-500/50 rounded-t" style="height: 45%"></div>
+                                        <div class="flex-1 bg-brand-500/50 rounded-t" style="height: 65%"></div>
+                                        <div class="flex-1 bg-brand-500/50 rounded-t" style="height: 75%"></div>
+                                        <div class="flex-1 bg-positive-500/50 rounded-t" style="height: 85%"></div>
+                                        <div class="flex-1 bg-positive-500/50 rounded-t" style="height: 100%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -206,7 +202,7 @@ import { AuthService } from '../../core/services/auth.service';
                         </p>
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
                             Devenez le roi<br>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">de votre patrimoine</span>
+                            <span class="text-ochre-400">de votre patrimoine</span>
                         </h2>
                         <p class="text-warm-400 max-w-md mx-auto mb-10 leading-relaxed">
                             Patrimoine, épargne, dettes, objectif FIRE — tout est centralisé pour que vous preniez les bonnes décisions.

@@ -130,7 +130,7 @@ interface CategoryCard {
                                     </div>
                                     <!-- Decorative illustration area (right) -->
                                     <div class="absolute top-1/2 -translate-y-1/2 right-4 w-14 h-14 rounded-xl {{ cat.bgClass }}
-                                                flex items-center justify-center opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                                                flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all">
                                         <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl"></i>
                                     </div>
                                 </button>

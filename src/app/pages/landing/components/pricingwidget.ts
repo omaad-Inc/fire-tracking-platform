@@ -20,7 +20,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         {{ t('landing.pricing.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-brand-500 dark:from-ochre-400 dark:to-ochre-300">{{ t('landing.pricing.h2b') }}</span>
+                        <span class="text-brand-700 dark:text-ochre-400">{{ t('landing.pricing.h2b') }}</span>
                     </h2>
                     <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">{{ t('landing.pricing.description') }}</p>
                 </div>
@@ -61,17 +61,17 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <!-- Pro Plan (Popular) -->
                     <div class="col-span-12 md:col-span-4">
                         <div class="relative h-full">
-                            <div class="absolute -inset-0.5 bg-gradient-to-r from-ochre-500 via-ochre-400 to-ochre-300 rounded-2xl blur opacity-60"></div>
-                            <div class="relative h-full bg-surface-0 dark:bg-surface-800 rounded-2xl p-8 border border-ochre-200 dark:border-ochre-700/50 shadow-xl">
+                            <div class="absolute -inset-4 bg-ochre-500/10 blur-2xl rounded-2xl"></div>
+                            <div class="relative h-full bg-surface-0 dark:bg-surface-800 rounded-2xl p-8 border-2 border-ochre-500 shadow-sm">
                                 <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2">
-                                    <div class="px-4 py-1 rounded-full bg-gradient-to-r from-ochre-500 to-ochre-400 text-warm-900 text-xs font-semibold whitespace-nowrap flex items-center gap-1">
+                                    <div class="px-4 py-1 rounded-full bg-ochre-500 text-warm-900 text-xs font-semibold whitespace-nowrap flex items-center gap-1">
                                         <i class="pi pi-star-fill text-[10px]"></i>
                                         {{ t('landing.pricing.proBadge') }}
                                     </div>
                                 </div>
                                 <div class="mb-6 pt-2">
-                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-400 flex items-center justify-center mb-4 shadow-lg shadow-card">
-                                        <i class="pi pi-crown text-warm-900 text-xl"></i>
+                                    <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
+                                        <i class="pi pi-crown text-brand-700 dark:text-ochre-400 text-xl"></i>
                                     </div>
                                     <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('landing.pricing.proName') }}</h3>
                                     <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.proTagline') }}</p>
@@ -82,7 +82,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                 </div>
                                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.proSubprice') }}</p>
                                 <button pButton pRipple [rounded]="true"
-                                    class="w-full !py-3 !font-semibold !bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !text-warm-900 hover:!shadow-lg hover:!shadow-card transition-all mb-8">
+                                    class="w-full !py-3 !font-semibold !bg-ochre-500 hover:!bg-ochre-400 !border-0 !text-warm-900 transition-all mb-8">
                                     {{ t('landing.pricing.proCta') }}
                                 </button>
                                 <p-divider />
@@ -110,8 +110,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div class="col-span-12 md:col-span-4">
                         <div class="h-full bg-surface-50 dark:bg-surface-800 rounded-2xl p-8 border border-surface-200 dark:border-surface-700">
                             <div class="mb-6">
-                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 dark:from-brand-400 dark:to-brand-300 flex items-center justify-center mb-4">
-                                    <i class="pi pi-bolt text-white dark:text-warm-900 text-xl"></i>
+                                <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
+                                    <i class="pi pi-bolt text-brand-700 dark:text-ochre-400 text-xl"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('landing.pricing.premiumName') }}</h3>
                                 <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.premiumTagline') }}</p>

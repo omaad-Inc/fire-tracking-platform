@@ -365,6 +365,32 @@ app-amount,
     box-shadow: 0 0 0 3px rgba(138, 152, 174, 0.20) !important;
 }
 
+// — Consistent, accessible focus ring for all other interactive elements —
+// (links, native buttons, inputs, anything with tabindex/role=button)
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible,
+.p-inputtext:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--omaad-ochre-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.app-dark a:focus-visible,
+.app-dark button:focus-visible,
+.app-dark [role="button"]:focus-visible,
+.app-dark [tabindex]:focus-visible,
+.app-dark .p-inputtext:focus-visible,
+.app-dark input:focus-visible,
+.app-dark textarea:focus-visible,
+.app-dark select:focus-visible {
+    outline-color: var(--omaad-ochre-400);
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // SHIMMER SKELETONS (unchanged from before)
 // ═══════════════════════════════════════════════════════════════════

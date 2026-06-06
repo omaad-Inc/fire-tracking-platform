@@ -23,9 +23,9 @@ interface FaqCategory {
     standalone: true,
     imports: [CommonModule, RouterModule, RippleModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 min-h-screen">
+        <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
             <!-- Topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 backdrop-blur-lg border-b border-surface-200/50"
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-800/50"
                  style="padding-top: env(safe-area-inset-top, 0px)">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>
@@ -34,14 +34,14 @@ interface FaqCategory {
 
                 <!-- Hero -->
                 <header class="mb-12 text-center max-w-2xl mx-auto">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ochre-100 border border-ochre-200 text-ochre-700 text-xs font-semibold uppercase tracking-wider mb-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wider mb-4">
                         <i class="pi pi-question-circle text-[10px]"></i>
                         {{ isFr() ? 'Aide & FAQ' : 'Help & FAQ' }}
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-bold text-surface-900 mb-4 tracking-tight">
+                    <h1 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-white mb-4 tracking-tight">
                         {{ isFr() ? 'Questions fréquentes' : 'Frequently asked questions' }}
                     </h1>
-                    <p class="text-lg text-surface-600 leading-relaxed">
+                    <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
                         {{ isFr()
                             ? 'Tout ce qu\\'il faut savoir sur Omaad, la BRVM, FIRE Africa et la sécurité de vos données.'
                             : 'Everything you need to know about Omaad, the BRVM, FIRE Africa, and your data security.' }}
@@ -54,7 +54,7 @@ interface FaqCategory {
                             class="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
                             [ngClass]="selectedCategory() === null
                                 ? 'bg-brand-700 text-white'
-                                : 'bg-surface-100 text-surface-700 hover:bg-surface-200'">
+                                : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                         {{ isFr() ? 'Toutes' : 'All' }}
                     </button>
                     @for (cat of categories(); track cat.id) {
@@ -62,7 +62,7 @@ interface FaqCategory {
                                 class="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
                                 [ngClass]="selectedCategory() === cat.id
                                     ? 'bg-brand-700 text-white'
-                                    : 'bg-surface-100 text-surface-700 hover:bg-surface-200'">
+                                    : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                             {{ cat.label }}
                         </button>
                     }
@@ -71,19 +71,19 @@ interface FaqCategory {
                 <!-- Categories with entries -->
                 @for (cat of visibleCategories(); track cat.id) {
                     <section class="mb-10">
-                        <h2 class="text-2xl font-bold text-surface-900 mb-5">{{ cat.label }}</h2>
+                        <h2 class="text-2xl font-bold text-surface-900 dark:text-white mb-5">{{ cat.label }}</h2>
                         <div class="space-y-3">
                             @for (q of cat.entries; track q.id) {
-                                <div class="rounded-2xl border border-surface-200 bg-surface-0 overflow-hidden transition-all"
+                                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900 overflow-hidden transition-all"
                                      [ngClass]="{ 'shadow-md': isOpen(q.id) }">
                                     <button (click)="toggle(q.id)" pRipple
-                                            class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-surface-50 transition-colors">
-                                        <span class="font-semibold text-surface-900">{{ q.question }}</span>
-                                        <i class="pi pi-chevron-down text-surface-400 text-xs transition-transform shrink-0"
+                                            class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                                        <span class="font-semibold text-surface-900 dark:text-white">{{ q.question }}</span>
+                                        <i class="pi pi-chevron-down text-surface-400 dark:text-surface-500 text-xs transition-transform shrink-0"
                                            [class.rotate-180]="isOpen(q.id)"></i>
                                     </button>
                                     @if (isOpen(q.id)) {
-                                        <div class="px-5 pb-5 pt-1 text-surface-700 leading-relaxed whitespace-pre-line">{{ q.answer }}</div>
+                                        <div class="px-5 pb-5 pt-1 text-surface-700 dark:text-surface-300 leading-relaxed whitespace-pre-line">{{ q.answer }}</div>
                                     }
                                 </div>
                             }

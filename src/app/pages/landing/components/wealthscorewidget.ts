@@ -32,7 +32,7 @@ interface AxisInsight {
                     </div>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white leading-tight mb-4">
                         {{ t('landing.wealthScore.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-ochre-500 dark:from-ochre-300 dark:to-ochre-400">
+                        <span class="text-brand-700 dark:text-ochre-400">
                             {{ t('landing.wealthScore.h2b') }}
                         </span>
                     </h2>
@@ -53,7 +53,7 @@ interface AxisInsight {
                             </button>
                             <button (click)="setShowAfter(true)"
                                     class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300"
-                                    [class]="showAfter() ? 'bg-gradient-to-r from-ochre-500 to-ochre-400 text-warm-900' : 'text-surface-500 dark:text-surface-300 hover:text-surface-700 dark:hover:text-white'">
+                                    [class]="showAfter() ? 'bg-ochre-500 text-warm-900' : 'text-surface-500 dark:text-surface-300 hover:text-surface-700 dark:hover:text-white'">
                                 {{ t('landing.wealthScore.toggleAfter') }}
                             </button>
                         </div>
@@ -111,8 +111,8 @@ interface AxisInsight {
                             <button pButton pRipple [label]="t('landing.wealthScore.ctaScore')"
                                     [routerLink]="['/', currentLang, 'pages', 'wealth-score']"
                                     icon="pi pi-arrow-right" iconPos="right"
-                                    class="!w-full !bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
-                                           dark:!text-warm-900 !rounded-full !py-3 hover:!shadow-lg transition-all duration-300">
+                                    class="!w-full !bg-ochre-500 hover:!bg-ochre-400 !border-0 !font-semibold
+                                           !text-warm-900 !rounded-full !py-3 transition-all duration-300">
                             </button>
                         </div>
                     </div>

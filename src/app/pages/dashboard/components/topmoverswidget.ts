@@ -13,13 +13,11 @@ interface MoverItem extends PatrimoineAssetItemDto {
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
-            <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/50 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-800/90"></div>
-            <div class="absolute top-2 left-2 w-14 h-14 rounded-full bg-ochre-100/40 dark:bg-ochre-800/15 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur flex items-center justify-center shadow-sm">
-                        <i class="pi pi-bolt text-ochre-600 dark:text-ochre-300"></i>
+                    <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center">
+                        <i class="pi pi-bolt text-warm-900"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('dashboard.topMovers') }}</h3>
@@ -51,9 +49,8 @@ interface MoverItem extends PatrimoineAssetItemDto {
                 <div class="relative flex flex-col gap-3">
                     @for (item of movers(); track item.name; let i = $index) {
                         <div class="flex items-center gap-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                                 [style.background]="getIconBg(i)">
-                                <i [class]="getIcon(item.category)" class="text-white text-sm"></i>
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-brand-100 dark:bg-brand-700/20">
+                                <i [class]="getIcon(item.category)" class="text-brand-700 dark:text-ochre-400 text-sm"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-surface-900 dark:text-surface-0 text-sm truncate">{{ item.name }}</div>

@@ -91,9 +91,7 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </ng-template>
         </p-dialog>
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute top-4 right-4 w-20 h-20 rounded-full bg-brand-100/20 dark:bg-brand-800/10 blur-lg"></div>
+        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
             <!-- Mon Profil Section -->
             <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
@@ -110,9 +108,9 @@ import { environment } from '../../../../environments/environment';
                                 [label]="userInitials" 
                                 shape="circle" 
                                 size="xlarge"
-                                [style]="{ 
-                                    'background': 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)', 
-                                    'color': 'white', 
+                                [style]="{
+                                    'background': '#1A2740',
+                                    'color': 'white',
                                     'font-weight': '600',
                                     'width': '80px',
                                     'height': '80px',
@@ -223,8 +221,8 @@ import { environment } from '../../../../environments/environment';
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-ochre-500 to-ochre-600 flex items-center justify-center">
-                            <i class="pi pi-sign-out text-white text-xl"></i>
+                        <div class="w-12 h-12 rounded-full bg-ochre-500 flex items-center justify-center">
+                            <i class="pi pi-sign-out text-warm-900 text-xl"></i>
                         </div>
                         <div>
                             <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.account.logout') }}</p>

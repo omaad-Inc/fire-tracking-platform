@@ -85,8 +85,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
             <!-- Not found -->
             @if (!loading() && !goal()) {
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center py-12">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800/90 dark:to-surface-900"></div>
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 text-center py-12">
                     <div class="relative w-16 h-16 mx-auto rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-flag text-2xl text-surface-400"></i>
                     </div>
@@ -145,15 +144,13 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
                 <!-- KPI strip -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-stretch">
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             <app-amount [value]="g.current_amount" />
                         </div>
                         <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.totalSaved') }}</div>
                     </div>
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/30 dark:from-surface-800 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (remaining() != null) {
                                 <app-amount [value]="remaining()!" />
@@ -163,8 +160,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         </div>
                         <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.leftToSave') }}</div>
                     </div>
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800 dark:to-brand-900/10"></div>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (monthlyNeeded() != null) {
                                 <app-amount [value]="monthlyNeeded()!" />
@@ -174,8 +170,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         </div>
                         <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthlyNeeded') }}</div>
                     </div>
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
-                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800 dark:to-surface-900"></div>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-full min-h-[96px] flex flex-col justify-center text-center sm:text-left">
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (monthsLeft() != null) {
                                 {{ monthsLeft() }}
@@ -194,11 +189,10 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                     <div class="lg:col-span-2 flex flex-col gap-4">
 
                         <!-- Activity log -->
-                        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100 dark:from-surface-800 dark:via-surface-800/90 dark:to-surface-900"></div>
+                        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5">
                             <div class="relative flex items-center justify-between gap-2 mb-4">
                                 <div class="flex items-center gap-2">
-                                    <i class="pi pi-history text-brand-700 dark:text-brand-300"></i>
+                                    <i class="pi pi-history text-brand-700 dark:text-ochre-400"></i>
                                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.activity.title') }}</h3>
                                 </div>
                                 @if (contributions().length > 0) {
@@ -234,15 +228,15 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                     @for (c of contributions(); track c.id) {
                                         <li class="py-3 flex items-center gap-3">
                                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                                                 [ngClass]="c.type === 'contribution' ? 'bg-positive/10' : 'bg-warning/10'">
+                                                 [ngClass]="c.type === 'contribution' ? 'bg-positive-50 dark:bg-positive-500/15' : 'bg-warning-50 dark:bg-warning-500/15'">
                                                 <i class="pi text-sm"
-                                                   [ngClass]="c.type === 'contribution' ? 'pi-arrow-down text-positive' : 'pi-arrow-up text-warning'"></i>
+                                                   [ngClass]="c.type === 'contribution' ? 'pi-arrow-down text-positive-600 dark:text-positive-400' : 'pi-arrow-up text-warning-600 dark:text-warning-400'"></i>
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-2 text-sm font-medium text-surface-900 dark:text-surface-0">
                                                     <span class="truncate">{{ c.asset_name || i18n.t('goals.activity.unknownSource') }}</span>
                                                     <span class="text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded"
-                                                          [ngClass]="c.type === 'contribution' ? 'bg-positive-50 text-positive-700' : 'bg-warning-50 text-warning-700'">
+                                                          [ngClass]="c.type === 'contribution' ? 'bg-positive-50 dark:bg-positive-500/15 text-positive-700 dark:text-positive-400' : 'bg-warning-50 dark:bg-warning-500/15 text-warning-700 dark:text-warning-400'">
                                                         {{ c.type === 'contribution' ? i18n.t('goals.activity.tagContribution') : i18n.t('goals.activity.tagDeallocation') }}
                                                     </span>
                                                 </div>
@@ -273,8 +267,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
                         <!-- Note -->
                         @if (userNote()) {
-                            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                                <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/30 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-900"></div>
+                            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5">
                                 <div class="relative flex items-center gap-2 mb-2">
                                     <i class="pi pi-comment text-ochre-500"></i>
                                     <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.fields.note') }}</h3>
@@ -285,8 +278,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                     </div>
 
                     <!-- RIGHT — details panel -->
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 self-start">
-                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+                    <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 self-start">
                         <h3 class="relative font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
                             {{ i18n.t('goals.detail.details') }}
                         </h3>

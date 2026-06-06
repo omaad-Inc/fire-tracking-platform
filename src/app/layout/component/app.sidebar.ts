@@ -43,7 +43,8 @@ import { environment } from '../../../environments/environment';
                             <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover rounded-full">
                         } @else {
                             <p-avatar [label]="userInitials" shape="circle"
-                                [style]="{ 'background': 'linear-gradient(135deg, #1A2740 0%, #C77B3C 100%)', 'color': 'white', 'font-weight': '600', 'font-size': '0.75rem', 'width': '100%', 'height': '100%' }" />
+                                styleClass="bg-brand-700 text-white"
+                                [style]="{ 'font-weight': '600', 'font-size': '0.75rem', 'width': '100%', 'height': '100%' }" />
                         }
                     </div>
                     <div class="sidebar-user-info">

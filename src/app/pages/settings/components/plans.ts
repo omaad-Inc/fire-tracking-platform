@@ -64,10 +64,9 @@ interface PlanFeature {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
 
                 <!-- Gratuit -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-surface-200 dark:border-surface-700">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-surface-100/50 dark:from-surface-800 dark:via-surface-800 dark:to-surface-700/30"></div>
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800">
                     <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-700 shadow-sm flex items-center justify-center mb-3">
                             <i class="pi pi-chart-line text-surface-500 text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">
@@ -97,16 +96,15 @@ interface PlanFeature {
                 </div>
 
                 <!-- Pro -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
-                    <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/30 via-surface-50 to-surface-50 dark:from-ochre-900/10 dark:via-surface-800 dark:to-surface-800"></div>
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
                     <div class="absolute top-3 right-3">
-                        <span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-ochre-500 to-ochre-400 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
+                        <span class="px-2.5 py-1 rounded-full bg-ochre-500 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
                             <i class="pi pi-star-fill text-[8px]"></i>
                             {{ isFr() ? 'Populaire' : 'Popular' }}
                         </span>
                     </div>
                     <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-400 flex items-center justify-center mb-3 shadow-lg shadow-card">
+                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center mb-3 shadow-lg shadow-card">
                             <i class="pi pi-crown text-warm-900 text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">Pro</h3>
@@ -122,7 +120,7 @@ interface PlanFeature {
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
-                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-ochre-500 !to-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
+                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-ochre-500 hover:!bg-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
                     <ul class="relative space-y-3 flex-1">
                         <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
                             <i class="pi pi-check text-xs text-ochre-500 shrink-0"></i>
@@ -138,16 +136,15 @@ interface PlanFeature {
                 </div>
 
                 <!-- Premium -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col border border-brand-300 dark:border-brand-500/40">
-                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border border-brand-300 dark:border-brand-500/40">
                     <div class="absolute top-3 right-3">
-                        <span class="px-2.5 py-1 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
+                        <span class="px-2.5 py-1 rounded-full bg-brand-700 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
                             <i class="pi pi-bolt text-[8px]"></i>
                             {{ isFr() ? 'Meilleure valeur' : 'Best value' }}
                         </span>
                     </div>
                     <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 dark:from-brand-400 dark:to-brand-300 flex items-center justify-center mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center mb-3">
                             <i class="pi pi-bolt text-white dark:text-warm-900 text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">Premium</h3>
@@ -163,7 +160,7 @@ interface PlanFeature {
                     <button pButton
                             [label]="isFr() ? 'Bientôt disponible' : 'Coming soon'"
                             [disabled]="true" icon="pi pi-clock"
-                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !text-white opacity-60"></button>
+                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-ochre-500 hover:!bg-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
                     <ul class="relative space-y-3 flex-1">
                         <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
                             <i class="pi pi-check text-xs text-brand-700 dark:text-brand-300 shrink-0"></i>

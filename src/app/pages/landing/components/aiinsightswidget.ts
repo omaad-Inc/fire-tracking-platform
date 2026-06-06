@@ -29,7 +29,7 @@ interface InsightCard {
                     </div>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white leading-tight mb-4">
                         {{ t('landing.aiInsights.h2a') }}<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-ochre-500 dark:from-ochre-300 dark:to-ochre-400">
+                        <span class="text-brand-700 dark:text-ochre-400">
                             {{ t('landing.aiInsights.h2b') }}
                         </span>
                     </h2>

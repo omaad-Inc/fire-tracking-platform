@@ -24,9 +24,7 @@ interface GoalDisplay {
     selector: 'app-savings-progress',
     imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/50 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute top-2 right-2 w-16 h-16 rounded-full bg-brand-100/30 dark:bg-brand-800/15 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.savingsProgress') }}</div>
                 <a [routerLink]="link('pages', 'goals')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">

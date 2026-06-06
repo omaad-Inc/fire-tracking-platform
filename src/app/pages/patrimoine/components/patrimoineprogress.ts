@@ -12,9 +12,7 @@ import { ApiService } from '../../../core/services/api.service';
 @Component({
     selector: 'app-patrimoine-progress',
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute top-3 left-3 w-14 h-14 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-md"></div>
+        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
                     <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Patrimoine Brut</div>

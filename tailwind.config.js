@@ -112,6 +112,25 @@ export default {
             fontFeatureSettings: {
                 tnum: '"tnum" 1, "lnum" 1',
             },
+            // Premium weight depth: light (labels/secondary) + extrabold (display).
+            fontWeight: {
+                light: '300',
+                extrabold: '800',
+            },
+            // Semantic type scale — tight leading + negative tracking for display sizes.
+            // (Additive; standard text-xs…text-7xl still available.)
+            fontSize: {
+                eyebrow:      ['0.75rem',  { lineHeight: '1',    letterSpacing: '0.08em'  }],
+                'display':    ['3.5rem',   { lineHeight: '1.05', letterSpacing: '-0.025em' }],
+                'display-sm': ['2.75rem',  { lineHeight: '1.1',  letterSpacing: '-0.02em' }],
+                title:        ['2rem',     { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+            },
+            // Named motion curves so transitions feel intentional & consistent.
+            transitionTimingFunction: {
+                standard:   'cubic-bezier(0.4, 0, 0.2, 1)',
+                emphasized: 'cubic-bezier(0.2, 0, 0, 1)',
+                decelerate: 'cubic-bezier(0, 0, 0.2, 1)',
+            },
         }
     }
 };

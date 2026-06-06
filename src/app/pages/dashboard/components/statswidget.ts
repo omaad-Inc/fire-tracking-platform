@@ -16,7 +16,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
         <!-- Loading State -->
         @if (loading()) {
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
@@ -28,7 +28,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 </div>
             </div>
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
@@ -40,7 +40,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 </div>
             </div>
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 p-5 animate-pulse">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex-1">
                             <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
@@ -54,11 +54,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
         } @else {
             <!-- KPI Card 1 - Patrimoine -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer group transition-all duration-300"
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer transition-colors duration-300"
                      [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface-50 to-surface-100 dark:from-brand-900/20 dark:via-surface-800 dark:to-surface-900"></div>
-                    <div class="absolute top-3 right-3 w-20 h-20 rounded-full bg-brand-100/50 dark:bg-brand-800/20 blur-md"></div>
-                    <div class="absolute top-10 right-10 w-12 h-12 rounded-full bg-brand-200/40 dark:bg-brand-700/20 blur-sm"></div>
                     <div class="relative flex justify-between items-start mb-4">
                         <div>
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
@@ -67,8 +64,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" />
                             </div>
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm group-hover:scale-110 transition-transform duration-300">
-                            <i class="pi pi-wallet text-brand-700 dark:text-brand-300 text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20">
+                            <i class="pi pi-wallet text-brand-700 dark:text-ochre-400 text-2xl"></i>
                         </div>
                     </div>
                     <div class="relative flex items-center gap-2 mt-auto">
@@ -94,11 +91,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <!-- KPI Card 2 - Flux Mensuel -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer group transition-all duration-300"
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer transition-colors duration-300"
                      [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les transactions" tabindex="0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-100 to-brand-50 dark:from-surface-800 dark:via-surface-800/80 dark:to-brand-900/15"></div>
-                    <div class="absolute top-4 right-4 w-18 h-18 rounded-full bg-surface-200/50 dark:bg-surface-700/30 blur-md"></div>
-                    <div class="absolute top-12 right-12 w-10 h-10 rounded-full bg-brand-100/40 dark:bg-brand-800/20 blur-sm"></div>
                     <div class="relative flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlyFlux') }}</span>
@@ -112,8 +106,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.thisMonthLabel') }}</div>
                             }
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm group-hover:scale-110 transition-transform duration-300 shrink-0">
-                            <i class="pi pi-arrow-right-arrow-left text-brand-700 dark:text-brand-300 text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20 shrink-0">
+                            <i class="pi pi-arrow-right-arrow-left text-brand-700 dark:text-ochre-400 text-2xl"></i>
                         </div>
                     </div>
                     <div class="relative mt-auto">
@@ -154,12 +148,9 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <!-- KPI Card 3 - Objectif FIRE -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer group transition-all duration-300"
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer transition-colors duration-300"
                      [routerLink]="fireProgress() && (fireProgress()!.targetAmount) > 0 ? link('pages','goals') : link('pages','fire')"
                      role="link" aria-label="Voir l'objectif financier" tabindex="0">
-                    <div class="absolute inset-0 bg-gradient-to-br from-ochre-50 via-surface-50 to-surface-100 dark:from-ochre-900/20 dark:via-surface-800 dark:to-surface-900"></div>
-                    <div class="absolute top-3 right-3 w-20 h-20 rounded-full bg-ochre-100/50 dark:bg-ochre-800/20 blur-md"></div>
-                    <div class="absolute top-10 right-10 w-12 h-12 rounded-full bg-ochre-200/40 dark:bg-ochre-700/20 blur-sm"></div>
                     <div class="relative flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>
@@ -171,8 +162,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.fireGoalUndefined') }}</div>
                             }
                         </div>
-                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm group-hover:scale-110 transition-transform duration-300 shrink-0">
-                            <i class="pi pi-flag text-ochre-600 dark:text-ochre-300 text-2xl"></i>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-ochre-500 shrink-0">
+                            <i class="pi pi-flag text-warm-900 text-2xl"></i>
                         </div>
                     </div>
                     <div class="relative mt-auto">

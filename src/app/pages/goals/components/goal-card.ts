@@ -15,7 +15,7 @@ import { I18nService } from '../../../i18n/i18n.service';
         <button
             type="button"
             (click)="navigate()"
-            class="group text-left w-full bg-white dark:bg-surface-800 rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
+            class="group text-left w-full bg-surface-0 dark:bg-surface-900 rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-lg transition-all duration-300"
         >
             <!-- Image banner -->
             <div class="relative h-32 sm:h-36 bg-surface-100 dark:bg-surface-900 overflow-hidden">
@@ -23,7 +23,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     *ngIf="image"
                     [src]="image"
                     [alt]="goal.name"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    class="w-full h-full object-cover"
                     loading="lazy"
                     (error)="image = ''"
                 />

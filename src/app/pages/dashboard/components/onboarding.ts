@@ -24,12 +24,11 @@ interface OnboardingStep {
             <!-- Header with gradient -->
             <div class="bg-brand-900 px-6 py-8 sm:px-8 sm:py-10 text-center relative overflow-hidden">
                 <!-- Background decoration -->
-                <div class="absolute top-0 right-0 w-40 h-40 bg-ochre-500/15 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 w-32 h-32 bg-brand-300/10 rounded-full blur-3xl"></div>
+                <div class="absolute top-0 right-0 w-40 h-40 bg-ochre-500/10 rounded-full blur-3xl"></div>
 
                 <div class="relative">
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 mb-4">
-                        <span class="w-2 h-2 rounded-full bg-ochre-400 animate-pulse"></span>
+                        <span class="w-2 h-2 rounded-full bg-positive-500"></span>
                         <span class="text-white/80 text-xs font-medium">
                             {{ isFr() ? 'Bienvenue sur Omaad' : 'Welcome to Omaad' }}
                         </span>
@@ -68,7 +67,7 @@ interface OnboardingStep {
                             </div>
 
                             <!-- Icon -->
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-1 {{ step.iconBg }} group-hover:scale-110 transition-transform">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-1 {{ step.iconBg }}">
                                 <i class="pi {{ step.icon }} text-xl text-white"></i>
                             </div>
 

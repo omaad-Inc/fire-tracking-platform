@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
@@ -15,7 +15,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <!-- Logo (pulled flush-left, Finary-style) -->
         <a class="flex items-center gap-2 cursor-pointer group shrink-0 -ml-4 md:-ml-8 lg:-ml-16" [routerLink]="[currentLang, 'landing']" fragment="home">
             <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                     class="w-10 h-10 md:w-12 md:h-12 transition-transform duration-300 group-hover:scale-110">
+                     class="w-10 h-10 md:w-12 md:h-12">
             <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad Wealth</span>
         </a>
 
@@ -61,7 +61,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                   hover:border-brand-500/50 dark:hover:border-ochre-500/50 transition-all duration-200">
                             <div class="relative h-36 flex items-center justify-center bg-brand-50 dark:bg-surface-900 overflow-hidden">
                                 <div class="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-brand-500/10 blur-2xl"></div>
-                                <i class="pi pi-users text-5xl text-brand-700/60 dark:text-ochre-300/60 relative transition-transform duration-500 group-hover:scale-110"></i>
+                                <i class="pi pi-users text-5xl text-brand-700/60 dark:text-ochre-300/60 relative"></i>
                             </div>
                             <div class="p-3">
                                 <div class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutTeam') }}</div>
@@ -162,6 +162,14 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
 
         <!-- Desktop CTA -->
         <div class="hidden lg:flex items-center gap-3 shrink-0 -mr-6 md:-mr-12 lg:-mr-24">
+            <!-- Theme toggle -->
+            <button (click)="toggleDarkMode()" pRipple
+                    class="flex items-center justify-center w-9 h-9 rounded-full border border-surface-300 dark:border-surface-600
+                           text-surface-700 dark:text-surface-200
+                           hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200"
+                    [title]="isDark() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode')">
+                <i class="pi text-sm" [ngClass]="isDark() ? 'pi-sun' : 'pi-moon'"></i>
+            </button>
             <!-- Language toggle -->
             <button (click)="switchLang()" pRipple
                     class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-surface-300 dark:border-surface-600
@@ -179,8 +187,8 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <button pButton pRipple [label]="t('landing.nav.register')"
                     [routerLink]="[currentLang, 'auth', 'register']"
                     [rounded]="true"
-                    class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
-                           dark:!text-warm-900 hover:!shadow-lg hover:!shadow-card transition-all duration-300">
+                    class="!bg-ochre-500 hover:!bg-ochre-400 !text-warm-900 !border-0 !font-semibold
+                           hover:!shadow-lg transition-all duration-300">
             </button>
         </div>
 
@@ -282,6 +290,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </ul>
             <div class="flex flex-col gap-2 border-t border-surface-200 dark:border-surface-700 pt-4 mt-4">
                 <!-- Language toggle (mobile) -->
+                <button (click)="toggleDarkMode()" pRipple
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
+                               text-surface-700 dark:text-surface-200
+                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                    <i class="pi" [ngClass]="isDark() ? 'pi-sun' : 'pi-moon'"></i>
+                    <span class="font-medium text-base">{{ isDark() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode') }}</span>
+                </button>
                 <button (click)="switchLang()" pRipple
                         class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
                                text-surface-700 dark:text-surface-200
@@ -297,8 +312,8 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <button pButton pRipple [label]="t('landing.nav.register')"
                         [routerLink]="[currentLang, 'auth', 'register']"
                         [rounded]="true"
-                        class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
-                               dark:!text-warm-900 hover:!shadow-lg hover:!shadow-card transition-all duration-300 w-full justify-center">
+                        class="!bg-ochre-500 hover:!bg-ochre-400 !text-warm-900 !border-0 !font-semibold
+                               hover:!shadow-lg transition-all duration-300 w-full justify-center">
                 </button>
             </div>
         </div>
@@ -313,6 +328,7 @@ export class TopbarWidget {
     mobileMenuOpen = signal(false);
     toolsOpen = signal(false);
     aboutOpen = signal(false);
+    isDark = computed(() => this.layoutService.layoutConfig()?.darkTheme ?? false);
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -320,18 +336,22 @@ export class TopbarWidget {
         this.currentLang = '/' + this.lang;
         // Ensure service lang matches URL (in case localStorage differs)
         this.i18n.setLang(this.lang);
-        // Public pages (landing, tools, blog...) are always light-themed —
-        // the dark/light selector lives inside the authenticated app's settings.
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            themeMode: 'light',
-            darkTheme: false,
-        }));
+        // Theme is no longer forced here — the navbar light/dark toggle controls it,
+        // and the saved preference (localStorage via LayoutService) applies on load.
     }
 
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
     get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
+
+    toggleDarkMode() {
+        const next = !this.layoutService.layoutConfig().darkTheme;
+        this.layoutService.layoutConfig.update((state) => ({
+            ...state,
+            darkTheme: next,
+            themeMode: next ? 'dark' : 'light',
+        }));
+    }
 
     navigateTo(fragment: string) {
         this.mobileMenuOpen.set(false);

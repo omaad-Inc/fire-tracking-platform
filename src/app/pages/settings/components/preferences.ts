@@ -16,9 +16,7 @@ import { TokenService } from '../../../core/services/token.service';
     standalone: true,
     imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute top-4 right-4 w-16 h-16 rounded-full bg-brand-100/20 dark:bg-brand-800/10 blur-lg"></div>
+        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
             <!-- Language & Region -->
             <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.title') }}</h2>
@@ -226,7 +224,7 @@ export class PreferencesSettings implements OnInit {
     readonly notificationItems = [
         { key: 'email',   label: 'settings.preferences.emailNotifications',  desc: 'settings.preferences.emailNotificationsDesc',  icon: 'pi-envelope',              bg: 'bg-brand-700 dark:bg-brand-300'   },
         { key: 'push',    label: 'settings.preferences.pushNotifications',   desc: 'settings.preferences.pushNotificationsDesc',   icon: 'pi-bell',                  bg: 'bg-positive'  },
-        { key: 'monthly', label: 'settings.preferences.monthlyReports',      desc: 'settings.preferences.monthlyReportsDesc',      icon: 'pi-chart-line',            bg: 'bg-gradient-to-br from-ochre-500 to-ochre-600'  },
+        { key: 'monthly', label: 'settings.preferences.monthlyReports',      desc: 'settings.preferences.monthlyReportsDesc',      icon: 'pi-chart-line',            bg: 'bg-ochre-500'  },
         { key: 'alert',   label: 'settings.preferences.expenseAlerts',       desc: 'settings.preferences.expenseAlertsDesc',       icon: 'pi-exclamation-triangle',  bg: 'bg-negative'     },
     ];
 

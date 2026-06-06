@@ -55,12 +55,11 @@ import { environment } from '../../../environments/environment';
 
                 <!-- PRO upgrade banner -->
                 <a [routerLink]="['/', lang, 'pages', 'plans']"
-                   class="block mb-8 p-4 rounded-2xl bg-gradient-to-r from-ochre-100 to-ochre-200/60
-                          dark:from-ochre-900/40 dark:to-ochre-800/30
+                   class="block mb-8 p-4 rounded-2xl bg-ochre-100 dark:bg-ochre-900/30
                           border border-ochre-300/50 dark:border-ochre-600/40
                           hover:border-ochre-400/60 dark:hover:border-ochre-500/50 transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-ochre-500 to-ochre-400 flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
                             <i class="pi pi-crown text-warm-900"></i>
                         </div>
                         <div class="flex-1 min-w-0">

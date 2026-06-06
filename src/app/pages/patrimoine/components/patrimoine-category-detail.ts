@@ -17,7 +17,7 @@ interface GroupConfig {
 }
 
 // Brand-tokenized: every group gets the same navy gradient. Icon glyph differentiates.
-const BRAND_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
+const BRAND_BG = '#1A2740';
 const BRAND_COLOR = '#1A2740';
 
 const GROUPS: GroupConfig[] = [
@@ -135,8 +135,7 @@ function getDonutColors(): string[] {
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
 
                 <!-- Progression chart -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
+                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
                     <div class="relative flex items-center justify-between mb-4">
                         <span class="font-semibold text-surface-900 dark:text-surface-0">Progression</span>
                         <div class="flex items-center gap-1">
@@ -173,8 +172,7 @@ function getDonutColors(): string[] {
                 </div>
 
                 <!-- Donut chart -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-ochre-900/10"></div>
+                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
                     <div class="relative flex items-center justify-between mb-4">
                         <span class="font-semibold text-surface-900 dark:text-surface-0">Répartition</span>
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
@@ -231,7 +229,7 @@ function getDonutColors(): string[] {
                             <a [routerLink]="assetLink(item.id)"
                                class="flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group no-underline border border-surface-200 dark:border-surface-700 hover:border-brand-300/40 dark:hover:border-brand-700/50 shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
-                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="getCategoryBg(item.category)">
                                         <i [class]="getCategoryIcon(item.category)" class="text-white"></i>
                                     </div>
@@ -456,7 +454,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     }
 
     getCategoryIcon(cat?: string): string  { return CATEGORY_ICONS[cat ?? ''] ?? 'pi pi-box'; }
-    getCategoryBg(cat?: string): string    { return CATEGORY_BGS[cat ?? ''] ?? 'linear-gradient(135deg,#94a3b8,#64748b)'; }
+    getCategoryBg(cat?: string): string    { return CATEGORY_BGS[cat ?? ''] ?? '#64748b'; }
     getCategoryLabel(cat?: string): string { return CATEGORY_LABELS[cat ?? ''] ?? cat ?? ''; }
 
     assetLink(id: number): any[] {

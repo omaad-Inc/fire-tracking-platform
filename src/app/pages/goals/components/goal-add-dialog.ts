@@ -73,7 +73,7 @@ export interface GoalSavePayload {
                                 [class.dark:border-surface-700]="form.templateKey !== tpl.key"
                             >
                                 <div class="relative h-20 bg-surface-100 dark:bg-surface-900 overflow-hidden">
-                                    <img [src]="tpl.image" [alt]="i18n.t(tpl.nameKey)" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                    <img [src]="tpl.image" [alt]="i18n.t(tpl.nameKey)" class="w-full h-full object-cover" loading="lazy" />
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                     @if (form.templateKey === tpl.key) {
                                         <div class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-md">

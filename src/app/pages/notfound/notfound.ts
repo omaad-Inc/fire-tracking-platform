@@ -14,13 +14,13 @@ import { RippleModule } from 'primeng/ripple';
                 <!-- Animated 404 number -->
                 <div class="relative mb-8">
                     <div class="text-[10rem] sm:text-[12rem] font-black leading-none tracking-tighter
-                                text-transparent bg-clip-text bg-gradient-to-br from-brand-700 via-cyan-500 to-positive-500
-                                select-none opacity-20">
+                                text-brand-700 dark:text-ochre-400
+                                select-none opacity-10">
                         404
                     </div>
                     <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center shadow-xl shadow-card">
-                            <i class="pi pi-map text-white text-3xl"></i>
+                        <div class="w-20 h-20 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                            <i class="pi pi-map text-brand-700 dark:text-ochre-400 text-3xl"></i>
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,7 @@ import { RippleModule } from 'primeng/ripple';
                 <div class="flex flex-col sm:flex-row gap-3 justify-center mb-12">
                     <button pButton pRipple label="Retour au Dashboard" icon="pi pi-home"
                             [routerLink]="currentLang"
-                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 !border-0 !text-white !font-semibold !rounded-xl !px-6 !py-3"></button>
+                            class="!bg-brand-700 hover:!bg-brand-800 !border-0 !text-white !font-semibold !rounded-xl !px-6 !py-3"></button>
                     <button pButton pRipple label="Page d'accueil" icon="pi pi-arrow-left"
                             [routerLink]="[currentLang, 'landing']"
                             [outlined]="true"

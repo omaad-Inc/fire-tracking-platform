@@ -273,7 +273,7 @@ import { firstValueFrom } from 'rxjs';
                             <div class="flex items-center gap-2 flex-wrap">
                                 <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ currentSession().device }}</p>
                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-[10px] font-semibold">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-positive-500 animate-pulse"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
                                     Actif maintenant
                                 </span>
                             </div>

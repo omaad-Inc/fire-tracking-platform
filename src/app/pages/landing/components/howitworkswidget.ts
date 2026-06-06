@@ -11,13 +11,13 @@ import { I18nService } from '../../../i18n/i18n.service';
             <div class="max-w-6xl mx-auto">
                 <!-- Header -->
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-200 dark:border-brand-700 bg-brand-700/10 dark:bg-brand-300/15 text-brand-700 dark:text-brand-300 text-sm font-medium mb-6">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-sm font-medium mb-6">
                         <i class="pi pi-check-circle text-xs"></i>
                         <span>{{ t('landing.howItWorks.eyebrow') }}</span>
                     </div>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white leading-tight mb-4">
                         {{ t('landing.howItWorks.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-ochre-500 dark:from-ochre-300 dark:to-ochre-400">
+                        <span class="text-brand-700 dark:text-ochre-400">
                             {{ t('landing.howItWorks.h2b') }}
                         </span>
                     </h2>
@@ -29,7 +29,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <!-- 3-step grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 relative">
                     <!-- Connector line (desktop only) -->
-                    <div class="hidden md:block absolute top-[52px] left-[16.67%] right-[16.67%] h-px bg-gradient-to-r from-brand-300 via-ochre-400 to-brand-300 dark:from-brand-600 dark:via-ochre-500 dark:to-brand-600"></div>
+                    <div class="hidden md:block absolute top-[52px] left-[16.67%] right-[16.67%] h-px bg-surface-200 dark:bg-surface-800"></div>
 
                     @for (step of steps; track step.numberKey) {
                         <div class="relative flex flex-col items-center text-center px-6">
@@ -37,7 +37,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <div class="relative z-10 w-[104px] h-[104px] rounded-full flex items-center justify-center mb-6
                                         bg-surface-0 dark:bg-surface-900 border-2 border-surface-200 dark:border-surface-800
                                         shadow-lg shadow-surface-200/50 dark:shadow-surface-950/50">
-                                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-brand-100 to-ochre-100 dark:from-brand-800/40 dark:to-ochre-900/30 flex items-center justify-center">
+                                <div class="w-20 h-20 rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
                                     <i class="pi {{ step.icon }} text-2xl text-brand-700 dark:text-ochre-400"></i>
                                 </div>
                             </div>

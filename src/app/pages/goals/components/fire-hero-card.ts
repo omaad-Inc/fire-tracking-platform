@@ -24,9 +24,8 @@ import { AssetsStateService } from '../../service/assets-state.service';
     standalone: true,
     imports: [CommonModule, ButtonModule, AppAmountComponent],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 sm:p-6">
-            <div class="absolute inset-0 bg-gradient-to-br from-ochre-50/40 via-surface-50 to-brand-50/20 dark:from-ochre-900/10 dark:via-surface-800 dark:to-brand-900/10"></div>
-            <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-ochre-100/30 dark:bg-ochre-800/10 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+            <div class="absolute top-3 right-3 w-40 h-40 rounded-full bg-ochre-500/10 blur-3xl pointer-events-none"></div>
 
             <!-- Header / badge — ochre = "premium accent", reserved for FIRE -->
             <div class="relative flex items-center justify-between gap-3 mb-4">
@@ -35,7 +34,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                         <i class="pi pi-flag text-[10px]"></i>
                         {{ i18n.t('goals.fire.badge') }}
                     </span>
-                    <h2 class="text-base sm:text-lg font-bold text-warm-900 dark:text-warm-50 m-0">
+                    <h2 class="text-base sm:text-lg font-bold text-surface-900 dark:text-surface-0 m-0">
                         {{ i18n.t('goals.fire.title') }}
                     </h2>
                 </div>
@@ -43,7 +42,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
             <!-- Loading -->
             @if (loading()) {
-                <div class="relative animate-pulse h-32 bg-warm-100 dark:bg-warm-800 rounded-xl"></div>
+                <div class="relative animate-pulse h-32 bg-surface-100 dark:bg-surface-800 rounded-xl"></div>
             }
 
             <!-- Not configured -->
@@ -53,10 +52,10 @@ import { AssetsStateService } from '../../service/assets-state.service';
                         <i class="pi pi-flag text-2xl text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 text-center sm:text-left">
-                        <h3 class="text-sm sm:text-base font-semibold text-warm-900 dark:text-warm-50 m-0 mb-1">
+                        <h3 class="text-sm sm:text-base font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">
                             {{ i18n.t('goals.fire.notConfiguredTitle') }}
                         </h3>
-                        <p class="text-xs sm:text-sm text-warm-500 dark:text-warm-400 m-0">
+                        <p class="text-xs sm:text-sm text-surface-500 dark:text-surface-400 m-0">
                             {{ i18n.t('goals.fire.notConfiguredDesc') }}
                         </p>
                     </div>
@@ -76,7 +75,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                     <div class="relative shrink-0 self-center">
                         <svg [attr.width]="size" [attr.height]="size" [attr.viewBox]="'0 0 ' + size + ' ' + size" class="-rotate-90">
                             <circle [attr.cx]="size/2" [attr.cy]="size/2" [attr.r]="radius" fill="none"
-                                class="stroke-warm-200 dark:stroke-warm-700" [attr.stroke-width]="strokeWidth" />
+                                class="stroke-surface-200 dark:stroke-surface-700" [attr.stroke-width]="strokeWidth" />
                             <circle [attr.cx]="size/2" [attr.cy]="size/2" [attr.r]="radius" fill="none"
                                 stroke="url(#fire-hero-grad)" [attr.stroke-width]="strokeWidth" stroke-linecap="round"
                                 [attr.stroke-dasharray]="circumference"
@@ -91,8 +90,8 @@ import { AssetsStateService } from '../../service/assets-state.service';
                             </defs>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-2xl sm:text-3xl font-bold text-warm-900 dark:text-warm-50">{{ progressPct() | number:'1.1-1' }}%</span>
-                            <span class="text-warm-500 dark:text-warm-400 text-[10px] sm:text-xs mt-0.5">{{ i18n.t('goals.fire.towardsFire') }}</span>
+                            <span class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0">{{ progressPct() | number:'1.1-1' }}%</span>
+                            <span class="text-surface-500 dark:text-surface-400 text-[10px] sm:text-xs mt-0.5">{{ i18n.t('goals.fire.towardsFire') }}</span>
                         </div>
                     </div>
 
@@ -100,15 +99,15 @@ import { AssetsStateService } from '../../service/assets-state.service';
                     <div class="flex-1 min-w-0 w-full flex flex-col justify-center gap-3 text-center lg:text-left">
                         <div class="flex flex-wrap items-end justify-center lg:justify-start gap-x-8 gap-y-3">
                             <div class="min-w-0">
-                                <div class="text-[11px] uppercase tracking-wide text-warm-500 dark:text-warm-400">
+                                <div class="text-[11px] uppercase tracking-wide text-surface-500 dark:text-surface-400">
                                     {{ i18n.t('goals.fire.netWorth') }}
                                 </div>
-                                <div class="text-2xl sm:text-3xl font-bold text-warm-900 dark:text-warm-50 leading-tight">
+                                <div class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 leading-tight">
                                     <app-amount [value]="f.currentNetWorth" />
                                 </div>
                             </div>
                             <div class="min-w-0">
-                                <div class="text-[11px] uppercase tracking-wide text-warm-500 dark:text-warm-400">
+                                <div class="text-[11px] uppercase tracking-wide text-surface-500 dark:text-surface-400">
                                     {{ i18n.t('goals.fire.target') }}
                                 </div>
                                 <div class="text-2xl sm:text-3xl font-bold text-ochre-600 dark:text-ochre-400 leading-tight">
@@ -119,7 +118,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
                         @if (f.yearsToFire != null) {
                             <div class="flex justify-center lg:justify-start">
-                                <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-warm-100 text-warm-700 dark:bg-warm-800 dark:text-warm-200">
+                                <span class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full bg-surface-100 text-surface-700 dark:bg-surface-800 dark:text-surface-200">
                                     <i class="pi pi-clock text-[10px]"></i>
                                     {{ f.yearsToFire | number:'1.0-1' }}
                                     {{ f.yearsToFire === 1 ? i18n.t('goals.fire.yearSingular') : i18n.t('goals.fire.yearPlural') }}

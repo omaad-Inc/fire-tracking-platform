@@ -21,7 +21,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <div class="mb-10">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
                         <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                             class="w-10 h-10 transition-transform duration-300 group-hover:scale-110">
+                             class="w-10 h-10">
                         <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad Wealth</span>
                     </a>
                 </div>

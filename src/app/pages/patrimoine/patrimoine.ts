@@ -21,9 +21,9 @@ interface CategoryGroupCard {
     assetCount: number;
 }
 
-// All asset groups share the same brand gradient — the icon glyph
+// All asset groups share the same solid brand navy — the icon glyph
 // differentiates the category, not the color. (Phase 2 identity rule.)
-const GROUP_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
+const GROUP_BG = '#1A2740';
 
 const GROUPS = [
     { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
@@ -80,7 +80,7 @@ const GROUPS = [
                             <button (click)="navigateToCategory(group.id)"
                                     class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-brand-300/40 dark:hover:border-brand-700/50 text-left shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
-                                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
+                                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                                          [style.background]="group.bg">
                                         <i [class]="group.icon" class="text-white text-lg"></i>
                                     </div>
@@ -137,8 +137,8 @@ const GROUPS = [
                     <button (click)="navigateToDebts()"
                             class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-negative/30 text-left shadow-sm">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200"
-                                 style="background: linear-gradient(135deg, #B0463E, #933832)">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                                 style="background: #B0463E">
                                 <i class="pi pi-credit-card text-white text-lg"></i>
                             </div>
                             <div>

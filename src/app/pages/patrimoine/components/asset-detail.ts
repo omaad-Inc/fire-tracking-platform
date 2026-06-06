@@ -72,9 +72,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
             </div>
 
             <!-- Value + date -->
-            <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 mb-6">
-                <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface-50 to-surface-100 dark:from-brand-900/15 dark:via-surface-800 dark:to-surface-900"></div>
-                <div class="absolute top-3 right-3 w-16 h-16 rounded-full bg-brand-100/30 dark:bg-brand-800/15 blur-md"></div>
+            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 mb-6">
                 <div class="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div>
                         <p class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ formatDate(asset()!.updated_at) }}</p>
@@ -842,18 +840,12 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
             overflow: hidden;
             border-radius: 1rem;                              /* rounded-2xl */
             border: 1px solid #e2e8f0;                        /* surface-200 */
-            background: linear-gradient(135deg,
-                #f8fafc 0%,                                   /* surface-50 */
-                #f8fafc 50%,                                  /* surface-50 (via) */
-                rgba(239, 242, 247, 0.5) 100%);               /* brand-50/50  */
+            background: #ffffff;                              /* surface-0 */
         }
         :host-context(.app-dark) .detail-surface,
         .app-dark .detail-surface {
-            border-color: #334155;                            /* surface-700 */
-            background: linear-gradient(135deg,
-                #1e293b 0%,                                   /* surface-800 */
-                rgba(30, 41, 59, 0.9) 50%,                    /* surface-800/90 */
-                rgba(15, 26, 46, 0.1) 100%);                  /* brand-900/10 */
+            border-color: #1e293b;                            /* surface-800 */
+            background: #0f172a;                              /* surface-900 */
         }
 
         /* KPI tile layout — flex column, centered, fixed padding */
@@ -1014,20 +1006,20 @@ export class AssetDetailPage implements OnInit {
     private readonly CATEGORY_BGS: Record<string, string> = {
         // Brand-tokenized: every asset category shares the navy gradient.
         // The icon glyph (CATEGORY_ICONS) carries the visual identity.
-        real_estate:     'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        stocks:          'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        bonds:           'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        crypto:          'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        cash:            'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        retirement:      'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        life_insurance:  'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        savings_account: 'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        business:        'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        vehicle:         'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        tontine:         'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        mobile_money:    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        collectibles:    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-        other:           'linear-gradient(135deg, #1A2740, #2C3E5E)',
+        real_estate:     '#1A2740',
+        stocks:          '#1A2740',
+        bonds:           '#1A2740',
+        crypto:          '#1A2740',
+        cash:            '#1A2740',
+        retirement:      '#1A2740',
+        life_insurance:  '#1A2740',
+        savings_account: '#1A2740',
+        business:        '#1A2740',
+        vehicle:         '#1A2740',
+        tontine:         '#1A2740',
+        mobile_money:    '#1A2740',
+        collectibles:    '#1A2740',
+        other:           '#1A2740',
     };
 
     private readonly CATEGORY_LABELS: Record<string, string> = {
@@ -1049,7 +1041,7 @@ export class AssetDetailPage implements OnInit {
     };
 
     categoryIcon = computed(() => this.CATEGORY_ICONS[this.asset()?.category ?? ''] ?? 'pi pi-box');
-    categoryBg = computed(() => this.CATEGORY_BGS[this.asset()?.category ?? ''] ?? 'linear-gradient(135deg, #1A2740, #2C3E5E)');
+    categoryBg = computed(() => this.CATEGORY_BGS[this.asset()?.category ?? ''] ?? '#1A2740');
     categoryLabel = computed(() => this.CATEGORY_LABELS[this.asset()?.category ?? ''] ?? this.asset()?.category ?? '');
 
     // ─── Tontine status helpers ─────────────────────────────────────────

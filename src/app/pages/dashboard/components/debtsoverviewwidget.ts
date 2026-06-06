@@ -25,9 +25,7 @@ interface DebtDisplay {
     selector: 'app-debts-overview',
     imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/40 dark:from-surface-800 dark:via-surface-800/90 dark:to-ochre-900/10"></div>
-            <div class="absolute top-2 right-2 w-16 h-16 rounded-full bg-ochre-100/30 dark:bg-ochre-800/15 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.debtsOverview') }}</div>
                 <a [routerLink]="link('pages', 'debts')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">

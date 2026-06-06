@@ -8,9 +8,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full flex flex-col gap-5">
-            <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/30 dark:from-surface-800 dark:via-surface-800/90 dark:to-brand-900/10"></div>
-            <div class="absolute bottom-3 right-3 w-14 h-14 rounded-full bg-brand-100/25 dark:bg-brand-800/10 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col gap-5">
             <!-- Header -->
             <div class="relative">
                 <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ monthTitle }}</h3>
@@ -26,7 +24,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             } @else if (summary()) {
                 <!-- Net flow pill -->
                 <div class="relative flex items-center justify-between p-3 rounded-xl"
-                     [ngClass]="(summary()!.net >= 0) ? 'bg-positive/10' : 'bg-negative/10'">
+                     [ngClass]="(summary()!.net >= 0) ? 'bg-positive-50 dark:bg-positive-500/15' : 'bg-negative-50 dark:bg-negative-500/15'">
                     <span class="text-sm font-medium"
                           [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
                         {{ summary()!.net >= 0 ? 'Solde positif' : 'Solde négatif' }}
@@ -42,8 +40,8 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Income -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-positive/10 flex items-center justify-center">
-                                <i class="pi pi-arrow-down-left text-positive text-xs"></i>
+                            <div class="w-7 h-7 rounded-lg bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
+                                <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xs"></i>
                             </div>
                             <span class="text-sm text-surface-600 dark:text-surface-400">Revenus</span>
                         </div>
@@ -54,8 +52,8 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <!-- Expense -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-negative/10 flex items-center justify-center">
-                                <i class="pi pi-arrow-up-right text-negative text-xs"></i>
+                            <div class="w-7 h-7 rounded-lg bg-negative-50 dark:bg-negative-500/15 flex items-center justify-center">
+                                <i class="pi pi-arrow-up-right text-negative-600 dark:text-negative-400 text-xs"></i>
                             </div>
                             <span class="text-sm text-surface-600 dark:text-surface-400">Dépenses</span>
                         </div>

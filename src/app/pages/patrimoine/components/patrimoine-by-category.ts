@@ -49,12 +49,12 @@ const CATEGORY_ICONS: Record<string, string> = {
 // All asset rows share the same brand gradient — the icon glyph is what
 // differentiates the category, not the tile color.
 const ICON_BGS = [
-    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-    'linear-gradient(135deg, #1A2740, #2C3E5E)',
-    'linear-gradient(135deg, #1A2740, #2C3E5E)',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
 ];
 
 @Component({
@@ -108,7 +108,7 @@ const ICON_BGS = [
                             <!-- Name -->
                             <div class="md:col-span-4">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300"
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="getIconBg(i)">
                                         <i [class]="getCategoryIcon(item.category)" class="text-white text-sm"></i>
                                     </div>

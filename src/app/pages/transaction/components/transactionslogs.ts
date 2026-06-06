@@ -81,36 +81,33 @@ interface DayGroup {
         @if (!loading()) {
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                 <!-- Revenus -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-positive/5 dark:from-surface-800 dark:to-surface-900"></div>
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
-                        <div class="w-7 h-7 rounded-lg bg-positive/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-down-left text-positive text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
+                            <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xs"></i>
                         </div>
                     </div>
                     <div class="relative text-base font-bold text-positive truncate">+<app-amount [value]="monthSummary().income" /></div>
                 </div>
                 <!-- Dépenses -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-negative/5 dark:from-surface-800 dark:to-surface-900"></div>
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
-                        <div class="w-7 h-7 rounded-lg bg-negative/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-up-right text-negative text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-negative-50 dark:bg-negative-500/15 flex items-center justify-center">
+                            <i class="pi pi-arrow-up-right text-negative-600 dark:text-negative-400 text-xs"></i>
                         </div>
                     </div>
                     <div class="relative text-base font-bold text-negative truncate">−<app-amount [value]="monthSummary().expenses" /></div>
                 </div>
                 <!-- Solde net -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-brand-50/30 dark:from-surface-800 dark:to-surface-900"></div>
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center"
-                             [ngClass]="monthSummary().net >= 0 ? 'bg-brand-700/10 dark:bg-brand-300/15' : 'bg-negative/10'">
+                             [ngClass]="monthSummary().net >= 0 ? 'bg-brand-100 dark:bg-brand-700/20' : 'bg-negative-50 dark:bg-negative-500/15'">
                             <i class="pi text-xs"
-                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-brand-700 dark:text-brand-300' : 'pi-trending-down text-negative'"></i>
+                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-brand-700 dark:text-ochre-400' : 'pi-trending-down text-negative-600 dark:text-negative-400'"></i>
                         </div>
                     </div>
                     <div class="relative text-base font-bold truncate"
@@ -119,12 +116,11 @@ interface DayGroup {
                     </div>
                 </div>
                 <!-- Taux d'épargne -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-4 h-[86px] flex flex-col justify-between">
-                    <div class="absolute inset-0 bg-gradient-to-br from-surface-50 to-brand-50/20 dark:from-surface-800 dark:to-surface-900"></div>
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
-                        <div class="w-7 h-7 rounded-lg bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center">
-                            <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                            <i class="pi pi-percentage text-brand-700 dark:text-ochre-400 text-xs"></i>
                         </div>
                     </div>
                     <div class="relative">

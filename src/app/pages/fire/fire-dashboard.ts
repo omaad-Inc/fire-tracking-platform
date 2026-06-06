@@ -41,20 +41,18 @@ import { FireSettings } from '../settings/components/fire-settings';
                     <i class="pi pi-flag text-white dark:text-brand-900 text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-warm-900 dark:text-warm-50 m-0">{{ i18n.t('menu.financialGoal') }}</h1>
+                    <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('menu.financialGoal') }}</h1>
                     <p class="text-warm-500 dark:text-warm-400 text-sm m-0">Construis. Protège. Règne.</p>
                 </div>
             </div>
 
             <!-- No FIRE target configured -->
             @if (!loading() && (!fire() || (fire()!.targetAmount) === 0)) {
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center py-12">
-                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-ochre-50/20 dark:from-brand-900/15 dark:via-surface-800 dark:to-ochre-900/10"></div>
-                    <div class="absolute top-4 right-4 w-20 h-20 rounded-full bg-brand-100/30 dark:bg-brand-800/10 blur-lg"></div>
-                    <div class="relative w-20 h-20 mx-auto rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center mb-4">
-                        <i class="pi pi-flag text-3xl text-brand-700 dark:text-brand-300"></i>
+                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center py-12">
+                    <div class="relative w-20 h-20 mx-auto rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
+                        <i class="pi pi-flag text-3xl text-brand-700 dark:text-ochre-400"></i>
                     </div>
-                    <h2 class="relative text-xl font-semibold text-warm-900 dark:text-warm-50 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
+                    <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
                     <p class="relative text-warm-500 dark:text-warm-400 text-sm max-w-md mx-auto mb-6">
                         Le capital à atteindre pour que vos revenus passifs couvrent vos dépenses — et que vous ayez le choix de travailler ou non.
                     </p>
@@ -64,10 +62,7 @@ import { FireSettings } from '../settings/components/fire-settings';
             <!-- FIRE configured: show progress hero -->
             @if (!loading() && fire() && (fire()!.targetAmount) > 0) {
                 <!-- Hero progress card -->
-                <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-8">
-                    <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-surface-50 to-ochre-50/30 dark:from-brand-900/20 dark:via-surface-800 dark:to-ochre-900/10"></div>
-                    <div class="absolute top-4 right-4 w-24 h-24 rounded-full bg-brand-100/30 dark:bg-brand-800/10 blur-lg"></div>
-                    <div class="absolute bottom-4 left-4 w-16 h-16 rounded-full bg-ochre-100/30 dark:bg-ochre-800/10 blur-md"></div>
+                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-8">
                     <div class="relative flex flex-col lg:flex-row items-center gap-8">
                         <!-- Circular progress — navy → ochre, the lifetime journey -->
                         <div class="relative shrink-0">
@@ -87,7 +82,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                                 </defs>
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span class="text-4xl font-bold text-warm-900 dark:text-warm-50">{{ progressPct() | number:'1.1-1' }}%</span>
+                                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ progressPct() | number:'1.1-1' }}%</span>
                                 <span class="text-warm-500 dark:text-warm-400 text-xs mt-1">vers FIRE</span>
                             </div>
                         </div>
@@ -95,7 +90,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                         <!-- Main numbers -->
                         <div class="flex-1 text-center lg:text-left">
                             <p class="text-warm-500 dark:text-warm-400 text-sm mb-1">Patrimoine net actuel</p>
-                            <div class="text-3xl md:text-4xl font-bold text-warm-900 dark:text-warm-50 mb-3">
+                            <div class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3">
                                 <app-amount [value]="fire()!.currentNetWorth" />
                             </div>
                             <p class="text-warm-500 dark:text-warm-400 text-sm">
@@ -106,7 +101,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                             </p>
                             @if (remaining() > 0) {
                                 <p class="text-warm-500 dark:text-warm-400 text-sm mt-1">
-                                    Encore <span class="font-semibold text-warm-900 dark:text-warm-50">
+                                    Encore <span class="font-semibold text-surface-900 dark:text-surface-0">
                                         <app-amount [value]="remaining()" />
                                     </span> à constituer
                                 </p>
@@ -118,8 +113,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                 <!-- KPI Row -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
                     <!-- Years to FIRE -->
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
-                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50/40 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800"></div>
+                    <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
                         <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Années restantes</p>
                         @if (fire()!.yearsToFire != null) {
                             <div class="relative text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
@@ -136,8 +130,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                     </div>
 
                     <!-- Monthly passive income at FIRE -->
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
-                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-ochre-50/30 dark:from-surface-800 dark:via-surface-800 dark:to-ochre-900/10"></div>
+                    <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
                         <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Revenus passifs visés</p>
                         @if ((fire()!.monthlyPassiveIncomeNeeded) > 0) {
                             <div class="relative text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
@@ -150,8 +143,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                     </div>
 
                     <!-- Savings rate -->
-                    <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
-                        <div class="absolute inset-0 bg-gradient-to-br from-surface-50 via-surface-50 to-brand-50/20 dark:from-surface-800 dark:via-surface-800 dark:to-brand-900/10"></div>
+                    <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
                         <p class="relative text-warm-500 dark:text-warm-400 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
                         @if ((fire()!.savingsRate) > 0) {
                             <div class="relative text-3xl font-bold truncate"

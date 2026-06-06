@@ -26,7 +26,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <div class="mb-12">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
                         <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                             class="w-10 h-10 transition-transform duration-300 group-hover:scale-110">
+                             class="w-10 h-10">
                         <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad Wealth</span>
                     </a>
                 </div>
@@ -161,11 +161,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="hidden lg:flex w-1/2 bg-warm-900 relative overflow-hidden">
                 <!-- Background Effects -->
                 <div class="absolute inset-0">
-                    <div class="absolute inset-0 opacity-10" 
-                         style="background-image: linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px); background-size: 40px 40px;">
-                    </div>
-                    <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-brand-700/15 dark:bg-brand-300/20 rounded-full blur-3xl"></div>
-                    <div class="absolute bottom-1/3 left-1/4 w-80 h-80 bg-brand-700/20 dark:bg-brand-300/20 rounded-full blur-3xl"></div>
+                    <div class="absolute top-1/3 right-1/4 w-96 h-96 bg-ochre-500/10 rounded-full blur-3xl"></div>
                 </div>
 
                 <!-- Content -->
@@ -175,7 +171,7 @@ import { AuthService } from '../../core/services/auth.service';
                         <!-- Main Card -->
                         <div class="bg-warm-800/80 backdrop-blur-sm rounded-2xl border border-warm-700/50 p-6 shadow-2xl">
                             <div class="flex items-center gap-4 mb-6">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-brand-700 flex items-center justify-center">
                                     <i class="pi pi-user text-white text-xl"></i>
                                 </div>
                                 <div>
@@ -213,9 +209,9 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <!-- Floating Badge -->
-                        <div class="absolute -top-4 -right-4 bg-gradient-to-r from-brand-700 to-brand-500 rounded-xl px-4 py-2 shadow-lg">
-                            <div class="text-white font-bold text-lg">100%</div>
-                            <div class="text-white/80 text-xs">Pour toujours</div>
+                        <div class="absolute -top-4 -right-4 bg-ochre-500 rounded-xl px-4 py-2 shadow-lg">
+                            <div class="text-warm-900 font-bold text-lg">100%</div>
+                            <div class="text-warm-900/80 text-xs">Pour toujours</div>
                         </div>
                     </div>
 
@@ -223,7 +219,7 @@ import { AuthService } from '../../core/services/auth.service';
                     <div class="text-center">
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
                             Votre chemin vers
-                            <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">l'indépendance financière</span>
+                            <br><span class="text-ochre-400">l'indépendance financière</span>
                         </h2>
                         <p class="text-warm-400 max-w-md mx-auto mb-8">
                             Prenez le contrôle de vos finances et construisez votre chemin vers la retraite anticipée.

@@ -20,7 +20,7 @@ import { TokenService } from '../../core/services/token.service';
         RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
     ],
     template: `
-        <!-- Onboarding: shown until all 3 steps are done, or dismissed -->
+        <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {
             <div class="pb-6">
                 <app-onboarding
@@ -85,8 +85,11 @@ export class Dashboard implements OnInit {
         this.hasTransactions.set(transactions.length > 0);
         this.hasFireGoal.set(fireTarget > 0);
 
-        const allDone = this.hasAssets() && this.hasTransactions() && this.hasFireGoal();
-        this.showOnboarding.set(!allDone);
+        // Only guide a truly brand-new user. As soon as ANY step is done,
+        // the user has grasped the tool — stop showing the onboarding guide.
+        // (A future config agent will take over richer guidance from here.)
+        const anyDone = this.hasAssets() || this.hasTransactions() || this.hasFireGoal();
+        this.showOnboarding.set(!anyDone);
     }
 
     openAddAsset() {

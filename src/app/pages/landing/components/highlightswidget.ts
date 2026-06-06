@@ -7,16 +7,16 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [CommonModule],
     template: `
-        <div id="highlights" class="py-20 px-6 lg:px-20 bg-gradient-to-b from-surface-0 via-indigo-50/30 to-surface-0 dark:from-surface-900 dark:via-brand-950/30 dark:to-surface-900">
+        <div id="highlights" class="py-20 px-6 lg:px-20 bg-surface-50 dark:bg-surface-950">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-brand-300/15 dark:bg-brand-700/15 dark:bg-brand-300/20 border border-brand-700/30 mb-6">
-                        <i class="pi pi-bolt text-brand-700 dark:text-brand-300"></i>
-                        <span class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 text-sm font-medium">{{ t('landing.highlights.badge') }}</span>
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 mb-6">
+                        <i class="pi pi-bolt text-ochre-700 dark:text-ochre-400"></i>
+                        <span class="text-ochre-700 dark:text-ochre-400 text-sm font-medium">{{ t('landing.highlights.badge') }}</span>
                     </div>
                     <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
                         {{ t('landing.highlights.h2a') }}
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-positive-500 dark:from-ochre-400 dark:to-positive-400">{{ t('landing.highlights.h2b') }}</span>
+                        <span class="text-brand-700 dark:text-ochre-400">{{ t('landing.highlights.h2b') }}</span>
                     </h2>
                     <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">{{ t('landing.highlights.description') }}</p>
                 </div>
@@ -25,7 +25,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <div class="grid grid-cols-12 gap-8 items-center mb-20">
                     <div class="col-span-12 lg:col-span-6 order-2 lg:order-1">
                         <div class="relative">
-                            <div class="absolute -inset-4 bg-gradient-to-br from-brand-700/20 to-brand-500/20 rounded-3xl blur-2xl"></div>
+                            <div class="absolute -inset-4 bg-ochre-500/10 rounded-3xl blur-3xl"></div>
                             <div class="relative bg-warm-900 rounded-2xl p-6 shadow-2xl border border-warm-700/50">
                                 <div class="mb-6">
                                     <div class="flex items-center justify-between mb-3">
@@ -70,8 +70,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                         </div>
                     </div>
                     <div class="col-span-12 lg:col-span-6 order-1 lg:order-2 text-center lg:text-left">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center mb-6 mx-auto lg:mx-0">
-                            <i class="pi pi-compass text-white text-3xl"></i>
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-6 mx-auto lg:mx-0">
+                            <i class="pi pi-compass text-brand-700 dark:text-ochre-400 text-3xl"></i>
                         </div>
                         <h3 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-4">{{ t('landing.highlights.h1Title') }}</h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">{{ t('landing.highlights.h1Desc') }}</p>
@@ -101,8 +101,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <!-- Highlight 2 -->
                 <div class="grid grid-cols-12 gap-8 items-center mb-20">
                     <div class="col-span-12 lg:col-span-6 text-center lg:text-left">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center mb-6 mx-auto lg:mx-0">
-                            <i class="pi pi-chart-bar text-white text-3xl"></i>
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-6 mx-auto lg:mx-0">
+                            <i class="pi pi-chart-bar text-brand-700 dark:text-ochre-400 text-3xl"></i>
                         </div>
                         <h3 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-4">{{ t('landing.highlights.h2Title') }}</h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">{{ t('landing.highlights.h2Desc') }}</p>
@@ -129,7 +129,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </div>
                     <div class="col-span-12 lg:col-span-6">
                         <div class="relative">
-                            <div class="absolute -inset-4 bg-gradient-to-br from-brand-700/20 to-positive-500/20 rounded-3xl blur-2xl"></div>
+                            <div class="absolute -inset-4 bg-ochre-500/10 rounded-3xl blur-3xl"></div>
                             <div class="relative bg-warm-900 rounded-2xl p-6 shadow-2xl border border-warm-700/50">
                                 <div class="flex items-center justify-between mb-6">
                                     <span class="text-warm-300 font-medium">{{ t('landing.highlights.h2MockupTitle') }}</span>
@@ -174,7 +174,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <div class="grid grid-cols-12 gap-8 items-center">
                     <div class="col-span-12 lg:col-span-6 order-2 lg:order-1">
                         <div class="relative">
-                            <div class="absolute -inset-4 bg-gradient-to-br from-positive/20 to-brand-500/20 rounded-3xl blur-2xl"></div>
+                            <div class="absolute -inset-4 bg-ochre-500/10 rounded-3xl blur-3xl"></div>
                             <div class="relative bg-warm-900 rounded-2xl p-6 shadow-2xl border border-warm-700/50">
                                 <div class="space-y-4 py-4">
                                     @for (item of securityItems(); track item.title) {
@@ -194,8 +194,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                         </div>
                     </div>
                     <div class="col-span-12 lg:col-span-6 order-1 lg:order-2 text-center lg:text-left">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-positive-600 to-positive-500 flex items-center justify-center mb-6 mx-auto lg:mx-0">
-                            <i class="pi pi-lock text-white text-3xl"></i>
+                        <div class="w-16 h-16 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-6 mx-auto lg:mx-0">
+                            <i class="pi pi-lock text-brand-700 dark:text-ochre-400 text-3xl"></i>
                         </div>
                         <h3 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-4">{{ t('landing.highlights.h3Title') }}</h3>
                         <p class="text-lg text-surface-600 dark:text-surface-300 leading-relaxed mb-6">{{ t('landing.highlights.h3Desc') }}</p>

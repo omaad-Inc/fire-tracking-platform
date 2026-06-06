@@ -21,9 +21,6 @@ const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
     imports: [CommonModule, FormsModule, RouterModule, ButtonModule, RippleModule],
     template: `
         <section id="projection" class="relative py-20 md:py-28 px-6 lg:px-20 bg-surface-50 dark:bg-surface-950 overflow-hidden">
-            <!-- Subtle background -->
-            <div class="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]" style="background-image: linear-gradient(rgba(199, 123, 60, 1) 1px, transparent 1px), linear-gradient(90deg, rgba(199, 123, 60, 1) 1px, transparent 1px); background-size: 60px 60px;"></div>
-
             <div class="relative max-w-6xl mx-auto">
                 <!-- Header -->
                 <div class="text-center max-w-3xl mx-auto mb-12">
@@ -33,7 +30,7 @@ const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
                     </div>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white leading-tight mb-4">
                         {{ t('landing.fireProjection.h2a') }}<br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-700 to-ochre-500 dark:from-ochre-300 dark:to-ochre-400">
+                        <span class="text-brand-700 dark:text-ochre-400">
                             {{ t('landing.fireProjection.h2b') }}
                         </span>
                     </h2>
@@ -101,7 +98,7 @@ const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
                             <!-- Visual bar of pess→opti range -->
                             <div class="mb-5">
                                 <div class="relative h-2 rounded-full bg-surface-200 dark:bg-surface-800 overflow-hidden">
-                                    <div class="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-negative/40 via-ochre-400 to-positive/60"
+                                    <div class="absolute inset-y-0 left-0 rounded-full bg-ochre-500/60"
                                          [style.width.%]="100"></div>
                                     <!-- Median tick -->
                                     <div class="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-surface-900 dark:bg-white rounded-full"
@@ -137,9 +134,9 @@ const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
                     </p>
                     <button pButton pRipple [label]="t('landing.fireProjection.ctaSimulate')"
                             [routerLink]="[currentLang, 'tools', 'fire-simulator']"
-                            class="!bg-gradient-to-r !from-brand-700 !to-brand-500 dark:!from-ochre-500 dark:!to-ochre-400 !border-0 !font-semibold
-                                   dark:!text-warm-900 !rounded-full !px-6 !py-2.5 !text-sm shrink-0
-                                   hover:!shadow-lg transition-all duration-300">
+                            class="!bg-ochre-500 hover:!bg-ochre-400 !border-0 !font-semibold
+                                   !text-warm-900 !rounded-full !px-6 !py-2.5 !text-sm shrink-0
+                                   transition-all duration-300">
                     </button>
                 </div>
             </div>
@@ -152,7 +149,7 @@ const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
             width: 20px;
             height: 20px;
             border-radius: 9999px;
-            background: linear-gradient(135deg, #C77B3C 0%, #E89F5C 100%);
+            background: #C77B3C;
             cursor: pointer;
             border: 3px solid var(--surface-0, white);
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
@@ -161,7 +158,7 @@ const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
             width: 20px;
             height: 20px;
             border-radius: 9999px;
-            background: linear-gradient(135deg, #C77B3C 0%, #E89F5C 100%);
+            background: #C77B3C;
             cursor: pointer;
             border: 3px solid var(--surface-0, white);
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);

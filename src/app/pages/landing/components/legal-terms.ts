@@ -10,22 +10,22 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [CommonModule, RouterModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 min-h-screen">
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 backdrop-blur-lg border-b border-surface-200/50"
+        <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
                  style="padding-top: env(safe-area-inset-top, 0px)">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>
 
             <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
                 <header class="mb-10">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 text-surface-600 text-xs font-semibold uppercase tracking-wider mb-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
                         <i class="pi pi-file text-[10px]"></i>
                         {{ isFr() ? 'Conditions contractuelles' : 'Contractual terms' }}
                     </span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 mb-3 tracking-tight">
+                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
                         {{ isFr() ? 'Conditions générales d\\'utilisation' : 'Terms of service' }}
                     </h1>
-                    <p class="text-surface-500 text-sm">
+                    <p class="text-surface-500 dark:text-surface-400 text-sm">
                         {{ isFr() ? 'Dernière mise à jour : ' : 'Last updated: ' }}{{ updated }}
                     </p>
                 </header>
@@ -33,22 +33,22 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <article class="space-y-8">
                     @for (section of sections(); track section.id) {
                         <section>
-                            <h2 class="text-xl font-bold text-surface-900 mb-3">{{ section.title }}</h2>
-                            <p class="text-surface-700 leading-relaxed whitespace-pre-line">{{ section.body }}</p>
+                            <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">{{ section.title }}</h2>
+                            <p class="text-surface-700 dark:text-surface-300 leading-relaxed whitespace-pre-line">{{ section.body }}</p>
                         </section>
                     }
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 mb-3">
+                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
                             {{ isFr() ? 'Contact' : 'Contact' }}
                         </h2>
-                        <p class="text-surface-700 leading-relaxed">
+                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
                             {{ isFr() ? 'Pour toute question relative à ces conditions, écrivez à' : 'For any question about these terms, write to' }}
-                            <a href="mailto:contact@omaad.africa" class="text-brand-700 font-semibold hover:underline">contact&#64;omaad.africa</a>.
+                            <a href="mailto:contact@omaad.africa" class="text-brand-700 dark:text-ochre-400 font-semibold hover:underline">contact&#64;omaad.africa</a>.
                         </p>
                     </section>
 
-                    <div class="mt-10 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm leading-relaxed">
+                    <div class="mt-10 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300 text-sm leading-relaxed">
                         ⚠️ {{ isFr()
                             ? 'Ce document est un brouillon pré-lancement. Il sera complété et validé juridiquement avant la mise en production publique.'
                             : 'This document is a pre-launch draft. It will be finalized and legally reviewed before public production.' }}

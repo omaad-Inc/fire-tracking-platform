@@ -9,10 +9,6 @@ import { I18nService } from '../../../i18n/i18n.service';
     imports: [RouterModule, CommonModule],
     template: `
         <footer class="relative bg-warm-900 text-white overflow-hidden">
-            <div class="absolute inset-0 opacity-5">
-                <div class="absolute inset-0" style="background-image: linear-gradient(rgba(99, 102, 241, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.5) 1px, transparent 1px); background-size: 40px 40px;"></div>
-            </div>
-
             <div class="relative py-16 px-6 lg:px-20">
                 <div class="max-w-7xl mx-auto">
                     <div class="grid grid-cols-12 gap-8 lg:gap-12">
@@ -20,17 +16,17 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="col-span-12 lg:col-span-4">
                             <a (click)="navigateTo('home')" class="flex items-center gap-3 cursor-pointer mb-6 group">
                                 <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
-                                     class="w-12 h-12 transition-transform duration-300 group-hover:scale-110">
+                                     class="w-12 h-12">
                                 <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad Wealth</span>
                             </a>
                             <p class="text-warm-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
                             <div class="flex gap-3">
                                 <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300">
                                     <i class="pi pi-linkedin text-lg"></i>
                                 </a>
                                 <a href="https://www.youtube.com/@fire_africa" target="_blank" rel="noopener noreferrer" aria-label="YouTube FIRE Africa"
-                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-negative flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-negative flex items-center justify-center transition-all duration-300">
                                     <i class="pi pi-youtube text-lg"></i>
                                 </a>
                             </div>
@@ -38,7 +34,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <!-- Product -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-400">{{ t('landing.footer.productTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.productTitle') }}</h4>
                             <ul class="space-y-3">
                                 <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productFeatures') }}</a></li>
                                 <li><a (click)="navigateTo('highlights')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
@@ -49,7 +45,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <!-- Resources -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-positive-400">{{ t('landing.footer.resourcesTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.resourcesTitle') }}</h4>
                             <ul class="space-y-3">
                                 <li><a [routerLink]="[currentLang, 'blog']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
                                 <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">{{ _('Newsletter FIRE Africa', 'FIRE Africa newsletter') }}<i class="pi pi-external-link text-[9px]"></i></a></li>
@@ -61,7 +57,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <!-- Company -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-200">{{ _('Entreprise', 'Company') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ _('Entreprise', 'Company') }}</h4>
                             <ul class="space-y-3">
                                 <li><a [routerLink]="[currentLang, aboutSlug]" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.nav.about') }}</a></li>
                                 <li><a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">LinkedIn<i class="pi pi-external-link text-[9px]"></i></a></li>
@@ -70,7 +66,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <!-- Legal -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-brand-300">{{ t('landing.footer.legalTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.legalTitle') }}</h4>
                             <ul class="space-y-3">
                                 <li><a [routerLink]="[currentLang, 'legal', 'privacy']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'legal', 'terms']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
@@ -93,10 +89,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="flex items-center gap-2 text-warm-500 text-sm">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-positive-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-positive-500"></span>
-                                </span>
+                                <span class="inline-flex rounded-full h-2 w-2 bg-positive-500"></span>
                                 <span>{{ t('landing.footer.available') }}</span>
                             </div>
                             <span class="text-warm-700">•</span>

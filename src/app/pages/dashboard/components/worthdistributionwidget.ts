@@ -14,9 +14,7 @@ import { I18nService } from '../../../i18n/i18n.service';
     selector: 'app-worth-distribution-widget',
     imports: [CommonModule, ChartModule, FluidModule],
     template: `
-        <div class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700 p-5 h-full flex flex-col">
-            <div class="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-surface-50 to-surface-50 dark:from-brand-900/10 dark:via-surface-800 dark:to-surface-800/90"></div>
-            <div class="absolute top-3 left-3 w-14 h-14 rounded-full bg-brand-100/30 dark:bg-brand-800/10 blur-md"></div>
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col">
             <div class="relative mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.distribution') }}</div>
             </div>

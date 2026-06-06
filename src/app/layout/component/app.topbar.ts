@@ -54,8 +54,8 @@ import { AiAssistantService } from '../../core/services/ai-assistant.service';
             <!-- UPGRADE PRO pill — visible on all sizes -->
             <a [routerLink]="['/'+lang, 'pages', 'plans']"
                class="flex items-center gap-1 px-2.5 py-1.5 rounded-full
-                      bg-gradient-to-r from-ochre-500 to-ochre-600 text-white text-[10px] lg:text-xs font-bold
-                      tracking-wider transition-all hover:scale-105 hover:shadow-lg hover:shadow-card">
+                      bg-ochre-500 hover:bg-ochre-400 text-warm-900 text-[10px] lg:text-xs font-bold
+                      tracking-wider transition-all hover:shadow-lg">
                 <i class="pi pi-crown" style="font-size:9px"></i>
                 PRO
             </a>
@@ -63,7 +63,7 @@ import { AiAssistantService } from '../../core/services/ai-assistant.service';
             <!-- Add Assets Button - Desktop Only -->
             <button
                 type="button"
-                class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-brand-700 to-brand-500 text-white font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-card"
+                class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700 hover:bg-brand-800 text-white font-medium transition-all hover:shadow-lg"
                 (click)="navigateToAddAsset()"
             >
                 <i class="pi pi-plus"></i>

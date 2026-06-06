@@ -21,10 +21,10 @@ interface AssetGroup {
 }
 
 const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
-    { id: 'liquidity',    label: 'Liquidités & Épargne', icon: 'pi pi-wallet',      gradient: 'from-positive-500 to-positive-700', categories: ['cash', 'savings_account', 'mobile_money'] },
-    { id: 'investments',  label: 'Investissements',       icon: 'pi pi-chart-line',  gradient: 'from-brand-700 to-brand-600',     categories: ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'retirement', 'life_insurance'] },
-    { id: 'real_estate',  label: 'Immobilier',            icon: 'pi pi-building',    gradient: 'from-brand-700 to-brand-500', categories: ['real_estate'] },
-    { id: 'business',     label: 'Autres actifs',         icon: 'pi pi-briefcase',   gradient: 'from-brand-700 to-brand-500', categories: ['business', 'vehicle', 'tontine', 'collectibles', 'commodities', 'other'] },
+    { id: 'liquidity',    label: 'Liquidités & Épargne', icon: 'pi pi-wallet',      gradient: 'bg-positive-500', categories: ['cash', 'savings_account', 'mobile_money'] },
+    { id: 'investments',  label: 'Investissements',       icon: 'pi pi-chart-line',  gradient: 'bg-brand-700',     categories: ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'retirement', 'life_insurance'] },
+    { id: 'real_estate',  label: 'Immobilier',            icon: 'pi pi-building',    gradient: 'bg-brand-700', categories: ['real_estate'] },
+    { id: 'business',     label: 'Autres actifs',         icon: 'pi pi-briefcase',   gradient: 'bg-brand-700', categories: ['business', 'vehicle', 'tontine', 'collectibles', 'commodities', 'other'] },
 ];
 
 @Component({
@@ -95,7 +95,7 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
                             <button (click)="toggleGroup(group.id)"
                                     class="w-full flex items-center justify-between px-5 py-4 hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-colors text-left">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br"
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
                                          [ngClass]="group.gradient">
                                         <i [class]="group.icon + ' text-white text-sm'"></i>
                                     </div>
