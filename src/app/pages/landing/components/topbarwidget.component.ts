@@ -39,6 +39,56 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
             </a>
+            <!-- Resources dropdown -->
+            <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
+                <a pRipple
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                          hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
+                          transition-all duration-200 cursor-pointer">
+                    {{ _('Ressources', 'Resources') }}
+                    <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
+                       [class.rotate-180]="toolsOpen()"></i>
+                </a>
+                <div [class.hidden]="!toolsOpen()"
+                     class="absolute top-full left-0 mt-1 w-72 rounded-xl
+                            bg-surface-0 dark:bg-surface-800
+                            shadow-lg border border-surface-200 dark:border-surface-700
+                            p-2 z-30">
+                    <a [routerLink]="[currentLang, 'blog']" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-book text-brand-700 dark:text-brand-300 text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">Blog</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Toutes les éditions FIRE Africa', 'All FIRE Africa editions') }}</div>
+                        </div>
+                    </a>
+                    <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
+                            <span class="text-base">🔥</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Calcule ton objectif d\u2019indépendance financière', 'Calculate your financial independence goal') }}</div>
+                        </div>
+                    </a>
+                    <a [routerLink]="[currentLang, 'tools', 'compound-interest']" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-chart-bar text-brand-700 dark:text-brand-300 text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Intérêts composés', 'Compound Interest') }}</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Visualise la puissance des intérêts composés', 'Visualize the power of compound interest') }}</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
             <!-- About dropdown -->
             <div class="relative" (mouseenter)="aboutOpen.set(true)" (mouseleave)="aboutOpen.set(false)">
                 <a pRipple
@@ -106,56 +156,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             </a>
                         </div>
                     </div>
-                </div>
-            </div>
-            <!-- Resources dropdown -->
-            <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
-                <a pRipple
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                          hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                          transition-all duration-200 cursor-pointer">
-                    {{ _('Ressources', 'Resources') }}
-                    <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
-                       [class.rotate-180]="toolsOpen()"></i>
-                </a>
-                <div [class.hidden]="!toolsOpen()"
-                     class="absolute top-full left-0 mt-1 w-72 rounded-xl
-                            bg-surface-0 dark:bg-surface-800
-                            shadow-lg border border-surface-200 dark:border-surface-700
-                            p-2 z-30">
-                    <a [routerLink]="[currentLang, 'blog']" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-book text-brand-700 dark:text-brand-300 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">Blog</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Toutes les éditions FIRE Africa', 'All FIRE Africa editions') }}</div>
-                        </div>
-                    </a>
-                    <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
-                            <span class="text-base">🔥</span>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Calcule ton objectif d\u2019indépendance financière', 'Calculate your financial independence goal') }}</div>
-                        </div>
-                    </a>
-                    <a [routerLink]="[currentLang, 'tools', 'compound-interest']" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-chart-bar text-brand-700 dark:text-brand-300 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Intérêts composés', 'Compound Interest') }}</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Visualise la puissance des intérêts composés', 'Visualize the power of compound interest') }}</div>
-                        </div>
-                    </a>
                 </div>
             </div>
         </nav>
