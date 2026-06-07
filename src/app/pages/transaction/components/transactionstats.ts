@@ -10,7 +10,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     template: `
         <!-- Card 1 - Solde Comptes Bancaires -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 transition-colors duration-300">
+            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-sm p-5 transition-all duration-300">
                 <div class="relative flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Solde Comptes Bancaires</span>
@@ -26,7 +26,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
         
         <!-- Card 2 - Dépenses Totales -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 transition-colors duration-300">
+            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-sm p-5 transition-all duration-300">
                 <div class="relative flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dépenses Totales</span>
@@ -42,7 +42,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
         
         <!-- Card 3 - Dernier Salaire -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 transition-colors duration-300">
+            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-sm p-5 transition-all duration-300">
                 <div class="relative flex justify-between items-start mb-4">
                     <div>
                         <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dernier Salaire</span>

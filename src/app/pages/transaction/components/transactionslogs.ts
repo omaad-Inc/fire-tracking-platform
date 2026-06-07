@@ -165,15 +165,15 @@ interface DayGroup {
                             <span class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
                                 {{ group.label }}
                             </span>
-                            <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
+                            <div class="flex-1 h-px bg-surface-200 dark:bg-surface-800"></div>
                             <span class="text-xs text-surface-400 dark:text-surface-500">
                                 {{ group.records.length }} opération{{ group.records.length > 1 ? 's' : '' }}
                             </span>
                         </div>
 
-                        <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 divide-y divide-surface-100 dark:divide-surface-700/50 overflow-hidden">
+                        <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 divide-y divide-surface-100 dark:divide-surface-800 overflow-hidden transition-shadow hover:shadow-sm">
                             @for (rec of group.records; track rec.id) {
-                                <div class="flex items-center gap-3 px-3 py-3 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-700/40 transition-colors group">
+                                <div class="flex items-center gap-3 px-3 py-3.5 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors group">
                                     <!-- Category icon -->
                                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="categoryBg(rec)">
@@ -203,11 +203,11 @@ interface DayGroup {
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
                                     <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                                 (click)="editRecord(rec)">
                                             <i class="pi pi-pencil text-xs text-surface-500"></i>
                                         </button>
-                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
                                                 (click)="deleteRecord(rec)">
                                             <i class="pi pi-trash text-xs text-surface-500"></i>
                                         </button>
@@ -227,10 +227,10 @@ interface DayGroup {
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg"
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center"
                          [ngClass]="formType() === 'Income'
-                             ? 'bg-positive shadow-card'
-                             : 'bg-negative shadow-card'">
+                             ? 'bg-positive'
+                             : 'bg-negative'">
                         <i class="pi text-white text-lg"
                            [ngClass]="formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right'"></i>
                     </div>
@@ -331,7 +331,7 @@ interface DayGroup {
                                         [style.border-color]="form.category === cat ? getCatConfig(cat).color : ''"
                                         [style.background]="form.category === cat ? getCatConfig(cat).color + '15' : ''"
                                         [ngClass]="form.category === cat
-                                            ? 'shadow-sm scale-[1.02]'
+                                            ? 'shadow-sm'
                                             : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
                                     <div class="w-8 h-8 rounded-lg flex items-center justify-center"
                                          [style.background]="getCatConfig(cat).color + '20'">

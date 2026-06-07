@@ -64,7 +64,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 </div>
 
                 <!-- Divider -->
-                <div class="relative h-px bg-surface-200 dark:bg-surface-700"></div>
+                <div class="relative h-px bg-surface-200 dark:bg-surface-800"></div>
 
                 <!-- By category -->
                 @if (summary()!.byCategory.length > 0) {
@@ -86,7 +86,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                                    <div class="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
                                         <div class="h-full rounded-full transition-all duration-500"
                                              [style.width]="cat.pct + '%'"
                                              [style.background]="cat.color"></div>
@@ -102,7 +102,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 }
 
                 <!-- Transaction count -->
-                <div class="relative mt-auto pt-2 border-t border-surface-200 dark:border-surface-700">
+                <div class="relative mt-auto pt-2 border-t border-surface-200 dark:border-surface-800">
                     <p class="text-xs text-surface-400 text-center">
                         {{ summary()!.count }} transaction{{ summary()!.count > 1 ? 's' : '' }} ce mois
                     </p>

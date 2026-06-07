@@ -84,72 +84,75 @@ import { CurrencyService } from '../../../core/services/currency.service';
         @else {
             <div class="space-y-3">
                 @for (rec of filteredRecords(); track rec.id) {
-                    <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 p-4">
+                    <div class="group bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 transition-all duration-200 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm">
                         <!-- Header row -->
-                        <div class="flex items-start gap-3 mb-3">
+                        <div class="flex items-start gap-3 mb-4">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                  [ngClass]="rec.type === 'Debt' ? 'bg-negative-50 dark:bg-negative-500/15' : 'bg-positive-50 dark:bg-positive-500/15'">
                                 <i class="pi text-lg"
-                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-negative-600 dark:text-negative-400' : 'pi-arrow-down-left text-positive-600 dark:text-positive-400'"></i>
+                                   [ngClass]="rec.type === 'Debt' ? 'pi-arrow-up-right text-negative dark:text-negative-400' : 'pi-arrow-down-left text-positive-600 dark:text-positive-400'"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ rec.name }}</span>
-                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
                                           [ngClass]="rec.type === 'Debt'
-                                              ? 'bg-negative-50 dark:bg-negative-500/15 text-negative-600 dark:text-negative-400'
-                                              : 'bg-positive-50 dark:bg-positive-500/15 text-positive-600 dark:text-positive-400'">
-                                        {{ rec.type === 'Debt' ? 'Dette' : 'Créance' }}
+                                              ? 'bg-negative-50 dark:bg-negative-500/15 border-negative-100 dark:border-negative-500/20 text-negative dark:text-negative-400'
+                                              : 'bg-positive-50 dark:bg-positive-500/15 border-positive-100 dark:border-positive-500/20 text-positive-600 dark:text-positive-400'">
+                                        {{ rec.type === 'Debt' ? 'Je dois' : 'On me doit' }}
                                     </span>
                                 </div>
-                                <div class="flex items-center gap-3 mt-0.5 text-xs text-surface-400 flex-wrap">
-                                    @if (rec.interestRate > 0) { <span>{{ rec.interestRate }}% intérêt</span> }
-                                    @if (rec.frequency) { <span>· {{ rec.frequency }}</span> }
-                                    @if (rec.date) { <span>· {{ rec.date }}</span> }
+                                <div class="flex items-center gap-2 mt-1 text-xs text-surface-500 flex-wrap">
+                                    @if (rec.interestRate > 0) {
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-800 text-ochre-700 dark:text-ochre-400 font-medium">
+                                            {{ rec.interestRate }}% intérêt
+                                        </span>
+                                    }
+                                    @if (rec.frequency) { <span>{{ rec.frequency }}</span> }
+                                    @if (rec.date) { <span class="text-surface-400">· {{ rec.date }}</span> }
                                 </div>
                             </div>
                             <!-- Actions: always visible on mobile, hover on desktop -->
                             <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                         (click)="editRecord(rec)" title="Modifier">
                                     <i class="pi pi-pencil text-xs text-surface-500"></i>
                                 </button>
-                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-positive-50 dark:hover:bg-positive-700/30 transition-colors"
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-positive-50 dark:hover:bg-positive-700/30 transition-colors"
                                         (click)="openAddPaymentDialog(rec)" title="Ajouter un paiement">
-                                    <i class="pi pi-plus text-xs text-positive"></i>
+                                    <i class="pi pi-plus text-xs text-positive-600"></i>
                                 </button>
-                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
+                                <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
                                         (click)="deleteRecord(rec)" title="Supprimer">
                                     <i class="pi pi-trash text-xs text-surface-500"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Amounts row -->
-                        <div class="grid grid-cols-3 gap-2 mb-3 text-center">
-                            <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
-                                <div class="text-[10px] text-surface-400 mb-0.5">Total</div>
-                                <div class="text-sm font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="rec.total" /></div>
+                        <!-- Remaining amount (prominent) -->
+                        <div class="flex items-end justify-between gap-3 mb-3">
+                            <div class="min-w-0">
+                                <div class="text-[11px] uppercase tracking-wide text-surface-500 mb-0.5">Restant</div>
+                                <div class="text-xl font-bold leading-none"
+                                     [ngClass]="rec.type === 'Debt' ? 'text-negative' : 'text-positive'">
+                                    <app-amount [value]="rec.total - rec.paid" />
+                                </div>
                             </div>
-                            <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
-                                <div class="text-[10px] text-surface-400 mb-0.5">{{ rec.type === 'Debt' ? 'Payé' : 'Reçu' }}</div>
-                                <div class="text-sm font-bold text-positive"><app-amount [value]="rec.paid" /></div>
-                            </div>
-                            <div class="bg-surface-50 dark:bg-surface-700/50 rounded-xl p-2">
-                                <div class="text-[10px] text-surface-400 mb-0.5">Reste</div>
-                                <div class="text-sm font-bold text-negative"><app-amount [value]="rec.total - rec.paid" /></div>
+                            <div class="text-right shrink-0">
+                                <div class="text-[11px] text-surface-500 mb-0.5">{{ rec.type === 'Debt' ? 'Payé' : 'Reçu' }} / Total</div>
+                                <div class="text-sm font-semibold text-surface-600 dark:text-surface-300">
+                                    <app-amount [value]="rec.paid" /> <span class="text-surface-400">/</span> <app-amount [value]="rec.total" />
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Progress bar -->
-                        <div class="flex items-center gap-2">
-                            <div class="flex-1 h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                <div class="h-full rounded-full transition-all duration-500"
-                                     [ngClass]="rec.type === 'Debt' ? 'bg-brand-700 dark:bg-brand-300' : 'bg-positive-500'"
+                        <!-- Repayment progress bar -->
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1 h-2 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
+                                <div class="h-full rounded-full bg-positive-500 transition-all duration-500"
                                      [style.width]="getPercent(rec) + '%'"></div>
                             </div>
-                            <span class="text-xs font-semibold shrink-0"
-                                  [ngClass]="rec.type === 'Debt' ? 'text-brand-700 dark:text-brand-300' : 'text-positive'">
+                            <span class="text-xs font-semibold text-positive-600 dark:text-positive-400 shrink-0 tabular-nums">
                                 {{ getPercent(rec) }}%
                             </span>
                         </div>
@@ -165,8 +168,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-negative flex items-center justify-center shadow-card">
-                        <i class="pi pi-credit-card text-white text-lg"></i>
+                    <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                        <i class="pi pi-credit-card text-brand-700 dark:text-ochre-400 text-lg"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -277,8 +280,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-positive flex items-center justify-center">
-                        <i class="pi pi-plus text-white text-lg"></i>
+                    <div class="w-10 h-10 rounded-xl bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
+                        <i class="pi pi-plus text-positive-600 dark:text-positive-400 text-lg"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Ajouter un paiement</h3>

@@ -110,7 +110,7 @@ function getDonutColors(): string[] {
                     <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
                 </button>
                 <div class="flex items-center gap-4 min-w-0">
-                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0"
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm shrink-0"
                          [style.background]="currentGroup?.bg">
                         <i [class]="currentGroup?.icon" class="text-white text-2xl"></i>
                     </div>
@@ -220,7 +220,7 @@ function getDonutColors(): string[] {
                     <div class="space-y-3">
                         @for (item of items; track item.id) {
                             <a [routerLink]="assetLink(item.id)"
-                               class="flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group no-underline border border-surface-200 dark:border-surface-700 hover:border-brand-300/40 dark:hover:border-brand-700/50 shadow-sm">
+                               class="flex items-center justify-between p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer group no-underline border border-surface-200 dark:border-surface-800 hover:border-brand-300/40 dark:hover:border-brand-700/50 hover:shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="getCategoryBg(item.category)">
@@ -228,7 +228,9 @@ function getDonutColors(): string[] {
                                     </div>
                                     <div class="min-w-0">
                                         <div class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ item.name }}</div>
-                                        <div class="text-surface-500 dark:text-surface-400 text-sm">{{ getCategoryLabel(item.category) }}</div>
+                                        <div class="text-surface-500 dark:text-surface-400 text-sm truncate">
+                                            @if (item.institution) {<span>{{ item.institution }} · </span>}<span>{{ sharePct(item) }}% du total</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0 ml-4">

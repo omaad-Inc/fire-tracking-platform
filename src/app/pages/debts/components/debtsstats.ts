@@ -10,61 +10,55 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     selector: 'app-debts-stats',
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <!-- Card 1 - Dette Totale -->
+        <!-- Card 1 - Je dois (dettes) -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 transition-colors duration-300">
-                <div class="relative flex justify-between items-start mb-4">
-                    <div>
-                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dette Totale</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="totalDebt" /></div>
+            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm p-5 transition-all duration-200">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="min-w-0">
+                        <span class="block text-surface-500 text-sm font-medium mb-2">Je dois</span>
+                        <div class="text-negative font-bold text-2xl"><app-amount [value]="totalDebt" /></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-negative-50 dark:bg-negative-500/15">
-                        <i class="pi pi-credit-card text-negative-600 dark:text-negative-400 text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-negative-50 dark:bg-negative-500/15 shrink-0">
+                        <i class="pi pi-arrow-up-right text-negative dark:text-negative-400 text-xl"></i>
                     </div>
                 </div>
-                <div class="relative flex items-center gap-2">
-                    <span class="text-surface-500 dark:text-surface-400 text-sm">Somme de toutes vos dettes</span>
-                </div>
+                <span class="text-surface-500 text-sm">Total de vos dettes</span>
             </div>
         </div>
-        
-        <!-- Card 2 - Dernier Paiement -->
+
+        <!-- Card 2 - On me doit (créances) -->
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 transition-colors duration-300">
-                <div class="relative flex justify-between items-start mb-4">
-                    <div>
-                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Dernier Paiement</span>
+            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm p-5 transition-all duration-200">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="min-w-0">
+                        <span class="block text-surface-500 text-sm font-medium mb-2">On me doit</span>
+                        <div class="text-positive font-bold text-2xl"><app-amount [value]="receivables" /></div>
+                    </div>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-positive-50 dark:bg-positive-500/15 shrink-0">
+                        <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-surface-500 text-sm">Total de vos créances</span>
+            </div>
+        </div>
+
+        <!-- Card 3 - Dernier paiement -->
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+            <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-surface-300 dark:hover:border-surface-700 hover:shadow-sm p-5 transition-all duration-200">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="min-w-0">
+                        <span class="block text-surface-500 text-sm font-medium mb-2">Dernier paiement</span>
                         <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="paidAmount" /></div>
                     </div>
-                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-positive-50 dark:bg-positive-500/15">
-                        <i class="pi pi-check-circle text-positive-600 dark:text-positive-400 text-xl"></i>
+                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 shrink-0">
+                        <i class="pi pi-check-circle text-brand-700 dark:text-ochre-400 text-xl"></i>
                     </div>
                 </div>
-                <div class="relative flex items-center gap-2">
-                    @if (lastPaymentDate) {
-                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ lastPaymentDate }}</span>
-                    } @else {
-                        <span class="text-surface-500 dark:text-surface-400 text-sm">Aucun paiement récent</span>
-                    }
-                </div>
-            </div>
-        </div>
-        
-        <!-- Card 3 - Montant des Créances -->
-        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-            <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 transition-colors duration-300">
-                <div class="relative flex justify-between items-start mb-4">
-                    <div>
-                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">Montant des Créances</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl"><app-amount [value]="receivables" /></div>
-                    </div>
-                    <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20">
-                        <i class="pi pi-arrow-right text-brand-700 dark:text-ochre-400 text-xl"></i>
-                    </div>
-                </div>
-                <div class="relative flex items-center gap-2">
-                    <span class="text-surface-500 dark:text-surface-400 text-sm">Somme de vos créances</span>
-                </div>
+                @if (lastPaymentDate) {
+                    <span class="text-surface-500 text-sm">{{ lastPaymentDate }}</span>
+                } @else {
+                    <span class="text-surface-500 text-sm">Aucun paiement récent</span>
+                }
             </div>
         </div>
     `

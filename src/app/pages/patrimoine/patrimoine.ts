@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
-import { PatrimoineStats } from './components/patrimoinestats';
+import { ChartModule } from 'primeng/chart';
 import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
 import { AssetsStateService } from '../service/assets-state.service';
@@ -25,6 +25,9 @@ interface CategoryGroupCard {
 // differentiates the category, not the color. (Phase 2 identity rule.)
 const GROUP_BG = '#1A2740';
 
+// Allocation donut palette (navy / ochre / warm-grey spread).
+const DONUT_COLORS = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#2C3E5E', '#9C988C', '#71421C', '#8A98AE'];
+
 const GROUPS = [
     { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
     { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
@@ -38,16 +41,72 @@ const GROUPS = [
 @Component({
     selector: 'app-patrimoine',
     standalone: true,
-    imports: [CommonModule, PatrimoineProgress, PatrimoineStats, AppAmountComponent],
+    imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
 
-            <!-- Chart + KPI stats -->
+            <!-- Net-worth hero -->
+            <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div class="min-w-0">
+                        <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">Patrimoine net</span>
+                        <div class="flex items-center gap-3 mt-1 flex-wrap">
+                            <app-amount [value]="netWorth()" class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-0" />
+                            @if (assetDeltaAbs() !== 0) {
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"
+                                      [ngClass]="assetDeltaAbs() >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
+                                    <i class="pi text-xs" [ngClass]="assetDeltaAbs() >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
+                                    <app-amount [value]="assetDeltaAbs()" [prefix]="assetDeltaAbs() >= 0 ? '+' : '-'" />
+                                    &nbsp;{{ assetDeltaPct() | number:'1.2-2' }}%
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6 sm:gap-8">
+                        <div>
+                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">Actifs</div>
+                            <div class="font-semibold text-surface-900 dark:text-surface-0"><app-amount [value]="totalAssets()" /></div>
+                        </div>
+                        <div>
+                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">Passifs</div>
+                            <div class="font-semibold" [ngClass]="totalDebts() > 0 ? 'text-negative' : 'text-surface-900 dark:text-surface-0'">
+                                <app-amount [value]="totalDebts()" [prefix]="totalDebts() > 0 ? '-' : ''" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progression + allocation donut -->
             <div class="grid grid-cols-12 gap-4 md:gap-6">
                 <div class="col-span-12 xl:col-span-8">
                     <app-patrimoine-progress />
                 </div>
-                <app-patrimoine-stats class="col-span-12 xl:col-span-4" />
+                <div class="col-span-12 xl:col-span-4 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-surface-900 dark:text-surface-0">Répartition</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ categoryGroups().length }} catégorie{{ categoryGroups().length > 1 ? 's' : '' }}</span>
+                    </div>
+                    @if (donutData(); as dd) {
+                        <div class="flex-1 flex items-center justify-center py-2">
+                            <div class="relative" style="width:230px;height:230px">
+                                <p-chart type="doughnut" [data]="dd" [options]="donutOptions" styleClass="w-full h-full" [height]="'230px'" />
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
+                                    @if (hovered(); as h) {
+                                        <span class="text-surface-500 dark:text-surface-400 text-xs leading-tight line-clamp-2">{{ h.name }}</span>
+                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="h.value" /></span>
+                                        <span class="text-brand-700 dark:text-ochre-400 text-sm font-semibold mt-0.5">{{ h.pct }} %</span>
+                                    } @else {
+                                        <span class="text-surface-500 dark:text-surface-400 text-xs">Total actifs</span>
+                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="totalAssets()" /></span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    } @else {
+                        <div class="flex-1 flex items-center justify-center text-surface-400 text-sm py-10">Aucun actif</div>
+                    }
+                </div>
             </div>
 
             <!-- Actifs section -->
@@ -78,7 +137,7 @@ const GROUPS = [
                     <div class="space-y-3">
                         @for (group of categoryGroups(); track group.id) {
                             <button (click)="navigateToCategory(group.id)"
-                                    class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-brand-300/40 dark:hover:border-brand-700/50 text-left shadow-sm">
+                                    class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-800 hover:border-brand-300/40 dark:hover:border-brand-700/50 text-left hover:shadow-sm">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                                          [style.background]="group.bg">
@@ -87,7 +146,7 @@ const GROUPS = [
                                     <div class="min-w-0">
                                         <div class="font-semibold text-surface-900 dark:text-surface-0">{{ group.label }}</div>
                                         <div class="text-surface-500 dark:text-surface-400 text-sm">
-                                            {{ group.assetCount }} actif{{ group.assetCount > 1 ? 's' : '' }}
+                                            {{ group.assetCount }} actif{{ group.assetCount > 1 ? 's' : '' }} · {{ groupSharePct(group) }}%
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +194,7 @@ const GROUPS = [
                     </div>
                 } @else {
                     <button (click)="navigateToDebts()"
-                            class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-800 hover:bg-surface-50 dark:hover:bg-surface-700 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-700 hover:border-negative/30 text-left shadow-sm">
+                            class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-800 hover:border-negative/30 text-left hover:shadow-sm">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                                  style="background: #B0463E">
@@ -191,6 +250,55 @@ export class Patrimoine implements OnInit, OnDestroy {
     totalAssets = computed(() => this.allAssets().reduce((s, a) => s + a.value, 0));
     totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe').reduce((s, d) => s + d.current_amount, 0));
     debtsCount = computed(() => this.debts().filter(d => d.type === 'i_owe').length);
+
+    // ── Net-worth hero ──
+    netWorth = computed(() => this.totalAssets() - this.totalDebts());
+    assetDeltaAbs = computed(() => this.allAssets().reduce((s, a) => s + (a.deltaAbs ?? 0), 0));
+    assetDeltaPct = computed(() => {
+        const base = this.totalAssets() - this.assetDeltaAbs();
+        return base > 0 ? (this.assetDeltaAbs() / base) * 100 : 0;
+    });
+
+    // ── Allocation donut (hover-driven center, no legend) ──
+    hovered = signal<{ name: string; value: number; pct: number } | null>(null);
+    private hoveredIdx = -1;
+
+    donutData = computed(() => {
+        const groups = this.categoryGroups();
+        if (!groups.length) return null;
+        const isDark = document.documentElement.classList.contains('app-dark');
+        const sliceBorder = isDark ? '#0F1A2E' : '#ffffff';
+        return {
+            labels: groups.map(g => g.label),
+            datasets: [{
+                data: groups.map(g => g.totalValue),
+                backgroundColor: groups.map((_, i) => DONUT_COLORS[i % DONUT_COLORS.length]),
+                borderColor: sliceBorder,
+                borderWidth: 2,
+                hoverOffset: 10,
+                hoverBorderColor: sliceBorder,
+            }],
+        };
+    });
+
+    donutOptions: any = {
+        cutout: '72%',
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        onHover: (_e: any, els: any[]) => {
+            const idx = els && els.length ? els[0].index : -1;
+            if (idx === this.hoveredIdx) return;
+            this.hoveredIdx = idx;
+            const groups = this.categoryGroups();
+            const g = idx >= 0 ? groups[idx] : null;
+            this.hovered.set(g ? { name: g.label, value: g.totalValue, pct: this.groupSharePct(g) } : null);
+        },
+    };
+
+    groupSharePct(group: CategoryGroupCard): number {
+        const tot = this.totalAssets();
+        return tot > 0 ? Math.round((group.totalValue / tot) * 100) : 0;
+    }
 
     async ngOnInit() {
         await Promise.all([this.loadAssets(), this.loadDebts()]);

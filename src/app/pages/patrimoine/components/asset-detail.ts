@@ -52,9 +52,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                     <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
                 </button>
                 <div class="flex items-center gap-3 flex-1 min-w-0">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl shrink-0 flex items-center justify-center shadow-lg"
-                         [style.background]="categoryBg()">
-                        <i [class]="categoryIcon()" class="text-white text-lg sm:text-xl"></i>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl shrink-0 flex items-center justify-center bg-brand-100 dark:bg-brand-700/20">
+                        <i [class]="categoryIcon()" class="text-brand-700 dark:text-ochre-400 text-lg sm:text-xl"></i>
                     </div>
                     <div class="min-w-0 flex-1">
                         <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 m-0 truncate">{{ asset()!.name }}</h1>
@@ -81,7 +80,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         </div>
                         @if (gainLoss() !== null) {
                             <div class="flex items-center gap-2 mt-2">
-                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-semibold"
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"
                                       [ngClass]="(gainLoss()! >= 0) ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                     <i class="pi text-xs" [ngClass]="gainLoss()! >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                     <app-amount [value]="gainLoss()!" [prefix]="gainLoss()! >= 0 ? '+' : '-'" />
@@ -307,8 +306,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                     <div class="px-5 py-2">
                         @for (row of generalInfoRows(); track row.label) {
                             <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
-                                <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                    <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                    <i class="pi text-brand-700 dark:text-ochre-400 text-sm" [ngClass]="row.icon"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
@@ -331,8 +330,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             <div class="px-5 py-2">
                                 @for (row of realEstateRows(); track row.label) {
                                     <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
-                                        <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                            <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                            <i class="pi text-brand-700 dark:text-ochre-400 text-sm" [ngClass]="row.icon"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
@@ -347,25 +346,25 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 <div class="px-5 py-4 border-t border-surface-200 dark:border-surface-700">
                                     <h4 class="text-[11px] font-bold uppercase tracking-wider text-surface-500 mb-3">Frais d'acquisition</h4>
                                     <div class="grid grid-cols-2 gap-3">
-                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">Agence</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
                                                 @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { <span class="text-surface-400">—</span> }
                                             </p>
                                         </div>
-                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">Notaire</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
                                                 @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { <span class="text-surface-400">—</span> }
                                             </p>
                                         </div>
-                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">Rénovation</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
                                                 @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { <span class="text-surface-400">—</span> }
                                             </p>
                                         </div>
-                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800/60">
+                                        <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">Ameublement</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
                                                 @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { <span class="text-surface-400">—</span> }
@@ -384,8 +383,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             <div class="px-5 py-2">
                                 @for (row of performanceRows(); track row.label) {
                                     <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
-                                        <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                            <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                            <i class="pi text-brand-700 dark:text-ochre-400 text-sm" [ngClass]="row.icon"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
@@ -406,8 +405,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             <div class="px-5 py-2">
                                 @for (row of tontineRows(); track row.label) {
                                     <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800 last:border-b-0">
-                                        <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                            <i class="pi text-surface-500 dark:text-surface-400 text-sm" [ngClass]="row.icon"></i>
+                                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                            <i class="pi text-brand-700 dark:text-ochre-400 text-sm" [ngClass]="row.icon"></i>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ row.label }}</p>
@@ -427,13 +426,12 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             </div>
                             <div class="px-5 py-2">
                                 <div class="flex items-center gap-3 py-3">
-                                    <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                                         style="background: rgba(199, 123, 60, 0.12);">
-                                        <i class="pi pi-mobile text-sm" style="color: #C77B3C;"></i>
+                                    <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-ochre-100 dark:bg-ochre-900/20">
+                                        <i class="pi pi-mobile text-sm text-ochre-600 dark:text-ochre-400"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Opérateur</p>
-                                        <p class="text-sm font-bold text-brand-700 dark:text-brand-300">
+                                        <p class="text-sm font-bold text-surface-900 dark:text-surface-0">
                                             {{ asset()!.mobile_money_operator || '—' }}
                                         </p>
                                     </div>
@@ -461,8 +459,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             </div>
                             <div class="px-5 py-2">
                                 <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
-                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                        <i class="pi pi-building text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-building text-brand-700 dark:text-ochre-400 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Institution</p>
@@ -479,8 +477,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 py-3">
-                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                        <i class="pi pi-calendar text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-calendar text-brand-700 dark:text-ochre-400 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Suivi depuis</p>
@@ -498,8 +496,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             </div>
                             <div class="px-5 py-2">
                                 <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
-                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                        <i class="pi pi-calendar text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-calendar text-brand-700 dark:text-ochre-400 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Suivi depuis</p>
@@ -507,8 +505,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
-                                    <div class="w-9 h-9 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
-                                        <i class="pi pi-history text-surface-500 dark:text-surface-400 text-sm"></i>
+                                    <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-history text-brand-700 dark:text-ochre-400 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Dernière mise à jour</p>
@@ -543,9 +541,8 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
-                         [style.background]="categoryBg()">
-                        <i [class]="categoryIcon()" class="text-white"></i>
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-100 dark:bg-brand-700/20">
+                        <i [class]="categoryIcon()" class="text-brand-700 dark:text-ochre-400"></i>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">Modifier l'actif</h3>
