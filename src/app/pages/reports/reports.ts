@@ -43,7 +43,7 @@ const trunc = (s: string, len = 12) =>
                 <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0 m-0">Rapports</h1>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mt-0.5">Flux financiers mensuels</p>
             </div>
-            <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-1 py-1">
+            <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-1 py-1 border border-surface-200 dark:border-surface-800">
                 <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
                         (click)="prevMonth()">
                     <i class="pi pi-chevron-left text-sm text-surface-600 dark:text-surface-300"></i>
@@ -52,7 +52,7 @@ const trunc = (s: string, len = 12) =>
                     {{ monthLabel() }}
                 </span>
                 <button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
-                        (click)="nextMonth()" [disabled]="isCurrentMonth()" [class.opacity-40]="isCurrentMonth()">
+                        (click)="nextMonth()" [disabled]="isCurrentMonth()" [ngClass]="isCurrentMonth() ? 'opacity-40' : ''">
                     <i class="pi pi-chevron-right text-sm text-surface-600 dark:text-surface-300"></i>
                 </button>
             </div>
@@ -68,66 +68,66 @@ const trunc = (s: string, len = 12) =>
         } @else if (summary()) {
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <!-- Revenus -->
-                <div class="card !p-5 h-[110px] flex flex-col justify-between">
+                <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-[110px] flex flex-col justify-between transition-shadow hover:shadow-sm">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
-                        <div class="w-8 h-8 rounded-xl bg-positive/10 flex items-center justify-center">
+                        <span class="text-xs font-semibold text-surface-500 uppercase tracking-wide">Revenus</span>
+                        <div class="w-8 h-8 rounded-xl bg-positive/10 dark:bg-positive/15 flex items-center justify-center">
                             <i class="pi pi-arrow-down-left text-positive text-xs"></i>
                         </div>
                     </div>
                     <div>
                         <div class="text-xl font-bold text-positive">+<app-amount [value]="summary()!.income" /></div>
-                        <p class="text-xs text-surface-400 mt-0.5">{{ incomeCount() }} opération{{ incomeCount() !== 1 ? 's' : '' }}</p>
+                        <p class="text-xs text-surface-500 mt-0.5">{{ incomeCount() }} opération{{ incomeCount() !== 1 ? 's' : '' }}</p>
                     </div>
                 </div>
                 <!-- Dépenses -->
-                <div class="card !p-5 h-[110px] flex flex-col justify-between">
+                <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-[110px] flex flex-col justify-between transition-shadow hover:shadow-sm">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
-                        <div class="w-8 h-8 rounded-xl bg-negative/10 flex items-center justify-center">
+                        <span class="text-xs font-semibold text-surface-500 uppercase tracking-wide">Dépenses</span>
+                        <div class="w-8 h-8 rounded-xl bg-negative/10 dark:bg-negative/15 flex items-center justify-center">
                             <i class="pi pi-arrow-up-right text-negative text-xs"></i>
                         </div>
                     </div>
                     <div>
                         <div class="text-xl font-bold text-negative">−<app-amount [value]="summary()!.expenses" /></div>
-                        <p class="text-xs text-surface-400 mt-0.5">{{ summary()!.count - incomeCount() }} opération{{ (summary()!.count - incomeCount()) !== 1 ? 's' : '' }}</p>
+                        <p class="text-xs text-surface-500 mt-0.5">{{ summary()!.count - incomeCount() }} opération{{ (summary()!.count - incomeCount()) !== 1 ? 's' : '' }}</p>
                     </div>
                 </div>
                 <!-- Solde net -->
-                <div class="card !p-5 h-[110px] flex flex-col justify-between">
+                <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-[110px] flex flex-col justify-between transition-shadow hover:shadow-sm">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
+                        <span class="text-xs font-semibold text-surface-500 uppercase tracking-wide">Solde net</span>
                         <div class="w-8 h-8 rounded-xl flex items-center justify-center"
-                             [ngClass]="summary()!.net >= 0 ? 'bg-brand-700/10 dark:bg-brand-300/15' : 'bg-negative/10'">
-                            <i class="pi text-xs" [ngClass]="summary()!.net >= 0 ? 'pi-trending-up text-brand-700 dark:text-brand-300' : 'pi-trending-down text-negative'"></i>
+                             [ngClass]="summary()!.net >= 0 ? 'bg-brand-100 dark:bg-brand-700/20' : 'bg-negative/10 dark:bg-negative/15'">
+                            <i class="pi text-xs" [ngClass]="summary()!.net >= 0 ? 'pi-trending-up text-brand-700 dark:text-ochre-400' : 'pi-trending-down text-negative'"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold" [ngClass]="summary()!.net >= 0 ? 'text-brand-700 dark:text-brand-300' : 'text-negative'">
+                        <div class="text-xl font-bold" [ngClass]="summary()!.net >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-negative'">
                             {{ summary()!.net >= 0 ? '+' : '−' }}<app-amount [value]="summary()!.net" />
                         </div>
-                        <p class="text-xs text-surface-400 mt-0.5">{{ summary()!.net >= 0 ? 'Bilan positif' : 'Bilan négatif' }}</p>
+                        <p class="text-xs text-surface-500 mt-0.5">{{ summary()!.net >= 0 ? 'Bilan positif' : 'Bilan négatif' }}</p>
                     </div>
                 </div>
                 <!-- Taux d'épargne -->
-                <div class="card !p-5 h-[110px] flex flex-col justify-between">
+                <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-[110px] flex flex-col justify-between transition-shadow hover:shadow-sm">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
-                        <div class="w-8 h-8 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center">
-                            <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-xs"></i>
+                        <span class="text-xs font-semibold text-surface-500 uppercase tracking-wide">Taux d'épargne</span>
+                        <div class="w-8 h-8 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                            <i class="pi pi-percentage text-brand-700 dark:text-ochre-400 text-xs"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-xl font-bold text-brand-700 dark:text-brand-300">{{ savingsRate() }}%</div>
-                        <div class="h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full mt-2 overflow-hidden">
-                            <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full" [style.width]="savingsRate() + '%'"></div>
+                        <div class="text-xl font-bold text-surface-900 dark:text-surface-0">{{ savingsRate() }}%</div>
+                        <div class="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full mt-2 overflow-hidden">
+                            <div class="h-full bg-brand-700 dark:bg-ochre-400 rounded-full" [style.width]="savingsRate() + '%'"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- ── Sankey cash-flow chart ─────────────────────────────── -->
-            <div class="card overflow-hidden">
+            <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6 overflow-hidden">
                 <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-5">Flux de trésorerie</h2>
 
                 @if (!sankey() || sankey()!.links.length === 0) {
@@ -192,10 +192,10 @@ const trunc = (s: string, len = 12) =>
             </div>
 
             <!-- ── Expense breakdown ─────────────────────────────────── -->
-            <div class="card">
+            <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
                 <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-5">Répartition des dépenses</h2>
                 @if (summary()!.byCategory.length === 0) {
-                    <p class="text-surface-400 text-sm text-center py-6">Aucune dépense ce mois-ci</p>
+                    <p class="text-surface-500 text-sm text-center py-6">Aucune dépense ce mois-ci</p>
                 } @else {
                     <div class="space-y-4">
                         @for (cat of summary()!.byCategory; track cat.category) {
@@ -206,16 +206,16 @@ const trunc = (s: string, len = 12) =>
                                              [style.background]="cat.color + '20'">
                                             <i [class]="getCatIcon(cat.category) + ' text-xs'" [style.color]="cat.color"></i>
                                         </div>
-                                        <span class="text-sm text-surface-700 dark:text-surface-300">{{ cat.label }}</span>
+                                        <span class="text-sm text-surface-600 dark:text-surface-300">{{ cat.label }}</span>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <span class="text-xs text-surface-400">{{ cat.pct }}%</span>
+                                        <span class="text-xs text-surface-500">{{ cat.pct }}%</span>
                                         <span class="text-sm font-semibold text-surface-900 dark:text-surface-0 min-w-[70px] text-right">
                                             <app-amount [value]="cat.amount" />
                                         </span>
                                     </div>
                                 </div>
-                                <div class="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                                <div class="h-2 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
                                     <div class="h-full rounded-full transition-all duration-700"
                                          [style.width]="cat.pct + '%'" [style.background]="cat.color"></div>
                                 </div>

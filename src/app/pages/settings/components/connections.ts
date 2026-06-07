@@ -89,11 +89,11 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
                                         <i class="pi pi-ellipsis-h text-surface-400"></i>
                                     </button>
                                     @if (openMenuId() === conn.id) {
-                                        <div class="absolute right-0 top-10 w-48 py-1 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-lg z-50">
+                                        <div class="absolute right-0 top-10 w-48 py-1 rounded-xl bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-sm z-50">
                                             <button type="button" (click)="triggerSync(conn)" class="w-full text-left px-4 py-2.5 text-sm text-surface-700 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors">
                                                 <i class="pi pi-refresh mr-2 text-xs"></i>{{ t('broker.sync') }}
                                             </button>
-                                            <button type="button" (click)="confirmDelete(conn)" class="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                            <button type="button" (click)="confirmDelete(conn)" class="w-full text-left px-4 py-2.5 text-sm text-negative dark:text-negative-400 hover:bg-negative-50 dark:hover:bg-negative-700/20 transition-colors">
                                                 <i class="pi pi-trash mr-2 text-xs"></i>{{ t('broker.delete') }}
                                             </button>
                                         </div>
@@ -134,11 +134,11 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
                                         <i class="pi pi-ellipsis-h text-surface-400"></i>
                                     </button>
                                     @if (openMenuId() === conn.id) {
-                                        <div class="absolute right-0 top-10 w-48 py-1 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-lg z-50">
+                                        <div class="absolute right-0 top-10 w-48 py-1 rounded-xl bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-sm z-50">
                                             <button type="button" (click)="triggerSync(conn)" class="w-full text-left px-4 py-2.5 text-sm text-surface-700 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors">
                                                 <i class="pi pi-refresh mr-2 text-xs"></i>{{ t('broker.sync') }}
                                             </button>
-                                            <button type="button" (click)="confirmDelete(conn)" class="w-full text-left px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                            <button type="button" (click)="confirmDelete(conn)" class="w-full text-left px-4 py-2.5 text-sm text-negative dark:text-negative-400 hover:bg-negative-50 dark:hover:bg-negative-700/20 transition-colors">
                                                 <i class="pi pi-trash mr-2 text-xs"></i>{{ t('broker.delete') }}
                                             </button>
                                         </div>

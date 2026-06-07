@@ -87,16 +87,6 @@ export class TopMoversWidget implements OnInit {
     loading = signal(true);
     movers = signal<MoverItem[]>([]);
 
-    // All movers share the same brand gradient — the icon glyph differentiates.
-    private static readonly ICON_BG = 'linear-gradient(135deg, #1A2740, #2C3E5E)';
-    private iconBgs = [
-        TopMoversWidget.ICON_BG,
-        TopMoversWidget.ICON_BG,
-        TopMoversWidget.ICON_BG,
-        TopMoversWidget.ICON_BG,
-        TopMoversWidget.ICON_BG,
-    ];
-
     async ngOnInit() {
         try {
             const assets = await this.patrimoineService.getAssets();
@@ -121,10 +111,6 @@ export class TopMoversWidget implements OnInit {
         } finally {
             this.loading.set(false);
         }
-    }
-
-    getIconBg(index: number): string {
-        return this.iconBgs[index % this.iconBgs.length];
     }
 
     getIcon(category?: string): string {

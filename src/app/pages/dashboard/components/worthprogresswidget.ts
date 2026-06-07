@@ -94,17 +94,24 @@ export class WorthProgress implements OnInit {
                 datasets: [
                     {
                         data: points.map(p => p.value),
-                        fill: false,
+                        fill: true,
+                        backgroundColor: (ctx: any) => {
+                            const { ctx: c, chartArea } = ctx.chart;
+                            if (!chartArea) return 'transparent';
+                            const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                            const dark = document.documentElement.classList.contains('app-dark');
+                            g.addColorStop(0, dark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)');
+                            g.addColorStop(1, dark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)');
+                            return g;
+                        },
                         borderColor: borderColor,
                         tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 3,
-                        pointBackgroundColor: borderColor,
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
+                        borderWidth: 2,
+                        pointRadius: 0,
                         pointHoverRadius: 5,
                         pointHoverBackgroundColor: borderColor,
-                        pointHoverBorderColor: '#fff'
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
                     }
                 ]
             };

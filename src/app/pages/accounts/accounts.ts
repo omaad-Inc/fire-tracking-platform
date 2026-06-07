@@ -35,7 +35,7 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
         <div class="flex flex-col gap-6">
 
             <!-- ── Hero: Net worth ─────────────────────────────────── -->
-            <div class="card">
+            <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
                 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
                     <div>
                         <p class="text-surface-500 dark:text-surface-400 text-sm mb-1">Valeur nette totale</p>
@@ -44,7 +44,7 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
                         </div>
                         @if (netWorthChange() !== null) {
                             <div class="flex items-center gap-2 mt-2">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-semibold"
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"
                                       [ngClass]="netWorthChange()! >= 0
                                           ? 'bg-positive/10 text-positive'
                                           : 'bg-negative/10 text-negative'">
@@ -55,18 +55,18 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
                                         ({{ netWorthChangePct()! >= 0 ? '+' : '' }}{{ netWorthChangePct() | number:'1.1-1' }}%)
                                     }
                                 </span>
-                                <span class="text-surface-400 text-sm">ce mois</span>
+                                <span class="text-surface-500 text-sm">ce mois</span>
                             </div>
                         }
                     </div>
                     <div class="flex items-center gap-6 shrink-0">
                         <div class="text-right">
-                            <p class="text-surface-400 text-xs mb-0.5">Actifs</p>
+                            <p class="text-surface-500 text-xs mb-0.5">Actifs</p>
                             <p class="font-semibold text-positive"><app-amount [value]="totalAssets()" /></p>
                         </div>
-                        <div class="w-px h-8 bg-surface-200 dark:bg-surface-700"></div>
+                        <div class="w-px h-8 bg-surface-200 dark:bg-surface-800"></div>
                         <div class="text-right">
-                            <p class="text-surface-400 text-xs mb-0.5">Passifs</p>
+                            <p class="text-surface-500 text-xs mb-0.5">Passifs</p>
                             <p class="font-semibold text-negative">−<app-amount [value]="totalDebts()" /></p>
                         </div>
                     </div>
@@ -90,18 +90,17 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
             } @else {
                 <div class="space-y-4">
                     @for (group of assetGroups(); track group.id) {
-                        <div class="card !p-0 overflow-hidden">
+                        <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 overflow-hidden transition-shadow hover:shadow-sm">
                             <!-- Group header -->
                             <button (click)="toggleGroup(group.id)"
-                                    class="w-full flex items-center justify-between px-5 py-4 hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-colors text-left">
+                                    class="w-full flex items-center justify-between px-5 py-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-left">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-                                         [ngClass]="group.gradient">
-                                        <i [class]="group.icon + ' text-white text-sm'"></i>
+                                    <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-brand-100 dark:bg-brand-700/20">
+                                        <i [class]="group.icon + ' text-brand-700 dark:text-ochre-400 text-sm'"></i>
                                     </div>
                                     <div>
                                         <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ group.label }}</p>
-                                        <p class="text-xs text-surface-400">{{ group.assets.length }} actif{{ group.assets.length > 1 ? 's' : '' }}</p>
+                                        <p class="text-xs text-surface-500">{{ group.assets.length }} actif{{ group.assets.length > 1 ? 's' : '' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
@@ -115,14 +114,14 @@ const GROUPS: Omit<AssetGroup, 'total' | 'assets'>[] = [
 
                             <!-- Individual assets (collapsible) -->
                             @if (expandedGroups().has(group.id)) {
-                                <div class="border-t border-surface-200 dark:border-surface-700 divide-y divide-surface-100 dark:divide-surface-700/50">
+                                <div class="border-t border-surface-200 dark:border-surface-800 divide-y divide-surface-100 dark:divide-surface-800">
                                     @for (asset of group.assets; track asset.id) {
                                         <button (click)="navigateToAsset(asset.id)"
-                                                class="w-full flex items-center justify-between px-5 py-3 hover:bg-surface-50 dark:hover:bg-surface-700/30 transition-colors text-left pl-[68px]">
+                                                class="w-full flex items-center justify-between px-5 py-3 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors text-left pl-[68px]">
                                             <div class="min-w-0">
                                                 <p class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate">{{ asset.name }}</p>
                                                 @if (asset.institution) {
-                                                    <p class="text-xs text-surface-400 truncate">{{ asset.institution }}</p>
+                                                    <p class="text-xs text-surface-500 truncate">{{ asset.institution }}</p>
                                                 }
                                             </div>
                                             <div class="flex items-center gap-3 shrink-0 ml-4">
@@ -234,41 +233,57 @@ export class AccountsPage implements OnInit, OnDestroy {
             if (labels.length === 0) { this.chartLoading.set(false); return; }
 
             const cs = this.cs;
+            const isDark = document.documentElement.classList.contains('app-dark');
+
+            // Brand-tokenized chart palette (brand-300 / brand-700).
+            const borderColor = isDark ? '#8A98AE' : '#1A2740';
+            const textColorSecondary = isDark ? '#9C988C' : '#6E6A60';
+
+            // Soft vertical area-fill gradient under the line (Finary-style).
+            const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
+            const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+
             this.chartData = {
                 labels,
                 datasets: [{
                     label: 'Valeur nette',
                     data: netWorth,
-                    fill: false,
-                    borderColor: '#6366f1',
-                    tension: 0.45,
+                    fill: true,
+                    backgroundColor: (ctx: any) => {
+                        const { ctx: c, chartArea } = ctx.chart;
+                        if (!chartArea) return 'transparent';
+                        const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        g.addColorStop(0, fillTop);
+                        g.addColorStop(1, fillBottom);
+                        return g;
+                    },
+                    borderColor: borderColor,
+                    tension: 0.4,
                     borderWidth: 2.5,
                     pointRadius: 0,
                     pointHoverRadius: 5,
-                    pointHoverBackgroundColor: '#6366f1',
+                    pointHoverBackgroundColor: borderColor,
                     pointHoverBorderColor: '#fff',
                     pointHoverBorderWidth: 2,
                 }]
             };
-            const textColor = getComputedStyle(document.documentElement)
-                .getPropertyValue('--text-color-secondary') || '#94a3b8';
             this.chartOptions = {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(15,23,42,0.95)',
-                        titleColor: '#fff', bodyColor: '#94a3b8',
-                        borderColor: 'rgba(99,102,241,0.4)', borderWidth: 1,
-                        cornerRadius: 8, padding: 10, displayColors: false,
+                        backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                        titleColor: '#FAF8F4', bodyColor: '#DEDAD0',
+                        borderColor: 'rgba(199, 123, 60, 0.30)', borderWidth: 1,
+                        cornerRadius: 8, padding: 12, displayColors: false,
                         callbacks: {
                             label: (ctx: any) => cs.format(ctx.raw, 0)
                         }
                     }
                 },
                 scales: {
-                    x: { ticks: { color: textColor, font: { size: 10 }, maxTicksLimit: 8 }, grid: { display: false } },
-                    y: { ticks: { color: textColor, font: { size: 10 }, callback: cs.tickFormatter() }, grid: { display: false } }
+                    x: { ticks: { color: textColorSecondary, font: { size: 10 }, maxTicksLimit: 8 }, grid: { display: false, drawBorder: false } },
+                    y: { ticks: { color: textColorSecondary, font: { size: 10 }, callback: cs.tickFormatter() }, grid: { display: false, drawBorder: false } }
                 },
                 interaction: { intersect: false, mode: 'index' },
                 elements: { point: { radius: 0, hoverRadius: 5 } }

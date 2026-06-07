@@ -64,9 +64,9 @@ interface PlanFeature {
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
 
                 <!-- Gratuit -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800">
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                     <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-700 shadow-sm flex items-center justify-center mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                             <i class="pi pi-chart-line text-surface-500 text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">
@@ -96,7 +96,7 @@ interface PlanFeature {
                 </div>
 
                 <!-- Pro -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border border-ochre-400 dark:border-ochre-500/40 shadow-lg shadow-card">
+                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border-2 border-ochre-500">
                     <div class="absolute top-3 right-3">
                         <span class="px-2.5 py-1 rounded-full bg-ochre-500 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
                             <i class="pi pi-star-fill text-[8px]"></i>
@@ -104,7 +104,7 @@ interface PlanFeature {
                         </span>
                     </div>
                     <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center mb-3 shadow-lg shadow-card">
+                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center mb-3">
                             <i class="pi pi-crown text-warm-900 text-lg"></i>
                         </div>
                         <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">Pro</h3>

@@ -16,34 +16,39 @@ import { AxisScore } from '../../core/services/api.service';
         <div class="px-2 md:px-0">
             <!-- Header -->
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-white mb-1">
-                        {{ t('landing.wealthScore.pageTitle') }}
-                    </h1>
-                    <p class="text-surface-600 dark:text-surface-400">
-                        {{ t('landing.wealthScore.pageSubtitle') }}
-                    </p>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                        <i class="pi pi-gauge text-brand-700 dark:text-ochre-400 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 mb-1">
+                            {{ t('landing.wealthScore.pageTitle') }}
+                        </h1>
+                        <p class="text-surface-600 dark:text-surface-400">
+                            {{ t('landing.wealthScore.pageSubtitle') }}
+                        </p>
+                    </div>
                 </div>
                 <button pButton pRipple [label]="t('landing.wealthScore.refreshBtn')"
                         icon="pi pi-refresh" [loading]="scoreService.loading()"
                         (click)="scoreService.refresh()"
-                        class="!rounded-full !px-5 !py-2 !text-sm">
+                        class="omaad-cta !rounded-xl !px-5 !py-2 !text-sm">
                 </button>
             </div>
 
             <!-- Explanation card — what the score means, what's a good score, how it updates -->
-            <div class="card !mb-6 !p-0 overflow-hidden border-l-4 border-ochre-500">
+            <div class="mb-6 overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 border-l-4 border-l-ochre-500">
                 <button
                     type="button"
                     (click)="toggleHelp()"
                     [attr.aria-expanded]="helpOpen()"
                     class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-surface-50 dark:hover:bg-surface-800/40 transition-colors">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-10 h-10 rounded-lg bg-ochre-100 dark:bg-ochre-900/30 flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-ochre-100 dark:bg-ochre-900/20 flex items-center justify-center shrink-0">
                             <i class="pi pi-info-circle text-ochre-600 dark:text-ochre-400"></i>
                         </div>
                         <div class="min-w-0">
-                            <h2 class="text-base md:text-lg font-bold text-surface-900 dark:text-white truncate">
+                            <h2 class="text-base md:text-lg font-bold text-surface-900 dark:text-surface-0 truncate">
                                 {{ t('landing.wealthScore.help.title') }}
                             </h2>
                             <p class="hidden sm:block text-xs md:text-sm text-surface-500 dark:text-surface-400 truncate">
@@ -56,7 +61,7 @@ import { AxisScore } from '../../core/services/api.service';
                 </button>
 
                 @if (helpOpen()) {
-                    <div class="px-5 pb-5 pt-1 space-y-6 border-t border-surface-200 dark:border-surface-700">
+                    <div class="px-5 pb-5 pt-1 space-y-6 border-t border-surface-200 dark:border-surface-800">
                         <!-- Step 1: What is it -->
                         <section class="pt-4">
                             <h3 class="text-[11px] font-bold uppercase tracking-[0.08em] text-ochre-600 dark:text-ochre-400 mb-2">
@@ -74,16 +79,16 @@ import { AxisScore } from '../../core/services/api.service';
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @for (axis of axisInfo; track axis.key) {
-                                    <div class="flex items-start gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-700 bg-surface-50/40 dark:bg-surface-800/30">
+                                    <div class="flex items-start gap-3 p-3 rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
                                         <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-900/20 flex items-center justify-center shrink-0">
                                             <i class="pi text-ochre-600 dark:text-ochre-400" [ngClass]="axisIcon(axis.key)"></i>
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="flex items-center gap-2 flex-wrap">
-                                                <strong class="text-sm font-semibold text-surface-900 dark:text-white">
+                                                <strong class="text-sm font-semibold text-surface-900 dark:text-surface-0">
                                                     {{ axisLabel(axis.key) }}
                                                 </strong>
-                                                <span class="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-ochre-500/10 text-ochre-600 dark:text-ochre-400">
+                                                <span class="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400">
                                                     {{ axis.weight }}%
                                                 </span>
                                             </div>
@@ -108,7 +113,7 @@ import { AxisScore } from '../../core/services/api.service';
                                             {{ t('landing.wealthScore.help.bands.' + band.key + 'Range') }}
                                         </span>
                                         <div class="min-w-0 text-sm leading-snug">
-                                            <strong class="text-surface-900 dark:text-white">
+                                            <strong class="text-surface-900 dark:text-surface-0">
                                                 {{ t('landing.wealthScore.help.bands.' + band.key + 'Label') }}
                                             </strong>
                                             <span class="text-surface-600 dark:text-surface-400">
@@ -138,18 +143,18 @@ import { AxisScore } from '../../core/services/api.service';
                     <i class="pi pi-spin pi-spinner text-4xl text-surface-400"></i>
                 </div>
             } @else if (!scoreService.hasData()) {
-                <div class="card text-center py-16">
+                <div class="text-center py-16 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                     <div class="w-20 h-20 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4 mx-auto">
                         <i class="pi pi-gauge text-3xl text-surface-400"></i>
                     </div>
-                    <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-2">{{ t('landing.wealthScore.noDataTitle') }}</h2>
+                    <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-2">{{ t('landing.wealthScore.noDataTitle') }}</h2>
                     <p class="text-surface-500 dark:text-surface-400 max-w-md mx-auto">{{ t('landing.wealthScore.noDataDesc') }}</p>
                 </div>
             } @else {
                 <div class="grid grid-cols-12 gap-6">
                     <!-- Left: Radar + total score -->
                     <div class="col-span-12 lg:col-span-5">
-                        <div class="card !mb-0 text-center">
+                        <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6 text-center">
                             <!-- Total score -->
                             <div class="mb-4">
                                 <span class="text-7xl font-black tabular-nums" [class]="totalScoreColor()">
@@ -167,20 +172,20 @@ import { AxisScore } from '../../core/services/api.service';
 
                     <!-- Right: Axis breakdown -->
                     <div class="col-span-12 lg:col-span-7">
-                        <div class="card !mb-0">
-                            <h2 class="text-lg font-bold text-surface-900 dark:text-white mb-5">
+                        <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+                            <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-5">
                                 {{ t('landing.wealthScore.axisDetail') }}
                             </h2>
                             <div class="space-y-5">
                                 @for (axis of scoreService.axes(); track axis.axis) {
-                                    <div class="p-4 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-ochre-500/30 transition-colors">
+                                    <div class="p-4 rounded-xl border border-surface-200 dark:border-surface-800 hover:border-ochre-500/30 transition-colors">
                                         <!-- Axis header -->
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-9 h-9 rounded-lg flex items-center justify-center" [class]="iconBg(axis.score)">
                                                     <i class="pi text-sm" [class]="axisIcon(axis.axis) + ' ' + iconColor(axis.score)"></i>
                                                 </div>
-                                                <span class="font-bold text-surface-900 dark:text-white">{{ axisLabel(axis.axis) }}</span>
+                                                <span class="font-bold text-surface-900 dark:text-surface-0">{{ axisLabel(axis.axis) }}</span>
                                             </div>
                                             <span class="text-2xl font-black tabular-nums" [class]="scoreColor(axis.score)">
                                                 {{ axis.score }}
@@ -188,7 +193,7 @@ import { AxisScore } from '../../core/services/api.service';
                                         </div>
 
                                         <!-- Progress bar -->
-                                        <div class="h-2 rounded-full bg-surface-200 dark:bg-surface-800 overflow-hidden mb-3">
+                                        <div class="h-2 rounded-full bg-surface-100 dark:bg-surface-800 overflow-hidden mb-3">
                                             <div class="h-full rounded-full transition-all duration-700"
                                                  [class]="barColor(axis.score)"
                                                  [style.width.%]="axis.score"></div>
@@ -244,7 +249,7 @@ export class WealthScorePage implements OnInit {
         { key: 'excellent', bg: 'bg-positive-50 dark:bg-positive-900/10', pill: 'bg-positive-500' },
         { key: 'healthy',   bg: 'bg-ochre-50 dark:bg-ochre-900/10',       pill: 'bg-ochre-500'    },
         { key: 'growing',   bg: 'bg-surface-100 dark:bg-surface-800/40',  pill: 'bg-surface-500'  },
-        { key: 'starting',  bg: 'bg-red-50 dark:bg-red-900/10',           pill: 'bg-red-500'      },
+        { key: 'starting',  bg: 'bg-negative-50 dark:bg-negative-500/10',  pill: 'bg-negative-500' },
     ];
 
     toggleHelp(): void {
@@ -274,25 +279,25 @@ export class WealthScorePage implements OnInit {
     scoreColor(score: number): string {
         if (score >= 70) return 'text-positive-600 dark:text-positive-400';
         if (score >= 40) return 'text-ochre-600 dark:text-ochre-400';
-        return 'text-negative dark:text-red-400';
+        return 'text-negative-600 dark:text-negative-400';
     }
 
     barColor(score: number): string {
         if (score >= 70) return 'bg-positive-500';
         if (score >= 40) return 'bg-ochre-500';
-        return 'bg-red-500';
+        return 'bg-negative-500';
     }
 
     iconBg(score: number): string {
-        if (score >= 70) return 'bg-positive-100 dark:bg-positive-700/20';
+        if (score >= 70) return 'bg-positive-50 dark:bg-positive-500/15';
         if (score >= 40) return 'bg-ochre-100 dark:bg-ochre-900/20';
-        return 'bg-red-100 dark:bg-red-900/20';
+        return 'bg-negative-50 dark:bg-negative-500/15';
     }
 
     iconColor(score: number): string {
         if (score >= 70) return 'text-positive-600 dark:text-positive-400';
         if (score >= 40) return 'text-ochre-600 dark:text-ochre-400';
-        return 'text-red-600 dark:text-red-400';
+        return 'text-negative-600 dark:text-negative-400';
     }
 
     axisIcon(axis: string): string {
@@ -325,6 +330,12 @@ export class WealthScorePage implements OnInit {
         const axes = this.scoreService.axes();
         if (!axes.length) return;
 
+        // Brand-tokenized radar palette. Ochre = the single accent (data-viz);
+        // grid / labels use warm neutrals so it reads on both themes.
+        const isDark = document.documentElement.classList.contains('app-dark');
+        const gridColor = isDark ? 'rgba(138,152,174,0.20)' : 'rgba(26,39,64,0.12)';
+        const labelColor = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
+
         this.chartData = {
             labels: axes.map(a => this.axisLabel(a.axis)),
             datasets: [{
@@ -345,10 +356,10 @@ export class WealthScorePage implements OnInit {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#cbd5e1',
-                    borderColor: 'rgba(148, 163, 184, 0.3)',
+                    backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                    titleColor: '#FAF8F4',
+                    bodyColor: '#DEDAD0',
+                    borderColor: 'rgba(199, 123, 60, 0.30)',
                     borderWidth: 1,
                     cornerRadius: 8,
                     padding: 12,
@@ -359,9 +370,9 @@ export class WealthScorePage implements OnInit {
                 r: {
                     min: 0, max: 100,
                     ticks: { display: false, stepSize: 25 },
-                    grid: { color: 'rgba(148, 163, 184, 0.25)', circular: true },
-                    angleLines: { color: 'rgba(148, 163, 184, 0.25)' },
-                    pointLabels: { color: 'rgba(71, 85, 105, 0.9)', font: { size: 12, weight: '600' } },
+                    grid: { color: gridColor, circular: true },
+                    angleLines: { color: gridColor },
+                    pointLabels: { color: labelColor, font: { size: 12, weight: '600' } },
                 }
             },
             animation: { duration: 600, easing: 'easeOutQuart' },

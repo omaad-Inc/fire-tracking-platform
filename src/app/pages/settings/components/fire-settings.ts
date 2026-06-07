@@ -28,8 +28,8 @@ import { I18nService } from '../../../i18n/i18n.service';
         <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
             <!-- Header -->
             <div class="relative flex items-center gap-4 mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-white/80 dark:bg-surface-700/80 backdrop-blur shadow-sm flex items-center justify-center">
-                    <i class="pi pi-flag text-positive text-xl"></i>
+                <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                    <i class="pi pi-flag text-brand-700 dark:text-ochre-400 text-xl"></i>
                 </div>
                 <div>
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">Mon objectif financier</h2>

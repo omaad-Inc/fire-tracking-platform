@@ -100,8 +100,8 @@ export class RecentTransactionsWidget implements OnInit {
      * income/expense signaling, the icon glyph itself differentiates the
      * category. No more rainbow chrome.
      */
-    private static readonly CHROME_BG = 'bg-warm-100 dark:bg-warm-800';
-    private static readonly CHROME_FG = 'text-warm-700 dark:text-warm-300';
+    private static readonly CHROME_BG = 'bg-brand-100 dark:bg-brand-700/20';
+    private static readonly CHROME_FG = 'text-brand-700 dark:text-ochre-400';
 
     private categoryIcons: { [key: string]: string } = {
         // ── Income ──

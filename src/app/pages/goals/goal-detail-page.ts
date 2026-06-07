@@ -102,21 +102,21 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
             @if (!loading() && goal(); as g) {
                 <!-- HERO -->
-                <div class="relative rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 shadow-xl border border-surface-200 dark:border-surface-700">
+                <div class="relative rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                     <div class="relative h-56 sm:h-72 lg:h-80">
                         <img [src]="heroImage()" [alt]="g.name" class="w-full h-full object-cover" (error)="onHeroError()" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent"></div>
-                        <span class="absolute top-4 right-4 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-md shadow-md" [ngClass]="badgeClass()">
+                        <span class="absolute top-4 right-4 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-md shadow-sm" [ngClass]="badgeClass()">
                             <i [class]="badgeIcon() + ' text-[11px]'"></i>
                             {{ i18n.t('goals.status.' + statusKey()) }}
                         </span>
                     </div>
 
-                    <div class="absolute left-3 right-3 bottom-3 sm:left-5 sm:right-5 sm:bottom-5 bg-white/95 dark:bg-surface-800/95 backdrop-blur rounded-xl p-4 sm:p-5 shadow-xl">
+                    <div class="absolute left-3 right-3 bottom-3 sm:left-5 sm:right-5 sm:bottom-5 bg-white/95 dark:bg-surface-900/95 backdrop-blur rounded-xl p-4 sm:p-5 shadow-sm">
                         <div class="flex items-start justify-between gap-4">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br" [ngClass]="template().gradient">
-                                    <i [class]="template().icon + ' text-white text-base'"></i>
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-brand-100 dark:bg-brand-700/20">
+                                    <i [class]="template().icon + ' text-brand-700 dark:text-ochre-400 text-base'"></i>
                                 </div>
                                 <div class="min-w-0">
                                     <h1 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-surface-0 m-0 truncate">{{ g.name }}</h1>
@@ -135,8 +135,8 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             </div>
                         </div>
                         @if (g.target_amount > 0) {
-                            <div class="mt-3 relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                <div class="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r transition-all duration-500" [ngClass]="barClass()" [style.width.%]="percent()"></div>
+                            <div class="mt-3 relative h-2 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
+                                <div class="absolute inset-y-0 left-0 rounded-full transition-all duration-500" [ngClass]="barClass()" [style.width.%]="percent()"></div>
                             </div>
                         }
                     </div>
@@ -224,7 +224,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                     />
                                 </div>
                             } @else {
-                                <ul class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+                                <ul class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-800">
                                     @for (c of contributions(); track c.id) {
                                         <li class="py-3 flex items-center gap-3">
                                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
@@ -282,7 +282,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         <h3 class="relative font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
                             {{ i18n.t('goals.detail.details') }}
                         </h3>
-                        <dl class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-700">
+                        <dl class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-800">
                             <div class="flex items-center justify-between py-3">
                                 <dt class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('goals.detail.status') }}</dt>
                                 <dd class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ i18n.t('goals.status.' + statusKey()) }}</dd>
@@ -431,13 +431,13 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         const status = g ? computeStatus(g) : 'no_target';
         switch (status) {
             case 'completed':
-                return 'from-positive-500 to-positive-400';
+                return 'bg-positive-500';
             case 'on_track':
-                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
+                return 'bg-ochre-500';
             case 'at_risk':
-                return 'from-warning-500 to-warning-400';
+                return 'bg-warning-500';
             default:
-                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
+                return 'bg-ochre-500';
         }
     });
 

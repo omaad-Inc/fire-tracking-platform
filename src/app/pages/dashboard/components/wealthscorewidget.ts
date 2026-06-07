@@ -116,6 +116,9 @@ export class WealthScoreDashboardWidget implements OnInit {
         const axes = this.scoreService.axes();
         if (!axes.length) return;
 
+        const isDark = document.documentElement.classList.contains('app-dark');
+        const gridColor = isDark ? 'rgba(138, 152, 174, 0.18)' : 'rgba(26, 39, 64, 0.12)';
+
         this.chartData = {
             labels: axes.map(a => this.axisLabel(a.axis)),
             datasets: [{
@@ -124,6 +127,8 @@ export class WealthScoreDashboardWidget implements OnInit {
                 backgroundColor: 'rgba(199, 123, 60, 0.15)',
                 borderWidth: 2,
                 pointBackgroundColor: '#C77B3C',
+                pointBorderColor: isDark ? '#0F1A2E' : '#ffffff',
+                pointBorderWidth: 1.5,
                 pointRadius: 3,
                 pointHoverRadius: 5,
             }]
@@ -137,8 +142,8 @@ export class WealthScoreDashboardWidget implements OnInit {
                 r: {
                     min: 0, max: 100,
                     ticks: { display: false, stepSize: 25 },
-                    grid: { color: 'rgba(148, 163, 184, 0.25)', circular: true },
-                    angleLines: { color: 'rgba(148, 163, 184, 0.25)' },
+                    grid: { color: gridColor, circular: true },
+                    angleLines: { color: gridColor },
                     pointLabels: { display: false },
                 }
             },

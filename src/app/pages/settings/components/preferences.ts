@@ -89,16 +89,16 @@ import { TokenService } from '../../../core/services/token.service';
                     <!-- Light Theme -->
                     <div
                         (click)="setTheme('light')"
-                        [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' +
-                            (isLightMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
+                        class="p-4 rounded-xl border-2 cursor-pointer transition-all"
+                        [ngClass]="isLightMode ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
                         <div class="w-full h-20 bg-white border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
                             <i class="pi pi-sun text-2xl text-ochre-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.lightMode') }}</span>
-                            <div *ngIf="isLightMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                                <i class="pi pi-check text-white text-xs"></i>
+                            <div *ngIf="isLightMode" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center">
+                                <i class="pi pi-check text-warm-900 text-xs"></i>
                             </div>
                         </div>
                     </div>
@@ -106,16 +106,16 @@ import { TokenService } from '../../../core/services/token.service';
                     <!-- Dark Theme -->
                     <div
                         (click)="setTheme('dark')"
-                        [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' +
-                            (isDarkModeSelected ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
+                        class="p-4 rounded-xl border-2 cursor-pointer transition-all"
+                        [ngClass]="isDarkModeSelected ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
                         <div class="w-full h-20 bg-warm-900 border border-warm-700 rounded-lg mb-3 flex items-center justify-center">
-                            <i class="pi pi-moon text-2xl text-brand-700 dark:text-brand-300"></i>
+                            <i class="pi pi-moon text-2xl text-brand-300"></i>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.darkMode') }}</span>
-                            <div *ngIf="isDarkModeSelected" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                                <i class="pi pi-check text-white text-xs"></i>
+                            <div *ngIf="isDarkModeSelected" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center">
+                                <i class="pi pi-check text-warm-900 text-xs"></i>
                             </div>
                         </div>
                     </div>
@@ -123,16 +123,21 @@ import { TokenService } from '../../../core/services/token.service';
                     <!-- System Theme -->
                     <div
                         (click)="setTheme('system')"
-                        [class]="'p-4 rounded-xl border-2 cursor-pointer transition-all ' +
-                            (isSystemMode ? 'border-primary bg-primary/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600')"
+                        class="p-4 rounded-xl border-2 cursor-pointer transition-all"
+                        [ngClass]="isSystemMode ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
-                        <div class="w-full h-20 bg-gradient-to-r from-warm-0 to-warm-900 border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
-                            <i class="pi pi-desktop text-2xl text-surface-500"></i>
+                        <div class="w-full h-20 rounded-lg mb-3 overflow-hidden flex border border-surface-200 dark:border-surface-700">
+                            <div class="w-1/2 bg-white flex items-center justify-center">
+                                <i class="pi pi-sun text-xl text-ochre-500"></i>
+                            </div>
+                            <div class="w-1/2 bg-warm-900 flex items-center justify-center">
+                                <i class="pi pi-moon text-xl text-brand-300"></i>
+                            </div>
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.systemMode') }}</span>
-                            <div *ngIf="isSystemMode" class="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                                <i class="pi pi-check text-white text-xs"></i>
+                            <div *ngIf="isSystemMode" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center">
+                                <i class="pi pi-check text-warm-900 text-xs"></i>
                             </div>
                         </div>
                     </div>
@@ -145,15 +150,15 @@ import { TokenService } from '../../../core/services/token.service';
             <div class="relative mb-8">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.notifications') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
+                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
                 </div>
 
                 <div class="space-y-3 opacity-50 pointer-events-none select-none" title="Bientôt disponible">
                     @for (notif of notificationItems; track notif.key) {
                         <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center" [ngClass]="notif.bg">
-                                    <i [class]="'pi ' + notif.icon + ' text-white'"></i>
+                                <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                    <i [class]="'pi ' + notif.icon + ' text-brand-700 dark:text-ochre-400'"></i>
                                 </div>
                                 <div>
                                     <p class="font-medium text-surface-900 dark:text-surface-0">{{ t(notif.label) }}</p>
@@ -176,13 +181,13 @@ import { TokenService } from '../../../core/services/token.service';
             <div class="relative">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.data') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
+                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
                 </div>
 
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl opacity-50">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center">
-                            <i class="pi pi-download text-white text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-download text-brand-700 dark:text-ochre-400 text-xl"></i>
                         </div>
                         <div>
                             <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.exportData') }}</p>

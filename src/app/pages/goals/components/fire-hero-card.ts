@@ -25,12 +25,11 @@ import { AssetsStateService } from '../../service/assets-state.service';
     imports: [CommonModule, ButtonModule, AppAmountComponent],
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
-            <div class="absolute top-3 right-3 w-40 h-40 rounded-full bg-ochre-500/10 blur-3xl pointer-events-none"></div>
 
             <!-- Header / badge — ochre = "premium accent", reserved for FIRE -->
             <div class="relative flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full bg-ochre-100 text-ochre-700 dark:bg-ochre-700/20 dark:text-ochre-300">
+                    <span class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400">
                         <i class="pi pi-flag text-[10px]"></i>
                         {{ i18n.t('goals.fire.badge') }}
                     </span>
@@ -48,8 +47,8 @@ import { AssetsStateService } from '../../service/assets-state.service';
             <!-- Not configured -->
             @if (!loading() && !isConfigured()) {
                 <div class="relative flex flex-col sm:flex-row items-center gap-4 sm:gap-6 py-4">
-                    <div class="w-16 h-16 rounded-full bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center shrink-0">
-                        <i class="pi pi-flag text-2xl text-brand-700 dark:text-brand-300"></i>
+                    <div class="w-16 h-16 rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                        <i class="pi pi-flag text-2xl text-brand-700 dark:text-ochre-400"></i>
                     </div>
                     <div class="flex-1 text-center sm:text-left">
                         <h3 class="text-sm sm:text-base font-semibold text-surface-900 dark:text-surface-0 m-0 mb-1">

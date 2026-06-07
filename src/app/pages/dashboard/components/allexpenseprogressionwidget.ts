@@ -5,7 +5,6 @@ import { FluidModule } from 'primeng/fluid';
 import { debounceTime, Subscription } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { DashboardService, AssetAllocation } from '../../service/dashboard.service';
-import { CurrencyService } from '../../../core/services/currency.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
 
@@ -38,26 +37,19 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <p class="text-surface-400 dark:text-surface-500 text-sm">{{ i18n.t('dashboard.noExpensesDesc') }}</p>
             </div>
         } @else {
-            <div class="relative flex-1 flex flex-col items-center justify-center">
-                <div class="relative w-full max-w-[280px] mx-auto mb-6">
-                    <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
-                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div class="text-center">
-                            <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ i18n.t('patrimoine.repartition.total') }}</span>
-                            <app-amount [value]="total()" class="font-bold text-2xl text-surface-900 dark:text-surface-0 block" />
-                        </div>
+            <div class="relative flex-1 flex items-center justify-center py-2">
+                <div class="relative" style="width:230px;height:230px">
+                    <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" styleClass="w-full h-full" [height]="'230px'"></p-chart>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
+                        @if (hovered(); as h) {
+                            <span class="text-surface-500 dark:text-surface-400 text-xs leading-tight line-clamp-2">{{ h.name }}</span>
+                            <app-amount [value]="h.value" class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5 block" />
+                            <span class="text-brand-700 dark:text-ochre-400 text-sm font-semibold mt-0.5">{{ h.pct }} %</span>
+                        } @else {
+                            <span class="text-surface-500 dark:text-surface-400 text-xs">{{ i18n.t('patrimoine.repartition.total') }}</span>
+                            <app-amount [value]="total()" class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5 block" />
+                        }
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3 w-full">
-                    @for (item of legendItems(); track item.label) {
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
-                            <div class="w-3 h-3 rounded-full" [style.background]="item.color"></div>
-                            <div class="flex-1 min-w-0">
-                                <span class="text-surface-900 dark:text-surface-0 text-sm font-medium block truncate">{{ item.label }}</span>
-                                <span class="text-surface-500 dark:text-surface-400 text-xs"><app-amount [value]="item.value" /></span>
-                            </div>
-                        </div>
-                    }
                 </div>
             </div>
         }
@@ -67,12 +59,15 @@ import { I18nService } from '../../../i18n/i18n.service';
 export class AllExpensesProgression implements OnInit, OnDestroy {
     private layoutService = inject(LayoutService);
     private dashboardService = inject(DashboardService);
-    private cs = inject(CurrencyService);
     readonly i18n = inject(I18nService);
 
     loading = signal(true);
     total = signal(0);
     legendItems = signal<{ label: string; color: string; value: number }[]>([]);
+
+    // ── Hover-driven center, no legend ──
+    hovered = signal<{ name: string; value: number; pct: number } | null>(null);
+    private hoveredIdx = -1;
 
     pieData: any;
     pieOptions: any;
@@ -111,9 +106,7 @@ export class AllExpensesProgression implements OnInit, OnDestroy {
         const labels = this.distribution.map(d => d.category);
         const values = this.distribution.map(d => d.value);
         const colors = this.distribution.map(d => d.color);
-
-        // Generate lighter hover colors
-        const hoverColors = colors.map(color => this.lightenColor(color, 20));
+        const totalValue = values.reduce((s, v) => s + v, 0);
 
         this.legendItems.set(this.distribution.map(d => ({
             label: d.category,
@@ -121,58 +114,40 @@ export class AllExpensesProgression implements OnInit, OnDestroy {
             value: d.value
         })));
 
+        const isDark = document.documentElement.classList.contains('app-dark');
+        const sliceBorder = isDark ? '#0F1A2E' : '#ffffff';
+
         this.pieData = {
             labels: labels,
             datasets: [
                 {
                     data: values,
                     backgroundColor: colors,
-                    hoverBackgroundColor: hoverColors,
-                    borderWidth: 0
+                    borderColor: sliceBorder,
+                    borderWidth: 2,
+                    hoverOffset: 10,
+                    hoverBorderColor: sliceBorder
                 }
             ]
         };
 
-        const cs = this.cs;
         this.pieOptions = {
+            cutout: '72%',
+            maintainAspectRatio: false,
+            responsive: true,
             plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(20, 19, 15, 0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#9C988C',
-                    borderColor: 'rgba(199, 123, 60, 0.30)',
-                    borderWidth: 1,
-                    cornerRadius: 8,
-                    padding: 12,
-                    displayColors: true,
-                    callbacks: {
-                        label: function(context: any) {
-                            return cs.format(context.raw, 0);
-                        }
-                    }
-                }
+                legend: { display: false },
+                tooltip: { enabled: false }
             },
-            cutout: '70%',
-            maintainAspectRatio: true,
-            responsive: true
+            onHover: (_e: any, els: any[]) => {
+                const idx = els && els.length ? els[0].index : -1;
+                if (idx === this.hoveredIdx) return;
+                this.hoveredIdx = idx;
+                const d = idx >= 0 ? this.distribution[idx] : null;
+                const pct = d && totalValue > 0 ? Math.round((d.value / totalValue) * 100) : 0;
+                this.hovered.set(d ? { name: d.category, value: d.value, pct } : null);
+            }
         };
-    }
-
-    private lightenColor(hex: string, percent: number): string {
-        const num = parseInt(hex.replace('#', ''), 16);
-        const amt = Math.round(2.55 * percent);
-        const R = (num >> 16) + amt;
-        const G = (num >> 8 & 0x00FF) + amt;
-        const B = (num & 0x0000FF) + amt;
-        return '#' + (
-            0x1000000 +
-            (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-            (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-            (B < 255 ? (B < 1 ? 0 : B) : 255)
-        ).toString(16).slice(1);
     }
 
     ngOnDestroy() {

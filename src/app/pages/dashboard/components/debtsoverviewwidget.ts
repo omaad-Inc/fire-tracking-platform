@@ -127,9 +127,9 @@ export class DebtsOverview implements OnInit, OnDestroy {
                 // All debts share the same neutral chrome — only the icon glyph
                 // differentiates the category. Progress bar uses the brand color.
                 const sharedChrome = {
-                    bgClass: 'bg-warm-100 dark:bg-warm-800',
-                    iconClass: 'text-warm-700 dark:text-warm-300',
-                    progressClass: 'bg-gradient-to-r from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200',
+                    bgClass: 'bg-brand-100 dark:bg-brand-700/20',
+                    iconClass: 'text-brand-700 dark:text-ochre-400',
+                    progressClass: 'bg-brand-700 dark:bg-brand-300',
                     textClass: 'text-brand-700 dark:text-brand-300',
                 };
                 const colorConfigs = [

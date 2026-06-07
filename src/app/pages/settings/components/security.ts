@@ -65,7 +65,7 @@ import { firstValueFrom } from 'rxjs';
                             <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
                             Votre mot de passe est géré par Google. Pour le modifier, rendez-vous dans votre
                             <a href="https://myaccount.google.com/security" target="_blank"
-                               class="text-brand-700 dark:text-brand-300 hover:text-brand-700 dark:text-brand-300 font-medium ml-1">compte Google →</a>
+                               class="text-brand-700 dark:text-brand-300 hover:underline font-medium ml-1">compte Google →</a>
                         </p>
                     } @else {
                         <!-- Email / password user -->

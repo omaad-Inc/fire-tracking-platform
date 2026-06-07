@@ -15,7 +15,7 @@ import { I18nService } from '../../../i18n/i18n.service';
         <button
             type="button"
             (click)="navigate()"
-            class="group text-left w-full bg-surface-0 dark:bg-surface-900 rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-lg transition-all duration-300"
+            class="group text-left w-full bg-surface-0 dark:bg-surface-900 rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-sm transition-colors"
         >
             <!-- Image banner -->
             <div class="relative h-32 sm:h-36 bg-surface-100 dark:bg-surface-900 overflow-hidden">
@@ -27,7 +27,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                     loading="lazy"
                     (error)="image = ''"
                 />
-                <div *ngIf="!image" class="w-full h-full bg-gradient-to-br" [ngClass]="template().gradient"></div>
+                <div *ngIf="!image" class="w-full h-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                    <i [class]="template().icon + ' text-3xl text-brand-700 dark:text-ochre-400'"></i>
+                </div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                 <!-- Status badge -->
                 <span
@@ -55,9 +57,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <span class="text-surface-500 dark:text-surface-400">{{ i18n.t('goals.progress') }}</span>
                             <span class="font-bold text-surface-900 dark:text-surface-0">{{ percent }}%</span>
                         </div>
-                        <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                        <div class="relative h-2 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
                             <div
-                                class="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r transition-all duration-500"
+                                class="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
                                 [ngClass]="barClass"
                                 [style.width.%]="percent"
                             ></div>
@@ -153,13 +155,13 @@ export class GoalCardComponent {
     get barClass(): string {
         switch (this.status) {
             case 'completed':
-                return 'from-positive-500 to-positive-400';
+                return 'bg-positive-500';
             case 'on_track':
-                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
+                return 'bg-ochre-500';
             case 'at_risk':
-                return 'from-warning-500 to-warning-400';
+                return 'bg-warning-500';
             default:
-                return 'from-brand-700 to-brand-500 dark:from-brand-300 dark:to-brand-200';
+                return 'bg-ochre-500';
         }
     }
 

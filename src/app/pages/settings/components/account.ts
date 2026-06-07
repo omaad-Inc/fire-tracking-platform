@@ -100,23 +100,13 @@ import { environment } from '../../../../environments/environment';
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8 text-center sm:text-left">
                     <div class="relative group">
                         @if (user()?.avatar_url) {
-                            <img [src]="getAvatarUrl()" 
-                                 alt="Profile" 
+                            <img [src]="getAvatarUrl()"
+                                 alt="Profile"
                                  class="w-20 h-20 rounded-full object-cover border-2 border-surface-200 dark:border-surface-700">
                         } @else {
-                            <p-avatar 
-                                [label]="userInitials" 
-                                shape="circle" 
-                                size="xlarge"
-                                [style]="{
-                                    'background': '#1A2740',
-                                    'color': 'white',
-                                    'font-weight': '600',
-                                    'width': '80px',
-                                    'height': '80px',
-                                    'font-size': '1.5rem'
-                                }"
-                            />
+                            <div class="w-20 h-20 rounded-full bg-brand-700 flex items-center justify-center text-white font-semibold text-2xl">
+                                {{ userInitials }}
+                            </div>
                         }
                         <button 
                             class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -163,7 +153,7 @@ import { environment } from '../../../../environments/environment';
                         <input 
                             pInputText 
                             [(ngModel)]="firstName" 
-                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
                     <div>
@@ -171,7 +161,7 @@ import { environment } from '../../../../environments/environment';
                         <input 
                             pInputText 
                             [(ngModel)]="lastName" 
-                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
                 </div>
@@ -192,23 +182,18 @@ import { environment } from '../../../../environments/environment';
                 <div class="mb-6">
                     <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.myEmail') }}</label>
                     <div class="flex items-center gap-4">
-                        <span class="text-lg text-surface-900 dark:text-surface-0">{{ user()?.email }}</span>
+                        <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ user()?.email }}</span>
                     </div>
                     <div class="mt-3 flex items-center gap-2">
                         @if (user()?.is_verified) {
-                            <p-tag 
-                                [value]="t('settings.account.verified')" 
-                                icon="pi pi-check" 
-                                severity="success"
-                                [style]="{ 'background': 'rgba(16, 185, 129, 0.1)', 'color': '#10b981' }"
-                            />
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold">
+                                <i class="pi pi-check text-[10px]"></i>{{ t('settings.account.verified') }}
+                            </span>
                         }
                         @if (user()?.auth_provider && user()?.auth_provider !== 'email') {
-                            <p-tag 
-                                [value]="'via ' + user()?.auth_provider" 
-                                icon="pi pi-google"
-                                [style]="{ 'background': 'rgba(99, 102, 241, 0.1)', 'color': '#6366f1' }"
-                            />
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-brand-300 text-xs font-semibold">
+                                <i class="pi pi-google text-[10px]"></i>via {{ user()?.auth_provider }}
+                            </span>
                         }
                     </div>
                 </div>
@@ -221,8 +206,8 @@ import { environment } from '../../../../environments/environment';
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-ochre-500 flex items-center justify-center">
-                            <i class="pi pi-sign-out text-warm-900 text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-sign-out text-brand-700 dark:text-ochre-400 text-xl"></i>
                         </div>
                         <div>
                             <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.account.logout') }}</p>

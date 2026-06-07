@@ -44,8 +44,8 @@ export interface GoalSavePayload {
         >
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-card">
-                        <i class="pi pi-flag text-white dark:text-brand-900 text-lg"></i>
+                    <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                        <i class="pi pi-flag text-brand-700 dark:text-ochre-400 text-lg"></i>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -66,7 +66,7 @@ export interface GoalSavePayload {
                             <button
                                 type="button"
                                 (click)="pickTemplate(tpl)"
-                                class="group rounded-xl overflow-hidden border-2 transition-all duration-200 text-left bg-white dark:bg-surface-800 hover:shadow-lg"
+                                class="group rounded-xl overflow-hidden border-2 transition-colors text-left bg-surface-0 dark:bg-surface-900 hover:shadow-sm"
                                 [class.border-brand-700]="form.templateKey === tpl.key"
                                 [class.dark:border-brand-300]="form.templateKey === tpl.key"
                                 [class.border-surface-200]="form.templateKey !== tpl.key"
@@ -103,7 +103,7 @@ export interface GoalSavePayload {
                                 @if (!editing) {
                                     <button
                                         type="button"
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-surface-900 dark:text-surface-0 hover:bg-white dark:hover:bg-surface-800 shadow-md"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-surface-900 dark:text-surface-0 hover:bg-white dark:hover:bg-surface-800 shadow-sm"
                                         (click)="step.set(1)"
                                     >
                                         <i class="pi pi-images text-[10px]"></i>
@@ -112,7 +112,7 @@ export interface GoalSavePayload {
                                 }
                                 <button
                                     type="button"
-                                    class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-surface-900 dark:text-surface-0 hover:bg-white dark:hover:bg-surface-800 shadow-md"
+                                    class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-surface-900 dark:text-surface-0 hover:bg-white dark:hover:bg-surface-800 shadow-sm"
                                     [disabled]="uploading()"
                                     (click)="fileInput.click()"
                                 >
@@ -126,7 +126,7 @@ export interface GoalSavePayload {
                                 @if (form.imageUrl) {
                                     <button
                                         type="button"
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-negative hover:bg-white dark:hover:bg-surface-800 shadow-md"
+                                        class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg bg-white/90 dark:bg-surface-800/90 backdrop-blur text-negative hover:bg-white dark:hover:bg-surface-800 shadow-sm"
                                         (click)="clearCustomImage()"
                                         [title]="i18n.t('goals.dialog.removeCustomImage')"
                                     >

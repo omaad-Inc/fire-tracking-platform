@@ -148,6 +148,10 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const isDark = document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark');
         const borderColor = isDark ? '#8A98AE' : '#1A2740';
 
+        // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
+        const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
+        const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+
         const points = this.getVisiblePoints();
 
         this.data = {
@@ -156,7 +160,15 @@ export class SavingsProgress implements OnInit, OnDestroy {
                 {
                     label: this.i18n.t('savings.evolution'),
                     data: points.map(p => p.value),
-                    fill: false,
+                    fill: true,
+                    backgroundColor: (ctx: any) => {
+                        const { ctx: c, chartArea } = ctx.chart;
+                        if (!chartArea) return 'transparent';
+                        const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        g.addColorStop(0, fillTop);
+                        g.addColorStop(1, fillBottom);
+                        return g;
+                    },
                     borderColor,
                     tension: 0.4,
                     borderWidth: 3,
@@ -178,10 +190,10 @@ export class SavingsProgress implements OnInit, OnDestroy {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#94a3b8',
-                    borderColor: 'rgba(16, 185, 129, 0.5)',
+                    backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                    titleColor: '#FAF8F4',
+                    bodyColor: '#DEDAD0',
+                    borderColor: 'rgba(199, 123, 60, 0.30)',
                     borderWidth: 1,
                     cornerRadius: 8,
                     padding: 12,

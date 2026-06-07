@@ -35,8 +35,8 @@ import { progressPercent } from './goal-utils';
             <!-- Header -->
             <div class="flex items-center justify-between gap-4 flex-wrap">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-card">
-                        <i class="pi pi-flag-fill text-white dark:text-brand-900 text-xl"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                        <i class="pi pi-flag-fill text-brand-700 dark:text-ochre-400 text-xl"></i>
                     </div>
                     <div>
                         <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">

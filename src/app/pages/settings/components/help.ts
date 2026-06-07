@@ -53,7 +53,7 @@ interface FaqItem {
             </div>
 
             <!-- ── FAQ ──────────────────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
+            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
@@ -88,7 +88,7 @@ interface FaqItem {
             </section>
 
             <!-- ── Contact ──────────────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
+            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-envelope text-brand-700 dark:text-brand-300"></i>
@@ -129,7 +129,7 @@ interface FaqItem {
             </section>
 
             <!-- ── Other resources ──────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
+            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
                     <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
                         <i class="pi pi-link text-positive"></i>
