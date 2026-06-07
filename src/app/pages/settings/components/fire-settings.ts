@@ -13,8 +13,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TokenService } from '../../../core/services/token.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { DashboardService } from '../../service/dashboard.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 
 import { CurrencyService } from '../../../core/services/currency.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
     selector: 'app-fire-settings',
@@ -93,12 +95,26 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 <!-- autoTarget() returns a display-currency value (annualExpenses is in display currency)
                      — format directly, do NOT use app-amount which expects EUR and would double-convert -->
                 @if (autoTarget() > 0) {
-                    <div class="mt-4 p-4 bg-positive/10 border border-positive-100 dark:border-positive-700/40 rounded-xl flex items-center justify-between">
-                        <span class="text-surface-700 dark:text-surface-300 text-sm">Capital calculé automatiquement</span>
-                        <span class="text-2xl font-bold text-positive dark:text-positive-400">
-                            {{ cs.formatNumber(autoTarget()) }} {{ cs.config().symbol }}
-                        </span>
+                    <div class="mt-4 p-4 bg-positive/10 border border-positive-100 dark:border-positive-700/40 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <span class="text-surface-700 dark:text-surface-300 text-sm block">{{ _('Votre nombre FIRE estimé', 'Your estimated FIRE number') }}</span>
+                            <span class="text-2xl font-bold text-positive dark:text-positive-400">
+                                {{ cs.formatNumber(autoTarget()) }} {{ cs.config().symbol }}
+                            </span>
+                        </div>
+                        <button pButton type="button"
+                                [label]="_('Découvrir mon nombre FIRE', 'Discover my FIRE number')"
+                                icon="pi pi-sparkles"
+                                (click)="applyAutoTarget()"
+                                class="omaad-cta !rounded-full !px-6 !py-3 !font-semibold whitespace-nowrap shrink-0">
+                        </button>
                     </div>
+                    @if (justApplied) {
+                        <p class="mt-2 text-xs font-medium text-positive dark:text-positive-400 flex items-center gap-1.5">
+                            <i class="pi pi-arrow-down text-[10px]"></i>
+                            {{ _('Pré-rempli dans « Capital cible » — vérifiez puis Enregistrez.', 'Pre-filled into “Target capital” — review, then Save.') }}
+                        </p>
+                    }
                 }
             </div>
 
@@ -183,14 +199,19 @@ export class FireSettings implements OnInit {
     private tokenService     = inject(TokenService);
     private analytics        = inject(AnalyticsService);
     private dashboardService = inject(DashboardService);
+    private assetsState      = inject(AssetsStateService);
     private messageService   = inject(MessageService);
     private router           = inject(Router);
     cs = inject(CurrencyService);
+    private i18n = inject(I18nService);
 
     annualExpenses: number | null = null;
     withdrawalRate: number | null = 4.0;
     fireTarget: number | null = null;
     targetDate: Date | null = null;
+    justApplied = false;
+
+    _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
 
     isSaving = signal(false);
     isClearing = signal(false);
@@ -222,11 +243,17 @@ export class FireSettings implements OnInit {
     }
 
     onCalcChange() {
+        // No longer auto-fills the target — the explicit "Discover my FIRE number"
+        // button does that. Editing the inputs just clears the applied hint.
+        this.justApplied = false;
+    }
+
+    /** Compute the FIRE number (≈ expenses ÷ rate) and pre-fill the Capital cible field. */
+    applyAutoTarget() {
         const calc = this.autoTarget();
-        // autoTarget() returns a display-currency value — keep it in display
-        // currency for the input field; save() will convert to EUR on submit.
         if (calc > 0) {
-            this.fireTarget = calc;
+            this.fireTarget = calc;  // display-currency; save() converts to EUR
+            this.justApplied = true;
         }
     }
 
@@ -310,7 +337,10 @@ export class FireSettings implements OnInit {
                 this.fireTarget = null;
                 this.targetDate = null;
                 this.withdrawalRate = 4.0;
+                this.justApplied = false;
                 this.isClearing.set(false);
+                // Notify the FIRE dashboard (parent) to reload + reset its displayed data.
+                this.assetsState.notifyAssetsUpdated();
                 this.messageService.add({
                     severity: 'info',
                     summary: 'Objectif supprimé',

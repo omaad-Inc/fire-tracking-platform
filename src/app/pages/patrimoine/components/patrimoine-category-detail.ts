@@ -132,10 +132,10 @@ function getDonutColors(): string[] {
             </div>
 
             <!-- ── Charts row ── -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-8">
 
                 <!-- Progression chart -->
-                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
+                <div class="xl:col-span-7 relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
                     <div class="relative flex items-center justify-between mb-4">
                         <span class="font-semibold text-surface-900 dark:text-surface-0">Progression</span>
                         <div class="flex items-center gap-1">
@@ -166,13 +166,13 @@ function getDonutColors(): string[] {
                             <div class="text-surface-900 dark:text-surface-0 font-bold text-xl"><app-amount [value]="totalValue" /></div>
                         </div>
                         <div class="relative">
-                            <p-chart type="line" [data]="lineData" [options]="lineOptions" styleClass="w-full" [height]="'200px'" />
+                            <p-chart type="line" [data]="lineData" [options]="lineOptions" styleClass="w-full" [height]="'240px'" />
                         </div>
                     }
                 </div>
 
                 <!-- Donut chart -->
-                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
+                <div class="xl:col-span-5 relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
                     <div class="relative flex items-center justify-between mb-4">
                         <span class="font-semibold text-surface-900 dark:text-surface-0">Répartition</span>
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
@@ -184,29 +184,22 @@ function getDonutColors(): string[] {
                             <p class="text-surface-500 text-sm">Aucun actif</p>
                         </div>
                     } @else if (donutData) {
-                        <!-- Donut with centered value -->
-                        <div class="relative mx-auto" style="width:220px; height:220px">
-                            <p-chart type="doughnut" [data]="donutData" [options]="donutOptions" styleClass="w-full h-full" [height]="'220px'" />
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <span class="text-surface-500 dark:text-surface-400 text-xs">Total</span>
-                                <span class="font-bold text-surface-900 dark:text-surface-0 text-sm leading-tight text-center px-2"><app-amount [value]="totalValue" /></span>
-                                <span class="text-surface-500 dark:text-surface-400 text-xs mt-0.5">100 %</span>
-                            </div>
-                        </div>
-                        <!-- Legend -->
-                        <div class="mt-5 space-y-2.5">
-                            @for (item of items; track item.id; let i = $index) {
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2.5 min-w-0">
-                                        <span class="w-2.5 h-2.5 rounded-full shrink-0" [style.background]="donutColor(i)"></span>
-                                        <span class="text-surface-700 dark:text-surface-300 text-sm truncate">{{ item.name }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-3 shrink-0 ml-3">
-                                        <span class="text-surface-400 dark:text-surface-500 text-sm">{{ sharePct(item) }}%</span>
-                                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm"><app-amount [value]="item.value" /></span>
-                                    </div>
+                        <!-- Donut: hover a slice to reveal its share in the center (no legend) -->
+                        <div class="flex items-center justify-center py-4 min-h-[280px]">
+                            <div class="relative" style="width:260px; height:260px">
+                                <p-chart type="doughnut" [data]="donutData" [options]="donutOptions" styleClass="w-full h-full" [height]="'260px'" />
+                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
+                                    @if (hovered; as h) {
+                                        <span class="text-surface-500 dark:text-surface-400 text-xs leading-tight line-clamp-2">{{ h.name }}</span>
+                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="h.value" /></span>
+                                        <span class="text-brand-700 dark:text-ochre-400 text-sm font-semibold mt-0.5">{{ h.pct }} %</span>
+                                    } @else {
+                                        <span class="text-surface-500 dark:text-surface-400 text-xs">Total</span>
+                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="totalValue" /></span>
+                                        <span class="text-surface-400 dark:text-surface-500 text-xs mt-0.5">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
+                                    }
                                 </div>
-                            }
+                            </div>
                         </div>
                     }
                 </div>
@@ -295,6 +288,9 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     lineOptions: any = null;
     donutData: any = null;
     donutOptions: any = null;
+    // Hover-driven donut center (replaces the legend list, Finary-style)
+    hovered: { name: string; value: number; pct: number } | null = null;
+    private hoveredIdx = -1;
 
     async ngOnInit() {
         const categoryId = this.route.snapshot.paramMap.get('categoryId') ?? '';
@@ -357,11 +353,23 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         const textMuted = isDark ? '#9C988C' : '#6E6A60';   // warm-400 / warm-500
         const cs = this.cs;
 
+        // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
+        const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
+        const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+
         this.lineData = {
             labels: points.map(p => p.label),
             datasets: [{
                 data: points.map(p => p.value),
-                fill: false,
+                fill: true,
+                backgroundColor: (ctx: any) => {
+                    const { ctx: c, chartArea } = ctx.chart;
+                    if (!chartArea) return 'transparent';
+                    const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                    g.addColorStop(0, fillTop);
+                    g.addColorStop(1, fillBottom);
+                    return g;
+                },
                 borderColor: color,
                 tension: 0.4,
                 borderWidth: 2.5,
@@ -405,40 +413,39 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     }
 
     private buildDonut() {
+        const isDark = document.documentElement.classList.contains('app-dark');
+        const sliceBorder = isDark ? '#0F1A2E' : '#ffffff';  // matches card bg for clean gaps
         const donutColors = getDonutColors();
         const colors = this.items.map((_, i) => donutColors[i % donutColors.length]);
-        const tv = this.totalValue;
-        const cs = this.cs;
 
         this.donutData = {
             labels: this.items.map(i => i.name),
             datasets: [{
                 data: this.items.map(i => i.value),
                 backgroundColor: colors,
-                borderColor: 'transparent',
-                borderWidth: 0,
-                hoverOffset: 8,
+                borderColor: sliceBorder,
+                borderWidth: 2,
+                hoverOffset: 10,
+                hoverBorderColor: sliceBorder,
             }]
         };
 
         this.donutOptions = {
             cutout: '72%',
             maintainAspectRatio: false,
+            // Hovering a slice drives the center label (Finary-style) — no legend, no tooltip.
             plugins: {
                 legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(15,23,42,0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#94a3b8',
-                    borderWidth: 1,
-                    cornerRadius: 8,
-                    padding: 10,
-                    displayColors: true,
-                    callbacks: {
-                        label: (ctx: any) => ` ${cs.format(ctx.raw, 0)}  (${tv > 0 ? Math.round(ctx.raw / tv * 100) : 0}%)`
-                    }
-                }
-            }
+                tooltip: { enabled: false },
+            },
+            onHover: (_event: any, elements: any[]) => {
+                const idx = elements && elements.length ? elements[0].index : -1;
+                if (idx === this.hoveredIdx) return;
+                this.hoveredIdx = idx;
+                const item = idx >= 0 ? this.items[idx] : null;
+                this.hovered = item ? { name: item.name, value: item.value, pct: this.sharePct(item) } : null;
+                this.cd.detectChanges();
+            },
         };
     }
 

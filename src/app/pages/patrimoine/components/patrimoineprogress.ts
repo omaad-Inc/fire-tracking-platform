@@ -155,6 +155,10 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
             const borderColor = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
             const textColorSecondary = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
 
+            // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
+            const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
+            const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+
             const points = this.dataPoints();
 
             this.data = {
@@ -163,7 +167,15 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                     {
                         label: 'Patrimoine Brut',
                         data: points.map(p => p.value),
-                        fill: false,
+                        fill: true,
+                        backgroundColor: (ctx: any) => {
+                            const { ctx: c, chartArea } = ctx.chart;
+                            if (!chartArea) return 'transparent';
+                            const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                            g.addColorStop(0, fillTop);
+                            g.addColorStop(1, fillBottom);
+                            return g;
+                        },
                         borderColor: borderColor,
                         tension: 0.4,
                         borderWidth: 3,
