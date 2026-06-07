@@ -14,6 +14,7 @@ interface TransactionDisplay {
     icon: string;
     bgClass: string;
     iconClass: string;
+    account?: string;
 }
 
 @Component({
@@ -63,7 +64,14 @@ interface TransactionDisplay {
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-surface-900 dark:text-surface-0 truncate">{{ tx.category }}</div>
-                                <div class="text-surface-500 dark:text-surface-400 text-sm truncate">{{ tx.description }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-sm truncate">
+                                    {{ tx.description }}
+                                    @if (tx.account) {
+                                        <span class="inline-flex items-center gap-1 ml-1 text-surface-400 dark:text-surface-500">
+                                            <i class="pi pi-wallet text-[9px]"></i>{{ tx.account }}
+                                        </span>
+                                    }
+                                </div>
                             </div>
                             <div class="flex flex-col items-end ml-4">
                                 <span class="font-bold" [ngClass]="tx.amount < 0 ? 'text-negative' : 'text-positive'">
@@ -168,6 +176,9 @@ export class RecentTransactionsWidget implements OnInit {
             description: r.remarks ?? '',
             amount: isExpense ? -r.amount : r.amount,
             date: this.formatDate(r.date),
+            account: (r.fromAccountName || r.toAccountName)
+                ? `${r.fromAccountName ?? '?'} → ${r.toAccountName ?? '?'}`
+                : (r.accountName ?? ''),
             ...config
         };
     }

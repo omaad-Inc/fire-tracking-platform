@@ -14,6 +14,7 @@ import {
     TransactionsService, TransactionRecord,
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
+import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { LayoutService } from '../../../layout/service/layout.service';
@@ -189,6 +190,11 @@ interface DayGroup {
                                               [style.background]="categoryBg(rec)">
                                             {{ getCategoryConfig(rec).label }}
                                         </span>
+                                        @if (accountLabel(rec)) {
+                                            <span class="inline-flex items-center gap-1 text-[10px] sm:text-xs mt-0.5 ml-1.5 text-surface-500 dark:text-surface-400">
+                                                <i class="pi pi-wallet text-[9px]"></i>{{ accountLabel(rec) }}
+                                            </span>
+                                        }
                                     </div>
                                     <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
@@ -295,6 +301,21 @@ interface DayGroup {
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
+                    <!-- Account selector -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
+                            Compte
+                            @if (submitted && !form.accountId) {
+                                <span class="text-negative ml-2 text-xs">Requis</span>
+                            }
+                        </label>
+                        <p-select [(ngModel)]="form.accountId" [options]="accountOptions()"
+                                  optionLabel="label" optionValue="value"
+                                  placeholder="Sélectionnez un compte" [filter]="accountOptions().length > 6"
+                                  appendTo="body" styleClass="w-full"
+                                  [emptyMessage]="'Aucun compte monétaire'" />
+                    </div>
+
                     <!-- Category grid -->
                     <div class="flex flex-col gap-3">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
@@ -344,6 +365,7 @@ interface DayGroup {
 })
 export class TransactionLogs implements OnInit {
     private transactionsService = inject(TransactionsService);
+    private patrimoineService   = inject(PatrimoineService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
     private layoutService       = inject(LayoutService);
@@ -375,9 +397,13 @@ export class TransactionLogs implements OnInit {
     editDate: Date | null = null;
     // formType is a Signal so computed() can track changes reactively
     formType = signal<'Income' | 'Expense'>('Expense');
-    form: { amount: number; remarks: string; category: string } = {
-        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0]
+    form: { amount: number; remarks: string; category: string; accountId?: number } = {
+        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined
     };
+
+    // Monetary accounts (cash / savings / mobile money) for the account selector
+    private static readonly MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
+    accountOptions = signal<{ label: string; value: number }[]>([]);
 
     readonly currentCategories = computed(() =>
         this.formType() === 'Income' ? [...INCOME_CATEGORIES] : [...EXPENSE_CATEGORIES]
@@ -460,8 +486,22 @@ export class TransactionLogs implements OnInit {
             const recs = await this.transactionsService.getRecords();
             this.allRecords.set(recs);
             this.emitMonth();
+            this.loadAccounts();
         } finally {
             this.loading.set(false);
+        }
+    }
+
+    private async loadAccounts() {
+        try {
+            const assets = await this.patrimoineService.getAssets();
+            this.accountOptions.set(
+                assets
+                    .filter(a => TransactionLogs.MONETARY_CATEGORIES.includes(a.category))
+                    .map(a => ({ label: a.name, value: a.id }))
+            );
+        } catch {
+            this.accountOptions.set([]);
         }
     }
 
@@ -494,7 +534,7 @@ export class TransactionLogs implements OnInit {
         this.editingRecord = null;
         this.editDate = new Date();
         this.formType.set('Expense');
-        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0] };
+        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined };
         this.submitted = false;
         this.dialogVisible = true;
     }
@@ -504,9 +544,10 @@ export class TransactionLogs implements OnInit {
         this.editDate = rec.date ? new Date(rec.date) : new Date();
         this.formType.set(rec.type);
         this.form = {
-            amount:   rec.amount,
-            remarks:  rec.remarks || rec.name || '',
-            category: rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0])
+            amount:    rec.amount,
+            remarks:   rec.remarks || rec.name || '',
+            category:  rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]),
+            accountId: rec.accountId
         };
         this.submitted = false;
         this.dialogVisible = true;
@@ -519,7 +560,7 @@ export class TransactionLogs implements OnInit {
 
     async saveRecord() {
         this.submitted = true;
-        if (!this.editDate || !(this.form.amount > 0) || !this.form.category) return;
+        if (!this.editDate || !(this.form.amount > 0) || !this.form.category || !this.form.accountId) return;
 
         const dateStr = this.toDateStr(this.editDate);
         this.isSaving.set(true);
@@ -530,10 +571,11 @@ export class TransactionLogs implements OnInit {
                     ...this.editingRecord,
                     date:     dateStr,
                     type:     this.formType(),
-                    amount:   this.form.amount,
-                    remarks:  this.form.remarks,
-                    category: this.form.category,
-                    name:     this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name,
+                    amount:    this.form.amount,
+                    remarks:   this.form.remarks,
+                    category:  this.form.category,
+                    accountId: this.form.accountId,
+                    name:      this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name,
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
                 this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Transaction mise à jour.', life: 3000 });
@@ -541,10 +583,11 @@ export class TransactionLogs implements OnInit {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
                     type:     this.formType(),
-                    amount:   this.form.amount,
-                    remarks:  this.form.remarks,
-                    category: this.form.category,
-                    name:     this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense'),
+                    amount:    this.form.amount,
+                    remarks:   this.form.remarks,
+                    category:  this.form.category,
+                    accountId: this.form.accountId,
+                    name:      this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense'),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
                 this.messageService.add({ severity: 'success', summary: 'Enregistré', detail: 'Transaction ajoutée.', life: 3000 });
@@ -583,6 +626,14 @@ export class TransactionLogs implements OnInit {
     getCategoryConfig(rec: TransactionRecord) {
         const cat = rec.category || (rec.type === 'Income' ? 'other_income' : 'other_expense');
         return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-warm-500/10' };
+    }
+
+    /** Account label for the chip: "from → to" for transfers, else the account name. */
+    accountLabel(rec: TransactionRecord): string {
+        if (rec.fromAccountName || rec.toAccountName) {
+            return `${rec.fromAccountName ?? '?'} → ${rec.toAccountName ?? '?'}`;
+        }
+        return rec.accountName ?? '';
     }
 
     categoryFg(rec: TransactionRecord): string {

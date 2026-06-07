@@ -18,6 +18,10 @@ export interface TransactionRecord {
     amount: number;
     remarks?: string;
     category?: string;
+    accountId?: number;
+    accountName?: string;
+    fromAccountName?: string;
+    toAccountName?: string;
 }
 
 export interface TransactionStats {
@@ -99,9 +103,6 @@ export class TransactionsService {
     private api             = inject(ApiService);
     private currencyService = inject(CurrencyService);
 
-    // Categories to exclude from main transactions view (these are managed separately in Savings)
-    private readonly SAVINGS_CATEGORIES = ['savings', 'investment'];
-    
     // Cache storage
     private recordsCache: CacheEntry<TransactionRecord[]> | null = null;
     private statsCache: CacheEntry<TransactionStats> | null = null;
@@ -111,7 +112,7 @@ export class TransactionsService {
     private statsRequest$: Observable<TransactionStats> | null = null;
     
     /**
-     * Get all transactions (excluding savings-related transactions) (with caching)
+     * Get all transactions (with caching)
      */
     async getRecords(): Promise<TransactionRecord[]> {
         // Return cached data immediately if available and fresh
@@ -142,7 +143,6 @@ export class TransactionsService {
         
         this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
             map(transactions => transactions
-                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
@@ -158,7 +158,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get transactions as Observable (excluding savings-related transactions) (with caching and deduplication)
+     * Get transactions as Observable (with caching and deduplication)
      */
     getRecords$(): Observable<TransactionRecord[]> {
         // Return cached data immediately if available
@@ -174,7 +174,6 @@ export class TransactionsService {
         // Create new request
         this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
             map(transactions => transactions
-                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
@@ -207,7 +206,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get recent transactions (last N, excluding savings-related) (with caching)
+     * Get recent transactions (last N) (with caching)
      */
     async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
         // Use cached records if available
@@ -254,9 +253,10 @@ export class TransactionsService {
                 category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
                 amount: this.currencyService.toBaseAmount(record.amount),
                 description: record.remarks,
-                date: this.toDateString(record.date)
+                date: this.toDateString(record.date),
+                account_id: record.accountId
             };
-            
+
             const transaction = await firstValueFrom(this.api.createTransaction(transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
             // Invalidate cache
@@ -282,9 +282,10 @@ export class TransactionsService {
                 category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
                 amount: this.currencyService.toBaseAmount(record.amount),
                 description: record.remarks,
-                date: this.toDateString(record.date)
+                date: this.toDateString(record.date),
+                account_id: record.accountId
             };
-            
+
             const transaction = await firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
             // Invalidate cache
@@ -315,7 +316,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get transaction statistics (excluding savings-related) (with caching)
+     * Get transaction statistics (with caching)
      */
     async getStats(): Promise<TransactionStats> {
         // Return cached data immediately if available and fresh
@@ -414,7 +415,11 @@ export class TransactionsService {
             type: t.type === 'income' || t.type === 'investment' ? 'Income' : 'Expense',
             amount: t.amount,
             remarks: t.description ?? undefined,
-            category: t.category
+            category: t.category,
+            accountId: t.account_id ?? undefined,
+            accountName: t.account_name ?? undefined,
+            fromAccountName: t.from_account_name ?? undefined,
+            toAccountName: t.to_account_name ?? undefined
         };
     }
 

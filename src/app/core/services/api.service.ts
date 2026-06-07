@@ -135,7 +135,12 @@ export interface Transaction {
     date: string;
     is_recurring: boolean;
     recurring_frequency: string | null;
-    asset_id: number | null;
+    account_id: number | null;
+    from_account_id: number | null;
+    to_account_id: number | null;
+    account_name: string | null;
+    from_account_name: string | null;
+    to_account_name: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -149,7 +154,9 @@ export interface TransactionCreate {
     date?: string;
     is_recurring?: boolean;
     recurring_frequency?: string;
-    asset_id?: number;
+    account_id?: number;
+    from_account_id?: number;
+    to_account_id?: number;
 }
 
 export interface TransactionUpdate {
@@ -161,7 +168,9 @@ export interface TransactionUpdate {
     date?: string;
     is_recurring?: boolean;
     recurring_frequency?: string;
-    asset_id?: number;
+    account_id?: number;
+    from_account_id?: number;
+    to_account_id?: number;
 }
 
 // ============================================
