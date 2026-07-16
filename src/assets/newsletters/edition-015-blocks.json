@@ -1,0 +1,57 @@
+{
+  "title": "Gestion sous mandat ou gestion libre : qui bat l'indice ?",
+  "subtitle": "Édition #015 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["SPIVA", "gestion sous mandat", "gestion libre", "SGI", "BRVM", "frais", "indice"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Confier ton portefeuille à un pro coûte 2 à 3 % par an. Et dans 9 cas sur 10, il ne bat pas l'indice."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "**L'étude qui a tué le mythe du gérant star**\n\nDepuis 2002, S&P Dow Jones Indices publie chaque semestre un rapport appelé SPIVA (S&P Indices Versus Active). L'idée est simple : comparer la performance des fonds gérés activement à celle de leur indice de référence. Vingt ans plus tard, les résultats sont devenus l'une des données les plus robustes de la finance moderne (source : https://www.spglobal.com/spdji/en/research-insights/spiva/).\n\nAux États-Unis, sur 15 ans, environ **88 % des fonds actions large-cap sous-performent le S&P 500**. Sur 20 ans, on monte à **93 %**. En Europe, le SPIVA Europe Scorecard montre la même tendance : ~85 % des fonds actions Europe sous-performent leur indice sur 10 ans, après frais. Le verdict est constant, peu importe le pays, peu importe la décennie : la grande majorité des gérants actifs ne bat pas le marché une fois les frais déduits.\n\n**Pourquoi les pros perdent**\n\nCe n'est pas une question de talent. Les gérants actifs sont, en moyenne, plus compétents que l'investisseur particulier. Mais ils affrontent trois adversaires structurels :\n\n1. **Les frais.** Un fonds géré activement facture 1,5 à 2,5 % de frais de gestion par an, contre 0,1 à 0,3 % pour un ETF indiciel. Sur 20 ans, à 6 % de rendement brut, cet écart efface 35 à 40 % du patrimoine final.\n\n2. **La concurrence.** Le marché actions, ce sont des milliers d'analystes pros qui s'affrontent en temps réel. Chaque transaction a un perdant et un gagnant. En moyenne, après frais, le gérant ne peut pas battre la moyenne — c'est mathématique (Sharpe, 1991).\n\n3. **La persistance.** Les fonds top quartile une année ne restent presque jamais top quartile l'année suivante. Identifier à l'avance les 7 à 12 % qui surperforment relève de la loterie.\n\n**Et à la BRVM, alors ?**\n\nÀ la BRVM, la quasi-totalité des SGI (Société de Gestion et d'Intermédiation) agréées propose deux services :\n\n— **La gestion libre.** Tu ouvres un compte titres chez la SGI, tu passes tes propres ordres (achat / vente d'actions, souscription FCP). La SGI exécute, conserve les titres, et te facture des frais de courtage (~1 % par ordre) plus des droits de garde annuels (~0,1 à 0,2 %). Tu décides de tout.\n\n— **La gestion sous mandat.** Tu signes un mandat de gestion discrétionnaire. La SGI investit pour toi selon un profil de risque convenu (prudent, équilibré, dynamique). Tu ne valides plus chaque ordre. En contrepartie, elle facture des frais de gestion annuels de 1,5 à 2 %, parfois un ticket d'entrée, et conserve les frais de courtage et de garde par-dessus. Coût total annuel typique : **2,5 à 3,5 % du portefeuille**, parfois plus selon le ticket et le profil.\n\nLe problème est double. D'abord, il n'existe pas d'étude type SPIVA sur la BRVM : aucune publication systématique n'établit que les mandats des SGI battent un benchmark comme le BRVM Composite. Ensuite, l'univers BRVM est petit — 47 sociétés cotées seulement — ce qui réduit mécaniquement la marge de différenciation d'un gérant pro par rapport à un investisseur particulier informé. L'alpha théorique est plus rare, pas plus abondant.\n\n**Mon angle FIRE**\n\nPour la diaspora qui vise l'indépendance financière, la conclusion est la même qu'ailleurs dans le monde, et peut-être plus encore à la BRVM :\n\n— Si tu sais ce que tu veux faire (DCA sur l'indice composite, achat de quelques grandes capitalisations à dividende), **la gestion libre via une SGI suffit largement**. Tu paies 1 à 1,5 % all-in au lieu de 3 %.\n\n— La gestion sous mandat se défend dans deux cas seulement : tu n'as vraiment pas le temps ou l'envie de t'en occuper, ou tu as un patrimoine large (> 500 M FCFA) où la fiscalité, la diversification et la conformité justifient l'accompagnement.\n\n— Dans les autres cas, garde le contrôle. Sur 20 ans, l'écart de frais entre 1 % et 3 % par an, c'est **la différence entre prendre sa retraite à 50 ou à 60 ans**."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Si tu choisis la gestion libre, encore faut-il pouvoir suivre ton portefeuille proprement : valorisation à jour, dividendes encaissés, frais cumulés, performance nette vs indice. C'est ce qu'on construit chez Omaad Wealth — un tableau de bord patrimonial pensé pour la diaspora et les investisseurs BRVM, en FCFA et en euros.\n\nNotre conviction : pour la majorité des investisseurs, la gestion libre est viable à condition d'avoir le bon outillage. Pas un conseiller à 500 €/h. Juste un dashboard clair, sourcé, qui te dit où tu en es et combien te coûte réellement chaque décision."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">47</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">sociétés cotées à la BRVM en 2024</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BRVM — Rapport annuel 2024</span><br><span style=\"font-size:13px; color:#6E6A60; line-height:1.6; display:inline-block; margin-top:12px;\">À titre de comparaison, le S&P 500 en compte 500 et la cote de Paris plus de 700. Sur un univers aussi resserré, le gain marginal qu'un gérant pro peut extraire face à un investisseur particulier informé est faible.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📊 SPIVA Scorecard</span> <span style=\"font-size:13px; color:#6E6A60;\">— S&P Dow Jones Indices, mis à jour deux fois par an</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">La référence mondiale sur la performance des fonds actifs vs leur indice. Gratuit, en anglais. Versions US, Europe, Emerging Markets, MEA. Lecture obligatoire avant de signer un mandat de gestion. <a href=\"https://www.spglobal.com/spdji/en/research-insights/spiva/\" style=\"color:#C77B3C; text-decoration:underline;\">spglobal.com/spdji</a></span></td></tr></table><table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin-top:12px;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 Common Sense on Mutual Funds</span> <span style=\"font-size:13px; color:#6E6A60;\">— John C. Bogle (1999, éd. révisée 2010)</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le fondateur de Vanguard démonte, chiffres à l'appui, la promesse de la gestion active. Le livre qui a popularisé l'investissement indiciel auprès du grand public. Disponible en anglais.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. S&P's SPIVA Scorecard, published since 2002, shows that ~88% of US large-cap active funds underperform the S&P 500 over 15 years, and ~93% over 20 years. European funds tell the same story. Across decades and geographies, the verdict is constant: after fees, most professional managers don't beat the index.\n\n2. On the BRVM, virtually every licensed SGI offers two services: self-directed brokerage (~1% all-in fees) and discretionary management (~2.5–3.5% all-in). With only 47 listed companies, the BRVM offers an even narrower universe than developed markets — limiting the structural alpha a pro can extract over an informed retail investor.\n\n3. For most diaspora investors pursuing FIRE, self-directed management through an SGI — paired with a clear dashboard to track your real net performance — is the better default. Discretionary mandates make sense only for very large portfolios (> 500M FCFA) or for those with truly no time to manage their own allocation."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}

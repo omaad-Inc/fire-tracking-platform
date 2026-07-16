@@ -8,7 +8,8 @@ import { environment } from '../../../environments/environment';
 // ============================================
 export type AssetCategory =
     | 'real_estate'
-    | 'stocks'
+    | 'stocks_brvm'
+    | 'stocks_intl'
     | 'bonds'
     | 'crypto'
     | 'cash'
@@ -49,6 +50,14 @@ export interface Asset {
     notary_fees: number | null;
     renovation_fees: number | null;
     furnishing_costs: number | null;
+    // Tontine specific
+    tontine_monthly_contribution: number | null;
+    tontine_participants: number | null;
+    tontine_start_date: string | null;
+    tontine_collection_date: string | null;
+    tontine_status: string | null;
+    // Mobile Money specific
+    mobile_money_operator: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -57,32 +66,49 @@ export interface AssetCreate {
     name: string;
     category: AssetCategory;
     current_value: number;
-    purchase_value?: number;
-    purchase_date?: string;
+    purchase_value?: number | null;
+    purchase_date?: string | null;
     currency?: string;
-    notes?: string;
+    notes?: string | null;
     is_liquid?: boolean;
-    institution?: string;
+    institution?: string | null;
     location?: string;
     surface_m2?: number;
     price_per_m2_purchase?: number;
     quantity?: number;
+    // Tontine specific
+    tontine_monthly_contribution?: number | null;
+    tontine_participants?: number | null;
+    tontine_start_date?: string | null;
+    tontine_collection_date?: string | null;
+    tontine_status?: string | null;
+    // Mobile Money specific
+    mobile_money_operator?: string | null;
 }
 
 export interface AssetUpdate {
     name?: string;
     category?: AssetCategory;
     current_value?: number;
-    purchase_value?: number;
-    purchase_date?: string;
+    purchase_value?: number | null;
+    purchase_date?: string | null;
     currency?: string;
-    notes?: string;
+    notes?: string | null;
     is_liquid?: boolean;
-    institution?: string;
+    institution?: string | null;
     location?: string;
     surface_m2?: number;
     price_per_m2_purchase?: number;
     quantity?: number | null;
+    rental_income?: number | null;
+    // Tontine specific
+    tontine_monthly_contribution?: number | null;
+    tontine_participants?: number | null;
+    tontine_start_date?: string | null;
+    tontine_collection_date?: string | null;
+    tontine_status?: string | null;
+    // Mobile Money specific
+    mobile_money_operator?: string | null;
 }
 
 // ============================================
@@ -91,11 +117,13 @@ export interface AssetUpdate {
 export type TransactionType = 'income' | 'expense' | 'transfer' | 'investment';
 export type TransactionCategory =
     // Income
-    | 'salary' | 'freelance' | 'dividends' | 'rental_income' | 'interest' | 'gift_received' | 'other_income'
+    | 'salary' | 'freelance' | 'dividends' | 'rental_income' | 'interest' | 'gift_received'
+    | 'family_support_received' | 'tontine_payout' | 'other_income'
     // Expense
     | 'housing' | 'utilities' | 'groceries' | 'transport' | 'health' | 'insurance'
     | 'entertainment' | 'dining' | 'shopping' | 'education' | 'subscriptions'
-    | 'travel' | 'gift_given' | 'taxes' | 'savings' | 'investment' | 'debt_payment' | 'other_expense'
+    | 'travel' | 'gift_given' | 'family_support' | 'religious' | 'ceremony' | 'airtime' | 'tontine'
+    | 'taxes' | 'savings' | 'investment' | 'debt_payment' | 'other_expense'
     // Transfer
     | 'transfer';
 
@@ -109,7 +137,12 @@ export interface Transaction {
     date: string;
     is_recurring: boolean;
     recurring_frequency: string | null;
-    asset_id: number | null;
+    account_id: number | null;
+    from_account_id: number | null;
+    to_account_id: number | null;
+    account_name: string | null;
+    from_account_name: string | null;
+    to_account_name: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -123,7 +156,9 @@ export interface TransactionCreate {
     date?: string;
     is_recurring?: boolean;
     recurring_frequency?: string;
-    asset_id?: number;
+    account_id?: number;
+    from_account_id?: number;
+    to_account_id?: number;
 }
 
 export interface TransactionUpdate {
@@ -135,7 +170,9 @@ export interface TransactionUpdate {
     date?: string;
     is_recurring?: boolean;
     recurring_frequency?: string;
-    asset_id?: number;
+    account_id?: number;
+    from_account_id?: number;
+    to_account_id?: number;
 }
 
 // ============================================
@@ -145,38 +182,86 @@ export type SavingStatus = 'active' | 'paused' | 'completed' | 'cancelled';
 
 export interface SavingGoal {
     id: number;
+    owner_id?: number;
     name: string;
+    description: string | null;
+    icon: string | null;
+    color: string | null;
     target_amount: number;
     current_amount: number;
-    currency: string;
+    monthly_contribution: number | null;
     target_date: string | null;
-    status: SavingStatus;
+    start_date: string | null;
     priority: number;
+    is_completed: boolean;
+    is_active: boolean;
+    progress_percentage?: number;
+    remaining_amount?: number;
+    template_key: string | null;
+    image_url: string | null;
+    created_at: string;
+    updated_at: string;
+    // Legacy/optional — not returned by the backend, kept for compat with older callers
+    currency?: string;
+    status?: SavingStatus;
+    notes?: string | null;
+}
+
+export interface SavingGoalCreate {
+    name: string;
+    description?: string;
+    target_amount: number;
+    current_amount?: number;
+    target_date?: string;
+    priority?: number;
+    template_key?: string;
+    image_url?: string;
+}
+
+export interface SavingGoalUpdate {
+    name?: string;
+    description?: string;
+    target_amount?: number;
+    current_amount?: number;
+    target_date?: string;
+    priority?: number;
+    template_key?: string;
+    image_url?: string;
+}
+
+// ============================================
+// GOAL CONTRIBUTION INTERFACES
+// ============================================
+export type GoalContributionType = 'contribution' | 'deallocation';
+
+export interface GoalContribution {
+    id: number;
+    goal_id: number;
+    asset_id: number | null;
+    asset_name: string | null;
+    asset_category: string | null;
+    type: GoalContributionType;
+    amount: number;
+    date: string;          // ISO YYYY-MM-DD
     notes: string | null;
     created_at: string;
     updated_at: string;
 }
 
-export interface SavingGoalCreate {
-    name: string;
-    target_amount: number;
-    current_amount?: number;
-    currency?: string;
-    target_date?: string;
-    status?: SavingStatus;
-    priority?: number;
+export interface GoalContributionCreate {
+    asset_id: number;
+    amount: number;        // always positive
+    date?: string;         // ISO YYYY-MM-DD; defaults to today
     notes?: string;
 }
 
-export interface SavingGoalUpdate {
-    name?: string;
-    target_amount?: number;
-    current_amount?: number;
-    currency?: string;
-    target_date?: string;
-    status?: SavingStatus;
-    priority?: number;
-    notes?: string;
+export interface LiquidAsset {
+    id: number;
+    name: string;
+    category: string;
+    current_value: number;
+    currency: string;
+    institution: string | null;
 }
 
 // ============================================
@@ -307,6 +392,56 @@ export interface FIRESettings {
     withdrawal_rate?: number;
 }
 
+export interface SubScore {
+    label: string;
+    score: number;
+    max_score: number;
+    raw_value: number;
+}
+
+export interface AxisScore {
+    axis: string;
+    score: number;
+    max_score: number;
+    sub_scores: SubScore[];
+    insight_key: string;
+}
+
+export interface WealthScoreResponse {
+    total_score: number;
+    axes: AxisScore[];
+    computed_at: string;
+}
+
+// ============================================
+// BROKER CONNECTION INTERFACES
+// ============================================
+export type BrokerProvider =
+    | 'jokko_fi' | 'cgf_bourse' | 'bridge_securities'
+    | 'credit_agricole' | 'boursobank' | 'credit_mutuel' | 'trade_republic' | 'fortuneo';
+export type ConnectionStatus = 'pending' | 'connected' | 'error' | 'disabled';
+
+export interface BrokerConnectionCreate {
+    provider: BrokerProvider;
+    login: string;
+    password: string;
+}
+
+export interface BrokerConnectionUpdate {
+    login?: string;
+    password?: string;
+}
+
+export interface BrokerConnection {
+    id: number;
+    provider: BrokerProvider;
+    login: string;
+    status: ConnectionStatus;
+    last_sync: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
 // ============================================
 // API SERVICE
 // ============================================
@@ -392,8 +527,40 @@ export class ApiService {
         return this.http.delete<void>(`${this.apiUrl}/savings/${id}`);
     }
 
-    addContribution(goalId: number, amount: number): Observable<SavingGoal> {
-        return this.http.post<SavingGoal>(`${this.apiUrl}/savings/${goalId}/contribute`, { amount });
+    /** @deprecated — use `contributeToGoal` (with asset_id) */
+    addContribution(goalId: number, amount: number): Observable<GoalContribution> {
+        return this.http.post<GoalContribution>(
+            `${this.apiUrl}/savings/${goalId}/contribute`,
+            { amount },
+        );
+    }
+
+    listLiquidAssets(): Observable<LiquidAsset[]> {
+        return this.http.get<LiquidAsset[]>(`${this.apiUrl}/savings/liquid-assets`);
+    }
+
+    listGoalContributions(goalId: number): Observable<GoalContribution[]> {
+        return this.http.get<GoalContribution[]>(`${this.apiUrl}/savings/${goalId}/contributions`);
+    }
+
+    contributeToGoal(goalId: number, data: GoalContributionCreate): Observable<GoalContribution> {
+        return this.http.post<GoalContribution>(
+            `${this.apiUrl}/savings/${goalId}/contribute`,
+            data,
+        );
+    }
+
+    deallocateFromGoal(goalId: number, data: GoalContributionCreate): Observable<GoalContribution> {
+        return this.http.post<GoalContribution>(
+            `${this.apiUrl}/savings/${goalId}/deallocate`,
+            data,
+        );
+    }
+
+    deleteGoalContribution(goalId: number, contributionId: number): Observable<void> {
+        return this.http.delete<void>(
+            `${this.apiUrl}/savings/${goalId}/contributions/${contributionId}`,
+        );
     }
 
     // ========== DEBTS ==========
@@ -471,6 +638,32 @@ export class ApiService {
 
     deleteAccount(): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/users/me`);
+    }
+
+    // ========== WEALTH SCORE ==========
+    getWealthScore(): Observable<WealthScoreResponse> {
+        return this.http.get<WealthScoreResponse>(`${this.apiUrl}/wealth-score`);
+    }
+
+    // ========== BROKER CONNECTIONS ==========
+    createBrokerConnection(data: BrokerConnectionCreate): Observable<BrokerConnection> {
+        return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections`, data);
+    }
+
+    getBrokerConnections(): Observable<BrokerConnection[]> {
+        return this.http.get<BrokerConnection[]>(`${this.apiUrl}/broker/connections`);
+    }
+
+    updateBrokerConnection(id: number, data: BrokerConnectionUpdate): Observable<BrokerConnection> {
+        return this.http.patch<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}`, data);
+    }
+
+    deleteBrokerConnection(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/broker/connections/${id}`);
+    }
+
+    syncBrokerConnection(id: number): Observable<BrokerConnection> {
+        return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}/sync`, {});
     }
 }
 

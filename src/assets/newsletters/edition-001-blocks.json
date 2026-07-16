@@ -1,0 +1,53 @@
+{
+  "title": "La règle des 4% fonctionne-t-elle en FCFA ?",
+  "subtitle": "Édition #012 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["FIRE", "FCFA", "BRVM", "investissement"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "La règle des 4% a été pensée pour le S&P 500. Pas pour la BRVM."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "En 1994, William Bengen publie son étude sur les retraités américains : si tu retires 4% de ton portefeuille chaque année, tu ne seras jamais à sec sur 30 ans. Cette règle est devenue le pilier du mouvement FIRE dans le monde entier.\n\nMais elle repose sur trois hypothèses très américaines : un rendement annualisé du S&P 500 autour de 7% après inflation, une inflation maîtrisée en USD, et un accès à des ETFs à frais quasi nuls.\n\nQuand tu vis entre Dakar, Abidjan et Paris, la donne change. Le FCFA est arrimé à l'euro — ton inflation suit celle de la zone euro, pas celle des États-Unis. C'est un avantage que beaucoup sous-estiment : pas de dévaluation sauvage, pas de spirale monétaire. Ta monnaie est stable par design.\n\nCôté rendements, la BRVM (Bourse Régionale des Valeurs Mobilières) affiche une performance moyenne de 8 à 12% sur les bonnes années, mais avec une volatilité et une liquidité bien différentes du marché américain. Et si tu investis via un PEA depuis la France, tu accèdes au marché européen avec une fiscalité avantageuse.\n\nLe vrai calcul FIRE en FCFA, c'est un mix : actions BRVM pour la croissance, immobilier en Afrique pour le rendement locatif, épargne en FCFA pour la liquidité quotidienne. Le 4% devient alors un 3,5% — plus conservateur, mais adapté à ta réalité multi-devises.\n\nLe FIRE number en FCFA : si tu vises 800 000 FCFA/mois de dépenses (≈1 220 €), ton objectif est de 274 millions FCFA (≈418 000 €) à un taux de retrait de 3,5%. C'est ambitieux mais concret — et c'est exactement ce qu'Omaad Wealth t'aide à traquer."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "On a lancé le simulateur FIRE Africa — un outil gratuit, accessible sans inscription, qui te permet de calculer ton objectif d'indépendance financière adapté au contexte FCFA. Tu entres tes dépenses mensuelles, ton patrimoine actuel, ton taux d'épargne et ton rendement attendu — et le simulateur te montre année par année comment ton patrimoine évolue et quand tu atteins la liberté financière.\n\nEssaie le simulateur FIRE → https://omaad.africa/fr/tools/fire-simulator\n\nC'est exactement pour ça qu'on construit Omaad — des outils qui comprennent ta réalité, pas celle d'un américain à San Francisco."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">+9,4%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">Rendement de l'indice BRVM Composite en 2025</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BRVM — Rapport annuel 2025</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 The Simple Path to Wealth</span> <span style=\"font-size:13px; color:#6E6A60;\">— JL Collins</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le livre qui a démocratisé FIRE aux États-Unis. Le chapitre sur les index funds est un must — même si tu dois adapter la stratégie à la zone UEMOA. Disponible en anglais, résumés FR facilement trouvables.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. The 4% rule was built on US market assumptions. For FCFA-based investors, a 3.5% withdrawal rate is safer — accounting for BRVM volatility, EUR-pegged stability, and a diversified portfolio mixing BRVM stocks, African real estate, and local savings.\n\n2. Omaad has launched a free FIRE simulator — no login required. Enter your monthly expenses, current wealth, savings rate, and expected return to see your path to financial independence year by year.\n\n3. The BRVM Composite returned +9.4% in 2025 — proof that West African markets deserve a seat at the FIRE table."
+    }
+  ]
+}

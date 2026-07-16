@@ -14,6 +14,8 @@ interface TransactionDisplay {
     icon: string;
     bgClass: string;
     iconClass: string;
+    account?: string;
+    isTransfer?: boolean;
 }
 
 @Component({
@@ -21,16 +23,16 @@ interface TransactionDisplay {
     selector: 'app-recent-transactions-widget',
     imports: [CommonModule, RouterModule, AppAmountComponent],
     template: `
-        <div class="card !mb-0 h-full">
-            <div class="flex justify-between items-center mb-6">
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
+            <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.recentTransactions') }}</div>
-                <a [routerLink]="link('pages', 'transaction')" class="text-indigo-500 hover:text-indigo-400 font-medium text-sm transition-colors">
+                <a [routerLink]="link('pages', 'transaction')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
                     {{ t('common.viewMore') }} <i class="pi pi-chevron-right text-xs ml-1"></i>
                 </a>
             </div>
             
             @if (loading()) {
-                <div class="space-y-4">
+                <div class="relative space-y-4">
                     @for (i of [1,2,3,4,5,6]; track i) {
                         <div class="flex items-center p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 animate-pulse">
                             <div class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700 mr-4"></div>
@@ -45,17 +47,17 @@ interface TransactionDisplay {
                     }
                 </div>
             } @else if (transactions().length === 0) {
-                <div class="flex flex-col items-center justify-center py-8 text-center">
+                <div class="relative flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-list text-2xl text-surface-400"></i>
                     </div>
                     <p class="text-surface-600 dark:text-surface-400 mb-2">{{ t('dashboard.noRecentTransactions') }}</p>
-                    <a [routerLink]="link('pages', 'transaction')" class="text-indigo-500 hover:text-indigo-400 text-sm">
+                    <a [routerLink]="link('pages', 'transaction')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 text-sm">
                         {{ t('dashboard.kpi.addTransaction') }} <i class="pi pi-arrow-right text-xs ml-1"></i>
                     </a>
                 </div>
             } @else {
-                <div class="space-y-4">
+                <div class="relative space-y-4">
                     @for (tx of transactions(); track tx.id) {
                         <div class="flex items-center p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors group">
                             <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-4" [ngClass]="tx.bgClass">
@@ -63,11 +65,18 @@ interface TransactionDisplay {
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-surface-900 dark:text-surface-0 truncate">{{ tx.category }}</div>
-                                <div class="text-surface-500 dark:text-surface-400 text-sm truncate">{{ tx.description }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-sm truncate">
+                                    {{ tx.description }}
+                                    @if (tx.account) {
+                                        <span class="inline-flex items-center gap-1 ml-1 text-surface-400 dark:text-surface-500">
+                                            <i class="pi pi-wallet text-[9px]"></i>{{ tx.account }}
+                                        </span>
+                                    }
+                                </div>
                             </div>
                             <div class="flex flex-col items-end ml-4">
-                                <span class="font-bold" [ngClass]="tx.amount < 0 ? 'text-rose-500' : 'text-emerald-500'">
-                                    <app-amount [value]="tx.amount" [prefix]="tx.amount >= 0 ? '+' : '-'" />
+                                <span class="font-bold" [ngClass]="tx.isTransfer ? 'text-surface-500 dark:text-surface-400' : (tx.amount < 0 ? 'text-negative' : 'text-positive')">
+                                    <app-amount [value]="tx.amount" [prefix]="tx.isTransfer ? '⇄ ' : (tx.amount >= 0 ? '+' : '-')" />
                                 </span>
                                 <span class="text-surface-400 dark:text-surface-500 text-xs mt-1">{{ tx.date }}</span>
                             </div>
@@ -86,37 +95,59 @@ export class RecentTransactionsWidget implements OnInit {
     loading = signal(true);
     transactions = signal<TransactionDisplay[]>([]);
 
-    private categoryConfig: { [key: string]: { icon: string; bgClass: string; iconClass: string } } = {
+    /**
+     * Category → icon glyph map. Chrome (icon-tile background + icon color)
+     * is uniform across all categories: the +/− amount color does the
+     * income/expense signaling, the icon glyph itself differentiates the
+     * category. No more rainbow chrome.
+     */
+    private static readonly CHROME_BG = 'bg-brand-100 dark:bg-brand-700/20';
+    private static readonly CHROME_FG = 'text-brand-700 dark:text-ochre-400';
+
+    private categoryIcons: { [key: string]: string } = {
         // ── Income ──
-        'salary':        { icon: 'pi pi-briefcase',   bgClass: 'bg-emerald-500/10', iconClass: 'text-emerald-500' },
-        'freelance':     { icon: 'pi pi-code',         bgClass: 'bg-cyan-500/10',    iconClass: 'text-cyan-500' },
-        'dividends':     { icon: 'pi pi-chart-bar',    bgClass: 'bg-indigo-500/10',  iconClass: 'text-indigo-500' },
-        'rental_income': { icon: 'pi pi-home',         bgClass: 'bg-orange-500/10',  iconClass: 'text-orange-500' },
-        'interest':      { icon: 'pi pi-percentage',   bgClass: 'bg-teal-500/10',    iconClass: 'text-teal-500' },
-        'gift_received': { icon: 'pi pi-gift',         bgClass: 'bg-pink-500/10',    iconClass: 'text-pink-500' },
-        'other_income':  { icon: 'pi pi-wallet',       bgClass: 'bg-green-500/10',   iconClass: 'text-green-500' },
+        'salary':        'pi pi-briefcase',
+        'freelance':     'pi pi-code',
+        'dividends':     'pi pi-chart-bar',
+        'rental_income': 'pi pi-home',
+        'interest':      'pi pi-percentage',
+        'gift_received': 'pi pi-gift',
+        'other_income':  'pi pi-wallet',
         // ── Expenses ──
-        'housing':       { icon: 'pi pi-home',         bgClass: 'bg-orange-500/10',  iconClass: 'text-orange-500' },
-        'utilities':     { icon: 'pi pi-bolt',         bgClass: 'bg-yellow-500/10',  iconClass: 'text-yellow-500' },
-        'groceries':     { icon: 'pi pi-shopping-cart',bgClass: 'bg-rose-500/10',    iconClass: 'text-rose-500' },
-        'transport':     { icon: 'pi pi-car',          bgClass: 'bg-sky-500/10',     iconClass: 'text-sky-500' },
-        'health':        { icon: 'pi pi-heart',        bgClass: 'bg-red-500/10',     iconClass: 'text-red-500' },
-        'insurance':     { icon: 'pi pi-shield',       bgClass: 'bg-slate-500/10',   iconClass: 'text-slate-500' },
-        'entertainment': { icon: 'pi pi-play',         bgClass: 'bg-pink-500/10',    iconClass: 'text-pink-500' },
-        'dining':        { icon: 'pi pi-star',         bgClass: 'bg-amber-500/10',   iconClass: 'text-amber-500' },
-        'shopping':      { icon: 'pi pi-tag',          bgClass: 'bg-purple-500/10',  iconClass: 'text-purple-500' },
-        'education':     { icon: 'pi pi-book',         bgClass: 'bg-blue-500/10',    iconClass: 'text-blue-500' },
-        'subscriptions': { icon: 'pi pi-calendar',     bgClass: 'bg-violet-500/10',  iconClass: 'text-violet-500' },
-        'travel':        { icon: 'pi pi-send',         bgClass: 'bg-teal-500/10',    iconClass: 'text-teal-500' },
-        'gift_given':    { icon: 'pi pi-gift',         bgClass: 'bg-fuchsia-500/10', iconClass: 'text-fuchsia-500' },
-        'taxes':         { icon: 'pi pi-building',     bgClass: 'bg-gray-500/10',    iconClass: 'text-gray-500' },
-        'savings':       { icon: 'pi pi-chart-pie',    bgClass: 'bg-emerald-500/10', iconClass: 'text-emerald-500' },
-        'investment':    { icon: 'pi pi-chart-line',   bgClass: 'bg-indigo-500/10',  iconClass: 'text-indigo-500' },
-        'debt_payment':  { icon: 'pi pi-credit-card',  bgClass: 'bg-amber-500/10',   iconClass: 'text-amber-500' },
-        'other_expense': { icon: 'pi pi-ellipsis-h',   bgClass: 'bg-surface-500/10', iconClass: 'text-surface-500' },
+        'housing':       'pi pi-home',
+        'utilities':     'pi pi-bolt',
+        'groceries':     'pi pi-shopping-cart',
+        'transport':     'pi pi-car',
+        'health':        'pi pi-heart',
+        'insurance':     'pi pi-shield',
+        'entertainment': 'pi pi-play',
+        'dining':        'pi pi-star',
+        'shopping':      'pi pi-tag',
+        'education':     'pi pi-book',
+        'subscriptions': 'pi pi-calendar',
+        'travel':        'pi pi-send',
+        'gift_given':    'pi pi-gift',
+        'taxes':         'pi pi-building',
+        'savings':       'pi pi-chart-pie',
+        'investment':    'pi pi-chart-line',
+        'debt_payment':  'pi pi-credit-card',
+        'other_expense': 'pi pi-ellipsis-h',
     };
 
-    private defaultConfig = { icon: 'pi pi-arrow-right-arrow-left', bgClass: 'bg-surface-500/10', iconClass: 'text-surface-500' };
+    /** Used by the template — derived from the icon map + uniform chrome colors. */
+    private categoryConfig = new Proxy({} as { [key: string]: { icon: string; bgClass: string; iconClass: string } }, {
+        get: (_t, key: string) => ({
+            icon: this.categoryIcons[key] ?? 'pi pi-arrow-right-arrow-left',
+            bgClass: RecentTransactionsWidget.CHROME_BG,
+            iconClass: RecentTransactionsWidget.CHROME_FG,
+        }),
+    });
+
+    private defaultConfig = {
+        icon: 'pi pi-arrow-right-arrow-left',
+        bgClass: RecentTransactionsWidget.CHROME_BG,
+        iconClass: RecentTransactionsWidget.CHROME_FG,
+    };
 
     async ngOnInit() {
         await this.loadRecent();
@@ -138,14 +169,19 @@ export class RecentTransactionsWidget implements OnInit {
 
     private mapToWidget(r: TransactionRecord): TransactionDisplay {
         const isExpense = r.type === 'Expense';
+        const isTransfer = r.type === 'Transfer';
         const config = this.categoryConfig[r.category || ''] || this.defaultConfig;
-        
+
         return {
             id: r.id || '',
             category: r.name,
             description: r.remarks ?? '',
-            amount: isExpense ? -r.amount : r.amount,
+            amount: isTransfer ? r.amount : (isExpense ? -r.amount : r.amount),
+            isTransfer,
             date: this.formatDate(r.date),
+            account: (r.fromAccountName || r.toAccountName)
+                ? `${r.fromAccountName ?? '?'} → ${r.toAccountName ?? '?'}`
+                : (r.accountName ?? ''),
             ...config
         };
     }

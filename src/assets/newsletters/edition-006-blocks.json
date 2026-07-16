@@ -1,0 +1,53 @@
+{
+  "title": "Les frais, le nerf de la guerre à la BRVM : le cas des FCP",
+  "subtitle": "Édition #013 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["FCP", "frais", "BRVM", "OPCVM", "gestion", "TER"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "À la BRVM, les frais de gestion des FCP mangent ton rendement en silence."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Les FCP (Fonds Communs de Placement) sont souvent présentés comme la porte d'entrée idéale à la BRVM. Tu confies ton argent à un gestionnaire professionnel, il investit pour toi sur le marché régional, et tu récupères ta part de la performance. Simple, non ?\n\nSauf que personne ne te parle des frais. Et à la BRVM, les frais des FCP sont parmi les plus élevés au monde.\n\nDécomposons. Un FCP actions à la BRVM facture typiquement :\n— Des frais d'entrée de 1 à 3% (prélevés sur ton investissement initial)\n— Des frais de gestion annuels de 2 à 3,5% (prélevés chaque année sur l'encours)\n— Des frais de sortie de 0,5 à 1% (prélevés quand tu retires)\n— Parfois une commission de surperformance de 10 à 20% (prélevée sur les gains au-delà d'un benchmark)\n\nFais le calcul. Si ton FCP performe à 10% brut sur une année, les frais de gestion à 3% ramènent ta performance nette à 7%. Sur 20 ans, la différence est colossale. Un investissement de 10 millions FCFA à 10% brut pendant 20 ans donne 67,3 millions. Le même à 7% net (après 3% de frais) donne 38,7 millions. Les frais t'ont coûté 28,6 millions FCFA — soit 42% de tes gains potentiels.\n\nPourquoi les frais sont-ils si élevés à la BRVM ? Plusieurs raisons : un marché encore petit (environ 18 000 milliards FCFA de capitalisation totale), peu de concurrence entre les SGI, une réglementation qui n'impose pas de plafonds stricts, et des investisseurs qui ne comparent pas assez.\n\nLe TER (Total Expense Ratio) est le chiffre clé à regarder avant d'investir dans un FCP. C'est le ratio total des frais annuels rapporté à l'actif net du fonds. À la BRVM, les TER oscillent entre 2,5% et 4,5% — contre 0,07% à 0,20% pour un ETF S&P 500 aux États-Unis. L'écart est vertigineux.\n\nCela ne veut pas dire que les FCP BRVM sont inutiles. Pour un investisseur débutant qui ne veut pas gérer un portefeuille d'actions individuelles, un FCP reste un véhicule pertinent. Mais il faut choisir avec lucidité : compare les TER, exige la transparence sur les frais, et surtout, mesure la performance NETTE de frais — c'est la seule qui compte."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "On prépare un comparateur de FCP dans Omaad Wealth. L'idée : tu sélectionnes deux ou trois FCP de la BRVM, et l'app te montre côte à côte leur TER, leur performance nette sur 1/3/5 ans, et surtout l'impact des frais sur un investissement simulé. Parce que le premier pas vers de meilleurs rendements, c'est la transparence."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">~3%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">TER typique des FCP actions à la BRVM</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : estimation basée sur les prospectus publics des FCP actions BRVM (AMF-UMOA, Sikafinance)</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 The Little Book of Common Sense Investing</span> <span style=\"font-size:13px; color:#6E6A60;\">— John C. Bogle</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le fondateur de Vanguard explique pourquoi les frais sont l'ennemi n°1 de l'investisseur. Son plaidoyer pour les fonds indiciels à bas coûts est directement applicable à la réflexion sur les FCP BRVM : chaque point de frais en moins, c'est un point de rendement en plus pour toi.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. BRVM mutual funds (FCP) charge some of the highest fees globally: 2-3.5% annual management fees, 1-3% entry fees, and sometimes performance commissions. TERs typically range from 2.5% to 3.5%, compared to 0.07-0.20% for US index ETFs.\n\n2. Over 20 years, a 3% annual fee drag turns a 10M FCFA investment from 67.3M (at 10% gross) into 38.7M (at 7% net) — fees consume 42% of potential gains.\n\n3. FCPs remain useful for beginners who want professional management, but investors must compare TERs and demand transparency. Omaad Wealth is building an FCP comparison tool to make fee analysis accessible to everyone."
+    }
+  ]
+}

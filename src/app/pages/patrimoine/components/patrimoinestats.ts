@@ -15,42 +15,40 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     template: `
         <div class="h-full flex flex-col gap-4">
 
-            <!-- Card 1 - Valeur Nette = assets - debts -->
-            <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 border border-transparent hover:border-indigo-500/20">
-                <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('patrimoine.netWorth') }}</span>
-                <div class="font-bold text-2xl mb-1"
-                     [ngClass]="netWorth >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-rose-500'">
+            <!-- Card 1 - Valeur Nette -->
+            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 flex-1 flex flex-col items-center justify-center text-center group transition-all duration-300">
+                <span class="relative block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('patrimoine.netWorth') }}</span>
+                <div class="relative font-bold text-2xl mb-1"
+                     [ngClass]="netWorth >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-negative'">
                     <app-amount [value]="netWorth" />
                 </div>
-                <span class="text-surface-500 dark:text-surface-400 text-xs">
-                    Actifs&nbsp;−&nbsp;Dettes
-                </span>
-                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <i class="pi pi-wallet text-white text-lg"></i>
+                <span class="relative text-surface-500 dark:text-surface-400 text-xs">Actifs&nbsp;−&nbsp;Dettes</span>
+                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 shadow-sm">
+                    <i class="pi pi-wallet text-brand-700 dark:text-brand-300 text-lg"></i>
                 </div>
             </div>
 
-            <!-- Card 2 - Taux d'épargne global (average monthly savings rate) -->
-            <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 border border-transparent hover:border-cyan-500/20">
-                <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.globalSavingsRate') }}</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl mb-1">
+            <!-- Card 2 - Taux d'épargne global -->
+            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 flex-1 flex flex-col items-center justify-center text-center group transition-all duration-300">
+                <span class="relative block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.globalSavingsRate') }}</span>
+                <div class="relative text-surface-900 dark:text-surface-0 font-bold text-2xl mb-1">
                     {{ globalSavingsRate }}%
                 </div>
-                <div class="w-4/5 h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                    <div class="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                <div class="relative w-4/5 h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
                          [style.width]="globalSavingsRate + '%'"></div>
                 </div>
-                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-600 shadow-lg shadow-cyan-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <i class="pi pi-percentage text-white text-lg"></i>
+                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 shadow-sm">
+                    <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-lg"></i>
                 </div>
             </div>
 
             <!-- Card 3 - Nombre d'actifs -->
-            <div class="card flex-1 flex flex-col items-center justify-center text-center relative group hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 border border-transparent hover:border-emerald-500/20">
-                <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('patrimoine.stats.assetsCount') }}</span>
-                <div class="text-surface-900 dark:text-surface-0 font-bold text-xl mb-2">{{ assetsCount }}</div>
-                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform duration-300">
-                    <i class="pi pi-chart-line text-white text-lg"></i>
+            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 flex-1 flex flex-col items-center justify-center text-center group transition-all duration-300">
+                <span class="relative block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('patrimoine.stats.assetsCount') }}</span>
+                <div class="relative text-surface-900 dark:text-surface-0 font-bold text-xl mb-2">{{ assetsCount }}</div>
+                <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 shadow-sm">
+                    <i class="pi pi-chart-line text-ochre-600 dark:text-ochre-300 text-lg"></i>
                 </div>
             </div>
         </div>

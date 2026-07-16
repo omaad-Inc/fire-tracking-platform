@@ -8,74 +8,69 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [RouterModule, CommonModule],
     template: `
-        <footer class="relative bg-slate-950 text-white overflow-hidden">
-            <div class="absolute inset-0 opacity-5">
-                <div class="absolute inset-0" style="background-image: linear-gradient(rgba(99, 102, 241, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.5) 1px, transparent 1px); background-size: 40px 40px;"></div>
-            </div>
-
+        <footer class="relative bg-warm-900 text-white overflow-hidden">
             <div class="relative py-16 px-6 lg:px-20">
                 <div class="max-w-7xl mx-auto">
                     <div class="grid grid-cols-12 gap-8 lg:gap-12">
                         <!-- Brand -->
                         <div class="col-span-12 lg:col-span-4">
                             <a (click)="navigateTo('home')" class="flex items-center gap-3 cursor-pointer mb-6 group">
-                                <img src="assets/afrin-nexus-logo.svg" alt="Omaad Logo"
-                                     class="w-12 h-12 transition-transform duration-300 group-hover:scale-110">
+                                <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
+                                     class="w-12 h-12">
                                 <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad Wealth</span>
                             </a>
-                            <p class="text-slate-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
+                            <p class="text-warm-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
                             <div class="flex gap-3">
-                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-cyan-600 flex items-center justify-center transition-all duration-300 hover:scale-110">
-                                    <i class="pi pi-twitter text-lg"></i>
-                                </a>
-                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-blue-600 flex items-center justify-center transition-all duration-300 hover:scale-110">
+                                <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-brand-700 flex items-center justify-center transition-all duration-300">
                                     <i class="pi pi-linkedin text-lg"></i>
                                 </a>
-                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-violet-600 flex items-center justify-center transition-all duration-300 hover:scale-110">
-                                    <i class="pi pi-discord text-lg"></i>
+                                <a href="https://www.youtube.com/@fire_africa" target="_blank" rel="noopener noreferrer" aria-label="YouTube FIRE Africa"
+                                   class="w-10 h-10 rounded-xl bg-warm-800 hover:bg-negative flex items-center justify-center transition-all duration-300">
+                                    <i class="pi pi-youtube text-lg"></i>
                                 </a>
                             </div>
                         </div>
 
                         <!-- Product -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">{{ t('landing.footer.productTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.productTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a (click)="navigateTo('features')" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productFeatures') }}</a></li>
-                                <li><a [routerLink]="[currentLang]" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'pages', 'patrimoine']" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productPatrimony') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'pages', 'savings']" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productSavings') }}</a></li>
+                                <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productFeatures') }}</a></li>
+                                <li><a (click)="navigateTo('highlights')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
+                                <li><a (click)="navigateTo('projection')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Projection patrimoniale', 'Wealth projection') }}</a></li>
+                                <li><a (click)="navigateTo('pricing')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Tarifs', 'Pricing') }}</a></li>
                             </ul>
                         </div>
 
                         <!-- Resources -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">{{ t('landing.footer.resourcesTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.resourcesTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesGuide') }}</a></li>
-                                <li><a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
-                                <li><a (click)="navigateTo('pricing')" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
-                                <li><a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesCalc') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'blog']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
+                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">{{ _('Newsletter FIRE Africa', 'FIRE Africa newsletter') }}<i class="pi pi-external-link text-[9px]"></i></a></li>
+                                <li><a [routerLink]="[currentLang, 'faq']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>
                             </ul>
                         </div>
 
-                        <!-- Advisory -->
+                        <!-- Company -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">{{ t('landing.footer.advisoryTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ _('Entreprise', 'Company') }}</h4>
                             <ul class="space-y-3">
-                                <li><a [routerLink]="[currentLang, 'advisory']" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryOffers') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'advisory']" [fragment]="'offres'" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryServices') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'advisory']" [fragment]="'contact'" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.advisoryContact') }}</a></li>
+                                <li><a [routerLink]="[currentLang, aboutSlug]" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.nav.about') }}</a></li>
+                                <li><a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">LinkedIn<i class="pi pi-external-link text-[9px]"></i></a></li>
                             </ul>
                         </div>
 
                         <!-- Legal -->
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-indigo-400">{{ t('landing.footer.legalTitle') }}</h4>
+                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.legalTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
-                                <li><a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
-                                <li><a href="#" class="text-slate-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalMentions') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'legal', 'privacy']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'legal', 'terms']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'legal', 'mentions']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalMentions') }}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -83,26 +78,23 @@ import { I18nService } from '../../../i18n/i18n.service';
             </div>
 
             <!-- Bottom Bar -->
-            <div class="relative border-t border-slate-800">
+            <div class="relative border-t border-warm-800">
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="text-slate-500 text-sm text-center md:text-left">
+                        <div class="text-warm-500 text-sm text-center md:text-left">
                             © {{ currentYear }} Omaad Wealth. {{ t('landing.footer.copyright') }}
-                            <span class="text-slate-600">{{ t('landing.footer.madeWith') }}</span>
-                            <i class="pi pi-heart-fill text-red-500 mx-1"></i>
-                            <span class="text-slate-600">{{ t('landing.footer.forFreedom') }}</span>
+                            <span class="text-warm-600">{{ t('landing.footer.madeWith') }}</span>
+                            <i class="pi pi-heart-fill text-negative mx-1"></i>
+                            <span class="text-warm-600">{{ t('landing.footer.forFreedom') }}</span>
                         </div>
                         <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-2 text-slate-500 text-sm">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                </span>
+                            <div class="flex items-center gap-2 text-warm-500 text-sm">
+                                <span class="inline-flex rounded-full h-2 w-2 bg-positive-500"></span>
                                 <span>{{ t('landing.footer.available') }}</span>
                             </div>
-                            <span class="text-slate-700">•</span>
-                            <div class="flex items-center gap-2 text-slate-500 text-sm">
-                                <i class="pi pi-shield text-indigo-400"></i>
+                            <span class="text-warm-700">•</span>
+                            <div class="flex items-center gap-2 text-warm-500 text-sm">
+                                <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
                                 <span>{{ t('landing.footer.secure') }}</span>
                             </div>
                         </div>
@@ -123,6 +115,8 @@ export class FooterWidget {
     }
 
     t(key: string): string { return this.i18n.t(key); }
+    _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
+    get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
 
     navigateTo(fragment: string) {
         this.router.navigate([this.currentLang + '/landing'], { fragment });

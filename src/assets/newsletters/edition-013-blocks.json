@@ -1,0 +1,57 @@
+{
+  "title": "Ta retraite, personne ne la prépare à ta place — surtout pas l'État",
+  "subtitle": "Édition #003 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["retraite", "BRVM", "IPRES", "CSS", "dividendes", "patrimoine", "long terme"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "À 60 ans, tu auras soit un portefeuille, soit des regrets. La BRVM peut t'aider à choisir."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Parlons d'un sujet que personne n'aime aborder : la retraite. En Afrique de l'Ouest, le mot même fait sourire. « La retraite ? C'est mes enfants qui vont s'occuper de moi. » Ou alors : « Je suis fonctionnaire, j'ai l'IPRES. » Ou encore : « Je penserai à ça plus tard. »\n\nMais regardons les chiffres en face.\n\nAu Sénégal, le système de retraite repose principalement sur l'IPRES (Institution de Prévoyance Retraite du Sénégal) et la CSS (Caisse de Sécurité Sociale). Le taux de remplacement — c'est-à-dire le pourcentage de ton dernier salaire que tu touches en pension — tourne en moyenne autour de 30 à 40% (source : IPRES, Rapport d'activité, https://www.ipres.sn). Concrètement, si tu gagnais 500 000 FCFA par mois, ta pension sera d'environ 150 000 à 200 000 FCFA. Essaie de vivre avec ça.\n\nPour la diaspora, c'est encore plus flou. Tu cotises peut-être au système de retraite de ton pays de résidence, mais tu n'as pas toujours les trimestres nécessaires. Tu envoies de l'argent au pays, mais ça ne cotise nulle part. Tu as peut-être de l'immobilier, mais il ne génère pas toujours des revenus réguliers.\n\nLa BRVM offre une solution concrète pour préparer ta retraite : les dividendes.\n\nLes blue chips de la BRVM sont connues pour verser des dividendes réguliers et généreux. Sonatel, Orange CI, BOA, Société Générale CI — ces entreprises distribuent souvent entre 5% et 8% de rendement en dividendes par an (source : BRVM, Historique des dividendes, https://www.brvm.org). C'est du revenu récurrent, sans toucher à ton capital.\n\nVoici la stratégie en 3 phases :\n\n**Phase 1 — Accumulation (30-50 ans).** Tu investis régulièrement à la BRVM. Chaque mois, tu achètes des actions de sociétés solides qui versent des dividendes. Tu réinvestis systématiquement les dividendes reçus pour maximiser l'effet composé. C'est la phase où tu construis.\n\n**Phase 2 — Consolidation (50-60 ans).** Tu arrêtes progressivement de prendre des risques. Tu te concentres sur les valeurs les plus stables, celles qui ont un historique de dividende régulier sur 10-15 ans. Tu commences à diversifier : un peu d'immobilier locatif, un peu d'obligations si disponibles. L'objectif : un portefeuille qui peut générer des revenus sans que tu aies besoin de vendre tes actions.\n\n**Phase 3 — Distribution (60 ans+).** Tu vis de tes dividendes. Si tu as construit un portefeuille de 30 millions FCFA en actions à dividendes (6% de rendement moyen), tu touches environ 1 800 000 FCFA par an — soit 150 000 FCFA par mois. En complément de ta pension IPRES ou de toute autre source, c'est un matelas qui change tout.\n\nEt 30 millions, c'est atteignable. Si tu investis 100 000 FCFA par mois pendant 15 ans avec un rendement total de 8% (dividendes réinvestis + appréciation du capital), tu arrives à environ 34 millions FCFA.\n\nLe vrai ennemi de la retraite, ce n'est pas le manque d'argent. C'est le manque de temps. Chaque année que tu attends pour commencer, c'est une année de moins pour l'effet composé. À 30 ans, tu as 30 ans devant toi. À 45 ans, il te reste 15 ans — et le montant mensuel nécessaire double.\n\nN'attends pas que l'État te sauve. N'attends pas que tes enfants te prennent en charge. Construis ta propre retraite, action par action, dividende par dividende."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Omaad Wealth veut t'aider à visualiser ta trajectoire vers la retraite. L'idée : tu entres ton âge, ton investissement mensuel, et l'app te projette dans le temps — combien tu auras à 50, 55, 60 ans, combien de dividendes tu pourrais toucher par mois. Pas de promesses, juste des projections basées sur des hypothèses réalistes. Parce que voir l'objectif, c'est le premier pas pour l'atteindre."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">~35%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">taux de remplacement moyen à la retraite au Sénégal (IPRES)</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : IPRES — Rapport d'activité</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 Your Money or Your Life</span> <span style=\"font-size:13px; color:#6E6A60;\">— Vicki Robin &amp; Joe Dominguez</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le livre fondateur du mouvement FIRE. Robin et Dominguez posent la question qui dérange : combien d'heures de ta vie échanges-tu contre ton salaire ? Et surtout, à quel moment tes investissements génèrent suffisamment de revenus pour que tu n'aies plus besoin de travailler ? Leur concept de « crossover point » — le moment où tes revenus passifs dépassent tes dépenses — est le cœur de la préparation à la retraite par l'investissement.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. Retirement pensions in West Africa replace only about 30-40% of your last salary (IPRES, Senegal). For the diaspora, the situation is even murkier — split contributions, incomplete quarters, and no formal savings structure. You cannot rely on the state alone.\n\n2. The BRVM offers a concrete retirement strategy through dividends. Blue chips like Sonatel and Orange CI yield 5-8% annually. A 3-phase plan: accumulate and reinvest dividends (age 30-50), consolidate into stable dividend payers (50-60), then live off the income (60+). A portfolio of 30M FCFA at 6% yield generates 150,000 FCFA/month.\n\n3. 30 million FCFA is achievable: 100,000 FCFA/month invested over 15 years at 8% total return gets you there. The real enemy of retirement is not money — it's time. Every year you wait, the required monthly investment doubles."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}

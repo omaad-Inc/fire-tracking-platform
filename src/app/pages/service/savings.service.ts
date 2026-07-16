@@ -35,14 +35,11 @@ export interface SavingsGoalDisplay {
     status?: string;
 }
 
-// Color palette for goals
+// Legacy color palette — no longer applied (the Goals UI uses photos +
+// uniform navy chrome). Kept here only so existing widget code that still
+// reads `colorClass` / `textColorClass` doesn't crash.
 const GOAL_COLORS = [
-    { bg: 'bg-blue-700', text: 'text-blue-700' },
-    { bg: 'bg-green-600', text: 'text-green-600' },
-    { bg: 'bg-orange-600', text: 'text-orange-600' },
-    { bg: 'bg-purple-600', text: 'text-purple-600' },
-    { bg: 'bg-cyan-600', text: 'text-cyan-600' },
-    { bg: 'bg-pink-600', text: 'text-pink-600' },
+    { bg: 'bg-brand-700', text: 'text-brand-700 dark:text-brand-300' },
 ];
 
 interface CacheEntry<T> {
@@ -199,22 +196,15 @@ export class SavingsService {
     }
 
     /**
-     * Add contribution to a saving goal
+     * @deprecated Use ApiService.contributeToGoal directly with an asset_id.
+     * Goal contributions now require a source asset and create an audit-log entry;
+     * this no-arg legacy helper is kept only to avoid breaking the (about-to-be-removed)
+     * Savings page widget. Returns null because the underlying API now returns a
+     * GoalContribution, not a SavingGoal.
      */
-    async addContribution(goalId: number, amount: number): Promise<SavingsGoalDisplay | null> {
-        try {
-            // amount is in display currency — convert to EUR before sending.
-            const goal = await firstValueFrom(this.api.addContribution(goalId, this.currencyService.toBaseAmount(amount)));
-            const displayGoal = this.mapGoalToDisplay(goal, 0);
-            // Invalidate cache
-            this.invalidateGoalsCache();
-            this.invalidateStatsCache();
-            this.invalidateTransactionsCache();
-            return displayGoal;
-        } catch (error) {
-            console.error('Error adding contribution:', error);
-            throw error;
-        }
+    async addContribution(_goalId: number, _amount: number): Promise<SavingsGoalDisplay | null> {
+        console.warn('savingsService.addContribution() is deprecated; use ApiService.contributeToGoal');
+        return null;
     }
 
     // ==================== TRANSACTIONS (Savings-related) ====================

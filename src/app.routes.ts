@@ -5,14 +5,11 @@ import localeFr from '@angular/common/locales/fr';
 import localeEn from '@angular/common/locales/en';
 import { LOCALE_ID } from '@angular/core';
 import { AppLayout } from './app/layout/component/app.layout';
-import { Dashboard } from './app/pages/dashboard/dashboard';
-import { Landing } from './app/pages/landing/landing';
-import { Notfound } from './app/pages/notfound/notfound';
 import { authGuard } from './app/core/guards/auth.guard';
-import { AdvisoryPage } from './app/pages/landing/components/advisory';
-import { AdvisoryAuditPage } from './app/pages/landing/components/advisory-audit';
-import { AdvisoryMissionPage } from './app/pages/landing/components/advisory-mission';
-import { AdvisoryFormationPage } from './app/pages/landing/components/advisory-formation';
+
+// Everything except the app shell (AppLayout) is lazy-loaded so a returning
+// logged-in user never downloads the marketing site, and a first-time visitor
+// never downloads the dashboard. Each route ships as its own chunk.
 
 // Guard to redirect OAuth tokens from root to callback handler
 const oauthTokenRedirect: CanActivateFn = () => {
@@ -44,18 +41,25 @@ export const appRoutes: Routes = [
     { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
     
     // Landing page as the first route (home) - but check for OAuth token first
-    { 
-        path: '', 
-        pathMatch: 'full', 
-        component: Landing,
+    {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./app/pages/landing/landing').then(m => m.Landing),
         canActivate: [oauthTokenRedirect]
     },
-    { path: ':lang/landing', component: Landing },
-    { path: ':lang/advisory', component: AdvisoryPage },
-    { path: ':lang/advisory/audit', component: AdvisoryAuditPage },
-    { path: ':lang/advisory/mission', component: AdvisoryMissionPage },
-    { path: ':lang/advisory/formation', component: AdvisoryFormationPage },
-    
+    { path: ':lang/landing', loadComponent: () => import('./app/pages/landing/landing').then(m => m.Landing) },
+    { path: ':lang/fire-africa/welcome', loadComponent: () => import('./app/pages/landing/components/fire-africa-welcome').then(m => m.FireAfricaWelcome) },
+    { path: ':lang/tools/fire-simulator', loadComponent: () => import('./app/pages/landing/components/fire-simulator').then(m => m.FireSimulator) },
+    { path: ':lang/tools/compound-interest', loadComponent: () => import('./app/pages/landing/components/compound-calculator').then(m => m.CompoundCalculator) },
+    { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
+    { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },
+    { path: ':lang/faq', loadComponent: () => import('./app/pages/landing/components/faq').then(m => m.FaqPage) },
+    { path: ':lang/legal/mentions', loadComponent: () => import('./app/pages/landing/components/legal-mentions').then(m => m.LegalMentionsPage) },
+    { path: ':lang/legal/privacy', loadComponent: () => import('./app/pages/landing/components/legal-privacy').then(m => m.LegalPrivacyPage) },
+    { path: ':lang/legal/terms', loadComponent: () => import('./app/pages/landing/components/legal-terms').then(m => m.LegalTermsPage) },
+    { path: ':lang/qui-sommes-nous', loadComponent: () => import('./app/pages/landing/components/qui-sommes-nous').then(m => m.QuiSommesNousPage) },
+    { path: ':lang/about', loadComponent: () => import('./app/pages/landing/components/qui-sommes-nous').then(m => m.QuiSommesNousPage) },
+
     // Main app with layout (protected routes)
     {
         path: ':lang',
@@ -68,13 +72,13 @@ export const appRoutes: Routes = [
             }
         ],
         children: [
-            { path: '', component: Dashboard },
+            { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },
-    
+
     // Other standalone routes
-    { path: ':lang/notfound', component: Notfound },
+    { path: ':lang/notfound', loadComponent: () => import('./app/pages/notfound/notfound').then(m => m.Notfound) },
     { path: ':lang/auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
     { path: '**', redirectTo: '' }
 ];

@@ -1,0 +1,57 @@
+{
+  "title": "Trading ou DCA : faut-il jouer le timing ou la discipline ?",
+  "subtitle": "Édition #005 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["trading", "DCA", "investissement", "long terme", "discipline", "BRVM"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Le trader cherche le bon moment. L'investisseur FIRE cherche le bon nombre d'années."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Chaque semaine, on voit passer des captures d'écran de gains spectaculaires sur les réseaux. +40% en une journée sur une action. Des groupes Telegram qui promettent des « signaux » infaillibles. Le trading court terme fascine — et dans la diaspora, il attire de plus en plus.\n\nMais remettons les choses en perspective. Les études sont unanimes, et elles ne datent pas d'hier : selon une recherche de l'AMF (Autorité des Marchés Financiers) publiée en 2014 et confirmée par des études ultérieures, environ 89% des traders particuliers perdent de l'argent sur une période de 4 ans (source : AMF, « Étude des résultats des investisseurs particuliers sur le trading de CFD et de Forex en France », 2014 — https://www.amf-france.org). Ce chiffre n'est pas une opinion. C'est une statistique réglementaire.\n\nLe DCA (Dollar Cost Averaging), c'est l'exact opposé. Tu investis un montant fixe, à intervalle régulier, sans te soucier du cours. Pas de signaux, pas de graphiques en chandelier japonais, pas de stress. Juste de la discipline.\n\nPrenons un exemple concret. Si tu investis 100 000 FCFA par mois à la BRVM dans des actions solides avec un rendement annualisé de 8% (dividendes réinvestis), au bout de 20 ans tu te retrouves avec environ 59 millions FCFA — dont 35 millions de gains nets. Sans avoir passé une seule nuit à surveiller un écran.\n\nLe trading a un coût invisible que personne ne mesure : le temps. Les heures passées à analyser les graphiques, à vérifier les cours, à gérer le stress d'une position ouverte — c'est du temps que tu ne passes pas à construire ta carrière, ton entreprise, ou à vivre tout simplement. Pour la plupart des gens dans la diaspora qui ont un emploi à temps plein, le trading est un deuxième job non rémunéré.\n\nIl existe un juste milieu. Certains investisseurs allouent 90% de leur capital en DCA long terme et 10% en « satellite » — une poche de trading pour ceux qui veulent apprendre et expérimenter, sans mettre en danger leur stratégie patrimoniale. C'est ce qu'on appelle la stratégie Core-Satellite (source : Investopedia, « Core-Satellite Investing » — https://www.investopedia.com/terms/c/core-satellite-investing.asp).\n\nLe verdict est clair : si tu vises l'indépendance financière, le DCA est ta fondation. Le trading peut être un hobby avec 10% de ton capital — jamais ta stratégie principale."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Omaad Wealth, c'est la plateforme qu'on construit pour aider la diaspora et les investisseurs de la zone UEMOA à gérer leur patrimoine. L'objectif : te donner une vision claire de ton portefeuille BRVM, suivre tes dividendes, et t'accompagner dans ta stratégie d'investissement régulier. On veut rendre l'investissement à la BRVM aussi simple que possible — parce que la discipline, ça commence par la clarté."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">89%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">des traders particuliers perdent de l'argent sur 4 ans</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : AMF — Étude sur le trading des particuliers, 2014</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 Thinking, Fast and Slow</span> <span style=\"font-size:13px; color:#6E6A60;\">— Daniel Kahneman</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le prix Nobel d'économie explique pourquoi notre cerveau est câblé pour prendre de mauvaises décisions financières. Le biais de surconfiance, l'aversion à la perte, l'illusion de contrôle — tout ce qui rend le trading si dangereux pour le commun des mortels. Un livre qui change ta façon de penser l'argent.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. Around 89% of retail traders lose money over 4 years (AMF, 2014). Day trading is a full-time job disguised as a shortcut. For diaspora investors with careers, the time cost alone makes it unsustainable.\n\n2. DCA of 100,000 FCFA/month invested in solid BRVM stocks at 8% annualized over 20 years yields approximately 59 million FCFA. No charts, no signals, no stress — just discipline and compound interest.\n\n3. The Core-Satellite approach offers a middle ground: 90% in disciplined DCA for wealth building, 10% in a trading pocket for learning. Never risk your FIRE strategy on short-term bets."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}

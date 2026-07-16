@@ -5,22 +5,28 @@ import { RecentTransactionsWidget } from './components/recenttransactionswidget'
 import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
 import { TopMoversWidget } from './components/topmoverswidget';
+import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
+import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
-import { LayoutService } from '../../layout/service/layout.service';
+import { TransactionsService } from '../service/transactions.service';
+import { TokenService } from '../../core/services/token.service';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
     imports: [
         CommonModule, StatsWidget, SavingsProgress, DebtsOverview,
-        RecentTransactionsWidget, TopMoversWidget, OnboardingComponent
+        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
     ],
     template: `
-        <!-- Onboarding for new users: shown when no assets and not dismissed -->
+        <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {
             <div class="pb-6">
                 <app-onboarding
+                    [hasAssets]="hasAssets()"
+                    [hasTransactions]="hasTransactions()"
+                    [hasFireGoal]="hasFireGoal()"
                     (addAsset)="openAddAsset()"
                     (dismissed)="showOnboarding.set(false)"
                 />
@@ -39,40 +45,56 @@ import { LayoutService } from '../../layout/service/layout.service';
                 <app-debts-overview />
             </div>
 
-            <!-- Third row: Recent Transactions + Top Movers -->
-            <div class="col-span-12 xl:col-span-6">
-                <app-recent-transactions-widget />
+            <!-- Third row: Wealth Score + Top Movers -->
+            <div class="col-span-12 md:col-span-6 xl:col-span-6">
+                <app-wealth-score-widget />
             </div>
-            <div class="col-span-12 xl:col-span-6">
+            <div class="col-span-12 md:col-span-6 xl:col-span-6">
                 <app-top-movers-widget />
+            </div>
+
+            <!-- Fourth row: Recent Transactions -->
+            <div class="col-span-12">
+                <app-recent-transactions-widget />
             </div>
         </div>
     `
 })
 export class Dashboard implements OnInit {
-    private patrimoineService = inject(PatrimoineService);
-    private layoutService     = inject(LayoutService);
+    private patrimoineService   = inject(PatrimoineService);
+    private transactionsService = inject(TransactionsService);
+    private tokenService        = inject(TokenService);
+    private router              = inject(Router);
 
-    showOnboarding = signal(false);
+    showOnboarding  = signal(false);
+    hasAssets       = signal(false);
+    hasTransactions = signal(false);
+    hasFireGoal     = signal(false);
 
     async ngOnInit() {
-        // Show onboarding if user has no assets and hasn't dismissed it before
-        const dismissed = localStorage.getItem('omaad_onboarding_dismissed') === 'true';
-        if (!dismissed) {
-            try {
-                const assets = await this.patrimoineService.getAssets();
-                this.showOnboarding.set(assets.length === 0);
-            } catch {
-                // If API fails, don't show onboarding
-            }
-        }
+        if (localStorage.getItem('omaad_onboarding_dismissed') === 'true') return;
+
+        const [assets, transactions] = await Promise.all([
+            this.patrimoineService.getAssets().catch(() => [] as unknown[]),
+            this.transactionsService.getRecords().catch(() => [] as unknown[]),
+        ]);
+
+        const fireTarget = this.tokenService.user()?.fire_target_amount ?? 0;
+
+        this.hasAssets.set(assets.length > 0);
+        this.hasTransactions.set(transactions.length > 0);
+        this.hasFireGoal.set(fireTarget > 0);
+
+        // Only guide a truly brand-new user. As soon as ANY step is done,
+        // the user has grasped the tool — stop showing the onboarding guide.
+        // (A future config agent will take over richer guidance from here.)
+        const anyDone = this.hasAssets() || this.hasTransactions() || this.hasFireGoal();
+        this.showOnboarding.set(!anyDone);
     }
 
     openAddAsset() {
-        // Trigger the topbar's add asset dialog via LayoutService
-        this.layoutService.onMenuToggle();
-        // The topbar listens for this and opens the dialog
-        // For a direct approach, dispatch a custom event
-        window.dispatchEvent(new CustomEvent('omaad:open-add-asset'));
+        const match = this.router.url.match(/^\/(fr|en)\//);
+        const lang = match ? match[1] : 'fr';
+        this.router.navigate(['/', lang, 'pages', 'patrimoine', 'add-asset']);
     }
 }

@@ -6,6 +6,7 @@ import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { AppMobileNav } from './app.mobile-nav';
 import { AppFab } from './app.fab';
+import { AppAiAssistantPanel } from './app.ai-assistant-panel';
 import { LayoutService } from '../service/layout.service';
 import { PwaPromptComponent } from './pwa-prompt.component';
 import { PinLockComponent } from '../../core/components/pin-lock.component';
@@ -15,7 +16,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, RouterModule, PwaPromptComponent, PinLockComponent],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
@@ -27,6 +28,7 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="layout-mask animate-fadein"></div>
         <app-mobile-nav></app-mobile-nav>
         <app-fab (addAsset)="onAddAsset()"></app-fab>
+        <app-ai-assistant-panel></app-ai-assistant-panel>
         <app-pwa-prompt></app-pwa-prompt>
 
         <!-- PIN Lock Screen — covers everything when locked -->
@@ -133,9 +135,9 @@ export class AppLayout implements OnInit, OnDestroy {
     }
 
     onAddAsset(): void {
-        if (this.appTopBar) {
-            this.appTopBar.openAddAssetDialog();
-        }
+        const match = this.router.url.match(/^\/(fr|en)\//);
+        const lang = match ? match[1] : 'fr';
+        this.router.navigate(['/', lang, 'pages', 'patrimoine', 'add-asset']);
     }
 
     ngOnDestroy() {

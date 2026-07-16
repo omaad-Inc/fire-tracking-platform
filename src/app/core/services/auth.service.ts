@@ -105,6 +105,28 @@ export class AuthService {
     }
 
     /**
+     * Request a password-reset email. Backend always returns 200 with a
+     * generic message to avoid leaking which emails are registered.
+     */
+    forgotPassword(email: string): Observable<{ message: string }> {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/auth/forgot-password`, { email }).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    /**
+     * Confirm a password reset using the token from the email.
+     */
+    resetPassword(token: string, newPassword: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/reset-password`, {
+            token,
+            new_password: newPassword,
+        }).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    /**
      * Get current user info
      */
     getCurrentUser(): Observable<User> {
@@ -138,26 +160,16 @@ export class AuthService {
     }
 
     /**
-     * Initiate Google OAuth login
-     * Redirects to backend which then redirects to Google
+     * URL that starts the Google OAuth flow on the backend. The backend
+     * redirects to Google's consent screen, then back to
+     * `/auth/callback?token=...&new_user=...`, handled by OAuthCallback.
+     *
+     * Bind this to a plain `<a [href]>` rather than `(click)` + `window.location` —
+     * an anchor lets the browser navigate synchronously, without racing Angular's
+     * change detection, and supports right-click → "open in new tab".
      */
-    loginWithGoogle(): void {
-        window.location.href = `${this.apiUrl}/auth/google/login`;
-    }
-
-    /**
-     * Exchange Google ID token for app token (SPA flow)
-     */
-    exchangeGoogleToken(idToken: string): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/google/token`, null, {
-            params: { id_token: idToken }
-        }).pipe(
-            tap(response => {
-                this.clearAllCaches();
-                this.tokenService.setToken(response.access_token);
-            }),
-            catchError(this.handleError)
-        );
+    get googleAuthUrl(): string {
+        return `${this.apiUrl}/auth/google/login`;
     }
 
     /**

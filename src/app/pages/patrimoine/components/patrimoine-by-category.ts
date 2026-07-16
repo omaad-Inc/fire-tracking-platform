@@ -14,15 +14,18 @@ interface GroupConfig {
     color: string;
 }
 
+// All groups share the brand color — the icon glyph is the differentiator.
+const GROUP_COLOR = '#1A2740'; // brand-700
+
 const GROUPS: GroupConfig[] = [
-    { id: 'all',          label: 'Tous',           icon: 'pi pi-th-large',   categories: [],                                                                    color: '#6366f1' },
-    { id: 'real_estate',  label: 'Immobilier',     icon: 'pi pi-building',   categories: ['real_estate'],                                                       color: '#6366f1' },
-    { id: 'stocks_bonds', label: 'Actions & Fonds',icon: 'pi pi-chart-line', categories: ['stocks', 'bonds'],                                                    color: '#06b6d4' },
-    { id: 'savings',      label: 'Épargne',        icon: 'pi pi-dollar',     categories: ['savings_account', 'cash', 'life_insurance', 'retirement'],            color: '#10b981' },
-    { id: 'crypto',         label: 'Crypto',             icon: 'pi pi-bitcoin',    categories: ['crypto'],                                                color: '#f59e0b' },
-    { id: 'tontine',        label: 'Tontine',             icon: 'pi pi-users',      categories: ['tontine'],                                               color: '#e11d48' },
-    { id: 'mobile_money',   label: 'Mobile Money',        icon: 'pi pi-mobile',     categories: ['mobile_money'],                                          color: '#0ea5e9' },
-    { id: 'other',          label: 'Autres',             icon: 'pi pi-box',        categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'], color: '#8b5cf6' },
+    { id: 'all',            label: 'Tous',            icon: 'pi pi-th-large',   categories: [],                                                                    color: GROUP_COLOR },
+    { id: 'real_estate',    label: 'Immobilier',      icon: 'pi pi-building',   categories: ['real_estate'],                                                       color: GROUP_COLOR },
+    { id: 'stocks_bonds',   label: 'Actions & Fonds', icon: 'pi pi-chart-line', categories: ['stocks_brvm', 'stocks_intl', 'bonds'],                                color: GROUP_COLOR },
+    { id: 'savings',        label: 'Épargne',         icon: 'pi pi-dollar',     categories: ['savings_account', 'cash', 'life_insurance', 'retirement'],            color: GROUP_COLOR },
+    { id: 'crypto',         label: 'Crypto',          icon: 'pi pi-bitcoin',    categories: ['crypto'],                                                            color: GROUP_COLOR },
+    { id: 'tontine',        label: 'Tontine',         icon: 'pi pi-users',      categories: ['tontine'],                                                           color: GROUP_COLOR },
+    { id: 'mobile_money',   label: 'Mobile Money',    icon: 'pi pi-mobile',     categories: ['mobile_money'],                                                      color: GROUP_COLOR },
+    { id: 'other',          label: 'Autres',          icon: 'pi pi-box',        categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'],       color: GROUP_COLOR },
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -43,13 +46,15 @@ const CATEGORY_ICONS: Record<string, string> = {
     other:           'pi pi-box',
 };
 
+// All asset rows share the same brand gradient — the icon glyph is what
+// differentiates the category, not the tile color.
 const ICON_BGS = [
-    'linear-gradient(135deg, #6366f1, #4f46e5)',
-    'linear-gradient(135deg, #06b6d4, #0891b2)',
-    'linear-gradient(135deg, #10b981, #059669)',
-    'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-    'linear-gradient(135deg, #f59e0b, #d97706)',
-    'linear-gradient(135deg, #ec4899, #db2777)',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
+    '#1A2740',
 ];
 
 @Component({
@@ -64,7 +69,7 @@ const ICON_BGS = [
                     (click)="selectGroup(group.id)"
                     class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
                     [ngClass]="activeGroup() === group.id
-                        ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
+                        ? 'bg-brand-700 text-white shadow-card dark:bg-brand-300 dark:text-brand-900'
                         : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                     <i [class]="group.icon" class="text-sm"></i>
                     {{ group.label }}
@@ -103,7 +108,7 @@ const ICON_BGS = [
                             <!-- Name -->
                             <div class="md:col-span-4">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300"
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="getIconBg(i)">
                                         <i [class]="getCategoryIcon(item.category)" class="text-white text-sm"></i>
                                     </div>
@@ -122,7 +127,7 @@ const ICON_BGS = [
                                 <svg viewBox="0 0 80 32" width="80" height="32" preserveAspectRatio="none">
                                     <polyline [attr.points]="getSparkline(item, i)"
                                               fill="none"
-                                              [attr.stroke]="(item.deltaPct ?? item.deltaAbs ?? 0) >= 0 ? '#10b981' : '#f43f5e'"
+                                              [attr.stroke]="(item.deltaPct ?? item.deltaAbs ?? 0) >= 0 ? '#2F8F6E' : '#B0463E'"
                                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
@@ -134,14 +139,14 @@ const ICON_BGS = [
                             <div class="hidden md:flex md:justify-end md:items-center md:col-span-2 gap-1">
                                 @if (item.deltaPct != null) {
                                     <span class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold"
-                                          [ngClass]="item.deltaPct >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                          [ngClass]="item.deltaPct >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                         <i class="pi text-xs mr-1" [ngClass]="item.deltaPct >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                         {{ item.deltaPct >= 0 ? '+' : '' }}{{ item.deltaPct | number:'1.1-1' }}%
                                     </span>
                                 } @else {
                                     <span class="text-surface-400 text-xs">—</span>
                                 }
-                                <i class="pi pi-chevron-right text-surface-400 text-xs ml-1 group-hover:text-indigo-400 transition-colors"></i>
+                                <i class="pi pi-chevron-right text-surface-400 text-xs ml-1 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
                             </div>
                             <!-- Mobile stacked -->
                             <div class="md:hidden col-span-12 mt-2 pt-2 border-t border-surface-200 dark:border-surface-700 flex justify-between text-sm">
@@ -191,7 +196,7 @@ export class PatrimoineByCategoryComponent {
     getCategoryLabel(cat?: string): string {
         const labels: Record<string, string> = {
             real_estate: 'Immobilier', stocks: 'Actions', bonds: 'Obligations',
-            crypto: 'Crypto', cash: 'Liquidités', retirement: 'Retraite',
+            crypto: 'Crypto', cash: 'Compte bancaire', retirement: 'Retraite',
             life_insurance: 'Assurance vie', savings_account: 'Livret',
             business: 'Entreprise', vehicle: 'Véhicule',
             tontine: 'Tontine', mobile_money: 'Mobile Money',

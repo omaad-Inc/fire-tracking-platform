@@ -1,0 +1,57 @@
+{
+  "title": "BRVM 30, Composite, Prestige : à quoi servent vraiment les indices boursiers ?",
+  "subtitle": "Édition #008 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["BRVM", "indices", "BRVM30", "BRVM Composite", "BRVM Prestige", "benchmark", "analyse"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Les indices ne sont pas juste des chiffres qui montent et qui descendent. Ce sont des boussoles."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Quand on parle de la BRVM dans les médias, on entend souvent « le BRVM Composite a pris +2% cette semaine » ou « le BRVM 30 est en baisse depuis janvier ». Pour beaucoup d'investisseurs débutants, ces chiffres restent abstraits. Pourtant, comprendre les indices, c'est comprendre le marché.\n\nUn indice boursier, c'est un panier théorique d'actions dont on suit la performance agrégée. C'est un thermomètre du marché — il ne s'achète pas directement, mais il te dit si le marché va bien ou non. La BRVM en propose trois principaux, et chacun raconte une histoire différente.\n\n**Le BRVM Composite** — C'est l'indice le plus large. Il inclut l'ensemble des 47 titres cotés sur la bourse régionale (source : BRVM, « Méthodologie des indices BRVM », https://www.brvm.org/fr/indices). C'est le meilleur indicateur de la santé globale du marché ouest-africain. Si tu veux savoir comment va « la BRVM » dans son ensemble, c'est lui que tu regardes. Son inconvénient : il est dilué par des small caps très peu liquides. Certaines valeurs n'échangent que quelques dizaines de titres par semaine.\n\n**Le BRVM 30** — Créé pour répondre au problème de liquidité du Composite. Il regroupe les 30 valeurs les plus actives en termes de volume et de fréquence de cotation. C'est l'indice de référence pour évaluer la performance de la partie liquide du marché. Son avantage : il filtre les valeurs dormantes et te donne une vision du marché réellement négociable. C'est lui que les investisseurs institutionnels regardent pour juger de la dynamique du marché.\n\n**Le BRVM Prestige** — Le plus sélectif. Il retient les titres sur des critères fondamentaux : capitalisation boursière, rendement du dividende, PER (Price Earnings Ratio), et gouvernance (source : BRVM, « Note méthodologique BRVM Prestige », https://www.brvm.org/fr/indices). C'est un indice de qualité. Si le BRVM 30 dit « les valeurs les plus échangées », le BRVM Prestige dit « les entreprises les mieux gérées ».\n\n**Pourquoi c'est crucial pour toi :**\n\n1. **Benchmark personnel.** Si ton portefeuille d'actions fait +5% cette année mais que le BRVM 30 fait +12%, tu sous-performes le marché. Tu aurais mieux fait de répartir ton capital sur les 30 valeurs les plus actives. L'indice te donne un point de comparaison objectif. Sans benchmark, tu navigues à l'aveugle — tu ne sais jamais si tes choix individuels de titres créent réellement de la valeur par rapport au marché dans son ensemble.\n\n2. **Lecture macro.** Quand le BRVM 30 monte mais le Composite stagne, cela signifie que les blue chips performent tandis que les petites valeurs souffrent — un signe de concentration du marché. Quand le Prestige surperforme le BRVM 30, cela indique que la qualité est récompensée — bon signe pour les investisseurs qui sélectionnent des entreprises sur les fondamentaux plutôt que sur les rumeurs.\n\n3. **Sélection de tes actions.** Si tu investis en direct (ce qui est le cas à la BRVM puisqu'il n'existe pas encore de fonds indiciels passifs type ETF), les indices t'aident à choisir dans quel « univers » piocher. Tu veux de la liquidité ? Regarde les composantes du BRVM 30. Tu veux de la qualité fondamentale ? Regarde celles du Prestige. L'indice n'est pas un produit à acheter — c'est un filtre pour mieux choisir.\n\n4. **Évaluation de ton FCP.** Si tu investis via un FCP actions, compare sa performance annuelle à celle du BRVM Composite ou du BRVM 30. Un FCP qui fait +3% quand le BRVM 30 fait +10% ne mérite probablement pas ses frais de gestion de 3-4%. L'indice est ton outil pour savoir si ton gestionnaire fait du bon travail.\n\n**Historiquement,** le BRVM Composite a délivré un rendement annualisé d'environ 6-8% dividendes inclus sur la période 2015-2025, avec une volatilité inférieure aux marchés développés (source : BRVM, Rapports statistiques annuels, https://www.brvm.org/fr/statistiques). Pour un investisseur FIRE en zone FCFA, c'est un rendement réel positif après inflation (inflation UEMOA moyenne de 2-3% sur la période — source : BCEAO, Rapports sur la politique monétaire, https://www.bceao.int).\n\n**Ce qui manque à la BRVM :** à la différence des marchés occidentaux (S&P 500, CAC 40, etc.), il n'existe pas aujourd'hui de fonds indiciels passifs (ETF) qui répliquent automatiquement ces indices à bas coût. Tu ne peux pas « acheter le BRVM 30 » en un clic. Le jour où ce sera possible, ce sera un tournant majeur pour la démocratisation de l'investissement en Afrique de l'Ouest. En attendant, les indices restent ton meilleur outil d'analyse — pas un véhicule d'investissement.\n\nLes indices ne sont pas réservés aux analystes en costume. Ce sont tes outils de navigation. Apprends à les lire, et tu sauras exactement où tu en es."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Le tableau de bord Omaad Wealth va intégrer un suivi en temps réel des trois indices BRVM — Composite, BRVM 30, et Prestige — directement à côté de ton portefeuille. L'idée : tu vois en un coup d'œil comment tes actions se comportent par rapport au marché, sans aller chercher l'info sur trois sites différents. On travaille aussi sur des alertes : « ton portefeuille a sous-performé le BRVM 30 de 3% ce mois-ci ». Transparence totale sur la valeur réelle de tes choix d'investissement."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">47</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">titres cotés à la BRVM — la bourse commune de 8 pays de l'UEMOA</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BRVM — Statistiques du marché, 2026</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 A Random Walk Down Wall Street</span> <span style=\"font-size:13px; color:#6E6A60;\">— Burton G. Malkiel</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Malkiel a posé les bases intellectuelles de l'investissement indiciel. Son chapitre sur la construction d'indices explique pourquoi un indice bien construit bat la majorité des gestionnaires actifs — un argument qui devrait pousser le marché UEMOA à créer des ETFs un jour. En attendant, le livre t'apprend à utiliser les indices comme boussole, même quand tu investis en direct.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. The BRVM has three main indices: the Composite (all 47 listed stocks — full market health), the BRVM 30 (the 30 most actively traded stocks — the institutional benchmark), and the Prestige (quality-screened stocks based on fundamentals and governance). None of these can be bought directly — there are no index funds or ETFs on the BRVM.\n\n2. Indices serve as essential tools: personal benchmark (are your stock picks beating the market?), macro reading (blue chips vs small caps divergence signals market concentration), stock selection filter (BRVM 30 for liquidity, Prestige for quality), and FCP evaluation (is your fund manager worth their 3-4% fees?).\n\n3. The BRVM Composite has delivered approximately 6-8% annualized returns including dividends over 2015-2025. The absence of passive index funds remains a major gap — until ETFs arrive, indices are your best analytical tool, not an investment vehicle."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:16px 0; padding:0;\"><tr><td style=\"padding:16px 20px; border-top:1px solid #EBD0B0;\"><span style=\"font-size:11px; color:#9C988C; line-height:1.5;\">⚠️ <strong>Avertissement</strong> — Ce contenu est publié à titre éducatif et informatif uniquement. Il ne constitue en aucun cas un conseil en investissement, une recommandation personnalisée ou une incitation à acheter ou vendre des instruments financiers. Les performances passées ne préjugent pas des performances futures. Tout investissement comporte des risques, y compris la perte du capital investi. Consultez un conseiller financier agréé avant toute décision d'investissement.</span></td></tr></table>"
+    }
+  ]
+}

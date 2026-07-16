@@ -16,12 +16,12 @@ import { AuthService } from '../../core/services/auth.service';
                 <p class="mt-4 text-surface-600 dark:text-surface-400">{{ message }}</p>
             } @else {
                 <div class="text-center">
-                    <i class="pi pi-times-circle text-6xl text-red-500 mb-4"></i>
+                    <i class="pi pi-times-circle text-6xl text-negative mb-4"></i>
                     <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2">Authentication Failed</h2>
                     <p class="text-surface-600 dark:text-surface-400 mb-6">{{ error }}</p>
                     <button 
                         (click)="goToLogin()"
-                        class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                        class="px-6 py-3 bg-brand-700 text-white rounded-lg hover:bg-brand-800 transition-colors">
                         Back to Login
                     </button>
                 </div>
@@ -67,7 +67,7 @@ export class OAuthCallback implements OnInit {
                 this.message = 'Success! Redirecting...';
                 const lang = this.getLang();
                 setTimeout(() => {
-                    this.router.navigate([`/${lang}`]);
+                    this.router.navigate([`/${lang}`], { replaceUrl: true });
                 }, 500);
             },
             error: (err) => {

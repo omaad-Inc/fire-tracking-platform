@@ -55,53 +55,46 @@ import { environment } from '../../../environments/environment';
 
                 <!-- PRO upgrade banner -->
                 <a [routerLink]="['/', lang, 'pages', 'plans']"
-                   class="block mb-8 p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-amber-600/10
-                          border border-amber-500/20 hover:border-amber-500/40 transition-all">
+                   class="block mb-8 p-4 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
+                          border border-ochre-200 dark:border-ochre-700/40
+                          hover:shadow-sm transition-all">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shrink-0">
-                            <i class="pi pi-crown text-white"></i>
+                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
+                            <i class="pi pi-crown text-warm-900"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Passer à Omaad Pro</p>
-                            <p class="text-xs text-surface-500 dark:text-surface-400">Débloquez les fonctionnalités avancées</p>
+                            <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">Passer à Omaad Pro</p>
+                            <p class="text-xs text-surface-600 dark:text-ochre-400/70">Débloquez les fonctionnalités avancées</p>
                         </div>
-                        <i class="pi pi-chevron-right text-surface-400 text-xs shrink-0"></i>
+                        <i class="pi pi-chevron-right text-ochre-500 dark:text-ochre-400 text-xs shrink-0"></i>
                     </div>
                 </a>
 
                 <!-- Section: Mon Omaad -->
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-3 px-1">Mon Omaad</h3>
-                <div class="divide-y divide-surface-200 dark:divide-surface-700 mb-8">
+                <h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wide mb-3 px-1">Mon Omaad</h3>
+                <div class="mb-8 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 overflow-hidden divide-y divide-surface-100 dark:divide-surface-800">
                     @for (item of mainMenuItems; track item.route) {
                         <a [routerLink]="item.route"
-                           class="flex items-center gap-4 py-4 px-2 cursor-pointer
-                                  hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors rounded-lg">
-                            <i class="pi {{ item.icon }} text-amber-500 w-5 text-center"></i>
+                           class="flex items-center gap-4 py-4 px-4 cursor-pointer
+                                  hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all">
+                            <div class="w-9 h-9 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                                <i class="pi {{ item.icon }} text-brand-700 dark:text-ochre-400 text-sm"></i>
+                            </div>
                             <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ item.label }}</span>
                             <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
                         </a>
                     }
                 </div>
 
-                <!-- Section: FIRE -->
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-3 px-1">FIRE</h3>
-                <div class="divide-y divide-surface-200 dark:divide-surface-700 mb-8">
-                    <a routerLink="fire"
-                       class="flex items-center gap-4 py-4 px-2 cursor-pointer
-                              hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors rounded-lg">
-                        <i class="pi pi-flag text-amber-500 w-5 text-center"></i>
-                        <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">Objectif Financier</span>
-                        <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
-                    </a>
-                </div>
-
                 <!-- Section: Aide -->
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-3 px-1">{{ t('settings.help') }}</h3>
-                <div class="divide-y divide-surface-200 dark:divide-surface-700 mb-8">
+                <h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wide mb-3 px-1">{{ t('settings.help') }}</h3>
+                <div class="mb-8 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 overflow-hidden">
                     <a routerLink="help"
-                       class="flex items-center gap-4 py-4 px-2 cursor-pointer
-                              hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors rounded-lg">
-                        <i class="pi pi-question-circle text-amber-500 w-5 text-center"></i>
+                       class="flex items-center gap-4 py-4 px-4 cursor-pointer
+                              hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all">
+                        <div class="w-9 h-9 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-question-circle text-brand-700 dark:text-ochre-400 text-sm"></i>
+                        </div>
                         <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ t('settings.getHelp') }}</span>
                         <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
                     </a>
@@ -120,7 +113,7 @@ import { environment } from '../../../environments/environment';
                 <!-- Version -->
                 <div class="text-center pb-8">
                     <p class="text-xs text-surface-400 dark:text-surface-500">
-                        Omaad Wealth · v1.0.0 · <span class="text-emerald-500">●</span> production
+                        Omaad Wealth · v1.0.0 · <span class="text-positive">●</span> production
                     </p>
                 </div>
             }
@@ -143,7 +136,7 @@ import { environment } from '../../../environments/environment';
                     <button (click)="goBack()"
                             class="w-10 h-10 flex items-center justify-center rounded-full
                                    bg-surface-100 dark:bg-surface-800
-                                   hover:bg-red-100 dark:hover:bg-red-900/30 transition-all shrink-0"
+                                   hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-all shrink-0"
                             title="Fermer">
                         <i class="pi pi-times text-surface-600 dark:text-surface-300"></i>
                     </button>
@@ -202,6 +195,7 @@ export class Settings implements OnInit {
     mainMenuItems = [
         { route: 'account',     icon: 'pi-user',   label: 'Mon compte' },
         { route: 'security',    icon: 'pi-shield',  label: 'Sécurité' },
+        { route: 'connections', icon: 'pi-link',    label: 'Mes connexions' },
         { route: 'preferences', icon: 'pi-cog',     label: 'Préférences' },
     ];
 
@@ -223,6 +217,7 @@ export class Settings implements OnInit {
         const url = this.router.url;
         if (url.includes('/security'))    return this.t('menu.security');
         if (url.includes('/account'))     return this.t('menu.myAccount');
+        if (url.includes('/connections')) return 'Mes connexions';
         if (url.includes('/preferences')) return this.t('menu.preferences');
         if (url.includes('/fire'))        return 'Objectif Financier';
         if (url.includes('/plans'))       return 'Omaad Pro';

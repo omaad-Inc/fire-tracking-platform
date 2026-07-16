@@ -14,8 +14,10 @@ import {
     TransactionsService, TransactionRecord,
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
+import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { LayoutService } from '../../../layout/service/layout.service';
 
 interface DayGroup {
     dateKey: string;
@@ -52,7 +54,7 @@ interface DayGroup {
                 </div>
                 <div class="flex-1"></div>
                 <button pButton icon="pi pi-plus" label="Ajouter"
-                        class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
+                        class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
             <!-- Row 2: search + type filter -->
@@ -80,52 +82,52 @@ interface DayGroup {
         @if (!loading()) {
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                 <!-- Revenus -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
-                        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-down-left text-emerald-500 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
+                            <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold text-emerald-500 truncate">+<app-amount [value]="monthSummary().income" /></div>
+                    <div class="relative text-base font-bold text-positive truncate">+<app-amount [value]="monthSummary().income" /></div>
                 </div>
                 <!-- Dépenses -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
-                        <div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                            <i class="pi pi-arrow-up-right text-rose-500 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-negative-50 dark:bg-negative-500/15 flex items-center justify-center">
+                            <i class="pi pi-arrow-up-right text-negative-600 dark:text-negative-400 text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold text-rose-500 truncate">−<app-amount [value]="monthSummary().expenses" /></div>
+                    <div class="relative text-base font-bold text-negative truncate">−<app-amount [value]="monthSummary().expenses" /></div>
                 </div>
                 <!-- Solde net -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center"
-                             [ngClass]="monthSummary().net >= 0 ? 'bg-indigo-500/10' : 'bg-rose-500/10'">
+                             [ngClass]="monthSummary().net >= 0 ? 'bg-brand-100 dark:bg-brand-700/20' : 'bg-negative-50 dark:bg-negative-500/15'">
                             <i class="pi text-xs"
-                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-indigo-500' : 'pi-trending-down text-rose-500'"></i>
+                               [ngClass]="monthSummary().net >= 0 ? 'pi-arrow-up-right text-brand-700 dark:text-ochre-400' : 'pi-arrow-down-left text-negative-600 dark:text-negative-400'"></i>
                         </div>
                     </div>
-                    <div class="text-base font-bold truncate"
-                         [ngClass]="monthSummary().net >= 0 ? 'text-indigo-500' : 'text-rose-500'">
+                    <div class="relative text-base font-bold truncate"
+                         [ngClass]="monthSummary().net >= 0 ? 'text-brand-700 dark:text-brand-300' : 'text-negative'">
                         {{ monthSummary().net >= 0 ? '+' : '−' }}<app-amount [value]="monthSummary().net" />
                     </div>
                 </div>
-                <!-- Taux d'épargne — value + bar grouped as one bottom block to match other cards -->
-                <div class="card !p-4 h-[86px] flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
+                <!-- Taux d'épargne -->
+                <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
+                    <div class="relative flex items-center justify-between">
                         <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
-                        <div class="w-7 h-7 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                            <i class="pi pi-percentage text-cyan-500 text-xs"></i>
+                        <div class="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                            <i class="pi pi-percentage text-brand-700 dark:text-ochre-400 text-xs"></i>
                         </div>
                     </div>
-                    <div>
-                        <div class="text-base font-bold text-cyan-500 mb-1">{{ monthSummary().savingsRate }}%</div>
+                    <div class="relative">
+                        <div class="text-base font-bold text-brand-700 dark:text-brand-300 mb-1">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                            <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
                                  [style.width]="monthSummary().savingsRate + '%'"></div>
                         </div>
                     </div>
@@ -163,20 +165,20 @@ interface DayGroup {
                             <span class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider">
                                 {{ group.label }}
                             </span>
-                            <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
+                            <div class="flex-1 h-px bg-surface-200 dark:bg-surface-800"></div>
                             <span class="text-xs text-surface-400 dark:text-surface-500">
                                 {{ group.records.length }} opération{{ group.records.length > 1 ? 's' : '' }}
                             </span>
                         </div>
 
-                        <div class="bg-surface-0 dark:bg-surface-800 rounded-2xl border border-surface-200 dark:border-surface-700 divide-y divide-surface-100 dark:divide-surface-700/50 overflow-hidden">
+                        <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 divide-y divide-surface-100 dark:divide-surface-800 overflow-hidden transition-shadow hover:shadow-sm">
                             @for (rec of group.records; track rec.id) {
-                                <div class="flex items-center gap-3 px-3 py-3 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-700/40 transition-colors group">
+                                <div class="flex items-center gap-3 px-3 py-3.5 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors group">
                                     <!-- Category icon -->
                                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0"
-                                         [style.background]="getCategoryConfig(rec).color + '1a'">
+                                         [style.background]="categoryBg(rec)">
                                         <i [class]="getCategoryConfig(rec).icon + ' text-xs sm:text-sm'"
-                                           [style.color]="getCategoryConfig(rec).color"></i>
+                                           [style.color]="categoryFg(rec)"></i>
                                     </div>
                                     <!-- Name + category -->
                                     <div class="flex-1 min-w-0">
@@ -184,23 +186,28 @@ interface DayGroup {
                                             {{ rec.remarks || rec.name }}
                                         </div>
                                         <span class="inline-flex items-center text-[10px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
-                                              [style.color]="getCategoryConfig(rec).color"
-                                              [style.background]="getCategoryConfig(rec).color + '1a'">
+                                              [style.color]="categoryFg(rec)"
+                                              [style.background]="categoryBg(rec)">
                                             {{ getCategoryConfig(rec).label }}
                                         </span>
+                                        @if (accountLabel(rec)) {
+                                            <span class="inline-flex items-center gap-1 text-[10px] sm:text-xs mt-0.5 ml-1.5 text-surface-500 dark:text-surface-400">
+                                                <i class="pi pi-wallet text-[9px]"></i>{{ accountLabel(rec) }}
+                                            </span>
+                                        }
                                     </div>
                                     <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
-                                         [ngClass]="rec.type === 'Income' ? 'text-emerald-500' : 'text-rose-500'">
-                                        {{ rec.type === 'Income' ? '+' : '−' }}<app-amount [value]="rec.amount" />
+                                         [ngClass]="rec.type === 'Transfer' ? 'text-surface-500 dark:text-surface-400' : (rec.type === 'Income' ? 'text-positive' : 'text-negative')">
+                                        {{ rec.type === 'Transfer' ? '⇄ ' : (rec.type === 'Income' ? '+' : '−') }}<app-amount [value]="rec.amount" />
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
                                     <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                                 (click)="editRecord(rec)">
                                             <i class="pi pi-pencil text-xs text-surface-500"></i>
                                         </button>
-                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-700 flex items-center justify-center hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                                        <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
                                                 (click)="deleteRecord(rec)">
                                             <i class="pi pi-trash text-xs text-surface-500"></i>
                                         </button>
@@ -220,12 +227,10 @@ interface DayGroup {
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-xl flex items-center justify-center shadow-lg"
-                         [ngClass]="formType() === 'Income'
-                             ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-500/30'
-                             : 'bg-gradient-to-br from-rose-500 to-rose-600 shadow-rose-500/30'">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center"
+                         [ngClass]="formType() === 'Transfer' ? 'bg-brand-700' : (formType() === 'Income' ? 'bg-positive' : 'bg-negative')">
                         <i class="pi text-white text-lg"
-                           [ngClass]="formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right'"></i>
+                           [ngClass]="formType() === 'Transfer' ? 'pi-arrow-right-arrow-left' : (formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right')"></i>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -246,99 +251,153 @@ interface DayGroup {
                         <button (click)="setType('Expense')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Expense'
-                                    ? 'bg-white dark:bg-surface-700 text-rose-500 shadow-sm'
+                                    ? 'bg-white dark:bg-surface-700 text-negative shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
                             <i class="pi pi-arrow-up-right text-xs"></i> Dépense
                         </button>
                         <button (click)="setType('Income')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Income'
-                                    ? 'bg-white dark:bg-surface-700 text-emerald-500 shadow-sm'
+                                    ? 'bg-white dark:bg-surface-700 text-positive shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
                             <i class="pi pi-arrow-down-left text-xs"></i> Revenu
+                        </button>
+                        <button (click)="setType('Transfer')"
+                                class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                                [ngClass]="formType() === 'Transfer'
+                                    ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm'
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                            <i class="pi pi-arrow-right-arrow-left text-xs"></i> Transfert
                         </button>
                     </div>
 
                     <!-- Amount + Date row -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
                                 Montant <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="form.amount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
                                            styleClass="w-full"
-                                           inputStyleClass="!py-3 !rounded-xl !text-lg !font-semibold" />
+                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
                             @if (submitted && !(form.amount > 0)) {
-                                <small class="text-rose-500 text-xs">Montant requis</small>
+                                <small class="text-negative text-xs mt-1">Montant requis</small>
                             }
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">Date</label>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Date</label>
                             <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="yy-mm-dd" styleClass="w-full"
-                                          inputStyleClass="!py-3 !rounded-xl" />
+                                          inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                             @if (submitted && !editDate) {
-                                <small class="text-rose-500 text-xs">Date requise</small>
+                                <small class="text-negative text-xs mt-1">Date requise</small>
                             }
                         </div>
                     </div>
 
                     <!-- Description -->
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
                             Description <span class="text-surface-400 font-normal">(optionnel)</span>
                         </label>
                         <input pInputText [(ngModel)]="form.remarks"
                                placeholder="Ex : Salaire avril, Courses Auchan..."
-                               class="w-full !py-3 !rounded-xl" />
+                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
-                    <!-- Category grid -->
-                    <div class="flex flex-col gap-3">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            Catégorie
-                            @if (submitted && !form.category) {
-                                <span class="text-rose-500 ml-2 text-xs">Requise</span>
-                            }
-                        </label>
-                        <div class="grid grid-cols-3 gap-2">
-                            @for (cat of currentCategories(); track cat) {
-                                <button (click)="form.category = cat"
-                                        class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all text-center"
-                                        [style.border-color]="form.category === cat ? getCatConfig(cat).color : ''"
-                                        [style.background]="form.category === cat ? getCatConfig(cat).color + '15' : ''"
-                                        [ngClass]="form.category === cat
-                                            ? 'shadow-sm scale-[1.02]'
-                                            : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-                                         [style.background]="getCatConfig(cat).color + '20'">
-                                        <i [class]="getCatConfig(cat).icon + ' text-sm'"
-                                           [style.color]="getCatConfig(cat).color"></i>
-                                    </div>
-                                    <span class="text-[11px] font-medium leading-tight text-surface-700 dark:text-surface-300">
-                                        {{ getCatConfig(cat).label }}
-                                    </span>
-                                </button>
-                            }
+                    @if (formType() === 'Transfer') {
+                        <!-- Transfer: From → To account pickers -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">
+                                    Depuis
+                                    @if (submitted && !form.fromAccountId) {
+                                        <span class="text-negative ml-2 text-xs">Requis</span>
+                                    }
+                                </label>
+                                <p-select [(ngModel)]="form.fromAccountId" [options]="accountOptions()"
+                                          optionLabel="label" optionValue="value"
+                                          placeholder="Compte source" [filter]="accountOptions().length > 6"
+                                          appendTo="body" styleClass="w-full"
+                                          [emptyMessage]="'Aucun compte monétaire'" />
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">
+                                    Vers
+                                    @if (submitted && !form.toAccountId) {
+                                        <span class="text-negative ml-2 text-xs">Requis</span>
+                                    }
+                                </label>
+                                <p-select [(ngModel)]="form.toAccountId" [options]="accountOptions()"
+                                          optionLabel="label" optionValue="value"
+                                          placeholder="Compte destination" [filter]="accountOptions().length > 6"
+                                          appendTo="body" styleClass="w-full"
+                                          [emptyMessage]="'Aucun compte monétaire'" />
+                            </div>
                         </div>
-                    </div>
+                        @if (submitted && form.fromAccountId && form.fromAccountId === form.toAccountId) {
+                            <small class="text-negative text-xs -mt-3">Les comptes source et destination doivent être différents.</small>
+                        }
+                    } @else {
+                        <!-- Account selector -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
+                                Compte
+                                @if (submitted && !form.accountId) {
+                                    <span class="text-negative ml-2 text-xs">Requis</span>
+                                }
+                            </label>
+                            <p-select [(ngModel)]="form.accountId" [options]="accountOptions()"
+                                      optionLabel="label" optionValue="value"
+                                      placeholder="Sélectionnez un compte" [filter]="accountOptions().length > 6"
+                                      appendTo="body" styleClass="w-full"
+                                      [emptyMessage]="'Aucun compte monétaire'" />
+                        </div>
+
+                        <!-- Category grid -->
+                        <div class="flex flex-col gap-3">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
+                                Catégorie
+                                @if (submitted && !form.category) {
+                                    <span class="text-negative ml-2 text-xs">Requise</span>
+                                }
+                            </label>
+                            <div class="grid grid-cols-3 gap-2">
+                                @for (cat of currentCategories(); track cat) {
+                                    <button (click)="form.category = cat"
+                                            class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all text-center"
+                                            [style.border-color]="form.category === cat ? getCatConfig(cat).color : ''"
+                                            [style.background]="form.category === cat ? getCatConfig(cat).color + '15' : ''"
+                                            [ngClass]="form.category === cat
+                                                ? 'shadow-sm'
+                                                : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                             [style.background]="getCatConfig(cat).color + '20'">
+                                            <i [class]="getCatConfig(cat).icon + ' text-sm'"
+                                               [style.color]="getCatConfig(cat).color"></i>
+                                        </div>
+                                        <span class="text-[11px] font-medium leading-tight text-surface-700 dark:text-surface-300">
+                                            {{ getCatConfig(cat).label }}
+                                        </span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
 
                 </div>
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="hideDialog()"
-                              styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button [label]="editingRecord ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !border-0"
-                              [ngClass]="formType() === 'Income'
-                                  ? '!from-emerald-600 !to-teal-500'
-                                  : '!from-indigo-600 !to-cyan-500'" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="hideDialog()"
+                              styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -346,8 +405,10 @@ interface DayGroup {
 })
 export class TransactionLogs implements OnInit {
     private transactionsService = inject(TransactionsService);
+    private patrimoineService   = inject(PatrimoineService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
+    private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
 
     @Output() monthChanged = new EventEmitter<string>();
@@ -375,10 +436,14 @@ export class TransactionLogs implements OnInit {
     editingRecord: TransactionRecord | null = null;
     editDate: Date | null = null;
     // formType is a Signal so computed() can track changes reactively
-    formType = signal<'Income' | 'Expense'>('Expense');
-    form: { amount: number; remarks: string; category: string } = {
-        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0]
+    formType = signal<'Income' | 'Expense' | 'Transfer'>('Expense');
+    form: { amount: number; remarks: string; category: string; accountId?: number; fromAccountId?: number; toAccountId?: number } = {
+        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined
     };
+
+    // Monetary accounts (cash / savings / mobile money) for the account selector
+    private static readonly MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
+    accountOptions = signal<{ label: string; value: number }[]>([]);
 
     readonly currentCategories = computed(() =>
         this.formType() === 'Income' ? [...INCOME_CATEGORIES] : [...EXPENSE_CATEGORIES]
@@ -388,8 +453,9 @@ export class TransactionLogs implements OnInit {
         return CATEGORY_CONFIG[cat] ?? { label: cat, icon: 'pi pi-circle', color: '#94a3b8', bg: '' };
     }
 
-    setType(t: 'Income' | 'Expense') {
+    setType(t: 'Income' | 'Expense' | 'Transfer') {
         this.formType.set(t);
+        if (t === 'Transfer') return; // transfers have no income/expense category
         const cats = t === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
         if (!(cats as readonly string[]).includes(this.form.category)) {
             this.form.category = cats[0];
@@ -461,8 +527,22 @@ export class TransactionLogs implements OnInit {
             const recs = await this.transactionsService.getRecords();
             this.allRecords.set(recs);
             this.emitMonth();
+            this.loadAccounts();
         } finally {
             this.loading.set(false);
+        }
+    }
+
+    private async loadAccounts() {
+        try {
+            const assets = await this.patrimoineService.getAssets();
+            this.accountOptions.set(
+                assets
+                    .filter(a => TransactionLogs.MONETARY_CATEGORIES.includes(a.category))
+                    .map(a => ({ label: a.name, value: a.id }))
+            );
+        } catch {
+            this.accountOptions.set([]);
         }
     }
 
@@ -495,7 +575,7 @@ export class TransactionLogs implements OnInit {
         this.editingRecord = null;
         this.editDate = new Date();
         this.formType.set('Expense');
-        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0] };
+        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined };
         this.submitted = false;
         this.dialogVisible = true;
     }
@@ -505,9 +585,12 @@ export class TransactionLogs implements OnInit {
         this.editDate = rec.date ? new Date(rec.date) : new Date();
         this.formType.set(rec.type);
         this.form = {
-            amount:   rec.amount,
-            remarks:  rec.remarks || rec.name || '',
-            category: rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0])
+            amount:    rec.amount,
+            remarks:   rec.remarks || rec.name || '',
+            category:  rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]),
+            accountId: rec.accountId,
+            fromAccountId: rec.fromAccountId,
+            toAccountId: rec.toAccountId
         };
         this.submitted = false;
         this.dialogVisible = true;
@@ -520,10 +603,22 @@ export class TransactionLogs implements OnInit {
 
     async saveRecord() {
         this.submitted = true;
-        if (!this.editDate || !(this.form.amount > 0) || !this.form.category) return;
+        const isTransfer = this.formType() === 'Transfer';
+
+        // Validation differs by type: transfers need two distinct accounts and
+        // no category; income/expense need a category and a single account.
+        if (!this.editDate || !(this.form.amount > 0)) return;
+        if (isTransfer) {
+            if (!this.form.fromAccountId || !this.form.toAccountId) return;
+            if (this.form.fromAccountId === this.form.toAccountId) return;
+        } else if (!this.form.category || !this.form.accountId) {
+            return;
+        }
 
         const dateStr = this.toDateStr(this.editDate);
         this.isSaving.set(true);
+
+        const transferName = 'Transfert';
 
         try {
             if (this.editingRecord?.id) {
@@ -531,10 +626,13 @@ export class TransactionLogs implements OnInit {
                     ...this.editingRecord,
                     date:     dateStr,
                     type:     this.formType(),
-                    amount:   this.form.amount,
-                    remarks:  this.form.remarks,
-                    category: this.form.category,
-                    name:     this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name,
+                    amount:    this.form.amount,
+                    remarks:   this.form.remarks,
+                    category:  isTransfer ? 'transfer' : this.form.category,
+                    accountId: isTransfer ? undefined : this.form.accountId,
+                    fromAccountId: isTransfer ? this.form.fromAccountId : undefined,
+                    toAccountId:   isTransfer ? this.form.toAccountId : undefined,
+                    name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
                 this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Transaction mise à jour.', life: 3000 });
@@ -542,10 +640,13 @@ export class TransactionLogs implements OnInit {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
                     type:     this.formType(),
-                    amount:   this.form.amount,
-                    remarks:  this.form.remarks,
-                    category: this.form.category,
-                    name:     this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense'),
+                    amount:    this.form.amount,
+                    remarks:   this.form.remarks,
+                    category:  isTransfer ? 'transfer' : this.form.category,
+                    accountId: isTransfer ? undefined : this.form.accountId,
+                    fromAccountId: isTransfer ? this.form.fromAccountId : undefined,
+                    toAccountId:   isTransfer ? this.form.toAccountId : undefined,
+                    name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense')),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
                 this.messageService.add({ severity: 'success', summary: 'Enregistré', detail: 'Transaction ajoutée.', life: 3000 });
@@ -566,7 +667,7 @@ export class TransactionLogs implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Supprimer',
             rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 if (!rec.id) return;
                 try {
@@ -583,7 +684,29 @@ export class TransactionLogs implements OnInit {
     // ── Helpers ───────────────────────────────────────────────────
     getCategoryConfig(rec: TransactionRecord) {
         const cat = rec.category || (rec.type === 'Income' ? 'other_income' : 'other_expense');
-        return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-slate-500/10' };
+        return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-warm-500/10' };
+    }
+
+    /** Account label for the chip: "from → to" for transfers, else the account name. */
+    accountLabel(rec: TransactionRecord): string {
+        if (rec.fromAccountName || rec.toAccountName) {
+            return `${rec.fromAccountName ?? '?'} → ${rec.toAccountName ?? '?'}`;
+        }
+        return rec.accountName ?? '';
+    }
+
+    categoryFg(rec: TransactionRecord): string {
+        const c = this.getCategoryConfig(rec).color;
+        return this.layoutService.isDarkTheme()
+            ? `color-mix(in srgb, ${c} 30%, white)`
+            : c;
+    }
+
+    categoryBg(rec: TransactionRecord): string {
+        const c = this.getCategoryConfig(rec).color;
+        return this.layoutService.isDarkTheme()
+            ? `color-mix(in srgb, ${c} 35%, transparent)`
+            : `${c}1a`;
     }
 
     private formatDayLabel(dateStr: string): string {

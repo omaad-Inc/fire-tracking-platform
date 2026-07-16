@@ -14,10 +14,16 @@ export interface TransactionRecord {
     id?: string;
     date: string;
     name: string;
-    type: 'Income' | 'Expense';
+    type: 'Income' | 'Expense' | 'Transfer';
     amount: number;
     remarks?: string;
     category?: string;
+    accountId?: number;
+    accountName?: string;
+    fromAccountId?: number;
+    toAccountId?: number;
+    fromAccountName?: string;
+    toAccountName?: string;
 }
 
 export interface TransactionStats {
@@ -53,38 +59,48 @@ export interface CategoryConfig {
  * colors sit at medium saturation so ribbons and chips look cohesive.
  */
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
-    // ── Income: cool blue family ──────────────────────────────────
-    salary:        { label: 'Salaire',        icon: 'pi pi-briefcase',              color: '#5B7FD4', bg: 'bg-blue-500/10'    },
-    freelance:     { label: 'Freelance',      icon: 'pi pi-code',                   color: '#7B9ED9', bg: 'bg-blue-400/10'    },
-    dividends:     { label: 'Dividendes',     icon: 'pi pi-chart-bar',              color: '#8B7EC8', bg: 'bg-violet-500/10'  },
-    rental_income: { label: 'Loyers',         icon: 'pi pi-home',                   color: '#9B8BC8', bg: 'bg-purple-500/10'  },
-    interest:      { label: 'Intérêts',       icon: 'pi pi-percentage',             color: '#6B9EC8', bg: 'bg-sky-500/10'     },
-    gift_received: { label: 'Cadeau reçu',    icon: 'pi pi-gift',                   color: '#7BAEC8', bg: 'bg-sky-400/10'     },
-    other_income:  { label: 'Autres revenus', icon: 'pi pi-plus-circle',            color: '#8BA8C8', bg: 'bg-slate-400/10'   },
+    // Brand-tokenized: every category uses a shade from the chartTheme
+    // categorical palette (navy + ochre + warm-greys). The icon glyph and
+    // label do the differentiation work — colours just have to be distinct
+    // enough for chart slice readability.
+    salary:        { label: 'Salaire',        icon: 'pi pi-briefcase',              color: '#1A2740', bg: 'bg-warm-100 dark:bg-warm-800' },
+    freelance:     { label: 'Freelance',      icon: 'pi pi-code',                   color: '#4D5F80', bg: 'bg-warm-100 dark:bg-warm-800' },
+    dividends:     { label: 'Dividendes',     icon: 'pi pi-chart-bar',              color: '#2C3E5E', bg: 'bg-brand-700/10 dark:bg-brand-300/15' },
+    rental_income: { label: 'Loyers',         icon: 'pi pi-home',                   color: '#3D3B35', bg: 'bg-warm-100 dark:bg-warm-800' },
+    interest:      { label: 'Intérêts',       icon: 'pi pi-percentage',             color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
+    gift_received: { label: 'Cadeau reçu',    icon: 'pi pi-gift',                   color: '#9C988C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    family_support_received: { label: 'Soutien reçu', icon: 'pi pi-users',          color: '#3E7C6A', bg: 'bg-warm-100 dark:bg-warm-800' },
+    tontine_payout: { label: 'Tour de tontine', icon: 'pi pi-sync',                 color: '#2F8F6E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    other_income:  { label: 'Autres revenus', icon: 'pi pi-plus-circle',            color: '#C2BDB1', bg: 'bg-warm-100 dark:bg-warm-800' },
     // ── Expenses: warm spectrum (Finary style) ────────────────────
-    housing:       { label: 'Logement',       icon: 'pi pi-home',                   color: '#C96B5A', bg: 'bg-red-500/10'     }, // terracotta
-    utilities:     { label: 'Factures',       icon: 'pi pi-bolt',                   color: '#D4895A', bg: 'bg-orange-500/10'  }, // amber-orange
-    groceries:     { label: 'Alimentation',   icon: 'pi pi-shopping-cart',          color: '#D4A06A', bg: 'bg-amber-400/10'   }, // warm peach
-    transport:     { label: 'Transport',      icon: 'pi pi-car',                    color: '#6B9EC8', bg: 'bg-sky-500/10'     }, // cool blue (contrast)
-    health:        { label: 'Santé',          icon: 'pi pi-heart',                  color: '#C46A6A', bg: 'bg-red-400/10'     }, // muted red
-    insurance:     { label: 'Assurance',      icon: 'pi pi-shield',                 color: '#8AA8C0', bg: 'bg-slate-400/10'   }, // slate-blue
-    entertainment: { label: 'Loisirs',        icon: 'pi pi-star',                   color: '#9E8AC4', bg: 'bg-purple-400/10'  }, // muted purple
-    dining:        { label: 'Restaurants',    icon: 'pi pi-ticket',                 color: '#D4846A', bg: 'bg-orange-400/10'  }, // salmon-orange
-    shopping:      { label: 'Shopping',       icon: 'pi pi-tag',                    color: '#C47A8A', bg: 'bg-rose-400/10'    }, // mauve-rose
-    education:     { label: 'Éducation',      icon: 'pi pi-book',                   color: '#7B9EC8', bg: 'bg-blue-400/10'    }, // medium blue
-    subscriptions: { label: 'Abonnements',    icon: 'pi pi-refresh',                color: '#8A9CB8', bg: 'bg-slate-400/10'   }, // gray-blue
-    travel:        { label: 'Voyages',        icon: 'pi pi-globe',                  color: '#6AB8A8', bg: 'bg-teal-400/10'    }, // soft teal
-    gift_given:    { label: 'Cadeau offert',  icon: 'pi pi-gift',                   color: '#C47A8A', bg: 'bg-rose-400/10'    }, // rose
-    taxes:         { label: 'Impôts',         icon: 'pi pi-file',                   color: '#7A8EA8', bg: 'bg-slate-400/10'   }, // slate
-    savings:       { label: 'Épargne',        icon: 'pi pi-dollar',                 color: '#6AAE82', bg: 'bg-green-500/10'   }, // soft green
-    investment:    { label: 'Investissement', icon: 'pi pi-chart-line',             color: '#E8943A', bg: 'bg-amber-500/10'   }, // Finary amber/orange
-    debt_payment:  { label: 'Remboursement',  icon: 'pi pi-credit-card',            color: '#B86A6A', bg: 'bg-red-400/10'     }, // muted red
-    other_expense: { label: 'Autres',         icon: 'pi pi-circle',                 color: '#96A8B8', bg: 'bg-slate-300/10'   }, // light slate
-    transfer:      { label: 'Transfert',      icon: 'pi pi-arrow-right-arrow-left', color: '#8A9CB8', bg: 'bg-slate-400/10'   },
+    housing:       { label: 'Logement',       icon: 'pi pi-home',                   color: '#71421C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    utilities:     { label: 'Factures',       icon: 'pi pi-bolt',                   color: '#C77B3C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    groceries:     { label: 'Alimentation',   icon: 'pi pi-shopping-cart',          color: '#D8A369', bg: 'bg-warm-100 dark:bg-warm-800' },
+    transport:     { label: 'Transport',      icon: 'pi pi-car',                    color: '#4D5F80', bg: 'bg-warm-100 dark:bg-warm-800' },
+    health:        { label: 'Santé',          icon: 'pi pi-heart',                  color: '#B0463E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    insurance:     { label: 'Assurance',      icon: 'pi pi-shield',                 color: '#52504A', bg: 'bg-warm-100 dark:bg-warm-800' },
+    entertainment: { label: 'Loisirs',        icon: 'pi pi-star',                   color: '#1A2740', bg: 'bg-warm-100 dark:bg-warm-800' },
+    dining:        { label: 'Restaurants',    icon: 'pi pi-ticket',                 color: '#AB6630', bg: 'bg-warm-100 dark:bg-warm-800' },
+    shopping:      { label: 'Shopping',       icon: 'pi pi-tag',                    color: '#3D3B35', bg: 'bg-warm-100 dark:bg-warm-800' },
+    education:     { label: 'Éducation',      icon: 'pi pi-book',                   color: '#2C3E5E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    subscriptions: { label: 'Abonnements',    icon: 'pi pi-refresh',                color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
+    travel:        { label: 'Voyages',        icon: 'pi pi-globe',                  color: '#EBD0B0', bg: 'bg-warm-100 dark:bg-warm-800' },
+    gift_given:    { label: 'Cadeau offert',  icon: 'pi pi-gift',                   color: '#9C988C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    family_support:{ label: 'Soutien familial', icon: 'pi pi-users',               color: '#71421C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    religious:     { label: 'Zakat / Sadaqa', icon: 'pi pi-star',                   color: '#2C3E5E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    ceremony:      { label: 'Cérémonies',     icon: 'pi pi-users',                  color: '#AB6630', bg: 'bg-warm-100 dark:bg-warm-800' },
+    airtime:       { label: 'Crédit / Forfait', icon: 'pi pi-mobile',              color: '#4D5F80', bg: 'bg-warm-100 dark:bg-warm-800' },
+    tontine:       { label: 'Tontine',        icon: 'pi pi-sync',                   color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
+    taxes:         { label: 'Impôts',         icon: 'pi pi-file',                   color: '#26241F', bg: 'bg-warm-100 dark:bg-warm-800' },
+    savings:       { label: 'Épargne',        icon: 'pi pi-dollar',                 color: '#2F8F6E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    investment:    { label: 'Investissement', icon: 'pi pi-chart-line',             color: '#C77B3C', bg: 'bg-ochre-100' },
+    debt_payment:  { label: 'Remboursement',  icon: 'pi pi-credit-card',            color: '#933832', bg: 'bg-warm-100 dark:bg-warm-800' },
+    other_expense: { label: 'Autres',         icon: 'pi pi-circle',                 color: '#C2BDB1', bg: 'bg-warm-100 dark:bg-warm-800' },
+    transfer:      { label: 'Transfert',      icon: 'pi pi-arrow-right-arrow-left', color: '#8A98AE', bg: 'bg-warm-100 dark:bg-warm-800' },
 };
 
-export const INCOME_CATEGORIES  = ['salary','freelance','dividends','rental_income','interest','gift_received','other_income'] as const;
-export const EXPENSE_CATEGORIES = ['housing','utilities','groceries','transport','health','insurance','entertainment','dining','shopping','education','subscriptions','travel','gift_given','taxes','investment','debt_payment','other_expense'] as const;
+export const INCOME_CATEGORIES  = ['salary','freelance','dividends','rental_income','interest','gift_received','family_support_received','tontine_payout','other_income'] as const;
+export const EXPENSE_CATEGORIES = ['housing','utilities','groceries','transport','health','insurance','entertainment','dining','shopping','education','subscriptions','travel','family_support','religious','ceremony','airtime','tontine','gift_given','taxes','investment','debt_payment','other_expense'] as const;
 
 // Category to display name mapping
 const CATEGORY_DISPLAY_MAP: Record<string, string> = Object.fromEntries(
@@ -96,9 +112,6 @@ export class TransactionsService {
     private api             = inject(ApiService);
     private currencyService = inject(CurrencyService);
 
-    // Categories to exclude from main transactions view (these are managed separately in Savings)
-    private readonly SAVINGS_CATEGORIES = ['savings', 'investment'];
-    
     // Cache storage
     private recordsCache: CacheEntry<TransactionRecord[]> | null = null;
     private statsCache: CacheEntry<TransactionStats> | null = null;
@@ -108,7 +121,7 @@ export class TransactionsService {
     private statsRequest$: Observable<TransactionStats> | null = null;
     
     /**
-     * Get all transactions (excluding savings-related transactions) (with caching)
+     * Get all transactions (with caching)
      */
     async getRecords(): Promise<TransactionRecord[]> {
         // Return cached data immediately if available and fresh
@@ -139,7 +152,6 @@ export class TransactionsService {
         
         this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
             map(transactions => transactions
-                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
@@ -155,7 +167,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get transactions as Observable (excluding savings-related transactions) (with caching and deduplication)
+     * Get transactions as Observable (with caching and deduplication)
      */
     getRecords$(): Observable<TransactionRecord[]> {
         // Return cached data immediately if available
@@ -171,7 +183,6 @@ export class TransactionsService {
         // Create new request
         this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
             map(transactions => transactions
-                .filter(t => !this.SAVINGS_CATEGORIES.includes(t.category))
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
@@ -204,7 +215,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get recent transactions (last N, excluding savings-related) (with caching)
+     * Get recent transactions (last N) (with caching)
      */
     async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
         // Use cached records if available
@@ -246,14 +257,25 @@ export class TransactionsService {
     async addRecord(record: TransactionRecord): Promise<TransactionRecord> {
         try {
             // Convert from display currency (e.g. FCFA) → EUR before persisting.
-            const transactionData: TransactionCreate = {
-                type: record.type === 'Income' ? 'income' : 'expense',
-                category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                amount: this.currencyService.toBaseAmount(record.amount),
-                description: record.remarks,
-                date: this.toDateString(record.date)
-            };
-            
+            const transactionData: TransactionCreate = record.type === 'Transfer'
+                ? {
+                    type: 'transfer',
+                    category: 'transfer',
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    from_account_id: record.fromAccountId,
+                    to_account_id: record.toAccountId
+                }
+                : {
+                    type: record.type === 'Income' ? 'income' : 'expense',
+                    category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    account_id: record.accountId
+                };
+
             const transaction = await firstValueFrom(this.api.createTransaction(transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
             // Invalidate cache
@@ -274,14 +296,25 @@ export class TransactionsService {
 
         try {
             // Same conversion as addRecord — user edits in display currency.
-            const transactionData: TransactionUpdate = {
-                type: record.type === 'Income' ? 'income' : 'expense',
-                category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                amount: this.currencyService.toBaseAmount(record.amount),
-                description: record.remarks,
-                date: this.toDateString(record.date)
-            };
-            
+            const transactionData: TransactionUpdate = record.type === 'Transfer'
+                ? {
+                    type: 'transfer',
+                    category: 'transfer',
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    from_account_id: record.fromAccountId,
+                    to_account_id: record.toAccountId
+                }
+                : {
+                    type: record.type === 'Income' ? 'income' : 'expense',
+                    category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    account_id: record.accountId
+                };
+
             const transaction = await firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
             // Invalidate cache
@@ -312,7 +345,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get transaction statistics (excluding savings-related) (with caching)
+     * Get transaction statistics (with caching)
      */
     async getStats(): Promise<TransactionStats> {
         // Return cached data immediately if available and fresh
@@ -404,14 +437,24 @@ export class TransactionsService {
     // ==================== PRIVATE HELPERS ====================
 
     private mapTransactionToRecord(t: Transaction): TransactionRecord {
+        const type: TransactionRecord['type'] =
+            t.type === 'transfer' ? 'Transfer'
+            : (t.type === 'income' || t.type === 'investment') ? 'Income'
+            : 'Expense';
         return {
             id: t.id.toString(),
             date: t.date,
             name: CATEGORY_DISPLAY_MAP[t.category] || t.category,
-            type: t.type === 'income' || t.type === 'investment' ? 'Income' : 'Expense',
+            type,
             amount: t.amount,
             remarks: t.description ?? undefined,
-            category: t.category
+            category: t.category,
+            accountId: t.account_id ?? undefined,
+            accountName: t.account_name ?? undefined,
+            fromAccountId: t.from_account_id ?? undefined,
+            toAccountId: t.to_account_id ?? undefined,
+            fromAccountName: t.from_account_name ?? undefined,
+            toAccountName: t.to_account_name ?? undefined
         };
     }
 
@@ -490,7 +533,7 @@ export class TransactionsService {
             const byCategory = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,amount])=>({
                 category: cat, label: CATEGORY_CONFIG[cat]?.label || cat, amount,
                 pct: expenses > 0 ? Math.round(amount/expenses*100) : 0,
-                color: CATEGORY_CONFIG[cat]?.color || '#94a3b8',
+                color: CATEGORY_CONFIG[cat]?.color || '#9C988C',
             }));
             return { month: yearMonth, income, expenses, net: income-expenses, count: monthRecords.length, byCategory };
         }
@@ -515,7 +558,7 @@ export class TransactionsService {
                 label:    CATEGORY_CONFIG[cat]?.label || cat,
                 amount,
                 pct:      expenses > 0 ? Math.round((amount / expenses) * 100) : 0,
-                color:    CATEGORY_CONFIG[cat]?.color || '#94a3b8',
+                color:    CATEGORY_CONFIG[cat]?.color || '#9C988C',
             }));
 
         return { month: yearMonth, income, expenses, net: income - expenses, count, byCategory };

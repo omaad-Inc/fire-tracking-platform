@@ -8,10 +8,10 @@ import { PwaService } from '../service/pwa.service';
     standalone: true,
     imports: [CommonModule, ButtonModule],
     template: `
-        <!-- Update Available Banner (top, gradient) -->
+        <!-- Update Available Banner (top) -->
         @if (showUpdateBanner && pwaService.hasUpdate()) {
             <div class="fixed top-0 left-0 right-0 z-[60] h-12 flex items-center justify-between px-4
-                        bg-gradient-to-r from-indigo-600 to-cyan-500 shadow-md animate-slide-down">
+                        bg-brand-700 shadow-md animate-slide-down">
                 <div class="flex items-center gap-2.5">
                     <i class="pi pi-refresh text-white text-sm"></i>
                     <span class="text-white font-medium text-sm">Nouvelle version disponible</span>
@@ -19,7 +19,7 @@ import { PwaService } from '../service/pwa.service';
                 <div class="flex items-center gap-2">
                     <button pButton label="Mettre à jour" size="small"
                             (click)="pwaService.applyUpdate()"
-                            class="!bg-white !text-indigo-600 !border-0 !py-1 !px-3 !text-xs !font-semibold !rounded-lg"></button>
+                            class="!bg-white !text-brand-700 dark:text-brand-300 !border-0 !py-1 !px-3 !text-xs !font-semibold !rounded-lg"></button>
                     <button (click)="dismissUpdate()" class="text-white/70 hover:text-white p-1">
                         <i class="pi pi-times text-xs"></i>
                     </button>
@@ -36,10 +36,10 @@ import { PwaService } from '../service/pwa.service';
                 <!-- Mobile: floating card -->
                 <div class="sm:hidden rounded-2xl bg-surface-0 dark:bg-surface-900
                             border border-surface-200 dark:border-surface-700
-                            shadow-xl shadow-indigo-500/10 p-4">
+                            shadow-xl shadow-card p-4">
                     <div class="flex items-start gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/25">
-                            <img src="assets/afrin-nexus-logo.svg" alt="Omaad" class="w-7 h-7">
+                        <div class="w-11 h-11 rounded-xl bg-brand-700 flex items-center justify-center shrink-0 shadow-lg">
+                            <img src="assets/brand/omaad-icon-mono-white.svg" alt="Omaad" class="w-7 h-7">
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm leading-tight">Installer Omaad</p>
@@ -52,7 +52,7 @@ import { PwaService } from '../service/pwa.service';
                     <div class="flex gap-2 mt-3">
                         <button pButton label="Installer" icon="pi pi-download"
                                 (click)="installApp()"
-                                class="flex-1 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0 !text-white !py-2.5 !text-sm !font-semibold !rounded-xl"></button>
+                                class="flex-1 !bg-brand-700 hover:!bg-brand-800 !border-0 !text-white !py-2.5 !text-sm !font-semibold !rounded-xl"></button>
                         <button pButton label="Plus tard" [outlined]="true"
                                 (click)="dismissInstall()"
                                 class="!py-2.5 !text-sm !rounded-xl !border-surface-300 dark:!border-surface-600"></button>
@@ -63,7 +63,7 @@ import { PwaService } from '../service/pwa.service';
                 <div class="hidden sm:flex items-center justify-between h-12 px-4
                             bg-surface-0 dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 shadow-sm">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                        <div class="w-7 h-7 rounded-lg bg-brand-700 flex items-center justify-center">
                             <i class="pi pi-download text-white text-xs"></i>
                         </div>
                         <span class="text-surface-900 dark:text-surface-0 font-medium text-sm">Installer Omaad pour un accès rapide</span>
@@ -71,7 +71,7 @@ import { PwaService } from '../service/pwa.service';
                     <div class="flex items-center gap-2">
                         <button pButton label="Installer" size="small"
                                 (click)="installApp()"
-                                class="!bg-gradient-to-r !from-indigo-600 !to-cyan-500 !text-white !border-0 !py-1 !px-3 !text-xs !font-semibold !rounded-lg"></button>
+                                class="!bg-brand-700 hover:!bg-brand-800 !text-white !border-0 !py-1 !px-3 !text-xs !font-semibold !rounded-lg"></button>
                         <button (click)="dismissInstall()" class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 p-1">
                             <i class="pi pi-times text-sm"></i>
                         </button>

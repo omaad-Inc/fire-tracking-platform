@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
 import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
+import { isDarkMode } from '../../core/theme/chart-theme';
 
 export interface DashboardStats {
     netWorth: number;
@@ -36,31 +37,57 @@ export interface AssetAllocation {
     color: string;
 }
 
-// Color mapping for asset categories
-const CATEGORY_COLORS: Record<string, string> = {
-    'real_estate':  '#6366f1', // Indigo
-    'stocks':       '#06b6d4', // Cyan
-    'bonds':        '#10b981', // Emerald
-    'crypto':       '#f59e0b', // Amber
-    'cash':         '#8b5cf6', // Violet
-    'retirement':   '#3b82f6', // Blue
-    'life_insurance':'#14b8a6',// Teal
-    'savings_account':'#a855f7',// Purple
-    'business':     '#f97316', // Orange
-    'vehicle':      '#64748b', // Slate
-    'tontine':      '#e11d48', // Rose
-    'mobile_money': '#0ea5e9', // Sky
-    'collectibles': '#84cc16', // Lime
-    'commodities':  '#ec4899', // Pink
-    'other':        '#94a3b8'  // Gray
+// Brand-tokenized chart palette — navy + ochre + warm-grays.
+// Light and dark variants so donut slices remain visible on both backgrounds.
+const CATEGORY_COLORS_LIGHT: Record<string, string> = {
+    'real_estate':    '#1A2740', // brand-700 (anchor)
+    'stocks_brvm':    '#C77B3C', // ochre-500 (accent — BRVM identity)
+    'stocks_intl':    '#8B4F26', // deep ochre — international stocks
+    'bonds':          '#4D5F80', // brand-400
+    'crypto':         '#D8A369', // ochre-400
+    'cash':           '#3D3B35', // warm-700
+    'retirement':     '#6E6A60', // warm-500
+    'life_insurance': '#9C988C', // warm-400
+    'savings_account':'#C2BDB1', // warm-300
+    'business':       '#08111E', // brand-950
+    'vehicle':        '#71421C', // ochre-800
+    'tontine':        '#2C3E5E', // brand-500
+    'mobile_money':   '#EBD0B0', // ochre-200
+    'collectibles':   '#52504A', // warm-600
+    'commodities':    '#8A98AE', // brand-300
+    'other':          '#B6BFCD'  // brand-200
 };
+
+const CATEGORY_COLORS_DARK: Record<string, string> = {
+    'real_estate':    '#8A98AE', // brand-300
+    'stocks_brvm':    '#D8A369', // ochre-400 — BRVM identity
+    'stocks_intl':    '#B98856', // mid-ochre — international stocks
+    'bonds':          '#B6BFCD', // brand-200
+    'crypto':         '#EBD0B0', // ochre-200
+    'cash':           '#9C988C', // warm-400
+    'retirement':     '#C2BDB1', // warm-300
+    'life_insurance': '#DEDAD0', // warm-200
+    'savings_account':'#F1EDE5', // warm-100
+    'business':       '#4D5F80', // brand-400
+    'vehicle':        '#D8A369', // ochre-400
+    'tontine':        '#B6BFCD', // brand-200
+    'mobile_money':   '#F4E5D2', // ochre-100
+    'collectibles':   '#C2BDB1', // warm-300
+    'commodities':    '#EBD0B0', // ochre-200
+    'other':          '#DEDAD0'  // warm-200
+};
+
+function getCategoryColors(): Record<string, string> {
+    return isDarkMode() ? CATEGORY_COLORS_DARK : CATEGORY_COLORS_LIGHT;
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
     'real_estate':   'Immobilier',
-    'stocks':        'Actions / Bourse',
+    'stocks_brvm':   'Actions BRVM',
+    'stocks_intl':   'Actions internationales',
     'bonds':         'Obligations',
     'crypto':        'Cryptomonnaies',
-    'cash':          'Liquidités',
+    'cash':          'Compte bancaire',
     'retirement':    'Épargne retraite',
     'life_insurance':'Assurance vie',
     'savings_account':'Livrets',
@@ -73,19 +100,35 @@ const CATEGORY_LABELS: Record<string, string> = {
     'other':         'Autres'
 };
 
-// Color palette for expense categories
-const EXPENSE_COLORS: string[] = [
-    '#6366f1', // indigo
-    '#8b5cf6', // violet
-    '#06b6d4', // cyan
-    '#14b8a6', // teal
-    '#10b981', // emerald
-    '#f59e0b', // amber
-    '#ef4444', // red
-    '#ec4899', // pink
-    '#84cc16', // lime
-    '#64748b'  // slate
+const EXPENSE_COLORS_LIGHT: string[] = [
+    '#1A2740', // brand-700
+    '#C77B3C', // ochre-500
+    '#4D5F80', // brand-400
+    '#D8A369', // ochre-400
+    '#3D3B35', // warm-700
+    '#6E6A60', // warm-500
+    '#9C988C', // warm-400
+    '#C2BDB1', // warm-300
+    '#71421C', // ochre-800
+    '#08111E'  // brand-950
 ];
+
+const EXPENSE_COLORS_DARK: string[] = [
+    '#8A98AE', // brand-300
+    '#D8A369', // ochre-400
+    '#B6BFCD', // brand-200
+    '#EBD0B0', // ochre-200
+    '#9C988C', // warm-400
+    '#C2BDB1', // warm-300
+    '#DEDAD0', // warm-200
+    '#F1EDE5', // warm-100
+    '#F4E5D2', // ochre-100
+    '#4D5F80'  // brand-400
+];
+
+function getExpenseColors(): string[] {
+    return isDarkMode() ? EXPENSE_COLORS_DARK : EXPENSE_COLORS_LIGHT;
+}
 
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
@@ -110,6 +153,11 @@ export class DashboardService {
 
     invalidateCache(): void {
         this._cache = {};
+    }
+
+    /** Check synchronously whether a specific cache key has data (avoids skeleton flash) */
+    hasCached(key: string): boolean {
+        return this._cache[key]?.data != null;
     }
 
     // Reactive state
@@ -276,7 +324,7 @@ export class DashboardService {
                 category: CATEGORY_LABELS[d.category] || d.category,
                 value: d.value,
                 percentage: d.percentage,
-                color: CATEGORY_COLORS[d.category] || CATEGORY_COLORS['other']
+                color: getCategoryColors()[d.category] || getCategoryColors()['other']
             }));
         } catch (error) {
             console.error('Error fetching asset distribution:', error);
@@ -294,7 +342,7 @@ export class DashboardService {
                 category: d.category,
                 value: d.value,
                 percentage: d.percentage,
-                color: EXPENSE_COLORS[index % EXPENSE_COLORS.length]
+                color: getExpenseColors()[index % getExpenseColors().length]
             }));
         } catch (error) {
             console.error('Error fetching expense distribution:', error);

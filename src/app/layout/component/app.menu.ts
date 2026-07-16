@@ -1,9 +1,10 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { I18nService } from '../../i18n/i18n.service';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { AiAssistantService } from '../../core/services/ai-assistant.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -20,6 +21,8 @@ import { filter } from 'rxjs/operators';
 export class AppMenu {
     model: MenuItem[] = [];
     lang = 'fr';
+
+    private aiAssistant = inject(AiAssistantService);
 
     constructor(private router: Router, private i18n: I18nService) {
         // Listen to route changes to update language
@@ -42,9 +45,9 @@ export class AppMenu {
                 label: this.t('menu.navigation'),
                 items: [
                     {
-                        label: this.t('menu.dashboard'), 
-                        icon: 'pi pi-fw pi-home', 
-                        routerLink: this.link() 
+                        label: this.t('menu.dashboard'),
+                        icon: 'pi pi-fw pi-home',
+                        routerLink: this.link()
                     },
                     {
                         label: this.t('menu.patrimony'),
@@ -60,51 +63,44 @@ export class AppMenu {
             },
             // Separator
             { separator: true },
+            // Goals — both lifetime (FIRE) and short-term goals merged here
+            {
+                label: this.t('menu.fireSection'),
+                items: [
+                    {
+                        label: this.t('menu.myGoals'),
+                        icon: 'pi pi-fw pi-bullseye',
+                        routerLink: this.link('pages', 'goals')
+                    }
+                ]
+            },
+            // Separator
+            { separator: true },
             // Finance
             {
                 label: this.t('menu.finances'),
                 items: [
                     {
-                        label: this.t('menu.savings'), 
-                        icon: 'pi pi-fw pi-dollar', 
-                        routerLink: this.link('pages', 'savings')
-                    },
-                    {
-                        label: this.t('menu.debts'), 
-                        icon: 'pi pi-fw pi-credit-card', 
+                        label: this.t('menu.debts'),
+                        icon: 'pi pi-fw pi-credit-card',
                         routerLink: this.link('pages', 'debts')
                     },
                 ]
             },
             // Separator
             { separator: true },
-            // Settings
+            // AI Assistant
             {
-                label: this.t('menu.account'),
+                label: this.t('menu.assistant'),
                 items: [
                     {
-                        label: this.t('menu.settings'),
-                        icon: 'pi pi-fw pi-cog',
-                        items: [
-                            {
-                                label: this.t('menu.myAccount'),
-                                icon: 'pi pi-fw pi-user',
-                                routerLink: this.link('pages', 'settings', 'account')
-                            },
-                            {
-                                label: this.t('menu.security'),
-                                icon: 'pi pi-fw pi-shield',
-                                routerLink: this.link('pages', 'settings', 'security')
-                            },
-                            {
-                                label: this.t('menu.preferences'),
-                                icon: 'pi pi-fw pi-sliders-h',
-                                routerLink: this.link('pages', 'settings', 'preferences')
-                            }
-                        ]
-                    },
+                        label: this.t('menu.aiAssistant'),
+                        icon: 'pi pi-fw pi-sparkles',
+                        styleClass: 'menu-item-ai',
+                        command: () => this.aiAssistant.show(),
+                    }
                 ]
-            },
+            }
         ];
     }
 

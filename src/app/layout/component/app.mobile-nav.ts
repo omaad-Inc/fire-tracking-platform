@@ -40,14 +40,14 @@ interface NavItem {
             bottom: 0;
             left: 0;
             right: 0;
-            height: 70px;
-            background: var(--surface-card);
+            height: calc(70px + env(safe-area-inset-bottom, 0px));
+            background: rgba(255, 255, 255, 0.95);
             border-top: 1px solid var(--surface-border);
             padding: 0 0.5rem;
-            padding-bottom: env(safe-area-inset-bottom, 0);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
             z-index: 999;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         @media (max-width: 991px) {
@@ -89,36 +89,31 @@ interface NavItem {
         .nav-icon-wrapper i {
             font-size: 1.15rem;
             transition: all 0.3s ease;
-            opacity: 0.5; /* Muted when inactive — high contrast with active */
+            color: #8A98AE;
         }
 
         .nav-icon-wrapper.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+            background: rgba(199, 123, 60, 0.12);
             transform: scale(1.05);
         }
 
         .nav-icon-wrapper.active i {
-            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            opacity: 1; /* Full opacity when active */
-            font-size: 1.3rem; /* Slightly larger active icon */
+            color: #C77B3C;
+            font-size: 1.3rem;
         }
 
         .nav-label {
             font-size: 0.65rem;
             font-weight: 500;
+            color: #8A98AE;
             transition: color 0.3s ease;
         }
 
-        .nav-item.active .nav-label,
-        .nav-item:hover .nav-label {
-            color: var(--primary-color);
-            font-weight: 600;
+        .nav-item.active .nav-label {
+            color: #C77B3C;
+            font-weight: 700;
         }
 
-        /* Active dot indicator below the label */
         .nav-dot {
             width: 4px;
             height: 4px;
@@ -129,18 +124,38 @@ interface NavItem {
         }
 
         .nav-dot.active {
-            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            background: #C77B3C;
             transform: scale(1);
         }
 
-        /* Dark mode adjustments */
+        /* Dark mode */
         :host-context(.app-dark) .mobile-bottom-nav {
-            background: rgba(15, 23, 42, 0.95);
-            border-top-color: rgba(255, 255, 255, 0.1);
+            background: rgba(15, 26, 46, 0.95);
+            border-top-color: rgba(255, 255, 255, 0.08);
+        }
+
+        :host-context(.app-dark) .nav-icon-wrapper i {
+            color: #5A6478;
         }
 
         :host-context(.app-dark) .nav-icon-wrapper.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%);
+            background: rgba(199, 123, 60, 0.15);
+        }
+
+        :host-context(.app-dark) .nav-icon-wrapper.active i {
+            color: #D4945A;
+        }
+
+        :host-context(.app-dark) .nav-label {
+            color: #5A6478;
+        }
+
+        :host-context(.app-dark) .nav-item.active .nav-label {
+            color: #D4945A;
+        }
+
+        :host-context(.app-dark) .nav-dot.active {
+            background: #D4945A;
         }
     `]
 })
@@ -187,9 +202,9 @@ export class AppMobileNav implements OnInit {
                 route: ['/', this.lang, 'pages', 'transaction']
             },
             {
-                label: this.t('menu.savings'),
-                icon: 'pi pi-dollar',
-                route: ['/', this.lang, 'pages', 'savings']
+                label: this.t('menu.myGoals'),
+                icon: 'pi pi-bullseye',
+                route: ['/', this.lang, 'pages', 'goals']
             },
             {
                 label: this.t('menu.debts'),

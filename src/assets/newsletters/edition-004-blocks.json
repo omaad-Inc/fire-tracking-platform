@@ -1,0 +1,53 @@
+{
+  "title": "BRVM vs S&P 500 : le match des rendements",
+  "subtitle": "Édition #009 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["BRVM", "S&P 500", "performance", "comparaison", "rendements"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Comparer la BRVM au S&P 500, c'est comparer deux réalités — pas deux faiblesses."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Dans le mouvement FIRE, le S&P 500 est la référence absolue. 10% de rendement annualisé sur 30 ans, des frais d'ETF à 0,03%, une liquidité totale. Quand tu lis les blogs FIRE américains, tout tourne autour de Vanguard et du marché US. Mais si tu vis entre Dakar et Paris, est-ce que la BRVM peut rivaliser ?\n\nLes chiffres bruts d'abord. Sur la période 2015-2025, le S&P 500 a affiché un rendement annualisé d'environ 10-12% en USD. La BRVM Composite, elle, a oscillé entre -15% (2016-2018, la grande correction) et +25% (2021, le rebond post-Covid). Sur 10 ans, le rendement annualisé de la BRVM tourne autour de 5-7% — inférieur au S&P 500 en apparence.\n\nMais cette comparaison brute est trompeuse pour trois raisons.\n\nPremièrement, les dividendes. La BRVM est un marché de dividendes. Le rendement moyen des dividendes sur la BRVM tourne autour de 5-7% par an — contre 1,5% pour le S&P 500. Quand tu réintègres les dividendes, l'écart de performance totale se réduit considérablement. Sonatel, par exemple, verse régulièrement 6-8% de dividendes.\n\nDeuxièmement, la devise. Le S&P 500 performe en USD. Si tu rapatries tes gains en FCFA, tu subis le risque de change EUR/USD (le FCFA étant arrimé à l'euro). Sur les 5 dernières années, le dollar s'est apprécié puis déprécié face à l'euro — ce yoyo peut manger 2-3% de rendement réel certaines années.\n\nTroisièmement, l'accessibilité. Investir sur le S&P 500 depuis la zone UEMOA nécessite un courtier international, des frais de transfert, et souvent une fiscalité complexe. La BRVM, tu y accèdes via ta SGI locale avec un compte en FCFA.\n\nLe verdict ? Le S&P 500 reste supérieur en rendement total et en liquidité. Mais la BRVM offre un rendement en dividendes imbattable, zéro risque de change pour un résident UEMOA, et une accessibilité directe. La vraie stratégie FIRE pour la diaspora, c'est les deux : ETF monde via un PEA pour la croissance long terme, actions BRVM pour le revenu en dividendes en FCFA."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "On travaille sur un module de comparaison de portefeuilles dans Omaad Wealth. L'idée : tu entres ton allocation (par exemple 60% ETF monde via PEA, 30% actions BRVM, 10% immobilier Sénégal) et l'app te simule la performance historique de ce mix sur 5, 10 et 15 ans — avec les dividendes réinvestis et la conversion FCFA/EUR en temps réel. L'objectif est de te montrer que la diversification géographique, c'est pas juste un concept théorique — c'est mesurable."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">5,8%</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">Rendement moyen en dividendes des 10 premières capitalisations BRVM (2025)</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BRVM — Statistiques annuelles 2025</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 A Random Walk Down Wall Street</span> <span style=\"font-size:13px; color:#6E6A60;\">— Burton Malkiel</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">Le classique absolu sur l'investissement indiciel. Malkiel démontre pourquoi les marchés efficients rendent la gestion passive supérieure — un argument qui vaut aussi pour la BRVM, où les frais de gestion active sont particulièrement élevés.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. The S&P 500 beats the BRVM on total returns (10-12% vs 5-7% annualized over 10 years), but the comparison is misleading. The BRVM's 5-7% average dividend yield crushes the S&P 500's 1.5%, narrowing the total return gap significantly when dividends are reinvested.\n\n2. Currency risk matters: investing in the S&P 500 from the FCFA zone means exposure to EUR/USD fluctuations, which can erode 2-3% of real returns in volatile years. BRVM investments carry zero currency risk for UEMOA residents.\n\n3. The smart FIRE strategy combines both: ETF world via PEA for long-term growth, BRVM stocks for dividend income in FCFA. Omaad Wealth is building a portfolio comparison tool to simulate this exact multi-market strategy."
+    }
+  ]
+}

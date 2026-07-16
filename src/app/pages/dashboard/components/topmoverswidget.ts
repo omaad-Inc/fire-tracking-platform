@@ -13,11 +13,11 @@ interface MoverItem extends PatrimoineAssetItemDto {
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <div class="card h-full">
-            <div class="flex items-center justify-between mb-6">
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
+            <div class="relative flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                        <i class="pi pi-bolt text-white"></i>
+                    <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center">
+                        <i class="pi pi-bolt text-warm-900"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('dashboard.topMovers') }}</h3>
@@ -27,7 +27,7 @@ interface MoverItem extends PatrimoineAssetItemDto {
             </div>
 
             @if (loading()) {
-                <div class="flex flex-col gap-4">
+                <div class="relative flex flex-col gap-4">
                     @for (i of [1,2,3]; track i) {
                         <div class="animate-pulse flex items-center gap-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50">
                             <div class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700"></div>
@@ -39,19 +39,18 @@ interface MoverItem extends PatrimoineAssetItemDto {
                     }
                 </div>
             } @else if (movers().length === 0) {
-                <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="relative flex flex-col items-center justify-center py-12 text-center">
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-bar text-surface-400 text-xl"></i>
                     </div>
                     <p class="text-surface-500 dark:text-surface-400 text-sm">{{ i18n.t('dashboard.noMovers') }}</p>
                 </div>
             } @else {
-                <div class="flex flex-col gap-3">
+                <div class="relative flex flex-col gap-3">
                     @for (item of movers(); track item.name; let i = $index) {
                         <div class="flex items-center gap-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800/50 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                                 [style.background]="getIconBg(i)">
-                                <i [class]="getIcon(item.category)" class="text-white text-sm"></i>
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-brand-100 dark:bg-brand-700/20">
+                                <i [class]="getIcon(item.category)" class="text-brand-700 dark:text-ochre-400 text-sm"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="font-medium text-surface-900 dark:text-surface-0 text-sm truncate">{{ item.name }}</div>
@@ -62,14 +61,14 @@ interface MoverItem extends PatrimoineAssetItemDto {
                                     <polyline
                                         [attr.points]="getSparkline(item, i)"
                                         fill="none"
-                                        [attr.stroke]="item.gainPct >= 0 ? '#10b981' : '#f43f5e'"
+                                        [attr.stroke]="item.gainPct >= 0 ? '#2F8F6E' : '#B0463E'"
                                         stroke-width="2"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                     />
                                 </svg>
                                 <span class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-bold shrink-0"
-                                      [ngClass]="item.gainPct >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                      [ngClass]="item.gainPct >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                     <i class="pi text-xs mr-1" [ngClass]="item.gainPct >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                     {{ item.gainPct >= 0 ? '+' : '' }}{{ item.gainPct | number:'1.1-1' }}%
                                 </span>
@@ -87,14 +86,6 @@ export class TopMoversWidget implements OnInit {
 
     loading = signal(true);
     movers = signal<MoverItem[]>([]);
-
-    private iconBgs = [
-        'linear-gradient(135deg, #6366f1, #4f46e5)',
-        'linear-gradient(135deg, #06b6d4, #0891b2)',
-        'linear-gradient(135deg, #10b981, #059669)',
-        'linear-gradient(135deg, #8b5cf6, #7c3aed)',
-        'linear-gradient(135deg, #f59e0b, #d97706)'
-    ];
 
     async ngOnInit() {
         try {
@@ -120,10 +111,6 @@ export class TopMoversWidget implements OnInit {
         } finally {
             this.loading.set(false);
         }
-    }
-
-    getIconBg(index: number): string {
-        return this.iconBgs[index % this.iconBgs.length];
     }
 
     getIcon(category?: string): string {

@@ -12,8 +12,8 @@ import { ApiService } from '../../../core/services/api.service';
 @Component({
     selector: 'app-patrimoine-progress',
     template: `
-        <div class="card h-full">
-            <div class="flex items-center justify-between mb-4">
+        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-full">
+            <div class="relative flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
                     <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Patrimoine Brut</div>
                     <i class="pi pi-chevron-down text-surface-500 text-sm cursor-pointer"></i>
@@ -24,7 +24,7 @@ import { ApiService } from '../../../core/services/api.service';
                             <button (click)="setRange(r.months)"
                                 class="px-3 py-1 text-xs rounded-lg transition-colors"
                                 [ngClass]="selectedMonths() === r.months
-                                    ? 'bg-indigo-500 text-white'
+                                    ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                 {{ r.label }}
                             </button>
@@ -34,22 +34,24 @@ import { ApiService } from '../../../core/services/api.service';
             </div>
             
             @if (loading()) {
-                <div class="animate-pulse">
+                <div class="relative animate-pulse">
                     <div class="h-[200px] md:h-[300px] bg-surface-200 dark:bg-surface-700 rounded"></div>
                 </div>
             } @else if (dataPoints().length === 0) {
-                <div class="flex flex-col items-center justify-center h-[200px] md:h-[300px] text-center">
+                <div class="relative flex flex-col items-center justify-center h-[200px] md:h-[300px] text-center">
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-line text-xl text-surface-400"></i>
                     </div>
                     <p class="text-surface-500 dark:text-surface-400 text-sm">Pas encore de données</p>
                 </div>
             } @else {
-                <div class="mb-4">
+                <div class="relative mb-4">
                     <div class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ currentDate() }}</div>
                     <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl"><app-amount [value]="currentValue()" /></div>
                 </div>
-                <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[180px] md:min-h-[250px]" />
+                <div class="relative">
+                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[180px] md:min-h-[250px]" />
+                </div>
             }
         </div>
     `,
@@ -144,16 +146,21 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
 
     initChart() {
         if (isPlatformBrowser(this.platformId)) {
-            const documentStyle = getComputedStyle(document.documentElement);
-            const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
             const cs = this.cs;
+            const isDark = document.documentElement.classList.contains('app-dark');
 
-            // Couleurs indigo/cyan Finary-style
-            const borderColor = '#6366f1'; // Indigo-500
-            const backgroundColor = 'rgba(99, 102, 241, 0.15)';
+            // Brand-tokenized chart palette — single source of truth in
+            // core/theme/chart-theme.ts. Inlined here to avoid breaking the
+            // build dependency graph.
+            const borderColor = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
+            const textColorSecondary = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
+
+            // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
+            const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
+            const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
 
             const points = this.dataPoints();
-            
+
             this.data = {
                 labels: points.map(p => p.label),
                 datasets: [
@@ -161,16 +168,23 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         label: 'Patrimoine Brut',
                         data: points.map(p => p.value),
                         fill: true,
+                        backgroundColor: (ctx: any) => {
+                            const { ctx: c, chartArea } = ctx.chart;
+                            if (!chartArea) return 'transparent';
+                            const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                            g.addColorStop(0, fillTop);
+                            g.addColorStop(1, fillBottom);
+                            return g;
+                        },
                         borderColor: borderColor,
-                        backgroundColor: backgroundColor,
                         tension: 0.4,
                         borderWidth: 3,
-                        pointRadius: 0, // Pas de points par défaut
-                        pointBackgroundColor: '#6366f1',
+                        pointRadius: 0,
+                        pointBackgroundColor: borderColor,
                         pointBorderColor: '#fff',
                         pointBorderWidth: 2,
                         pointHoverRadius: 6,
-                        pointHoverBackgroundColor: '#6366f1',
+                        pointHoverBackgroundColor: borderColor,
                         pointHoverBorderColor: '#fff',
                         pointHoverBorderWidth: 2
                     }
@@ -185,10 +199,10 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                         display: false
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        titleColor: '#fff',
-                        bodyColor: '#94a3b8',
-                        borderColor: 'rgba(99, 102, 241, 0.5)',
+                        backgroundColor: 'rgba(20, 19, 15, 0.95)',
+                        titleColor: '#FAF8F4',
+                        bodyColor: '#DEDAD0',
+                        borderColor: 'rgba(199, 123, 60, 0.30)',
                         borderWidth: 1,
                         cornerRadius: 8,
                         padding: 12,
@@ -228,7 +242,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                             callback: cs.tickFormatter()
                         },
                         grid: {
-                            color: 'rgba(148, 163, 184, 0.1)',
+                            display: false,
                             drawBorder: false
                         }
                     }

@@ -1,6 +1,7 @@
 import { Injectable, inject, computed } from '@angular/core';
 import { TokenService } from './token.service';
 import { ApiService } from './api.service';
+import { AnalyticsService } from './analytics.service';
 import { firstValueFrom } from 'rxjs';
 
 export interface CurrencyConfig {
@@ -20,6 +21,7 @@ const CURRENCIES: Record<string, CurrencyConfig> = {
 export class CurrencyService {
     private tokenService = inject(TokenService);
     private api = inject(ApiService);
+    private analytics = inject(AnalyticsService);
 
     /** Current currency code — reacts to user preference changes. */
     readonly currencyCode = computed<string>(() =>
@@ -108,9 +110,13 @@ export class CurrencyService {
     async setCurrency(code: string): Promise<void> {
         const user = this.tokenService.user();
         if (!user) return;
+        const previous = user.preferred_currency;
         try {
             await firstValueFrom(this.api.updateProfile({ preferred_currency: code }));
         } catch { /* non-blocking */ }
         this.tokenService.setUser({ ...user, preferred_currency: code });
+        if (previous !== code) {
+            this.analytics.track('currency_switched', { from: previous, to: code });
+        }
     }
 }

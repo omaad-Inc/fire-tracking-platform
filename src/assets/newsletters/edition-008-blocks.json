@@ -1,0 +1,53 @@
+{
+  "title": "Comment appliquer le DCA à la BRVM",
+  "subtitle": "Édition #006 — FIRE Africa par Omaad",
+  "status": "draft",
+  "content_tags": ["DCA", "BRVM", "investissement programmé", "stratégie", "discipline"],
+  "blocks": [
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "L'INSIGHT DU MOIS"
+    },
+    {
+      "type": "heading",
+      "level": "2",
+      "text": "Le DCA est la stratégie FIRE la plus puissante. À la BRVM, elle demande juste un peu d'adaptation."
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "Le Dollar Cost Averaging (DCA) — ou investissement programmé — est le pilier de toute stratégie FIRE. Le principe est simple : tu investis un montant fixe à intervalle régulier, quel que soit le cours du marché. Quand le marché est haut, tu achètes moins d'unités. Quand il est bas, tu en achètes plus. Sur le long terme, tu lisses ton prix d'entrée et tu élimines le stress du timing.\n\nAux États-Unis, le DCA est trivial : tu programmes un virement automatique vers ton compte Vanguard, tu achètes un ETF S&P 500 chaque mois pour 500$, et c'est fait. Zéro friction.\n\nÀ la BRVM, c'est plus compliqué. Et voici pourquoi — et comment contourner chaque obstacle.\n\nPremier obstacle : le ticket d'entrée. La plupart des SGI demandent un investissement minimum de 100 000 à 500 000 FCFA par opération. Si tu veux investir 50 000 FCFA/mois, c'est souvent en dessous du seuil. Solution : accumule ta mise mensuelle et passe un ordre tous les 2 ou 3 mois. Un DCA trimestriel est presque aussi efficace qu'un DCA mensuel sur le long terme.\n\nDeuxième obstacle : les frais de courtage. Chaque transaction via ta SGI coûte entre 0,5% et 1,5% en frais de courtage. Si tu passes 12 ordres par an, ça chiffre. Solution : regroupe tes achats. Un ordre trimestriel de 300 000 FCFA au lieu de trois ordres mensuels de 100 000 FCFA réduit tes frais de transaction de deux tiers.\n\nTroisième obstacle : la liquidité. Certaines actions BRVM ne s'échangent que quelques dizaines de lots par jour. Si tu veux acheter pour 500 000 FCFA de Nestlé CI un mardi, il se peut que ton ordre ne soit exécuté que partiellement. Solution : concentre-toi sur les blue chips les plus liquides (Sonatel, Société Générale CI, Orange CI, BOA) et passe tes ordres au prix du marché (ordre « au mieux ») pour maximiser l'exécution.\n\nQuatrième obstacle : l'absence d'automatisation. Aucune SGI à la BRVM ne propose de plan d'investissement automatique comme Vanguard ou Boursorama. Tu dois passer chaque ordre manuellement. Solution : fixe un jour précis dans ton agenda (le 1er de chaque trimestre, par exemple) et traite-le comme un rendez-vous non négociable. La discipline remplace l'automatisation.\n\nLe DCA adapté à la BRVM :\n— Montant fixe : 200 000 à 500 000 FCFA par trimestre\n— Fréquence : trimestrielle (réduit les frais vs mensuel)\n— Cible : 5-8 blue chips liquides, pondérées par capitalisation\n— Dividendes : réinvestis systématiquement au trimestre suivant\n— Durée : 10 ans minimum, idéalement 15-20 ans\n\nC'est moins élégant qu'un virement automatique vers un ETF, mais sur 15 ans, le résultat est le même : un patrimoine construit brique par brique, sans timing, sans émotion."
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "On lance un module DCA Tracker dans Omaad Wealth. Tu définis ton plan (montant, fréquence, actions cibles), et l'app te rappelle quand passer ton ordre, calcule ton prix moyen pondéré en temps réel, et te montre la performance de ta stratégie DCA vs un investissement en une seule fois (lump sum). L'automatisation viendra un jour côté SGI — en attendant, Omaad est ton copilote DCA."
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0; margin:16px 0;\"><tr><td style=\"padding:12px 0 4px 0; text-align:center;\"><span style=\"font-size:11px; font-weight:700; letter-spacing:2px; color:#C77B3C; text-transform:uppercase;\">LE CHIFFRE AFRICAIN</span></td></tr><tr><td style=\"padding:8px 32px 28px 32px; text-align:center;\"><span style=\"font-size:52px; font-weight:800; color:#C77B3C; line-height:1;\">47 titres</span><br><span style=\"font-size:15px; color:#1A2740; font-weight:600; line-height:2;\">Nombre de sociétés cotées à la BRVM en 2026</span><br><span style=\"font-size:12px; color:#9C988C; font-style:italic;\">Source : BRVM — Liste officielle des valeurs cotées, T1 2026</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "type": "html",
+      "html": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color:#FAF8F4; border-radius:10px; border:1px solid #EBD0B0;\"><tr><td style=\"padding:20px 24px;\"><span style=\"font-size:16px; font-weight:700; color:#1A2740;\">📖 The Bogleheads' Guide to Investing</span> <span style=\"font-size:13px; color:#6E6A60;\">— Larimore, Lindauer & LeBoeuf</span><br><span style=\"font-size:14px; color:#3D3B35; line-height:1.6; padding-top:6px; display:inline-block;\">La bible de l'investissement passif et du DCA. Les Bogleheads démontrent avec des décennies de données que la régularité bat le timing dans 100% des cas. Leur mantra « stay the course » est exactement ce dont un investisseur BRVM a besoin face à la volatilité du marché régional.</span></td></tr></table>"
+    },
+    {
+      "type": "heading",
+      "level": "3",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "type": "paragraph",
+      "plaintext": "1. Dollar Cost Averaging (DCA) works at the BRVM, but requires adaptation: quarterly frequency (to reduce brokerage fees), focus on liquid blue chips, and manual order placement since no SGI offers automated investment plans.\n\n2. The four main obstacles — minimum ticket size, brokerage fees, low liquidity, and no automation — all have practical workarounds. A quarterly DCA of 200,000-500,000 FCFA into 5-8 blue chips is the optimal setup for most BRVM investors.\n\n3. Omaad Wealth is launching a DCA Tracker module: set your plan, get reminders, track your weighted average price, and compare DCA vs lump sum performance over time."
+    }
+  ]
+}

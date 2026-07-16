@@ -1,11 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { environment } from '../../../../environments/environment';
+import { TokenService } from '../../../core/services/token.service';
 
 interface FaqItem {
     question: string;
@@ -24,13 +27,13 @@ interface FaqItem {
         <div class="flex flex-col gap-5">
 
             <!-- ── Search bar ────────────────────────────────────── -->
-            <div class="card !p-5">
-                <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">Comment pouvons-nous vous aider ?</h2>
-                <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">Parcourez les questions fréquentes ou contactez notre équipe.</p>
+            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
+                <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">Comment pouvons-nous vous aider ?</h2>
+                <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">Parcourez les questions fréquentes ou contactez notre équipe.</p>
                 <div class="relative">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"></i>
                     <input pInputText [(ngModel)]="searchQuery" placeholder="Rechercher une question..."
-                           class="w-full !pl-10 !py-3 !rounded-xl" />
+                           class="w-full !pl-10 !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                 </div>
             </div>
 
@@ -39,9 +42,9 @@ interface FaqItem {
                 @for (link of quickLinks; track link.label) {
                     <button (click)="searchQuery = link.tag"
                             class="flex flex-col items-center gap-2 p-4 rounded-2xl border border-surface-200 dark:border-surface-700
-                                   hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-indigo-500/5
+                                   hover:border-brand-300 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20
                                    transition-all text-center group">
-                        <div class="w-10 h-10 rounded-xl flex items-center justify-center {{ link.bg }} group-hover:scale-110 transition-transform">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center {{ link.bg }}">
                             <i class="pi {{ link.icon }} {{ link.color }} text-lg"></i>
                         </div>
                         <span class="text-xs font-medium text-surface-700 dark:text-surface-200 leading-tight">{{ link.label }}</span>
@@ -50,10 +53,10 @@ interface FaqItem {
             </div>
 
             <!-- ── FAQ ──────────────────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-question-circle text-indigo-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                        <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Questions fréquentes</h2>
                 </div>
@@ -63,11 +66,11 @@ interface FaqItem {
                         <div class="px-5">
                             <button (click)="item.open = !item.open"
                                     class="w-full flex items-center justify-between py-4 text-left group">
-                                <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-indigo-500 transition-colors">
+                                <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-ochre-600 dark:group-hover:text-ochre-400 transition-colors">
                                     {{ item.question }}
                                 </span>
                                 <i class="pi shrink-0 transition-transform duration-200 text-surface-400"
-                                   [ngClass]="item.open ? 'pi-chevron-up text-indigo-500' : 'pi-chevron-down'"></i>
+                                   [ngClass]="item.open ? 'pi-chevron-up text-brand-700 dark:text-brand-300' : 'pi-chevron-down'"></i>
                             </button>
                             @if (item.open) {
                                 <div class="pb-4 text-sm text-surface-600 dark:text-surface-300 leading-relaxed">
@@ -85,10 +88,10 @@ interface FaqItem {
             </section>
 
             <!-- ── Contact ──────────────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-envelope text-cyan-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                        <i class="pi pi-envelope text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div>
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Nous contacter</h2>
@@ -97,39 +100,39 @@ interface FaqItem {
                 </div>
 
                 <div class="p-5">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Sujet</label>
+                    <div class="flex flex-col gap-6">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Sujet</label>
                             <input pInputText [(ngModel)]="contactForm.subject"
                                    placeholder="Ex : Problème de connexion, question sur les devises…"
-                                   class="w-full !py-3 !rounded-xl" />
+                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-sm font-medium text-surface-700 dark:text-surface-300">Message</label>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">Message</label>
                             <textarea pTextarea [(ngModel)]="contactForm.message" rows="4"
                                       placeholder="Décrivez votre problème ou question en détail…"
-                                      class="w-full !rounded-xl resize-none"></textarea>
+                                      class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"></textarea>
                         </div>
                         <div class="flex items-center justify-between gap-4 flex-wrap">
                             <p class="text-xs text-surface-400 flex items-center gap-1.5">
-                                <i class="pi pi-shield text-indigo-400"></i>
+                                <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
                                 Vos données restent confidentielles.
                             </p>
                             <p-button label="Envoyer le message" icon="pi pi-send"
                                       [loading]="isSending()"
                                       [disabled]="!contactForm.subject || !contactForm.message"
                                       (click)="sendMessage()"
-                                      styleClass="!rounded-xl !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0" />
+                                      styleClass="omaad-cta !rounded-full" />
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- ── Other resources ──────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-link text-emerald-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-link text-positive"></i>
                     </div>
                     <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Ressources utiles</h2>
                 </div>
@@ -141,7 +144,7 @@ interface FaqItem {
                                 <i class="pi {{ res.icon }} {{ res.color }}"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 group-hover:text-indigo-500 transition-colors">{{ res.label }}</p>
+                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0 group-hover:text-ochre-600 dark:group-hover:text-ochre-400 transition-colors">{{ res.label }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400">{{ res.desc }}</p>
                             </div>
                             <i class="pi pi-external-link text-xs text-surface-400 shrink-0"></i>
@@ -153,24 +156,26 @@ interface FaqItem {
             <!-- ── Version info ─────────────────────────────────── -->
             <div class="text-center py-2">
                 <p class="text-xs text-surface-400 dark:text-surface-500">
-                    Omaad Wealth · v1.0.0 · <span class="text-emerald-500">●</span> Opérationnel
+                    Omaad Wealth · v1.0.0 · <span class="text-positive">●</span> Opérationnel
                 </p>
             </div>
         </div>
     `
 })
 export class HelpSettings {
+    private http = inject(HttpClient);
+    private tokenService = inject(TokenService);
+    private messageService = inject(MessageService);
+
     searchQuery = '';
     isSending   = signal(false);
     contactForm = { subject: '', message: '' };
 
-    constructor(private messageService: MessageService) {}
-
     readonly quickLinks = [
-        { label: 'Compte & Profil',  tag: 'compte',    icon: 'pi-user',          color: 'text-indigo-500',  bg: 'bg-indigo-500/10'  },
-        { label: 'Devises & FCFA',   tag: 'devise',    icon: 'pi-wallet',        color: 'text-cyan-500',    bg: 'bg-cyan-500/10'    },
-        { label: 'Objectif FIRE',    tag: 'fire',      icon: 'pi-flag',          color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-        { label: 'Sécurité',         tag: 'sécurité',  icon: 'pi-shield',        color: 'text-amber-500',   bg: 'bg-amber-500/10'   },
+        { label: 'Compte & Profil',  tag: 'compte',    icon: 'pi-user',          color: 'text-brand-700 dark:text-brand-300',  bg: 'bg-brand-700/10 dark:bg-brand-300/15'  },
+        { label: 'Devises & FCFA',   tag: 'devise',    icon: 'pi-wallet',        color: 'text-brand-700 dark:text-brand-300',    bg: 'bg-brand-700/10 dark:bg-brand-300/15'    },
+        { label: 'Objectif FIRE',    tag: 'fire',      icon: 'pi-flag',          color: 'text-positive', bg: 'bg-positive/10' },
+        { label: 'Sécurité',         tag: 'sécurité',  icon: 'pi-shield',        color: 'text-ochre-500',   bg: 'bg-ochre-100'   },
     ];
 
     readonly resources = [
@@ -178,7 +183,7 @@ export class HelpSettings {
             label: 'Centre d\'aide en ligne',
             desc:  'Documentation complète et tutoriels vidéo',
             url:   'https://help.omaad.app',
-            icon:  'pi-book',  color: 'text-indigo-500', bg: 'bg-indigo-500/10',
+            icon:  'pi-book',  color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15',
         },
         {
             label: 'Signaler un bug',
@@ -190,7 +195,7 @@ export class HelpSettings {
             label: 'Règle des 4% — SWR',
             desc:  'Comprendre la base du calcul FIRE',
             url:   'https://www.investopedia.com/terms/f/four-percent-rule.asp',
-            icon:  'pi-percentage', color: 'text-emerald-500', bg: 'bg-emerald-500/10',
+            icon:  'pi-percentage', color: 'text-positive', bg: 'bg-positive/10',
         },
     ];
 
@@ -259,16 +264,36 @@ export class HelpSettings {
     sendMessage() {
         if (!this.contactForm.subject || !this.contactForm.message) return;
         this.isSending.set(true);
-        // Simulate send (no real email API yet)
-        setTimeout(() => {
-            this.isSending.set(false);
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Message envoyé',
-                detail: 'Nous vous répondrons dans les 24–48 h. Merci !',
-                life: 5000
-            });
-            this.contactForm = { subject: '', message: '' };
-        }, 1200);
+
+        const user = this.tokenService.user();
+        const payload = {
+            fullName: user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] : 'Utilisateur',
+            email: user?.email || 'no-reply@omaad.app',
+            company: 'Omaad Wealth (Support)',
+            needType: this.contactForm.subject,
+            message: this.contactForm.message
+        };
+
+        this.http.post(`${environment.apiUrl}/contact`, payload).subscribe({
+            next: () => {
+                this.isSending.set(false);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Message envoyé',
+                    detail: 'Nous vous répondrons dans les 24–48 h. Merci !',
+                    life: 5000
+                });
+                this.contactForm = { subject: '', message: '' };
+            },
+            error: () => {
+                this.isSending.set(false);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: 'Impossible d\'envoyer le message. Réessayez plus tard.',
+                    life: 5000
+                });
+            }
+        });
     }
 }

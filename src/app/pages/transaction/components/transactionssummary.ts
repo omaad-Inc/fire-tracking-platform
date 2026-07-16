@@ -8,67 +8,67 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `
-        <div class="card h-full flex flex-col gap-5">
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col gap-5">
             <!-- Header -->
-            <div>
+            <div class="relative">
                 <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ monthTitle }}</h3>
                 <p class="text-surface-400 text-xs mt-0.5">Résumé financier</p>
             </div>
 
             @if (loading()) {
-                <div class="space-y-3">
+                <div class="relative space-y-3">
                     @for (i of [1,2,3]; track i) {
                         <div class="h-10 bg-surface-100 dark:bg-surface-800 rounded-xl animate-pulse"></div>
                     }
                 </div>
             } @else if (summary()) {
                 <!-- Net flow pill -->
-                <div class="flex items-center justify-between p-3 rounded-xl"
-                     [ngClass]="(summary()!.net >= 0) ? 'bg-emerald-500/10' : 'bg-rose-500/10'">
+                <div class="relative flex items-center justify-between p-3 rounded-xl"
+                     [ngClass]="(summary()!.net >= 0) ? 'bg-positive-50 dark:bg-positive-500/15' : 'bg-negative-50 dark:bg-negative-500/15'">
                     <span class="text-sm font-medium"
-                          [ngClass]="(summary()!.net >= 0) ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                          [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
                         {{ summary()!.net >= 0 ? 'Solde positif' : 'Solde négatif' }}
                     </span>
                     <span class="text-lg font-bold"
-                          [ngClass]="(summary()!.net >= 0) ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">
+                          [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
                         {{ summary()!.net >= 0 ? '+' : '−' }}<app-amount [value]="summary()!.net" />
                     </span>
                 </div>
 
                 <!-- Income / Expense rows -->
-                <div class="space-y-3">
+                <div class="relative space-y-3">
                     <!-- Income -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                                <i class="pi pi-arrow-down-left text-emerald-500 text-xs"></i>
+                            <div class="w-7 h-7 rounded-lg bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
+                                <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xs"></i>
                             </div>
                             <span class="text-sm text-surface-600 dark:text-surface-400">Revenus</span>
                         </div>
-                        <span class="text-sm font-semibold text-emerald-500">
+                        <span class="text-sm font-semibold text-positive">
                             +<app-amount [value]="summary()!.income" />
                         </span>
                     </div>
                     <!-- Expense -->
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                                <i class="pi pi-arrow-up-right text-rose-500 text-xs"></i>
+                            <div class="w-7 h-7 rounded-lg bg-negative-50 dark:bg-negative-500/15 flex items-center justify-center">
+                                <i class="pi pi-arrow-up-right text-negative-600 dark:text-negative-400 text-xs"></i>
                             </div>
                             <span class="text-sm text-surface-600 dark:text-surface-400">Dépenses</span>
                         </div>
-                        <span class="text-sm font-semibold text-rose-500">
+                        <span class="text-sm font-semibold text-negative">
                             −<app-amount [value]="summary()!.expenses" />
                         </span>
                     </div>
                 </div>
 
                 <!-- Divider -->
-                <div class="h-px bg-surface-200 dark:bg-surface-700"></div>
+                <div class="relative h-px bg-surface-200 dark:bg-surface-800"></div>
 
                 <!-- By category -->
                 @if (summary()!.byCategory.length > 0) {
-                    <div>
+                    <div class="relative">
                         <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">
                             Répartition des dépenses
                         </p>
@@ -86,7 +86,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                                    <div class="h-1.5 bg-surface-100 dark:bg-surface-800 rounded-full overflow-hidden">
                                         <div class="h-full rounded-full transition-all duration-500"
                                              [style.width]="cat.pct + '%'"
                                              [style.background]="cat.color"></div>
@@ -96,13 +96,13 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                         </div>
                     </div>
                 } @else {
-                    <p class="text-xs text-surface-400 dark:text-surface-500 text-center py-4">
+                    <p class="relative text-xs text-surface-400 dark:text-surface-500 text-center py-4">
                         Aucune dépense ce mois-ci
                     </p>
                 }
 
                 <!-- Transaction count -->
-                <div class="mt-auto pt-2 border-t border-surface-200 dark:border-surface-700">
+                <div class="relative mt-auto pt-2 border-t border-surface-200 dark:border-surface-800">
                     <p class="text-xs text-surface-400 text-center">
                         {{ summary()!.count }} transaction{{ summary()!.count > 1 ? 's' : '' }} ce mois
                     </p>

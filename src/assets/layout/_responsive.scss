@@ -9,45 +9,91 @@
 
 @media (min-width: 992px) {
     .layout-wrapper {
-        &.layout-overlay {
-            .layout-main-container {
-                margin-left: 0;
-                padding-left: 2rem;
-            }
-
-            .layout-sidebar {
-                transform: translateX(-100%);
-                left: 0;
-                top: 4rem;
-                height: calc(100vh - 4rem);
-                border-radius: 0;
-                border-right: 1px solid var(--surface-border);
-                box-shadow: 4px 0 16px rgba(0, 0, 0, 0.12);
-                transition:
-                    transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
-            }
-
-            &.layout-overlay-active {
-                .layout-sidebar {
-                    transform: translateX(0);
-                }
-            }
+        // Topbar starts after the sidebar (no logo container on desktop)
+        .layout-topbar {
+            left: 17rem;
+            width: calc(100% - 17rem);
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         &.layout-static {
             .layout-main-container {
                 margin-left: 17rem;
+                transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
+            // Collapsed = rail mode (icon-only)
             &.layout-static-inactive {
                 .layout-sidebar {
-                    transform: translateX(-100%);
-                    left: 0;
+                    width: 4.5rem;
+
+                    .sidebar-logo-text,
+                    .sidebar-user-info,
+                    .sidebar-user-toggle,
+                    .layout-menuitem-text,
+                    .layout-submenu-toggler,
+                    .layout-menuitem-root-text {
+                        display: none !important;
+                    }
+
+                    // Hide section separators — they look like stub lines in narrow rail
+                    .menu-separator {
+                        display: none;
+                    }
+
+                    // Center logo and avatar
+                    .sidebar-logo {
+                        justify-content: center;
+                        padding: 1rem 0.5rem;
+
+                        .sidebar-logo-toggle {
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                        }
+                    }
+
+                    .sidebar-user-button {
+                        justify-content: center;
+                        padding: 0.5rem;
+                    }
+
+                    // Center menu items (icons only)
+                    .layout-menu a {
+                        justify-content: center;
+                        padding: 0.625rem 0.5rem !important;
+
+                        .layout-menuitem-icon {
+                            margin-right: 0 !important;
+                        }
+                    }
+
+                    // Strip submenu visual chrome (border-left, padding-left, margins)
+                    // so nested menu items show as plain icons in the rail
+                    .layout-menu ul {
+                        border-left: none !important;
+                        margin-left: 0 !important;
+                        padding-left: 0 !important;
+                    }
+
+                    // Hide deeply-nested submenus (e.g. Settings → My Account)
+                    // — only show top-level menu items as icons
+                    .layout-menu > .layout-root-menuitem > ul ul {
+                        display: none;
+                    }
+
+                    // Tighter padding around the menu
+                    .sidebar-menu-wrapper {
+                        padding: 0.5rem 0.5rem;
+                    }
+                }
+
+                .layout-topbar {
+                    left: 4.5rem;
+                    width: calc(100% - 4.5rem);
                 }
 
                 .layout-main-container {
-                    margin-left: 0;
-                    padding-left: 2rem;
+                    margin-left: 4.5rem;
                 }
             }
         }
@@ -88,7 +134,7 @@
 
         // Simplify topbar on mobile — Finary-style: [👤 avatar] ... [👁] [PRO]
         .layout-topbar {
-            padding: 0 0.75rem;
+            padding: env(safe-area-inset-top, 0px) 0.75rem 0 0.75rem;
             border-bottom: 1px solid var(--surface-border);
 
             .layout-topbar-logo-container {

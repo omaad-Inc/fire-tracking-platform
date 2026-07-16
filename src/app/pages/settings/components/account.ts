@@ -38,8 +38,8 @@ import { environment } from '../../../../environments/environment';
         >
             <ng-template pTemplate="header">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                        <i class="pi pi-exclamation-triangle text-red-500 text-lg"></i>
+                    <div class="w-10 h-10 rounded-full bg-negative-50 dark:bg-negative-700/30 flex items-center justify-center">
+                        <i class="pi pi-exclamation-triangle text-negative text-lg"></i>
                     </div>
                     <span class="text-lg font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.account.deleteConfirmTitle') }}</span>
                 </div>
@@ -52,7 +52,7 @@ import { environment } from '../../../../environments/environment';
                 <ul class="mb-6 space-y-2">
                     @for (item of deleteConfirmItems; track item) {
                         <li class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
-                            <i class="pi pi-times-circle text-red-400 text-xs"></i>
+                            <i class="pi pi-times-circle text-negative text-xs"></i>
                             {{ item }}
                         </li>
                     }
@@ -60,7 +60,7 @@ import { environment } from '../../../../environments/environment';
                 <div>
                     <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
                         {{ t('settings.account.deleteConfirmType') }}
-                        <span class="font-mono font-bold text-red-500 ml-1">{{ t('settings.account.deleteConfirmKeyword') }}</span>
+                        <span class="font-mono font-bold text-negative ml-1">{{ t('settings.account.deleteConfirmKeyword') }}</span>
                     </label>
                     <input
                         pInputText
@@ -91,32 +91,22 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </ng-template>
         </p-dialog>
-        <div class="card">
+        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
             <!-- Mon Profil Section -->
-            <div class="mb-8">
+            <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
                 
                 <!-- Avatar Section -->
                 <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8 text-center sm:text-left">
                     <div class="relative group">
                         @if (user()?.avatar_url) {
-                            <img [src]="getAvatarUrl()" 
-                                 alt="Profile" 
+                            <img [src]="getAvatarUrl()"
+                                 alt="Profile"
                                  class="w-20 h-20 rounded-full object-cover border-2 border-surface-200 dark:border-surface-700">
                         } @else {
-                            <p-avatar 
-                                [label]="userInitials" 
-                                shape="circle" 
-                                size="xlarge"
-                                [style]="{ 
-                                    'background': 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)', 
-                                    'color': 'white', 
-                                    'font-weight': '600',
-                                    'width': '80px',
-                                    'height': '80px',
-                                    'font-size': '1.5rem'
-                                }"
-                            />
+                            <div class="w-20 h-20 rounded-full bg-brand-700 flex items-center justify-center text-white font-semibold text-2xl">
+                                {{ userInitials }}
+                            </div>
                         }
                         <button 
                             class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -163,7 +153,7 @@ import { environment } from '../../../../environments/environment';
                         <input 
                             pInputText 
                             [(ngModel)]="firstName" 
-                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
                     <div>
@@ -171,7 +161,7 @@ import { environment } from '../../../../environments/environment';
                         <input 
                             pInputText 
                             [(ngModel)]="lastName" 
-                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary"
+                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
                 </div>
@@ -192,23 +182,18 @@ import { environment } from '../../../../environments/environment';
                 <div class="mb-6">
                     <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.myEmail') }}</label>
                     <div class="flex items-center gap-4">
-                        <span class="text-lg text-surface-900 dark:text-surface-0">{{ user()?.email }}</span>
+                        <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ user()?.email }}</span>
                     </div>
                     <div class="mt-3 flex items-center gap-2">
                         @if (user()?.is_verified) {
-                            <p-tag 
-                                [value]="t('settings.account.verified')" 
-                                icon="pi pi-check" 
-                                severity="success"
-                                [style]="{ 'background': 'rgba(16, 185, 129, 0.1)', 'color': '#10b981' }"
-                            />
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold">
+                                <i class="pi pi-check text-[10px]"></i>{{ t('settings.account.verified') }}
+                            </span>
                         }
                         @if (user()?.auth_provider && user()?.auth_provider !== 'email') {
-                            <p-tag 
-                                [value]="'via ' + user()?.auth_provider" 
-                                icon="pi pi-google"
-                                [style]="{ 'background': 'rgba(99, 102, 241, 0.1)', 'color': '#6366f1' }"
-                            />
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-brand-300 text-xs font-semibold">
+                                <i class="pi pi-google text-[10px]"></i>via {{ user()?.auth_provider }}
+                            </span>
                         }
                     </div>
                 </div>
@@ -217,12 +202,12 @@ import { environment } from '../../../../environments/environment';
             <p-divider />
 
             <!-- Logout Section -->
-            <div class="my-8">
+            <div class="relative my-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
                 <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                            <i class="pi pi-sign-out text-white text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <i class="pi pi-sign-out text-brand-700 dark:text-ochre-400 text-xl"></i>
                         </div>
                         <div>
                             <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.account.logout') }}</p>
@@ -242,8 +227,8 @@ import { environment } from '../../../../environments/environment';
             <p-divider />
 
             <!-- Danger Zone -->
-            <div class="mt-8">
-                <h2 class="text-2xl font-semibold text-red-500 mb-4">{{ t('settings.account.deleteAccount') }}</h2>
+            <div class="relative mt-8">
+                <h2 class="text-2xl font-semibold text-negative mb-4">{{ t('settings.account.deleteAccount') }}</h2>
                 <p class="text-surface-500 dark:text-surface-400 mb-4">
                     {{ t('settings.account.deleteAccountDesc') }}
                 </p>
@@ -404,7 +389,7 @@ export class AccountSettings implements OnInit {
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Supprimer',
             rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-rose-500 !border-rose-500',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: () => {
                 this.apiService.deleteAvatar().subscribe({
                     next: () => {

@@ -28,11 +28,11 @@ import { firstValueFrom } from 'rxjs';
         <div class="flex flex-col gap-4 md:gap-6">
 
             <!-- ── 1. Méthode de connexion ──────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <!-- Section header -->
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-lock text-indigo-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                        <i class="pi pi-lock text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Méthode de connexion</h2>
@@ -43,7 +43,7 @@ import { firstValueFrom } from 'rxjs';
                 <div class="p-5">
                     @if (isGoogleUser()) {
                         <!-- Google OAuth user -->
-                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-cyan-50 dark:from-indigo-950/30 dark:to-cyan-950/30 border border-indigo-100 dark:border-indigo-900/40">
+                        <div class="flex items-center gap-4 p-4 rounded-2xl bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                             <div class="w-12 h-12 rounded-full bg-white dark:bg-surface-700 flex items-center justify-center shadow-sm shrink-0">
                                 <!-- Google logo SVG -->
                                 <svg class="w-6 h-6" viewBox="0 0 24 24">
@@ -57,20 +57,20 @@ import { firstValueFrom } from 'rxjs';
                                 <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Connecté via Google</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold shrink-0">
                                 <i class="pi pi-check text-[10px]"></i> Actif
                             </span>
                         </div>
                         <p class="text-sm text-surface-500 dark:text-surface-400 mt-3 flex items-start gap-2">
-                            <i class="pi pi-info-circle text-indigo-400 mt-0.5 shrink-0"></i>
+                            <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
                             Votre mot de passe est géré par Google. Pour le modifier, rendez-vous dans votre
                             <a href="https://myaccount.google.com/security" target="_blank"
-                               class="text-indigo-500 hover:text-indigo-600 font-medium ml-1">compte Google →</a>
+                               class="text-brand-700 dark:text-brand-300 hover:underline font-medium ml-1">compte Google →</a>
                         </p>
                     } @else {
                         <!-- Email / password user -->
                         <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center shrink-0">
+                            <div class="w-12 h-12 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center shrink-0">
                                 <i class="pi pi-envelope text-white text-lg"></i>
                             </div>
                             <div class="flex-1 min-w-0">
@@ -82,14 +82,14 @@ import { firstValueFrom } from 'rxjs';
                         <div class="mt-4 p-4 rounded-2xl border border-surface-200 dark:border-surface-700">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <i class="pi pi-key text-amber-500"></i>
+                                    <i class="pi pi-key text-ochre-500"></i>
                                     <div>
                                         <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Mot de passe</p>
                                         <p class="text-xs text-surface-500 dark:text-surface-400">Modifiez votre mot de passe de connexion</p>
                                     </div>
                                 </div>
                                 <button pButton label="Modifier" [outlined]="true" size="small"
-                                        class="shrink-0" (click)="openPasswordDialog()"></button>
+                                        class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500" (click)="openPasswordDialog()"></button>
                             </div>
                         </div>
                     }
@@ -97,10 +97,10 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 2. Sécurité avancée (2FA) ────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-shield text-emerald-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
+                        <i class="pi pi-shield text-positive"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Sécurité avancée</h2>
@@ -111,9 +111,9 @@ import { firstValueFrom } from 'rxjs';
                 <div class="p-5">
                     @if (isGoogleUser()) {
                         <!-- Google handles 2FA -->
-                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-100 dark:border-emerald-900/40">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                                <i class="pi pi-verified text-emerald-500 text-lg"></i>
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-positive-50 dark:bg-positive-700/15 border border-positive-100 dark:border-positive-700/40">
+                            <div class="w-10 h-10 rounded-xl bg-positive/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <i class="pi pi-verified text-positive text-lg"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">Protégé par Google</p>
@@ -121,7 +121,7 @@ import { firstValueFrom } from 'rxjs';
                                     Votre compte bénéficie des protections de Google, incluant la 2FA si vous l'avez activée dans votre compte Google.
                                 </p>
                                 <a href="https://myaccount.google.com/security" target="_blank"
-                                   class="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-2 hover:underline">
+                                   class="inline-flex items-center gap-1.5 text-xs text-positive dark:text-positive-400 font-medium mt-2 hover:underline">
                                     Gérer la sécurité Google <i class="pi pi-external-link text-[10px]"></i>
                                 </a>
                             </div>
@@ -135,7 +135,7 @@ import { firstValueFrom } from 'rxjs';
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-1">
                                     <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Authentification 2FA</p>
-                                    <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-semibold uppercase tracking-wide">Bientôt</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-[10px] font-semibold uppercase tracking-wide">Bientôt</span>
                                 </div>
                                 <p class="text-xs text-surface-500 dark:text-surface-400">
                                     L'authentification à deux facteurs par application (TOTP) sera disponible prochainement.
@@ -147,10 +147,10 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 3. Code PIN ────────────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-lock text-amber-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
+                        <i class="pi pi-lock text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Code PIN</h2>
@@ -171,7 +171,7 @@ import { firstValueFrom } from 'rxjs';
                                     </div>
                                 </div>
                                 <button pButton label="Configurer" size="small" [outlined]="true"
-                                        (click)="startPinSetup()" class="shrink-0"></button>
+                                        (click)="startPinSetup()" class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500"></button>
                             </div>
                         } @else {
                             <!-- PIN entry UI -->
@@ -186,7 +186,7 @@ import { firstValueFrom } from 'rxjs';
                                 <div class="flex gap-4 justify-center mb-5">
                                     @for (i of [0,1,2,3]; track i) {
                                         <div class="w-3.5 h-3.5 rounded-full border-2 transition-all"
-                                             [ngClass]="i < pinSetupInput.length ? 'bg-amber-500 border-amber-500' : 'border-amber-500/40'"></div>
+                                             [ngClass]="i < pinSetupInput.length ? 'bg-ochre-500 border-ochre-500' : 'border-ochre-500/40'"></div>
                                     }
                                 </div>
                                 <!-- Mini numpad -->
@@ -217,10 +217,10 @@ import { firstValueFrom } from 'rxjs';
                         }
                     } @else {
                         <!-- PIN is set -->
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-positive/10 border border-positive-100 dark:border-positive-700/40">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                    <i class="pi pi-check text-emerald-500"></i>
+                                <div class="w-10 h-10 rounded-xl bg-positive/10 flex items-center justify-center">
+                                    <i class="pi pi-check text-positive"></i>
                                 </div>
                                 <div>
                                     <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Code PIN activé</p>
@@ -252,10 +252,10 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 4. Session actuelle ──────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-desktop text-violet-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                        <i class="pi pi-desktop text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Session actuelle</h2>
@@ -266,14 +266,14 @@ import { firstValueFrom } from 'rxjs';
                 <div class="p-5">
                     <!-- Current real session -->
                     <div class="flex items-center gap-3 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
-                        <div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
-                            <i [class]="'pi ' + currentSession().deviceIcon + ' text-violet-500'"></i>
+                        <div class="w-10 h-10 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                            <i [class]="'pi ' + currentSession().deviceIcon + ' text-brand-700 dark:text-brand-300'"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ currentSession().device }}</p>
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-[10px] font-semibold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
                                     Actif maintenant
                                 </span>
                             </div>
@@ -305,10 +305,10 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 4. Activité récente ──────────────────────────────── -->
-            <section class="card !p-0 overflow-hidden">
+            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
                 <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
-                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-                        <i class="pi pi-history text-amber-500"></i>
+                    <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
+                        <i class="pi pi-history text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
                         <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Activité récente</h2>
@@ -320,8 +320,8 @@ import { firstValueFrom } from 'rxjs';
                     <div class="space-y-1">
                         <!-- Real login event -->
                         <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                <i [class]="'pi ' + loginIcon() + ' text-emerald-500 text-sm'"></i>
+                            <div class="w-8 h-8 rounded-lg bg-positive/10 flex items-center justify-center shrink-0">
+                                <i [class]="'pi ' + loginIcon() + ' text-positive text-sm'"></i>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ loginEventLabel() }}</p>
@@ -333,8 +333,8 @@ import { firstValueFrom } from 'rxjs';
                         <!-- Account creation event (real) -->
                         @if (user()?.created_at) {
                             <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
-                                    <i class="pi pi-user-plus text-indigo-500 text-sm"></i>
+                                <div class="w-8 h-8 rounded-lg bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-user-plus text-brand-700 dark:text-brand-300 text-sm"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">Compte créé</p>
@@ -363,7 +363,7 @@ import { firstValueFrom } from 'rxjs';
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center">
                         <i class="pi pi-key text-white"></i>
                     </div>
                     <div>
@@ -374,37 +374,37 @@ import { firstValueFrom } from 'rxjs';
             </ng-template>
 
             <ng-template #content>
-                <div class="flex flex-col gap-5 pt-3">
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            Mot de passe actuel <span class="text-rose-400">*</span>
+                <div class="flex flex-col gap-6 pt-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
+                            Mot de passe actuel <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.current" [feedback]="false" [toggleMask]="true"
-                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl" />
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         @if (pwSubmitted && !pwForm.current) {
-                            <small class="text-rose-500 text-xs">Requis</small>
+                            <small class="text-negative text-xs mt-1">Requis</small>
                         }
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            Nouveau mot de passe <span class="text-rose-400">*</span>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
+                            Nouveau mot de passe <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.newPw" [toggleMask]="true"
-                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl"
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                                     promptLabel="Choisissez un mot de passe"
                                     weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort" />
                         @if (pwSubmitted && !pwForm.newPw) {
-                            <small class="text-rose-500 text-xs">Requis</small>
+                            <small class="text-negative text-xs mt-1">Requis</small>
                         }
                     </div>
-                    <div class="flex flex-col gap-2">
-                        <label class="text-surface-700 dark:text-surface-300 font-medium text-sm">
-                            Confirmer le nouveau mot de passe <span class="text-rose-400">*</span>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">
+                            Confirmer le nouveau mot de passe <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.confirm" [feedback]="false" [toggleMask]="true"
-                                    styleClass="w-full" inputStyleClass="w-full !py-3 !rounded-xl" />
+                                    styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         @if (pwSubmitted && pwForm.confirm && pwForm.confirm !== pwForm.newPw) {
-                            <small class="text-rose-500 text-xs">Les mots de passe ne correspondent pas</small>
+                            <small class="text-negative text-xs mt-1">Les mots de passe ne correspondent pas</small>
                         }
                     </div>
 
@@ -413,8 +413,8 @@ import { firstValueFrom } from 'rxjs';
                         <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 mb-2">Règles :</p>
                         @for (rule of passwordRules; track rule.label) {
                             <div class="flex items-center gap-2">
-                                <i class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'pi pi-check text-emerald-500' : 'pi pi-times text-surface-400'"></i>
-                                <span class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'text-emerald-600 dark:text-emerald-400' : 'text-surface-500'">{{ rule.label }}</span>
+                                <i class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'pi pi-check text-positive' : 'pi pi-times text-surface-400'"></i>
+                                <span class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'text-positive dark:text-positive-400' : 'text-surface-500'">{{ rule.label }}</span>
                             </div>
                         }
                     </div>
@@ -422,13 +422,13 @@ import { firstValueFrom } from 'rxjs';
             </ng-template>
 
             <ng-template #footer>
-                <div class="flex gap-3 pt-2">
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
-                              (click)="closePasswordDialog()" styleClass="flex-1 !rounded-xl !py-3" />
+                <div class="flex flex-col gap-2 pt-2 w-full">
                     <p-button label="Enregistrer" icon="pi pi-check"
                               [loading]="savingPassword()"
                               (click)="savePassword()"
-                              styleClass="flex-1 !rounded-xl !py-3 !bg-gradient-to-r !from-indigo-600 !to-cyan-500 !border-0" />
+                              styleClass="w-full omaad-cta !rounded-full !py-3" />
+                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                              (click)="closePasswordDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>

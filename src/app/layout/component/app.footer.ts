@@ -4,8 +4,10 @@ import { Component } from '@angular/core';
     standalone: true,
     selector: 'app-footer',
     template: `<div class="layout-footer">
-        Omaad Wealth by
-        <a href="https://mbayestein.netlify.app/" target="_blank" rel="noopener noreferrer" class="text-primary font-bold hover:underline">MbayeStein</a>
+        <span class="font-semibold">Omaad</span>
+        <span class="text-muted-color ml-1">© {{ year }}</span>
     </div>`
 })
-export class AppFooter {}
+export class AppFooter {
+    year = new Date().getFullYear();
+}

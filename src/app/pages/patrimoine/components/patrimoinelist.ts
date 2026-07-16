@@ -34,7 +34,7 @@ export interface PatrimoineAssetItem {
                         <!-- Name -->
                         <div class="md:col-span-4">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300"
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                                      [style.background]="getIconBgColor(i)">
                                     <i [class]="getIcon(i)" class="text-white text-sm"></i>
                                 </div>
@@ -63,7 +63,7 @@ export interface PatrimoineAssetItem {
                         <div class="hidden md:flex md:justify-end md:col-span-2">
                             <span *ngIf="item.deltaAbs != null"
                                   class="inline-flex items-center px-2 py-1 rounded-lg text-sm font-semibold"
-                                  [ngClass]="(item.deltaAbs || 0) >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                  [ngClass]="(item.deltaAbs || 0) >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                 <i class="pi text-xs mr-1" [ngClass]="(item.deltaAbs || 0) >= 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
                                 {{ formatDeltaShort(item) }}
                             </span>
@@ -79,7 +79,7 @@ export interface PatrimoineAssetItem {
                             <span class="text-surface-500 dark:text-surface-400">{{ t('patrimoine.list.delta') }}</span>
                             <span *ngIf="item.deltaAbs != null" 
                                   class="inline-flex items-center px-2 py-1 rounded-lg text-xs font-semibold"
-                                  [ngClass]="(item.deltaAbs || 0) >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'">
+                                  [ngClass]="(item.deltaAbs || 0) >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
                                 {{ formatDeltaShort(item) }}
                             </span>
                         </div>
@@ -91,14 +91,17 @@ export interface PatrimoineAssetItem {
 })
 export class PatrimoineListComponent {
     @Input() items: PatrimoineAssetItem[] = [];
-    @Input() colorFor: (item: PatrimoineAssetItem) => string = () => '#6366f1';
+    @Input() colorFor: (item: PatrimoineAssetItem) => string = () => '#1A2740'; // brand-700
 
+    // All asset rows share the same brand gradient — only the icon glyph
+    // differentiates the asset type.
+    private static readonly ICON_BG = '#1A2740';
     private iconConfigs = [
-        { icon: 'pi pi-building', bg: 'linear-gradient(135deg, #6366f1, #4f46e5)' },
-        { icon: 'pi pi-chart-line', bg: 'linear-gradient(135deg, #06b6d4, #0891b2)' },
-        { icon: 'pi pi-wallet', bg: 'linear-gradient(135deg, #10b981, #059669)' },
-        { icon: 'pi pi-bitcoin', bg: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' },
-        { icon: 'pi pi-car', bg: 'linear-gradient(135deg, #f59e0b, #d97706)' }
+        { icon: 'pi pi-building',   bg: PatrimoineListComponent.ICON_BG },
+        { icon: 'pi pi-chart-line', bg: PatrimoineListComponent.ICON_BG },
+        { icon: 'pi pi-wallet',     bg: PatrimoineListComponent.ICON_BG },
+        { icon: 'pi pi-bitcoin',    bg: PatrimoineListComponent.ICON_BG },
+        { icon: 'pi pi-car',        bg: PatrimoineListComponent.ICON_BG },
     ];
 
     private cs = inject(CurrencyService);
@@ -136,7 +139,7 @@ export class PatrimoineListComponent {
 
     getSparklineColor(item: PatrimoineAssetItem): string {
         const delta = item.deltaPct ?? item.deltaAbs ?? 0;
-        return delta >= 0 ? '#10b981' : '#f43f5e';
+        return delta >= 0 ? '#2F8F6E' : '#B0463E'; // positive / negative tokens
     }
 
     getSparklinePoints(item: PatrimoineAssetItem, index: number): string {

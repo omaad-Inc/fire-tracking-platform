@@ -2,47 +2,25 @@
 
 .layout-topbar {
     position: fixed;
-    height: 4rem;
+    height: calc(4rem + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
     z-index: 997;
     left: 0;
     top: 0;
     width: 100%;
-    padding: 0 2rem 0 0;
+    padding-right: 2rem;
     border-bottom: 1px solid var(--surface-border);
-    background-color: var(--surface-card);
+    background: linear-gradient(to bottom right, var(--surface-ground), var(--surface-card));
     transition: left var(--layout-section-transition-duration);
     display: flex;
     align-items: center;
 
     .layout-topbar-logo-container {
-        width: 17rem;
-        min-width: 17rem;
         display: flex;
         align-items: center;
         height: 100%;
-        padding-left: 1.5rem;
-        padding-right: 1rem;
-        border-right: 1px solid var(--surface-border);
-        margin-right: 1.5rem;
+        padding-left: 1rem;
         flex-shrink: 0;
-    }
-
-    .layout-topbar-logo {
-        display: inline-flex;
-        align-items: center;
-        font-size: 1.5rem;
-        border-radius: var(--content-border-radius);
-        color: var(--text-color);
-        font-weight: 500;
-        gap: 0.5rem;
-
-        svg {
-            width: 3rem;
-        }
-
-        &:focus-visible {
-            @include focused();
-        }
     }
 
     .layout-topbar-action {
@@ -77,6 +55,15 @@
         &.layout-topbar-action-highlight {
             background-color: var(--primary-color);
             color: var(--primary-contrast-color);
+        }
+
+        // AI Assistant sparkle — ochre accent to mirror the sidebar entry
+        &.ai-topbar-btn {
+            color: var(--omaad-ochre-500, #C77B3C);
+
+            &:hover {
+                background-color: rgba(199, 123, 60, 0.10);
+            }
         }
     }
 
@@ -117,7 +104,7 @@
 
 @media (max-width: 991px) {
     .layout-topbar {
-        padding: 0 1rem;
+        padding: env(safe-area-inset-top, 0px) 1rem 0 1rem;
 
         .layout-topbar-logo-container {
             width: auto;

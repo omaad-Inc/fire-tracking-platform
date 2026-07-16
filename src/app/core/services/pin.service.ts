@@ -3,6 +3,7 @@ import { Injectable, signal } from '@angular/core';
 const STORAGE_PIN_HASH  = 'omaad_pin_hash';
 const STORAGE_PIN_SALT  = 'omaad_pin_salt';
 const STORAGE_LOCK_DELAY = 'omaad_lock_delay';  // ms before auto-lock (0 = immediate)
+const SESSION_ACTIVE_KEY = 'omaad_session_active';  // sessionStorage: survives refresh, dies on tab close
 const MAX_ATTEMPTS = 5;
 
 /**
@@ -69,6 +70,7 @@ export class PinService {
             localStorage.removeItem(STORAGE_PIN_SALT);
             localStorage.removeItem(STORAGE_LOCK_DELAY);
         } catch {}
+        try { sessionStorage.removeItem(SESSION_ACTIVE_KEY); } catch {}
         this.locked.set(false);
         this.failedAttempts.set(0);
     }
@@ -81,9 +83,10 @@ export class PinService {
 
         const hash = await this.hashPin(salt, pin);
         if (hash === storedHash) {
-            // Success — unlock
+            // Success — unlock and mark session as active (survives page refresh)
             this.locked.set(false);
             this.failedAttempts.set(0);
+            try { sessionStorage.setItem(SESSION_ACTIVE_KEY, '1'); } catch {}
             return true;
         }
 
@@ -109,11 +112,21 @@ export class PinService {
         }
     }
 
-    /** Called when the app is ready (e.g. after login) — locks if PIN is set and on mobile */
+    /** Called when the app is ready (e.g. after login) — locks if PIN is set and on mobile.
+     *  Uses sessionStorage to skip lock on page refresh (session flag survives refresh
+     *  but is cleared when the tab/browser closes → cold start locks as expected). */
     initLockOnStartup(): void {
-        if (this.isPinSet() && this.isMobile()) {
-            this.locked.set(true);
-        }
+        if (!this.isPinSet() || !this.isMobile()) return;
+
+        try {
+            if (sessionStorage.getItem(SESSION_ACTIVE_KEY)) {
+                // Page refresh within an active session — don't lock
+                return;
+            }
+        } catch {}
+
+        // Cold start (new tab or browser reopen) — lock
+        this.locked.set(true);
     }
 
     /** Returns true if the screen width is below the desktop breakpoint (992px) */
