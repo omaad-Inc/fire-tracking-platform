@@ -50,19 +50,21 @@
     {
       "name": "api-freshness",
       "urls": [
-        "/api/**"
+        "/api/**",
+        "https://fire-tracking-backend.vercel.app/api/**"
       ],
       "cacheConfig": {
         "strategy": "freshness",
-        "maxSize": 100,
+        "maxSize": 200,
         "maxAge": "1h",
-        "timeout": "10s"
+        "timeout": "5s"
       }
     },
     {
       "name": "api-performance",
       "urls": [
-        "/api/static/**"
+        "/api/static/**",
+        "https://fire-tracking-backend.vercel.app/api/static/**"
       ],
       "cacheConfig": {
         "strategy": "performance",

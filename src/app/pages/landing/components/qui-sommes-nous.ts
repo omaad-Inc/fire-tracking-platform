@@ -43,7 +43,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     <div class="grid grid-cols-2 gap-4 sm:gap-6 max-w-lg mx-auto lg:mx-0 lg:ml-auto">
                         <figure class="group">
                             <div class="aspect-[4/5] overflow-hidden rounded-3xl ring-1 ring-surface-200 dark:ring-surface-700 shadow-sm">
-                                <img src="assets/team/mbaye-omaad.png" [alt]="t('landing.about.founderName')"
+                                <img src="assets/team/mbaye-omaad.webp" [alt]="t('landing.about.founderName')"
                                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                             </div>
                             <figcaption class="mt-3 text-center">
@@ -195,7 +195,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
                         <!-- Founder card -->
                         <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 text-center">
-                            <img src="assets/team/mbaye-omaad.png" [alt]="t('landing.about.founderName')"
+                            <img src="assets/team/mbaye-omaad.webp" [alt]="t('landing.about.founderName')"
                                  class="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-brand-100 dark:ring-ochre-500/20"
                                  loading="lazy" />
                             <h3 class="text-xl font-bold text-surface-900 dark:text-white">{{ t('landing.about.founderName') }}</h3>
@@ -299,7 +299,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 <span class="w-3 h-3 rounded-full bg-ochre-400/70"></span>
                                 <span class="w-3 h-3 rounded-full bg-positive-500/70"></span>
                             </div>
-                            <img src="assets/product/home_product.png" alt="Omaad Wealth — dashboard"
+                            <img src="assets/product/home_product.webp" alt="Omaad Wealth — dashboard"
                                  class="w-full block" loading="lazy" />
                         </div>
                     </div>
