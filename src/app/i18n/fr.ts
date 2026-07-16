@@ -86,6 +86,8 @@ export const FR = {
     template: {
       emergency: 'Fond d\'urgence',
       down_payment: 'Apport immobilier',
+      land: 'Terrain',
+      family_support: 'Soutien familial',
       vacation: 'Voyage',
       wedding: 'Mariage',
       education: 'Éducation',
@@ -96,6 +98,8 @@ export const FR = {
     defaultName: {
       emergency: 'Fond d\'urgence',
       down_payment: 'Apport pour ma maison',
+      land: 'Mon terrain au pays',
+      family_support: 'Soutien à la famille',
       vacation: 'Voyage de rêve',
       wedding: 'Mon mariage',
       education: 'Études',
@@ -423,6 +427,11 @@ export const FR = {
     noExpensesDesc: 'Vos dépenses apparaîtront ici',
     savingsNoGoal: 'Aucun objectif d\'épargne',
     savingsCreateGoal: 'Créer un objectif',
+    stats: {
+      errorTitle: 'Données indisponibles',
+      errorBody: 'Impossible de charger votre synthèse pour le moment. Vérifiez votre connexion et réessayez.',
+      retry: 'Réessayer',
+    },
     kpi: {
       netWorth: 'Patrimoine Net',
       sinceLastMonth: 'vs mois dernier',
@@ -713,6 +722,7 @@ export const FR = {
       proTagline: 'Pour les investisseurs actifs',
       proBadge: 'Populaire',
       proCta: 'Passer au Pro',
+      comingSoonCta: 'Bientôt disponible',
       proSubprice: 'Pour les investisseurs qui veulent aller plus loin',
       proIncludes: 'Tout le plan Gratuit, plus :',
       premiumName: 'Premium',
@@ -791,7 +801,7 @@ export const FR = {
       step3Desc: 'Définissez vos objectifs FIRE, épargne de précaution ou achat immobilier — Omaad trace la route.',
     },
     socialProof: {
-      eyebrow: 'Lancement juin 2026',
+      eyebrow: 'Accès anticipé',
       h2a: 'Construit pour',
       h2b: 'la diaspora africaine.',
       stat1Value: '15',
@@ -975,7 +985,7 @@ export const FR = {
       historyTitle: 'Notre histoire',
       historyP1: 'Le mouvement FIRE — Financial Independence, Retire Early, né aux États-Unis dans les années 90 — est devenu un repère pour des millions de personnes en Occident. Sauf qu\'il a été pensé pour un investisseur américain mono-devise, mono-pays, avec un 401(k) et un ETF Vanguard. Pour la diaspora africaine, la règle des 4 % ne tient pas. La discipline d\'épargne se heurte à la tontine, à la liquidité BRVM, aux frais des SGI, à l\'arrimage FCFA / euro. Tout est à réécrire.',
       historyP2Lead: 'Nous avons commencé par écrire.',
-      historyP2: ' FIRE Africa, notre newsletter mensuelle, lance le 1ᵉʳ juin 2026 sur Beehiiv. Quinze éditions sont déjà rédigées — règle des 4 % en FCFA, tontine + BRVM, frais des FCP, retraite par dividendes. Et puis il a fallu construire l\'outil que la newsletter ne suffisait pas à remplacer : Omaad. Un tableau de bord patrimonial bilingue, multi-devises, multi-actifs — pensé pour qui vit avec deux continents en tête. Le lancement public est prévu pour juin 2026.',
+      historyP2: ' FIRE Africa, notre newsletter mensuelle, est née en 2026 sur Beehiiv — règle des 4 % en FCFA, tontine + BRVM, frais des FCP, retraite par dividendes. Et puis il a fallu construire l\'outil que la newsletter ne suffisait pas à remplacer : Omaad. Un tableau de bord patrimonial bilingue, multi-devises, multi-actifs — pensé pour qui vit avec deux continents en tête. Omaad est aujourd\'hui en accès anticipé.',
       historyAmbitionPre: 'Notre ambition est claire :',
       historyAmbition: 'devenir le tableau de bord patrimonial de la diaspora africaine.',
       historySignature: 'Mbaye & Bamba — co-fondateurs',

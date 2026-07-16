@@ -69,7 +69,10 @@ export class TransactionStats {
 
     private computeStats() {
         this.transactionsService.getRecords().then((records: TransactionRecord[]) => {
-            const signedTotal = records.reduce((sum, r) => sum + (r.type === 'Income' ? r.amount : -r.amount), 0);
+            // Transfers move money between the user's own accounts — net zero.
+            // They must not count toward income or the running balance.
+            const signedTotal = records.reduce((sum, r) =>
+                r.type === 'Transfer' ? sum : sum + (r.type === 'Income' ? r.amount : -r.amount), 0);
             this.totalBank = signedTotal;
 
             this.totalExpense = records.filter((r) => r.type === 'Expense').reduce((sum, r) => sum + r.amount, 0);

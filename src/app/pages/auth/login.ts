@@ -268,14 +268,13 @@ export class Login {
                 // Verify it's actually saved
                 setTimeout(() => {
                     const isAuth = this.authService.isAuthenticated();
-                    console.log('Token saved check:', isAuth, 'Token:', authResponse.access_token.substring(0, 20) + '...');
-                    
+
                     if (!isAuth) {
                         this.isLoading.set(false);
                         this.messageService.add({
                             severity: 'error',
                             summary: 'Login Failed',
-                            detail: 'Failed to save authentication token. Please check browser console.',
+                            detail: 'We could not complete your sign-in. Please try again.',
                             life: 5000
                         });
                         return;
@@ -289,13 +288,10 @@ export class Login {
                     
                     // Fetch user info in background (optional)
                     this.authService.getCurrentUser().subscribe({
-                        next: () => {
-                            console.log('User data fetched successfully');
-                        },
-                        error: (err) => {
-                            // Don't fail login if getCurrentUser fails - token is valid
-                            // User data will be fetched later by the dashboard
-                            console.warn('Could not fetch user info immediately (non-critical):', err);
+                        next: () => {},
+                        error: () => {
+                            // Don't fail login if getCurrentUser fails - token is valid.
+                            // User data will be fetched later by the dashboard.
                         }
                     });
                 }, 50); // Small delay to ensure localStorage write completes

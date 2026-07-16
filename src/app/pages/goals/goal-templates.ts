@@ -7,6 +7,8 @@
 export type GoalTemplateKey =
     | 'emergency'
     | 'down_payment'
+    | 'land'
+    | 'family_support'
     | 'vacation'
     | 'wedding'
     | 'education'
@@ -53,6 +55,24 @@ export const GOAL_TEMPLATES: GoalTemplate[] = [
         gradient: 'from-brand-700 to-brand-500',
         nameKey: 'goals.template.down_payment',
         defaultNameKey: 'goals.defaultName.down_payment',
+    },
+    {
+        key: 'land',
+        image: 'assets/goals/down_payment.jpeg',
+        imageFull: 'assets/goals/down_payment.jpeg',
+        icon: 'pi pi-map-marker',
+        gradient: 'from-brand-700 to-brand-500',
+        nameKey: 'goals.template.land',
+        defaultNameKey: 'goals.defaultName.land',
+    },
+    {
+        key: 'family_support',
+        image: 'assets/goals/savings.jpeg',
+        imageFull: 'assets/goals/savings-full.jpeg',
+        icon: 'pi pi-users',
+        gradient: 'from-brand-700 to-brand-500',
+        nameKey: 'goals.template.family_support',
+        defaultNameKey: 'goals.defaultName.family_support',
     },
     {
         key: 'vacation',

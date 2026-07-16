@@ -108,7 +108,7 @@ interface DayGroup {
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center"
                              [ngClass]="monthSummary().net >= 0 ? 'bg-brand-100 dark:bg-brand-700/20' : 'bg-negative-50 dark:bg-negative-500/15'">
                             <i class="pi text-xs"
-                               [ngClass]="monthSummary().net >= 0 ? 'pi-trending-up text-brand-700 dark:text-ochre-400' : 'pi-trending-down text-negative-600 dark:text-negative-400'"></i>
+                               [ngClass]="monthSummary().net >= 0 ? 'pi-arrow-up-right text-brand-700 dark:text-ochre-400' : 'pi-arrow-down-left text-negative-600 dark:text-negative-400'"></i>
                         </div>
                     </div>
                     <div class="relative text-base font-bold truncate"
@@ -198,8 +198,8 @@ interface DayGroup {
                                     </div>
                                     <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
-                                         [ngClass]="rec.type === 'Income' ? 'text-positive' : 'text-negative'">
-                                        {{ rec.type === 'Income' ? '+' : '−' }}<app-amount [value]="rec.amount" />
+                                         [ngClass]="rec.type === 'Transfer' ? 'text-surface-500 dark:text-surface-400' : (rec.type === 'Income' ? 'text-positive' : 'text-negative')">
+                                        {{ rec.type === 'Transfer' ? '⇄ ' : (rec.type === 'Income' ? '+' : '−') }}<app-amount [value]="rec.amount" />
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
                                     <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
@@ -228,11 +228,9 @@ interface DayGroup {
             <ng-template #header>
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-xl flex items-center justify-center"
-                         [ngClass]="formType() === 'Income'
-                             ? 'bg-positive'
-                             : 'bg-negative'">
+                         [ngClass]="formType() === 'Transfer' ? 'bg-brand-700' : (formType() === 'Income' ? 'bg-positive' : 'bg-negative')">
                         <i class="pi text-white text-lg"
-                           [ngClass]="formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right'"></i>
+                           [ngClass]="formType() === 'Transfer' ? 'pi-arrow-right-arrow-left' : (formType() === 'Income' ? 'pi-arrow-down-left' : 'pi-arrow-up-right')"></i>
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -263,6 +261,13 @@ interface DayGroup {
                                     ? 'bg-white dark:bg-surface-700 text-positive shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
                             <i class="pi pi-arrow-down-left text-xs"></i> Revenu
+                        </button>
+                        <button (click)="setType('Transfer')"
+                                class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
+                                [ngClass]="formType() === 'Transfer'
+                                    ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm'
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                            <i class="pi pi-arrow-right-arrow-left text-xs"></i> Transfert
                         </button>
                     </div>
 
@@ -301,50 +306,85 @@ interface DayGroup {
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
-                    <!-- Account selector -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Compte
-                            @if (submitted && !form.accountId) {
-                                <span class="text-negative ml-2 text-xs">Requis</span>
-                            }
-                        </label>
-                        <p-select [(ngModel)]="form.accountId" [options]="accountOptions()"
-                                  optionLabel="label" optionValue="value"
-                                  placeholder="Sélectionnez un compte" [filter]="accountOptions().length > 6"
-                                  appendTo="body" styleClass="w-full"
-                                  [emptyMessage]="'Aucun compte monétaire'" />
-                    </div>
-
-                    <!-- Category grid -->
-                    <div class="flex flex-col gap-3">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Catégorie
-                            @if (submitted && !form.category) {
-                                <span class="text-negative ml-2 text-xs">Requise</span>
-                            }
-                        </label>
-                        <div class="grid grid-cols-3 gap-2">
-                            @for (cat of currentCategories(); track cat) {
-                                <button (click)="form.category = cat"
-                                        class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all text-center"
-                                        [style.border-color]="form.category === cat ? getCatConfig(cat).color : ''"
-                                        [style.background]="form.category === cat ? getCatConfig(cat).color + '15' : ''"
-                                        [ngClass]="form.category === cat
-                                            ? 'shadow-sm'
-                                            : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-                                         [style.background]="getCatConfig(cat).color + '20'">
-                                        <i [class]="getCatConfig(cat).icon + ' text-sm'"
-                                           [style.color]="getCatConfig(cat).color"></i>
-                                    </div>
-                                    <span class="text-[11px] font-medium leading-tight text-surface-700 dark:text-surface-300">
-                                        {{ getCatConfig(cat).label }}
-                                    </span>
-                                </button>
-                            }
+                    @if (formType() === 'Transfer') {
+                        <!-- Transfer: From → To account pickers -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">
+                                    Depuis
+                                    @if (submitted && !form.fromAccountId) {
+                                        <span class="text-negative ml-2 text-xs">Requis</span>
+                                    }
+                                </label>
+                                <p-select [(ngModel)]="form.fromAccountId" [options]="accountOptions()"
+                                          optionLabel="label" optionValue="value"
+                                          placeholder="Compte source" [filter]="accountOptions().length > 6"
+                                          appendTo="body" styleClass="w-full"
+                                          [emptyMessage]="'Aucun compte monétaire'" />
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">
+                                    Vers
+                                    @if (submitted && !form.toAccountId) {
+                                        <span class="text-negative ml-2 text-xs">Requis</span>
+                                    }
+                                </label>
+                                <p-select [(ngModel)]="form.toAccountId" [options]="accountOptions()"
+                                          optionLabel="label" optionValue="value"
+                                          placeholder="Compte destination" [filter]="accountOptions().length > 6"
+                                          appendTo="body" styleClass="w-full"
+                                          [emptyMessage]="'Aucun compte monétaire'" />
+                            </div>
                         </div>
-                    </div>
+                        @if (submitted && form.fromAccountId && form.fromAccountId === form.toAccountId) {
+                            <small class="text-negative text-xs -mt-3">Les comptes source et destination doivent être différents.</small>
+                        }
+                    } @else {
+                        <!-- Account selector -->
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
+                                Compte
+                                @if (submitted && !form.accountId) {
+                                    <span class="text-negative ml-2 text-xs">Requis</span>
+                                }
+                            </label>
+                            <p-select [(ngModel)]="form.accountId" [options]="accountOptions()"
+                                      optionLabel="label" optionValue="value"
+                                      placeholder="Sélectionnez un compte" [filter]="accountOptions().length > 6"
+                                      appendTo="body" styleClass="w-full"
+                                      [emptyMessage]="'Aucun compte monétaire'" />
+                        </div>
+
+                        <!-- Category grid -->
+                        <div class="flex flex-col gap-3">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">
+                                Catégorie
+                                @if (submitted && !form.category) {
+                                    <span class="text-negative ml-2 text-xs">Requise</span>
+                                }
+                            </label>
+                            <div class="grid grid-cols-3 gap-2">
+                                @for (cat of currentCategories(); track cat) {
+                                    <button (click)="form.category = cat"
+                                            class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-xl border-2 transition-all text-center"
+                                            [style.border-color]="form.category === cat ? getCatConfig(cat).color : ''"
+                                            [style.background]="form.category === cat ? getCatConfig(cat).color + '15' : ''"
+                                            [ngClass]="form.category === cat
+                                                ? 'shadow-sm'
+                                                : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
+                                        <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                                             [style.background]="getCatConfig(cat).color + '20'">
+                                            <i [class]="getCatConfig(cat).icon + ' text-sm'"
+                                               [style.color]="getCatConfig(cat).color"></i>
+                                        </div>
+                                        <span class="text-[11px] font-medium leading-tight text-surface-700 dark:text-surface-300">
+                                            {{ getCatConfig(cat).label }}
+                                        </span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
 
                 </div>
             </ng-template>
@@ -396,9 +436,9 @@ export class TransactionLogs implements OnInit {
     editingRecord: TransactionRecord | null = null;
     editDate: Date | null = null;
     // formType is a Signal so computed() can track changes reactively
-    formType = signal<'Income' | 'Expense'>('Expense');
-    form: { amount: number; remarks: string; category: string; accountId?: number } = {
-        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined
+    formType = signal<'Income' | 'Expense' | 'Transfer'>('Expense');
+    form: { amount: number; remarks: string; category: string; accountId?: number; fromAccountId?: number; toAccountId?: number } = {
+        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined
     };
 
     // Monetary accounts (cash / savings / mobile money) for the account selector
@@ -413,8 +453,9 @@ export class TransactionLogs implements OnInit {
         return CATEGORY_CONFIG[cat] ?? { label: cat, icon: 'pi pi-circle', color: '#94a3b8', bg: '' };
     }
 
-    setType(t: 'Income' | 'Expense') {
+    setType(t: 'Income' | 'Expense' | 'Transfer') {
         this.formType.set(t);
+        if (t === 'Transfer') return; // transfers have no income/expense category
         const cats = t === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
         if (!(cats as readonly string[]).includes(this.form.category)) {
             this.form.category = cats[0];
@@ -534,7 +575,7 @@ export class TransactionLogs implements OnInit {
         this.editingRecord = null;
         this.editDate = new Date();
         this.formType.set('Expense');
-        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined };
+        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined };
         this.submitted = false;
         this.dialogVisible = true;
     }
@@ -547,7 +588,9 @@ export class TransactionLogs implements OnInit {
             amount:    rec.amount,
             remarks:   rec.remarks || rec.name || '',
             category:  rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]),
-            accountId: rec.accountId
+            accountId: rec.accountId,
+            fromAccountId: rec.fromAccountId,
+            toAccountId: rec.toAccountId
         };
         this.submitted = false;
         this.dialogVisible = true;
@@ -560,10 +603,22 @@ export class TransactionLogs implements OnInit {
 
     async saveRecord() {
         this.submitted = true;
-        if (!this.editDate || !(this.form.amount > 0) || !this.form.category || !this.form.accountId) return;
+        const isTransfer = this.formType() === 'Transfer';
+
+        // Validation differs by type: transfers need two distinct accounts and
+        // no category; income/expense need a category and a single account.
+        if (!this.editDate || !(this.form.amount > 0)) return;
+        if (isTransfer) {
+            if (!this.form.fromAccountId || !this.form.toAccountId) return;
+            if (this.form.fromAccountId === this.form.toAccountId) return;
+        } else if (!this.form.category || !this.form.accountId) {
+            return;
+        }
 
         const dateStr = this.toDateStr(this.editDate);
         this.isSaving.set(true);
+
+        const transferName = 'Transfert';
 
         try {
             if (this.editingRecord?.id) {
@@ -573,9 +628,11 @@ export class TransactionLogs implements OnInit {
                     type:     this.formType(),
                     amount:    this.form.amount,
                     remarks:   this.form.remarks,
-                    category:  this.form.category,
-                    accountId: this.form.accountId,
-                    name:      this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name,
+                    category:  isTransfer ? 'transfer' : this.form.category,
+                    accountId: isTransfer ? undefined : this.form.accountId,
+                    fromAccountId: isTransfer ? this.form.fromAccountId : undefined,
+                    toAccountId:   isTransfer ? this.form.toAccountId : undefined,
+                    name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
                 this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Transaction mise à jour.', life: 3000 });
@@ -585,9 +642,11 @@ export class TransactionLogs implements OnInit {
                     type:     this.formType(),
                     amount:    this.form.amount,
                     remarks:   this.form.remarks,
-                    category:  this.form.category,
-                    accountId: this.form.accountId,
-                    name:      this.form.remarks || CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense'),
+                    category:  isTransfer ? 'transfer' : this.form.category,
+                    accountId: isTransfer ? undefined : this.form.accountId,
+                    fromAccountId: isTransfer ? this.form.fromAccountId : undefined,
+                    toAccountId:   isTransfer ? this.form.toAccountId : undefined,
+                    name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense')),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
                 this.messageService.add({ severity: 'success', summary: 'Enregistré', detail: 'Transaction ajoutée.', life: 3000 });

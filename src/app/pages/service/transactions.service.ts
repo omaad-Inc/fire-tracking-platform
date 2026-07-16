@@ -14,12 +14,14 @@ export interface TransactionRecord {
     id?: string;
     date: string;
     name: string;
-    type: 'Income' | 'Expense';
+    type: 'Income' | 'Expense' | 'Transfer';
     amount: number;
     remarks?: string;
     category?: string;
     accountId?: number;
     accountName?: string;
+    fromAccountId?: number;
+    toAccountId?: number;
     fromAccountName?: string;
     toAccountName?: string;
 }
@@ -67,6 +69,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     rental_income: { label: 'Loyers',         icon: 'pi pi-home',                   color: '#3D3B35', bg: 'bg-warm-100 dark:bg-warm-800' },
     interest:      { label: 'Intérêts',       icon: 'pi pi-percentage',             color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
     gift_received: { label: 'Cadeau reçu',    icon: 'pi pi-gift',                   color: '#9C988C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    family_support_received: { label: 'Soutien reçu', icon: 'pi pi-users',          color: '#3E7C6A', bg: 'bg-warm-100 dark:bg-warm-800' },
+    tontine_payout: { label: 'Tour de tontine', icon: 'pi pi-sync',                 color: '#2F8F6E', bg: 'bg-warm-100 dark:bg-warm-800' },
     other_income:  { label: 'Autres revenus', icon: 'pi pi-plus-circle',            color: '#C2BDB1', bg: 'bg-warm-100 dark:bg-warm-800' },
     // ── Expenses: warm spectrum (Finary style) ────────────────────
     housing:       { label: 'Logement',       icon: 'pi pi-home',                   color: '#71421C', bg: 'bg-warm-100 dark:bg-warm-800' },
@@ -82,6 +86,11 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     subscriptions: { label: 'Abonnements',    icon: 'pi pi-refresh',                color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
     travel:        { label: 'Voyages',        icon: 'pi pi-globe',                  color: '#EBD0B0', bg: 'bg-warm-100 dark:bg-warm-800' },
     gift_given:    { label: 'Cadeau offert',  icon: 'pi pi-gift',                   color: '#9C988C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    family_support:{ label: 'Soutien familial', icon: 'pi pi-users',               color: '#71421C', bg: 'bg-warm-100 dark:bg-warm-800' },
+    religious:     { label: 'Zakat / Sadaqa', icon: 'pi pi-star',                   color: '#2C3E5E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    ceremony:      { label: 'Cérémonies',     icon: 'pi pi-users',                  color: '#AB6630', bg: 'bg-warm-100 dark:bg-warm-800' },
+    airtime:       { label: 'Crédit / Forfait', icon: 'pi pi-mobile',              color: '#4D5F80', bg: 'bg-warm-100 dark:bg-warm-800' },
+    tontine:       { label: 'Tontine',        icon: 'pi pi-sync',                   color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
     taxes:         { label: 'Impôts',         icon: 'pi pi-file',                   color: '#26241F', bg: 'bg-warm-100 dark:bg-warm-800' },
     savings:       { label: 'Épargne',        icon: 'pi pi-dollar',                 color: '#2F8F6E', bg: 'bg-warm-100 dark:bg-warm-800' },
     investment:    { label: 'Investissement', icon: 'pi pi-chart-line',             color: '#C77B3C', bg: 'bg-ochre-100' },
@@ -90,8 +99,8 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     transfer:      { label: 'Transfert',      icon: 'pi pi-arrow-right-arrow-left', color: '#8A98AE', bg: 'bg-warm-100 dark:bg-warm-800' },
 };
 
-export const INCOME_CATEGORIES  = ['salary','freelance','dividends','rental_income','interest','gift_received','other_income'] as const;
-export const EXPENSE_CATEGORIES = ['housing','utilities','groceries','transport','health','insurance','entertainment','dining','shopping','education','subscriptions','travel','gift_given','taxes','investment','debt_payment','other_expense'] as const;
+export const INCOME_CATEGORIES  = ['salary','freelance','dividends','rental_income','interest','gift_received','family_support_received','tontine_payout','other_income'] as const;
+export const EXPENSE_CATEGORIES = ['housing','utilities','groceries','transport','health','insurance','entertainment','dining','shopping','education','subscriptions','travel','family_support','religious','ceremony','airtime','tontine','gift_given','taxes','investment','debt_payment','other_expense'] as const;
 
 // Category to display name mapping
 const CATEGORY_DISPLAY_MAP: Record<string, string> = Object.fromEntries(
@@ -248,14 +257,24 @@ export class TransactionsService {
     async addRecord(record: TransactionRecord): Promise<TransactionRecord> {
         try {
             // Convert from display currency (e.g. FCFA) → EUR before persisting.
-            const transactionData: TransactionCreate = {
-                type: record.type === 'Income' ? 'income' : 'expense',
-                category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                amount: this.currencyService.toBaseAmount(record.amount),
-                description: record.remarks,
-                date: this.toDateString(record.date),
-                account_id: record.accountId
-            };
+            const transactionData: TransactionCreate = record.type === 'Transfer'
+                ? {
+                    type: 'transfer',
+                    category: 'transfer',
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    from_account_id: record.fromAccountId,
+                    to_account_id: record.toAccountId
+                }
+                : {
+                    type: record.type === 'Income' ? 'income' : 'expense',
+                    category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    account_id: record.accountId
+                };
 
             const transaction = await firstValueFrom(this.api.createTransaction(transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
@@ -277,14 +296,24 @@ export class TransactionsService {
 
         try {
             // Same conversion as addRecord — user edits in display currency.
-            const transactionData: TransactionUpdate = {
-                type: record.type === 'Income' ? 'income' : 'expense',
-                category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                amount: this.currencyService.toBaseAmount(record.amount),
-                description: record.remarks,
-                date: this.toDateString(record.date),
-                account_id: record.accountId
-            };
+            const transactionData: TransactionUpdate = record.type === 'Transfer'
+                ? {
+                    type: 'transfer',
+                    category: 'transfer',
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    from_account_id: record.fromAccountId,
+                    to_account_id: record.toAccountId
+                }
+                : {
+                    type: record.type === 'Income' ? 'income' : 'expense',
+                    category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
+                    amount: this.currencyService.toBaseAmount(record.amount),
+                    description: record.remarks,
+                    date: this.toDateString(record.date),
+                    account_id: record.accountId
+                };
 
             const transaction = await firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
@@ -408,16 +437,22 @@ export class TransactionsService {
     // ==================== PRIVATE HELPERS ====================
 
     private mapTransactionToRecord(t: Transaction): TransactionRecord {
+        const type: TransactionRecord['type'] =
+            t.type === 'transfer' ? 'Transfer'
+            : (t.type === 'income' || t.type === 'investment') ? 'Income'
+            : 'Expense';
         return {
             id: t.id.toString(),
             date: t.date,
             name: CATEGORY_DISPLAY_MAP[t.category] || t.category,
-            type: t.type === 'income' || t.type === 'investment' ? 'Income' : 'Expense',
+            type,
             amount: t.amount,
             remarks: t.description ?? undefined,
             category: t.category,
             accountId: t.account_id ?? undefined,
             accountName: t.account_name ?? undefined,
+            fromAccountId: t.from_account_id ?? undefined,
+            toAccountId: t.to_account_id ?? undefined,
             fromAccountName: t.from_account_name ?? undefined,
             toAccountName: t.to_account_name ?? undefined
         };

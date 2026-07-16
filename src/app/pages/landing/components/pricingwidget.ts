@@ -81,9 +81,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <span class="text-surface-500 dark:text-surface-400 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
                                 </div>
                                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.proSubprice') }}</p>
-                                <button pButton pRipple [rounded]="true"
-                                    class="w-full !py-3 !font-semibold !bg-ochre-500 hover:!bg-ochre-400 !border-0 !text-warm-900 transition-all mb-8">
-                                    {{ t('landing.pricing.proCta') }}
+                                <button pButton pRipple [rounded]="true" [disabled]="true"
+                                    class="w-full !py-3 !font-semibold !bg-ochre-500/40 !border-0 !text-warm-900 !cursor-not-allowed mb-8">
+                                    {{ t('landing.pricing.comingSoonCta') }}
                                 </button>
                                 <p-divider />
                                 <ul class="space-y-3 mt-6">
@@ -121,9 +121,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                                 <span class="text-surface-500 dark:text-surface-400 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
                             </div>
                             <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.premiumSubprice') }}</p>
-                            <button pButton pRipple [rounded]="true" [outlined]="true"
-                                class="w-full !py-3 !font-semibold !border-surface-300 dark:!border-surface-500 !text-surface-700 dark:!text-surface-100 hover:!bg-surface-100 dark:hover:!bg-surface-700 transition-all mb-8">
-                                {{ t('landing.pricing.premiumCta') }}
+                            <button pButton pRipple [rounded]="true" [outlined]="true" [disabled]="true"
+                                class="w-full !py-3 !font-semibold !border-surface-300 dark:!border-surface-500 !text-surface-500 dark:!text-surface-400 !cursor-not-allowed mb-8">
+                                {{ t('landing.pricing.comingSoonCta') }}
                             </button>
                             <p-divider />
                             <ul class="space-y-3 mt-6">

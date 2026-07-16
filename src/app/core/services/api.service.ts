@@ -117,11 +117,13 @@ export interface AssetUpdate {
 export type TransactionType = 'income' | 'expense' | 'transfer' | 'investment';
 export type TransactionCategory =
     // Income
-    | 'salary' | 'freelance' | 'dividends' | 'rental_income' | 'interest' | 'gift_received' | 'other_income'
+    | 'salary' | 'freelance' | 'dividends' | 'rental_income' | 'interest' | 'gift_received'
+    | 'family_support_received' | 'tontine_payout' | 'other_income'
     // Expense
     | 'housing' | 'utilities' | 'groceries' | 'transport' | 'health' | 'insurance'
     | 'entertainment' | 'dining' | 'shopping' | 'education' | 'subscriptions'
-    | 'travel' | 'gift_given' | 'taxes' | 'savings' | 'investment' | 'debt_payment' | 'other_expense'
+    | 'travel' | 'gift_given' | 'family_support' | 'religious' | 'ceremony' | 'airtime' | 'tontine'
+    | 'taxes' | 'savings' | 'investment' | 'debt_payment' | 'other_expense'
     // Transfer
     | 'transfer';
 

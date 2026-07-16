@@ -51,6 +51,20 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <div class="h-6 bg-surface-200 dark:bg-surface-700 rounded w-40"></div>
                 </div>
             </div>
+        } @else if (loadError()) {
+            <div class="col-span-12">
+                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900 p-6 flex flex-col items-center text-center gap-3">
+                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-negative-50 dark:bg-negative-500/15">
+                        <i class="pi pi-exclamation-triangle text-negative-600 dark:text-negative-400 text-xl"></i>
+                    </div>
+                    <div class="font-semibold text-surface-900 dark:text-surface-0">{{ t('dashboard.stats.errorTitle') }}</div>
+                    <div class="text-sm text-surface-500 dark:text-surface-400 max-w-sm">{{ t('dashboard.stats.errorBody') }}</div>
+                    <button type="button" (click)="retry()"
+                            class="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold transition-colors">
+                        <i class="pi pi-refresh text-xs"></i>{{ t('dashboard.stats.retry') }}
+                    </button>
+                </div>
+            </div>
         } @else {
             <!-- KPI Card 1 - Patrimoine -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
@@ -217,6 +231,7 @@ export class StatsWidget implements OnInit, OnDestroy {
     
     private subscription?: Subscription;
     loading = signal(true);
+    loadError = signal(false);
     stats = signal<DashboardStats | null>(null);
     fireProgress = signal<FIREProgress | null>(null);
 
@@ -287,23 +302,21 @@ export class StatsWidget implements OnInit, OnDestroy {
                 ? Math.min(100, Math.max(0, Math.round((stats.monthlyIncome - stats.monthlyExpenses) / stats.monthlyIncome * 100)))
                 : 0;
             this.savingsRatePct.set(pct);
-        } catch (error) {
-            console.error('Error loading stats:', error);
+            this.loadError.set(false);
+        } catch {
+            // Never fabricate a "0" net worth on failure — show an explicit error with retry.
+            // Fake zeros on a finance dashboard read as "you have nothing", which destroys trust.
             if (!this.stats()) {
-                this.stats.set({
-                    netWorth: 0,
-                    netWorthChange: 0,
-                    netWorthChangePct: 0,
-                    totalAssets: 0,
-                    totalDebts: 0,
-                    savingsRate: 0,
-                    monthlyIncome: 0,
-                    monthlyExpenses: 0
-                });
+                this.loadError.set(true);
             }
         } finally {
             this.loading.set(false);
         }
+    }
+
+    retry() {
+        this.loadError.set(false);
+        this.loadStats();
     }
 
     abs(n: number): number { return Math.abs(n); }

@@ -86,6 +86,8 @@ export const EN = {
     template: {
       emergency: 'Emergency fund',
       down_payment: 'Down payment',
+      land: 'Land / plot',
+      family_support: 'Family support',
       vacation: 'Vacation',
       wedding: 'Wedding',
       education: 'Education',
@@ -96,6 +98,8 @@ export const EN = {
     defaultName: {
       emergency: 'Emergency fund',
       down_payment: 'House down payment',
+      land: 'My plot back home',
+      family_support: 'Support for family',
       vacation: 'Dream trip',
       wedding: 'My wedding',
       education: 'Education',
@@ -423,6 +427,11 @@ export const EN = {
     noExpensesDesc: 'Your expenses will appear here',
     savingsNoGoal: 'No savings goal',
     savingsCreateGoal: 'Create a goal',
+    stats: {
+      errorTitle: 'Data unavailable',
+      errorBody: 'We couldn\'t load your summary right now. Check your connection and try again.',
+      retry: 'Retry',
+    },
     kpi: {
       netWorth: 'Net Worth',
       sinceLastMonth: 'vs last month',
@@ -713,6 +722,7 @@ export const EN = {
       proTagline: 'For active investors',
       proBadge: 'Popular',
       proCta: 'Upgrade to Pro',
+      comingSoonCta: 'Coming soon',
       proSubprice: 'For investors who want to go further',
       proIncludes: 'Everything in Free, plus:',
       premiumName: 'Premium',
@@ -791,7 +801,7 @@ export const EN = {
       step3Desc: 'Set your FIRE goals, emergency fund or real estate targets — Omaad maps the path.',
     },
     socialProof: {
-      eyebrow: 'Launching June 2026',
+      eyebrow: 'Early access',
       h2a: 'Built for',
       h2b: 'the African diaspora.',
       stat1Value: '15',
@@ -973,7 +983,7 @@ export const EN = {
       historyTitle: 'Our story',
       historyP1: 'The FIRE movement — Financial Independence, Retire Early, born in the U.S. in the 90s — has become a north star for millions in the West. Except it was designed for a single-currency, single-country American investor with a 401(k) and a Vanguard ETF. For the African diaspora, the 4% rule doesn\'t hold. Savings discipline runs into tontines, BRVM liquidity, broker fees, the XOF/euro peg. The whole playbook needs rewriting.',
       historyP2Lead: 'We started by writing.',
-      historyP2: ' FIRE Africa, our monthly newsletter, launches June 1, 2026 on Beehiiv. Fifteen editions are already drafted — the 4% rule in XOF, tontines + BRVM, fund fees, retirement through dividends. Then we had to build the tool the newsletter alone couldn\'t replace: Omaad. A bilingual, multi-currency, multi-asset wealth dashboard — built for people living with two continents in mind. Public launch is set for June 2026.',
+      historyP2: ' FIRE Africa, our monthly newsletter, was born in 2026 on Beehiiv — the 4% rule in XOF, tontines + BRVM, fund fees, retirement through dividends. Then we had to build the tool the newsletter alone couldn\'t replace: Omaad. A bilingual, multi-currency, multi-asset wealth dashboard — built for people living with two continents in mind. Omaad is now in early access.',
       historyAmbitionPre: 'Our ambition is clear:',
       historyAmbition: 'become the wealth dashboard of the African diaspora.',
       historySignature: 'Mbaye & Bamba — co-founders',

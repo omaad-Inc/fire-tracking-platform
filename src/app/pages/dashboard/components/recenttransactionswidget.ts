@@ -15,6 +15,7 @@ interface TransactionDisplay {
     bgClass: string;
     iconClass: string;
     account?: string;
+    isTransfer?: boolean;
 }
 
 @Component({
@@ -74,8 +75,8 @@ interface TransactionDisplay {
                                 </div>
                             </div>
                             <div class="flex flex-col items-end ml-4">
-                                <span class="font-bold" [ngClass]="tx.amount < 0 ? 'text-negative' : 'text-positive'">
-                                    <app-amount [value]="tx.amount" [prefix]="tx.amount >= 0 ? '+' : '-'" />
+                                <span class="font-bold" [ngClass]="tx.isTransfer ? 'text-surface-500 dark:text-surface-400' : (tx.amount < 0 ? 'text-negative' : 'text-positive')">
+                                    <app-amount [value]="tx.amount" [prefix]="tx.isTransfer ? '⇄ ' : (tx.amount >= 0 ? '+' : '-')" />
                                 </span>
                                 <span class="text-surface-400 dark:text-surface-500 text-xs mt-1">{{ tx.date }}</span>
                             </div>
@@ -168,13 +169,15 @@ export class RecentTransactionsWidget implements OnInit {
 
     private mapToWidget(r: TransactionRecord): TransactionDisplay {
         const isExpense = r.type === 'Expense';
+        const isTransfer = r.type === 'Transfer';
         const config = this.categoryConfig[r.category || ''] || this.defaultConfig;
-        
+
         return {
             id: r.id || '',
             category: r.name,
             description: r.remarks ?? '',
-            amount: isExpense ? -r.amount : r.amount,
+            amount: isTransfer ? r.amount : (isExpense ? -r.amount : r.amount),
+            isTransfer,
             date: this.formatDate(r.date),
             account: (r.fromAccountName || r.toAccountName)
                 ? `${r.fromAccountName ?? '?'} → ${r.toAccountName ?? '?'}`
