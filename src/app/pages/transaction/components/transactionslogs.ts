@@ -275,7 +275,7 @@ interface DayGroup {
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">
-                                Montant <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
+                                Montant <span class="text-surface-400 font-normal">({{ curSymbol() }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="form.amount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
@@ -294,6 +294,13 @@ interface DayGroup {
                                 <small class="text-negative text-xs mt-1">Date requise</small>
                             }
                         </div>
+                    </div>
+
+                    <!-- Currency -->
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-surface-500 dark:text-surface-400">Devise</label>
+                        <p-select [(ngModel)]="form.currency" [options]="currencyOptions"
+                                  optionLabel="label" optionValue="value" appendTo="body" styleClass="w-full" />
                     </div>
 
                     <!-- Description -->
@@ -437,9 +444,22 @@ export class TransactionLogs implements OnInit {
     editDate: Date | null = null;
     // formType is a Signal so computed() can track changes reactively
     formType = signal<'Income' | 'Expense' | 'Transfer'>('Expense');
-    form: { amount: number; remarks: string; category: string; accountId?: number; fromAccountId?: number; toAccountId?: number } = {
-        amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined
+    form: { amount: number; currency: string; remarks: string; category: string; accountId?: number; fromAccountId?: number; toAccountId?: number } = {
+        amount: 0, currency: this.cs.config().code, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined
     };
+
+    /** Currencies a transaction can be entered in. */
+    readonly currencyOptions = [
+        { label: 'FCFA (XOF)', value: 'XOF' },
+        { label: 'Euro (€)', value: 'EUR' },
+        { label: 'Dollar ($)', value: 'USD' },
+    ];
+
+    /** Symbol for the currently selected transaction currency. */
+    curSymbol(): string {
+        const c = this.form.currency;
+        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+    }
 
     // Monetary accounts (cash / savings / mobile money) for the account selector
     private static readonly MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
@@ -575,7 +595,7 @@ export class TransactionLogs implements OnInit {
         this.editingRecord = null;
         this.editDate = new Date();
         this.formType.set('Expense');
-        this.form = { amount: 0, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined };
+        this.form = { amount: 0, currency: this.cs.config().code, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined };
         this.submitted = false;
         this.dialogVisible = true;
     }
@@ -585,7 +605,8 @@ export class TransactionLogs implements OnInit {
         this.editDate = rec.date ? new Date(rec.date) : new Date();
         this.formType.set(rec.type);
         this.form = {
-            amount:    rec.amount,
+            amount:    rec.nativeAmount ?? rec.amount,  // edit in the transaction's native currency
+            currency:  rec.currency || this.cs.config().code,
             remarks:   rec.remarks || rec.name || '',
             category:  rec.category || (rec.type === 'Income' ? INCOME_CATEGORIES[0] : EXPENSE_CATEGORIES[0]),
             accountId: rec.accountId,
@@ -627,6 +648,7 @@ export class TransactionLogs implements OnInit {
                     date:     dateStr,
                     type:     this.formType(),
                     amount:    this.form.amount,
+                    currency:  this.form.currency,
                     remarks:   this.form.remarks,
                     category:  isTransfer ? 'transfer' : this.form.category,
                     accountId: isTransfer ? undefined : this.form.accountId,
@@ -641,6 +663,7 @@ export class TransactionLogs implements OnInit {
                     date:     dateStr,
                     type:     this.formType(),
                     amount:    this.form.amount,
+                    currency:  this.form.currency,
                     remarks:   this.form.remarks,
                     category:  isTransfer ? 'transfer' : this.form.category,
                     accountId: isTransfer ? undefined : this.form.accountId,

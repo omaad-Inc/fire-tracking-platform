@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-login',
@@ -34,12 +35,12 @@ import { AuthService } from '../../core/services/auth.service';
                 <!-- Login Form -->
                 <div class="max-w-md">
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                        Connectez-vous à votre compte
+                        {{ t('auth.login.title') }}
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
-                        Pas encore de compte ?
+                        {{ t('auth.login.noAccount') }}
                         <a [routerLink]="[currentLang, 'auth', 'register']" class="text-brand-700 dark:text-ochre-400 hover:text-brand-500 dark:hover:text-ochre-300 font-medium cursor-pointer">
-                            S'inscrire <i class="pi pi-chevron-right text-xs"></i>
+                            {{ t('auth.login.signUp') }} <i class="pi pi-chevron-right text-xs"></i>
                         </a>
                     </p>
 
@@ -54,23 +55,23 @@ import { AuthService } from '../../core/services/auth.service';
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff"/>
                                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff"/>
                             </svg>
-                            Continuer avec Google
+                            {{ t('auth.login.google') }}
                         </a>
                     </div>
 
                     <!-- Divider -->
                     <div class="flex items-center gap-4 my-8">
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
-                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">ou par email</span>
+                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">{{ t('auth.login.orEmail') }}</span>
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
                     <!-- Email & Password Form -->
                     <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div>
-                            <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Adresse email</label>
+                            <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.emailLabel') }}</label>
                             <input pInputText id="email" type="email"
-                                   placeholder="Votre adresse email"
+                                   [placeholder]="t('auth.login.emailPlaceholder')"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-brand-700 focus:!shadow-none"
                                    [(ngModel)]="email" name="email" required 
@@ -78,11 +79,11 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Mot de passe</label>
+                            <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.passwordLabel') }}</label>
                             <p-password id="password"
                                         [(ngModel)]="password"
                                         name="password"
-                                        placeholder="Votre mot de passe"
+                                        [placeholder]="t('auth.login.passwordPlaceholder')"
                                         [toggleMask]="true" 
                                         [feedback]="false"
                                         [disabled]="isLoading()"
@@ -91,7 +92,7 @@ import { AuthService } from '../../core/services/auth.service';
                             </p-password>
                         </div>
 
-                        <button pButton pRipple label="Se connecter"
+                        <button pButton pRipple [label]="t('auth.login.submit')"
                                 type="submit"
                                 [loading]="isLoading()"
                                 class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta
@@ -102,7 +103,7 @@ import { AuthService } from '../../core/services/auth.service';
                         <div class="text-center">
                             <a [routerLink]="[currentLang, 'auth', 'forgot-password']"
                                class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium cursor-pointer text-sm">
-                                Mot de passe oublié ?
+                                {{ t('auth.login.forgot') }}
                             </a>
                         </div>
                     </form>
@@ -212,15 +213,15 @@ import { AuthService } from '../../core/services/auth.service';
                         <div class="flex items-center justify-center gap-6 text-warm-400 text-xs">
                             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
                                 <i class="pi pi-lock text-brand-700 dark:text-brand-300"></i>
-                                <span>Sécurisé</span>
+                                <span>{{ t('auth.login.trustSecure') }}</span>
                             </div>
                             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
                                 <i class="pi pi-bookmark text-ochre-400"></i>
-                                <span>Sans engagement</span>
+                                <span>{{ t('auth.login.trustNoCommitment') }}</span>
                             </div>
                             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
                                 <i class="pi pi-globe text-brand-700 dark:text-brand-300"></i>
-                                <span>Multi-devises</span>
+                                <span>{{ t('auth.login.trustMultiCurrency') }}</span>
                             </div>
                         </div>
                     </div>
@@ -234,6 +235,9 @@ export class Login {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private messageService = inject(MessageService);
+    private i18n = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     email = '';
     password = '';
@@ -257,8 +261,8 @@ export class Login {
                     this.isLoading.set(false);
                     this.messageService.add({
                         severity: 'error',
-                        summary: 'Login Failed',
-                        detail: 'Invalid response from server. Please try again.',
+                        summary: this.t('auth.login.failedSummary'),
+                        detail: this.t('auth.login.invalidResponse'),
                         life: 5000
                     });
                     return;
@@ -273,8 +277,8 @@ export class Login {
                         this.isLoading.set(false);
                         this.messageService.add({
                             severity: 'error',
-                            summary: 'Login Failed',
-                            detail: 'We could not complete your sign-in. Please try again.',
+                            summary: this.t('auth.login.failedSummary'),
+                            detail: this.t('auth.login.couldNotComplete'),
                             life: 5000
                         });
                         return;
@@ -300,8 +304,8 @@ export class Login {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Login Failed',
-                    detail: error.message || 'Invalid credentials',
+                    summary: this.t('auth.login.failedSummary'),
+                    detail: error.message || this.t('auth.login.invalidCredentials'),
                     life: 5000
                 });
             }

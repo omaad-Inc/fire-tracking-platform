@@ -570,7 +570,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.tontineMonthlyContribution"
                                                        [min]="0" [maxFractionDigits]="0"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
@@ -612,7 +612,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                    [min]="0" [maxFractionDigits]="2"
                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                 </div>
                             </div>
                         }
@@ -634,7 +634,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -655,7 +655,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -685,7 +685,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
@@ -694,7 +694,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.purchaseValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -709,7 +709,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                                     <span class="text-surface-500 text-sm">Prix unitaire actuel</span>
                                     <span class="text-brand-700 dark:text-brand-300 font-semibold">
-                                        {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ cs.config().symbol }}/part
+                                        {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ assetSymbol() }}/part
                                     </span>
                                 </div>
                             }
@@ -724,7 +724,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
@@ -733,7 +733,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.purchaseValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -758,14 +758,14 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     <p-inputnumber [(ngModel)]="editForm.rentalIncome"
                                                    [min]="0" [maxFractionDigits]="2"
                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}/mois</span>
+                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}/mois</span>
                                 </div>
                             </div>
                             @if ((editForm.surfaceM2 ?? 0) > 0 && editForm.currentValue > 0) {
                                 <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                                     <span class="text-surface-500 text-sm">Prix au m² actuel</span>
                                     <span class="text-brand-700 dark:text-brand-300 font-semibold">
-                                        {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ cs.config().symbol }}/m²
+                                        {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ assetSymbol() }}/m²
                                     </span>
                                 </div>
                             }
@@ -780,7 +780,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.currentValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col gap-1.5">
@@ -789,7 +789,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <p-inputnumber [(ngModel)]="editForm.purchaseValue"
                                                        [min]="0" [maxFractionDigits]="2"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -905,6 +905,12 @@ export class AssetDetailPage implements OnInit {
     readonly valueEur = computed(() =>
         this.cs.toEurFromNative(this.asset()?.current_value ?? 0, this.asset()?.currency)
     );
+
+    /** Symbol of the asset's own (native) currency — the edit form works in it. */
+    assetSymbol(): string {
+        const c = (this.asset()?.currency || 'EUR').toUpperCase();
+        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+    }
     editForm = {
         name: '',
         currentValue: 0,
