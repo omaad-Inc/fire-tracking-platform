@@ -1,4 +1,4 @@
-import { Injectable, inject, computed } from '@angular/core';
+import { Injectable, inject, computed, signal } from '@angular/core';
 import { TokenService } from './token.service';
 import { ApiService } from './api.service';
 import { AnalyticsService } from './analytics.service';
@@ -7,15 +7,19 @@ import { firstValueFrom } from 'rxjs';
 export interface CurrencyConfig {
     code: string;
     symbol: string;
-    rate: number; // Rate from EUR
+    rate: number; // Rate from EUR (units of this currency per 1 EUR)
     locale: string;
 }
 
+// Fallback rates used before /fx/rates loads or when offline. XOF is a fixed
+// EUR peg; USD is a stale placeholder overridden by the live backend rate.
 const CURRENCIES: Record<string, CurrencyConfig> = {
     XOF: { code: 'XOF', symbol: 'FCFA',  rate: 655.957, locale: 'fr-FR' },
     EUR: { code: 'EUR', symbol: '€',      rate: 1,       locale: 'fr-FR' },
     USD: { code: 'USD', symbol: '$',      rate: 1.08,    locale: 'en-US' },
 };
+
+const FX_CACHE_KEY = 'omaad_fx_rates';
 
 @Injectable({ providedIn: 'root' })
 export class CurrencyService {
@@ -23,15 +27,40 @@ export class CurrencyService {
     private api = inject(ApiService);
     private analytics = inject(AnalyticsService);
 
+    /** Live rates_per_eur fetched from the backend (empty until loaded). */
+    private liveRates = signal<Record<string, number>>({});
+
+    constructor() {
+        // Warm from cache immediately, then refresh from the backend (non-blocking).
+        try {
+            const cached = localStorage.getItem(FX_CACHE_KEY);
+            if (cached) this.liveRates.set(JSON.parse(cached).rates ?? {});
+        } catch { /* ignore malformed cache */ }
+        this.refreshRates();
+    }
+
+    /** Fetch the latest rates; on failure keep the cached/fallback values. */
+    async refreshRates(): Promise<void> {
+        try {
+            const res = await firstValueFrom(this.api.getFxRates());
+            if (res?.rates && Object.keys(res.rates).length) {
+                this.liveRates.set(res.rates);
+                try { localStorage.setItem(FX_CACHE_KEY, JSON.stringify({ rates: res.rates, as_of: res.as_of })); } catch {}
+            }
+        } catch { /* offline / endpoint down — fallback rates remain */ }
+    }
+
     /** Current currency code — reacts to user preference changes. */
     readonly currencyCode = computed<string>(() =>
         this.tokenService.user()?.preferred_currency || 'XOF'
     );
 
-    /** Current currency config. */
-    readonly config = computed<CurrencyConfig>(() =>
-        CURRENCIES[this.currencyCode()] ?? CURRENCIES['EUR']
-    );
+    /** Current currency config — live rate overrides the hardcoded fallback. */
+    readonly config = computed<CurrencyConfig>(() => {
+        const base = CURRENCIES[this.currencyCode()] ?? CURRENCIES['EUR'];
+        const live = this.liveRates()[base.code];
+        return live && live > 0 ? { ...base, rate: live } : base;
+    });
 
     /**
      * Convert a EUR (base) value → display currency.
