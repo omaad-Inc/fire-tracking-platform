@@ -285,7 +285,8 @@ export const FR = {
       expenseAlertsDesc: 'Être alerté en cas de dépenses inhabituelles',
       data: 'Données',
       exportData: 'Exporter mes données',
-      exportDataDesc: 'Télécharger toutes vos données au format CSV',
+      exportDataDesc: 'Téléchargez vos transactions (CSV) ou toutes vos données (JSON)',
+      exportError: 'L\'export a échoué. Veuillez réessayer.',
     },
     fire: {
       title: 'Objectif financier',

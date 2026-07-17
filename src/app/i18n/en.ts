@@ -285,7 +285,8 @@ export const EN = {
       expenseAlertsDesc: 'Get alerted for unusual expenses',
       data: 'Data',
       exportData: 'Export my data',
-      exportDataDesc: 'Download all your data in CSV format',
+      exportDataDesc: 'Download your transactions (CSV) or all your data (JSON)',
+      exportError: 'Export failed. Please try again.',
     },
     fire: {
       title: 'Financial Goal',
