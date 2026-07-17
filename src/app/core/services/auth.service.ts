@@ -88,6 +88,30 @@ export class AuthService {
     }
 
     /**
+     * Request a phone OTP (an additional login method — email login stays intact).
+     */
+    requestOtp(phone: string): Observable<{ sent: boolean }> {
+        return this.http.post<{ sent: boolean }>(`${this.apiUrl}/auth/otp/request`, { phone }).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    /**
+     * Verify a phone OTP and log in (creates a phone-only account if new).
+     */
+    verifyOtp(phone: string, code: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/otp/verify`, { phone, code }).pipe(
+            tap(response => {
+                if (response?.access_token) {
+                    this.clearAllCaches();
+                    this.tokenService.setToken(response.access_token);
+                }
+            }),
+            catchError(this.handleError)
+        );
+    }
+
+    /**
      * Login with OAuth2 form data (alternative)
      */
     loginOAuth(email: string, password: string): Observable<AuthResponse> {
