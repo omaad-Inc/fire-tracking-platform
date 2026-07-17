@@ -38,6 +38,7 @@ interface AssetFormData {
     mobileMoneyProvider: string;
     surfaceM2: number;
     region: string;
+    currency: string;  // native currency the entered amounts are in
 }
 
 interface CategoryCard {
@@ -185,6 +186,14 @@ interface CategoryCard {
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                         </div>
 
+                                        <!-- Currency (always) — the native currency the amounts below are entered in -->
+                                        <div class="flex flex-col gap-2 md:col-span-2">
+                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Devise' : 'Currency' }}</label>
+                                            <p-select [(ngModel)]="assetForm.currency" [options]="currencyOptions"
+                                                      optionLabel="label" optionValue="value" appendTo="body"
+                                                      styleClass="w-full" />
+                                        </div>
+
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
@@ -192,7 +201,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -221,7 +230,7 @@ interface CategoryCard {
                                                     <div>
                                                         <p class="text-xs text-surface-400 mb-0.5">Valeur accumulée estimée</p>
                                                         <p class="font-bold text-brand-700 dark:text-brand-300">
-                                                            {{ tontineCurrentValue() | number:'1.0-0' }} {{ cs.config().symbol }}
+                                                            {{ tontineCurrentValue() | number:'1.0-0' }} {{ curSymbol() }}
                                                             <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} mois × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
                                                     </div>
@@ -242,7 +251,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
@@ -264,7 +273,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -272,7 +281,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                         }
@@ -286,7 +295,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -309,7 +318,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -324,7 +333,7 @@ interface CategoryCard {
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ cs.config().symbol }}</span>
+                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                         }
@@ -358,7 +367,7 @@ interface CategoryCard {
                                                 <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
                                                     <span class="text-surface-500 dark:text-surface-400 text-xs">Prix au m² (achat)</span>
                                                     <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
-                                                        {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ cs.config().symbol }}/m²
+                                                        {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
                                                     </span>
                                                 </div>
                                             }
@@ -471,8 +480,21 @@ export class AddAssetPage implements OnInit {
         purchaseDate: '', institution: '', owners: [],
         tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
         tontineCollectionDate: '', tontineStatus: 'en_cours', mobileMoneyProvider: '',
-        surfaceM2: 0, region: ''
+        surfaceM2: 0, region: '', currency: this.cs.config().code
     };
+
+    /** Currencies the user can hold an asset in. */
+    readonly currencyOptions = [
+        { label: 'FCFA (XOF)', value: 'XOF' },
+        { label: 'Euro (€)', value: 'EUR' },
+        { label: 'Dollar ($)', value: 'USD' },
+    ];
+
+    /** Symbol for the currently selected asset currency (drives input suffixes). */
+    curSymbol(): string {
+        const c = this.assetForm.currency;
+        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+    }
 
     // Uniform chrome — icon glyph differentiates the asset type, not the color.
     private static readonly CARD_BG = 'bg-warm-100 dark:bg-warm-800';
@@ -567,7 +589,7 @@ export class AddAssetPage implements OnInit {
             owners: [{ name: this.userName, initials: this.userInitials, percentage: 100 }],
             tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
             tontineCollectionDate: '', tontineStatus: 'en_cours', mobileMoneyProvider: '',
-            surfaceM2: 0, region: ''
+            surfaceM2: 0, region: '', currency: this.cs.config().code
         };
         this.selectedCategory.set('');
         this.currentStep.set(0);
@@ -672,8 +694,9 @@ export class AddAssetPage implements OnInit {
         return this.assetForm.tontineMonthlyContribution * this.tontineMonthsElapsed();
     }
 
+    /** Convert an amount entered in the selected asset currency to EUR (preview only). */
     toEur(displayValue: number): number {
-        return displayValue / this.cs.config().rate;
+        return displayValue / this.cs.rateOf(this.assetForm.currency);
     }
 
     nextStep(): void {
@@ -713,13 +736,17 @@ export class AddAssetPage implements OnInit {
             const purchaseDateValue = f.purchaseDate || new Date().toISOString().split('T')[0];
             let assetData: AssetCreate;
 
+            // Amounts are stored in the asset's native currency; the backend
+            // converts to EUR at aggregation time via the fx_rates table.
+            const cur = f.currency;
+
             if (f.category === 'tontine') {
                 const months = Math.max(1, this.tontineMonthsElapsed());
                 assetData = {
-                    name: f.name, category: 'tontine',
-                    current_value: this.toEur(f.tontineMonthlyContribution * months),
+                    name: f.name, category: 'tontine', currency: cur,
+                    current_value: f.tontineMonthlyContribution * months,
                     // New dedicated tontine columns — no more overloading purchase_*.
-                    tontine_monthly_contribution: this.toEur(f.tontineMonthlyContribution),
+                    tontine_monthly_contribution: f.tontineMonthlyContribution,
                     tontine_participants: f.tontineParticipants,
                     tontine_start_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
                     tontine_collection_date: f.tontineCollectionDate || null,
@@ -727,33 +754,33 @@ export class AddAssetPage implements OnInit {
                 };
             } else if (f.category === 'mobile_money') {
                 assetData = {
-                    name: f.name, category: 'mobile_money',
-                    current_value: this.toEur(f.currentPrice),
+                    name: f.name, category: 'mobile_money', currency: cur,
+                    current_value: f.currentPrice,
                     mobile_money_operator: f.mobileMoneyProvider,
                     is_liquid: true,
                 };
             } else if (f.category === 'cash' || f.category === 'savings_account') {
                 // Simple-balance shape: no purchase event — current_value is THE value.
                 assetData = {
-                    name: f.name, category: f.category as AssetCategory,
-                    current_value: this.toEur(f.currentPrice),
+                    name: f.name, category: f.category as AssetCategory, currency: cur,
+                    current_value: f.currentPrice,
                     institution: f.institution || undefined, is_liquid: true
                 };
             } else {
                 if ((!f.currentPrice || f.currentPrice === 0) && f.purchasePrice > 0) f.currentPrice = f.purchasePrice;
                 const qty = this.isQuantityBased() ? Math.max(1, f.quantity ?? 1) : 1;
-                const purchaseEur = f.purchasePrice > 0 ? this.toEur(f.purchasePrice * qty) : undefined;
+                const purchaseNative = f.purchasePrice > 0 ? f.purchasePrice * qty : undefined;
                 const isQtyBased = this.isQuantityBased();
                 assetData = {
-                    name: f.name, category: f.category as AssetCategory,
-                    current_value: this.toEur(f.currentPrice * qty), purchase_value: purchaseEur,
+                    name: f.name, category: f.category as AssetCategory, currency: cur,
+                    current_value: f.currentPrice * qty, purchase_value: purchaseNative,
                     purchase_date: purchaseDateValue, institution: f.institution || undefined,
                     location: f.region || undefined,
                     notes: isQtyBased ? JSON.stringify({ quantity: qty }) : undefined,
                     quantity: isQtyBased ? qty : undefined,
                     surface_m2: f.category === 'real_estate' && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
                     price_per_m2_purchase: f.category === 'real_estate' && f.surfaceM2 > 0 && f.purchasePrice > 0
-                        ? Math.round(this.toEur(f.purchasePrice) / f.surfaceM2) : undefined
+                        ? Math.round(f.purchasePrice / f.surfaceM2) : undefined
                 };
             }
 

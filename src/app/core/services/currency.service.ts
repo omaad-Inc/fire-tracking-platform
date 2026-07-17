@@ -62,6 +62,23 @@ export class CurrencyService {
         return live && live > 0 ? { ...base, rate: live } : base;
     });
 
+    /** Rate (units per EUR) for any currency code: live → hardcoded fallback → 1. */
+    rateOf(code: string | null | undefined): number {
+        const c = (code || 'EUR').toUpperCase();
+        return this.liveRates()[c] ?? CURRENCIES[c]?.rate ?? 1;
+    }
+
+    /**
+     * Convert a value stored in its NATIVE currency → EUR base.
+     * Used at the API→display boundary now that assets/transactions are
+     * stored in native currency. Example: 655 957 FCFA / 655.957 = 1000 €.
+     */
+    toEurFromNative(nativeValue: number | null | undefined, currency: string | null | undefined): number {
+        if (!nativeValue) return 0;
+        const rate = this.rateOf(currency);
+        return rate ? nativeValue / rate : nativeValue;
+    }
+
     /**
      * Convert a EUR (base) value → display currency.
      * Used for reading values from the API before showing them in the UI.
