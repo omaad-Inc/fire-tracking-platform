@@ -184,12 +184,12 @@ interface DayGroup {
                                     <!-- Name + category -->
                                     <div class="flex-1 min-w-0">
                                         <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate leading-tight">
-                                            {{ rec.remarks || rec.name }}
+                                            {{ rec.remarks || categoryLabel(rec.category) }}
                                         </div>
                                         <span class="inline-flex items-center text-[10px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
                                               [style.color]="categoryFg(rec)"
                                               [style.background]="categoryBg(rec)">
-                                            {{ getCategoryConfig(rec).label }}
+                                            {{ categoryLabel(rec.category) }}
                                         </span>
                                         @if (accountLabel(rec)) {
                                             <span class="inline-flex items-center gap-1 text-[10px] sm:text-xs mt-0.5 ml-1.5 text-surface-500 dark:text-surface-400">
@@ -386,7 +386,7 @@ interface DayGroup {
                                                [style.color]="getCatConfig(cat).color"></i>
                                         </div>
                                         <span class="text-[11px] font-medium leading-tight text-surface-700 dark:text-surface-300">
-                                            {{ getCatConfig(cat).label }}
+                                            {{ categoryLabel(cat) }}
                                         </span>
                                     </button>
                                 }
@@ -478,6 +478,14 @@ export class TransactionLogs implements OnInit {
 
     getCatConfig(cat: string) {
         return CATEGORY_CONFIG[cat] ?? { label: cat, icon: 'pi pi-circle', color: '#94a3b8', bg: '' };
+    }
+
+    /** Localized category label; falls back to the CATEGORY_CONFIG label then the raw key. */
+    categoryLabel(cat: string | undefined | null): string {
+        const key = cat || 'other_expense';
+        const path = `categories.${key}`;
+        const label = this.i18n.t(path);
+        return label !== path ? label : (CATEGORY_CONFIG[key]?.label ?? key);
     }
 
     setType(t: 'Income' | 'Expense' | 'Transfer') {
