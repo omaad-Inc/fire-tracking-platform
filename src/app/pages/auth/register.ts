@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-register',
@@ -34,12 +35,12 @@ import { AuthService } from '../../core/services/auth.service';
                 <!-- Register Form -->
                 <div class="max-w-md">
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                        Bienvenue sur Omaad Wealth
+                        {{ t('auth.register.title') }}
                     </h1>
                     <p class="text-surface-600 dark:text-surface-400 mb-8">
-                        Déjà un compte ?
+                        {{ t('auth.register.haveAccount') }}
                         <a [routerLink]="[currentLang, 'auth', 'login']" class="text-brand-700 dark:text-ochre-400 hover:text-brand-500 dark:hover:text-ochre-300 font-medium cursor-pointer">
-                            Se connecter <i class="pi pi-chevron-right text-xs"></i>
+                            {{ t('auth.register.signIn') }} <i class="pi pi-chevron-right text-xs"></i>
                         </a>
                     </p>
 
@@ -54,14 +55,14 @@ import { AuthService } from '../../core/services/auth.service';
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#fff"/>
                                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#fff"/>
                             </svg>
-                            Continuer avec Google
+                            {{ t('auth.register.google') }}
                         </a>
                     </div>
 
                     <!-- Divider -->
                     <div class="flex items-center gap-4 my-8">
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
-                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">ou par email</span>
+                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">{{ t('auth.register.orEmail') }}</span>
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
@@ -69,17 +70,17 @@ import { AuthService } from '../../core/services/auth.service';
                     <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Prénom</label>
+                                <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.firstName') }}</label>
                                 <input pInputText id="firstName" type="text"
-                                       placeholder="Amadou"
+                                       [placeholder]="t('auth.register.firstNamePlaceholder')"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-brand-700 focus:!shadow-none"
                                        [(ngModel)]="firstName" name="firstName" />
                             </div>
                             <div>
-                                <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Nom</label>
+                                <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.lastName') }}</label>
                                 <input pInputText id="lastName" type="text"
-                                       placeholder="Diallo"
+                                       [placeholder]="t('auth.register.lastNamePlaceholder')"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-brand-700 focus:!shadow-none"
                                        [(ngModel)]="lastName" name="lastName" />
@@ -87,9 +88,9 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Adresse email</label>
+                            <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.emailLabel') }}</label>
                             <input pInputText id="email" type="email"
-                                   placeholder="vous@exemple.com"
+                                   [placeholder]="t('auth.register.emailPlaceholder')"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-brand-700 focus:!shadow-none"
                                    [(ngModel)]="email" name="email" required 
@@ -97,11 +98,11 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Mot de passe</label>
+                            <label for="password" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.passwordLabel') }}</label>
                             <p-password id="password"
                                         [(ngModel)]="password"
                                         name="password"
-                                        placeholder="Créez un mot de passe fort"
+                                        [placeholder]="t('auth.register.passwordPlaceholder')"
                                         [toggleMask]="true" 
                                         [feedback]="true"
                                         [disabled]="isLoading()"
@@ -111,11 +112,11 @@ import { AuthService } from '../../core/services/auth.service';
                         </div>
 
                         <div>
-                            <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Confirmer le mot de passe</label>
+                            <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.confirmLabel') }}</label>
                             <p-password id="confirmPassword"
                                         [(ngModel)]="confirmPassword"
                                         name="confirmPassword"
-                                        placeholder="Confirmez votre mot de passe"
+                                        [placeholder]="t('auth.register.confirmPlaceholder')"
                                         [toggleMask]="true" 
                                         [feedback]="false"
                                         [disabled]="isLoading()"
@@ -128,7 +129,7 @@ import { AuthService } from '../../core/services/auth.service';
                         @if (password && confirmPassword && password !== confirmPassword) {
                             <div class="text-negative text-sm flex items-center gap-2">
                                 <i class="pi pi-exclamation-circle"></i>
-                                Les mots de passe ne correspondent pas
+                                {{ t('auth.register.mismatch') }}
                             </div>
                         }
 
@@ -136,14 +137,14 @@ import { AuthService } from '../../core/services/auth.service';
                         <div class="flex items-start gap-3">
                             <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" name="terms" [disabled]="isLoading()"></p-checkbox>
                             <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
-                                J'accepte les
-                                <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">Conditions d'utilisation</a>
-                                et la
-                                <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">Politique de confidentialité</a>
+                                {{ t('auth.register.acceptPre') }}
+                                <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.terms') }}</a>
+                                {{ t('auth.register.and') }}
+                                <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.privacy') }}</a>
                             </label>
                         </div>
 
-                        <button pButton pRipple label="Créer mon compte"
+                        <button pButton pRipple [label]="t('auth.register.submit')"
                                 type="submit"
                                 [loading]="isLoading()"
                                 class="w-full !rounded-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300"
@@ -175,8 +176,8 @@ import { AuthService } from '../../core/services/auth.service';
                                     <i class="pi pi-user text-white text-xl"></i>
                                 </div>
                                 <div>
-                                    <div class="text-white font-semibold">Bienvenue sur Omaad Wealth</div>
-                                    <div class="text-warm-400 text-sm">Votre voyage financier commence ici</div>
+                                    <div class="text-white font-semibold">{{ t('auth.register.welcomeCard') }}</div>
+                                    <div class="text-warm-400 text-sm">{{ t('auth.register.journeyStart') }}</div>
                                 </div>
                             </div>
 
@@ -187,22 +188,22 @@ import { AuthService } from '../../core/services/auth.service';
                                         <i class="pi pi-check text-white text-sm"></i>
                                     </div>
                                     <div class="flex-1">
-                                        <div class="text-white text-sm font-medium">Créez votre compte</div>
-                                        <div class="text-warm-400 text-xs">Configurez votre profil en quelques minutes</div>
+                                        <div class="text-white text-sm font-medium">{{ t('auth.register.step1') }}</div>
+                                        <div class="text-warm-400 text-xs">{{ t('auth.register.step1desc') }}</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-warm-700 flex items-center justify-center text-warm-400 text-sm font-medium">2</div>
                                     <div class="flex-1">
-                                        <div class="text-warm-300 text-sm font-medium">Ajoutez vos actifs</div>
-                                        <div class="text-warm-500 text-xs">Saisissez vos biens et placements</div>
+                                        <div class="text-warm-300 text-sm font-medium">{{ t('auth.register.step2') }}</div>
+                                        <div class="text-warm-500 text-xs">{{ t('auth.register.step2desc') }}</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-warm-700 flex items-center justify-center text-warm-400 text-sm font-medium">3</div>
                                     <div class="flex-1">
-                                        <div class="text-warm-300 text-sm font-medium">Suivez votre progression</div>
-                                        <div class="text-warm-500 text-xs">Visualisez votre chemin vers la liberté</div>
+                                        <div class="text-warm-300 text-sm font-medium">{{ t('auth.register.step3') }}</div>
+                                        <div class="text-warm-500 text-xs">{{ t('auth.register.step3desc') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -211,18 +212,18 @@ import { AuthService } from '../../core/services/auth.service';
                         <!-- Floating Badge -->
                         <div class="absolute -top-4 -right-4 bg-ochre-500 rounded-xl px-4 py-2 shadow-lg">
                             <div class="text-warm-900 font-bold text-lg">100%</div>
-                            <div class="text-warm-900/80 text-xs">Pour toujours</div>
+                            <div class="text-warm-900/80 text-xs">{{ t('auth.register.badgeForever') }}</div>
                         </div>
                     </div>
 
                     <!-- Text Content -->
                     <div class="text-center">
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-                            Votre chemin vers
-                            <br><span class="text-ochre-400">l'indépendance financière</span>
+                            {{ t('auth.register.heroTitle') }}
+                            <br><span class="text-ochre-400">{{ t('auth.register.heroTitleAccent') }}</span>
                         </h2>
                         <p class="text-warm-400 max-w-md mx-auto mb-8">
-                            Prenez le contrôle de vos finances et construisez votre chemin vers la retraite anticipée.
+                            {{ t('auth.register.heroSubtitle') }}
                         </p>
 
                         <!-- Value Props -->
@@ -231,19 +232,19 @@ import { AuthService } from '../../core/services/auth.service';
                                 <div class="w-10 h-10 rounded-xl bg-brand-700/20 dark:bg-brand-300/20 flex items-center justify-center">
                                     <i class="pi pi-lock text-brand-700 dark:text-brand-300 text-lg"></i>
                                 </div>
-                                <span>Sécurisé</span>
+                                <span>{{ t('auth.register.trustSecure') }}</span>
                             </div>
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-10 h-10 rounded-xl bg-brand-700/15 dark:bg-brand-300/20 flex items-center justify-center">
                                     <i class="pi pi-shield text-brand-700 dark:text-brand-300 text-lg"></i>
                                 </div>
-                                <span>Confidentiel</span>
+                                <span>{{ t('auth.register.trustConfidential') }}</span>
                             </div>
                             <div class="flex flex-col items-center gap-2">
                                 <div class="w-10 h-10 rounded-xl bg-ochre-500/20 flex items-center justify-center">
                                     <i class="pi pi-bookmark text-ochre-400 text-lg"></i>
                                 </div>
-                                <span>Sans engagement</span>
+                                <span>{{ t('auth.register.trustNoCommitment') }}</span>
                             </div>
                         </div>
                     </div>
@@ -256,6 +257,9 @@ export class Register {
     readonly authService = inject(AuthService);
     private router = inject(Router);
     private messageService = inject(MessageService);
+    private i18n = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     firstName = '';
     lastName = '';
@@ -298,8 +302,8 @@ export class Register {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'success',
-                    summary: 'Account Created!',
-                    detail: 'Your account has been created successfully. Please log in.',
+                    summary: this.t('auth.register.createdSummary'),
+                    detail: this.t('auth.register.createdDetail'),
                     life: 4000
                 });
                 // Clear the token - user should login manually
@@ -313,8 +317,8 @@ export class Register {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Registration Failed',
-                    detail: error.message || 'Could not create account',
+                    summary: this.t('auth.register.failedSummary'),
+                    detail: error.message || this.t('auth.register.failedDetail'),
                     life: 5000
                 });
             }

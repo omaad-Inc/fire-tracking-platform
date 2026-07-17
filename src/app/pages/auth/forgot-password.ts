@@ -8,6 +8,7 @@ import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-forgot-password',
@@ -27,25 +28,24 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
 
                 <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                    Mot de passe oublié ?
+                    {{ t('auth.forgot.title') }}
                 </h1>
                 <p class="text-surface-600 dark:text-surface-400 mb-8">
-                    Entrez votre adresse email. Si un compte existe, nous vous enverrons un lien
-                    pour choisir un nouveau mot de passe.
+                    {{ t('auth.forgot.intro') }}
                 </p>
 
                 <form *ngIf="!submitted()" (ngSubmit)="onSubmit()" class="space-y-6">
                     <div>
-                        <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Adresse email</label>
+                        <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.forgot.emailLabel') }}</label>
                         <input pInputText id="email" type="email"
-                               placeholder="Votre adresse email"
+                               [placeholder]="t('auth.forgot.emailPlaceholder')"
                                class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                       focus:!border-brand-700 focus:!shadow-none"
                                [(ngModel)]="email" name="email" required
                                [disabled]="isLoading()" />
                     </div>
 
-                    <button pButton pRipple label="Envoyer le lien"
+                    <button pButton pRipple [label]="t('auth.forgot.submit')"
                             type="submit"
                             [loading]="isLoading()"
                             class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
@@ -57,11 +57,9 @@ import { AuthService } from '../../core/services/auth.service';
                     <div class="flex items-start gap-3">
                         <i class="pi pi-envelope text-brand-700 dark:text-brand-300 text-xl mt-1"></i>
                         <div>
-                            <p class="text-surface-900 dark:text-surface-0 font-medium mb-1">Vérifiez votre boîte mail</p>
+                            <p class="text-surface-900 dark:text-surface-0 font-medium mb-1">{{ t('auth.forgot.checkMailTitle') }}</p>
                             <p class="text-surface-600 dark:text-surface-400 text-sm">
-                                Si un compte est associé à <strong>{{ email }}</strong>, vous recevrez
-                                un email contenant un lien pour réinitialiser votre mot de passe.
-                                Le lien expire dans 30 minutes.
+                                {{ t('auth.forgot.checkMailBefore') }} <strong>{{ email }}</strong>{{ t('auth.forgot.checkMailAfter') }}
                             </p>
                         </div>
                     </div>
@@ -70,7 +68,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <div class="text-center mt-8">
                     <a [routerLink]="[currentLang, 'auth', 'login']"
                        class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium cursor-pointer text-sm">
-                        <i class="pi pi-chevron-left text-xs"></i> Retour à la connexion
+                        <i class="pi pi-chevron-left text-xs"></i> {{ t('auth.forgot.backToLogin') }}
                     </a>
                 </div>
             </div>
@@ -81,6 +79,9 @@ export class ForgotPassword {
     private authService = inject(AuthService);
     private router = inject(Router);
     private messageService = inject(MessageService);
+    private i18n = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     email = '';
     currentLang = '/fr';
@@ -106,8 +107,8 @@ export class ForgotPassword {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: error.message || 'Impossible d\'envoyer le lien. Réessayez plus tard.',
+                    summary: this.t('auth.forgot.errSummary'),
+                    detail: error.message || this.t('auth.forgot.errDetail'),
                     life: 5000
                 });
             }

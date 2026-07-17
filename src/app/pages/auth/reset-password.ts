@@ -8,6 +8,7 @@ import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-reset-password',
@@ -27,23 +28,23 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
 
                 <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
-                    Choisissez un nouveau mot de passe
+                    {{ t('auth.reset.title') }}
                 </h1>
                 <p class="text-surface-600 dark:text-surface-400 mb-8">
-                    Votre nouveau mot de passe doit contenir au moins 8 caractères.
+                    {{ t('auth.reset.intro') }}
                 </p>
 
                 <div *ngIf="!token" class="rounded-xl border border-negative/30 bg-negative/5 p-4 mb-6 text-sm text-surface-700 dark:text-surface-300">
-                    Lien invalide. Veuillez recommencer la procédure de réinitialisation.
+                    {{ t('auth.reset.invalidLink') }}
                 </div>
 
                 <form *ngIf="token && !success()" (ngSubmit)="onSubmit()" class="space-y-6">
                     <div>
-                        <label for="newPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Nouveau mot de passe</label>
+                        <label for="newPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.reset.newLabel') }}</label>
                         <p-password id="newPassword"
                                     [(ngModel)]="newPassword"
                                     name="newPassword"
-                                    placeholder="Au moins 8 caractères"
+                                    [placeholder]="t('auth.reset.newPlaceholder')"
                                     [toggleMask]="true"
                                     [feedback]="true"
                                     [disabled]="isLoading()"
@@ -53,11 +54,11 @@ import { AuthService } from '../../core/services/auth.service';
                     </div>
 
                     <div>
-                        <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">Confirmer le mot de passe</label>
+                        <label for="confirmPassword" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.reset.confirmLabel') }}</label>
                         <p-password id="confirmPassword"
                                     [(ngModel)]="confirmPassword"
                                     name="confirmPassword"
-                                    placeholder="Retapez votre mot de passe"
+                                    [placeholder]="t('auth.reset.confirmPlaceholder')"
                                     [toggleMask]="true"
                                     [feedback]="false"
                                     [disabled]="isLoading()"
@@ -66,11 +67,11 @@ import { AuthService } from '../../core/services/auth.service';
                         </p-password>
                         <p *ngIf="confirmPassword && confirmPassword !== newPassword"
                            class="text-negative text-xs mt-2">
-                            Les mots de passe ne correspondent pas.
+                            {{ t('auth.reset.mismatch') }}
                         </p>
                     </div>
 
-                    <button pButton pRipple label="Mettre à jour le mot de passe"
+                    <button pButton pRipple [label]="t('auth.reset.submit')"
                             type="submit"
                             [loading]="isLoading()"
                             class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
@@ -82,9 +83,9 @@ import { AuthService } from '../../core/services/auth.service';
                     <div class="flex items-start gap-3">
                         <i class="pi pi-check-circle text-positive text-xl mt-1"></i>
                         <div>
-                            <p class="text-surface-900 dark:text-surface-0 font-medium mb-1">Mot de passe mis à jour</p>
+                            <p class="text-surface-900 dark:text-surface-0 font-medium mb-1">{{ t('auth.reset.successTitle') }}</p>
                             <p class="text-surface-600 dark:text-surface-400 text-sm">
-                                Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.
+                                {{ t('auth.reset.successDesc') }}
                             </p>
                         </div>
                     </div>
@@ -93,7 +94,7 @@ import { AuthService } from '../../core/services/auth.service';
                 <div class="text-center mt-8">
                     <a [routerLink]="[currentLang, 'auth', 'login']"
                        class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium cursor-pointer text-sm">
-                        <i class="pi pi-chevron-left text-xs"></i> Retour à la connexion
+                        <i class="pi pi-chevron-left text-xs"></i> {{ t('auth.reset.backToLogin') }}
                     </a>
                 </div>
             </div>
@@ -105,6 +106,9 @@ export class ResetPassword {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private messageService = inject(MessageService);
+    private i18n = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     token = '';
     newPassword = '';
@@ -143,8 +147,8 @@ export class ResetPassword {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Réinitialisation impossible',
-                    detail: error.message || 'Le lien est invalide ou a expiré.',
+                    summary: this.t('auth.reset.errSummary'),
+                    detail: error.message || this.t('auth.reset.errDetail'),
                     life: 6000
                 });
             }

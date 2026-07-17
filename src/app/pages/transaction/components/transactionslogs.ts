@@ -17,6 +17,7 @@ import {
 import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { I18nService } from '../../../i18n/i18n.service';
 import { LayoutService } from '../../../layout/service/layout.service';
 
 interface DayGroup {
@@ -53,7 +54,7 @@ interface DayGroup {
                             [disabled]="isCurrentMonth()"></button>
                 </div>
                 <div class="flex-1"></div>
-                <button pButton icon="pi pi-plus" label="Ajouter"
+                <button pButton icon="pi pi-plus" [label]="t('transactions.add')"
                         class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
@@ -61,7 +62,7 @@ interface DayGroup {
             <div class="flex items-center gap-2">
                 <div class="relative flex-1 min-w-0">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
-                    <input pInputText [(ngModel)]="search" placeholder="Rechercher..."
+                    <input pInputText [(ngModel)]="search" [placeholder]="t('transactions.searchPlaceholder')"
                            class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
                 </div>
                 <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
@@ -84,7 +85,7 @@ interface DayGroup {
                 <!-- Revenus -->
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Revenus</span>
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">{{ t('transactions.kpi.income') }}</span>
                         <div class="w-7 h-7 rounded-lg bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
                             <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xs"></i>
                         </div>
@@ -94,7 +95,7 @@ interface DayGroup {
                 <!-- Dépenses -->
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Dépenses</span>
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">{{ t('transactions.kpi.expenses') }}</span>
                         <div class="w-7 h-7 rounded-lg bg-negative-50 dark:bg-negative-500/15 flex items-center justify-center">
                             <i class="pi pi-arrow-up-right text-negative-600 dark:text-negative-400 text-xs"></i>
                         </div>
@@ -104,7 +105,7 @@ interface DayGroup {
                 <!-- Solde net -->
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Solde net</span>
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">{{ t('transactions.kpi.net') }}</span>
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center"
                              [ngClass]="monthSummary().net >= 0 ? 'bg-brand-100 dark:bg-brand-700/20' : 'bg-negative-50 dark:bg-negative-500/15'">
                             <i class="pi text-xs"
@@ -119,7 +120,7 @@ interface DayGroup {
                 <!-- Taux d'épargne -->
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-4 h-[86px] flex flex-col justify-between">
                     <div class="relative flex items-center justify-between">
-                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">Taux d'épargne</span>
+                        <span class="text-xs font-semibold text-surface-400 uppercase tracking-wide">{{ t('transactions.kpi.savingsRate') }}</span>
                         <div class="w-7 h-7 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
                             <i class="pi pi-percentage text-brand-700 dark:text-ochre-400 text-xs"></i>
                         </div>
@@ -149,11 +150,11 @@ interface DayGroup {
                 </div>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
                     {{ search || typeFilter() !== 'all'
-                        ? 'Aucune transaction ne correspond à vos filtres'
-                        : 'Aucune transaction ce mois-ci' }}
+                        ? t('transactions.emptyFiltered')
+                        : t('transactions.emptyMonth') }}
                 </p>
                 @if (!search && typeFilter() === 'all') {
-                    <button pButton icon="pi pi-plus" label="Ajouter une transaction"
+                    <button pButton icon="pi pi-plus" [label]="t('transactions.addTransaction')"
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
             </div>
@@ -234,10 +235,10 @@ interface DayGroup {
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
-                            {{ editingRecord ? 'Modifier la transaction' : 'Nouvelle transaction' }}
+                            {{ editingRecord ? t('transactions.form.editTitle') : t('transactions.form.newTitle') }}
                         </h3>
                         <p class="text-surface-500 dark:text-surface-400 text-sm m-0">
-                            {{ editingRecord ? 'Modifiez les détails' : 'Renseignez les informations ci-dessous' }}
+                            {{ editingRecord ? t('transactions.form.editSub') : t('transactions.form.newSub') }}
                         </p>
                     </div>
                 </div>
@@ -253,21 +254,21 @@ interface DayGroup {
                                 [ngClass]="formType() === 'Expense'
                                     ? 'bg-white dark:bg-surface-700 text-negative shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
-                            <i class="pi pi-arrow-up-right text-xs"></i> Dépense
+                            <i class="pi pi-arrow-up-right text-xs"></i> {{ t('transactions.form.expense') }}
                         </button>
                         <button (click)="setType('Income')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Income'
                                     ? 'bg-white dark:bg-surface-700 text-positive shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
-                            <i class="pi pi-arrow-down-left text-xs"></i> Revenu
+                            <i class="pi pi-arrow-down-left text-xs"></i> {{ t('transactions.form.income') }}
                         </button>
                         <button (click)="setType('Transfer')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Transfer'
                                     ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm'
                                     : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
-                            <i class="pi pi-arrow-right-arrow-left text-xs"></i> Transfert
+                            <i class="pi pi-arrow-right-arrow-left text-xs"></i> {{ t('transactions.form.transfer') }}
                         </button>
                     </div>
 
@@ -275,30 +276,30 @@ interface DayGroup {
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">
-                                Montant <span class="text-surface-400 font-normal">({{ curSymbol() }})</span>
+                                {{ t('transactions.form.amount') }} <span class="text-surface-400 font-normal">({{ curSymbol() }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="form.amount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
                                            styleClass="w-full"
                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
                             @if (submitted && !(form.amount > 0)) {
-                                <small class="text-negative text-xs mt-1">Montant requis</small>
+                                <small class="text-negative text-xs mt-1">{{ t('transactions.form.amountRequired') }}</small>
                             }
                         </div>
                         <div class="flex flex-col gap-1">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Date</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.date') }}</label>
                             <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="yy-mm-dd" styleClass="w-full"
                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                             @if (submitted && !editDate) {
-                                <small class="text-negative text-xs mt-1">Date requise</small>
+                                <small class="text-negative text-xs mt-1">{{ t('transactions.form.dateRequired') }}</small>
                             }
                         </div>
                     </div>
 
                     <!-- Currency -->
                     <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Devise</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.currency') }}</label>
                         <p-select [(ngModel)]="form.currency" [options]="currencyOptions"
                                   optionLabel="label" optionValue="value" appendTo="body" styleClass="w-full" />
                     </div>
@@ -306,10 +307,10 @@ interface DayGroup {
                     <!-- Description -->
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Description <span class="text-surface-400 font-normal">(optionnel)</span>
+                            {{ t('transactions.form.description') }} <span class="text-surface-400 font-normal">{{ t('transactions.form.optional') }}</span>
                         </label>
                         <input pInputText [(ngModel)]="form.remarks"
-                               placeholder="Ex : Salaire avril, Courses Auchan..."
+                               [placeholder]="t('transactions.form.descriptionPlaceholder')"
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
@@ -318,56 +319,56 @@ interface DayGroup {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="flex flex-col gap-1">
                                 <label class="text-sm text-surface-500 dark:text-surface-400">
-                                    Depuis
+                                    {{ t('transactions.form.from') }}
                                     @if (submitted && !form.fromAccountId) {
-                                        <span class="text-negative ml-2 text-xs">Requis</span>
+                                        <span class="text-negative ml-2 text-xs">{{ t('transactions.form.required') }}</span>
                                     }
                                 </label>
                                 <p-select [(ngModel)]="form.fromAccountId" [options]="accountOptions()"
                                           optionLabel="label" optionValue="value"
-                                          placeholder="Compte source" [filter]="accountOptions().length > 6"
+                                          [placeholder]="t('transactions.form.sourceAccount')" [filter]="accountOptions().length > 6"
                                           appendTo="body" styleClass="w-full"
-                                          [emptyMessage]="'Aucun compte monétaire'" />
+                                          [emptyMessage]="t('transactions.form.noMonetaryAccount')" />
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label class="text-sm text-surface-500 dark:text-surface-400">
-                                    Vers
+                                    {{ t('transactions.form.to') }}
                                     @if (submitted && !form.toAccountId) {
-                                        <span class="text-negative ml-2 text-xs">Requis</span>
+                                        <span class="text-negative ml-2 text-xs">{{ t('transactions.form.required') }}</span>
                                     }
                                 </label>
                                 <p-select [(ngModel)]="form.toAccountId" [options]="accountOptions()"
                                           optionLabel="label" optionValue="value"
-                                          placeholder="Compte destination" [filter]="accountOptions().length > 6"
+                                          [placeholder]="t('transactions.form.destAccount')" [filter]="accountOptions().length > 6"
                                           appendTo="body" styleClass="w-full"
-                                          [emptyMessage]="'Aucun compte monétaire'" />
+                                          [emptyMessage]="t('transactions.form.noMonetaryAccount')" />
                             </div>
                         </div>
                         @if (submitted && form.fromAccountId && form.fromAccountId === form.toAccountId) {
-                            <small class="text-negative text-xs -mt-3">Les comptes source et destination doivent être différents.</small>
+                            <small class="text-negative text-xs -mt-3">{{ t('transactions.form.sameAccountError') }}</small>
                         }
                     } @else {
                         <!-- Account selector -->
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">
-                                Compte
+                                {{ t('transactions.form.account') }}
                                 @if (submitted && !form.accountId) {
-                                    <span class="text-negative ml-2 text-xs">Requis</span>
+                                    <span class="text-negative ml-2 text-xs">{{ t('transactions.form.required') }}</span>
                                 }
                             </label>
                             <p-select [(ngModel)]="form.accountId" [options]="accountOptions()"
                                       optionLabel="label" optionValue="value"
-                                      placeholder="Sélectionnez un compte" [filter]="accountOptions().length > 6"
+                                      [placeholder]="t('transactions.form.selectAccount')" [filter]="accountOptions().length > 6"
                                       appendTo="body" styleClass="w-full"
-                                      [emptyMessage]="'Aucun compte monétaire'" />
+                                      [emptyMessage]="t('transactions.form.noMonetaryAccount')" />
                         </div>
 
                         <!-- Category grid -->
                         <div class="flex flex-col gap-3">
                             <label class="text-sm text-surface-500 dark:text-surface-400">
-                                Catégorie
+                                {{ t('transactions.form.category') }}
                                 @if (submitted && !form.category) {
-                                    <span class="text-negative ml-2 text-xs">Requise</span>
+                                    <span class="text-negative ml-2 text-xs">{{ t('transactions.form.categoryRequired') }}</span>
                                 }
                             </label>
                             <div class="grid grid-cols-3 gap-2">
@@ -398,11 +399,11 @@ interface DayGroup {
 
             <ng-template #footer>
                 <div class="flex flex-col gap-2 pt-2 w-full">
-                    <p-button [label]="editingRecord ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
+                    <p-button [label]="editingRecord ? t('transactions.form.update') : t('transactions.form.save')" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                    <p-button [label]="t('transactions.form.cancel')" icon="pi pi-times" [outlined]="true"
                               (click)="hideDialog()"
                               styleClass="w-full !rounded-full !py-3" />
                 </div>
@@ -417,6 +418,10 @@ export class TransactionLogs implements OnInit {
     private confirmationService = inject(ConfirmationService);
     private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
+    private i18n = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
+    private dateLocale(): string { return this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR'; }
 
     @Output() monthChanged = new EventEmitter<string>();
 
@@ -432,11 +437,13 @@ export class TransactionLogs implements OnInit {
     search     = '';
     typeFilter = signal<'all' | 'Income' | 'Expense'>('all');
 
-    typeFilters = [
-        { label: 'Tous',     value: 'all'     as const },
-        { label: 'Revenus',  value: 'Income'  as const },
-        { label: 'Dépenses', value: 'Expense' as const },
-    ];
+    get typeFilters() {
+        return [
+            { label: this.t('transactions.filterAll'),      value: 'all'     as const },
+            { label: this.t('transactions.kpi.income'),     value: 'Income'  as const },
+            { label: this.t('transactions.kpi.expenses'),   value: 'Expense' as const },
+        ];
+    }
 
     // ── Dialog state ──────────────────────────────────────────────
     dialogVisible  = false;
@@ -490,8 +497,9 @@ export class TransactionLogs implements OnInit {
     });
 
     readonly monthLabel = computed(() => {
+        this.i18n.lang(); // track language for reactivity
         const d = new Date(this._selectedYear(), this._selectedMonth() - 1, 1);
-        return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+        return d.toLocaleDateString(this.dateLocale(), { month: 'long', year: 'numeric' })
                 .replace(/^\w/, c => c.toUpperCase());
     });
 
@@ -639,7 +647,7 @@ export class TransactionLogs implements OnInit {
         const dateStr = this.toDateStr(this.editDate);
         this.isSaving.set(true);
 
-        const transferName = 'Transfert';
+        const transferName = this.t('transactions.form.transfer');
 
         try {
             if (this.editingRecord?.id) {
@@ -657,7 +665,7 @@ export class TransactionLogs implements OnInit {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Transaction mise à jour.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.updated'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
             } else {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
@@ -669,15 +677,15 @@ export class TransactionLogs implements OnInit {
                     accountId: isTransfer ? undefined : this.form.accountId,
                     fromAccountId: isTransfer ? this.form.fromAccountId : undefined,
                     toAccountId:   isTransfer ? this.form.toAccountId : undefined,
-                    name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? 'Revenu' : 'Dépense')),
+                    name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? this.t('transactions.form.income') : this.t('transactions.form.expense'))),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
-                this.messageService.add({ severity: 'success', summary: 'Enregistré', detail: 'Transaction ajoutée.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.saved'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
             }
             this.dialogVisible = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: 'Erreur',
-                detail: err?.message || 'Impossible d\'enregistrer la transaction.', life: 5000 });
+            this.messageService.add({ severity: 'error', summary: this.t('transactions.toast.error'),
+                detail: err?.message || this.t('transactions.toast.saveError'), life: 5000 });
         } finally {
             this.isSaving.set(false);
         }
@@ -685,20 +693,20 @@ export class TransactionLogs implements OnInit {
 
     deleteRecord(rec: TransactionRecord) {
         this.confirmationService.confirm({
-            message: `Supprimer cette transaction ?`,
-            header: 'Confirmation',
+            message: this.t('transactions.confirm.deleteMessage'),
+            header: this.t('transactions.confirm.header'),
             icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Supprimer',
-            rejectLabel: 'Annuler',
+            acceptLabel: this.t('transactions.confirm.accept'),
+            rejectLabel: this.t('transactions.confirm.reject'),
             acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 if (!rec.id) return;
                 try {
                     await this.transactionsService.deleteRecords([rec.id]);
                     this.allRecords.update(rs => rs.filter(r => r.id !== rec.id));
-                    this.messageService.add({ severity: 'success', summary: 'Supprimé', detail: 'Transaction supprimée.', life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.deleted'), detail: this.t('transactions.toast.deletedDetail'), life: 3000 });
                 } catch {
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Suppression impossible.', life: 4000 });
+                    this.messageService.add({ severity: 'error', summary: this.t('transactions.toast.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
                 }
             }
         });
@@ -737,11 +745,11 @@ export class TransactionLogs implements OnInit {
         const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
         const dt        = new Date(dateStr + 'T00:00:00');
 
-        if (dt.getTime() === today.getTime())     return 'Aujourd\'hui';
-        if (dt.getTime() === yesterday.getTime()) return 'Hier';
+        if (dt.getTime() === today.getTime())     return this.t('transactions.today');
+        if (dt.getTime() === yesterday.getTime()) return this.t('transactions.yesterday');
 
         return new Date(dateStr + 'T12:00:00')
-            .toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })
+            .toLocaleDateString(this.dateLocale(), { weekday: 'long', day: 'numeric', month: 'short' })
             .replace(/^\w/, c => c.toUpperCase());
     }
 
