@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,10 +6,13 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
+import { MessageService } from 'primeng/api';
+import { Observable } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
+import { ApiService } from '../../../core/services/api.service';
 
 @Component({
     selector: 'app-settings-preferences',
@@ -181,10 +184,9 @@ import { TokenService } from '../../../core/services/token.service';
             <div class="relative">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.data') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
                 </div>
 
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl opacity-50">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
                             <i class="pi pi-download text-brand-700 dark:text-ochre-400 text-xl"></i>
@@ -194,12 +196,11 @@ import { TokenService } from '../../../core/services/token.service';
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.exportDataDesc') }}</p>
                         </div>
                     </div>
-                    <p-button [label]="t('common.export')" icon="pi pi-download" [outlined]="true" [disabled]="true" />
+                    <div class="flex gap-2 shrink-0">
+                        <p-button [label]="'CSV'" icon="pi pi-file" [outlined]="true" [loading]="exporting()" (click)="downloadCsv()" />
+                        <p-button [label]="'JSON'" icon="pi pi-download" [outlined]="true" [loading]="exporting()" (click)="downloadJson()" />
+                    </div>
                 </div>
-                <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 flex items-center gap-1.5">
-                    <i class="pi pi-info-circle"></i>
-                    L'export CSV / PDF sera disponible avec le plan Pro.
-                </p>
             </div>
         </div>
     `
@@ -210,6 +211,39 @@ export class PreferencesSettings implements OnInit {
     private i18n = inject(I18nService);
     private currencyService = inject(CurrencyService);
     private tokenService = inject(TokenService);
+    private api = inject(ApiService);
+    private messageService = inject(MessageService);
+
+    exporting = signal(false);
+
+    downloadJson(): void {
+        this.runExport(() => this.api.exportDataJson(), 'omaad-export.json');
+    }
+
+    downloadCsv(): void {
+        this.runExport(() => this.api.exportTransactionsCsv(), 'omaad-transactions.csv');
+    }
+
+    private runExport(fetch: () => Observable<Blob>, filename: string): void {
+        this.exporting.set(true);
+        fetch().subscribe({
+            next: (blob) => {
+                this.exporting.set(false);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            },
+            error: () => {
+                this.exporting.set(false);
+                this.messageService.add({ severity: 'error', summary: 'Omaad', detail: this.t('settings.preferences.exportError'), life: 4000 });
+            }
+        });
+    }
 
     languages = [
         { name: 'Français', code: 'fr' },

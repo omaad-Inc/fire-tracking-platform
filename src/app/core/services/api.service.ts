@@ -464,6 +464,17 @@ export class ApiService {
         return this.http.get<FxRatesResponse>(`${this.apiUrl}/fx/rates`);
     }
 
+    // ========== DATA EXPORT ==========
+    /** Full account export as a JSON blob (auth added by the interceptor). */
+    exportDataJson(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/export/data.json`, { responseType: 'blob' });
+    }
+
+    /** Transactions as a CSV blob. */
+    exportTransactionsCsv(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/export/transactions.csv`, { responseType: 'blob' });
+    }
+
     // ========== ASSETS ==========
     getAssets(skip = 0, limit = 100): Observable<Asset[]> {
         const params = new HttpParams()
