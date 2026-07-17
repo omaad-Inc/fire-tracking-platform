@@ -125,7 +125,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
             if (progression.length > 0) {
                 // Always derive the displayed total from the real current_value of each asset,
                 // never from the last interpolated chart point which can be slightly off.
-                const realTotal = assets.reduce((sum, a) => sum + a.current_value, 0);
+                const realTotal = assets.reduce((sum, a) => sum + this.cs.toEurFromNative(a.current_value, a.currency), 0);
                 this.currentValue.set(realTotal);
                 this.currentDate.set(this.formatCurrentDate());
                 this.initChart();

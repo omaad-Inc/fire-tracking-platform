@@ -3,6 +3,7 @@ import { Observable, map, catchError, of, firstValueFrom, BehaviorSubject, share
 import { ApiService, Asset, AssetCreate, AssetUpdate } from '../../core/services/api.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AssetsStateService } from './assets-state.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 interface CacheEntry<T> {
     data: T;
@@ -28,6 +29,7 @@ export class PatrimoineService {
     private api = inject(ApiService);
     private analytics = inject(AnalyticsService);
     private stateService = inject(AssetsStateService);
+    private currency = inject(CurrencyService);
     
     // BehaviorSubject to hold the current assets list
     private _assets$ = new BehaviorSubject<PatrimoineAssetItemDto[]>([]);
@@ -254,19 +256,25 @@ export class PatrimoineService {
      * Map API Asset to DTO
      */
     private mapAssetToDto(asset: Asset): PatrimoineAssetItemDto {
+        // Assets are stored in their native currency; convert to the EUR base
+        // here so every downstream `.value` display (which then renders via
+        // <app-amount> in the user's display currency) stays correct.
+        const valueEur = this.currency.toEurFromNative(asset.current_value, asset.currency);
+        const purchaseEur = this.currency.toEurFromNative(asset.purchase_value ?? 0, asset.currency);
+
         // Calculate delta if purchase value is available
         let deltaAbs = 0;
         let deltaPct = 0;
-        
-        if (asset.purchase_value && asset.purchase_value > 0) {
-            deltaAbs = asset.current_value - asset.purchase_value;
-            deltaPct = ((asset.current_value - asset.purchase_value) / asset.purchase_value) * 100;
+
+        if (purchaseEur > 0) {
+            deltaAbs = valueEur - purchaseEur;
+            deltaPct = ((valueEur - purchaseEur) / purchaseEur) * 100;
         }
 
         return {
             id: asset.id,
             name: asset.name,
-            value: asset.current_value,
+            value: valueEur,
             category: asset.category,
             deltaAbs: Math.round(deltaAbs * 100) / 100,
             deltaPct: Math.round(deltaPct * 100) / 100,

@@ -114,6 +114,12 @@ export interface AssetUpdate {
 // ============================================
 // TRANSACTION INTERFACES
 // ============================================
+export interface FxRatesResponse {
+    base: string;
+    rates: Record<string, number>;
+    as_of: string | null;
+}
+
 export type TransactionType = 'income' | 'expense' | 'transfer' | 'investment';
 export type TransactionCategory =
     // Income
@@ -451,6 +457,12 @@ export interface BrokerConnection {
 export class ApiService {
     private http = inject(HttpClient);
     private apiUrl = environment.apiUrl;
+
+    // ========== FX RATES ==========
+    /** Public conversion rates relative to EUR base (see backend /fx/rates). */
+    getFxRates(): Observable<FxRatesResponse> {
+        return this.http.get<FxRatesResponse>(`${this.apiUrl}/fx/rates`);
+    }
 
     // ========== ASSETS ==========
     getAssets(skip = 0, limit = 100): Observable<Asset[]> {

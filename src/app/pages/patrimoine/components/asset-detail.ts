@@ -76,7 +76,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                     <div>
                         <p class="text-surface-500 dark:text-surface-400 text-sm mb-1">{{ formatDate(asset()!.updated_at) }}</p>
                         <div class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0">
-                            <app-amount [value]="asset()!.current_value" />
+                            <app-amount [value]="valueEur()" />
                         </div>
                         @if (gainLoss() !== null) {
                             <div class="flex items-center gap-2 mt-2">
@@ -198,7 +198,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             <p class="kpi-label">Prix unitaire</p>
                             <div class="kpi-value">
                                 @if (displayQuantity() != null && displayQuantity()! > 0) {
-                                    <app-amount [value]="asset()!.current_value / displayQuantity()!" />
+                                    <app-amount [value]="valueEur() / displayQuantity()!" />
                                 } @else {
                                     <span class="text-surface-400">—</span>
                                 }
@@ -234,7 +234,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             <p class="kpi-label">Prix au m²</p>
                             <div class="kpi-value">
                                 @if (asset()!.surface_m2 && asset()!.surface_m2! > 0) {
-                                    <app-amount [value]="asset()!.current_value / asset()!.surface_m2!" />
+                                    <app-amount [value]="valueEur() / asset()!.surface_m2!" />
                                 } @else {
                                     <span class="text-surface-400">—</span>
                                 }
@@ -522,7 +522,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                             <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">Dépréciation estimée</p>
                                             <p class="text-sm font-semibold text-negative">~15 % / an</p>
                                             <p class="text-[11px] text-surface-500 mt-0.5">
-                                                Valeur dans 5 ans : <span class="font-semibold"><app-amount [value]="asset()!.current_value * Math.pow(0.85, 5)" /></span>
+                                                Valeur dans 5 ans : <span class="font-semibold"><app-amount [value]="valueEur() * Math.pow(0.85, 5)" /></span>
                                             </p>
                                         </div>
                                     </div>
@@ -899,6 +899,12 @@ export class AssetDetailPage implements OnInit {
     asset = signal<Asset | null>(null);
     isSaving = signal(false);
     editDialog = false;
+
+    /** Current value converted from the asset's native currency to EUR base,
+     *  so <app-amount> renders it correctly in the user's display currency. */
+    readonly valueEur = computed(() =>
+        this.cs.toEurFromNative(this.asset()?.current_value ?? 0, this.asset()?.currency)
+    );
     editForm = {
         name: '',
         currentValue: 0,
