@@ -75,6 +75,29 @@ const GROUPS = [
                         </div>
                     </div>
                 </div>
+
+                @if (hasMultiCurrency()) {
+                    <!-- Currency exposure — where net worth sits across currencies -->
+                    <div class="mt-4 pt-4 border-t border-surface-200 dark:border-surface-700">
+                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-2">Exposition par devise</div>
+                        <div class="flex h-2 rounded-full overflow-hidden mb-2">
+                            @for (e of currencyExposure(); track e.currency; let i = $index) {
+                                <div [style.width.%]="e.pct"
+                                     [ngClass]="i === 0 ? 'bg-brand-700' : i === 1 ? 'bg-ochre-500' : 'bg-surface-400'"></div>
+                            }
+                        </div>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1">
+                            @for (e of currencyExposure(); track e.currency; let i = $index) {
+                                <span class="inline-flex items-center gap-1.5 text-xs text-surface-600 dark:text-surface-300">
+                                    <span class="w-2 h-2 rounded-full"
+                                          [ngClass]="i === 0 ? 'bg-brand-700' : i === 1 ? 'bg-ochre-500' : 'bg-surface-400'"></span>
+                                    <span class="font-semibold">{{ e.currency }}</span>
+                                    <span class="text-surface-400">{{ e.pct }}%</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
 
             <!-- Progression + allocation donut -->
@@ -250,6 +273,22 @@ export class Patrimoine implements OnInit, OnDestroy {
     totalAssets = computed(() => this.allAssets().reduce((s, a) => s + a.value, 0));
     totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe').reduce((s, d) => s + d.current_amount, 0));
     debtsCount = computed(() => this.debts().filter(d => d.type === 'i_owe').length);
+
+    // ── Currency exposure — how net worth splits across currencies ──
+    // Shown only when the user actually holds more than one currency.
+    currencyExposure = computed(() => {
+        const byCcy: Record<string, number> = {};
+        for (const a of this.allAssets()) {
+            const c = (a.currency || 'EUR').toUpperCase();
+            byCcy[c] = (byCcy[c] ?? 0) + a.value; // value is EUR base
+        }
+        const total = Object.values(byCcy).reduce((s, v) => s + v, 0);
+        if (total <= 0) return [];
+        return Object.entries(byCcy)
+            .map(([currency, eur]) => ({ currency, eur, pct: Math.round((eur / total) * 100) }))
+            .sort((a, b) => b.eur - a.eur);
+    });
+    hasMultiCurrency = computed(() => this.currencyExposure().length > 1);
 
     // ── Net-worth hero ──
     netWorth = computed(() => this.totalAssets() - this.totalDebts());

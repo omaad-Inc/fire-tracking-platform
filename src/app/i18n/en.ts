@@ -602,6 +602,28 @@ export const EN = {
       paymentSuccess: 'Payment recorded.',
     },
   },
+  auth: {
+    login: {
+      title: 'Sign in to your account',
+      noAccount: 'Don\'t have an account yet?',
+      signUp: 'Sign up',
+      google: 'Continue with Google',
+      orEmail: 'or with email',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'Your email address',
+      passwordLabel: 'Password',
+      passwordPlaceholder: 'Your password',
+      submit: 'Sign in',
+      forgot: 'Forgot password?',
+      trustSecure: 'Secure',
+      trustNoCommitment: 'No commitment',
+      trustMultiCurrency: 'Multi-currency',
+      failedSummary: 'Login failed',
+      invalidResponse: 'Invalid response from server. Please try again.',
+      couldNotComplete: 'We could not complete your sign-in. Please try again.',
+      invalidCredentials: 'Invalid credentials',
+    },
+  },
   landing: {
     nav: {
       home: 'Home',

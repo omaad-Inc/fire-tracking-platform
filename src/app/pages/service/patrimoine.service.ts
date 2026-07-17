@@ -15,7 +15,8 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 export interface PatrimoineAssetItemDto {
     id: number;
     name: string;
-    value: number;
+    value: number;          // EUR base
+    currency: string;       // native currency of the asset
     category: string;
     deltaAbs?: number;
     deltaPct?: number;
@@ -275,6 +276,7 @@ export class PatrimoineService {
             id: asset.id,
             name: asset.name,
             value: valueEur,
+            currency: asset.currency || 'EUR',
             category: asset.category,
             deltaAbs: Math.round(deltaAbs * 100) / 100,
             deltaPct: Math.round(deltaPct * 100) / 100,

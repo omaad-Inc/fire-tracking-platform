@@ -602,6 +602,28 @@ export const FR = {
       paymentSuccess: 'Paiement enregistré.',
     },
   },
+  auth: {
+    login: {
+      title: 'Connectez-vous à votre compte',
+      noAccount: 'Pas encore de compte ?',
+      signUp: 'S\'inscrire',
+      google: 'Continuer avec Google',
+      orEmail: 'ou par email',
+      emailLabel: 'Adresse email',
+      emailPlaceholder: 'Votre adresse email',
+      passwordLabel: 'Mot de passe',
+      passwordPlaceholder: 'Votre mot de passe',
+      submit: 'Se connecter',
+      forgot: 'Mot de passe oublié ?',
+      trustSecure: 'Sécurisé',
+      trustNoCommitment: 'Sans engagement',
+      trustMultiCurrency: 'Multi-devises',
+      failedSummary: 'Échec de la connexion',
+      invalidResponse: 'Réponse invalide du serveur. Veuillez réessayer.',
+      couldNotComplete: 'Nous n\'avons pas pu finaliser votre connexion. Veuillez réessayer.',
+      invalidCredentials: 'Identifiants invalides',
+    },
+  },
   landing: {
     nav: {
       home: 'Accueil',

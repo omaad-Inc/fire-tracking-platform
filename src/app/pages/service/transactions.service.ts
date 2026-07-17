@@ -15,7 +15,9 @@ export interface TransactionRecord {
     date: string;
     name: string;
     type: 'Income' | 'Expense' | 'Transfer';
-    amount: number;
+    amount: number;          // EUR base — for display (rendered via <app-amount>) and summaries
+    nativeAmount?: number;   // amount in `currency` — for the edit form
+    currency?: string;       // native currency the transaction was entered in
     remarks?: string;
     category?: string;
     accountId?: number;
@@ -256,12 +258,17 @@ export class TransactionsService {
 
     async addRecord(record: TransactionRecord): Promise<TransactionRecord> {
         try {
-            // Convert from display currency (e.g. FCFA) → EUR before persisting.
+            // Store the amount in its native currency; the backend converts to
+            // EUR at aggregation time. `record.amount` here is the native value
+            // the form captured (in `record.currency`).
+            const nativeAmount = record.amount;
+            const currency = record.currency || 'EUR';
             const transactionData: TransactionCreate = record.type === 'Transfer'
                 ? {
                     type: 'transfer',
                     category: 'transfer',
-                    amount: this.currencyService.toBaseAmount(record.amount),
+                    amount: nativeAmount,
+                    currency,
                     description: record.remarks,
                     date: this.toDateString(record.date),
                     from_account_id: record.fromAccountId,
@@ -270,7 +277,8 @@ export class TransactionsService {
                 : {
                     type: record.type === 'Income' ? 'income' : 'expense',
                     category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                    amount: this.currencyService.toBaseAmount(record.amount),
+                    amount: nativeAmount,
+                    currency,
                     description: record.remarks,
                     date: this.toDateString(record.date),
                     account_id: record.accountId
@@ -295,12 +303,15 @@ export class TransactionsService {
         if (!record.id) throw new Error('Missing id');
 
         try {
-            // Same conversion as addRecord — user edits in display currency.
+            // Native-currency storage — same as addRecord.
+            const nativeAmount = record.amount;
+            const currency = record.currency || 'EUR';
             const transactionData: TransactionUpdate = record.type === 'Transfer'
                 ? {
                     type: 'transfer',
                     category: 'transfer',
-                    amount: this.currencyService.toBaseAmount(record.amount),
+                    amount: nativeAmount,
+                    currency,
                     description: record.remarks,
                     date: this.toDateString(record.date),
                     from_account_id: record.fromAccountId,
@@ -309,7 +320,8 @@ export class TransactionsService {
                 : {
                     type: record.type === 'Income' ? 'income' : 'expense',
                     category: (record.category as TransactionCategory) || this.mapNameToCategory(record.name, record.type),
-                    amount: this.currencyService.toBaseAmount(record.amount),
+                    amount: nativeAmount,
+                    currency,
                     description: record.remarks,
                     date: this.toDateString(record.date),
                     account_id: record.accountId
@@ -446,7 +458,10 @@ export class TransactionsService {
             date: t.date,
             name: CATEGORY_DISPLAY_MAP[t.category] || t.category,
             type,
-            amount: t.amount,
+            // Convert native → EUR base for display/summaries; keep native for editing.
+            amount: this.currencyService.toEurFromNative(t.amount, t.currency),
+            nativeAmount: t.amount,
+            currency: t.currency,
             remarks: t.description ?? undefined,
             category: t.category,
             accountId: t.account_id ?? undefined,
