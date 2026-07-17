@@ -13,6 +13,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
     standalone: true,
@@ -30,15 +31,15 @@ import { CurrencyService } from '../../../core/services/currency.service';
         <!-- ── Top bar ── -->
         <div class="flex flex-col gap-2 mb-5">
             <div class="flex items-center gap-2">
-                <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0 flex-1">Dettes & Créances</h2>
-                <button pButton icon="pi pi-plus" label="Nouveau"
+                <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0 flex-1">{{ t('debts.title') }}</h2>
+                <button pButton icon="pi pi-plus" [label]="t('debts.add')"
                         class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
             <div class="flex items-center gap-2">
                 <div class="relative flex-1 min-w-0">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
-                    <input pInputText [(ngModel)]="search" placeholder="Rechercher..."
+                    <input pInputText [(ngModel)]="search" [placeholder]="t('debts.searchPlaceholder')"
                            class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
                 </div>
                 <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
@@ -71,10 +72,10 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <i class="pi pi-credit-card text-xl text-surface-400"></i>
                 </div>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
-                    {{ search || typeFilter() !== 'all' ? 'Aucun résultat' : 'Aucune dette ou créance enregistrée' }}
+                    {{ search || typeFilter() !== 'all' ? t('debts.emptyNoResult') : t('debts.noDebts') }}
                 </p>
                 @if (!search && typeFilter() === 'all') {
-                    <button pButton icon="pi pi-plus" label="Ajouter"
+                    <button pButton icon="pi pi-plus" [label]="t('debts.addShort')"
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
             </div>
@@ -99,31 +100,31 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                           [ngClass]="rec.type === 'Debt'
                                               ? 'bg-negative-50 dark:bg-negative-500/15 border-negative-100 dark:border-negative-500/20 text-negative dark:text-negative-400'
                                               : 'bg-positive-50 dark:bg-positive-500/15 border-positive-100 dark:border-positive-500/20 text-positive-600 dark:text-positive-400'">
-                                        {{ rec.type === 'Debt' ? 'Je dois' : 'On me doit' }}
+                                        {{ rec.type === 'Debt' ? t('debts.iOwe') : t('debts.owedToMe') }}
                                     </span>
                                 </div>
                                 <div class="flex items-center gap-2 mt-1 text-xs text-surface-500 flex-wrap">
                                     @if (rec.interestRate > 0) {
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-800 text-ochre-700 dark:text-ochre-400 font-medium">
-                                            {{ rec.interestRate }}% intérêt
+                                            {{ rec.interestRate }}% {{ t('debts.interest') }}
                                         </span>
                                     }
-                                    @if (rec.frequency) { <span>{{ rec.frequency }}</span> }
+                                    @if (rec.frequency) { <span>{{ freqLabel(rec.frequency) }}</span> }
                                     @if (rec.date) { <span class="text-surface-400">· {{ rec.date }}</span> }
                                 </div>
                             </div>
                             <!-- Actions: always visible on mobile, hover on desktop -->
                             <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                 <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
-                                        (click)="editRecord(rec)" title="Modifier">
+                                        (click)="editRecord(rec)" [title]="t('debts.editTitle')">
                                     <i class="pi pi-pencil text-xs text-surface-500"></i>
                                 </button>
                                 <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-positive-50 dark:hover:bg-positive-700/30 transition-colors"
-                                        (click)="openAddPaymentDialog(rec)" title="Ajouter un paiement">
+                                        (click)="openAddPaymentDialog(rec)" [title]="t('debts.addPayment.title')">
                                     <i class="pi pi-plus text-xs text-positive-600"></i>
                                 </button>
                                 <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-colors"
-                                        (click)="deleteRecord(rec)" title="Supprimer">
+                                        (click)="deleteRecord(rec)" [title]="t('debts.toast.accept')">
                                     <i class="pi pi-trash text-xs text-surface-500"></i>
                                 </button>
                             </div>
@@ -132,14 +133,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <!-- Remaining amount (prominent) -->
                         <div class="flex items-end justify-between gap-3 mb-3">
                             <div class="min-w-0">
-                                <div class="text-[11px] uppercase tracking-wide text-surface-500 mb-0.5">Restant</div>
+                                <div class="text-[11px] uppercase tracking-wide text-surface-500 mb-0.5">{{ t('debts.remaining') }}</div>
                                 <div class="text-xl font-bold leading-none"
                                      [ngClass]="rec.type === 'Debt' ? 'text-negative' : 'text-positive'">
                                     <app-amount [value]="rec.total - rec.paid" />
                                 </div>
                             </div>
                             <div class="text-right shrink-0">
-                                <div class="text-[11px] text-surface-500 mb-0.5">{{ rec.type === 'Debt' ? 'Payé' : 'Reçu' }} / Total</div>
+                                <div class="text-[11px] text-surface-500 mb-0.5">{{ rec.type === 'Debt' ? t('debts.paidShort') : t('debts.receivedShort') }} / {{ t('debts.total') }}</div>
                                 <div class="text-sm font-semibold text-surface-600 dark:text-surface-300">
                                     <app-amount [value]="rec.paid" /> <span class="text-surface-400">/</span> <app-amount [value]="rec.total" />
                                 </div>
@@ -173,9 +174,9 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">
-                            {{ isEdit ? 'Modifier' : 'Nouvelle dette / créance' }}
+                            {{ isEdit ? t('debts.editTitle') : t('debts.newTitle') }}
                         </h3>
-                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Gérez vos dettes et créances</p>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">{{ t('debts.dialogSub') }}</p>
                     </div>
                 </div>
             </ng-template>
@@ -184,36 +185,36 @@ import { CurrencyService } from '../../../core/services/currency.service';
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-3">
                     <!-- Type toggle -->
                     <div class="flex flex-col gap-1 sm:col-span-2">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Type</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.typeLabel') }}</label>
                         <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl">
                             <button (click)="record.type = 'Debt'"
                                     class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                     [ngClass]="record.type === 'Debt' ? 'bg-white dark:bg-surface-700 text-negative shadow-sm' : 'text-surface-500'">
-                                Dette (je dois)
+                                {{ t('debts.types.debt') }}
                             </button>
                             <button (click)="record.type = 'Receivable'"
                                     class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                     [ngClass]="record.type === 'Receivable' ? 'bg-white dark:bg-surface-700 text-positive shadow-sm' : 'text-surface-500'">
-                                Créance (on me doit)
+                                {{ t('debts.types.receivable') }}
                             </button>
                         </div>
                     </div>
 
                     <!-- Name -->
                     <div class="flex flex-col gap-1 sm:col-span-2">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Nom <span class="text-negative">*</span></label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.name') }} <span class="text-negative">*</span></label>
                         <input pInputText [(ngModel)]="record.name" required
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
-                               placeholder="Ex: Prêt immobilier, Ami..." />
+                               [placeholder]="t('debts.namePlaceholder')" />
                         @if (submitted && !record.name) {
-                            <small class="text-negative text-xs mt-1">Le nom est requis</small>
+                            <small class="text-negative text-xs mt-1">{{ t('debts.nameRequired') }}</small>
                         }
                     </div>
 
                     <!-- Total -->
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Montant total <span class="text-negative">*</span>
+                            {{ t('debts.fields.total') }} <span class="text-negative">*</span>
                             <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
@@ -225,7 +226,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <!-- Paid -->
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            {{ record.type === 'Debt' ? 'Déjà payé' : 'Déjà reçu' }}
+                            {{ record.type === 'Debt' ? t('debts.alreadyPaid') : t('debts.alreadyReceived') }}
                             <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
@@ -236,7 +237,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
                     <!-- Interest Rate -->
                     <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Taux d'intérêt</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.interestRate') }}</label>
                         <p-inputnumber [(ngModel)]="record.interestRate" mode="decimal"
                                        [minFractionDigits]="2" [maxFractionDigits]="2" suffix=" %"
                                        styleClass="w-full"
@@ -245,16 +246,16 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
                     <!-- Frequency -->
                     <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Fréquence</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.frequency') }}</label>
                         <p-select [(ngModel)]="record.frequency" [options]="frequencies"
                                   optionLabel="label" optionValue="value"
-                                  placeholder="Choisir une fréquence"
+                                  [placeholder]="t('debts.chooseFrequency')"
                                   styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                     </div>
 
                     <!-- Date -->
                     <div class="flex flex-col gap-1 sm:col-span-2">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Date</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.date') }}</label>
                         <input type="date" pInputText [(ngModel)]="record.date"
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
@@ -263,11 +264,11 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <ng-template #footer>
                 <div class="flex flex-col gap-2 pt-2 w-full">
-                    <p-button [label]="isEdit ? 'Mettre à jour' : 'Enregistrer'" icon="pi pi-check"
+                    <p-button [label]="isEdit ? t('debts.update') : t('debts.save')" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveRecord()"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                    <p-button [label]="t('debts.cancel')" icon="pi pi-times" [outlined]="true"
                               (click)="hideDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
@@ -284,7 +285,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                         <i class="pi pi-plus text-positive-600 dark:text-positive-400 text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Ajouter un paiement</h3>
+                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('debts.addPayment.title') }}</h3>
                         <p class="text-surface-500 dark:text-surface-400 text-sm m-0">{{ paymentRecord?.name }}</p>
                     </div>
                 </div>
@@ -295,21 +296,21 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     <div class="flex flex-col gap-6 pt-3">
                         <div class="grid grid-cols-3 gap-2 text-center">
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
-                                <div class="text-[10px] text-surface-400 mb-1">Total</div>
+                                <div class="text-[10px] text-surface-400 mb-1">{{ t('debts.total') }}</div>
                                 <div class="text-sm font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="paymentRecord.total" /></div>
                             </div>
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
-                                <div class="text-[10px] text-surface-400 mb-1">Payé</div>
+                                <div class="text-[10px] text-surface-400 mb-1">{{ t('debts.paidShort') }}</div>
                                 <div class="text-sm font-bold text-positive"><app-amount [value]="paymentRecord.paid" /></div>
                             </div>
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
-                                <div class="text-[10px] text-surface-400 mb-1">Reste</div>
+                                <div class="text-[10px] text-surface-400 mb-1">{{ t('debts.remaining') }}</div>
                                 <div class="text-sm font-bold text-negative"><app-amount [value]="paymentRecord.total - paymentRecord.paid" /></div>
                             </div>
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">
-                                Montant à ajouter <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
+                                {{ t('debts.addPayment.amount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="addPaymentAmount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
@@ -317,7 +318,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                            styleClass="w-full"
                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
                             @if (addPaymentSubmitted && !(addPaymentAmount! > 0)) {
-                                <small class="text-negative text-xs mt-1">Montant requis</small>
+                                <small class="text-negative text-xs mt-1">{{ t('debts.amountRequired') }}</small>
                             }
                         </div>
                     </div>
@@ -326,10 +327,10 @@ import { CurrencyService } from '../../../core/services/currency.service';
 
             <ng-template #footer>
                 <div class="flex flex-col gap-2 pt-2 w-full">
-                    <p-button label="Valider" icon="pi pi-check"
+                    <p-button [label]="t('debts.payConfirm')" icon="pi pi-check"
                               (click)="confirmAddPayment()"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                    <p-button [label]="t('debts.cancel')" icon="pi pi-times" [outlined]="true"
                               (click)="closeAddPaymentDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
@@ -341,6 +342,13 @@ export class DebtsProgress implements OnInit {
     cs = inject(CurrencyService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
+    private i18n = inject(I18nService);
+
+    t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
+    freqLabel(v: string | null | undefined): string {
+        const map: Record<string, string> = { Mensuel: 'debts.freqMonthly', Unique: 'debts.freqOnce', Libre: 'debts.freqFree' };
+        return v && map[v] ? this.t(map[v]) : (v ?? '');
+    }
 
     productDialog      = false;
     addPaymentDialog   = false;
@@ -358,17 +366,21 @@ export class DebtsProgress implements OnInit {
     search     = '';
     typeFilter = signal<'all' | 'Debt' | 'Receivable'>('all');
 
-    typeFilters = [
-        { label: 'Tous',      value: 'all'         as const },
-        { label: 'Dettes',    value: 'Debt'        as const },
-        { label: 'Créances',  value: 'Receivable'  as const },
-    ];
+    get typeFilters() {
+        return [
+            { label: this.t('debts.filterAll'),        value: 'all'         as const },
+            { label: this.t('debts.filterDebt'),       value: 'Debt'        as const },
+            { label: this.t('debts.filterReceivable'), value: 'Receivable'  as const },
+        ];
+    }
 
-    frequencies = [
-        { label: 'Mensuel', value: 'Mensuel' },
-        { label: 'Unique',  value: 'Unique'  },
-        { label: 'Libre',   value: 'Libre'   },
-    ];
+    get frequencies() {
+        return [
+            { label: this.t('debts.freqMonthly'), value: 'Mensuel' },
+            { label: this.t('debts.freqOnce'),    value: 'Unique'  },
+            { label: this.t('debts.freqFree'),    value: 'Libre'   },
+        ];
+    }
 
     readonly filteredRecords = computed(() => {
         const filter = this.typeFilter();
@@ -411,20 +423,20 @@ export class DebtsProgress implements OnInit {
 
     deleteRecord(record: DebtRecord) {
         this.confirmationService.confirm({
-            message: `Supprimer "${record.name}" ?`,
-            header: 'Confirmation',
+            message: this.t('debts.messages.deleteConfirm', { name: record.name }),
+            header: this.t('debts.toast.confirmHeader'),
             icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Supprimer',
-            rejectLabel: 'Annuler',
+            acceptLabel: this.t('debts.toast.accept'),
+            rejectLabel: this.t('debts.toast.reject'),
             acceptButtonStyleClass: '!bg-negative !border-negative',
             accept: async () => {
                 if (!record.id) return;
                 try {
                     await this.debtsService.deleteRecords([record.id]);
                     this.allRecords.update(rs => rs.filter(r => r.id !== record.id));
-                    this.messageService.add({ severity: 'success', summary: 'Supprimé', detail: 'Enregistrement supprimé.', life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: this.t('debts.toast.deleted'), detail: this.t('debts.toast.deletedDetail'), life: 3000 });
                 } catch {
-                    this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Suppression impossible.', life: 4000 });
+                    this.messageService.add({ severity: 'error', summary: this.t('debts.toast.error'), detail: this.t('debts.toast.deleteError'), life: 4000 });
                 }
             }
         });
@@ -439,15 +451,15 @@ export class DebtsProgress implements OnInit {
             if (this.record.id) {
                 const updated = await this.debtsService.updateRecord(this.record);
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: 'Modifié', detail: 'Enregistrement mis à jour.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('debts.toast.updated'), detail: this.t('debts.toast.updatedDetail'), life: 3000 });
             } else {
                 const created = await this.debtsService.addRecord(this.record);
                 this.allRecords.update(rs => [...rs, created]);
-                this.messageService.add({ severity: 'success', summary: 'Créé', detail: 'Enregistrement ajouté.', life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('debts.toast.created'), detail: this.t('debts.toast.createdDetail'), life: 3000 });
             }
             this.productDialog = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: err?.message || 'Impossible d\'enregistrer.', life: 5000 });
+            this.messageService.add({ severity: 'error', summary: this.t('debts.toast.error'), detail: err?.message || this.t('debts.toast.saveError'), life: 5000 });
         } finally {
             this.isSaving.set(false);
         }
@@ -478,10 +490,10 @@ export class DebtsProgress implements OnInit {
         try {
             const updated = await this.debtsService.addPayment(this.paymentRecord.id, this.addPaymentAmount!);
             this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-            this.messageService.add({ severity: 'success', summary: 'Paiement ajouté', detail: 'Remboursement enregistré.', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: this.t('debts.toast.paymentAdded'), detail: this.t('debts.toast.paymentAddedDetail'), life: 3000 });
             this.closeAddPaymentDialog();
         } catch {
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Impossible d\'ajouter le paiement.', life: 4000 });
+            this.messageService.add({ severity: 'error', summary: this.t('debts.toast.error'), detail: this.t('debts.toast.paymentError'), life: 4000 });
         }
     }
 }
