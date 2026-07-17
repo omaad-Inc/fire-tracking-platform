@@ -174,7 +174,7 @@ export class RecentTransactionsWidget implements OnInit {
 
         return {
             id: r.id || '',
-            category: r.name,
+            category: this.catLabel(r.category, r.name),
             description: r.remarks ?? '',
             amount: isTransfer ? r.amount : (isExpense ? -r.amount : r.amount),
             isTransfer,
@@ -193,6 +193,13 @@ export class RecentTransactionsWidget implements OnInit {
 
     t(key: string): string {
         return this.i18n.t(key);
+    }
+
+    /** Localized category label, falling back to the mapped display name. */
+    private catLabel(cat: string | undefined, fallback: string): string {
+        const key = `categories.${cat || ''}`;
+        const label = this.i18n.t(key);
+        return label !== key ? label : fallback;
     }
 
     link(...segments: string[]): any[] {
