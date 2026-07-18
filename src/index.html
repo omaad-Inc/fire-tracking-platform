@@ -42,13 +42,10 @@
     <!-- Manifest -->
     <link rel="manifest" href="/manifest.webmanifest"/>
     
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com"/>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <!-- Fonts: Inter self-hosted (see assets/layout/_fonts.scss) — offline + no
+         render-blocking Google Fonts round-trip. Preload the latin file. -->
+    <link rel="preload" href="assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin/>
 
-    <!-- Fonts: Inter — modern, data-optimized, tabular numbers -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    
     <!-- Open Graph / Social -->
     <meta property="og:type" content="website"/>
     <meta property="og:title" content="Omaad Wealth — Construis. Protège. Règne."/>
