@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { I18nService } from '../../i18n/i18n.service';
+import { ShareContextService } from '../../core/services/share-context.service';
 import { ApiService, SavingGoal } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
@@ -48,6 +49,7 @@ import { progressPercent } from './goal-utils';
                     </div>
                 </div>
                 <p-button
+                    *ngIf="!share.active()"
                     icon="pi pi-plus"
                     [label]="i18n.t('goals.add')"
                     (onClick)="openAdd()"
@@ -121,6 +123,7 @@ import { progressPercent } from './goal-utils';
                         {{ i18n.t('goals.empty.subtitle') }}
                     </p>
                     <p-button
+                        *ngIf="!share.active()"
                         icon="pi pi-plus"
                         [label]="i18n.t('goals.empty.cta')"
                         (onClick)="openAdd()"
@@ -154,6 +157,7 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
     private message = inject(MessageService);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
+    share = inject(ShareContextService);
 
     private sub?: Subscription;
 

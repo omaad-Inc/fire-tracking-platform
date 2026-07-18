@@ -14,6 +14,7 @@ import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { ShareContextService } from '../../../core/services/share-context.service';
 
 @Component({
     standalone: true,
@@ -32,7 +33,7 @@ import { I18nService } from '../../../i18n/i18n.service';
         <div class="flex flex-col gap-2 mb-5">
             <div class="flex items-center gap-2">
                 <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0 flex-1">{{ t('debts.title') }}</h2>
-                <button pButton icon="pi pi-plus" [label]="t('debts.add')"
+                <button *ngIf="!share.active()" pButton icon="pi pi-plus" [label]="t('debts.add')"
                         class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
@@ -74,7 +75,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
                     {{ search || typeFilter() !== 'all' ? t('debts.emptyNoResult') : t('debts.noDebts') }}
                 </p>
-                @if (!search && typeFilter() === 'all') {
+                @if (!share.active() && !search && typeFilter() === 'all') {
                     <button pButton icon="pi pi-plus" [label]="t('debts.addShort')"
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
@@ -114,7 +115,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                 </div>
                             </div>
                             <!-- Actions: always visible on mobile, hover on desktop -->
-                            <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                            <div *ngIf="!share.active()" class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                 <button class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                         (click)="editRecord(rec)" [title]="t('debts.editTitle')">
                                     <i class="pi pi-pencil text-xs text-surface-500"></i>
@@ -343,6 +344,7 @@ export class DebtsProgress implements OnInit {
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
     private i18n = inject(I18nService);
+    share = inject(ShareContextService);
 
     t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
     freqLabel(v: string | null | undefined): string {
