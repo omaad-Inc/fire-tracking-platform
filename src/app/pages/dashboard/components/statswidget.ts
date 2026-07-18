@@ -69,7 +69,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <!-- KPI Card 1 - Patrimoine -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer transition-colors duration-300"
-                     [routerLink]="link('pages','patrimoine')" role="link" aria-label="Voir le patrimoine" tabindex="0">
+                     [routerLink]="link('pages','patrimoine')" role="link" [attr.aria-label]="t('dashboard.kpi.viewPatrimoine')" tabindex="0">
                     <div class="relative flex justify-between items-start mb-4">
                         <div>
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.netWorth') }}</span>
@@ -106,7 +106,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <!-- KPI Card 2 - Flux Mensuel -->
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer transition-colors duration-300"
-                     [routerLink]="link('pages','transaction')" role="link" aria-label="Voir les transactions" tabindex="0">
+                     [routerLink]="link('pages','transaction')" role="link" [attr.aria-label]="t('dashboard.kpi.viewTransactions')" tabindex="0">
                     <div class="relative flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.monthlyFlux') }}</span>
@@ -164,7 +164,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4 h-full">
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 h-full flex flex-col cursor-pointer transition-colors duration-300"
                      [routerLink]="fireProgress() && (fireProgress()!.targetAmount) > 0 ? link('pages','goals') : link('pages','fire')"
-                     role="link" aria-label="Voir l'objectif financier" tabindex="0">
+                     role="link" [attr.aria-label]="t('dashboard.kpi.viewFireGoal')" tabindex="0">
                     <div class="relative flex justify-between items-start mb-3">
                         <div class="flex-1 min-w-0">
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>

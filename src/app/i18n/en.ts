@@ -456,6 +456,9 @@ export const EN = {
       fireYearsLeft: 'years left',
       fireReached: 'Goal reached!',
       addTransaction: 'Add a transaction',
+      viewPatrimoine: 'View portfolio',
+      viewTransactions: 'View transactions',
+      viewFireGoal: 'View financial goal',
     },
   },
   patrimoine: {
@@ -584,6 +587,17 @@ export const EN = {
       header: 'Confirmation',
       accept: 'Delete',
       reject: 'Cancel',
+    },
+    summary: {
+      title: 'Financial summary',
+      balancePositive: 'Positive balance',
+      balanceNegative: 'Negative balance',
+      income: 'Income',
+      expenses: 'Expenses',
+      spendBreakdown: 'Spending breakdown',
+      noExpense: 'No expense this month',
+      countOne: '{{count}} transaction this month',
+      countMany: '{{count}} transactions this month',
     },
   },
   savings: {

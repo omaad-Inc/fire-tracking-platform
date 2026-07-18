@@ -456,6 +456,9 @@ export const FR = {
       fireYearsLeft: 'ans restants',
       fireReached: 'Objectif atteint !',
       addTransaction: 'Ajouter une transaction',
+      viewPatrimoine: 'Voir le patrimoine',
+      viewTransactions: 'Voir les transactions',
+      viewFireGoal: 'Voir l\'objectif financier',
     },
   },
   patrimoine: {
@@ -584,6 +587,17 @@ export const FR = {
       header: 'Confirmation',
       accept: 'Supprimer',
       reject: 'Annuler',
+    },
+    summary: {
+      title: 'Résumé financier',
+      balancePositive: 'Solde positif',
+      balanceNegative: 'Solde négatif',
+      income: 'Revenus',
+      expenses: 'Dépenses',
+      spendBreakdown: 'Répartition des dépenses',
+      noExpense: 'Aucune dépense ce mois-ci',
+      countOne: '{{count}} transaction ce mois',
+      countMany: '{{count}} transactions ce mois',
     },
   },
   savings: {

@@ -188,7 +188,8 @@ export class RecentTransactionsWidget implements OnInit {
 
     private formatDate(dateStr: string): string {
         const date = new Date(dateStr);
-        return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+        const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
+        return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
     }
 
     t(key: string): string {

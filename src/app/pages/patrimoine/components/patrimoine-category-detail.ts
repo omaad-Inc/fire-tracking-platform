@@ -6,6 +6,7 @@ import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimo
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { I18nService } from '../../../i18n/i18n.service';
 
 interface GroupConfig {
     id: string;
@@ -264,6 +265,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     private patrimoineService = inject(PatrimoineService);
     private dashboardService = inject(DashboardService);
     private cs = inject(CurrencyService);
+    private i18n = inject(I18nService);
 
     // ── State (plain properties, not signals — avoids effect timing issues) ──
     loading = true;
@@ -284,7 +286,10 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     ];
     selectedMonths = 0;
 
-    todayLabel = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    get todayLabel(): string {
+        const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
+        return new Date().toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+    }
 
     lineData: any = null;
     lineOptions: any = null;
