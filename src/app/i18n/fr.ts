@@ -1301,7 +1301,7 @@ export const FR = {
       stat2Label: 'devises supportées (EUR, XOF, USD)',
       stat3Value: '2',
       stat3Label: 'continents couverts',
-      stat4Value: '1ᵉʳ juin',
+      stat4Value: 'Bientôt',
       stat4Label: 'lancement public',
     },
     wealthScore: {

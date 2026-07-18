@@ -1301,7 +1301,7 @@ export const EN = {
       stat2Label: 'currencies supported (EUR, XOF, USD)',
       stat3Value: '2',
       stat3Label: 'continents covered',
-      stat4Value: 'Jun 1',
+      stat4Value: 'Soon',
       stat4Label: 'public launch',
     },
     wealthScore: {
