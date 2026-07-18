@@ -35,6 +35,7 @@ interface AssetFormData {
     tontineStartDate: string;
     tontineCollectionDate: string;
     tontineStatus: 'en_cours' | 'mise_recue' | 'termine';
+    tontineFrequency: 'monthly' | 'weekly';
     mobileMoneyProvider: string;
     surfaceM2: number;
     region: string;
@@ -222,6 +223,11 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Statut</label>
                                                 <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
+                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Fréquence' : 'Frequency' }}</label>
+                                                <p-select [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
@@ -479,7 +485,7 @@ export class AddAssetPage implements OnInit {
         name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
         purchaseDate: '', institution: '', owners: [],
         tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
-        tontineCollectionDate: '', tontineStatus: 'en_cours', mobileMoneyProvider: '',
+        tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
         surfaceM2: 0, region: '', currency: this.cs.config().code
     };
 
@@ -536,6 +542,10 @@ export class AddAssetPage implements OnInit {
         { label: 'Terminée', value: 'termine' }
     ];
 
+    tontineFrequencyOptions = computed(() => this.isFr()
+        ? [{ label: 'Mensuelle', value: 'monthly' }, { label: 'Hebdomadaire', value: 'weekly' }]
+        : [{ label: 'Monthly', value: 'monthly' }, { label: 'Weekly', value: 'weekly' }]);
+
     selectedCard = computed(() => this.categoryCards().find(c => c.value === this.selectedCategory()) ?? null);
 
     filteredCategories = computed(() => {
@@ -588,7 +598,7 @@ export class AddAssetPage implements OnInit {
             purchaseDate: '', institution: '',
             owners: [{ name: this.userName, initials: this.userInitials, percentage: 100 }],
             tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
-            tontineCollectionDate: '', tontineStatus: 'en_cours', mobileMoneyProvider: '',
+            tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
             surfaceM2: 0, region: '', currency: this.cs.config().code
         };
         this.selectedCategory.set('');
@@ -748,6 +758,7 @@ export class AddAssetPage implements OnInit {
                     // New dedicated tontine columns — no more overloading purchase_*.
                     tontine_monthly_contribution: f.tontineMonthlyContribution,
                     tontine_participants: f.tontineParticipants,
+                    tontine_frequency: f.tontineFrequency,
                     tontine_start_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
                     tontine_collection_date: f.tontineCollectionDate || null,
                     tontine_status: f.tontineStatus,

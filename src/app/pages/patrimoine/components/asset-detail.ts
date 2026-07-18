@@ -18,6 +18,7 @@ import { ApiService, Asset } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { TontineCyclesComponent } from './tontine-cycles';
 import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatus } from '../asset-form-shape';
 
 @Component({
@@ -25,7 +26,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule, ButtonModule, TagModule, DividerModule,
               ConfirmDialogModule, ToastModule, DialogModule, InputTextModule, InputNumberModule,
-              DatePickerModule, SelectModule, AppAmountComponent],
+              DatePickerModule, SelectModule, AppAmountComponent, TontineCyclesComponent],
     providers: [ConfirmationService, MessageService],
     template: `
         <p-toast position="top-center" />
@@ -418,6 +419,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 }
                             </div>
                         </div>
+                        <app-tontine-cycles class="block mt-4" [assetId]="asset()!.id" [currency]="asset()!.currency" />
                     }
                     @case ('MOBILE_MONEY') {
                         <div class="detail-surface">
@@ -598,12 +600,21 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 </div>
                             </div>
 
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">Statut</label>
-                                <p-select [(ngModel)]="editForm.tontineStatus"
-                                          [options]="tontineStatusOptions"
-                                          optionLabel="label" optionValue="value"
-                                          styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Statut</label>
+                                    <p-select [(ngModel)]="editForm.tontineStatus"
+                                              [options]="tontineStatusOptions"
+                                              optionLabel="label" optionValue="value"
+                                              styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <label class="text-sm text-surface-500 dark:text-surface-400">Fréquence</label>
+                                    <p-select [(ngModel)]="editForm.tontineFrequency"
+                                              [options]="tontineFrequencyOptions"
+                                              optionLabel="label" optionValue="value"
+                                              styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                </div>
                             </div>
 
                             <div class="flex flex-col gap-1.5">
@@ -926,6 +937,7 @@ export class AssetDetailPage implements OnInit {
         tontineStartDate: <Date|null>null,
         tontineCollectionDate: <Date|null>null,
         tontineStatus: <TontineStatus>'en_cours',
+        tontineFrequency: <'monthly'|'weekly'>'monthly',
         // Mobile Money
         mobileMoneyOperator: '',
     };
@@ -943,6 +955,11 @@ export class AssetDetailPage implements OnInit {
         { value: 'en_cours',   label: 'En cours' },
         { value: 'mise_recue', label: 'Mise reçue' },
         { value: 'termine',    label: 'Terminée' },
+    ];
+
+    readonly tontineFrequencyOptions = [
+        { value: 'monthly', label: 'Mensuelle' },
+        { value: 'weekly',  label: 'Hebdomadaire' },
     ];
 
     readonly mobileMoneyOperatorOptions = MOBILE_MONEY_OPERATORS.map(o => ({ value: o, label: o }));
@@ -1289,6 +1306,7 @@ export class AssetDetailPage implements OnInit {
             tontineStartDate: a.tontine_start_date ? new Date(a.tontine_start_date) : null,
             tontineCollectionDate: a.tontine_collection_date ? new Date(a.tontine_collection_date) : null,
             tontineStatus: (a.tontine_status as TontineStatus) ?? 'en_cours',
+            tontineFrequency: (a.tontine_frequency as 'monthly'|'weekly') ?? 'monthly',
             // Mobile Money
             mobileMoneyOperator: a.mobile_money_operator ?? '',
         };
@@ -1322,6 +1340,7 @@ export class AssetDetailPage implements OnInit {
             payload.tontine_start_date           = this.toIsoDate(f.tontineStartDate);
             payload.tontine_collection_date      = this.toIsoDate(f.tontineCollectionDate);
             payload.tontine_status               = f.tontineStatus;
+            payload.tontine_frequency            = f.tontineFrequency;
             // Clear any junk from legacy overloaded columns
             payload.purchase_value = null;
             payload.purchase_date  = null;
