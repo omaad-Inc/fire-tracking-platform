@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed, inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, Output, EventEmitter } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +16,7 @@ import {
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
 import { PatrimoineService } from '../../service/patrimoine.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -411,9 +413,10 @@ interface DayGroup {
         </p-dialog>
     `
 })
-export class TransactionLogs implements OnInit {
+export class TransactionLogs implements OnInit, OnDestroy {
     private transactionsService = inject(TransactionsService);
     private patrimoineService   = inject(PatrimoineService);
+    private state               = inject(AssetsStateService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
     private layoutService       = inject(LayoutService);
@@ -553,8 +556,16 @@ export class TransactionLogs implements OnInit {
             }));
     });
 
+    private sub?: Subscription;
+
     ngOnInit() {
         this.load();
+        // Reflect a quick-add from the FAB without leaving the page.
+        this.sub = this.state.transactionsUpdated$.subscribe(() => this.load());
+    }
+
+    ngOnDestroy() {
+        this.sub?.unsubscribe();
     }
 
     private async load() {

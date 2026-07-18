@@ -1,7 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
@@ -87,11 +89,13 @@ interface TransactionDisplay {
         </div>
     `
 })
-export class RecentTransactionsWidget implements OnInit {
+export class RecentTransactionsWidget implements OnInit, OnDestroy {
     private transactionsService = inject(TransactionsService);
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private state = inject(AssetsStateService);
 
+    private sub?: Subscription;
     loading = signal(true);
     transactions = signal<TransactionDisplay[]>([]);
 
@@ -151,6 +155,12 @@ export class RecentTransactionsWidget implements OnInit {
 
     async ngOnInit() {
         await this.loadRecent();
+        // Reflect a quick-add (or any) new transaction without a navigation.
+        this.sub = this.state.transactionsUpdated$.subscribe(() => this.loadRecent());
+    }
+
+    ngOnDestroy() {
+        this.sub?.unsubscribe();
     }
 
     private async loadRecent() {
