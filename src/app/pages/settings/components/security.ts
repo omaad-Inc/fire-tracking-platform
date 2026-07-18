@@ -9,7 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, TwoFactorSetup } from '../../../core/services/auth.service';
 import { PinService } from '../../../core/services/pin.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
@@ -127,21 +127,69 @@ import { firstValueFrom } from 'rxjs';
                                 </a>
                             </div>
                         </div>
-                    } @else {
-                        <!-- Email user — 2FA coming soon -->
-                        <div class="flex items-center gap-4 p-4 rounded-2xl border border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800/50">
-                            <div class="w-10 h-10 rounded-xl bg-surface-200 dark:bg-surface-700 flex items-center justify-center shrink-0">
-                                <i class="pi pi-clock text-surface-500"></i>
+                    } @else if (twofaLoading()) {
+                        <div class="flex justify-center py-6"><i class="pi pi-spin pi-spinner text-surface-400"></i></div>
+                    } @else if (twofaBackupCodes()) {
+                        <!-- Backup codes — shown once -->
+                        <div class="p-4 rounded-2xl bg-ochre-50 dark:bg-ochre-900/15 border border-ochre-100 dark:border-ochre-700/40">
+                            <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">{{ t('security.2fa.backupTitle') }}</p>
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mb-3">{{ t('security.2fa.backupDesc') }}</p>
+                            <div class="grid grid-cols-2 gap-2 mb-3">
+                                @for (code of twofaBackupCodes()!; track code) {
+                                    <code class="text-sm font-mono text-center py-1.5 rounded-lg bg-surface-0 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 tracking-wider">{{ code }}</code>
+                                }
                             </div>
+                            <button class="px-4 py-2 rounded-xl bg-brand-700 text-white text-sm font-semibold" (click)="finishTwofaBackup()">{{ t('security.2fa.backupDone') }}</button>
+                        </div>
+                    } @else if (twofaSetup()) {
+                        <!-- Setup: scan QR + verify a code -->
+                        <div class="space-y-4">
+                            <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.2fa.setupHint') }}</p>
+                            <div class="flex flex-col items-center gap-3">
+                                <img [src]="twofaSetup()!.qr_data_uri" alt="QR" class="w-44 h-44 rounded-xl border border-surface-200 dark:border-surface-700 bg-white p-2" />
+                                <code class="text-xs font-mono text-surface-500 dark:text-surface-400 break-all text-center max-w-full">{{ twofaSetup()!.secret }}</code>
+                            </div>
+                            <input pInputText type="text" inputmode="numeric" [(ngModel)]="twofaCode" name="twofaCode" [placeholder]="t('security.2fa.codePlaceholder')" maxlength="6"
+                                   class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-2.5 focus:!border-brand-700 tracking-widest text-center" />
+                            <div class="flex gap-2">
+                                <button class="flex-1 px-4 py-2.5 rounded-xl bg-brand-700 text-white text-sm font-semibold disabled:opacity-50" [disabled]="twofaCode.trim().length !== 6 || twofaBusy()" (click)="confirmTwofaEnable()">
+                                    @if (twofaBusy()) { <i class="pi pi-spin pi-spinner mr-1"></i> }{{ t('security.2fa.verifyEnable') }}
+                                </button>
+                                <button class="px-4 py-2.5 rounded-xl border border-surface-300 dark:border-surface-600 text-sm text-surface-600 dark:text-surface-400" (click)="cancelTwofaSetup()">{{ t('common.cancel') }}</button>
+                            </div>
+                        </div>
+                    } @else if (twofaEnabled()) {
+                        <!-- Enabled -->
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-positive-50 dark:bg-positive-700/15 border border-positive-100 dark:border-positive-700/40">
+                            <div class="w-10 h-10 rounded-xl bg-positive/10 flex items-center justify-center shrink-0 mt-0.5"><i class="pi pi-verified text-positive text-lg"></i></div>
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('security.twoFA') }}</p>
-                                    <span class="px-2 py-0.5 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-[10px] font-semibold uppercase tracking-wide">{{ t('security.soon') }}</span>
-                                </div>
-                                <p class="text-xs text-surface-500 dark:text-surface-400">
-                                    {{ t('security.twoFASoon') }}
-                                </p>
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">{{ t('security.2fa.onTitle') }}</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed mb-2">{{ t('security.2fa.onDesc') }}</p>
+                                @if (!showTwofaDisable()) {
+                                    <button class="text-xs text-negative font-medium hover:underline" (click)="showTwofaDisable.set(true)">{{ t('security.2fa.disable') }}</button>
+                                } @else {
+                                    <div class="mt-2 space-y-2">
+                                        <input pInputText type="text" inputmode="numeric" [(ngModel)]="disableCode" name="disableCode" [placeholder]="t('security.2fa.disableCodePlaceholder')"
+                                               class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-2 focus:!border-brand-700 tracking-widest text-center text-sm" />
+                                        <div class="flex gap-2">
+                                            <button class="flex-1 px-3 py-2 rounded-xl bg-negative text-white text-xs font-semibold disabled:opacity-50" [disabled]="!disableCode.trim() || twofaBusy()" (click)="confirmTwofaDisable()">{{ t('security.2fa.confirmDisable') }}</button>
+                                            <button class="px-3 py-2 rounded-xl border border-surface-300 dark:border-surface-600 text-xs text-surface-500" (click)="showTwofaDisable.set(false)">{{ t('common.cancel') }}</button>
+                                        </div>
+                                    </div>
+                                }
                             </div>
+                        </div>
+                    } @else {
+                        <!-- Disabled: offer to enable -->
+                        <div class="flex items-center gap-4 p-4 rounded-2xl border border-surface-200 dark:border-surface-700">
+                            <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0"><i class="pi pi-shield text-brand-700 dark:text-ochre-400"></i></div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-0.5">{{ t('security.twoFA') }}</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.2fa.offDesc') }}</p>
+                            </div>
+                            <button class="px-4 py-2 rounded-xl bg-brand-700 text-white text-sm font-semibold shrink-0 disabled:opacity-50" [disabled]="twofaBusy()" (click)="startTwofaSetup()">
+                                @if (twofaBusy()) { <i class="pi pi-spin pi-spinner"></i> } @else { {{ t('security.2fa.enable') }} }
+                            </button>
                         </div>
                     }
                 </div>
@@ -554,6 +602,74 @@ export class SecuritySettings implements OnInit {
         if (u && !u.auth_provider && u.avatar_url?.includes('googleusercontent.com')) {
             this.tokenService.setUser({ ...u, auth_provider: 'google' });
         }
+        // TOTP 2FA is for local (non-Google) accounts; Google runs its own.
+        if (!this.isGoogleUser()) this.loadTwofaStatus();
+    }
+
+    // ── TOTP two-factor auth ────────────────────────────────────────────────
+    twofaLoading     = signal(true);
+    twofaEnabled     = signal(false);
+    twofaSetup       = signal<TwoFactorSetup | null>(null);
+    twofaBackupCodes = signal<string[] | null>(null);
+    twofaBusy        = signal(false);
+    showTwofaDisable = signal(false);
+    twofaCode   = '';
+    disableCode = '';
+
+    private loadTwofaStatus(): void {
+        this.twofaLoading.set(true);
+        this.authService.get2faStatus().subscribe({
+            next: s => { this.twofaEnabled.set(s.enabled); this.twofaLoading.set(false); },
+            error: () => this.twofaLoading.set(false),
+        });
+    }
+
+    startTwofaSetup(): void {
+        this.twofaBusy.set(true);
+        this.authService.setup2fa().subscribe({
+            next: s => { this.twofaSetup.set(s); this.twofaCode = ''; this.twofaBusy.set(false); },
+            error: err => { this.twofaBusy.set(false); this.toast2fa(err?.message || this.t('security.2fa.error'), 'error'); },
+        });
+    }
+
+    cancelTwofaSetup(): void { this.twofaSetup.set(null); this.twofaCode = ''; }
+
+    confirmTwofaEnable(): void {
+        const code = this.twofaCode.trim();
+        if (code.length !== 6 || this.twofaBusy()) return;
+        this.twofaBusy.set(true);
+        this.authService.enable2fa(code).subscribe({
+            next: r => {
+                this.twofaBusy.set(false);
+                this.twofaSetup.set(null);
+                this.twofaEnabled.set(true);
+                this.twofaBackupCodes.set(r.backup_codes);
+                this.toast2fa(this.t('security.2fa.enabled'), 'success');
+            },
+            error: err => { this.twofaBusy.set(false); this.toast2fa(err?.message || this.t('security.2fa.invalidCode'), 'error'); },
+        });
+    }
+
+    finishTwofaBackup(): void { this.twofaBackupCodes.set(null); }
+
+    confirmTwofaDisable(): void {
+        const code = this.disableCode.trim();
+        if (!code || this.twofaBusy()) return;
+        this.twofaBusy.set(true);
+        this.authService.disable2fa(code).subscribe({
+            next: () => {
+                this.twofaBusy.set(false);
+                this.twofaEnabled.set(false);
+                this.showTwofaDisable.set(false);
+                this.disableCode = '';
+                this.toast2fa(this.t('security.2fa.disabled'), 'success');
+            },
+            error: err => { this.twofaBusy.set(false); this.toast2fa(err?.message || this.t('security.2fa.invalidCode'), 'error'); },
+        });
+    }
+
+    private toast2fa(detail: string, severity: 'success' | 'error'): void {
+        this.msgService.add({ severity, summary: 'Omaad', detail, life: 4000 });
     }
 
     // ── Login icon: google = logo SVG inside span, email = pi-sign-in ──

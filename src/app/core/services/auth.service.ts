@@ -25,8 +25,20 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-    access_token: string;
+    access_token?: string | null;
     token_type: string;
+    mfa_required?: boolean;
+    mfa_token?: string;
+}
+
+export interface TwoFactorSetup {
+    secret: string;
+    otpauth_uri: string;
+    qr_data_uri: string;
+}
+
+export interface TwoFactorStatus {
+    enabled: boolean;
 }
 
 export interface OAuthStatus {
@@ -63,7 +75,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
             tap(response => {
                 this.clearAllCaches();
-                this.tokenService.setToken(response.access_token);
+                if (response.access_token) this.tokenService.setToken(response.access_token);
             }),
             catchError(this.handleError)
         );
@@ -75,16 +87,50 @@ export class AuthService {
     login(data: LoginRequest): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login/json`, data).pipe(
             tap(response => {
+                // When 2FA is on, the server returns a challenge (mfa_required)
+                // instead of a token — the login component then asks for a code.
                 if (response?.access_token) {
                     this.clearAllCaches();
                     this.tokenService.setToken(response.access_token);
-                    console.debug('Login successful - token saved');
-                } else {
+                } else if (!response?.mfa_required) {
                     console.error('Login response missing access_token');
                 }
             }),
             catchError(this.handleError)
         );
+    }
+
+    /**
+     * Second login step: exchange the mfa_token + a TOTP (or backup) code for
+     * a real access token.
+     */
+    verify2fa(mfaToken: string, code: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/2fa/verify`, { mfa_token: mfaToken, code }).pipe(
+            tap(response => {
+                if (response?.access_token) {
+                    this.clearAllCaches();
+                    this.tokenService.setToken(response.access_token);
+                }
+            }),
+            catchError(this.handleError)
+        );
+    }
+
+    // ── 2FA management (authenticated) ──────────────────────────────────────
+    get2faStatus(): Observable<TwoFactorStatus> {
+        return this.http.get<TwoFactorStatus>(`${this.apiUrl}/auth/2fa/status`).pipe(catchError(this.handleError));
+    }
+
+    setup2fa(): Observable<TwoFactorSetup> {
+        return this.http.post<TwoFactorSetup>(`${this.apiUrl}/auth/2fa/setup`, {}).pipe(catchError(this.handleError));
+    }
+
+    enable2fa(code: string): Observable<{ backup_codes: string[] }> {
+        return this.http.post<{ backup_codes: string[] }>(`${this.apiUrl}/auth/2fa/enable`, { code }).pipe(catchError(this.handleError));
+    }
+
+    disable2fa(code: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/2fa/disable`, { code }).pipe(catchError(this.handleError));
     }
 
     /**
@@ -122,7 +168,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, formData).pipe(
             tap(response => {
                 this.clearAllCaches();
-                this.tokenService.setToken(response.access_token);
+                if (response.access_token) this.tokenService.setToken(response.access_token);
             }),
             catchError(this.handleError)
         );
@@ -168,7 +214,7 @@ export class AuthService {
     refreshToken(): Observable<AuthResponse> {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, {}).pipe(
             tap(response => {
-                this.tokenService.setToken(response.access_token);
+                if (response.access_token) this.tokenService.setToken(response.access_token);
             }),
             catchError(this.handleError)
         );

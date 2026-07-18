@@ -44,6 +44,7 @@ import { I18nService } from '../../i18n/i18n.service';
                         </a>
                     </p>
 
+                    @if (!mfaChallenge()) {
                     <!-- Social Login Buttons -->
                     <div class="space-y-3 mb-6">
                         <a [href]="authService.googleAuthUrl"
@@ -157,6 +158,32 @@ import { I18nService } from '../../i18n/i18n.service';
                                 <a class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer" (click)="sendOtp()">{{ t('auth.login.resend') }}</a>
                             </div>
                         }
+                    </div>
+                    }
+                    } @else {
+                    <!-- TOTP two-factor challenge -->
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 mx-auto rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-3">
+                                <i class="pi pi-shield text-brand-700 dark:text-ochre-400 text-xl"></i>
+                            </div>
+                            <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ t('auth.twofa.title') }}</h3>
+                            <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">{{ t('auth.twofa.subtitle') }}</p>
+                        </div>
+                        <div>
+                            <input pInputText type="text" inputmode="numeric" autocomplete="one-time-code"
+                                   [placeholder]="t('auth.twofa.codePlaceholder')"
+                                   class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none tracking-widest text-center"
+                                   [(ngModel)]="mfaCode" name="mfaCode" [disabled]="isLoading()" (keyup.enter)="submit2fa()" />
+                        </div>
+                        <button pButton pRipple [label]="t('auth.twofa.verify')" type="button"
+                                [loading]="isLoading()"
+                                class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
+                                [disabled]="!mfaCode.trim() || isLoading()"
+                                (click)="submit2fa()"></button>
+                        <div class="text-center">
+                            <a class="text-surface-500 dark:text-surface-400 hover:underline cursor-pointer text-sm" (click)="cancelMfa()">{{ t('auth.twofa.back') }}</a>
+                        </div>
                     </div>
                     }
                 </div>
@@ -301,6 +328,11 @@ export class Login {
     otpCode = '';
     otpSent = signal(false);
 
+    // TOTP 2FA challenge (shown after a correct password when 2FA is on)
+    mfaChallenge = signal(false);
+    mfaToken = '';
+    mfaCode = '';
+
     isLoading = signal(false);
 
     setMode(mode: 'email' | 'phone') {
@@ -340,6 +372,31 @@ export class Login {
         });
     }
 
+    /** Second step of email login when 2FA is on: verify the TOTP/backup code. */
+    submit2fa(): void {
+        const code = this.mfaCode.trim();
+        if (!code || !this.mfaToken) return;
+        this.isLoading.set(true);
+        this.authService.verify2fa(this.mfaToken, code).subscribe({
+            next: () => {
+                this.mfaChallenge.set(false);
+                this.mfaToken = '';
+                this.finishLogin();
+            },
+            error: (err) => {
+                this.isLoading.set(false);
+                this.messageService.add({ severity: 'error', summary: this.t('auth.login.failedSummary'), detail: err?.message || this.t('auth.twofa.invalidCode'), life: 5000 });
+            }
+        });
+    }
+
+    cancelMfa(): void {
+        this.mfaChallenge.set(false);
+        this.mfaToken = '';
+        this.mfaCode = '';
+        this.password = '';
+    }
+
     /** Shared post-login navigation (used by both email and OTP flows). */
     private finishLogin(): void {
         this.isLoading.set(false);
@@ -359,6 +416,14 @@ export class Login {
         this.isLoading.set(true);
         this.authService.login({ email: this.email, password: this.password }).subscribe({
             next: (authResponse) => {
+                // 2FA on → password was correct, but we need a code next.
+                if (authResponse?.mfa_required && authResponse?.mfa_token) {
+                    this.isLoading.set(false);
+                    this.mfaToken = authResponse.mfa_token ?? '';
+                    this.mfaCode = '';
+                    this.mfaChallenge.set(true);
+                    return;
+                }
                 // Verify token was received
                 if (!authResponse?.access_token) {
                     this.isLoading.set(false);
