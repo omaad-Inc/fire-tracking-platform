@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@500;600&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body{ width:100%; height:100%; overflow:hidden; background:#1A2744; }
+  #stage{ position:absolute; top:0; left:0; transform-origin:0 0; }
+  .cover{ position:relative; width:1200px; height:420px; overflow:hidden; background:#1A2744; font-family:'Poppins',sans-serif; }
+  .cover::before{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(120% 140% at 82% 18%, rgba(200,132,58,.50) 0%, rgba(200,132,58,0) 55%),
+      radial-gradient(130% 130% at 12% 95%, rgba(12,20,38,.9) 0%, rgba(12,20,38,0) 60%),
+      linear-gradient(140deg, #21324f 0%, #1A2744 55%, #141f36 100%); }
+  .cover::after{ content:""; position:absolute; inset:0; opacity:.10; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .art{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .art svg{ width:210px; height:210px; }
+  .frame{ position:absolute; inset:26px; border:1px solid rgba(245,240,232,.16); border-radius:6px; }
+  .kicker{ position:absolute; left:48px; top:44px; z-index:3;
+    font-family:'Playfair Display',serif; color:#F5F0E8; font-size:34px; font-style:italic; font-weight:600; opacity:.92; }
+  .dot{ position:absolute; left:50px; top:104px; width:34px; height:2px; background:#C8843A; z-index:3; opacity:.85; }
+  .ln{ fill:none; stroke:#F5F0E8; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
+  .cop{ fill:none; stroke:#C8843A; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
+  .copf{ fill:#C8843A; }
+</style>
+</head>
+<body>
+<div id="stage"><div class="cover" id="cover"></div></div>
+<script>
+  // uniform-scale the fixed 1200x420 design to fill any same-aspect viewport
+  (function fit(){
+    const s = window.innerWidth / 1200;
+    document.getElementById('stage').style.transform = 'scale(' + s + ')';
+  })();
+  const G = {
+    emergency: { k:"Sécurité", svg:`
+      <path class="ln" d="M100 24 C70 40 44 44 44 44 C44 108 62 150 100 176 C138 150 156 108 156 44 C156 44 130 40 100 24 Z"/>
+      <path class="cop" d="M60 104 H82 L92 78 L108 130 L118 104 H140"/>` },
+
+    travel: { k:"Évasion", svg:`
+      <circle class="cop" cx="150" cy="54" r="19"/>
+      <path class="ln" d="M78 172 C82 128 78 96 70 76"/>
+      <path class="ln" d="M70 76 C46 62 30 66 20 82"/>
+      <path class="ln" d="M70 76 C60 50 64 34 82 26"/>
+      <path class="ln" d="M70 76 C94 62 112 66 122 84"/>
+      <path class="ln" d="M70 76 C78 50 96 42 116 46"/>
+      <path class="cop" d="M40 172 H172"/>` },
+
+    house: { k:"Immobilier", svg:`
+      <path class="ln" d="M46 96 L104 50 L162 96"/>
+      <path class="ln" d="M58 88 V166 H150 V88"/>
+      <path class="ln" d="M92 166 V124 H118 V166"/>
+      <circle class="cop" cx="132" cy="72" r="9"/>
+      <path class="cop" d="M132 81 V104 M132 96 H144 M132 100 H140"/>` },
+
+    education: { k:"Éducation", svg:`
+      <path class="ln" d="M100 62 L172 92 L100 122 L28 92 Z"/>
+      <path class="ln" d="M56 104 V138 C56 138 74 154 100 154 C126 154 144 138 144 138 V104"/>
+      <path class="cop" d="M172 92 V128"/>
+      <circle class="copf" cx="172" cy="134" r="7"/>` },
+
+    wedding: { k:"Célébration", svg:`
+      <circle class="ln" cx="80" cy="112" r="42"/>
+      <circle class="cop" cx="128" cy="104" r="42"/>` },
+
+    car: { k:"Mobilité", svg:`
+      <path class="ln" d="M34 128 L48 96 C52 86 60 80 72 80 H128 C138 80 146 84 152 94 L168 122"/>
+      <path class="ln" d="M30 128 H170 V148 H150"/>
+      <path class="ln" d="M64 148 H120"/>
+      <path class="ln" d="M60 96 H132"/>
+      <circle class="cop" cx="66" cy="150" r="16"/>
+      <circle class="cop" cx="134" cy="150" r="16"/>` },
+
+    savings: { k:"Épargne", svg:`
+      <ellipse class="ln" cx="100" cy="150" rx="46" ry="15"/>
+      <path class="ln" d="M54 150 V130 M146 150 V130"/>
+      <ellipse class="ln" cx="100" cy="130" rx="46" ry="15"/>
+      <path class="cop" d="M100 128 C100 104 100 92 100 84"/>
+      <path class="cop" d="M100 96 C86 92 76 80 78 66 C92 66 102 78 100 96 Z"/>
+      <path class="cop" d="M100 104 C114 100 124 88 122 74 C108 74 98 86 100 104 Z"/>` },
+
+    retirement: { k:"Horizon", svg:`
+      <circle class="cop" cx="100" cy="98" r="26"/>
+      <path class="cop" d="M100 54 V40 M100 156 V142 M56 98 H42 M158 98 H144 M69 67 L59 57 M131 67 L141 57"/>
+      <path class="ln" d="M32 150 H168"/>
+      <path class="ln" d="M64 150 C72 138 84 138 92 150" opacity=".7"/>
+      <path class="ln" d="M108 150 C116 138 128 138 136 150" opacity=".7"/>` },
+  };
+  const which = location.hash.replace('#','') || 'emergency';
+  const g = G[which];
+  document.getElementById('cover').innerHTML =
+    `<div class="frame"></div>
+     <div class="art"><svg viewBox="0 0 200 200">${g.svg}</svg></div>
+     <div class="kicker">${g.k}</div>
+     <div class="dot"></div>`;
+</script>
+</body>
+</html>
