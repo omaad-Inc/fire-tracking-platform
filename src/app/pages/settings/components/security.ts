@@ -11,6 +11,7 @@ import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { PinService } from '../../../core/services/pin.service';
+import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
@@ -35,8 +36,8 @@ import { firstValueFrom } from 'rxjs';
                         <i class="pi pi-lock text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Méthode de connexion</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Comment vous vous connectez à Omaad Wealth</p>
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.methodTitle') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.methodSub') }}</p>
                     </div>
                 </div>
 
@@ -54,18 +55,18 @@ import { firstValueFrom } from 'rxjs';
                                 </svg>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Connecté via Google</p>
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('security.connectedGoogle') }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
                             </div>
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold shrink-0">
-                                <i class="pi pi-check text-[10px]"></i> Actif
+                                <i class="pi pi-check text-[10px]"></i> {{ t('security.active') }}
                             </span>
                         </div>
                         <p class="text-sm text-surface-500 dark:text-surface-400 mt-3 flex items-start gap-2">
                             <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
-                            Votre mot de passe est géré par Google. Pour le modifier, rendez-vous dans votre
+                            {{ t('security.googlePwDesc1') }}
                             <a href="https://myaccount.google.com/security" target="_blank"
-                               class="text-brand-700 dark:text-brand-300 hover:underline font-medium ml-1">compte Google →</a>
+                               class="text-brand-700 dark:text-brand-300 hover:underline font-medium ml-1">{{ t('security.googlePwDesc2') }}</a>
                         </p>
                     } @else {
                         <!-- Email / password user -->
@@ -74,7 +75,7 @@ import { firstValueFrom } from 'rxjs';
                                 <i class="pi pi-envelope text-white text-lg"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Email & mot de passe</p>
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('security.emailPassword') }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
                             </div>
                         </div>
@@ -84,11 +85,11 @@ import { firstValueFrom } from 'rxjs';
                                 <div class="flex items-center gap-3">
                                     <i class="pi pi-key text-ochre-500"></i>
                                     <div>
-                                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Mot de passe</p>
-                                        <p class="text-xs text-surface-500 dark:text-surface-400">Modifiez votre mot de passe de connexion</p>
+                                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('security.password') }}</p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.changePasswordSub') }}</p>
                                     </div>
                                 </div>
-                                <button pButton label="Modifier" [outlined]="true" size="small"
+                                <button pButton [label]="t('security.edit')" [outlined]="true" size="small"
                                         class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500" (click)="openPasswordDialog()"></button>
                             </div>
                         </div>
@@ -103,8 +104,8 @@ import { firstValueFrom } from 'rxjs';
                         <i class="pi pi-shield text-positive"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Sécurité avancée</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Authentification à deux facteurs</p>
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.advancedSecurity') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.twoFAFull') }}</p>
                     </div>
                 </div>
 
@@ -116,13 +117,13 @@ import { firstValueFrom } from 'rxjs';
                                 <i class="pi pi-verified text-positive text-lg"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">Protégé par Google</p>
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">{{ t('security.protectedGoogle') }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
-                                    Votre compte bénéficie des protections de Google, incluant la 2FA si vous l'avez activée dans votre compte Google.
+                                    {{ t('security.googleDesc') }}
                                 </p>
                                 <a href="https://myaccount.google.com/security" target="_blank"
                                    class="inline-flex items-center gap-1.5 text-xs text-positive dark:text-positive-400 font-medium mt-2 hover:underline">
-                                    Gérer la sécurité Google <i class="pi pi-external-link text-[10px]"></i>
+                                    {{ t('security.manageGoogle') }} <i class="pi pi-external-link text-[10px]"></i>
                                 </a>
                             </div>
                         </div>
@@ -134,11 +135,11 @@ import { firstValueFrom } from 'rxjs';
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">Authentification 2FA</p>
-                                    <span class="px-2 py-0.5 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-[10px] font-semibold uppercase tracking-wide">Bientôt</span>
+                                    <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('security.twoFA') }}</p>
+                                    <span class="px-2 py-0.5 rounded-full bg-ochre-100 text-ochre-600 dark:text-ochre-300 text-[10px] font-semibold uppercase tracking-wide">{{ t('security.soon') }}</span>
                                 </div>
                                 <p class="text-xs text-surface-500 dark:text-surface-400">
-                                    L'authentification à deux facteurs par application (TOTP) sera disponible prochainement.
+                                    {{ t('security.twoFASoon') }}
                                 </p>
                             </div>
                         </div>
@@ -153,8 +154,8 @@ import { firstValueFrom } from 'rxjs';
                         <i class="pi pi-lock text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Code PIN</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Verrouillez l'accès à votre app</p>
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.pinTitle') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.pinLockAccess') }}</p>
                     </div>
                 </div>
 
@@ -166,21 +167,21 @@ import { firstValueFrom } from 'rxjs';
                                 <div class="flex items-center gap-3">
                                     <i class="pi pi-lock text-surface-400"></i>
                                     <div>
-                                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Aucun code PIN défini</p>
-                                        <p class="text-xs text-surface-500 dark:text-surface-400">Ajoutez un code pour protéger l'accès</p>
+                                        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('security.pinNone') }}</p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.pinAddPrompt') }}</p>
                                     </div>
                                 </div>
-                                <button pButton label="Configurer" size="small" [outlined]="true"
+                                <button pButton [label]="t('security.configure')" size="small" [outlined]="true"
                                         (click)="startPinSetup()" class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500"></button>
                             </div>
                         } @else {
                             <!-- PIN entry UI -->
                             <div class="text-center">
                                 <p class="text-sm font-medium text-surface-900 dark:text-surface-0 mb-1">
-                                    {{ pinSetupStep === 'new' ? 'Choisissez un code à 4 chiffres' : 'Confirmez votre code' }}
+                                    {{ pinSetupStep === 'new' ? t('security.pinChoose') : t('security.pinConfirm') }}
                                 </p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mb-5">
-                                    {{ pinSetupStep === 'new' ? 'Ce code sera demandé à chaque ouverture' : 'Entrez le même code à nouveau' }}
+                                    {{ pinSetupStep === 'new' ? t('security.pinChooseSub') : t('security.pinConfirmSub') }}
                                 </p>
                                 <!-- Dots -->
                                 <div class="flex gap-4 justify-center mb-5">
@@ -211,7 +212,7 @@ import { firstValueFrom } from 'rxjs';
                                     }
                                 </div>
                                 <button (click)="cancelPinSetup()" class="text-xs text-surface-400 hover:text-surface-600 transition-colors">
-                                    Annuler
+                                    {{ t('security.cancel') }}
                                 </button>
                             </div>
                         }
@@ -223,28 +224,28 @@ import { firstValueFrom } from 'rxjs';
                                     <i class="pi pi-check text-positive"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Code PIN activé</p>
-                                    <p class="text-xs text-surface-500 dark:text-surface-400">Votre app est protégée</p>
+                                    <p class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('security.pinEnabled') }}</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.pinProtected') }}</p>
                                 </div>
                             </div>
-                            <button pButton label="Supprimer" severity="danger" size="small" [outlined]="true"
+                            <button pButton [label]="t('security.remove')" severity="danger" size="small" [outlined]="true"
                                     (click)="removePin()" class="shrink-0"></button>
                         </div>
 
                         <!-- Lock delay setting -->
                         <div class="mt-4 flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0">Verrouillage auto</p>
-                                <p class="text-xs text-surface-500 dark:text-surface-400">Délai avant verrouillage en arrière-plan</p>
+                                <p class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('security.autoLock') }}</p>
+                                <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.autoLockDesc') }}</p>
                             </div>
                             <select (change)="onLockDelayChange($event)"
                                     [value]="pinService.getLockDelay()"
                                     class="text-sm bg-surface-100 dark:bg-surface-800 border-0 rounded-lg px-3 py-2
                                            text-surface-900 dark:text-surface-0">
-                                <option value="0">Immédiat</option>
-                                <option value="30000">30 secondes</option>
-                                <option value="60000">1 minute</option>
-                                <option value="300000">5 minutes</option>
+                                <option value="0">{{ t('security.immediate') }}</option>
+                                <option value="30000">{{ t('security.sec30') }}</option>
+                                <option value="60000">{{ t('security.min1') }}</option>
+                                <option value="300000">{{ t('security.min5') }}</option>
                             </select>
                         </div>
                     }
@@ -258,8 +259,8 @@ import { firstValueFrom } from 'rxjs';
                         <i class="pi pi-desktop text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Session actuelle</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Appareil sur lequel vous êtes connecté</p>
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.currentSession') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.currentDevice') }}</p>
                     </div>
                 </div>
 
@@ -274,14 +275,14 @@ import { firstValueFrom } from 'rxjs';
                                 <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ currentSession().device }}</p>
                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-[10px] font-semibold">
                                     <span class="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
-                                    Actif maintenant
+                                    {{ t('security.activeNow') }}
                                 </span>
                             </div>
                             <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                                 {{ currentSession().browser }} · {{ user()?.email }}
                             </p>
                             <p class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
-                                Connecté {{ currentSession().loginTime }}
+                                {{ t('security.connectedPrefix') }} {{ currentSession().loginTime }}
                             </p>
                         </div>
                     </div>
@@ -290,13 +291,13 @@ import { firstValueFrom } from 'rxjs';
                     <div class="flex items-start gap-2 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
                         <i class="pi pi-info-circle text-surface-400 text-sm mt-0.5 shrink-0"></i>
                         <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
-                            La gestion multi-appareils et la révocation à distance de sessions seront disponibles prochainement.
+                            {{ t('security.sessionsSoon') }}
                         </p>
                     </div>
 
                     <!-- Logout button -->
                     <div class="mt-4">
-                        <button pButton label="Se déconnecter de cette session" icon="pi pi-sign-out"
+                        <button pButton [label]="t('security.logoutSession')" icon="pi pi-sign-out"
                                 severity="secondary" [outlined]="true"
                                 class="w-full sm:w-auto"
                                 (click)="logout()"></button>
@@ -311,8 +312,8 @@ import { firstValueFrom } from 'rxjs';
                         <i class="pi pi-history text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Activité récente</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Dernières actions sur votre compte</p>
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.recentActivity') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.recentActivitySub') }}</p>
                     </div>
                 </div>
 
@@ -337,8 +338,8 @@ import { firstValueFrom } from 'rxjs';
                                     <i class="pi pi-user-plus text-brand-700 dark:text-brand-300 text-sm"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">Compte créé</p>
-                                    <p class="text-xs text-surface-500 dark:text-surface-400">Inscription à Omaad Wealth</p>
+                                    <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ t('security.accountCreated') }}</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.signupOmaad') }}</p>
                                 </div>
                                 <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
                             </div>
@@ -348,7 +349,7 @@ import { firstValueFrom } from 'rxjs';
                     <div class="flex items-start gap-2 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
                         <i class="pi pi-info-circle text-surface-400 text-sm mt-0.5 shrink-0"></i>
                         <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
-                            L'historique de sécurité complet (connexions, modifications de profil, etc.) sera disponible prochainement.
+                            {{ t('security.historySoon') }}
                         </p>
                     </div>
                 </div>
@@ -367,8 +368,8 @@ import { firstValueFrom } from 'rxjs';
                         <i class="pi pi-key text-white"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">Modifier le mot de passe</h3>
-                        <p class="text-surface-500 text-sm m-0">Choisissez un mot de passe fort</p>
+                        <h3 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.changePassword') }}</h3>
+                        <p class="text-surface-500 text-sm m-0">{{ t('security.passwordPlaceholder') }}</p>
                     </div>
                 </div>
             </ng-template>
@@ -377,40 +378,40 @@ import { firstValueFrom } from 'rxjs';
                 <div class="flex flex-col gap-6 pt-3">
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Mot de passe actuel <span class="text-negative">*</span>
+                            {{ t('security.currentPassword') }} <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.current" [feedback]="false" [toggleMask]="true"
                                     styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         @if (pwSubmitted && !pwForm.current) {
-                            <small class="text-negative text-xs mt-1">Requis</small>
+                            <small class="text-negative text-xs mt-1">{{ t('security.required') }}</small>
                         }
                     </div>
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Nouveau mot de passe <span class="text-negative">*</span>
+                            {{ t('security.newPassword') }} <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.newPw" [toggleMask]="true"
                                     styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
-                                    promptLabel="Choisissez un mot de passe"
-                                    weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort" />
+                                    [promptLabel]="t('security.pwPrompt')"
+                                    [weakLabel]="t('security.pwWeak')" [mediumLabel]="t('security.pwMedium')" [strongLabel]="t('security.pwStrong')" />
                         @if (pwSubmitted && !pwForm.newPw) {
-                            <small class="text-negative text-xs mt-1">Requis</small>
+                            <small class="text-negative text-xs mt-1">{{ t('security.required') }}</small>
                         }
                     </div>
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Confirmer le nouveau mot de passe <span class="text-negative">*</span>
+                            {{ t('security.confirmNewPassword') }} <span class="text-negative">*</span>
                         </label>
                         <p-password [(ngModel)]="pwForm.confirm" [feedback]="false" [toggleMask]="true"
                                     styleClass="w-full" inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         @if (pwSubmitted && pwForm.confirm && pwForm.confirm !== pwForm.newPw) {
-                            <small class="text-negative text-xs mt-1">Les mots de passe ne correspondent pas</small>
+                            <small class="text-negative text-xs mt-1">{{ t('security.mismatch') }}</small>
                         }
                     </div>
 
                     <!-- Password rules -->
                     <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800 space-y-1.5">
-                        <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 mb-2">Règles :</p>
+                        <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 mb-2">{{ t('security.rulesTitle') }}</p>
                         @for (rule of passwordRules; track rule.label) {
                             <div class="flex items-center gap-2">
                                 <i class="text-xs" [ngClass]="rule.valid(pwForm.newPw) ? 'pi pi-check text-positive' : 'pi pi-times text-surface-400'"></i>
@@ -423,11 +424,11 @@ import { firstValueFrom } from 'rxjs';
 
             <ng-template #footer>
                 <div class="flex flex-col gap-2 pt-2 w-full">
-                    <p-button label="Enregistrer" icon="pi pi-check"
+                    <p-button [label]="t('security.save')" icon="pi pi-check"
                               [loading]="savingPassword()"
                               (click)="savePassword()"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button label="Annuler" icon="pi pi-times" [outlined]="true"
+                    <p-button [label]="t('security.cancel')" icon="pi pi-times" [outlined]="true"
                               (click)="closePasswordDialog()" styleClass="w-full !rounded-full !py-3" />
                 </div>
             </ng-template>
@@ -440,6 +441,9 @@ export class SecuritySettings implements OnInit {
     private authService  = inject(AuthService);
     private msgService   = inject(MessageService);
     pinService           = inject(PinService);
+    private i18n         = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     // ── PIN setup state ──
     pinSetupActive = false;
@@ -475,10 +479,10 @@ export class SecuritySettings implements OnInit {
                 // Confirm step — check match
                 if (this.pinSetupInput === this.pinSetupFirstEntry) {
                     await this.pinService.setPin(this.pinSetupInput);
-                    this.msgService.add({ severity: 'success', summary: 'Code PIN activé', detail: 'Votre app est maintenant protégée.', life: 3000 });
+                    this.msgService.add({ severity: 'success', summary: this.t('security.pinEnabled'), detail: this.t('security.pinEnabledDetail'), life: 3000 });
                     this.pinSetupActive = false;
                 } else {
-                    this.msgService.add({ severity: 'error', summary: 'Codes différents', detail: 'Les deux codes ne correspondent pas. Réessayez.', life: 4000 });
+                    this.msgService.add({ severity: 'error', summary: this.t('security.pinMismatch'), detail: this.t('security.pinMismatchDetail'), life: 4000 });
                     this.pinSetupInput = '';
                     this.pinSetupStep = 'new';
                     this.pinSetupFirstEntry = '';
@@ -495,7 +499,7 @@ export class SecuritySettings implements OnInit {
 
     removePin() {
         this.pinService.removePin();
-        this.msgService.add({ severity: 'success', summary: 'Code PIN supprimé', detail: 'Le verrouillage est désactivé.', life: 3000 });
+        this.msgService.add({ severity: 'success', summary: this.t('security.pinRemoved'), detail: this.t('security.pinRemovedDetail'), life: 3000 });
     }
 
     onLockDelayChange(event: Event) {
@@ -534,13 +538,15 @@ export class SecuritySettings implements OnInit {
     pwSubmitted        = false;
     pwForm             = { current: '', newPw: '', confirm: '' };
 
-    passwordRules = [
-        { label: 'Au moins 8 caractères',           valid: (p: string) => p.length >= 8 },
-        { label: 'Une lettre majuscule',             valid: (p: string) => /[A-Z]/.test(p) },
-        { label: 'Une lettre minuscule',             valid: (p: string) => /[a-z]/.test(p) },
-        { label: 'Un chiffre',                       valid: (p: string) => /\d/.test(p) },
-        { label: 'Un caractère spécial (@!#$%…)',    valid: (p: string) => /[^A-Za-z0-9]/.test(p) },
-    ];
+    get passwordRules() {
+        return [
+            { label: this.t('security.ruleMin'),     valid: (p: string) => p.length >= 8 },
+            { label: this.t('security.ruleUpper'),   valid: (p: string) => /[A-Z]/.test(p) },
+            { label: this.t('security.ruleLower'),   valid: (p: string) => /[a-z]/.test(p) },
+            { label: this.t('security.ruleDigit'),   valid: (p: string) => /\d/.test(p) },
+            { label: this.t('security.ruleSpecial'), valid: (p: string) => /[^A-Za-z0-9]/.test(p) },
+        ];
+    }
 
     ngOnInit() {
         // If auth_provider is not set but user has a Google avatar, persist the inference
@@ -554,7 +560,7 @@ export class SecuritySettings implements OnInit {
     readonly loginIcon = computed(() => 'pi-sign-in');
 
     readonly loginEventLabel = computed(() =>
-        this.isGoogleUser() ? 'Connexion via Google' : 'Connexion réussie'
+        this.isGoogleUser() ? this.t('security.loginGoogle') : this.t('security.loginSuccess')
     );
 
     // ── Device detection ───────────────────────────────────────────────
@@ -631,8 +637,8 @@ export class SecuritySettings implements OnInit {
         if (!this.pwForm.current || !this.pwForm.newPw || !this.pwForm.confirm) return;
         if (this.pwForm.newPw !== this.pwForm.confirm) return;
         if (this.passwordRules.some(r => !r.valid(this.pwForm.newPw))) {
-            this.msgService.add({ severity: 'warn', summary: 'Mot de passe trop faible',
-                detail: 'Respectez toutes les règles de sécurité.', life: 4000 });
+            this.msgService.add({ severity: 'warn', summary: this.t('security.weakPassword'),
+                detail: this.t('security.weakPasswordDetail'), life: 4000 });
             return;
         }
 
@@ -642,14 +648,14 @@ export class SecuritySettings implements OnInit {
                 current_password: this.pwForm.current,
                 new_password:     this.pwForm.newPw,
             }));
-            this.msgService.add({ severity: 'success', summary: 'Mot de passe modifié',
-                detail: 'Votre mot de passe a été mis à jour.', life: 4000 });
+            this.msgService.add({ severity: 'success', summary: this.t('security.passwordChanged'),
+                detail: this.t('security.passwordChangedDetail'), life: 4000 });
             this.closePasswordDialog();
         } catch (err: any) {
             const detail = err?.error?.detail === 'Invalid current password'
-                ? 'Mot de passe actuel incorrect.'
-                : 'Impossible de modifier le mot de passe.';
-            this.msgService.add({ severity: 'error', summary: 'Erreur', detail, life: 5000 });
+                ? this.t('security.currentPwIncorrect')
+                : this.t('security.changeError');
+            this.msgService.add({ severity: 'error', summary: this.t('security.error'), detail, life: 5000 });
         } finally {
             this.savingPassword.set(false);
         }
