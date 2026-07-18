@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
+import { inject } from '@angular/core';
 import { I18nService } from '../../i18n/i18n.service';
+import { NavService } from '../../core/services/nav.service';
 import { filter } from 'rxjs/operators';
 
 interface NavItem {
@@ -163,6 +165,7 @@ export class AppMobileNav implements OnInit {
     navItems: NavItem[] = [];
     lang = 'fr';
     currentUrl = '';
+    private nav = inject(NavService);
 
     constructor(
         private router: Router,
@@ -186,31 +189,11 @@ export class AppMobileNav implements OnInit {
         this.lang = this.getCurrentLang();
         
         this.navItems = [
-            {
-                label: this.t('menu.dashboard'),
-                icon: 'pi pi-home',
-                route: ['/', this.lang]
-            },
-            {
-                label: this.t('menu.patrimony'),
-                icon: 'pi pi-wallet',
-                route: ['/', this.lang, 'pages', 'patrimoine']
-            },
-            {
-                label: this.t('menu.transactions'),
-                icon: 'pi pi-arrow-right-arrow-left',
-                route: ['/', this.lang, 'pages', 'transaction']
-            },
-            {
-                label: this.t('menu.myGoals'),
-                icon: 'pi pi-bullseye',
-                route: ['/', this.lang, 'pages', 'goals']
-            },
-            {
-                label: this.t('menu.debts'),
-                icon: 'pi pi-credit-card',
-                route: ['/', this.lang, 'pages', 'debts']
-            }
+            { label: this.t('menu.dashboard'),    icon: 'pi pi-home',                    route: this.nav.link() },
+            { label: this.t('menu.patrimony'),    icon: 'pi pi-wallet',                  route: this.nav.link('pages', 'patrimoine') },
+            { label: this.t('menu.transactions'), icon: 'pi pi-arrow-right-arrow-left',  route: this.nav.link('pages', 'transaction') },
+            { label: this.t('menu.myGoals'),      icon: 'pi pi-bullseye',                route: this.nav.link('pages', 'goals') },
+            { label: this.t('menu.debts'),        icon: 'pi pi-credit-card',             route: this.nav.link('pages', 'debts') },
         ];
     }
 

@@ -192,12 +192,14 @@ export class Settings implements OnInit {
         return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
     });
 
-    mainMenuItems = [
-        { route: 'account',     icon: 'pi-user',   label: 'Mon compte' },
-        { route: 'security',    icon: 'pi-shield',  label: 'Sécurité' },
-        { route: 'connections', icon: 'pi-link',    label: 'Mes connexions' },
-        { route: 'preferences', icon: 'pi-cog',     label: 'Préférences' },
-    ];
+    get mainMenuItems() {
+        return [
+            { route: 'account',     icon: 'pi-user',      label: 'Mon compte' },
+            { route: 'security',    icon: 'pi-shield',    label: 'Sécurité' },
+            { route: 'connections', icon: 'pi-link',      label: 'Mes connexions' },
+            { route: 'preferences', icon: 'pi-cog',       label: 'Préférences' },
+        ];
+    }
 
     ngOnInit() {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);

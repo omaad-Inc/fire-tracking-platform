@@ -2,6 +2,7 @@ import { Injectable, inject, computed, signal } from '@angular/core';
 import { TokenService } from './token.service';
 import { ApiService } from './api.service';
 import { AnalyticsService } from './analytics.service';
+import { ShareContextService } from './share-context.service';
 import { firstValueFrom } from 'rxjs';
 
 export interface CurrencyConfig {
@@ -26,6 +27,7 @@ export class CurrencyService {
     private tokenService = inject(TokenService);
     private api = inject(ApiService);
     private analytics = inject(AnalyticsService);
+    private share = inject(ShareContextService);
 
     /** Live rates_per_eur fetched from the backend (empty until loaded). */
     private liveRates = signal<Record<string, number>>({});
@@ -50,9 +52,12 @@ export class CurrencyService {
         } catch { /* offline / endpoint down — fallback rates remain */ }
     }
 
-    /** Current currency code — reacts to user preference changes. */
+    /** Current currency code — the shared portfolio's currency in share mode,
+     *  otherwise the logged-in user's preference. */
     readonly currencyCode = computed<string>(() =>
-        this.tokenService.user()?.preferred_currency || 'XOF'
+        this.share.active()
+            ? this.share.currency()
+            : (this.tokenService.user()?.preferred_currency || 'XOF')
     );
 
     /** Current currency config — live rate overrides the hardcoded fallback. */

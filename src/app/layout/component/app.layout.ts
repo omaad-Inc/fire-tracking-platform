@@ -13,6 +13,7 @@ import { PwaPromptComponent } from './pwa-prompt.component';
 import { PinLockComponent } from '../../core/components/pin-lock.component';
 import { PinService } from '../../core/services/pin.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ShareContextService } from '../../core/services/share-context.service';
 
 @Component({
     selector: 'app-layout',
@@ -28,14 +29,18 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
         <div class="layout-mask animate-fadein"></div>
         <app-mobile-nav></app-mobile-nav>
-        <app-fab (action)="onFabAction()"></app-fab>
-        <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
-        <app-ai-assistant-panel></app-ai-assistant-panel>
-        <app-pwa-prompt></app-pwa-prompt>
 
-        <!-- PIN Lock Screen — covers everything when locked -->
-        @if (pinService.locked()) {
-            <app-pin-lock />
+        <!-- Write affordances + personal overlays are hidden on a public read-only share -->
+        @if (!share.active()) {
+            <app-fab (action)="onFabAction()"></app-fab>
+            <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
+            <app-ai-assistant-panel></app-ai-assistant-panel>
+            <app-pwa-prompt></app-pwa-prompt>
+
+            <!-- PIN Lock Screen — covers everything when locked -->
+            @if (pinService.locked()) {
+                <app-pin-lock />
+            }
         }
     </div> `
 })
@@ -49,6 +54,7 @@ export class AppLayout implements OnInit, OnDestroy {
 
     pinService     = inject(PinService);
     private authService = inject(AuthService);
+    share          = inject(ShareContextService);
 
     private visibilityHandler = () => {
         if (document.hidden) {
@@ -126,6 +132,9 @@ export class AppLayout implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        // Public shared portfolio: no user, no PIN, no auto-lock/logout.
+        if (this.share.active()) return;
+
         // Lock on startup if PIN is configured
         this.pinService.initLockOnStartup();
 

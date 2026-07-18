@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { TransactionsService, TransactionRecord } from '../../service/transactions.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 
 interface TransactionDisplay {
@@ -93,6 +94,7 @@ export class RecentTransactionsWidget implements OnInit, OnDestroy {
     private transactionsService = inject(TransactionsService);
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private nav = inject(NavService);
     private state = inject(AssetsStateService);
 
     private sub?: Subscription;
@@ -214,9 +216,6 @@ export class RecentTransactionsWidget implements OnInit, OnDestroy {
     }
 
     link(...segments: string[]): any[] {
-        const url = this.router.url;
-        const match = url.match(/^\/(fr|en)(?:\/|$)/);
-        const lang = (match ? match[1] : 'fr') as 'fr' | 'en';
-        return ['/', lang, ...segments];
+        return this.nav.link(...segments);
     }
 }

@@ -15,6 +15,7 @@ import {
     SavingGoal,
 } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { AssetsStateService } from '../service/assets-state.service';
 import { GoalAddDialogComponent, GoalSavePayload } from './components/goal-add-dialog';
@@ -367,6 +368,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 export class GoalDetailPage implements OnInit, OnDestroy {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private nav = inject(NavService);
     private api = inject(ApiService);
     private state = inject(AssetsStateService);
     private message = inject(MessageService);
@@ -537,7 +539,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
     }
 
     back() {
-        this.router.navigate(['/', this.i18n.lang(), 'pages', 'goals']);
+        this.nav.go('pages', 'goals');
     }
 
     openEdit() {

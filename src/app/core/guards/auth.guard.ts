@@ -1,10 +1,16 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { TokenService } from '../services/token.service';
+import { ShareContextService } from '../services/share-context.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
     const tokenService = inject(TokenService);
     const router = inject(Router);
+
+    // Entering the real app clears any public-share mode left over from viewing
+    // a /share/:token link in this tab (so a logged-in user's own app is live,
+    // not stuck read-only on the frozen snapshot).
+    inject(ShareContextService).deactivate();
 
     if (tokenService.isAuthenticated()) {
         return true;

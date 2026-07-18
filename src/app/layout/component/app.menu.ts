@@ -5,6 +5,8 @@ import { I18nService } from '../../i18n/i18n.service';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 import { AiAssistantService } from '../../core/services/ai-assistant.service';
+import { NavService } from '../../core/services/nav.service';
+import { ShareContextService } from '../../core/services/share-context.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -23,6 +25,8 @@ export class AppMenu {
     lang = 'fr';
 
     private aiAssistant = inject(AiAssistantService);
+    private nav = inject(NavService);
+    private share = inject(ShareContextService);
 
     constructor(private router: Router, private i18n: I18nService) {
         // Listen to route changes to update language
@@ -87,21 +91,25 @@ export class AppMenu {
                     },
                 ]
             },
-            // Separator
-            { separator: true },
-            // AI Assistant
-            {
-                label: this.t('menu.assistant'),
-                items: [
-                    {
-                        label: this.t('menu.aiAssistant'),
-                        icon: 'pi pi-fw pi-sparkles',
-                        styleClass: 'menu-item-ai',
-                        command: () => this.aiAssistant.show(),
-                    }
-                ]
-            }
         ];
+
+        // AI Assistant — only in the authenticated app (not a public share).
+        if (!this.share.active()) {
+            this.model.push(
+                { separator: true },
+                {
+                    label: this.t('menu.assistant'),
+                    items: [
+                        {
+                            label: this.t('menu.aiAssistant'),
+                            icon: 'pi pi-fw pi-sparkles',
+                            styleClass: 'menu-item-ai',
+                            command: () => this.aiAssistant.show(),
+                        }
+                    ]
+                },
+            );
+        }
     }
 
     private getCurrentLang(): 'fr' | 'en' {
@@ -112,7 +120,7 @@ export class AppMenu {
     }
 
     private link(...segments: string[]): any[] {
-        return ['/', this.lang, ...segments];
+        return this.nav.link(...segments);
     }
 
     private t(key: string): string {
