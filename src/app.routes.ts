@@ -76,6 +76,9 @@ export const appRoutes: Routes = [
         ],
         children: [
             { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
+            // Read-only shared portfolio ("Bilan partageable") — viewer must be
+            // logged in (sits under the authGuard'd shell); token in the URL.
+            { path: 'shared/:token', loadComponent: () => import('./app/pages/shared/shared-portfolio').then(m => m.SharedPortfolioPage) },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },

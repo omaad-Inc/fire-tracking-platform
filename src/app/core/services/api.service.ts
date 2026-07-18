@@ -272,6 +272,104 @@ export interface PublicGoal {
     owner_name: string | null;
 }
 
+// ── Portfolio sharing ("Bilan partageable") ─────────────────────────────
+export interface PortfolioSnapshotFire {
+    net_worth: number;
+    total_assets: number;
+    total_liabilities: number;
+    total_owed_to_me: number;
+    fire_target: number | null;
+    fire_progress_percentage: number | null;
+    monthly_income: number;
+    monthly_expenses: number;
+    monthly_savings: number;
+    savings_rate: number;
+    passive_income: number;
+    passive_income_coverage: number;
+    years_to_fire: number | null;
+}
+export interface PortfolioSnapshotAsset {
+    category: string;
+    value: number;
+    native_currency: string;
+    is_liquid: boolean;
+    name?: string;              // only present when NOT anonymized
+    institution?: string | null;
+    location?: string | null;
+}
+export interface PortfolioSnapshotDebt {
+    type: string;
+    category: string;
+    current_amount: number;
+    progress_percentage: number;
+    name?: string;
+    creditor_name?: string | null;
+}
+export interface PortfolioSnapshotGoal {
+    template_key: string | null;
+    target_amount: number;
+    current_amount: number;
+    progress_percentage: number;
+    is_completed: boolean;
+    name?: string;
+    image_url?: string | null;
+}
+export interface PortfolioSnapshotTxn {
+    type: string;
+    category: string;
+    amount: number;
+    date: string;
+    description?: string | null;
+    merchant?: string | null;
+}
+export interface PortfolioSnapshot {
+    version: number;
+    generated_at: string;
+    anonymized: boolean;
+    currency: string;           // owner's display currency; amounts already converted
+    currency_symbol: string;
+    owner: { first_name: string | null; last_name: string | null; email: string | null };
+    fire: PortfolioSnapshotFire;
+    asset_distribution: { category: string; value: number; percentage: number }[];
+    assets: PortfolioSnapshotAsset[];
+    debt_summary: { total_i_owe: number; total_owed_to_me: number; count: number };
+    debts: PortfolioSnapshotDebt[];
+    savings_goals: PortfolioSnapshotGoal[];
+    income_expense_history: { period: string; income: number; expenses: number; savings: number; savings_rate: number }[];
+    top_expense_categories: { category: string; amount: number }[];
+    top_income_sources: { category: string; amount: number }[];
+    transactions: PortfolioSnapshotTxn[];
+    counts: { assets: number; debts: number; goals: number; transactions_total: number };
+}
+export interface PortfolioShareInfo {
+    id: number;
+    token: string;
+    share_path: string;         // "/shared/<token>" — prefix with the locale
+    anonymized: boolean;
+    allow_content: boolean;
+    expires_at: string;
+    revoked_at: string | null;
+    status: 'active' | 'expired' | 'revoked';
+    view_count: number;
+    last_viewed_at: string | null;
+    created_at: string;
+}
+export interface PortfolioShareCreate {
+    anonymized?: boolean;
+    allow_content?: boolean;
+    expires_in_days?: 7 | 30;
+}
+export interface SharedPortfolio {
+    meta: {
+        anonymized: boolean;
+        allow_content: boolean;
+        generated_at: string;
+        expires_at: string;
+        owner_name: string | null;
+    };
+    snapshot: PortfolioSnapshot;
+}
+
 export interface SavingGoalCreate {
     name: string;
     description?: string;
@@ -619,6 +717,28 @@ export class ApiService {
     /** Public, unauthenticated read-only goal view. */
     getPublicGoal(token: string): Observable<PublicGoal> {
         return this.http.get<PublicGoal>(`${this.apiUrl}/public/goals/${token}`);
+    }
+
+    // ── Portfolio sharing ("Bilan partageable") ─────────────────────────────
+    createPortfolioShare(data: PortfolioShareCreate): Observable<PortfolioShareInfo> {
+        return this.http.post<PortfolioShareInfo>(`${this.apiUrl}/portfolio/share`, data);
+    }
+
+    listPortfolioShares(): Observable<PortfolioShareInfo[]> {
+        return this.http.get<PortfolioShareInfo[]>(`${this.apiUrl}/portfolio/shares`);
+    }
+
+    refreshPortfolioShare(id: number): Observable<PortfolioShareInfo> {
+        return this.http.post<PortfolioShareInfo>(`${this.apiUrl}/portfolio/shares/${id}/refresh`, {});
+    }
+
+    revokePortfolioShare(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/portfolio/shares/${id}`);
+    }
+
+    /** Authenticated read-only view of a shared portfolio snapshot. */
+    getSharedPortfolio(token: string): Observable<SharedPortfolio> {
+        return this.http.get<SharedPortfolio>(`${this.apiUrl}/portfolio/shared/${token}`);
     }
 
     createSavingGoal(data: SavingGoalCreate): Observable<SavingGoal> {

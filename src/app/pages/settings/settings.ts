@@ -192,12 +192,15 @@ export class Settings implements OnInit {
         return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
     });
 
-    mainMenuItems = [
-        { route: 'account',     icon: 'pi-user',   label: 'Mon compte' },
-        { route: 'security',    icon: 'pi-shield',  label: 'Sécurité' },
-        { route: 'connections', icon: 'pi-link',    label: 'Mes connexions' },
-        { route: 'preferences', icon: 'pi-cog',     label: 'Préférences' },
-    ];
+    get mainMenuItems() {
+        return [
+            { route: 'account',     icon: 'pi-user',      label: 'Mon compte' },
+            { route: 'security',    icon: 'pi-shield',    label: 'Sécurité' },
+            { route: 'connections', icon: 'pi-link',      label: 'Mes connexions' },
+            { route: 'share',       icon: 'pi-share-alt', label: this.t('portfolioShare.menuLabel') },
+            { route: 'preferences', icon: 'pi-cog',       label: 'Préférences' },
+        ];
+    }
 
     ngOnInit() {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
@@ -217,6 +220,7 @@ export class Settings implements OnInit {
         const url = this.router.url;
         if (url.includes('/security'))    return this.t('menu.security');
         if (url.includes('/account'))     return this.t('menu.myAccount');
+        if (url.includes('/settings/share')) return this.t('portfolioShare.title');
         if (url.includes('/connections')) return 'Mes connexions';
         if (url.includes('/preferences')) return this.t('menu.preferences');
         if (url.includes('/fire'))        return 'Objectif Financier';
