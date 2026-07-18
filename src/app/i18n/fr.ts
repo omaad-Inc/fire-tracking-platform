@@ -335,14 +335,10 @@ export const FR = {
     },
     credentialForm: {
       title: 'Connexion à',
-      encryptionNotice: 'Vos identifiants sont chiffrés (AES-256) avant stockage. Nous n\'avons jamais accès à votre mot de passe en clair.',
-      loginLabel: 'Identifiant',
-      loginPlaceholder: 'Votre identifiant',
-      passwordLabel: 'Mot de passe',
-      passwordPlaceholder: 'Votre mot de passe',
-      submit: 'Enregistrer les accès',
-      successTitle: 'Connexion enregistrée',
-      successDetail: 'Vos accès ont été enregistrés. La synchronisation sera disponible prochainement.',
+      soonTitle: 'Connexion sécurisée bientôt disponible',
+      soonDesc: 'Nous préparons une connexion officielle sécurisée, en lecture seule, pour synchroniser vos positions automatiquement — sans partage de mot de passe.',
+      noPasswordNote: 'Omaad ne vous demandera jamais l\'identifiant ou le mot de passe de votre courtier. Méfiez-vous de quiconque le fait.',
+      addManually: 'Ajouter mes positions manuellement',
     },
     intl: {
       notAvailableTitle: 'Bientôt disponible',

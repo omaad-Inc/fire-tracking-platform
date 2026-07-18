@@ -184,42 +184,26 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                             </div>
                         }
 
-                        <!-- Encryption notice -->
-                        <div class="flex items-start gap-3 p-4 mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40">
-                            <i class="pi pi-lock text-amber-600 dark:text-amber-400 mt-0.5"></i>
-                            <p class="text-amber-800 dark:text-amber-300 text-sm leading-relaxed">{{ t('addAssets.credentialForm.encryptionNotice') }}</p>
-                        </div>
-
-                        <!-- Login -->
-                        <div class="flex flex-col gap-1 mb-5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('addAssets.credentialForm.loginLabel') }}</label>
-                            <input pInputText [(ngModel)]="brokerLogin"
-                                   [placeholder]="t('addAssets.credentialForm.loginPlaceholder')"
-                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
-                        </div>
-
-                        <!-- Password -->
-                        <div class="flex flex-col gap-1 mb-8">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('addAssets.credentialForm.passwordLabel') }}</label>
-                            <div class="relative">
-                                <input pInputText [(ngModel)]="brokerPassword"
-                                       [type]="showPassword() ? 'text' : 'password'"
-                                       [placeholder]="t('addAssets.credentialForm.passwordPlaceholder')"
-                                       class="w-full !py-3 !pr-12 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
-                                <button type="button" (click)="showPassword.set(!showPassword())"
-                                        class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-surface-400 hover:text-surface-600 transition-colors">
-                                    <i class="pi" [ngClass]="showPassword() ? 'pi-eye-slash' : 'pi-eye'"></i>
-                                </button>
+                        <!-- We do NOT collect broker passwords. Secure official
+                             connection (read-only) is coming; until then, add manually. -->
+                        <div class="flex items-start gap-3 p-4 mb-4 rounded-xl bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-800/40">
+                            <i class="pi pi-shield text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
+                            <div class="text-sm leading-relaxed">
+                                <p class="font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('addAssets.credentialForm.soonTitle') }}</p>
+                                <p class="text-surface-600 dark:text-surface-400">{{ t('addAssets.credentialForm.soonDesc') }}</p>
                             </div>
                         </div>
 
-                        <!-- Submit -->
+                        <div class="flex items-start gap-2 mb-8 px-1">
+                            <i class="pi pi-info-circle text-surface-400 text-xs mt-0.5 shrink-0"></i>
+                            <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">{{ t('addAssets.credentialForm.noPasswordNote') }}</p>
+                        </div>
+
+                        <!-- Add holdings manually instead -->
                         <button pButton type="button"
-                                [label]="t('addAssets.credentialForm.submit')"
+                                [label]="t('addAssets.credentialForm.addManually')"
                                 class="omaad-cta !rounded-full w-full !py-3"
-                                [loading]="isSaving()"
-                                [disabled]="!brokerLogin || !brokerPassword"
-                                (click)="submitCredentials()">
+                                (click)="chooseManual()">
                         </button>
                     </div>
                 }
@@ -239,10 +223,6 @@ export class ConnectBrokerPage implements OnInit {
     market = signal<Market>('brvm');
     selectedInstitution = signal<BrokerInstitution | null>(null);
     institutionSearch = '';
-    brokerLogin = '';
-    brokerPassword = '';
-    showPassword = signal(false);
-    isSaving = signal(false);
 
     private readonly BRVM_INSTITUTIONS: { id: BrokerProvider; type: string; flag: string }[] = [
         { id: 'jokko_fi',          type: 'SGI', flag: '🇸🇳' },
@@ -323,48 +303,10 @@ export class ConnectBrokerPage implements OnInit {
     }
 
     selectInstitution(inst: BrokerInstitution): void {
+        // We no longer collect broker credentials; the "credentials" step now
+        // explains the secure-connection plan and routes to manual entry.
         this.selectedInstitution.set(inst);
-        this.brokerLogin = '';
-        this.brokerPassword = '';
         this.step.set('credentials');
-    }
-
-    async submitCredentials(): Promise<void> {
-        const inst = this.selectedInstitution();
-        if (!inst || !this.brokerLogin || !this.brokerPassword) return;
-
-        if (this.market() === 'intl') {
-            this.messageService.add({
-                severity: 'info',
-                summary: this.t('addAssets.intl.notAvailableTitle'),
-                detail: this.t('addAssets.intl.notAvailableDetail'),
-                life: 6000,
-            });
-            return;
-        }
-
-        this.isSaving.set(true);
-        try {
-            await firstValueFrom(this.apiService.createBrokerConnection({
-                provider: inst.id,
-                login: this.brokerLogin,
-                password: this.brokerPassword,
-            }));
-            this.messageService.add({
-                severity: 'success',
-                summary: this.t('addAssets.credentialForm.successTitle'),
-                detail: this.t('addAssets.credentialForm.successDetail'),
-                life: 4000,
-            });
-            this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
-        } catch (error: any) {
-            const detail = error?.error?.detail
-                ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
-                : 'Erreur lors de la connexion';
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail, life: 6000 });
-        } finally {
-            this.isSaving.set(false);
-        }
     }
 
     t(key: string): string {

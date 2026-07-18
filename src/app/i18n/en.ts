@@ -335,14 +335,10 @@ export const EN = {
     },
     credentialForm: {
       title: 'Connect to',
-      encryptionNotice: 'Your credentials are encrypted (AES-256) before storage. We never access your password in plain text.',
-      loginLabel: 'Login',
-      loginPlaceholder: 'Your login',
-      passwordLabel: 'Password',
-      passwordPlaceholder: 'Your password',
-      submit: 'Save credentials',
-      successTitle: 'Connection saved',
-      successDetail: 'Your credentials have been saved. Synchronisation will be available soon.',
+      soonTitle: 'Secure connection coming soon',
+      soonDesc: 'We\'re building a secure, read-only official connection to sync your holdings automatically — no password sharing involved.',
+      noPasswordNote: 'Omaad will never ask for your broker login or password. Beware of anyone who does.',
+      addManually: 'Add my holdings manually',
     },
     intl: {
       notAvailableTitle: 'Coming soon',
