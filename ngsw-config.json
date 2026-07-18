@@ -3,7 +3,7 @@
   "index": "/index.html",
   "assetGroups": [
     {
-      "name": "app",
+      "name": "app-shell",
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
@@ -11,8 +11,21 @@
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",
-          "/*.js",
-          "/chunk-*.js"
+          "/main-*.js",
+          "/polyfills-*.js",
+          "/runtime-*.js",
+          "/scripts-*.js"
+        ]
+      }
+    },
+    {
+      "name": "app-lazy",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
+          "/chunk-*.js",
+          "/*.js"
         ]
       }
     },
@@ -24,18 +37,6 @@
         "files": [
           "/assets/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2|ico)",
           "/icons/**/*.(png|svg|ico)"
-        ]
-      }
-    },
-    {
-      "name": "fonts",
-      "installMode": "lazy",
-      "updateMode": "prefetch",
-      "resources": {
-        "urls": [
-          "https://fonts.cdnfonts.com/**",
-          "https://fonts.googleapis.com/**",
-          "https://fonts.gstatic.com/**"
         ]
       }
     }
