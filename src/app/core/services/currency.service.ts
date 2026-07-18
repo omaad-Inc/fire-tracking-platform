@@ -119,20 +119,19 @@ export class CurrencyService {
         return displayValue / rate;
     }
 
-    /** Format a EUR value as a localized currency string. */
+    /** Format a EUR value as a localized amount + the app's currency symbol.
+     *  Uses decimal formatting + our own symbol (FCFA / € / $) instead of Intl's
+     *  currency style, so XOF renders as "FCFA" everywhere — not Intl's "F CFA" —
+     *  matching app-amount and the rest of the UI. Symbol trails the number
+     *  (FR / West-African convention). */
     format(eurValue: number, fractionDigits = 0): string {
-        const { code, locale } = this.config();
+        const { symbol, locale } = this.config();
         const displayValue = this.convert(eurValue);
-        try {
-            return new Intl.NumberFormat(locale, {
-                style: 'currency',
-                currency: code,
-                maximumFractionDigits: fractionDigits,
-                minimumFractionDigits: fractionDigits,
-            }).format(displayValue);
-        } catch {
-            return `${displayValue.toFixed(fractionDigits)} ${this.config().symbol}`;
-        }
+        const n = new Intl.NumberFormat(locale, {
+            maximumFractionDigits: fractionDigits,
+            minimumFractionDigits: fractionDigits,
+        }).format(displayValue);
+        return `${n} ${symbol}`;
     }
 
     /** Format a EUR value as a plain number string (no currency symbol) in the display locale. */
