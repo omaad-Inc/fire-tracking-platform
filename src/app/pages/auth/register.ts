@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
@@ -66,6 +66,21 @@ import { I18nService } from '../../i18n/i18n.service';
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
+                    <!-- Email / Phone mode switch (phone signup = OTP, creates a phone-only account) -->
+                    <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl mb-6">
+                        <button type="button" (click)="setMode('email')"
+                                class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+                                [ngClass]="authMode() === 'email' ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm' : 'text-surface-500 dark:text-surface-400'">
+                            <i class="pi pi-envelope text-xs mr-1"></i>{{ t('auth.login.tabEmail') }}
+                        </button>
+                        <button type="button" (click)="setMode('phone')"
+                                class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
+                                [ngClass]="authMode() === 'phone' ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm' : 'text-surface-500 dark:text-surface-400'">
+                            <i class="pi pi-mobile text-xs mr-1"></i>{{ t('auth.login.tabPhone') }}
+                        </button>
+                    </div>
+
+                    @if (authMode() === 'email') {
                     <!-- Registration Form -->
                     <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
@@ -155,6 +170,43 @@ import { I18nService } from '../../i18n/i18n.service';
                                 [disabled]="!isFormValid || isLoading()">
                         </button>
                     </form>
+                    } @else {
+                    <!-- Phone / OTP signup (mirrors login; verifying the code creates the account) -->
+                    <div class="space-y-6">
+                        @if (!otpSent()) {
+                            <div>
+                                <label for="rphone" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.phoneLabel') }}</label>
+                                <input pInputText id="rphone" type="tel"
+                                       [placeholder]="t('auth.login.phonePlaceholder')"
+                                       class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none"
+                                       [(ngModel)]="phone" name="rphone" [disabled]="isLoading()" />
+                                <p class="text-surface-400 dark:text-surface-500 text-xs mt-2">{{ t('auth.login.phoneHint') }}</p>
+                            </div>
+                            <button pButton pRipple [label]="t('auth.login.sendCode')" type="button"
+                                    [loading]="isLoading()"
+                                    class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
+                                    [disabled]="phone.trim().length < 6 || isLoading()"
+                                    (click)="sendOtp()"></button>
+                        } @else {
+                            <div>
+                                <label for="rotp" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.codeLabel') }}</label>
+                                <input pInputText id="rotp" type="text" inputmode="numeric" autocomplete="one-time-code"
+                                       [placeholder]="t('auth.login.codePlaceholder')"
+                                       class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none tracking-widest"
+                                       [(ngModel)]="otpCode" name="rotp" [disabled]="isLoading()" (keyup.enter)="submitOtp()" />
+                            </div>
+                            <button pButton pRipple [label]="t('auth.register.submit')" type="button"
+                                    [loading]="isLoading()"
+                                    class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
+                                    [disabled]="!otpCode.trim() || isLoading()"
+                                    (click)="submitOtp()"></button>
+                            <div class="flex items-center justify-between text-sm">
+                                <a class="text-surface-500 dark:text-surface-400 hover:underline cursor-pointer" (click)="setMode('phone')">{{ t('auth.login.changeNumber') }}</a>
+                                <a class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer" (click)="sendOtp()">{{ t('auth.login.resend') }}</a>
+                            </div>
+                        }
+                    </div>
+                    }
                 </div>
             </div>
 
@@ -256,6 +308,7 @@ import { I18nService } from '../../i18n/i18n.service';
 export class Register {
     readonly authService = inject(AuthService);
     private router = inject(Router);
+    private route = inject(ActivatedRoute);
     private messageService = inject(MessageService);
     private i18n = inject(I18nService);
 
@@ -269,11 +322,59 @@ export class Register {
     acceptTerms = false;
     currentLang = '/fr';
 
+    // Phone signup (an additional method alongside email — kept coequal).
+    authMode = signal<'email' | 'phone'>('email');
+    phone = '';
+    otpCode = '';
+    otpSent = signal(false);
+
     isLoading = signal(false);
 
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+    }
+
+    setMode(mode: 'email' | 'phone') {
+        this.authMode.set(mode);
+        this.otpSent.set(false);
+        this.otpCode = '';
+    }
+
+    sendOtp(): void {
+        const phone = this.phone.trim();
+        if (phone.length < 6) return;
+        this.isLoading.set(true);
+        this.authService.requestOtp(phone).subscribe({
+            next: () => {
+                this.isLoading.set(false);
+                this.otpSent.set(true);
+                this.messageService.add({ severity: 'success', summary: 'Omaad', detail: this.t('auth.login.codeSent'), life: 3000 });
+            },
+            error: (err) => {
+                this.isLoading.set(false);
+                this.messageService.add({ severity: 'error', summary: this.t('auth.register.failedSummary'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
+            }
+        });
+    }
+
+    submitOtp(): void {
+        const phone = this.phone.trim();
+        const code = this.otpCode.trim();
+        if (!phone || !code) return;
+        this.isLoading.set(true);
+        this.authService.verifyOtp(phone, code).subscribe({
+            next: () => {
+                this.isLoading.set(false);
+                const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                this.router.navigate([returnUrl], { replaceUrl: true });
+                this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
+            },
+            error: (err) => {
+                this.isLoading.set(false);
+                this.messageService.add({ severity: 'error', summary: this.t('auth.register.failedSummary'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
+            }
+        });
     }
 
     get isFormValid(): boolean {
