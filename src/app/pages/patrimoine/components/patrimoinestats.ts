@@ -31,12 +31,14 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             <!-- Card 2 - Taux d'épargne global -->
             <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 flex-1 flex flex-col items-center justify-center text-center group transition-all duration-300">
                 <span class="relative block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.globalSavingsRate') }}</span>
-                <div class="relative text-surface-900 dark:text-surface-0 font-bold text-2xl mb-1">
+                <div class="relative font-bold text-2xl mb-1"
+                     [ngClass]="globalSavingsRate < 0 ? 'text-negative' : 'text-surface-900 dark:text-surface-0'">
                     {{ globalSavingsRate }}%
                 </div>
                 <div class="relative w-4/5 h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                    <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
-                         [style.width]="globalSavingsRate + '%'"></div>
+                    <div class="h-full rounded-full transition-all duration-500"
+                         [ngClass]="globalSavingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-brand-300'"
+                         [style.width]="savingsBarWidth + '%'"></div>
                 </div>
                 <div class="absolute top-4 right-4 flex items-center justify-center w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 shadow-sm">
                     <i class="pi pi-percentage text-brand-700 dark:text-brand-300 text-lg"></i>
@@ -69,6 +71,8 @@ export class PatrimoineStats implements OnInit, OnDestroy {
 
     // Card 2 — global savings rate (average of monthly rates over all available months)
     globalSavingsRate = 0;
+    /** Magnitude-based bar fill; the bar colour signals the sign. */
+    get savingsBarWidth(): number { return Math.min(100, Math.abs(this.globalSavingsRate)); }
 
     // Card 3
     assetsCount = 0;
@@ -109,7 +113,9 @@ export class PatrimoineStats implements OnInit, OnDestroy {
         for (const { income, expenses } of byMonth.values()) {
             if (income > 0) {
                 const net = income - expenses;
-                monthRates.push(Math.max(0, Math.min(100, Math.round(net / income * 100))));
+                // Keep deficit months negative — clamping them to 0 inflates
+                // the average (a +50%/−50% pair must average 0%, not +25%).
+                monthRates.push(Math.min(100, Math.round(net / income * 100)));
             }
         }
 

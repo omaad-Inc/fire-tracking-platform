@@ -298,8 +298,11 @@ export class StatsWidget implements OnInit, OnDestroy {
             this.stats.set(stats);
             this.fireProgress.set(fire);
             this.monthlySavings.set(stats.monthlyIncome - stats.monthlyExpenses);
+            // Truthful sign: a deficit month is a NEGATIVE rate, not 0. The
+            // pill already turns red with a down-arrow when monthlySavings < 0;
+            // clamping the number to 0 contradicted that. Upper-cap at 100.
             const pct = stats.monthlyIncome > 0
-                ? Math.min(100, Math.max(0, Math.round((stats.monthlyIncome - stats.monthlyExpenses) / stats.monthlyIncome * 100)))
+                ? Math.min(100, Math.round((stats.monthlyIncome - stats.monthlyExpenses) / stats.monthlyIncome * 100))
                 : 0;
             this.savingsRatePct.set(pct);
             this.loadError.set(false);

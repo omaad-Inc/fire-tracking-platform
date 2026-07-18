@@ -128,10 +128,12 @@ interface DayGroup {
                         </div>
                     </div>
                     <div class="relative">
-                        <div class="text-base font-bold text-brand-700 dark:text-brand-300 mb-1">{{ monthSummary().savingsRate }}%</div>
+                        <div class="text-base font-bold mb-1"
+                             [ngClass]="monthSummary().savingsRate < 0 ? 'text-negative' : 'text-brand-700 dark:text-brand-300'">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
-                                 [style.width]="monthSummary().savingsRate + '%'"></div>
+                            <div class="h-full rounded-full transition-all duration-500"
+                                 [ngClass]="monthSummary().savingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-brand-300'"
+                                 [style.width]="monthSummary().barWidth + '%'"></div>
                         </div>
                     </div>
                 </div>
@@ -538,8 +540,13 @@ export class TransactionLogs implements OnInit, OnDestroy {
         const income   = recs.filter(r => r.type === 'Income') .reduce((s, r) => s + r.amount, 0);
         const expenses = recs.filter(r => r.type === 'Expense').reduce((s, r) => s + r.amount, 0);
         const net      = income - expenses;
-        const savingsRate = income > 0 ? Math.max(0, Math.min(100, Math.round(net / income * 100))) : 0;
-        return { income, expenses, net, savingsRate };
+        // Show the truth, including deficit months: a month where you spent
+        // more than you earned has a NEGATIVE savings rate. Clamping it to 0
+        // would hide the one number this tracker exists to surface.
+        const savingsRate = income > 0 ? Math.min(100, Math.round(net / income * 100)) : 0;
+        // Bar fill is magnitude-based; its colour (below) signals the sign.
+        const barWidth = Math.min(100, Math.abs(savingsRate));
+        return { income, expenses, net, savingsRate, barWidth };
     });
 
     readonly dayGroups = computed((): DayGroup[] => {
