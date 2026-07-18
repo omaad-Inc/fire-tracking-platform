@@ -244,12 +244,32 @@ export interface SavingGoal {
     remaining_amount?: number;
     template_key: string | null;
     image_url: string | null;
+    share_token?: string | null;
     created_at: string;
     updated_at: string;
     // Legacy/optional — not returned by the backend, kept for compat with older callers
     currency?: string;
     status?: SavingStatus;
     notes?: string | null;
+}
+
+export interface ShareGoalResult {
+    share_token: string;
+    share_path: string;
+}
+
+export interface PublicGoal {
+    name: string;
+    image_url: string | null;
+    template_key: string | null;
+    progress_percentage: number;
+    current_amount: number;   // EUR base
+    target_amount: number;    // EUR base
+    currency: string;
+    currency_symbol: string;
+    target_date: string | null;
+    is_completed: boolean;
+    owner_name: string | null;
 }
 
 export interface SavingGoalCreate {
@@ -585,6 +605,20 @@ export class ApiService {
 
     getSavingGoal(id: number): Observable<SavingGoal> {
         return this.http.get<SavingGoal>(`${this.apiUrl}/savings/${id}`);
+    }
+
+    // ── Read-only goal sharing ──────────────────────────────────────────────
+    shareGoal(id: number): Observable<ShareGoalResult> {
+        return this.http.post<ShareGoalResult>(`${this.apiUrl}/savings/${id}/share`, {});
+    }
+
+    unshareGoal(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/savings/${id}/share`);
+    }
+
+    /** Public, unauthenticated read-only goal view. */
+    getPublicGoal(token: string): Observable<PublicGoal> {
+        return this.http.get<PublicGoal>(`${this.apiUrl}/public/goals/${token}`);
     }
 
     createSavingGoal(data: SavingGoalCreate): Observable<SavingGoal> {

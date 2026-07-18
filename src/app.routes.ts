@@ -60,6 +60,9 @@ export const appRoutes: Routes = [
     { path: ':lang/qui-sommes-nous', loadComponent: () => import('./app/pages/landing/components/qui-sommes-nous').then(m => m.QuiSommesNousPage) },
     { path: ':lang/about', loadComponent: () => import('./app/pages/landing/components/qui-sommes-nous').then(m => m.QuiSommesNousPage) },
 
+    // Public read-only shared goal (no login, no lang prefix) — /g/<token>
+    { path: 'g/:token', loadComponent: () => import('./app/pages/public/public-goal').then(m => m.PublicGoalPage) },
+
     // Main app with layout (protected routes)
     {
         path: ':lang',
