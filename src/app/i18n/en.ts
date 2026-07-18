@@ -408,7 +408,6 @@ export const EN = {
     },
   },
   dashboard: {
-    aspirationTitle: 'Your FIRE journey',
     recentTransactions: 'Recent transactions',
     debtsOverview: 'Debts overview',
     savingsProgress: 'Savings progress',
@@ -617,16 +616,6 @@ export const EN = {
     noAccountTitle: 'No account yet',
     noAccountDesc: 'Add a cash, savings or mobile-money account first to log transactions.',
     noAccountCta: 'Add an account',
-  },
-  hero: {
-    thisMonth: 'This month',
-    net: 'net',
-    add: 'Add',
-    in: 'In',
-    out: 'Out',
-    accounts: 'Accounts',
-    available: 'Available:',
-    addAccount: 'Add an account',
   },
   tontine: {
     scheduleTitle: 'Cycle schedule',

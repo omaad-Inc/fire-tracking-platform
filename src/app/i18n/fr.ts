@@ -408,7 +408,6 @@ export const FR = {
     },
   },
   dashboard: {
-    aspirationTitle: 'Votre parcours FIRE',
     recentTransactions: 'Transactions récentes',
     debtsOverview: 'Vue globale des dettes',
     savingsProgress: 'Progression de l\'épargne',
@@ -617,16 +616,6 @@ export const FR = {
     noAccountTitle: 'Aucun compte',
     noAccountDesc: 'Ajoutez d\'abord un compte espèces, épargne ou mobile money pour enregistrer des transactions.',
     noAccountCta: 'Ajouter un compte',
-  },
-  hero: {
-    thisMonth: 'Ce mois-ci',
-    net: 'net',
-    add: 'Ajouter',
-    in: 'Entrées',
-    out: 'Sorties',
-    accounts: 'Comptes',
-    available: 'Disponible :',
-    addAccount: 'Ajouter un compte',
   },
   tontine: {
     scheduleTitle: 'Calendrier des tours',
