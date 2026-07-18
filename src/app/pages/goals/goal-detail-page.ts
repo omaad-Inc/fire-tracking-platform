@@ -5,6 +5,7 @@ import { Subscription, firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { I18nService } from '../../i18n/i18n.service';
 import {
@@ -26,7 +27,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
     standalone: true,
     imports: [
         CommonModule,
-        ButtonModule, ToastModule, ConfirmDialogModule,
+        ButtonModule, ToastModule, ConfirmDialogModule, DialogModule,
         AppAmountComponent, GoalAddDialogComponent, GoalAllocateDialogComponent,
     ],
     providers: [MessageService, ConfirmationService],
@@ -60,6 +61,13 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             icon="pi pi-pencil"
                             [outlined]="true"
                             (onClick)="openEdit()"
+                            styleClass="!rounded-xl !border-surface-300 dark:!border-surface-600"
+                        />
+                        <p-button
+                            icon="pi pi-share-alt"
+                            [outlined]="true"
+                            (onClick)="openShare()"
+                            [attr.aria-label]="i18n.t('goals.share.button')"
                             styleClass="!rounded-xl !border-surface-300 dark:!border-surface-600"
                         />
                         <p-button
@@ -326,6 +334,32 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
             (submit)="onAllocate($event)"
         />
 
+        <!-- Share progress dialog -->
+        <p-dialog [(visible)]="shareDialog" [modal]="true" [dismissableMask]="true" [draggable]="false"
+                  [style]="{ width: '95vw', maxWidth: '440px' }" [header]="i18n.t('goals.share.title')">
+            <div class="flex flex-col gap-4 pt-1">
+                <p class="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">{{ i18n.t('goals.share.desc') }}</p>
+
+                @if (shareBusy()) {
+                    <div class="flex justify-center py-4"><i class="pi pi-spin pi-spinner text-surface-400"></i></div>
+                } @else if (shareUrl()) {
+                    <div class="flex items-center gap-2 p-2 pl-3 rounded-xl bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+                        <span class="flex-1 min-w-0 truncate text-sm text-surface-700 dark:text-surface-300">{{ shareUrl() }}</span>
+                        <button class="shrink-0 px-3 py-2 rounded-lg bg-brand-700 text-white text-xs font-semibold" (click)="copyShareUrl()">
+                            <i class="pi pi-copy text-xs mr-1"></i>{{ copied() ? i18n.t('goals.share.copied') : i18n.t('goals.share.copy') }}
+                        </button>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <i class="pi pi-eye text-surface-400 text-xs mt-0.5 shrink-0"></i>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">{{ i18n.t('goals.share.readonlyNote') }}</p>
+                    </div>
+                    <button class="text-xs text-negative font-medium hover:underline self-start" [disabled]="shareBusy()" (click)="revokeShare()">
+                        {{ i18n.t('goals.share.revoke') }}
+                    </button>
+                }
+            </div>
+        </p-dialog>
+
         <p-toast position="top-center" />
         <p-confirmDialog />
     `,
@@ -508,6 +542,65 @@ export class GoalDetailPage implements OnInit, OnDestroy {
 
     openEdit() {
         this.editDialogVisible = true;
+    }
+
+    // ── Read-only share ─────────────────────────────────────────────────────
+    shareDialog = false;
+    shareBusy = signal(false);
+    shareUrl = signal<string>('');
+    copied = signal(false);
+
+    private buildShareUrl(token: string): string {
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        return `${origin}/g/${token}`;
+    }
+
+    openShare() {
+        const g = this.goal();
+        if (!g) return;
+        this.copied.set(false);
+        this.shareDialog = true;
+        if (g.share_token) {
+            this.shareUrl.set(this.buildShareUrl(g.share_token));
+            return;
+        }
+        this.shareBusy.set(true);
+        this.shareUrl.set('');
+        this.api.shareGoal(g.id).subscribe({
+            next: res => {
+                this.shareBusy.set(false);
+                this.shareUrl.set(this.buildShareUrl(res.share_token));
+                const cur = this.goal();
+                if (cur) this.goal.set({ ...cur, share_token: res.share_token });
+            },
+            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: 'Omaad', detail: this.i18n.t('goals.share.error'), life: 4000 }); },
+        });
+    }
+
+    copyShareUrl() {
+        const url = this.shareUrl();
+        if (!url) return;
+        navigator.clipboard?.writeText(url).then(() => {
+            this.copied.set(true);
+            setTimeout(() => this.copied.set(false), 2000);
+        }).catch(() => {});
+    }
+
+    revokeShare() {
+        const g = this.goal();
+        if (!g) return;
+        this.shareBusy.set(true);
+        this.api.unshareGoal(g.id).subscribe({
+            next: () => {
+                this.shareBusy.set(false);
+                this.shareDialog = false;
+                this.shareUrl.set('');
+                const cur = this.goal();
+                if (cur) this.goal.set({ ...cur, share_token: null });
+                this.message.add({ severity: 'success', summary: 'Omaad', detail: this.i18n.t('goals.share.revoked'), life: 4000 });
+            },
+            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: 'Omaad', detail: this.i18n.t('goals.share.error'), life: 4000 }); },
+        });
     }
 
     openAllocate() {
