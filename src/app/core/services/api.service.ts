@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { ShareContextService, PublicPortfolioBundle } from './share-context.service';
 
 // ============================================
 // ASSET INTERFACES
@@ -272,81 +274,15 @@ export interface PublicGoal {
     owner_name: string | null;
 }
 
-// ── Portfolio sharing ("Bilan partageable") ─────────────────────────────
-export interface PortfolioSnapshotFire {
-    net_worth: number;
-    total_assets: number;
-    total_liabilities: number;
-    total_owed_to_me: number;
-    fire_target: number | null;
-    fire_progress_percentage: number | null;
-    monthly_income: number;
-    monthly_expenses: number;
-    monthly_savings: number;
-    savings_rate: number;
-    passive_income: number;
-    passive_income_coverage: number;
-    years_to_fire: number | null;
-}
-export interface PortfolioSnapshotAsset {
-    category: string;
-    value: number;
-    native_currency: string;
-    is_liquid: boolean;
-    name?: string;              // only present when NOT anonymized
-    institution?: string | null;
-    location?: string | null;
-}
-export interface PortfolioSnapshotDebt {
-    type: string;
-    category: string;
-    current_amount: number;
-    progress_percentage: number;
-    name?: string;
-    creditor_name?: string | null;
-}
-export interface PortfolioSnapshotGoal {
-    template_key: string | null;
-    target_amount: number;
-    current_amount: number;
-    progress_percentage: number;
-    is_completed: boolean;
-    name?: string;
-    image_url?: string | null;
-}
-export interface PortfolioSnapshotTxn {
-    type: string;
-    category: string;
-    amount: number;
-    date: string;
-    description?: string | null;
-    merchant?: string | null;
-}
-export interface PortfolioSnapshot {
-    version: number;
-    generated_at: string;
-    anonymized: boolean;
-    currency: string;           // owner's display currency; amounts already converted
-    currency_symbol: string;
-    owner: { first_name: string | null; last_name: string | null; email: string | null };
-    fire: PortfolioSnapshotFire;
-    asset_distribution: { category: string; value: number; percentage: number }[];
-    assets: PortfolioSnapshotAsset[];
-    debt_summary: { total_i_owe: number; total_owed_to_me: number; count: number };
-    debts: PortfolioSnapshotDebt[];
-    savings_goals: PortfolioSnapshotGoal[];
-    income_expense_history: { period: string; income: number; expenses: number; savings: number; savings_rate: number }[];
-    top_expense_categories: { category: string; amount: number }[];
-    top_income_sources: { category: string; amount: number }[];
-    transactions: PortfolioSnapshotTxn[];
-    counts: { assets: number; debts: number; goals: number; transactions_total: number };
-}
+// ── Portfolio sharing ("Bilan partageable") — public, Finary-style ───────
 export interface PortfolioShareInfo {
     id: number;
     token: string;
-    share_path: string;         // "/shared/<token>" — prefix with the locale
-    anonymized: boolean;
-    allow_content: boolean;
+    share_path: string;         // "/share/<token>" — prefix with the origin
+    categories: string[] | null;
+    share_budget: boolean;
+    hide_values: boolean;
+    has_access_code: boolean;
     expires_at: string;
     revoked_at: string | null;
     status: 'active' | 'expired' | 'revoked';
@@ -355,19 +291,11 @@ export interface PortfolioShareInfo {
     created_at: string;
 }
 export interface PortfolioShareCreate {
-    anonymized?: boolean;
-    allow_content?: boolean;
+    categories?: string[] | null;   // AssetCategory values to include (null = all)
+    share_budget?: boolean;         // include income/expense transactions (default true)
+    hide_values?: boolean;          // strip amounts/quantities server-side
+    access_code?: string | null;    // optional passcode gate
     expires_in_days?: 7 | 30;
-}
-export interface SharedPortfolio {
-    meta: {
-        anonymized: boolean;
-        allow_content: boolean;
-        generated_at: string;
-        expires_at: string;
-        owner_name: string | null;
-    };
-    snapshot: PortfolioSnapshot;
 }
 
 export interface SavingGoalCreate {
@@ -613,12 +541,38 @@ export interface BrokerConnection {
 })
 export class ApiService {
     private http = inject(HttpClient);
+    private share = inject(ShareContextService);
     private apiUrl = environment.apiUrl;
+
+    /**
+     * In share mode, resolve a read from the frozen bundle instead of HTTP.
+     * Returns null when NOT in share mode so callers fall through to `this.http`.
+     */
+    private shared<T>(pick: (b: PublicPortfolioBundle) => T | undefined): Observable<T> | null {
+        const b = this.share.bundle();
+        if (!b) return null;
+        return of(pick(b) as T);
+    }
+
+    /** Write guard: mutations are impossible on a read-only public share. */
+    private get readonlyBlock(): Observable<never> {
+        return throwError(() => new Error('This portfolio is shared read-only.'));
+    }
+
+    /** Public, unauthenticated portfolio bundle for /share/:token. */
+    getPublicPortfolio(token: string, code?: string): Observable<PublicPortfolioBundle> {
+        let params = new HttpParams();
+        if (code) params = params.set('code', code);
+        return this.http.get<{ meta: any; snapshot: PublicPortfolioBundle }>(
+            `${this.apiUrl}/public/portfolio/${token}`, { params },
+        ).pipe(map(r => r.snapshot));
+    }
 
     // ========== FX RATES ==========
     /** Public conversion rates relative to EUR base (see backend /fx/rates). */
     getFxRates(): Observable<FxRatesResponse> {
-        return this.http.get<FxRatesResponse>(`${this.apiUrl}/fx/rates`);
+        return this.shared<FxRatesResponse>(b => b.fx_rates)
+            ?? this.http.get<FxRatesResponse>(`${this.apiUrl}/fx/rates`);
     }
 
     // ========== DATA EXPORT ==========
@@ -634,6 +588,8 @@ export class ApiService {
 
     // ========== ASSETS ==========
     getAssets(skip = 0, limit = 100): Observable<Asset[]> {
+        const s = this.shared<Asset[]>(b => b.assets);
+        if (s) return s;
         const params = new HttpParams()
             .set('skip', skip.toString())
             .set('limit', limit.toString());
@@ -641,33 +597,42 @@ export class ApiService {
     }
 
     getAsset(id: number): Observable<Asset> {
-        return this.http.get<Asset>(`${this.apiUrl}/assets/${id}`);
+        return this.shared<Asset>(b => b.assets.find(a => a.id === id))
+            ?? this.http.get<Asset>(`${this.apiUrl}/assets/${id}`);
     }
 
     createAsset(data: AssetCreate): Observable<Asset> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<Asset>(`${this.apiUrl}/assets`, data);
     }
 
     updateAsset(id: number, data: AssetUpdate): Observable<Asset> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.patch<Asset>(`${this.apiUrl}/assets/${id}`, data);
     }
 
     deleteAsset(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/assets/${id}`);
     }
 
     // ========== TONTINE CYCLES ==========
     getTontineSchedule(assetId: number): Observable<TontineSchedule> {
+        // Not carried in the public bundle — yield an empty schedule in share mode.
+        if (this.share.active()) return of(null as unknown as TontineSchedule);
         return this.http.get<TontineSchedule>(`${this.apiUrl}/assets/${assetId}/tontine`);
     }
 
     setTontineCycle(assetId: number, cycleNumber: number, body: TontineCyclePay): Observable<TontineSchedule> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<TontineSchedule>(
             `${this.apiUrl}/assets/${assetId}/tontine/cycles/${cycleNumber}`, body);
     }
 
     // ========== TRANSACTIONS ==========
     getTransactions(skip = 0, limit = 100, type?: TransactionType): Observable<Transaction[]> {
+        const s = this.shared<Transaction[]>(b => type ? b.transactions.filter(t => t.type === type) : b.transactions);
+        if (s) return s;
         let params = new HttpParams()
             .set('skip', skip.toString())
             .set('limit', limit.toString());
@@ -678,23 +643,29 @@ export class ApiService {
     }
 
     getTransaction(id: number): Observable<Transaction> {
-        return this.http.get<Transaction>(`${this.apiUrl}/transactions/${id}`);
+        return this.shared<Transaction>(b => b.transactions.find(t => t.id === id))
+            ?? this.http.get<Transaction>(`${this.apiUrl}/transactions/${id}`);
     }
 
     createTransaction(data: TransactionCreate): Observable<Transaction> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<Transaction>(`${this.apiUrl}/transactions`, data);
     }
 
     updateTransaction(id: number, data: TransactionUpdate): Observable<Transaction> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.patch<Transaction>(`${this.apiUrl}/transactions/${id}`, data);
     }
 
     deleteTransaction(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/transactions/${id}`);
     }
 
     // ========== SAVING GOALS ==========
     getSavingGoals(skip = 0, limit = 100): Observable<SavingGoal[]> {
+        const s = this.shared<SavingGoal[]>(b => b.saving_goals);
+        if (s) return s;
         const params = new HttpParams()
             .set('skip', skip.toString())
             .set('limit', limit.toString());
@@ -702,15 +673,18 @@ export class ApiService {
     }
 
     getSavingGoal(id: number): Observable<SavingGoal> {
-        return this.http.get<SavingGoal>(`${this.apiUrl}/savings/${id}`);
+        return this.shared<SavingGoal>(b => b.saving_goals.find(g => g.id === id))
+            ?? this.http.get<SavingGoal>(`${this.apiUrl}/savings/${id}`);
     }
 
     // ── Read-only goal sharing ──────────────────────────────────────────────
     shareGoal(id: number): Observable<ShareGoalResult> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<ShareGoalResult>(`${this.apiUrl}/savings/${id}/share`, {});
     }
 
     unshareGoal(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/savings/${id}/share`);
     }
 
@@ -736,25 +710,29 @@ export class ApiService {
         return this.http.delete<void>(`${this.apiUrl}/portfolio/shares/${id}`);
     }
 
-    /** Authenticated read-only view of a shared portfolio snapshot. */
-    getSharedPortfolio(token: string): Observable<SharedPortfolio> {
-        return this.http.get<SharedPortfolio>(`${this.apiUrl}/portfolio/shared/${token}`);
+    /** Download a share's Wealth Statement PDF (owner-authed). */
+    downloadWealthStatementPdf(shareId: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/portfolio/shares/${shareId}/statement.pdf`, { responseType: 'blob' });
     }
 
     createSavingGoal(data: SavingGoalCreate): Observable<SavingGoal> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<SavingGoal>(`${this.apiUrl}/savings`, data);
     }
 
     updateSavingGoal(id: number, data: SavingGoalUpdate): Observable<SavingGoal> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.patch<SavingGoal>(`${this.apiUrl}/savings/${id}`, data);
     }
 
     deleteSavingGoal(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/savings/${id}`);
     }
 
     /** @deprecated — use `contributeToGoal` (with asset_id) */
     addContribution(goalId: number, amount: number): Observable<GoalContribution> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<GoalContribution>(
             `${this.apiUrl}/savings/${goalId}/contribute`,
             { amount },
@@ -762,14 +740,19 @@ export class ApiService {
     }
 
     listLiquidAssets(): Observable<LiquidAsset[]> {
+        const s = this.shared<LiquidAsset[]>(b => (b.assets as any[]).filter(a => a.is_liquid) as LiquidAsset[]);
+        if (s) return s;
         return this.http.get<LiquidAsset[]>(`${this.apiUrl}/savings/liquid-assets`);
     }
 
     listGoalContributions(goalId: number): Observable<GoalContribution[]> {
+        // Not carried in the public bundle.
+        if (this.share.active()) return of([] as GoalContribution[]);
         return this.http.get<GoalContribution[]>(`${this.apiUrl}/savings/${goalId}/contributions`);
     }
 
     contributeToGoal(goalId: number, data: GoalContributionCreate): Observable<GoalContribution> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<GoalContribution>(
             `${this.apiUrl}/savings/${goalId}/contribute`,
             data,
@@ -777,6 +760,7 @@ export class ApiService {
     }
 
     deallocateFromGoal(goalId: number, data: GoalContributionCreate): Observable<GoalContribution> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<GoalContribution>(
             `${this.apiUrl}/savings/${goalId}/deallocate`,
             data,
@@ -784,6 +768,7 @@ export class ApiService {
     }
 
     deleteGoalContribution(goalId: number, contributionId: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(
             `${this.apiUrl}/savings/${goalId}/contributions/${contributionId}`,
         );
@@ -791,6 +776,8 @@ export class ApiService {
 
     // ========== DEBTS ==========
     getDebts(skip = 0, limit = 100): Observable<Debt[]> {
+        const s = this.shared<Debt[]>(b => b.debts);
+        if (s) return s;
         const params = new HttpParams()
             .set('skip', skip.toString())
             .set('limit', limit.toString());
@@ -798,43 +785,54 @@ export class ApiService {
     }
 
     getDebt(id: number): Observable<Debt> {
-        return this.http.get<Debt>(`${this.apiUrl}/debts/${id}`);
+        return this.shared<Debt>(b => b.debts.find(d => d.id === id))
+            ?? this.http.get<Debt>(`${this.apiUrl}/debts/${id}`);
     }
 
     createDebt(data: DebtCreate): Observable<Debt> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<Debt>(`${this.apiUrl}/debts`, data);
     }
 
     updateDebt(id: number, data: DebtUpdate): Observable<Debt> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.patch<Debt>(`${this.apiUrl}/debts/${id}`, data);
     }
 
     deleteDebt(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/debts/${id}`);
     }
 
     makePayment(debtId: number, amount: number): Observable<Debt> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<Debt>(`${this.apiUrl}/debts/${debtId}/payment`, { amount });
     }
 
     // ========== DASHBOARD ==========
     getDashboardSummary(): Observable<DashboardSummary> {
-        return this.http.get<DashboardSummary>(`${this.apiUrl}/dashboard/summary`);
+        return this.shared<DashboardSummary>(b => b.dashboard_summary)
+            ?? this.http.get<DashboardSummary>(`${this.apiUrl}/dashboard/summary`);
     }
 
     getFIREMetrics(): Observable<FIREMetrics> {
-        return this.http.get<FIREMetrics>(`${this.apiUrl}/dashboard/fire-metrics`);
+        return this.shared<FIREMetrics>(b => b.fire_metrics)
+            ?? this.http.get<FIREMetrics>(`${this.apiUrl}/dashboard/fire-metrics`);
     }
 
     getAssetDistribution(): Observable<AssetDistribution[]> {
-        return this.http.get<AssetDistribution[]>(`${this.apiUrl}/dashboard/asset-distribution`);
+        return this.shared<AssetDistribution[]>(b => b.asset_distribution)
+            ?? this.http.get<AssetDistribution[]>(`${this.apiUrl}/dashboard/asset-distribution`);
     }
 
     getExpenseDistribution(): Observable<AssetDistribution[]> {
-        return this.http.get<AssetDistribution[]>(`${this.apiUrl}/dashboard/expense-distribution`);
+        return this.shared<AssetDistribution[]>(b => b.expense_distribution)
+            ?? this.http.get<AssetDistribution[]>(`${this.apiUrl}/dashboard/expense-distribution`);
     }
 
     getWorthProgression(months = 12): Observable<WorthProgression[]> {
+        const s = this.shared<WorthProgression[]>(b => b.worth_progression);
+        if (s) return s;
         const params = new HttpParams().set('months', months.toString());
         return this.http.get<WorthProgression[]>(`${this.apiUrl}/dashboard/worth-progression`, { params });
     }
@@ -868,27 +866,34 @@ export class ApiService {
 
     // ========== WEALTH SCORE ==========
     getWealthScore(): Observable<WealthScoreResponse> {
-        return this.http.get<WealthScoreResponse>(`${this.apiUrl}/wealth-score`);
+        return this.shared<WealthScoreResponse>(b => b.wealth_score)
+            ?? this.http.get<WealthScoreResponse>(`${this.apiUrl}/wealth-score`);
     }
 
     // ========== BROKER CONNECTIONS ==========
     createBrokerConnection(data: BrokerConnectionCreate): Observable<BrokerConnection> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections`, data);
     }
 
     getBrokerConnections(): Observable<BrokerConnection[]> {
+        const s = this.shared<BrokerConnection[]>(() => []);
+        if (s) return s;
         return this.http.get<BrokerConnection[]>(`${this.apiUrl}/broker/connections`);
     }
 
     updateBrokerConnection(id: number, data: BrokerConnectionUpdate): Observable<BrokerConnection> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.patch<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}`, data);
     }
 
     deleteBrokerConnection(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/broker/connections/${id}`);
     }
 
     syncBrokerConnection(id: number): Observable<BrokerConnection> {
+        if (this.share.active()) return this.readonlyBlock;
         return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}/sync`, {});
     }
 }

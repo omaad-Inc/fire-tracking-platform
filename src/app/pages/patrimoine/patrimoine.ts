@@ -8,6 +8,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
 import { AssetsStateService } from '../service/assets-state.service';
 import { ApiService, Debt } from '../../core/services/api.service';
+import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 
 interface CategoryGroupCard {
@@ -245,6 +246,7 @@ const GROUPS = [
 })
 export class Patrimoine implements OnInit, OnDestroy {
     private router = inject(Router);
+    private nav = inject(NavService);
     private patrimoineService = inject(PatrimoineService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
@@ -374,16 +376,10 @@ export class Patrimoine implements OnInit, OnDestroy {
     }
 
     navigateToCategory(groupId: string) {
-        const url = this.router.url;
-        const match = url.match(/^\/(fr|en)\//);
-        const lang = match ? match[1] : 'fr';
-        this.router.navigate(['/', lang, 'pages', 'patrimoine', 'category', groupId]);
+        this.nav.go('pages', 'patrimoine', 'category', groupId);
     }
 
     navigateToDebts() {
-        const url = this.router.url;
-        const match = url.match(/^\/(fr|en)\//);
-        const lang = match ? match[1] : 'fr';
-        this.router.navigate(['/', lang, 'pages', 'debts']);
+        this.nav.go('pages', 'debts');
     }
 }

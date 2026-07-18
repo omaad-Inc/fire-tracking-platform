@@ -9,6 +9,7 @@ import { TokenService } from '../../core/services/token.service';
 import { AuthService } from '../../core/services/auth.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { LayoutService } from '../service/layout.service';
+import { ShareContextService } from '../../core/services/share-context.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -34,6 +35,22 @@ import { environment } from '../../../environments/environment';
             </div>
 
             <!-- User footer -->
+            @if (share.active()) {
+                <!-- Public read-only share: owner label + join CTA, no account controls -->
+                <div class="sidebar-user-footer">
+                    <a [routerLink]="['/']" class="sidebar-user-button" style="text-decoration:none">
+                        <div class="sidebar-avatar">
+                            <p-avatar icon="pi pi-bolt" shape="circle"
+                                styleClass="bg-brand-700 text-white"
+                                [style]="{ 'width': '100%', 'height': '100%' }" />
+                        </div>
+                        <div class="sidebar-user-info">
+                            <div class="sidebar-user-name">{{ share.ownerName() ? share.ownerName() : t('shareView.readOnlyBadge') }}</div>
+                            <div class="text-xs text-ochre-500 font-semibold">{{ t('shareView.joinCtaButton') }}</div>
+                        </div>
+                    </a>
+                </div>
+            } @else {
             <div class="sidebar-user-footer relative">
                 <button type="button"
                         class="sidebar-user-button"
@@ -90,6 +107,7 @@ import { environment } from '../../../environments/environment';
                     </button>
                 </div>
             </div>
+            }
         </div>
     `
 })
@@ -99,6 +117,7 @@ export class AppSidebar {
     private authService = inject(AuthService);
     private i18n = inject(I18nService);
     layoutService = inject(LayoutService);
+    share = inject(ShareContextService);
 
     user = this.tokenService.user;
     userMenuOpen = signal(false);

@@ -6,6 +6,7 @@ import localeEn from '@angular/common/locales/en';
 import { LOCALE_ID } from '@angular/core';
 import { AppLayout } from './app/layout/component/app.layout';
 import { authGuard } from './app/core/guards/auth.guard';
+import { shareBootstrapGuard } from './app/core/guards/share.guard';
 
 // Everything except the app shell (AppLayout) is lazy-loaded so a returning
 // logged-in user never downloads the marketing site, and a first-time visitor
@@ -63,6 +64,26 @@ export const appRoutes: Routes = [
     // Public read-only shared goal (no login, no lang prefix) — /g/<token>
     { path: 'g/:token', loadComponent: () => import('./app/pages/public/public-goal').then(m => m.PublicGoalPage) },
 
+    // Public, navigable, read-only shared PORTFOLIO ("Bilan partageable") — no
+    // login, works in incognito. Reuses the exact everyday shell + pages, fed
+    // by a frozen snapshot (see shareBootstrapGuard + ShareContextService).
+    {
+        path: 'share/:token',
+        children: [
+            { path: 'protected', loadComponent: () => import('./app/pages/share/share-code-gate').then(m => m.ShareCodeGate) },
+            { path: 'unavailable', loadComponent: () => import('./app/pages/share/share-unavailable').then(m => m.ShareUnavailable) },
+            {
+                path: '',
+                component: AppLayout,
+                canActivate: [shareBootstrapGuard],
+                children: [
+                    { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
+                    { path: 'pages', loadChildren: () => import('./app/pages/share-pages.routes') },
+                ],
+            },
+        ],
+    },
+
     // Main app with layout (protected routes)
     {
         path: ':lang',
@@ -76,9 +97,6 @@ export const appRoutes: Routes = [
         ],
         children: [
             { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
-            // Read-only shared portfolio ("Bilan partageable") — viewer must be
-            // logged in (sits under the authGuard'd shell); token in the URL.
-            { path: 'shared/:token', loadComponent: () => import('./app/pages/shared/shared-portfolio').then(m => m.SharedPortfolioPage) },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },

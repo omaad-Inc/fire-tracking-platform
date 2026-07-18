@@ -5,6 +5,7 @@ import { ChartModule } from 'primeng/chart';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
 
@@ -262,6 +263,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     private cd = inject(ChangeDetectorRef);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private nav = inject(NavService);
     private patrimoineService = inject(PatrimoineService);
     private dashboardService = inject(DashboardService);
     private cs = inject(CurrencyService);
@@ -472,12 +474,10 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     getCategoryLabel(cat?: string): string { return CATEGORY_LABELS[cat ?? ''] ?? cat ?? ''; }
 
     assetLink(id: number): any[] {
-        const match = this.router.url.match(/^\/(fr|en)\//);
-        return ['/', match ? match[1] : 'fr', 'pages', 'patrimoine', 'assets', id];
+        return this.nav.link('pages', 'patrimoine', 'assets', id);
     }
 
     goBack() {
-        const match = this.router.url.match(/^\/(fr|en)\//);
-        this.router.navigate(['/', match ? match[1] : 'fr', 'pages', 'patrimoine']);
+        this.nav.go('pages', 'patrimoine');
     }
 }

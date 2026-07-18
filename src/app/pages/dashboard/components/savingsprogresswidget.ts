@@ -6,6 +6,7 @@ import { SavingsService, SavingsGoalDisplay } from '../../service/savings.servic
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 
 interface GoalDisplay {
     label: string;
@@ -101,6 +102,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
     private stateService = inject(AssetsStateService);
     private router = inject(Router);
     readonly i18n = inject(I18nService);
+    private nav = inject(NavService);
     
     private subscription?: Subscription;
     loading = signal(true);
@@ -165,9 +167,6 @@ export class SavingsProgress implements OnInit, OnDestroy {
     }
 
     link(...segments: string[]): any[] {
-        const url = this.router.url;
-        const match = url.match(/^\/(fr|en)(?:\/|$)/);
-        const lang = (match ? match[1] : 'fr') as 'fr' | 'en';
-        return ['/', lang, ...segments];
+        return this.nav.link(...segments);
     }
 }

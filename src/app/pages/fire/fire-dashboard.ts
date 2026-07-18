@@ -12,6 +12,7 @@ import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
 import { TokenService } from '../../core/services/token.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { NavService } from '../../core/services/nav.service';
 import { FireSettings } from '../settings/components/fire-settings';
 
 @Component({
@@ -182,11 +183,12 @@ export class FireDashboardPage implements OnInit, OnDestroy {
     private stateService = inject(AssetsStateService);
     private tokenService = inject(TokenService);
     private router = inject(Router);
+    private nav = inject(NavService);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
 
     back() {
-        this.router.navigate(['/', this.i18n.lang(), 'pages', 'goals']);
+        this.nav.go('pages', 'goals');
     }
 
     readonly circumference = 2 * Math.PI * 78; // r=78

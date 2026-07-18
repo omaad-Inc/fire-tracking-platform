@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { DashboardService, FIREProgress } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
@@ -146,6 +147,7 @@ export class FireHeroCardComponent implements OnInit, OnDestroy {
     private dashboard = inject(DashboardService);
     private state = inject(AssetsStateService);
     private router = inject(Router);
+    private nav = inject(NavService);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
 
@@ -200,7 +202,7 @@ export class FireHeroCardComponent implements OnInit, OnDestroy {
     }
 
     goDetails() {
-        this.router.navigate(['/', this.i18n.lang(), 'pages', 'fire']);
+        this.nav.go('pages', 'fire');
     }
 
     /** Empty-state CTA — same destination as the configured-state action. */

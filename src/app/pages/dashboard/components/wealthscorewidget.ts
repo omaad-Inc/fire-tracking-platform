@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
 import { WealthScoreService } from '../../service/wealth-score.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 
 @Component({
     selector: 'app-wealth-score-widget',
@@ -71,6 +72,7 @@ export class WealthScoreDashboardWidget implements OnInit {
     scoreService = inject(WealthScoreService);
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private nav = inject(NavService);
 
     chartData: any = {};
     chartOptions: any = {};
@@ -78,9 +80,7 @@ export class WealthScoreDashboardWidget implements OnInit {
     t(key: string): string { return this.i18n.t(key); }
 
     link(...segments: string[]): any[] {
-        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        const lang = match ? match[1] : 'fr';
-        return ['/', lang, ...segments];
+        return this.nav.link(...segments);
     }
 
     async ngOnInit() {

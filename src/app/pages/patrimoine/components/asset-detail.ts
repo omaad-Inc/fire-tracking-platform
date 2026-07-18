@@ -16,6 +16,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { NavService } from '../../../core/services/nav.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { TontineCyclesComponent } from './tontine-cycles';
@@ -898,6 +899,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
 export class AssetDetailPage implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private nav = inject(NavService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
     private confirmationService = inject(ConfirmationService);
@@ -1282,9 +1284,9 @@ export class AssetDetailPage implements OnInit {
         };
         const groupId = cat ? catToGroup[cat] : null;
         if (groupId) {
-            this.router.navigate(['/', lang, 'pages', 'patrimoine', 'category', groupId]);
+            this.nav.go('pages', 'patrimoine', 'category', groupId);
         } else {
-            this.router.navigate(['/', lang, 'pages', 'patrimoine']);
+            this.nav.go('pages', 'patrimoine');
         }
     }
 

@@ -6,6 +6,7 @@ import { templateOf } from '../goal-templates';
 import { computeStatus, progressPercent, templateKeyOf } from '../goal-utils';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 
 @Component({
     selector: 'app-goal-card',
@@ -94,6 +95,7 @@ export class GoalCardComponent {
     @Input({ required: true }) goal!: SavingGoal;
     i18n = inject(I18nService);
     private router = inject(Router);
+    private nav = inject(NavService);
 
     image = '';
 
@@ -102,7 +104,7 @@ export class GoalCardComponent {
     }
 
     navigate() {
-        this.router.navigate(['/', this.i18n.lang(), 'pages', 'goals', this.goal.id]);
+        this.nav.go('pages', 'goals', this.goal.id);
     }
 
     template = computed(() => templateOf(templateKeyOf(this.goal)));

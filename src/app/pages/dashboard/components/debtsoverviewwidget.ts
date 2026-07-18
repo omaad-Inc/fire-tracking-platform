@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
@@ -98,6 +99,7 @@ interface DebtDisplay {
 export class DebtsOverview implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private nav = inject(NavService);
     private debtsService = inject(DebtsService);
     private stateService = inject(AssetsStateService);
     
@@ -176,9 +178,6 @@ export class DebtsOverview implements OnInit, OnDestroy {
     }
 
     link(...segments: string[]): any[] {
-        const url = this.router.url;
-        const match = url.match(/^\/(fr|en)(?:\/|$)/);
-        const lang = (match ? match[1] : 'fr') as 'fr' | 'en';
-        return ['/', lang, ...segments];
+        return this.nav.link(...segments);
     }
 }
