@@ -20,6 +20,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { ShareContextService } from '../../../core/services/share-context.service';
 import { LayoutService } from '../../../layout/service/layout.service';
 
 interface DayGroup {
@@ -56,7 +57,7 @@ interface DayGroup {
                             [disabled]="isCurrentMonth()"></button>
                 </div>
                 <div class="flex-1"></div>
-                <button pButton icon="pi pi-plus" [label]="t('transactions.add')"
+                <button *ngIf="!share.active()" pButton icon="pi pi-plus" [label]="t('transactions.add')"
                         class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
@@ -157,7 +158,7 @@ interface DayGroup {
                         ? t('transactions.emptyFiltered')
                         : t('transactions.emptyMonth') }}
                 </p>
-                @if (!search && typeFilter() === 'all') {
+                @if (!share.active() && !search && typeFilter() === 'all') {
                     <button pButton icon="pi pi-plus" [label]="t('transactions.addTransaction')"
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
@@ -207,7 +208,7 @@ interface DayGroup {
                                         {{ rec.type === 'Transfer' ? '⇄ ' : (rec.type === 'Income' ? '+' : '−') }}<app-amount [value]="rec.amount" />
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
-                                    <div class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                    <div *ngIf="!share.active()" class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                         <button class="w-7 h-7 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-brand-50 dark:hover:bg-brand-700/30 transition-colors"
                                                 (click)="editRecord(rec)">
                                             <i class="pi pi-pencil text-xs text-surface-500"></i>
@@ -424,6 +425,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
     private i18n = inject(I18nService);
+    share = inject(ShareContextService);
 
     t(key: string): string { return this.i18n.t(key); }
     private dateLocale(): string { return this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR'; }

@@ -17,6 +17,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { NavService } from '../../../core/services/nav.service';
+import { ShareContextService } from '../../../core/services/share-context.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { TontineCyclesComponent } from './tontine-cycles';
@@ -62,7 +63,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         <span class="text-surface-500 text-sm">{{ categoryLabel() }}</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-1.5 shrink-0">
+                <div *ngIf="!share.active()" class="flex items-center gap-1.5 shrink-0">
                     <button pButton icon="pi pi-pencil" severity="secondary"
                             [outlined]="true" size="small" (click)="editAsset()"
                             class="!w-9 !h-9 !p-0"></button>
@@ -900,6 +901,7 @@ export class AssetDetailPage implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private nav = inject(NavService);
+    share = inject(ShareContextService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
     private confirmationService = inject(ConfirmationService);

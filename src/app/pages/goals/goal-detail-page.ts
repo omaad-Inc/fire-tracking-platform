@@ -16,6 +16,7 @@ import {
 } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { NavService } from '../../core/services/nav.service';
+import { ShareContextService } from '../../core/services/share-context.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { AssetsStateService } from '../service/assets-state.service';
 import { GoalAddDialogComponent, GoalSavePayload } from './components/goal-add-dialog';
@@ -49,7 +50,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                     <i class="pi pi-angle-right text-[10px]"></i>
                     <span class="text-surface-900 dark:text-surface-0 font-medium truncate">{{ goal()?.name || '...' }}</span>
                 </div>
-                @if (goal()) {
+                @if (goal() && !share.active()) {
                     <div class="flex flex-wrap gap-2">
                         <p-button
                             [label]="i18n.t('goals.detail.allocateFunds')"
@@ -225,6 +226,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                     </div>
                                     <p class="text-sm text-surface-500 dark:text-surface-400 m-0 mb-3">{{ i18n.t('goals.activity.empty') }}</p>
                                     <p-button
+                                        *ngIf="!share.active()"
                                         [label]="i18n.t('goals.detail.allocateFunds')"
                                         icon="pi pi-plus"
                                         size="small"
@@ -261,6 +263,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                                 {{ c.type === 'contribution' ? '+' : '−' }}<app-amount [value]="c.amount" />
                                             </div>
                                             <button
+                                                *ngIf="!share.active()"
                                                 type="button"
                                                 class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center hover:bg-negative-50 dark:hover:bg-negative-700/40 transition-colors shrink-0"
                                                 [title]="i18n.t('common.delete')"
@@ -375,6 +378,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
     private confirm = inject(ConfirmationService);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
+    share = inject(ShareContextService);
 
     private routeSub?: Subscription;
     private stateSub?: Subscription;
