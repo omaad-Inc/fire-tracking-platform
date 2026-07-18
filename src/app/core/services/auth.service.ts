@@ -41,6 +41,14 @@ export interface TwoFactorStatus {
     enabled: boolean;
 }
 
+export interface LoginEventEntry {
+    id: number;
+    method: string;      // password | otp | 2fa | google
+    ip: string | null;
+    user_agent: string | null;
+    created_at: string;
+}
+
 export interface OAuthStatus {
     google_configured: boolean;
 }
@@ -131,6 +139,19 @@ export class AuthService {
 
     disable2fa(code: string): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/auth/2fa/disable`, { code }).pipe(catchError(this.handleError));
+    }
+
+    // ── Login history & session revocation ──────────────────────────────────
+    getLoginHistory(): Observable<LoginEventEntry[]> {
+        return this.http.get<LoginEventEntry[]>(`${this.apiUrl}/auth/login-history`).pipe(catchError(this.handleError));
+    }
+
+    /** Sign out every other device; swaps in the fresh token for this one. */
+    logoutOtherDevices(): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/logout-others`, {}).pipe(
+            tap(res => { if (res.access_token) this.tokenService.setToken(res.access_token); }),
+            catchError(this.handleError)
+        );
     }
 
     /**

@@ -9,7 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
-import { AuthService, TwoFactorSetup } from '../../../core/services/auth.service';
+import { AuthService, TwoFactorSetup, LoginEventEntry } from '../../../core/services/auth.service';
 import { PinService } from '../../../core/services/pin.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
@@ -335,12 +335,14 @@ import { firstValueFrom } from 'rxjs';
                         </div>
                     </div>
 
-                    <!-- Multi-session coming soon note -->
-                    <div class="flex items-start gap-2 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
-                        <i class="pi pi-info-circle text-surface-400 text-sm mt-0.5 shrink-0"></i>
+                    <!-- Sign out other devices -->
+                    <div class="flex items-center justify-between gap-3 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
                         <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
-                            {{ t('security.sessionsSoon') }}
+                            {{ t('security.sessions.othersHint') }}
                         </p>
+                        <button class="shrink-0 px-3 py-2 rounded-xl border border-surface-300 dark:border-surface-600 text-xs font-semibold text-negative disabled:opacity-50" [disabled]="signingOut()" (click)="signOutOtherDevices()">
+                            @if (signingOut()) { <i class="pi pi-spin pi-spinner mr-1"></i> }{{ t('security.sessions.signOutOthers') }}
+                        </button>
                     </div>
 
                     <!-- Logout button -->
@@ -366,40 +368,43 @@ import { firstValueFrom } from 'rxjs';
                 </div>
 
                 <div class="p-5">
-                    <div class="space-y-1">
-                        <!-- Real login event -->
-                        <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                            <div class="w-8 h-8 rounded-lg bg-positive/10 flex items-center justify-center shrink-0">
-                                <i [class]="'pi ' + loginIcon() + ' text-positive text-sm'"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ loginEventLabel() }}</p>
-                                <p class="text-xs text-surface-500 dark:text-surface-400">{{ currentSession().browser }} · {{ currentSession().device }}</p>
-                            </div>
-                            <span class="text-xs text-surface-400 shrink-0">{{ currentSession().loginTime }}</span>
+                    @if (historyLoading()) {
+                        <div class="flex justify-center py-6"><i class="pi pi-spin pi-spinner text-surface-400"></i></div>
+                    } @else {
+                        <div class="space-y-1">
+                            <!-- Real sign-in history -->
+                            @for (ev of loginHistory(); track ev.id) {
+                                <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                                    <div class="w-8 h-8 rounded-lg bg-positive/10 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-sign-in text-positive text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ methodLabel(ev.method) }}</p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ uaLabel(ev.user_agent) }}@if (ev.ip) { · {{ ev.ip }}}</p>
+                                    </div>
+                                    <span class="text-xs text-surface-400 shrink-0">{{ formatDate(ev.created_at) }}</span>
+                                </div>
+                            }
+
+                            <!-- Account creation event (real) -->
+                            @if (user()?.created_at) {
+                                <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                                    <div class="w-8 h-8 rounded-lg bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
+                                        <i class="pi pi-user-plus text-brand-700 dark:text-brand-300 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ t('security.accountCreated') }}</p>
+                                        <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.signupOmaad') }}</p>
+                                    </div>
+                                    <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
+                                </div>
+                            }
+
+                            @if (loginHistory().length === 0) {
+                                <p class="text-xs text-surface-400 text-center py-4">{{ t('security.sessions.noHistory') }}</p>
+                            }
                         </div>
-
-                        <!-- Account creation event (real) -->
-                        @if (user()?.created_at) {
-                            <div class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                                <div class="w-8 h-8 rounded-lg bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
-                                    <i class="pi pi-user-plus text-brand-700 dark:text-brand-300 text-sm"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ t('security.accountCreated') }}</p>
-                                    <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.signupOmaad') }}</p>
-                                </div>
-                                <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
-                            </div>
-                        }
-                    </div>
-
-                    <div class="flex items-start gap-2 mt-4 p-3 rounded-xl bg-surface-100 dark:bg-surface-800/50">
-                        <i class="pi pi-info-circle text-surface-400 text-sm mt-0.5 shrink-0"></i>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed">
-                            {{ t('security.historySoon') }}
-                        </p>
-                    </div>
+                    }
                 </div>
             </section>
 
@@ -604,6 +609,57 @@ export class SecuritySettings implements OnInit {
         }
         // TOTP 2FA is for local (non-Google) accounts; Google runs its own.
         if (!this.isGoogleUser()) this.loadTwofaStatus();
+        this.loadLoginHistory();
+    }
+
+    // ── Login history & session revocation ──────────────────────────────────
+    loginHistory   = signal<LoginEventEntry[]>([]);
+    historyLoading = signal(true);
+    signingOut     = signal(false);
+
+    private loadLoginHistory(): void {
+        this.historyLoading.set(true);
+        this.authService.getLoginHistory().subscribe({
+            next: rows => { this.loginHistory.set(rows); this.historyLoading.set(false); },
+            error: () => this.historyLoading.set(false),
+        });
+    }
+
+    signOutOtherDevices(): void {
+        this.signingOut.set(true);
+        this.authService.logoutOtherDevices().subscribe({
+            next: () => {
+                this.signingOut.set(false);
+                this.msgService.add({ severity: 'success', summary: 'Omaad', detail: this.t('security.sessions.signedOutOthers'), life: 4000 });
+                this.loadLoginHistory();
+            },
+            error: err => { this.signingOut.set(false); this.msgService.add({ severity: 'error', summary: 'Omaad', detail: err?.message || this.t('security.2fa.error'), life: 4000 }); },
+        });
+    }
+
+    /** Localized sign-in method label. */
+    methodLabel(method: string): string {
+        const key = `security.sessions.method.${method}`;
+        const label = this.t(key);
+        return label !== key ? label : method;
+    }
+
+    /** A short "Browser · Device" label parsed from a stored user-agent. */
+    uaLabel(ua: string | null): string {
+        if (!ua) return this.t('security.sessions.unknownDevice');
+        const browser =
+            /edg/i.test(ua) ? 'Edge' :
+            /chrome|crios/i.test(ua) ? 'Chrome' :
+            /firefox|fxios/i.test(ua) ? 'Firefox' :
+            /safari/i.test(ua) ? 'Safari' : this.t('security.sessions.browser');
+        const device =
+            /iphone/i.test(ua) ? 'iPhone' :
+            /ipad/i.test(ua) ? 'iPad' :
+            /android/i.test(ua) ? 'Android' :
+            /mac/i.test(ua) ? 'Mac' :
+            /windows/i.test(ua) ? 'Windows' :
+            /linux/i.test(ua) ? 'Linux' : this.t('security.sessions.device');
+        return `${browser} · ${device}`;
     }
 
     // ── TOTP two-factor auth ────────────────────────────────────────────────
