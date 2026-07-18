@@ -2,6 +2,7 @@ import { Component, inject, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { I18nService } from '../../i18n/i18n.service';
 
 // Routes where the FAB should NOT appear (detail pages, settings)
 const HIDE_FAB_PATTERNS = [
@@ -20,8 +21,8 @@ const HIDE_FAB_PATTERNS = [
         @if (showFab) {
             <button
                 class="fab-button lg:hidden fixed right-5 z-50 w-14 h-14 rounded-full bg-brand-700 hover:bg-brand-800 text-white shadow-xl hover:shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95"
-                (click)="addAsset.emit()"
-                aria-label="Ajouter un actif"
+                (click)="action.emit()"
+                [attr.aria-label]="i18n.t('quickAdd.fabLabel')"
             >
                 <i class="pi pi-plus text-xl"></i>
             </button>
@@ -35,9 +36,10 @@ const HIDE_FAB_PATTERNS = [
     `]
 })
 export class AppFab implements OnInit {
-    @Output() addAsset = new EventEmitter<void>();
+    @Output() action = new EventEmitter<void>();
 
     private router = inject(Router);
+    readonly i18n = inject(I18nService);
     showFab = true;
 
     ngOnInit() {

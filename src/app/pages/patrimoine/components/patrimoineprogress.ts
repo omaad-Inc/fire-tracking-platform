@@ -139,9 +139,8 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     }
     
     private formatCurrentDate(): string {
-        const date = new Date();
-        const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-        return `${date.getDate()} ${months[date.getMonth()]}, ${date.getFullYear()}`;
+        const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
+        return new Date().toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
     initChart() {

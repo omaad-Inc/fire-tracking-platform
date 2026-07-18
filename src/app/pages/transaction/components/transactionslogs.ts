@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, computed, inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, Output, EventEmitter } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +16,7 @@ import {
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
 import { PatrimoineService } from '../../service/patrimoine.service';
+import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -126,10 +128,12 @@ interface DayGroup {
                         </div>
                     </div>
                     <div class="relative">
-                        <div class="text-base font-bold text-brand-700 dark:text-brand-300 mb-1">{{ monthSummary().savingsRate }}%</div>
+                        <div class="text-base font-bold mb-1"
+                             [ngClass]="monthSummary().savingsRate < 0 ? 'text-negative' : 'text-brand-700 dark:text-brand-300'">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand-700 dark:bg-brand-300 rounded-full transition-all duration-500"
-                                 [style.width]="monthSummary().savingsRate + '%'"></div>
+                            <div class="h-full rounded-full transition-all duration-500"
+                                 [ngClass]="monthSummary().savingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-brand-300'"
+                                 [style.width]="monthSummary().barWidth + '%'"></div>
                         </div>
                     </div>
                 </div>
@@ -411,9 +415,10 @@ interface DayGroup {
         </p-dialog>
     `
 })
-export class TransactionLogs implements OnInit {
+export class TransactionLogs implements OnInit, OnDestroy {
     private transactionsService = inject(TransactionsService);
     private patrimoineService   = inject(PatrimoineService);
+    private state               = inject(AssetsStateService);
     private messageService      = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
     private layoutService       = inject(LayoutService);
@@ -535,8 +540,13 @@ export class TransactionLogs implements OnInit {
         const income   = recs.filter(r => r.type === 'Income') .reduce((s, r) => s + r.amount, 0);
         const expenses = recs.filter(r => r.type === 'Expense').reduce((s, r) => s + r.amount, 0);
         const net      = income - expenses;
-        const savingsRate = income > 0 ? Math.max(0, Math.min(100, Math.round(net / income * 100))) : 0;
-        return { income, expenses, net, savingsRate };
+        // Show the truth, including deficit months: a month where you spent
+        // more than you earned has a NEGATIVE savings rate. Clamping it to 0
+        // would hide the one number this tracker exists to surface.
+        const savingsRate = income > 0 ? Math.min(100, Math.round(net / income * 100)) : 0;
+        // Bar fill is magnitude-based; its colour (below) signals the sign.
+        const barWidth = Math.min(100, Math.abs(savingsRate));
+        return { income, expenses, net, savingsRate, barWidth };
     });
 
     readonly dayGroups = computed((): DayGroup[] => {
@@ -553,8 +563,16 @@ export class TransactionLogs implements OnInit {
             }));
     });
 
+    private sub?: Subscription;
+
     ngOnInit() {
         this.load();
+        // Reflect a quick-add from the FAB without leaving the page.
+        this.sub = this.state.transactionsUpdated$.subscribe(() => this.load());
+    }
+
+    ngOnDestroy() {
+        this.sub?.unsubscribe();
     }
 
     private async load() {

@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Renderer2, ViewChild, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
@@ -6,6 +6,7 @@ import { AppTopbar } from './app.topbar';
 import { AppSidebar } from './app.sidebar';
 import { AppMobileNav } from './app.mobile-nav';
 import { AppFab } from './app.fab';
+import { QuickAddSheet } from './quick-add-sheet';
 import { AppAiAssistantPanel } from './app.ai-assistant-panel';
 import { LayoutService } from '../service/layout.service';
 import { PwaPromptComponent } from './pwa-prompt.component';
@@ -16,7 +17,7 @@ import { AuthService } from '../../core/services/auth.service';
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, QuickAddSheet, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
@@ -27,7 +28,8 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
         <div class="layout-mask animate-fadein"></div>
         <app-mobile-nav></app-mobile-nav>
-        <app-fab (addAsset)="onAddAsset()"></app-fab>
+        <app-fab (action)="onFabAction()"></app-fab>
+        <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
         <app-ai-assistant-panel></app-ai-assistant-panel>
         <app-pwa-prompt></app-pwa-prompt>
 
@@ -132,6 +134,21 @@ export class AppLayout implements OnInit, OnDestroy {
 
         // Auto-lock when app goes to background and returns
         document.addEventListener('visibilitychange', this.visibilityHandler);
+    }
+
+    quickAddOpen = signal(false);
+
+    /**
+     * The FAB adds "the thing this page is about": on the portfolio screen it
+     * opens the add-asset wizard; everywhere else it opens the sub-5s
+     * quick-add transaction sheet (manual entry is the main ingestion path).
+     */
+    onFabAction(): void {
+        if (this.router.url.includes('/pages/patrimoine')) {
+            this.onAddAsset();
+        } else {
+            this.quickAddOpen.set(true);
+        }
     }
 
     onAddAsset(): void {

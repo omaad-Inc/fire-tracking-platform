@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges, inject, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { TransactionsService, MonthlySummary } from '../../service/transactions.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
     selector: 'app-transactions-summary',
@@ -12,7 +13,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
             <!-- Header -->
             <div class="relative">
                 <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ monthTitle }}</h3>
-                <p class="text-surface-400 text-xs mt-0.5">Résumé financier</p>
+                <p class="text-surface-400 text-xs mt-0.5">{{ i18n.t('transactions.summary.title') }}</p>
             </div>
 
             @if (loading()) {
@@ -27,7 +28,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                      [ngClass]="(summary()!.net >= 0) ? 'bg-positive-50 dark:bg-positive-500/15' : 'bg-negative-50 dark:bg-negative-500/15'">
                     <span class="text-sm font-medium"
                           [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
-                        {{ summary()!.net >= 0 ? 'Solde positif' : 'Solde négatif' }}
+                        {{ summary()!.net >= 0 ? i18n.t('transactions.summary.balancePositive') : i18n.t('transactions.summary.balanceNegative') }}
                     </span>
                     <span class="text-lg font-bold"
                           [ngClass]="(summary()!.net >= 0) ? 'text-positive' : 'text-negative'">
@@ -43,7 +44,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             <div class="w-7 h-7 rounded-lg bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center">
                                 <i class="pi pi-arrow-down-left text-positive-600 dark:text-positive-400 text-xs"></i>
                             </div>
-                            <span class="text-sm text-surface-600 dark:text-surface-400">Revenus</span>
+                            <span class="text-sm text-surface-600 dark:text-surface-400">{{ i18n.t('transactions.summary.income') }}</span>
                         </div>
                         <span class="text-sm font-semibold text-positive">
                             +<app-amount [value]="summary()!.income" />
@@ -55,7 +56,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             <div class="w-7 h-7 rounded-lg bg-negative-50 dark:bg-negative-500/15 flex items-center justify-center">
                                 <i class="pi pi-arrow-up-right text-negative-600 dark:text-negative-400 text-xs"></i>
                             </div>
-                            <span class="text-sm text-surface-600 dark:text-surface-400">Dépenses</span>
+                            <span class="text-sm text-surface-600 dark:text-surface-400">{{ i18n.t('transactions.summary.expenses') }}</span>
                         </div>
                         <span class="text-sm font-semibold text-negative">
                             −<app-amount [value]="summary()!.expenses" />
@@ -70,7 +71,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                 @if (summary()!.byCategory.length > 0) {
                     <div class="relative">
                         <p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">
-                            Répartition des dépenses
+                            {{ i18n.t('transactions.summary.spendBreakdown') }}
                         </p>
                         <div class="space-y-3">
                             @for (cat of summary()!.byCategory; track cat.category) {
@@ -97,14 +98,14 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     </div>
                 } @else {
                     <p class="relative text-xs text-surface-400 dark:text-surface-500 text-center py-4">
-                        Aucune dépense ce mois-ci
+                        {{ i18n.t('transactions.summary.noExpense') }}
                     </p>
                 }
 
                 <!-- Transaction count -->
                 <div class="relative mt-auto pt-2 border-t border-surface-200 dark:border-surface-800">
                     <p class="text-xs text-surface-400 text-center">
-                        {{ summary()!.count }} transaction{{ summary()!.count > 1 ? 's' : '' }} ce mois
+                        {{ i18n.t(summary()!.count > 1 ? 'transactions.summary.countMany' : 'transactions.summary.countOne', { count: summary()!.count }) }}
                     </p>
                 </div>
             }
@@ -113,6 +114,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 })
 export class TransactionsSummary implements OnChanges {
     private service = inject(TransactionsService);
+    readonly i18n = inject(I18nService);
 
     @Input() yearMonth = '';  // YYYY-MM
 
@@ -122,8 +124,9 @@ export class TransactionsSummary implements OnChanges {
     get monthTitle(): string {
         if (!this.yearMonth) return '';
         const [y, m] = this.yearMonth.split('-').map(Number);
+        const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
         return new Date(y, m - 1, 1)
-            .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+            .toLocaleDateString(locale, { month: 'long', year: 'numeric' })
             .replace(/^\w/, c => c.toUpperCase());
     }
 

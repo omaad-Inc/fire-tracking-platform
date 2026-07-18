@@ -56,6 +56,7 @@ export interface Asset {
     tontine_start_date: string | null;
     tontine_collection_date: string | null;
     tontine_status: string | null;
+    tontine_frequency: string | null;
     // Mobile Money specific
     mobile_money_operator: string | null;
     created_at: string;
@@ -82,8 +83,45 @@ export interface AssetCreate {
     tontine_start_date?: string | null;
     tontine_collection_date?: string | null;
     tontine_status?: string | null;
+    tontine_frequency?: string | null;
     // Mobile Money specific
     mobile_money_operator?: string | null;
+}
+
+export interface TontineCycleView {
+    cycle_number: number;
+    due_date: string;
+    amount: number;
+    paid: boolean;
+    paid_date: string | null;
+    is_payout: boolean;
+    notes: string | null;
+}
+
+export interface TontineSchedule {
+    asset_id: number;
+    name: string;
+    currency: string;
+    frequency: string;          // 'monthly' | 'weekly'
+    participants: number;
+    contribution: number;
+    pot_size: number;
+    cycles: TontineCycleView[];
+    contributions_made: number;
+    contributions_total: number;
+    total_contributed: number;
+    is_complete: boolean;
+    next_due_cycle: number | null;
+    next_due_date: string | null;
+    payout_cycle_number: number | null;
+    payout_date: string | null;
+    payout_collected: boolean;
+}
+
+export interface TontineCyclePay {
+    paid: boolean;
+    paid_date?: string | null;
+    notes?: string | null;
 }
 
 export interface AssetUpdate {
@@ -107,6 +145,7 @@ export interface AssetUpdate {
     tontine_start_date?: string | null;
     tontine_collection_date?: string | null;
     tontine_status?: string | null;
+    tontine_frequency?: string | null;
     // Mobile Money specific
     mobile_money_operator?: string | null;
 }
@@ -497,6 +536,16 @@ export class ApiService {
 
     deleteAsset(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/assets/${id}`);
+    }
+
+    // ========== TONTINE CYCLES ==========
+    getTontineSchedule(assetId: number): Observable<TontineSchedule> {
+        return this.http.get<TontineSchedule>(`${this.apiUrl}/assets/${assetId}/tontine`);
+    }
+
+    setTontineCycle(assetId: number, cycleNumber: number, body: TontineCyclePay): Observable<TontineSchedule> {
+        return this.http.post<TontineSchedule>(
+            `${this.apiUrl}/assets/${assetId}/tontine/cycles/${cycleNumber}`, body);
     }
 
     // ========== TRANSACTIONS ==========
