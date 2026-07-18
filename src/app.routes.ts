@@ -67,20 +67,18 @@ export const appRoutes: Routes = [
     // Public, navigable, read-only shared PORTFOLIO ("Bilan partageable") — no
     // login, works in incognito. Reuses the exact everyday shell + pages, fed
     // by a frozen snapshot (see shareBootstrapGuard + ShareContextService).
+    // Gate/unavailable are shell-less siblings; the main entry puts the guard
+    // DIRECTLY on the AppLayout route (token param is on this route — avoids the
+    // empty-child-of-componentless-parent guard fragility).
+    { path: 'share/:token/protected', loadComponent: () => import('./app/pages/share/share-code-gate').then(m => m.ShareCodeGate) },
+    { path: 'share/:token/unavailable', loadComponent: () => import('./app/pages/share/share-unavailable').then(m => m.ShareUnavailable) },
     {
         path: 'share/:token',
+        component: AppLayout,
+        canActivate: [shareBootstrapGuard],
         children: [
-            { path: 'protected', loadComponent: () => import('./app/pages/share/share-code-gate').then(m => m.ShareCodeGate) },
-            { path: 'unavailable', loadComponent: () => import('./app/pages/share/share-unavailable').then(m => m.ShareUnavailable) },
-            {
-                path: '',
-                component: AppLayout,
-                canActivate: [shareBootstrapGuard],
-                children: [
-                    { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
-                    { path: 'pages', loadChildren: () => import('./app/pages/share-pages.routes') },
-                ],
-            },
+            { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
+            { path: 'pages', loadChildren: () => import('./app/pages/share-pages.routes') },
         ],
     },
 
