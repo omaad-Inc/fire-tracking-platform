@@ -14,12 +14,13 @@ import { FireProjectionWidget } from './components/fireprojectionwidget';
 import { PainCalculatorWidget } from './components/paincalculatorwidget';
 import { HowItWorksWidget } from './components/howitworkswidget';
 import { WealthScoreWidget } from './components/wealthscorewidget';
+import { SocialProofWidget } from './components/socialproofwidget';
 import { I18nService, Lang } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, FireProjectionWidget, PainCalculatorWidget, HowItWorksWidget, WealthScoreWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
+    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, FireProjectionWidget, PainCalculatorWidget, HowItWorksWidget, WealthScoreWidget, SocialProofWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
     template: `
         <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
             <div id="home" class="landing-wrapper overflow-hidden">
@@ -34,6 +35,8 @@ import { I18nService, Lang } from '../../i18n/i18n.service';
 
                 <!-- Main content -->
                 <hero-widget />
+                <!-- Early-access credibility strip (by the numbers) -->
+                <social-proof-widget />
                 <how-it-works-widget />
                 <!-- Aspirational hook: "where could this take me?" -->
                 <fire-projection-widget />
