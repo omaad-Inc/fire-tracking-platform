@@ -36,6 +36,8 @@ export default {
                     DEFAULT: '#1A2740',
                 },
                 // Accent — Savanna Ochre
+                // ⚠️ WCAG: ochre-400/500/600 backgrounds MUST use dark text
+                // (text-warm-900, ~5.4:1) — never text-white (~3.4:1, fails AA).
                 ochre: {
                     50:  '#FBF4E9',
                     100: '#F4E5D2',
