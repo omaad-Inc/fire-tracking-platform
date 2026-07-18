@@ -1119,7 +1119,7 @@ export const EN = {
       h1a: 'Become the king',
       h1b: 'of your',
       h1c: 'wealth',
-      description: 'Take full control of your wealth. Track your assets, master your spending and chart your path to financial independence.',
+      description: 'Your assets here and back home — real estate, BRVM, tontine, mobile money — in one place, in FCFA and euros.',
       descriptionHighlight: 'Omaad Wealth',
       descriptionSuffix: 'gives you the keys to your financial sovereignty.',
       stat1Value: 'Free',

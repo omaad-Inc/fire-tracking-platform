@@ -1119,7 +1119,7 @@ export const FR = {
       h1a: 'Devenez le roi',
       h1b: 'de votre',
       h1c: 'patrimoine',
-      description: 'Prenez le contrôle total de votre patrimoine. Suivez vos actifs, maîtrisez vos dépenses et tracez votre route vers l\'indépendance financière.',
+      description: 'Vos actifs ici et au pays — immobilier, BRVM, tontine, mobile money — réunis en un seul endroit, en FCFA et en euros.',
       descriptionHighlight: 'Omaad Wealth',
       descriptionSuffix: 'vous donne les clés de votre souveraineté financière.',
       stat1Value: 'Gratuit',
