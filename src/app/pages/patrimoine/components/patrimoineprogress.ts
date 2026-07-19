@@ -15,7 +15,7 @@ import { ApiService } from '../../../core/services/api.service';
         <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
-                    <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">Patrimoine Brut</div>
+                    <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('patrimoine.grossWorth') }}</div>
                     <i class="pi pi-chevron-down text-surface-500 text-sm cursor-pointer"></i>
                 </div>
                 @if (!loading()) {
@@ -42,7 +42,7 @@ import { ApiService } from '../../../core/services/api.service';
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
                         <i class="pi pi-chart-line text-xl text-surface-400"></i>
                     </div>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm">Pas encore de données</p>
+                    <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('patrimoine.noDataYet') }}</p>
                 </div>
             } @else {
                 <div class="relative mb-4">
@@ -164,7 +164,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                 labels: points.map(p => p.label),
                 datasets: [
                     {
-                        label: 'Patrimoine Brut',
+                        label: this.i18n.t('patrimoine.grossWorth'),
                         data: points.map(p => p.value),
                         fill: true,
                         backgroundColor: (ctx: any) => {
