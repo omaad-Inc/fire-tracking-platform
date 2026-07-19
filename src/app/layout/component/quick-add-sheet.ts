@@ -32,7 +32,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
         <p-toast position="top-center" key="quickadd" />
 
         <!-- Backdrop -->
-        <div class="fixed inset-0 z-[60] transition-opacity duration-300"
+        <div class="fixed inset-0 z-[1100] transition-opacity duration-300"
              [class.pointer-events-none]="!open()"
              [class.opacity-0]="!open()"
              [class.opacity-100]="open()">
@@ -41,13 +41,14 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
             <!-- Sheet -->
             <div class="absolute left-0 right-0 bottom-0 bg-surface-0 dark:bg-surface-900 rounded-t-3xl shadow-2xl
                         max-w-md mx-auto transition-transform duration-300 ease-out
+                        flex flex-col max-h-[92dvh]
                         px-5 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]"
                  [class.translate-y-0]="open()"
                  [class.translate-y-full]="!open()"
                  (click)="$event.stopPropagation()">
 
                 <!-- Grab handle -->
-                <div class="w-10 h-1.5 rounded-full bg-surface-200 dark:bg-surface-700 mx-auto mb-3"></div>
+                <div class="w-10 h-1.5 rounded-full bg-surface-200 dark:bg-surface-700 mx-auto mb-3 shrink-0"></div>
 
                 @if (accounts().length === 0 && !loading()) {
                     <!-- No monetary account -> guide the user -->
@@ -62,6 +63,10 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                         </button>
                     </div>
                 } @else {
+                  <!-- Scrollable middle: toggle / amount / categories / account.
+                       Keeps the numpad + save pinned below so the save button is
+                       always on-screen, never pushed under the fold. -->
+                  <div class="flex-1 min-h-0 overflow-y-auto">
                     <!-- Expense / Income toggle -->
                     <div class="flex gap-1 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl mb-4">
                         <button class="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors"
@@ -127,7 +132,10 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                             }
                         </select>
                     </div>
+                  </div>
 
+                  <!-- Pinned footer: numpad + save always visible above the fold -->
+                  <div class="shrink-0 pt-3">
                     <!-- Numpad -->
                     <div class="grid grid-cols-3 gap-2">
                         @for (k of keys; track k) {
@@ -146,6 +154,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                         @if (saving()) { <i class="pi pi-spin pi-spinner mr-2"></i> }
                         {{ i18n.t('quickAdd.save') }}
                     </button>
+                  </div>
                 }
             </div>
         </div>
