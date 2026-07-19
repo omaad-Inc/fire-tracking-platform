@@ -4,11 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService, User } from './token.service';
-import { DashboardService } from '../../pages/service/dashboard.service';
-import { PatrimoineService } from '../../pages/service/patrimoine.service';
-import { SavingsService } from '../../pages/service/savings.service';
-import { DebtsService } from '../../pages/service/debts.service';
-import { TransactionsService } from '../../pages/service/transactions.service';
+import { CACHE_RESET } from './cache-reset.token';
 
 export interface LoginRequest {
     email: string;
@@ -60,20 +56,17 @@ export class AuthService {
     private http = inject(HttpClient);
     private tokenService = inject(TokenService);
     private router = inject(Router);
-    private dashboardService = inject(DashboardService);
-    private patrimoineService = inject(PatrimoineService);
-    private savingsService = inject(SavingsService);
-    private debtsService = inject(DebtsService);
-    private transactionsService = inject(TransactionsService);
+    private cacheReset = inject(CACHE_RESET);
 
     private apiUrl = environment.apiUrl;
 
+    /**
+     * Broadcast a cache-clear to every feature service (they subscribe to
+     * CACHE_RESET and clear themselves). No core → pages import needed, so a
+     * newly added cached service can't be forgotten here.
+     */
     private clearAllCaches(): void {
-        this.dashboardService.invalidateCache();
-        this.patrimoineService.clearCache();
-        this.savingsService.clearCache();
-        this.debtsService.clearCache();
-        this.transactionsService.clearCache();
+        this.cacheReset.next();
     }
 
     /**

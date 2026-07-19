@@ -3,6 +3,7 @@ import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rx
 import { ApiService, Debt, DebtCreate, DebtUpdate, DebtType, DebtCategory } from '../../core/services/api.service';
 import { AssetsStateService } from './assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { CACHE_RESET } from '../../core/services/cache-reset.token';
 
 interface CacheEntry<T> {
     data: T;
@@ -50,7 +51,12 @@ export class DebtsService {
     // Cache storage
     private recordsCache: CacheEntry<DebtRecord[]> | null = null;
     private statsCache: CacheEntry<DebtsStatsSummary> | null = null;
-    
+
+    constructor() {
+        // Clear cached user data on logout/login (see CACHE_RESET).
+        inject(CACHE_RESET).subscribe(() => this.clearCache());
+    }
+
     // Request deduplication
     private recordsRequest$: Observable<DebtRecord[]> | null = null;
     private statsRequest$: Observable<DebtsStatsSummary> | null = null;

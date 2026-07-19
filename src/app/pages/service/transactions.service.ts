@@ -3,6 +3,7 @@ import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rx
 import { ApiService, Transaction, TransactionCreate, TransactionUpdate, TransactionType, TransactionCategory } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { CACHE_RESET } from '../../core/services/cache-reset.token';
 
 interface CacheEntry<T> {
     data: T;
@@ -123,7 +124,12 @@ export class TransactionsService {
     // Request deduplication
     private recordsRequest$: Observable<TransactionRecord[]> | null = null;
     private statsRequest$: Observable<TransactionStats> | null = null;
-    
+
+    constructor() {
+        // Clear cached user data on logout/login (see CACHE_RESET).
+        inject(CACHE_RESET).subscribe(() => this.clearCache());
+    }
+
     /**
      * Get all transactions (with caching)
      */

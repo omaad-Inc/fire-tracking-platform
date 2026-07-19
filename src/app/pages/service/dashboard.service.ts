@@ -4,6 +4,7 @@ import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProg
 import { isDarkMode } from '../../core/theme/chart-theme';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { CACHE_RESET } from '../../core/services/cache-reset.token';
 
 export interface DashboardStats {
     netWorth: number;
@@ -118,6 +119,12 @@ export class DashboardService {
     private api = inject(ApiService);
     private currencyService = inject(CurrencyService);
     private i18n = inject(I18nService);
+
+    constructor() {
+        // Clear cached user data on logout/login (see CACHE_RESET). Root
+        // singleton → lives for the app, so no teardown needed.
+        inject(CACHE_RESET).subscribe(() => this.invalidateCache());
+    }
 
     /** Asset-category display label via i18n (assetCategories.*), key fallback. */
     private assetCategoryLabel(cat: string): string {
