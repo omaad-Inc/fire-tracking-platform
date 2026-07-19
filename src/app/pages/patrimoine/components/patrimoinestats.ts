@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { PatrimoineService } from '../../service/patrimoine.service';
@@ -7,13 +7,24 @@ import { DebtsService } from '../../service/debts.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 
 @Component({
     standalone: true,
     selector: 'app-patrimoine-stats',
-    imports: [CommonModule, AppAmountComponent],
+    imports: [CommonModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <div class="h-full flex flex-col gap-4">
+            @if (loading()) {
+                @for (i of [1, 2, 3]; track i) {
+                    <div class="flex-1 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
+                        <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mx-auto mb-3"></div>
+                        <div class="h-7 bg-surface-200 dark:bg-surface-700 rounded w-32 mx-auto"></div>
+                    </div>
+                }
+            } @else if (loadError()) {
+                <app-load-error (retry)="loadStats()" />
+            } @else {
 
             <!-- Card 1 - Valeur Nette -->
             <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 p-5 flex-1 flex flex-col items-center justify-center text-center group transition-all duration-300">
@@ -53,6 +64,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <i class="pi pi-chart-line text-ochre-600 dark:text-ochre-300 text-lg"></i>
                 </div>
             </div>
+            }
         </div>
     `
 })
@@ -77,6 +89,10 @@ export class PatrimoineStats implements OnInit, OnDestroy {
     // Card 3
     assetsCount = 0;
 
+    loading = signal(true);
+    loadError = signal(false);
+    private hasLoaded = false;
+
     ngOnInit() {
         this.loadStats();
         this.subscription = this.stateService.assetsUpdated$.subscribe(() => this.loadStats());
@@ -86,12 +102,25 @@ export class PatrimoineStats implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
     }
 
-    private async loadStats() {
-        const [assets, debtsStats, allRecords] = await Promise.all([
-            this.patrimoineService.getAssets(),
-            this.debtsService.getStats(),
-            this.transactionsService.getRecords()
-        ]);
+    async loadStats() {
+        if (!this.hasLoaded) this.loading.set(true);
+        let assets, debtsStats, allRecords;
+        try {
+            [assets, debtsStats, allRecords] = await Promise.all([
+                this.patrimoineService.getAssets(),
+                this.debtsService.getStats(),
+                this.transactionsService.getRecords()
+            ]);
+            this.loadError.set(false);
+            this.hasLoaded = true;
+        } catch (error) {
+            console.error('Error loading patrimoine stats:', error);
+            // Explicit error+retry — fake-zero net worth reads as data loss.
+            if (!this.hasLoaded) this.loadError.set(true);
+            return;
+        } finally {
+            this.loading.set(false);
+        }
 
         // Card 1 — net worth
         this.totalAssets = assets.reduce((s, a) => s + a.value, 0);

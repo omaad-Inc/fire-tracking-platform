@@ -10,6 +10,7 @@ import { AssetsStateService } from '../service/assets-state.service';
 import { ApiService, Debt } from '../../core/services/api.service';
 import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../core/components/load-error.component';
 
 interface CategoryGroupCard {
     id: string;
@@ -43,7 +44,7 @@ const GROUPS = [
 @Component({
     selector: 'app-patrimoine',
     standalone: true,
-    imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent],
+    imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
 
@@ -151,6 +152,8 @@ const GROUPS = [
                             <div class="h-[76px] bg-surface-200 dark:bg-surface-700 rounded-2xl animate-pulse"></div>
                         }
                     </div>
+                } @else if (assetsLoadError()) {
+                    <app-load-error (retry)="retryAssets()" />
                 } @else if (categoryGroups().length === 0) {
                     <div class="flex flex-col items-center justify-center py-16 text-center rounded-2xl border border-dashed border-surface-300 dark:border-surface-700">
                         <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
@@ -213,6 +216,8 @@ const GROUPS = [
 
                 @if (loadingDebts()) {
                     <div class="h-[76px] bg-surface-200 dark:bg-surface-700 rounded-2xl animate-pulse"></div>
+                } @else if (debtsLoadError()) {
+                    <app-load-error (retry)="retryDebts()" />
                 } @else if (totalDebts() === 0) {
                     <div class="p-5 rounded-2xl border border-dashed border-surface-300 dark:border-surface-700 text-center text-surface-500 text-sm">
                         {{ i18n.t('patrimoine.noDebtsRecorded') }}
@@ -256,6 +261,8 @@ export class Patrimoine implements OnInit, OnDestroy {
 
     loadingGroups = signal(true);
     loadingDebts = signal(true);
+    assetsLoadError = signal(false);
+    debtsLoadError = signal(false);
     allAssets = signal<PatrimoineAssetItemDto[]>([]);
     debts = signal<Debt[]>([]);
 
@@ -361,6 +368,11 @@ export class Patrimoine implements OnInit, OnDestroy {
         try {
             const items = await this.patrimoineService.getAssets();
             this.allAssets.set(items);
+            this.assetsLoadError.set(false);
+        } catch (error) {
+            console.error('Error loading assets:', error);
+            // Explicit error+retry — a fake-empty portfolio reads as data loss.
+            if (this.allAssets().length === 0) this.assetsLoadError.set(true);
         } finally {
             this.loadingGroups.set(false);
         }
@@ -371,11 +383,22 @@ export class Patrimoine implements OnInit, OnDestroy {
         try {
             const debts = await firstValueFrom(this.apiService.getDebts());
             this.debts.set(debts);
-        } catch {
-            this.debts.set([]);
+            this.debtsLoadError.set(false);
+        } catch (error) {
+            console.error('Error loading debts:', error);
+            // Explicit error+retry — "no debts" on failure understates liabilities.
+            if (this.debts().length === 0) this.debtsLoadError.set(true);
         } finally {
             this.loadingDebts.set(false);
         }
+    }
+
+    retryAssets() {
+        this.loadAssets();
+    }
+
+    retryDebts() {
+        this.loadDebts();
     }
 
     navigateToCategory(groupId: string) {

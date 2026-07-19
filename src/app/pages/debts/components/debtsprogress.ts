@@ -14,6 +14,7 @@ import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { ShareContextService } from '../../../core/services/share-context.service';
 
 @Component({
@@ -22,8 +23,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
     imports: [
         CommonModule, FormsModule, ButtonModule, ToastModule,
         InputTextModule, SelectModule, InputNumberModule,
-        DialogModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent
-    ],
+        DialogModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent, LoadErrorComponent],
     providers: [MessageService, ConfirmationService],
     template: `
         <p-toast position="top-center" />
@@ -64,6 +64,11 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <div class="h-[110px] bg-surface-100 dark:bg-surface-800 rounded-2xl animate-pulse"></div>
                 }
             </div>
+        }
+
+        <!-- ── Load failure — never render as "no debts" ── -->
+        @else if (loadError()) {
+            <app-load-error (retry)="loadFromService()" />
         }
 
         <!-- ── Empty ── -->
@@ -363,6 +368,7 @@ export class DebtsProgress implements OnInit {
     submitted = false;
 
     private allRecords = signal<DebtRecord[]>([]);
+    loadError = signal(false);
     record!: DebtRecord;
 
     search     = signal('');
@@ -399,7 +405,15 @@ export class DebtsProgress implements OnInit {
     loadFromService() {
         this.loading.set(true);
         this.debtsService.getRecords()
-            .then(data => this.allRecords.set(data))
+            .then(data => {
+                this.allRecords.set(data);
+                this.loadError.set(false);
+            })
+            .catch(error => {
+                console.error('Error loading debts:', error);
+                // Explicit error+retry instead of a fake-empty debts list.
+                if (this.allRecords().length === 0) this.loadError.set(true);
+            })
             .finally(() => this.loading.set(false));
     }
 

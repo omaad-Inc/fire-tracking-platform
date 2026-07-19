@@ -83,8 +83,18 @@ export class PatrimoineService {
      */
     private refreshAssetsBackground(): void {
         if (this.assetsRequest$) return; // Already refreshing
-        
-        this.assetsRequest$ = this.api.getAssets().pipe(
+
+        this.assetsRequest$ = this.createAssetsRequest();
+    }
+
+    /**
+     * Build the shared assets request. On failure: fall back to the cache if
+     * one exists, otherwise LET THE ERROR SURFACE so the page can render an
+     * error+retry card instead of a fake-empty portfolio. The in-flight
+     * handle is reset in all outcomes so retry works.
+     */
+    private createAssetsRequest(): Observable<PatrimoineAssetItemDto[]> {
+        const request$ = this.api.getAssets().pipe(
             map(assets => {
                 const mapped = assets.map(asset => this.mapAssetToDto(asset));
                 this._assets$.next(mapped);
@@ -92,15 +102,22 @@ export class PatrimoineService {
             }),
             catchError(error => {
                 console.error('Error fetching assets:', error);
-                return of(this.assetsCache?.data || []);
+                if (this.assetsCache) return of(this.assetsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        firstValueFrom(this.assetsRequest$).then(data => {
-            this.assetsCache = { data, timestamp: Date.now() };
-            this.assetsRequest$ = null;
-        });
+
+        firstValueFrom(request$)
+            .then(data => {
+                this.assetsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.assetsRequest$ = null;
+            });
+
+        return request$;
     }
 
     /**
@@ -117,27 +134,9 @@ export class PatrimoineService {
         if (this.assetsRequest$) {
             return this.assetsRequest$;
         }
-        
-        // Create new request
-        this.assetsRequest$ = this.api.getAssets().pipe(
-            map(assets => {
-                const mapped = assets.map(asset => this.mapAssetToDto(asset));
-                this._assets$.next(mapped);
-                return mapped;
-            }),
-            catchError(error => {
-                console.error('Error fetching assets:', error);
-                return of(this.assetsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.assetsRequest$).then(data => {
-            this.assetsCache = { data, timestamp: Date.now() };
-            this.assetsRequest$ = null;
-        });
-        
+
+        // Create new request (errors surface when there is no cache to serve)
+        this.assetsRequest$ = this.createAssetsRequest();
         return this.assetsRequest$;
     }
     

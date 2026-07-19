@@ -24,6 +24,9 @@ export const EN = {
     optional: 'optional',
     success: 'Success',
     error: 'Error',
+    loadErrorTitle: 'Data unavailable',
+    loadErrorBody: 'We couldn\'t load this data right now. Check your connection and try again.',
+    retry: 'Retry',
   },
   menu: {
     navigation: 'Navigation',
@@ -938,6 +941,11 @@ export const EN = {
       totalDebt: 'Total debts',
       totalReceivable: 'Total receivables',
       lastPayment: 'Last payment',
+      iOwe: 'I owe',
+      iOweSub: 'Total of your debts',
+      owedToMe: 'Owed to me',
+      owedToMeSub: 'Total of your receivables',
+      noRecentPayment: 'No recent payment',
     },
     messages: {
       deleteConfirm: 'Delete "{{name}}"?',

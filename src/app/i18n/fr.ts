@@ -24,6 +24,9 @@ export const FR = {
     optional: 'optionnel',
     success: 'Succès',
     error: 'Erreur',
+    loadErrorTitle: 'Données indisponibles',
+    loadErrorBody: 'Impossible de charger ces données pour le moment. Vérifiez votre connexion et réessayez.',
+    retry: 'Réessayer',
   },
   menu: {
     navigation: 'Navigation',
@@ -938,6 +941,11 @@ export const FR = {
       totalDebt: 'Dettes totales',
       totalReceivable: 'Créances totales',
       lastPayment: 'Dernier paiement',
+      iOwe: 'Je dois',
+      iOweSub: 'Total de vos dettes',
+      owedToMe: 'On me doit',
+      owedToMeSub: 'Total de vos créances',
+      noRecentPayment: 'Aucun paiement récent',
     },
     messages: {
       deleteConfirm: 'Supprimer "{{name}}" ?',

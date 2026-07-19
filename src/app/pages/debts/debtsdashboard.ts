@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { DeptsStats } from './components/debtsstats';
+import { DebtsStats } from './components/debtsstats';
 import { DebtsProgress } from './components/debtsprogress';
 
 @Component({
     selector: 'app-debts-dashboard',
     standalone: true,
-    imports: [DeptsStats, DebtsProgress],
+    imports: [DebtsStats, DebtsProgress],
     template: `
         <div class="grid grid-cols-12 gap-6">
             <app-debts-stats class="contents" />

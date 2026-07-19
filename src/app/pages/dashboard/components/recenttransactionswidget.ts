@@ -7,6 +7,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 
 interface TransactionDisplay {
     id: string;
@@ -24,7 +25,7 @@ interface TransactionDisplay {
 @Component({
     standalone: true,
     selector: 'app-recent-transactions-widget',
-    imports: [CommonModule, RouterModule, AppAmountComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex justify-between items-center mb-6">
@@ -49,6 +50,8 @@ interface TransactionDisplay {
                         </div>
                     }
                 </div>
+            } @else if (loadError()) {
+                <app-load-error (retry)="loadRecent()" />
             } @else if (transactions().length === 0) {
                 <div class="relative flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
@@ -99,6 +102,7 @@ export class RecentTransactionsWidget implements OnInit, OnDestroy {
 
     private sub?: Subscription;
     loading = signal(true);
+    loadError = signal(false);
     transactions = signal<TransactionDisplay[]>([]);
 
     /**
@@ -165,15 +169,18 @@ export class RecentTransactionsWidget implements OnInit, OnDestroy {
         this.sub?.unsubscribe();
     }
 
-    private async loadRecent() {
+    async loadRecent() {
         this.loading.set(true);
         try {
             const data = await this.transactionsService.getRecentTransactions(6);
             const mapped = data.map((r) => this.mapToWidget(r));
             this.transactions.set(mapped);
+            this.loadError.set(false);
         } catch (error) {
             console.error('Error loading transactions:', error);
-            this.transactions.set([]);
+            // Show an explicit error+retry — a fake-empty list would read as
+            // "no transactions" on a network blip.
+            if (this.transactions().length === 0) this.loadError.set(true);
         } finally {
             this.loading.set(false);
         }

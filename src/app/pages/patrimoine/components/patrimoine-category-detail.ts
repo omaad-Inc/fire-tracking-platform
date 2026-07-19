@@ -8,6 +8,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 
 interface GroupConfig {
     id: string;
@@ -71,10 +72,14 @@ function getDonutColors(): string[] {
 @Component({
     selector: 'app-patrimoine-category-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent],
+    imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent, LoadErrorComponent],
     template: `
+        @if (loadError) {
+            <app-load-error (retry)="reload()" />
+        }
+
         <!-- ── Global loading skeleton ── -->
-        @if (loading) {
+        @else if (loading) {
             <div class="animate-pulse space-y-6">
                 <div class="flex items-center gap-4">
                     <div class="w-10 h-10 rounded-full bg-surface-200 dark:bg-surface-700"></div>
@@ -263,6 +268,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
 
     // ── State (plain properties, not signals — avoids effect timing issues) ──
     loading = true;
+    loadError = false;
     loadingChart = false;
 
     currentGroup: GroupConfig | null = null;
@@ -297,8 +303,19 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         const categoryId = this.route.snapshot.paramMap.get('categoryId') ?? '';
         this.currentGroup = GROUPS.find(g => g.id === categoryId) ?? null;
 
-        // Load assets
-        const all = await this.patrimoineService.getAssets();
+        // Load assets — surface failures as an error+retry card, never as an
+        // empty category (fake-empty money pages read as data loss).
+        let all: PatrimoineAssetItemDto[];
+        try {
+            all = await this.patrimoineService.getAssets();
+            this.loadError = false;
+        } catch (error) {
+            console.error('Error loading assets:', error);
+            this.loadError = true;
+            this.loading = false;
+            this.cd.markForCheck();
+            return;
+        }
         this.items = this.currentGroup
             ? all.filter(a => this.currentGroup!.categories.includes(a.category ?? ''))
             : all;
@@ -320,6 +337,13 @@ export class PatrimoineCategoryDetailPage implements OnInit {
 
         // Load line chart (can run after page is visible)
         await this.loadLineChart();
+    }
+
+    reload() {
+        this.loadError = false;
+        this.loading = true;
+        this.cd.markForCheck();
+        this.ngOnInit();
     }
 
     async changeRange(months: number) {

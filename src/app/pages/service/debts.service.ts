@@ -80,20 +80,37 @@ export class DebtsService {
      */
     private refreshRecords(): void {
         if (this.recordsRequest$) return; // Already refreshing
-        
-        this.recordsRequest$ = this.api.getDebts().pipe(
+
+        this.recordsRequest$ = this.createRecordsRequest();
+    }
+
+    /**
+     * Build the shared records request. On failure: fall back to the cache if
+     * one exists, otherwise LET THE ERROR SURFACE so widgets can render an
+     * error+retry card instead of a fake-empty "no debts 🎉" state. The
+     * in-flight handle is reset in all outcomes so retry works.
+     */
+    private createRecordsRequest(): Observable<DebtRecord[]> {
+        const request$ = this.api.getDebts().pipe(
             map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
             catchError(error => {
                 console.error('Error fetching debts:', error);
-                return of(this.recordsCache?.data || []);
+                if (this.recordsCache) return of(this.recordsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        firstValueFrom(this.recordsRequest$).then(data => {
-            this.recordsCache = { data, timestamp: Date.now() };
-            this.recordsRequest$ = null;
-        });
+
+        firstValueFrom(request$)
+            .then(data => {
+                this.recordsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.recordsRequest$ = null;
+            });
+
+        return request$;
     }
 
     /**
@@ -109,23 +126,9 @@ export class DebtsService {
         if (this.recordsRequest$) {
             return this.recordsRequest$;
         }
-        
-        // Create new request
-        this.recordsRequest$ = this.api.getDebts().pipe(
-            map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
-            catchError(error => {
-                console.error('Error fetching debts:', error);
-                return of(this.recordsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.recordsRequest$).then(data => {
-            this.recordsCache = { data, timestamp: Date.now() };
-            this.recordsRequest$ = null;
-        });
-        
+
+        // Create new request (errors surface when there is no cache to serve)
+        this.recordsRequest$ = this.createRecordsRequest();
         return this.recordsRequest$;
     }
 
@@ -284,12 +287,9 @@ export class DebtsService {
      */
     private refreshStats(): void {
         if (this.statsRequest$) return; // Already refreshing
-        
-        this.statsRequest$ = this.getStats$();
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
+
+        // getStats$ assigns this.statsRequest$ and handles caching/reset.
+        this.getStats$();
     }
     
     /**
@@ -341,21 +341,25 @@ export class DebtsService {
             }),
             catchError(error => {
                 console.error('Error fetching stats:', error);
-                return of(this.statsCache?.data || {
-                    totalDebt: 0,
-                    paidAmount: 0,
-                    receivables: 0
-                });
+                // Stale stats beat no stats — but NEVER fabricate zeros on
+                // failure; the error surfaces so the widget shows retry.
+                if (this.statsCache) return of(this.statsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        // Cache the result
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
-        
+
+        // Cache the result; reset the in-flight handle in all outcomes so a
+        // retry after failure issues a fresh request.
+        firstValueFrom(this.statsRequest$)
+            .then(data => {
+                this.statsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.statsRequest$ = null;
+            });
+
         return this.statsRequest$;
     }
 

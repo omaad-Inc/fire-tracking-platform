@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 
 interface MoverItem extends PatrimoineAssetItemDto {
     gainPct: number;
@@ -11,7 +12,7 @@ interface MoverItem extends PatrimoineAssetItemDto {
 @Component({
     selector: 'app-top-movers-widget',
     standalone: true,
-    imports: [CommonModule, AppAmountComponent],
+    imports: [CommonModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex items-center justify-between mb-6">
@@ -38,6 +39,8 @@ interface MoverItem extends PatrimoineAssetItemDto {
                         </div>
                     }
                 </div>
+            } @else if (loadError()) {
+                <app-load-error (retry)="load()" />
             } @else if (movers().length === 0) {
                 <div class="relative flex flex-col items-center justify-center py-12 text-center">
                     <div class="w-12 h-12 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
@@ -85,9 +88,15 @@ export class TopMoversWidget implements OnInit {
     readonly i18n = inject(I18nService);
 
     loading = signal(true);
+    loadError = signal(false);
     movers = signal<MoverItem[]>([]);
 
     async ngOnInit() {
+        await this.load();
+    }
+
+    async load() {
+        this.loading.set(true);
         try {
             const assets = await this.patrimoineService.getAssets();
             const withGain: MoverItem[] = assets
@@ -106,8 +115,10 @@ export class TopMoversWidget implements OnInit {
                 .slice(0, 3);
 
             this.movers.set(sorted);
+            this.loadError.set(false);
         } catch {
-            // silently fail — widget is non-critical
+            // Explicit error+retry instead of a silent fake-empty widget.
+            if (this.movers().length === 0) this.loadError.set(true);
         } finally {
             this.loading.set(false);
         }

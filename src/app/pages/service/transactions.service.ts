@@ -154,20 +154,38 @@ export class TransactionsService {
     private refreshRecords(): void {
         if (this.recordsRequest$) return; // Already refreshing
 
-        this.recordsRequest$ = this.api.getAllTransactions().pipe(
+        this.recordsRequest$ = this.createRecordsRequest();
+    }
+
+    /**
+     * Build the shared records request. On failure: fall back to the cache if
+     * one exists (stale data beats no data), otherwise LET THE ERROR SURFACE —
+     * swallowing it into [] made outages render as "you have no transactions",
+     * which on a finance app reads as data loss. The in-flight handle is reset
+     * in all outcomes so a later retry issues a fresh request.
+     */
+    private createRecordsRequest(): Observable<TransactionRecord[]> {
+        const request$ = this.api.getAllTransactions().pipe(
             map(transactions => transactions
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
                 console.error('Error fetching transactions:', error);
-                return of(this.recordsCache?.data || []);
+                if (this.recordsCache) return of(this.recordsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        firstValueFrom(this.recordsRequest$).then(data => {
-            this.recordsCache = { data, timestamp: Date.now() };
-            this.recordsRequest$ = null;
-        });
+
+        firstValueFrom(request$)
+            .then(data => {
+                this.recordsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.recordsRequest$ = null;
+            });
+
+        return request$;
     }
 
     /**
@@ -183,24 +201,9 @@ export class TransactionsService {
         if (this.recordsRequest$) {
             return this.recordsRequest$;
         }
-        
-        // Create new request
-        this.recordsRequest$ = this.api.getAllTransactions().pipe(
-            map(transactions => transactions
-                .map(t => this.mapTransactionToRecord(t))),
-            catchError(error => {
-                console.error('Error fetching transactions:', error);
-                return of(this.recordsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.recordsRequest$).then(data => {
-            this.recordsCache = { data, timestamp: Date.now() };
-            this.recordsRequest$ = null;
-        });
-        
+
+        // Create new request (errors surface when there is no cache to serve)
+        this.recordsRequest$ = this.createRecordsRequest();
         return this.recordsRequest$;
     }
 
