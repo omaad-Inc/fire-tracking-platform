@@ -489,10 +489,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
 
     /** Localized category label; falls back to the CATEGORY_CONFIG label then the raw key. */
     categoryLabel(cat: string | undefined | null): string {
-        const key = cat || 'other_expense';
-        const path = `categories.${key}`;
-        const label = this.i18n.t(path);
-        return label !== path ? label : (CATEGORY_CONFIG[key]?.label ?? key);
+        return this.i18n.categoryLabel(cat);
     }
 
     setType(t: 'Income' | 'Expense' | 'Transfer') {

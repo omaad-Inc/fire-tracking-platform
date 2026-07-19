@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
 import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
 import { isDarkMode } from '../../core/theme/chart-theme';
+import { I18nService } from '../../i18n/i18n.service';
 
 export interface DashboardStats {
     netWorth: number;
@@ -81,25 +82,6 @@ function getCategoryColors(): Record<string, string> {
     return isDarkMode() ? CATEGORY_COLORS_DARK : CATEGORY_COLORS_LIGHT;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-    'real_estate':   'Immobilier',
-    'stocks_brvm':   'Actions BRVM',
-    'stocks_intl':   'Actions internationales',
-    'bonds':         'Obligations',
-    'crypto':        'Cryptomonnaies',
-    'cash':          'Compte bancaire',
-    'retirement':    'Épargne retraite',
-    'life_insurance':'Assurance vie',
-    'savings_account':'Livrets',
-    'business':      'Entreprise',
-    'vehicle':       'Véhicules',
-    'tontine':       'Tontine',
-    'mobile_money':  'Mobile Money',
-    'collectibles':  'Collections',
-    'commodities':   'Matières premières',
-    'other':         'Autres'
-};
-
 const EXPENSE_COLORS_LIGHT: string[] = [
     '#1A2740', // brand-700
     '#C77B3C', // ochre-500
@@ -133,6 +115,20 @@ function getExpenseColors(): string[] {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
     private api = inject(ApiService);
+    private i18n = inject(I18nService);
+
+    /** Asset-category display label via i18n (assetCategories.*), key fallback. */
+    private assetCategoryLabel(cat: string): string {
+        const label = this.i18n.t('assetCategories.' + cat);
+        return label === 'assetCategories.' + cat ? cat : label;
+    }
+
+    /** Locale-aware short month names (indexed 0-11) for chart labels. */
+    private monthNames(): string[] {
+        return this.i18n.lang() === 'fr'
+            ? ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+            : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    }
 
     // ── Cache (5-minute TTL, stale-while-revalidate) ──────────────────────────
     private readonly CACHE_TTL = 5 * 60 * 1000;
@@ -321,7 +317,7 @@ export class DashboardService {
         try {
             const distribution = await firstValueFrom(this.api.getAssetDistribution());
             return distribution.map(d => ({
-                category: CATEGORY_LABELS[d.category] || d.category,
+                category: this.assetCategoryLabel(d.category),
                 value: d.value,
                 percentage: d.percentage,
                 color: getCategoryColors()[d.category] || getCategoryColors()['other']
@@ -394,7 +390,7 @@ export class DashboardService {
             cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
         }
 
-        const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const MONTH_NAMES = this.monthNames();
         const labels: string[] = [];
         const assetsArr: number[] = [];
         const debtsArr: number[] = [];
@@ -573,7 +569,7 @@ export class DashboardService {
             cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
         }
 
-        const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const MONTH_NAMES = this.monthNames();
         const result: ChartDataPoint[] = [];
 
         for (let idx = 0; idx < pointDates.length; idx++) {
@@ -616,7 +612,7 @@ export class DashboardService {
 
     private formatDateLabel(dateStr: string): string {
         const date = new Date(dateStr);
-        const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const months = this.monthNames();
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     }
 

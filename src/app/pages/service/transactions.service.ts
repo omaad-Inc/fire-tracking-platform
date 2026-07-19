@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
 import { ApiService, Transaction, TransactionCreate, TransactionUpdate, TransactionType, TransactionCategory } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 interface CacheEntry<T> {
     data: T;
@@ -113,6 +114,7 @@ const CATEGORY_DISPLAY_MAP: Record<string, string> = Object.fromEntries(
 export class TransactionsService {
     private api             = inject(ApiService);
     private currencyService = inject(CurrencyService);
+    private i18n            = inject(I18nService);
 
     // Cache storage
     private recordsCache: CacheEntry<TransactionRecord[]> | null = null;
@@ -550,7 +552,7 @@ export class TransactionsService {
             for (const r of monthRecords.filter(r => r.type === 'Expense'))
                 byCat[r.category || 'other_expense'] = (byCat[r.category || 'other_expense'] || 0) + r.amount;
             const byCategory = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([cat,amount])=>({
-                category: cat, label: CATEGORY_CONFIG[cat]?.label || cat, amount,
+                category: cat, label: this.i18n.categoryLabel(cat), amount,
                 pct: expenses > 0 ? Math.round(amount/expenses*100) : 0,
                 color: CATEGORY_CONFIG[cat]?.color || '#9C988C',
             }));
@@ -574,7 +576,7 @@ export class TransactionsService {
             .sort((a, b) => b[1] - a[1])
             .map(([cat, amount]) => ({
                 category: cat,
-                label:    CATEGORY_CONFIG[cat]?.label || cat,
+                label:    this.i18n.categoryLabel(cat),
                 amount,
                 pct:      expenses > 0 ? Math.round((amount / expenses) * 100) : 0,
                 color:    CATEGORY_CONFIG[cat]?.color || '#9C988C',
