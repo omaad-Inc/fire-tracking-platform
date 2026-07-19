@@ -253,7 +253,8 @@ export class AuthService {
     /**
      * URL that starts the Google OAuth flow on the backend. The backend
      * redirects to Google's consent screen, then back to
-     * `/auth/callback?token=...&new_user=...`, handled by OAuthCallback.
+     * `/auth/callback?code=...` (a single-use 60s exchange code — never the
+     * real token), handled by OAuthCallback via exchangeOAuthCode().
      *
      * Bind this to a plain `<a [href]>` rather than `(click)` + `window.location` —
      * an anchor lets the browser navigate synchronously, without racing Angular's
@@ -264,9 +265,33 @@ export class AuthService {
     }
 
     /**
-     * Logout - clear tokens and redirect
+     * Swap the one-time OAuth code from the redirect URL for an access token.
+     */
+    exchangeOAuthCode(code: string): Observable<AuthResponse & { new_user?: boolean }> {
+        return this.http.post<AuthResponse & { new_user?: boolean }>(
+            `${this.apiUrl}/auth/oauth/exchange`, { code }
+        ).pipe(
+            tap(response => {
+                if (response?.access_token) {
+                    this.clearAllCaches();
+                    this.tokenService.setToken(response.access_token);
+                }
+            }),
+            catchError(this.handleError)
+        );
+    }
+
+    /**
+     * Logout — revoke this device's token server-side (fire-and-forget),
+     * then clear local state and redirect. Without the server call the JWT
+     * would stay valid until it expires even after "logging out".
      */
     logout(): void {
+        if (this.tokenService.getToken()) {
+            this.http.post(`${this.apiUrl}/auth/logout`, {})
+                .pipe(catchError(() => of(null)))
+                .subscribe();
+        }
         this.clearAllCaches();
         this.tokenService.clear();
         const currentLang = this.router.url.match(/^\/(fr|en)/)?.[1] || 'fr';
