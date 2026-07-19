@@ -1,0 +1,2697 @@
+{
+  "meta": {
+    "source": "richbourse.com (liste) + PDF d'homologation AMF-UMOA/CREPMF (tarifs, curation manuelle)",
+    "regulateur": "AMF-UMOA (ex-CREPMF)",
+    "total_sgi": 41,
+    "avec_tarifs_detailles": 32,
+    "avertissement": "Tarifs = plafonds homologués ; certains sont négociables. Vérifiez toujours la grille à jour auprès de la SGI. Contenu informatif, pas un conseil en investissement.",
+    "maj": "2026-06"
+  },
+  "sgis": [
+    {
+      "id": "bsic-capital-sa",
+      "nom": "BSIC Capital SA",
+      "pays": "Côte d'Ivoire",
+      "note": 4.9,
+      "rang_richbourse": 1,
+      "tarif_status": "complet",
+      "courtage_pct": 0.8,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2024",
+      "agrement": "SGI/2017-04 (15 sept. 2017)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 0,8 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "Maximum 0,81 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "0,125 %/trim. (0–10 M) · 0,08 %/trim. (>10 M) · 0,0625 %/trim. (non cotés)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "Maximum 2 500 FCFA / trimestre",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "0,50 % / trimestre",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "25 000 FCFA (pers. physique) · 34 000 FCFA (pers. morale)",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "9 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3255_bsic-capital-sa.pdf"
+    },
+    {
+      "id": "societe-africaine-dingenierie-et-dintermediation-financiere-sa2if",
+      "nom": "Société Africaine d'Ingénierie et d'Intermédiation Financière (SA2IF)",
+      "pays": "Burkina Faso",
+      "note": 4.7,
+      "rang_richbourse": 2,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2023/009",
+      "agrement": "Agréée le 5 août 2022",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "[0,2 % - 1,0 %]",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "[0,2 % - 0,5 %]",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "[0,1 % - 0,2 %] / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par trimestre",
+          "value": "2 000 FCFA / trimestre",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "[1,0 % - 2,0 %] / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "5 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "[0,5 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,5 % - 1,50 %]",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2427_societe-africaine-dingenierie-et-dintermediation-financiere-sa2if.pdf"
+    },
+    {
+      "id": "sgi-cgf-bourse",
+      "nom": "CGF Bourse",
+      "pays": "Sénégal",
+      "note": 4.6,
+      "rang_richbourse": 3,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": "100 000 FCFA",
+      "frais_ouverture": "11 700 FCFA",
+      "decision": "homologation CREPMF",
+      "agrement": "CREPMF 30/04/014/98",
+      "note_extra": "1ʳᵉ SGI ouest-africaine certifiée ISO 9001 (2005).",
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "Maximum 0,5 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "Maximum 0,25 % / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "—",
+          "value": "Néant (gratuit)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "Maximum 2 % / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "Maximum 10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "0,5 % à 2 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "0,75 % à 1,7 %",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2278_sgi-cgf-bourse.pdf"
+    },
+    {
+      "id": "finance-gestion-intermediation",
+      "nom": "Finance Gestion et Intermédiation (FGI)",
+      "pays": "Sénégal",
+      "note": 4.6,
+      "rang_richbourse": 4,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2025/124 (28 mars 2025)",
+      "agrement": "Homologué AMF-UMOA 2025",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "Maximum 0,8 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "Maximum 0,25 % / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "Maximum 1,5 %",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "5 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait",
+          "value": "0,5 % (max. 10 000 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Bourse en ligne",
+          "base": "Trimestriel",
+          "value": "1 000 FCFA / trimestre",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3632_finance-gestion-intermediation.pdf"
+    },
+    {
+      "id": "sgi-phoenix-capital-management",
+      "nom": "Phoenix Capital Management",
+      "pays": "Côte d'Ivoire",
+      "note": 4.6,
+      "rang_richbourse": 5,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "homologation CREPMF/AMF-UMOA",
+      "agrement": "Homologué",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires (achat/vente)",
+          "base": "Montant de la transaction",
+          "value": "1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction",
+          "value": "1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "0,5 %",
+          "max": null
+        },
+        {
+          "label": "Valeurs non cotées",
+          "base": "Montant de la transaction",
+          "value": "1 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "0,4 % / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "—",
+          "value": "0 à 25 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "Maximum 2 %",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Succession",
+          "base": "Portefeuille",
+          "value": "0,30 %",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2949_sgi-phoenix-capital-management.pdf"
+    },
+    {
+      "id": "gek-capital",
+      "nom": "GEK Capital",
+      "pays": "Côte d'Ivoire",
+      "note": 4.5,
+      "rang_richbourse": 6,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2025/036",
+      "agrement": "AMF-UMOA/2024/318 (2 déc. 2024)",
+      "note_extra": "La grille homologuée ne comporte pas de ligne « frais de tenue de compte ».",
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "[0,10 % - 1 %]",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "[0,10 % - 0,81 %]",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "[0,10 % - 0,50 %]",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "Maximum 2 %",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "0,10 % (min. 5 000 FCFA · max. 34 375 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "5 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "[0,5 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,4 % - 1,75 %]",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "[5 000 000 - 10 625 000 FCFA]",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3557_gek-capital.pdf"
+    },
+    {
+      "id": "sirius-capital",
+      "nom": "Sirius Capital for Africa",
+      "pays": "Côte d'Ivoire",
+      "note": 4.5,
+      "rang_richbourse": 7,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "P-AMF-UMOA/2025/286",
+      "agrement": "SGI/2017-01 (PCR/DA/2017/002, 20 janv. 2017)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "Maximum 0,5 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction d'acheté/vendu",
+          "value": "[0,3 % - 0,75 %]",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Contractuelle",
+          "value": "Maximum 1 % HT",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "Maximum 0,50 % HT / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "2 500 FCFA HT / trimestre",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "Maximum 2 % / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait",
+          "value": "15 000 FCFA HT",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait",
+          "value": "10 000 FCFA HT",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "14 200 FCFA",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise ferme",
+          "value": "[0,5 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "Maximum 2 % HT",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "Maximum 1,5 % HT",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "Maximum 5 000 000 FCFA HT",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3906_sirius-capital.pdf"
+    },
+    {
+      "id": "sgi-sbif",
+      "nom": "Société Burkinabè d'Intermédiation Financière (SBIF)",
+      "pays": "Burkina Faso",
+      "note": 4.5,
+      "rang_richbourse": 8,
+      "tarif_status": "complet",
+      "courtage_pct": 0.8,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "homologation CREPMF/AMF-UMOA",
+      "agrement": "Homologué",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — actions (SBIF)",
+          "base": "Valeur de la transaction",
+          "value": "0,8 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — BRVM · DC/BR",
+          "base": "Valeur de la transaction",
+          "value": "0,3 %",
+          "max": null
+        },
+        {
+          "label": "Conservation — compte ordinaire",
+          "base": "Valeur du portefeuille",
+          "value": "0,15 % HT / semestre (0,075 %/trim.)",
+          "max": null
+        },
+        {
+          "label": "Conservation — compte géré",
+          "base": "Valeur du portefeuille",
+          "value": "0,2 % HT / semestre (0,1 %/trim.)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "2 500 FCFA HT / semestre (5 000 FCFA HT / an)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "25 000 FCFA HT",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "25 000 FCFA HT",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2951_sgi-sbif.pdf"
+    },
+    {
+      "id": "africaine-gestion-intermediation",
+      "nom": "Africaine de Gestion et d'Intermédiation (AGI)",
+      "pays": "Bénin",
+      "note": 4.4,
+      "rang_richbourse": 9,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PCR/DA/2017/115 (homologation des tarifs)",
+      "agrement": "Homologué CREPMF 2017",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "[0,25 % - 1 %] pour les obligations · 1 % pour les actions",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "[0,25 % - 0,81 %]",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "0,3 % / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "Néant",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "[0,1 % - 2 %] / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA (pers. physique) · 25 000 FCFA (pers. morale)",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "[0,1 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,25 % - 1,5 %]",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2253_africaine-gestion-intermediation.pdf"
+    },
+    {
+      "id": "abco-bourse",
+      "nom": "ABCO Bourse",
+      "pays": "Sénégal",
+      "note": 4.3,
+      "rang_richbourse": 10,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "homologation AMF-UMOA",
+      "agrement": "AMF-UMOA SGI/2016-02",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires (ABCO Bourse)",
+          "base": "Montant de la transaction",
+          "value": "1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,4 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,25 % (prélèvement trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "—",
+          "value": "0 FCFA (gratuit)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "[1 % - 1,8 %]",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "[0,5 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,75 % - 1,5 %]",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 000 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "—",
+          "value": "Gratuit (0)",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "5 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2953_abco-bourse.pdf"
+    },
+    {
+      "id": "invictus-capital-finance",
+      "nom": "Invictus Capital & Finance",
+      "pays": "Sénégal",
+      "note": 4.3,
+      "rang_richbourse": 12,
+      "tarif_status": "complet",
+      "courtage_pct": 0.9,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PCR/DA/2019/201 (6 sept. 2019)",
+      "agrement": "Homologué CREPMF 2019",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "0,90 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "0,5 % à 0,81 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "0,2 % / an (paiement trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Néant",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "1,5 % / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "0,5 % à 2 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2231_invictus-capital-finance.pdf"
+    },
+    {
+      "id": "sgi-niger",
+      "nom": "SGI Niger SA",
+      "pays": "Niger",
+      "note": 4.3,
+      "rang_richbourse": 13,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": "10 000 FCFA (pers. physique) · 20 000 FCFA (pers. morale)",
+      "decision": "homologation CREPMF/AMF-UMOA",
+      "agrement": "CREPMF SGI-016/2000",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires (SGI Niger)",
+          "base": "Montant de la transaction",
+          "value": "1,00 %",
+          "max": null
+        },
+        {
+          "label": "Commission BRVM · DC/BR",
+          "base": "Montant de la transaction",
+          "value": "0,30 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "0,25 % (tarif annuel, prélèvements trimestriels)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait trimestriel",
+          "value": "1 500 FCFA / trimestre",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Montant à gérer",
+          "value": "1 % (0–50 M) · 0,75 % (50–150 M) · 0,50 % (>150 M)",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Valeur des titres à nantir + forfait dossier",
+          "value": "Dossier 50 000 FCFA + 1 % (0–50 M) · 1,5 % (>50 M)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres (SGI Niger → autre SGI)",
+          "base": "Forfait",
+          "value": "25 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "10 000 FCFA (PP) · 20 000 FCFA (PM)",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "15 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2347_sgi-niger.pdf"
+    },
+    {
+      "id": "sgi-atlantique-finance",
+      "nom": "Atlantique Finance",
+      "pays": "Côte d'Ivoire",
+      "note": 4.2,
+      "rang_richbourse": 14,
+      "tarif_status": "complet",
+      "courtage_pct": 0.65,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "2012-039 (20 févr. 2012)",
+      "agrement": "Homologué CREPMF 2012",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "0,65 % (min. 1 000 FCFA) — max 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "0,5 % à 1 % — max 0,81 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "<100 M : 0,3 %/an (min. 1 500) · 100–500 M : 0,25 %/an · >500 M : 0,2 %/an (max 0,50 %)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "Néant (max 15 625 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "Néant (max 2 %)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "Tarif non homologué (max 34 375 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 FCFA (max 10 625 000)",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2261_sgi-atlantique-finance.pdf"
+    },
+    {
+      "id": "coris-bourse",
+      "nom": "Coris Bourse SA",
+      "pays": "Burkina Faso",
+      "note": 4.1,
+      "rang_richbourse": 15,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PCR/DA/2018/052",
+      "agrement": "Homologué CREPMF 2018",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "Maximum 0,5 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "Maximum 0,5 % par an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "Maximum 10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "Maximum 1 % par an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "Maximum 15 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "1 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "Maximum 1,5 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "Maximum 5 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_4551_coris-bourse.pdf"
+    },
+    {
+      "id": "sgi-nsia-finances",
+      "nom": "NSIA Capital (NSIA Finances)",
+      "pays": "Côte d'Ivoire",
+      "note": 4.1,
+      "rang_richbourse": 16,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2026/149 (18 mai 2026)",
+      "agrement": "Homologué AMF-UMOA 2026",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant acheté/vendu",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "Maximum 0,81 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "Maximum 0,125 % / trimestre (≈0,5 %/an)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait trimestriel",
+          "value": "2 500 FCFA/trim. (PP) · 3 500 FCFA/trim. (PM)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "Maximum 0,333 % HT / trimestre",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA (PP) · 30 000 FCFA (PM)",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "Maximum 10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Bourse en ligne",
+          "base": "Mensuel",
+          "value": "1 000 FCFA/mois (PP) · 2 500 FCFA/mois (PM)",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_4548_sgi-nsia-finances.pdf"
+    },
+    {
+      "id": "sgi-impaxis-securities",
+      "nom": "Impaxis Securities SA",
+      "pays": "Sénégal",
+      "note": 4.0,
+      "rang_richbourse": 19,
+      "tarif_status": "complet",
+      "courtage_pct": 0.8,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2026/023 (9 janv. 2026, abroge 2012-015)",
+      "agrement": "SGI-020/2004 (04-122, 15 sept. 2004)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 0,80 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction d'acheté/vendu",
+          "value": "Maximum 0,75 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "Maximum 0,50 %",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Contractuelle",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,05 % / trimestre",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait trimestriel",
+          "value": "2 000 FCFA/an (pers. physique) · 3 500 FCFA/an (pers. morale)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "0,5 % / trimestre (2 % / an)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "Maximum 34 375 FCFA",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "Maximum 10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise ferme",
+          "value": "Maximum 2 %",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "Maximum 2 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "Maximum 1,75 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "Maximum 10 625 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_4091_sgi-impaxis-securities.pdf"
+    },
+    {
+      "id": "matha-capital",
+      "nom": "Matha Securities",
+      "pays": "Côte d'Ivoire",
+      "note": 4.0,
+      "rang_richbourse": 20,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PCR/SG/DA/2022/081 (homologation des tarifs)",
+      "agrement": "SGI/2021-02 (CREPMF/2021/198, 2 sept. 2021)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,5 % HT",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,5 % HT / an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "2 % HT / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "15 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "2 % HT",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "1,50 % HT",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2178_matha-capital.pdf"
+    },
+    {
+      "id": "sgi-edc-investment-corporation",
+      "nom": "EDC Investment Corporation",
+      "pays": "Côte d'Ivoire",
+      "note": 3.7,
+      "rang_richbourse": 22,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "homologation AMF-UMOA",
+      "agrement": "Homologué",
+      "note_extra": "La grille tarifaire fournie est intitulée « EIC WA » / « EIC » (en-tête du PDF) ; rattachée à EDC Investment Corporation sous réserve de cette mention.",
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "[0,4 % - 1 %] — max 1 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "[0,4 % - 0,81 %] — max 0,81 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "[0 % - 0,5 %] / an (prélèvements trimestriels) — max 0,50 %",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "5 000 FCFA (pers. physique) · 10 000 FCFA (pers. morale) — max 15 625 FCFA",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "[0 % - 2 %] / an (prélèvements trimestriels) — max 2 %",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "[10 000 - 34 375 FCFA] — max 34 375 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "[0,75 % - 2 %] — max 2 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,35 % - 1,72 %] — max 1,72 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 625 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2952_sgi-edc-investment-corporation.pdf"
+    },
+    {
+      "id": "bridge-securities",
+      "nom": "Bridge Securities",
+      "pays": "Côte d'Ivoire",
+      "note": 3.6,
+      "rang_richbourse": 23,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2025/164 (abroge PAMF-UMOA/2023/150)",
+      "agrement": "SGI/2016-05 (agréée 13 déc. 2016)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction sur dossier",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,81 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Contractuelle",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,5 % HT / an maximum",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait trimestriel",
+          "value": "2 500 FCFA HT (PP) · 3 500 FCFA HT (PM) maximum",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "2 % HT / an maximum",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA / ligne maximum",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait",
+          "value": "10 000 FCFA / ligne maximum",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "15 000 FCFA maximum",
+          "max": null
+        },
+        {
+          "label": "Bourse en ligne",
+          "base": "Mensuel",
+          "value": "1 000 FCFA HT (PP) · 2 500 FCFA HT (PM) maximum",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "2 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "1,5 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 à 8 500 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3735_bridge-securities.pdf"
+    },
+    {
+      "id": "sgi-bibe-finance",
+      "nom": "BIIC Financial Services (BFS)",
+      "pays": "Bénin",
+      "note": 3.5,
+      "rang_richbourse": 24,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2024/024 (2 févr. 2024)",
+      "agrement": "SGI 15/12/002/97 (agréée 15 déc. 1997)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,75 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,3 % annuel max (paiement trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "Néant",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "1,2 % annuel max (paiement trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "34 375 FCFA",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "0,2 % à 2 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,5 % - 1,50 %]",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2991_sgi-bibe-finance.pdf"
+    },
+    {
+      "id": "mac-african",
+      "nom": "MAC-African SGI",
+      "pays": "Côte d'Ivoire",
+      "note": 3.5,
+      "rang_richbourse": 25,
+      "tarif_status": "complet",
+      "courtage_pct": 0.85,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2024/210 (abroge PCR/SG/DA/2020/050)",
+      "agrement": "PCR/DA/2017/098 (SGI/2017-03, 14 juil. 2017)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 0,85 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction d'acheté/vendu",
+          "value": "Maximum 0,7 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "Maximum 0,7 %",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Contractuel",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "≤3 Mds : 0,5 %/an · 3–10 Mds : 0,35 %/an · >10 Mds : 0,25 %/an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "10 000 FCFA / an",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "1,8 % / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "34 375 FCFA",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "15 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise",
+          "value": "0,5 % à 1 %",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "0,3 % à 2 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "0,3 % à 1,75 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 625 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3303_mac-african.pdf"
+    },
+    {
+      "id": "sgi-boa-capital-securities",
+      "nom": "BOA Capital Securities",
+      "pays": "Côte d'Ivoire",
+      "note": 3.4,
+      "rang_richbourse": 26,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2024/011 (25 janv. 2024, abroge 2012-010)",
+      "agrement": "SGI 15/12/010/97 (agréée 15 déc. 1997)",
+      "note_extra": "La grille homologuée ne comporte pas de ligne « frais de tenue de compte ».",
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "Maximum 0,8 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0–10 M : max 0,27 % HT · >10 M : max 0,22 % HT",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "— (non précisée dans la grille)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA (pers. physique) · 20 000 FCFA (pers. morale)",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "Maximum 2 % HT",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "Maximum 1,75 % HT",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2993_sgi-boa-capital-securities.pdf"
+    },
+    {
+      "id": "sgi-benin",
+      "nom": "SGI Bénin SA",
+      "pays": "Bénin",
+      "note": 3.4,
+      "rang_richbourse": 27,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "Décision 2012-030 (CREPMF)",
+      "agrement": "Homologué CREPMF 2012",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "1 % (maximum 1 %)",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,65 % (maximum 0,81 %)",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,40 % (maximum 0,50 %)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "Néant (maximum 15 625 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "0,10 % (maximum 2 %)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "15 000 FCFA (pers. physique) · 25 000 FCFA (pers. morale) — max 34 375 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "Min 5 000 000 FCFA · [0,2 % - 1,10 %] (maximum 2 %)",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[1 % - 1,5 %] actions · [0,5 % - 1 %] obligations (maximum 1,72 %)",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "2 000 000 FCFA (maximum 10 625 000 FCFA)",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2262_sgi-benin.pdf"
+    },
+    {
+      "id": "africabourse",
+      "nom": "Africabourse",
+      "pays": "Bénin",
+      "note": 3.2,
+      "rang_richbourse": 28,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PCR/SG/DA/2021/158",
+      "agrement": "SGI-021/2005 (14 sept. 2005)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 0,6 % (obligations) · Maximum 1 % (actions)",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "Maximum 0,5 % (obligations) · Maximum 0,81 % (actions)",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "<10 M : 0,35 %/an · 10–100 M : 0,30 %/an · >100 M : 0,25 %",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "1 000 FCFA/an (pers. physique) · 5 000 FCFA/an (pers. morale)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "2 % l'an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "34 375 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "Maximum 2 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "Maximum 1,5 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "Maximum 10 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_1618_africabourse.pdf"
+    },
+    {
+      "id": "sgi-bici-bourse",
+      "nom": "BICI Bourse",
+      "pays": "Côte d'Ivoire",
+      "note": 3.2,
+      "rang_richbourse": 29,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2024/326 (abroge 2012-12)",
+      "agrement": "SGI 15/12/004/97 (agréée 15 déc. 1997)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "[0,4 % - 1 %]",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction d'acheté/vendu",
+          "value": "[0,3 % - 0,75 %]",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "[0,1 % - 0,70 %]",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Contractuel",
+          "value": "Maximum 1 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "[0,1 % - 0,5 %] (prélèvements trimestriels)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "5 000 FCFA (pers. physique) · 10 000 FCFA (pers. morale)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "N/A",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "[10 000 - 34 375 FCFA]",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "[0,75 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "[0,3 % - 1,72 %]",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise",
+          "value": "[0,5 % - 2 %]",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 625 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3523_sgi-bici-bourse.pdf"
+    },
+    {
+      "id": "sogebourse",
+      "nom": "Sogebourse (Société Générale Capital Securities WA)",
+      "pays": "Côte d'Ivoire",
+      "note": 2.9,
+      "rang_richbourse": 30,
+      "tarif_status": "complet",
+      "courtage_pct": 0.8,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "homologation CREPMF",
+      "agrement": "CREPMF 15/12/009/97",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — achat / vente",
+          "base": "Montant de la transaction",
+          "value": "0,8 % (min. 1 000 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté-vendu / sur dossier",
+          "base": "Montant de la transaction",
+          "value": "0,8 % (min. 1 000 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Cession de bloc de titres",
+          "base": "Montant de la transaction",
+          "value": "2 % à 2,5 %",
+          "max": null
+        },
+        {
+          "label": "Droits de garde",
+          "base": "Pic du trimestre",
+          "value": "0,5 % (≤10 M, min. 2 500/trim.) · 0,26 % (>10 M)",
+          "max": null
+        },
+        {
+          "label": "Courtage OPCVM",
+          "base": "Montant de la transaction",
+          "value": "0,4 % (min. 1 000 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Portefeuille transféré",
+          "value": "0,2 % (min. 10 000 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Commission sur succession",
+          "base": "Portefeuille",
+          "value": "0,30 %",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2948_sogebourse.pdf"
+    },
+    {
+      "id": "sgi-bni-finance",
+      "nom": "BNI Finances",
+      "pays": "Côte d'Ivoire",
+      "note": 2.5,
+      "rang_richbourse": 33,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": true,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2025/091",
+      "agrement": "SGI-19/2003 (23 déc. 2003)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Maximum 1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "Maximum 0,8 % HT",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille",
+          "value": "Maximum 0,5 % HT",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Portefeuille sous gestion",
+          "value": "Maximum 2 % HT / an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA (PP) · 20 000 FCFA (PM)",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA HT",
+          "max": null
+        },
+        {
+          "label": "Bourse en ligne",
+          "base": "Mensuel",
+          "value": "Gratuit",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3622_sgi-bni-finance.pdf"
+    },
+    {
+      "id": "sgi-mali",
+      "nom": "SGI Mali SA",
+      "pays": "Mali",
+      "note": 1.0,
+      "rang_richbourse": 34,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "Décision 2012-045 (CREPMF)",
+      "agrement": "Homologué CREPMF 2012",
+      "note_extra": "Courtage transactions ordinaires et conservation indiqués « Taux non homologué » dans la grille — seuls les plafonds homologués sont affichés.",
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "Taux non homologué (maximum 1 %)",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,80 % (maximum 0,81 %)",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "Taux non homologué (maximum 0,50 %)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "12 500 FCFA (maximum 15 625 FCFA)",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "0,20 %/trim. (0,8 %/an) — maximum 2 %",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "20 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "1,125 % (maximum 2 %)",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "1,135 % (maximum 1,72 %)",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "8 500 000 FCFA (maximum 10 625 000 FCFA)",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2235_sgi-mali.pdf"
+    },
+    {
+      "id": "attijari-securities-west-africa",
+      "nom": "Attijari Securities West Africa",
+      "pays": "Côte d'Ivoire",
+      "note": null,
+      "rang_richbourse": null,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2025/172 (19 mai 2025)",
+      "agrement": "Homologué AMF-UMOA 2025",
+      "note_extra": "Tarifs issus du PDF homologué Attijari (fichier nommé par erreur « africaine-de-bourse »).",
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant brut de la transaction",
+          "value": "Négociable, max 1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant sur dossier",
+          "value": "Négociable, max 1 % HT",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant sur dossier",
+          "value": "Négociable, max 0,81 % HT",
+          "max": null
+        },
+        {
+          "label": "Droit de garde",
+          "base": "Portefeuille valorisé",
+          "value": "Négociable, max 0,50 % HT / an (trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "2 000 FCFA / an (trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait HT par ligne",
+          "value": "15 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait HT par ligne",
+          "value": "5 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture / fermeture de compte",
+          "base": "Forfait",
+          "value": "Néant",
+          "max": null
+        },
+        {
+          "label": "Animation de titre à la BRVM",
+          "base": "Forfait annuel HT",
+          "value": "Négociable, max 10 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_3751_sgi-africaine-de-bourse.pdf"
+    },
+    {
+      "id": "cifa-bourse",
+      "nom": "CIFA Bourse",
+      "pays": "Mali",
+      "note": null,
+      "rang_richbourse": 35,
+      "tarif_status": "complet",
+      "courtage_pct": 0.9,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PCR/SG/DA/2021/243",
+      "agrement": "CREPMF/2021/197 (SGI/2021-03, 2 sept. 2021)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "0,90 %",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,50 %",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,35 % par an (paiement trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait par ligne",
+          "value": "12 500 FCFA par an",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "1,50 % par an (paiement trimestriel)",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "26 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "1,75 %",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "1 %",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "9 500 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_2265_cifa-bourse.pdf"
+    },
+    {
+      "id": "kerales-finance",
+      "nom": "Kerales Finance",
+      "pays": "Côte d'Ivoire",
+      "note": null,
+      "rang_richbourse": 37,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2026/024",
+      "agrement": "AMF-UMOA/2025/217 (SGI/2025-01, 27 juin 2025)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "1 % maximum",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction d'acheté/vendu",
+          "value": "1 % maximum",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,81 % maximum",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Contractuelle",
+          "value": "1 % maximum",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille-titres en conservation",
+          "value": "Maximum 0,5 % l'an",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait",
+          "value": "Maximum 15 625 FCFA l'an",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "Maximum 1,5 % l'an",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "Particuliers 5 000 FCFA max · Institutionnels/entreprises 10 000 FCFA max",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait par ligne",
+          "value": "Maximum 10 000 FCFA",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "Maximum 15 625 FCFA",
+          "max": null
+        },
+        {
+          "label": "Bourse en ligne",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise ferme",
+          "value": "1 % maximum",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "2 % maximum",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "1,5 % maximum",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "10 000 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_4105_kerales-finance.pdf"
+    },
+    {
+      "id": "mansa-capital",
+      "nom": "Mansa Capital",
+      "pays": "Côte d'Ivoire",
+      "note": null,
+      "rang_richbourse": 38,
+      "tarif_status": "complet",
+      "courtage_pct": 1.0,
+      "tenue_gratuite": false,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2026/108 (2 mars 2026)",
+      "agrement": "AMF-UMOA/2025/351 (SGI/2025-02, 23 déc. 2025)",
+      "note_extra": null,
+      "fees": [
+        {
+          "label": "Courtage — transactions ordinaires",
+          "base": "Montant de la transaction",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Courtage — acheté/vendu",
+          "base": "Montant de la transaction sur dossier",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Courtage — sur dossier",
+          "base": "Montant de la transaction sur dossier",
+          "value": "0,81 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Animation / mécanisme de liquidité",
+          "base": "Sur la valeur du portefeuille",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Conservation (droits de garde)",
+          "base": "Valeur du portefeuille d'actifs conservés",
+          "value": "0,5 % HT/an maximum",
+          "max": null
+        },
+        {
+          "label": "Frais de tenue de compte",
+          "base": "Forfait trimestriel",
+          "value": "2 500 FCFA HT (pers. physique) · 3 500 FCFA HT (pers. morale) maximum",
+          "max": null
+        },
+        {
+          "label": "Gestion sous mandat",
+          "base": "Valeur du portefeuille sous gestion",
+          "value": "2 % HT/an maximum",
+          "max": null
+        },
+        {
+          "label": "Transfert de titres",
+          "base": "Forfait par ligne",
+          "value": "10 000 FCFA/ligne maximum",
+          "max": null
+        },
+        {
+          "label": "Nantissement de titres",
+          "base": "Forfait",
+          "value": "10 000 FCFA/ligne maximum",
+          "max": null
+        },
+        {
+          "label": "Frais d'ouverture de compte",
+          "base": "Forfait",
+          "value": "Gratuit",
+          "max": null
+        },
+        {
+          "label": "Frais de clôture de compte",
+          "base": "Forfait",
+          "value": "15 000 FCFA maximum",
+          "max": null
+        },
+        {
+          "label": "Bourse en ligne",
+          "base": "Mensuel",
+          "value": "1 000 FCFA HT (pers. physique) · 2 500 FCFA HT (pers. morale) maximum",
+          "max": null
+        },
+        {
+          "label": "Garantie de placement (prise ferme)",
+          "base": "Montant de la prise",
+          "value": "1 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Structuration / arrangement",
+          "base": "Montant levé",
+          "value": "2 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Placement de titres",
+          "base": "Montant placé",
+          "value": "1,5 % HT maximum",
+          "max": null
+        },
+        {
+          "label": "Introduction en bourse",
+          "base": "Forfait",
+          "value": "5 000 000 à 8 500 000 FCFA",
+          "max": null
+        }
+      ],
+      "source_pdf": "Tarifs_4413_mansa-capital.pdf"
+    },
+    {
+      "id": "sgi-hudson-cie",
+      "nom": "Hudson & Cie",
+      "pays": "Côte d'Ivoire",
+      "note": 4.3,
+      "rang_richbourse": 11,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": "PAMF-UMOA/2023/002 (16 janv. 2023, abroge PCR/DA/2019/094)",
+      "agrement": "SGI agréée 15 déc. 1997",
+      "note_extra": "Le PDF fourni ne contient que la décision d'homologation (2 pages, sans l'annexe) — la grille tarifaire n'y figure pas.",
+      "fees": [],
+      "source_pdf": "Tarifs_2418_sgi-hudson-cie.pdf"
+    },
+    {
+      "id": "sgi-everest-finance",
+      "nom": "EVEREST Finance",
+      "pays": "Sénégal",
+      "note": 4.0,
+      "rang_richbourse": 17,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    },
+    {
+      "id": "global-capital",
+      "nom": "GLOBAL CAPITAL",
+      "pays": "Mali",
+      "note": 4.0,
+      "rang_richbourse": 18,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    },
+    {
+      "id": "oragroup-securities",
+      "nom": "ORAGROUP SECURITIES",
+      "pays": "Côte d'Ivoire",
+      "note": 4.0,
+      "rang_richbourse": 21,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    },
+    {
+      "id": "sgi-africaine-de-bourse",
+      "nom": "SGI Africaine de Bourse",
+      "pays": "Bénin",
+      "note": 2.8,
+      "rang_richbourse": 31,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": "Aucune grille tarifaire fiable disponible (le PDF fourni sous ce nom correspondait à Attijari).",
+      "fees": [],
+      "source_pdf": "Tarifs_3751_sgi-africaine-de-bourse.pdf"
+    },
+    {
+      "id": "sgi-togo",
+      "nom": "SGI TOGO S.A",
+      "pays": "Togo",
+      "note": 2.6,
+      "rang_richbourse": 32,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    },
+    {
+      "id": "images-finances-internationales",
+      "nom": "IMAGES FINANCES INTERNATIONALES",
+      "pays": "Burkina Faso",
+      "note": null,
+      "rang_richbourse": 36,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    },
+    {
+      "id": "one-africa-markets",
+      "nom": "ONE AFRICA MARKETS (OAM CI)",
+      "pays": "Côte d'Ivoire",
+      "note": null,
+      "rang_richbourse": 39,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    },
+    {
+      "id": "united-capital-for-africa",
+      "nom": "UNITED CAPITAL FOR AFRICA",
+      "pays": "Bénin",
+      "note": null,
+      "rang_richbourse": 40,
+      "tarif_status": "absent",
+      "courtage_pct": null,
+      "tenue_gratuite": null,
+      "min_ouverture": null,
+      "frais_ouverture": null,
+      "decision": null,
+      "agrement": null,
+      "note_extra": null,
+      "fees": [],
+      "source_pdf": null
+    }
+  ]
+}
