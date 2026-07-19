@@ -87,7 +87,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                               [ngClass]="type() === 'Expense' ? 'text-surface-900 dark:text-surface-0' : 'text-positive'">
                             {{ type() === 'Expense' ? '−' : '+' }}{{ amountStr() }}
                         </span>
-                        <span class="text-lg font-medium text-surface-400 ml-2">{{ symbol() }}</span>
+                        <span class="text-lg font-medium text-surface-500 dark:text-surface-400 ml-2">{{ symbol() }}</span>
                     </div>
 
                     <!-- Category chips -->

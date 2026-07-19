@@ -62,7 +62,7 @@ import { I18nService } from '../../i18n/i18n.service';
                     <!-- Divider -->
                     <div class="flex items-center gap-4 my-8">
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
-                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">{{ t('auth.login.orEmail') }}</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-sm uppercase tracking-wider">{{ t('auth.login.orEmail') }}</span>
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
@@ -144,7 +144,7 @@ import { I18nService } from '../../i18n/i18n.service';
                                        [placeholder]="t('auth.login.phonePlaceholder')"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none"
                                        [(ngModel)]="phone" name="phone" [disabled]="isLoading()" />
-                                <p class="text-surface-400 dark:text-surface-500 text-xs mt-2">{{ t('auth.login.phoneHint') }}</p>
+                                <p class="text-surface-500 dark:text-surface-400 text-xs mt-2">{{ t('auth.login.phoneHint') }}</p>
                             </div>
                             <button pButton pRipple [label]="t('auth.login.sendCode')" type="button"
                                     [loading]="isLoading()"

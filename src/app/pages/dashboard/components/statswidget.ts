@@ -106,10 +106,10 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                 <div class="font-bold text-2xl leading-tight text-surface-900 dark:text-surface-0">
                                     {{ monthlySavings() >= 0 ? '+' : '-' }}{{ cs.formatNumber(abs(monthlySavings())) }}<span class="text-sm font-semibold ml-1 opacity-70">{{ cs.config().symbol }}</span>
                                 </div>
-                                <div class="text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.monthlyFluxNet') }} · {{ t('dashboard.kpi.thisMonthLabel') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.monthlyFluxNet') }} · {{ t('dashboard.kpi.thisMonthLabel') }}</div>
                             } @else {
-                                <div class="text-surface-400 dark:text-surface-500 font-medium text-lg">{{ t('dashboard.kpi.noData') }}</div>
-                                <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.thisMonthLabel') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 font-medium text-lg">{{ t('dashboard.kpi.noData') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.thisMonthLabel') }}</div>
                             }
                         </div>
                         <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20 shrink-0">
@@ -162,10 +162,10 @@ import { CurrencyService } from '../../../core/services/currency.service';
                             <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-2">{{ t('dashboard.kpi.fireObjectif') }}</span>
                             @if (fireProgress() && (fireProgress()!.targetAmount) > 0) {
                                 <div class="text-surface-900 dark:text-surface-0 font-bold text-2xl">{{ fireProgress()?.progressPct | number:'1.1-1' }}%</div>
-                                <div class="text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></div>
+                                <div class="text-surface-500 dark:text-surface-400 text-xs mt-0.5 truncate">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></div>
                             } @else {
-                                <div class="text-surface-400 dark:text-surface-500 font-medium text-lg">{{ t('dashboard.kpi.fireNotConfigured') }}</div>
-                                <div class="text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.fireGoalUndefined') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 font-medium text-lg">{{ t('dashboard.kpi.fireNotConfigured') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-xs mt-0.5">{{ t('dashboard.kpi.fireGoalUndefined') }}</div>
                             }
                         </div>
                         <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-ochre-500 shrink-0">
@@ -196,7 +196,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                                         <span class="text-sm font-semibold text-surface-700 dark:text-surface-200">
                                             {{ fireProgress()!.yearsToFire! | number:'1.0-0' }} {{ t('dashboard.kpi.fireYearsLeft') }}
                                         </span>
-                                        <span class="text-xs text-surface-400">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></span>
+                                        <span class="text-xs text-surface-500 dark:text-surface-400">{{ t('dashboard.kpi.fireTarget') }} <app-amount [value]="fireProgress()?.targetAmount ?? 0" /></span>
                                     } @else {
                                         <span class="text-sm font-semibold text-positive">{{ t('dashboard.kpi.fireReached') }}</span>
                                     }
