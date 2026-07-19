@@ -102,8 +102,8 @@ export class LegalMentionsPage {
                 ? 'Mbaye SENE, fondateur d\'Omaad.'
                 : 'Mbaye SENE, founder of Omaad.',
             hosting: fr
-                ? 'Front-end : Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA.\nBack-end : Vercel Serverless Functions.\nBase de données : PostgreSQL hébergée en région UE (Irlande).'
-                : 'Front-end: Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA.\nBack-end: Vercel Serverless Functions.\nDatabase: PostgreSQL hosted in EU region (Ireland).',
+                ? 'Front-end : Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA.\nBack-end : Render Services, Inc., San Francisco, CA, USA.\nBase de données : PostgreSQL (Supabase) hébergée en région UE (Irlande).'
+                : 'Front-end: Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, USA.\nBack-end: Render Services, Inc., San Francisco, CA, USA.\nDatabase: PostgreSQL (Supabase) hosted in EU region (Ireland).',
             ip: fr
                 ? 'L\'ensemble du contenu de ce site (textes, visuels, code, marque Omaad et FIRE Africa) est protégé par le droit d\'auteur. Toute reproduction, même partielle, est interdite sans autorisation écrite préalable.'
                 : 'All content on this site (text, visuals, code, Omaad and FIRE Africa brand) is protected by copyright. Any reproduction, even partial, is prohibited without prior written authorization.',
