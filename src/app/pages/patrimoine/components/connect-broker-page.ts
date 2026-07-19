@@ -137,7 +137,7 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                         <div class="relative mb-6">
                             <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
                             <input pInputText
-                                   [(ngModel)]="institutionSearch"
+                                   [ngModel]="institutionSearch()" (ngModelChange)="institutionSearch.set($event)"
                                    [placeholder]="t('addAssets.institutionList.searchPlaceholder')"
                                    class="w-full !pl-11 !py-3 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl" />
                         </div>
@@ -222,7 +222,7 @@ export class ConnectBrokerPage implements OnInit {
     step = signal<FlowStep>('method');
     market = signal<Market>('brvm');
     selectedInstitution = signal<BrokerInstitution | null>(null);
-    institutionSearch = '';
+    institutionSearch = signal('');
 
     private readonly BRVM_INSTITUTIONS: { id: BrokerProvider; type: string; flag: string }[] = [
         { id: 'jokko_fi',          type: 'SGI', flag: '🇸🇳' },
@@ -259,7 +259,7 @@ export class ConnectBrokerPage implements OnInit {
     );
 
     filteredInstitutions = computed(() => {
-        const q = this.institutionSearch.toLowerCase().trim();
+        const q = this.institutionSearch().toLowerCase().trim();
         const list = this.institutions();
         if (!q) return list;
         return list.filter(i =>

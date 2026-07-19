@@ -62,21 +62,20 @@ import { I18nService } from '../../../i18n/i18n.service';
                             Dépenses annuelles <span class="text-surface-400">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber
-                            [(ngModel)]="annualExpenses"
+                            [ngModel]="annualExpenses()" (ngModelChange)="annualExpenses.set($event); onCalcChange()"
                             [min]="0"
                             mode="decimal"
                             [minFractionDigits]="0" [maxFractionDigits]="0"
                             placeholder="Ex : 15 000 000"
                             inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             styleClass="w-full"
-                            (ngModelChange)="onCalcChange()"
                         />
                         <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Logement, alimentation, transport, loisirs… sur 12 mois</p>
                     </div>
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">Taux de rendement attendu (%)</label>
                         <p-inputnumber
-                            [(ngModel)]="withdrawalRate"
+                            [ngModel]="withdrawalRate()" (ngModelChange)="withdrawalRate.set($event); onCalcChange()"
                             [min]="1"
                             [max]="10"
                             [minFractionDigits]="1"
@@ -85,7 +84,6 @@ import { I18nService } from '../../../i18n/i18n.service';
                             placeholder="4.0"
                             inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             styleClass="w-full"
-                            (ngModelChange)="onCalcChange()"
                         />
                         <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Le rendement annuel moyen que vous espérez de vos placements (4 % est une référence prudente)</p>
                     </div>
@@ -205,8 +203,8 @@ export class FireSettings implements OnInit {
     cs = inject(CurrencyService);
     private i18n = inject(I18nService);
 
-    annualExpenses: number | null = null;
-    withdrawalRate: number | null = 4.0;
+    annualExpenses = signal<number | null>(null);
+    withdrawalRate = signal<number | null>(4.0);
     fireTarget: number | null = null;
     targetDate: Date | null = null;
     justApplied = false;
@@ -221,8 +219,10 @@ export class FireSettings implements OnInit {
     }
 
     autoTarget = computed(() => {
-        if (!this.annualExpenses || !this.withdrawalRate || this.withdrawalRate <= 0) return 0;
-        return Math.round(this.annualExpenses / (this.withdrawalRate / 100));
+        const exp = this.annualExpenses();
+        const rate = this.withdrawalRate();
+        if (!exp || !rate || rate <= 0) return 0;
+        return Math.round(exp / (rate / 100));
     });
 
     ngOnInit() {
@@ -233,8 +233,8 @@ export class FireSettings implements OnInit {
             const toDisplay = (v: number | null | undefined) =>
                 v != null ? Math.round(this.cs.convert(v)) : null;
 
-            this.annualExpenses = toDisplay(user.annual_expenses);
-            this.withdrawalRate = user.withdrawal_rate ?? 4.0;
+            this.annualExpenses.set(toDisplay(user.annual_expenses));
+            this.withdrawalRate.set(user.withdrawal_rate ?? 4.0);
             this.fireTarget     = toDisplay(user.fire_target_amount);
             if (user.fire_target_date) {
                 this.targetDate = new Date(user.fire_target_date);
@@ -268,10 +268,11 @@ export class FireSettings implements OnInit {
         const toBase = (v: number) => this.cs.toBaseAmount(v);
 
         const payload: FIRESettings = {
-            withdrawal_rate: this.withdrawalRate ?? 4.0
+            withdrawal_rate: this.withdrawalRate() ?? 4.0
         };
-        if (this.fireTarget)     payload.fire_target_amount = toBase(this.fireTarget);
-        if (this.annualExpenses) payload.annual_expenses    = toBase(this.annualExpenses);
+        const annualExpenses = this.annualExpenses();
+        if (this.fireTarget)  payload.fire_target_amount = toBase(this.fireTarget);
+        if (annualExpenses)   payload.annual_expenses    = toBase(annualExpenses);
         if (this.targetDate) {
             payload.fire_target_date = this.targetDate.toISOString().split('T')[0];
         }
@@ -333,10 +334,10 @@ export class FireSettings implements OnInit {
                     this.authService.getCurrentUser().subscribe();
                 }
                 this.dashboardService.invalidateCache();
-                this.annualExpenses = null;
+                this.annualExpenses.set(null);
                 this.fireTarget = null;
                 this.targetDate = null;
-                this.withdrawalRate = 4.0;
+                this.withdrawalRate.set(4.0);
                 this.justApplied = false;
                 this.isClearing.set(false);
                 // Notify the FIRE dashboard (parent) to reload + reset its displayed data.

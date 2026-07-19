@@ -40,7 +40,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
             <div class="flex items-center gap-2">
                 <div class="relative flex-1 min-w-0">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
-                    <input pInputText [(ngModel)]="search" [placeholder]="t('debts.searchPlaceholder')"
+                    <input pInputText [ngModel]="search()" (ngModelChange)="search.set($event)" [placeholder]="t('debts.searchPlaceholder')"
                            class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
                 </div>
                 <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
@@ -73,9 +73,9 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <i class="pi pi-credit-card text-xl text-surface-400"></i>
                 </div>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
-                    {{ search || typeFilter() !== 'all' ? t('debts.emptyNoResult') : t('debts.noDebts') }}
+                    {{ search() || typeFilter() !== 'all' ? t('debts.emptyNoResult') : t('debts.noDebts') }}
                 </p>
-                @if (!share.active() && !search && typeFilter() === 'all') {
+                @if (!share.active() && !search() && typeFilter() === 'all') {
                     <button pButton icon="pi pi-plus" [label]="t('debts.addShort')"
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
@@ -365,7 +365,7 @@ export class DebtsProgress implements OnInit {
     private allRecords = signal<DebtRecord[]>([]);
     record!: DebtRecord;
 
-    search     = '';
+    search     = signal('');
     typeFilter = signal<'all' | 'Debt' | 'Receivable'>('all');
 
     get typeFilters() {
@@ -386,7 +386,7 @@ export class DebtsProgress implements OnInit {
 
     readonly filteredRecords = computed(() => {
         const filter = this.typeFilter();
-        const q      = this.search.toLowerCase().trim();
+        const q      = this.search().toLowerCase().trim();
         return this.allRecords()
             .filter(r => filter === 'all' || r.type === filter)
             .filter(r => !q || (r.name || '').toLowerCase().includes(q));

@@ -107,7 +107,7 @@ interface CategoryCard {
                         <div class="relative mb-8">
                             <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
                             <input pInputText
-                                   [(ngModel)]="searchQuery"
+                                   [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
                                    placeholder="Rechercher un type d'actif..."
                                    class="w-full !pl-11 !py-3.5 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-sm" />
                         </div>
@@ -479,7 +479,7 @@ export class AddAssetPage implements OnInit {
     currentStep = signal(0);
     isSubmitting = signal(false);
     selectedCategory = signal<AssetCategory | ''>('');
-    searchQuery = '';
+    searchQuery = signal('');
 
     assetForm: AssetFormData = {
         name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
@@ -549,7 +549,7 @@ export class AddAssetPage implements OnInit {
     selectedCard = computed(() => this.categoryCards().find(c => c.value === this.selectedCategory()) ?? null);
 
     filteredCategories = computed(() => {
-        const q = this.searchQuery.toLowerCase().trim();
+        const q = this.searchQuery().toLowerCase().trim();
         const cards = this.categoryCards();
         if (!q) return cards;
         return cards.filter(c =>
