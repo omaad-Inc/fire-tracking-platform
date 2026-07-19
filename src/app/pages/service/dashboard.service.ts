@@ -275,12 +275,12 @@ export class DashboardService {
                 };
                 this.setCache(KEY, result);
                 return result;
-            } catch {
-                return cached ?? {
-                    netWorth: 0, netWorthChange: 0, netWorthChangePct: 0,
-                    totalAssets: 0, totalDebts: 0, savingsRate: 0,
-                    monthlyIncome: 0, monthlyExpenses: 0
-                };
+            } catch (e) {
+                // Serve stale cache if we have it, otherwise LET IT THROW so
+                // the KPI widget shows an error+retry card instead of a fake
+                // "0 FCFA" net worth (P1-5 — verified this was leaking zeros).
+                if (cached) return cached;
+                throw e;
             }
         };
 
@@ -316,12 +316,12 @@ export class DashboardService {
                 };
                 this.setCache(KEY, result);
                 return result;
-            } catch {
-                return cached ?? {
-                    currentNetWorth: 0, targetAmount: 0, progressPct: 0,
-                    yearsToFire: null, estimatedDate: null,
-                    monthlyPassiveIncomeNeeded: 0, currentPassiveIncome: 0, savingsRate: 0
-                };
+            } catch (e) {
+                // Stale cache beats nothing, but on a cold failure LET IT THROW
+                // so callers show an error/empty state, not fabricated 0% FIRE
+                // progress (P1-5). Callers (statswidget, fire pages) all catch.
+                if (cached) return cached;
+                throw e;
             }
         };
 
