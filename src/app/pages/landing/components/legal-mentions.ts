@@ -70,10 +70,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </section>
 
                     <!-- Draft banner -->
-                    <div class="mt-10 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300 text-sm leading-relaxed">
-                        ⚠️ {{ isFr()
-                            ? 'Ce document est un brouillon pré-lancement. Il sera complété et validé juridiquement avant la mise en production publique.'
-                            : 'This document is a pre-launch draft. It will be finalized and legally reviewed before public production.' }}
+                    <div class="mt-10 p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                        {{ isFr() ? 'Dernière mise à jour : 19 juillet 2026.' : 'Last updated: 19 July 2026.' }}
                     </div>
                 </article>
             </main>

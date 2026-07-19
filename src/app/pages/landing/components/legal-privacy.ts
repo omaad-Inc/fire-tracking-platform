@@ -53,10 +53,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                         </p>
                     </section>
 
-                    <div class="mt-10 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-300 text-sm leading-relaxed">
-                        ⚠️ {{ isFr()
-                            ? 'Ce document est un brouillon pré-lancement. Il sera complété et validé juridiquement avant la mise en production publique.'
-                            : 'This document is a pre-launch draft. It will be finalized and legally reviewed before public production.' }}
+                    <div class="mt-10 p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                        {{ isFr() ? 'Dernière mise à jour : 19 juillet 2026.' : 'Last updated: 19 July 2026.' }}
                     </div>
                 </article>
             </main>
@@ -86,8 +84,8 @@ export class LegalPrivacyPage {
                 id: 'collected',
                 title: fr ? 'Données collectées' : 'Data collected',
                 body: fr
-                    ? 'Nous collectons uniquement les données nécessaires au service :\n• Compte : email, prénom, nom, mot de passe (haché bcrypt), photo de profil optionnelle.\n• Patrimoine : actifs, transactions, dettes, objectifs d\'épargne — saisis manuellement ou récupérés via les connexions courtiers que tu autorises.\n• Préférences : devise, langue, fuseau horaire, choix de thème.\n• Techniques : adresse IP, type de navigateur, journaux applicatifs (anonymisés).'
-                    : 'We collect only what the service needs:\n• Account: email, first name, last name, password (bcrypt-hashed), optional profile picture.\n• Wealth: assets, transactions, debts, savings goals — entered manually or fetched via broker connections you authorize.\n• Preferences: currency, language, timezone, theme.\n• Technical: IP address, browser type, application logs (anonymized).',
+                    ? 'Nous collectons uniquement les données nécessaires au service :\n• Compte : email, prénom, nom, mot de passe (haché bcrypt), photo de profil optionnelle.\n• Patrimoine : actifs, transactions, dettes, objectifs d\'épargne — saisis manuellement.\n• Préférences : devise, langue, fuseau horaire, choix de thème.\n• Techniques : adresse IP, type de navigateur, journaux applicatifs (anonymisés).'
+                    : 'We collect only what the service needs:\n• Account: email, first name, last name, password (bcrypt-hashed), optional profile picture.\n• Wealth: assets, transactions, debts, savings goals — entered manually.\n• Preferences: currency, language, timezone, theme.\n• Technical: IP address, browser type, application logs (anonymized).',
             },
             {
                 id: 'purposes',
@@ -100,8 +98,8 @@ export class LegalPrivacyPage {
                 id: 'storage',
                 title: fr ? 'Stockage & sécurité' : 'Storage & security',
                 body: fr
-                    ? 'Les données sont stockées sur PostgreSQL en région UE (Irlande). Les identifiants courtiers et mots de passe sont chiffrés en AES-256 avant stockage. Les connexions sont chiffrées en TLS 1.3. Sauvegardes chiffrées quotidiennes.'
-                    : 'Data is stored on PostgreSQL in the EU region (Ireland). Broker credentials and passwords are encrypted with AES-256 before storage. Connections are encrypted with TLS 1.3. Encrypted daily backups.',
+                    ? 'Les données sont stockées sur PostgreSQL en région UE (Irlande). Les mots de passe sont hachés (bcrypt) et jamais stockés en clair. Les connexions sont chiffrées en TLS 1.3. Sauvegardes chiffrées quotidiennes.'
+                    : 'Data is stored on PostgreSQL in the EU region (Ireland). Passwords are hashed (bcrypt) and never stored in plaintext. Connections are encrypted with TLS 1.3. Encrypted daily backups.',
             },
             {
                 id: 'retention',

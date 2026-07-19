@@ -1355,7 +1355,7 @@ export const FR = {
       h3Item1: 'Hébergement sécurisé',
       h3Item2: 'Zéro publicité, zéro tracking',
       h3Item3: 'Suppression totale sur demande',
-      h3S1Title: 'Chiffrement bout-en-bout',
+      h3S1Title: 'Chiffrement en transit (TLS 1.3)',
       h3S1Desc: 'Communications SSL/TLS',
       h3S2Title: 'Données jamais vendues',
       h3S2Desc: 'Aucun tiers n\'y accède',
