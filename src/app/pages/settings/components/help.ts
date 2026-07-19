@@ -9,10 +9,11 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { environment } from '../../../../environments/environment';
 import { TokenService } from '../../../core/services/token.service';
+import { I18nService } from '../../../i18n/i18n.service';
 
 interface FaqItem {
-    question: string;
-    answer: string;
+    questionKey: string;
+    answerKey: string;
     open: boolean;
 }
 
@@ -28,11 +29,11 @@ interface FaqItem {
 
             <!-- ── Search bar ────────────────────────────────────── -->
             <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
-                <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">Comment pouvons-nous vous aider ?</h2>
-                <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">Parcourez les questions fréquentes ou contactez notre équipe.</p>
+                <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('help.title') }}</h2>
+                <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">{{ i18n.t('help.subtitle') }}</p>
                 <div class="relative">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"></i>
-                    <input pInputText [(ngModel)]="searchQuery" placeholder="Rechercher une question..."
+                    <input pInputText [(ngModel)]="searchQuery" [placeholder]="i18n.t('help.searchPlaceholder')"
                            class="w-full !pl-10 !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                 </div>
             </div>
@@ -58,30 +59,30 @@ interface FaqItem {
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
                     </div>
-                    <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Questions fréquentes</h2>
+                    <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.faqTitle') }}</h2>
                 </div>
 
                 <div class="divide-y divide-surface-100 dark:divide-surface-700/50">
-                    @for (item of filteredFaq(); track item.question) {
+                    @for (item of filteredFaq(); track item.questionKey) {
                         <div class="px-5">
                             <button (click)="item.open = !item.open"
                                     class="w-full flex items-center justify-between py-4 text-left group">
                                 <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-ochre-600 dark:group-hover:text-ochre-400 transition-colors">
-                                    {{ item.question }}
+                                    {{ i18n.t(item.questionKey) }}
                                 </span>
                                 <i class="pi shrink-0 transition-transform duration-200 text-surface-400"
                                    [ngClass]="item.open ? 'pi-chevron-up text-brand-700 dark:text-brand-300' : 'pi-chevron-down'"></i>
                             </button>
                             @if (item.open) {
                                 <div class="pb-4 text-sm text-surface-600 dark:text-surface-300 leading-relaxed">
-                                    {{ item.answer }}
+                                    {{ i18n.t(item.answerKey) }}
                                 </div>
                             }
                         </div>
                     }
                     @if (filteredFaq().length === 0) {
                         <div class="px-5 py-8 text-center text-surface-500 dark:text-surface-400 text-sm">
-                            Aucun résultat pour "{{ searchQuery }}". Essayez d'autres mots-clés.
+                            {{ i18n.t('help.noResults', { query: searchQuery }) }}
                         </div>
                     }
                 </div>
@@ -94,31 +95,31 @@ interface FaqItem {
                         <i class="pi pi-envelope text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Nous contacter</h2>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">Réponse sous 24–48 h</p>
+                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.contactTitle') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ i18n.t('help.responseTime') }}</p>
                     </div>
                 </div>
 
                 <div class="p-5">
                     <div class="flex flex-col gap-6">
                         <div class="flex flex-col gap-1">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Sujet</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('help.subject') }}</label>
                             <input pInputText [(ngModel)]="contactForm.subject"
-                                   placeholder="Ex : Problème de connexion, question sur les devises…"
+                                   [placeholder]="i18n.t('help.subjectPlaceholder')"
                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         </div>
                         <div class="flex flex-col gap-1">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">Message</label>
+                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('help.message') }}</label>
                             <textarea pTextarea [(ngModel)]="contactForm.message" rows="4"
-                                      placeholder="Décrivez votre problème ou question en détail…"
+                                      [placeholder]="i18n.t('help.messagePlaceholder')"
                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"></textarea>
                         </div>
                         <div class="flex items-center justify-between gap-4 flex-wrap">
                             <p class="text-xs text-surface-400 flex items-center gap-1.5">
                                 <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
-                                Vos données restent confidentielles.
+                                {{ i18n.t('help.dataConfidential') }}
                             </p>
-                            <p-button label="Envoyer le message" icon="pi pi-send"
+                            <p-button [label]="i18n.t('help.sendMessage')" icon="pi pi-send"
                                       [loading]="isSending()"
                                       [disabled]="!contactForm.subject || !contactForm.message"
                                       (click)="sendMessage()"
@@ -134,7 +135,7 @@ interface FaqItem {
                     <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
                         <i class="pi pi-link text-positive"></i>
                     </div>
-                    <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">Ressources utiles</h2>
+                    <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.resourcesTitle') }}</h2>
                 </div>
                 <div class="divide-y divide-surface-100 dark:divide-surface-700/50">
                     @for (res of resources; track res.label) {
@@ -156,7 +157,7 @@ interface FaqItem {
             <!-- ── Version info ─────────────────────────────────── -->
             <div class="text-center py-2">
                 <p class="text-xs text-surface-400 dark:text-surface-500">
-                    Omaad Wealth · v1.0.0 · <span class="text-positive">●</span> Opérationnel
+                    Omaad Wealth · v{{ appVersion }}
                 </p>
             </div>
         </div>
@@ -166,98 +167,59 @@ export class HelpSettings {
     private http = inject(HttpClient);
     private tokenService = inject(TokenService);
     private messageService = inject(MessageService);
+    i18n = inject(I18nService);
+    appVersion = environment.version;
 
     searchQuery = '';
     isSending   = signal(false);
     contactForm = { subject: '', message: '' };
 
-    readonly quickLinks = [
-        { label: 'Compte & Profil',  tag: 'compte',    icon: 'pi-user',          color: 'text-brand-700 dark:text-brand-300',  bg: 'bg-brand-700/10 dark:bg-brand-300/15'  },
-        { label: 'Devises & FCFA',   tag: 'devise',    icon: 'pi-wallet',        color: 'text-brand-700 dark:text-brand-300',    bg: 'bg-brand-700/10 dark:bg-brand-300/15'    },
-        { label: 'Objectif FIRE',    tag: 'fire',      icon: 'pi-flag',          color: 'text-positive', bg: 'bg-positive/10' },
-        { label: 'Sécurité',         tag: 'sécurité',  icon: 'pi-shield',        color: 'text-ochre-500',   bg: 'bg-ochre-100'   },
-    ];
+    get quickLinks() {
+        return [
+            { label: this.i18n.t('help.quickLinks.account'),  tag: this.i18n.t('help.quickTags.account'),  icon: 'pi-user',   color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15' },
+            { label: this.i18n.t('help.quickLinks.currency'), tag: this.i18n.t('help.quickTags.currency'), icon: 'pi-wallet', color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15' },
+            { label: this.i18n.t('help.quickLinks.fire'),     tag: this.i18n.t('help.quickTags.fire'),     icon: 'pi-flag',   color: 'text-positive', bg: 'bg-positive/10' },
+            { label: this.i18n.t('help.quickLinks.security'), tag: this.i18n.t('help.quickTags.security'), icon: 'pi-shield', color: 'text-ochre-500', bg: 'bg-ochre-100' },
+        ];
+    }
 
-    readonly resources = [
-        {
-            label: 'Centre d\'aide en ligne',
-            desc:  'Documentation complète et tutoriels vidéo',
-            url:   'https://help.omaad.app',
-            icon:  'pi-book',  color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15',
-        },
-        {
-            label: 'Signaler un bug',
-            desc:  'Aidez-nous à améliorer l\'application',
-            url:   'https://github.com/omaad-wealth/feedback/issues',
-            icon:  'pi-github', color: 'text-surface-500', bg: 'bg-surface-500/10',
-        },
-        {
-            label: 'Règle des 4% — SWR',
-            desc:  'Comprendre la base du calcul FIRE',
-            url:   'https://www.investopedia.com/terms/f/four-percent-rule.asp',
-            icon:  'pi-percentage', color: 'text-positive', bg: 'bg-positive/10',
-        },
-    ];
+    get resources() {
+        return [
+            {
+                label: this.i18n.t('help.resources.helpCenterLabel'),
+                desc:  this.i18n.t('help.resources.helpCenterDesc'),
+                url:   'https://help.omaad.app',
+                icon:  'pi-book',  color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15',
+            },
+            {
+                label: this.i18n.t('help.resources.reportBugLabel'),
+                desc:  this.i18n.t('help.resources.reportBugDesc'),
+                url:   'https://github.com/omaad-wealth/feedback/issues',
+                icon:  'pi-github', color: 'text-surface-500', bg: 'bg-surface-500/10',
+            },
+            {
+                label: this.i18n.t('help.resources.swrLabel'),
+                desc:  this.i18n.t('help.resources.swrDesc'),
+                url:   'https://www.investopedia.com/terms/f/four-percent-rule.asp',
+                icon:  'pi-percentage', color: 'text-positive', bg: 'bg-positive/10',
+            },
+        ];
+    }
 
-    private readonly faqItems: FaqItem[] = [
-        {
-            question: 'Comment modifier ma devise d\'affichage ?',
-            answer:   'Allez dans Paramètres → Préférences, puis sélectionnez la devise souhaitée (FCFA, EUR ou USD) dans le menu déroulant "Devise". Tous les montants seront immédiatement convertis dans votre nouvelle devise.',
-            open: false,
-        },
-        {
-            question: 'Mes données financières sont-elles sécurisées ?',
-            answer:   'Oui. Toutes les communications sont chiffrées en SSL/TLS. Vos données sont stockées sur des serveurs sécurisés et ne sont jamais partagées avec des tiers. Vous pouvez supprimer votre compte et toutes vos données à tout moment depuis Paramètres → Mon compte.',
-            open: false,
-        },
-        {
-            question: 'Qu\'est-ce que l\'objectif FIRE et comment le configurer ?',
-            answer:   'FIRE (Financial Independence, Retire Early) est une méthode qui consiste à épargner un capital suffisant pour vivre de ses revenus passifs. Dans Omaad Wealth, allez dans Paramètres → Objectif Financier, renseignez vos dépenses annuelles et le taux de rendement attendu — l\'application calcule automatiquement le capital cible (basé sur la règle des 4%).',
-            open: false,
-        },
-        {
-            question: 'Pourquoi mon patrimoine net est-il négatif ?',
-            answer:   'Le patrimoine net = total des actifs − total des dettes. Si vos dettes (prêt immobilier, crédit auto…) dépassent la valeur totale de vos actifs, le résultat est négatif. C\'est normal en début de remboursement d\'un prêt immobilier, par exemple. Il évoluera positivement au fil des remboursements.',
-            open: false,
-        },
-        {
-            question: 'Comment ajouter un actif de type Tontine ou Mobile Money ?',
-            answer:   'Cliquez sur "Ajouter un actif" dans la barre de navigation, puis sélectionnez "Tontine" ou "Mobile Money" dans la grille de catégories. Un formulaire adapté s\'affichera avec les champs spécifiques à chaque type.',
-            open: false,
-        },
-        {
-            question: 'Je me connecte via Google. Puis-je changer mon email ?',
-            answer:   'Non directement depuis Omaad Wealth. Votre email est géré par Google. Pour changer l\'email associé, rendez-vous sur myaccount.google.com, modifiez votre email Google, puis reconnectez-vous à Omaad Wealth.',
-            open: false,
-        },
-        {
-            question: 'Comment le taux d\'épargne global est-il calculé ?',
-            answer:   'Le taux d\'épargne global est la moyenne des taux d\'épargne mensuels sur tous les mois ayant au moins un revenu enregistré. Le taux mensuel = (revenus − dépenses) / revenus × 100. Les mois sans revenu sont exclus du calcul.',
-            open: false,
-        },
-        {
-            question: 'L\'application fonctionne-t-elle hors ligne ?',
-            answer:   'Omaad Wealth est une Progressive Web App (PWA). L\'interface s\'affiche hors ligne grâce au cache du navigateur, mais la création et modification de données nécessite une connexion internet pour synchroniser avec le serveur.',
-            open: false,
-        },
-        {
-            question: 'Le plan gratuit a-t-il des limites ?',
-            answer:   'Non pour les fonctionnalités principales : actifs illimités, transactions illimitées, objectifs d\'épargne, dettes, graphiques et objectif FIRE. Les fonctionnalités avancées (export CSV/PDF, alertes personnalisées, rapports automatiques) seront réservées au plan Pro.',
-            open: false,
-        },
-        {
-            question: 'Comment supprimer définitivement mon compte ?',
-            answer:   'Allez dans Paramètres → Mon compte → Zone de danger → "Supprimer mon compte". Vous devrez taper le mot SUPPRIMER pour confirmer. Cette action est irréversible et supprime immédiatement toutes vos données.',
-            open: false,
-        },
-    ];
+    // Q&A text lives in i18n (help.faq.*); this array only holds the keys +
+    // per-item accordion state, so `open` survives change detection.
+    readonly faqItems: FaqItem[] = Array.from({ length: 10 }, (_, i) => ({
+        questionKey: `help.faq.q${i + 1}`,
+        answerKey:   `help.faq.a${i + 1}`,
+        open: false,
+    }));
 
     filteredFaq() {
         const q = this.searchQuery.toLowerCase().trim();
         if (!q) return this.faqItems;
         return this.faqItems.filter(f =>
-            f.question.toLowerCase().includes(q) ||
-            f.answer.toLowerCase().includes(q)
+            this.i18n.t(f.questionKey).toLowerCase().includes(q) ||
+            this.i18n.t(f.answerKey).toLowerCase().includes(q)
         );
     }
 
@@ -279,8 +241,8 @@ export class HelpSettings {
                 this.isSending.set(false);
                 this.messageService.add({
                     severity: 'success',
-                    summary: 'Message envoyé',
-                    detail: 'Nous vous répondrons dans les 24–48 h. Merci !',
+                    summary: this.i18n.t('help.sendSuccessTitle'),
+                    detail: this.i18n.t('help.sendSuccessDetail'),
                     life: 5000
                 });
                 this.contactForm = { subject: '', message: '' };
@@ -289,8 +251,8 @@ export class HelpSettings {
                 this.isSending.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: 'Impossible d\'envoyer le message. Réessayez plus tard.',
+                    summary: this.i18n.t('common.error'),
+                    detail: this.i18n.t('help.sendErrorDetail'),
                     life: 5000
                 });
             }

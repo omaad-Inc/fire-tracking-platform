@@ -72,7 +72,7 @@ interface CategoryCard {
                 <div class="flex-1 min-w-0">
                     <h1 class="font-bold text-surface-900 dark:text-surface-0 m-0"
                         [ngClass]="currentStep() === 0 ? 'text-2xl' : 'text-xl'">
-                        @if (currentStep() === 0) { Compléter mon patrimoine }
+                        @if (currentStep() === 0) { {{ isFr() ? 'Compléter mon patrimoine' : 'Complete my portfolio' }} }
                         @if (currentStep() === 1) {
                             <span class="flex items-center gap-2">
                                 @if (selectedCard()) {
@@ -80,10 +80,10 @@ interface CategoryCard {
                                         <i class="pi {{ selectedCard()!.icon }} {{ selectedCard()!.textClass }} text-sm"></i>
                                     </span>
                                 }
-                                {{ selectedCard()?.label ?? 'Informations' }}
+                                {{ selectedCard()?.label ?? (isFr() ? 'Informations' : 'Details') }}
                             </span>
                         }
-                        @if (currentStep() === 2) { Répartition }
+                        @if (currentStep() === 2) { {{ isFr() ? 'Répartition' : 'Ownership' }} }
                     </h1>
                 </div>
                 <!-- Step dots (only on form steps) -->
@@ -107,8 +107,8 @@ interface CategoryCard {
                         <div class="relative mb-8">
                             <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
                             <input pInputText
-                                   [(ngModel)]="searchQuery"
-                                   placeholder="Rechercher un type d'actif..."
+                                   [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                                   [placeholder]="isFr() ? 'Rechercher un type d\\'actif...' : 'Search an asset type...'"
                                    class="w-full !pl-11 !py-3.5 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-sm" />
                         </div>
 
@@ -142,7 +142,7 @@ interface CategoryCard {
                         @if (filteredCategories().length === 0) {
                             <div class="text-center py-12 text-surface-400">
                                 <i class="pi pi-search text-2xl mb-3 block"></i>
-                                <p class="text-sm">Aucun type d'actif trouvé</p>
+                                <p class="text-sm">{{ isFr() ? 'Aucun type d\\'actif trouvé' : 'No asset type found' }}</p>
                             </div>
                         }
                     </div>
@@ -161,7 +161,7 @@ interface CategoryCard {
                                             (click)="goToStep(1)">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                                               [ngClass]="currentStep() === 1 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
-                                        <span class="text-sm">Informations</span>
+                                        <span class="text-sm">{{ isFr() ? 'Informations' : 'Details' }}</span>
                                     </button>
                                     <button type="button"
                                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
@@ -170,7 +170,7 @@ interface CategoryCard {
                                             [disabled]="!isStep1Valid()">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                                               [ngClass]="currentStep() === 2 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
-                                        <span class="text-sm">Répartition</span>
+                                        <span class="text-sm">{{ isFr() ? 'Répartition' : 'Ownership' }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -182,7 +182,7 @@ interface CategoryCard {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <!-- Name (always) -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nom de l'actif <span class="text-negative">*</span></label>
+                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Nom de l\\'actif' : 'Asset name' }} <span class="text-negative">*</span></label>
                                             <input pInputText [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                         </div>
@@ -198,7 +198,7 @@ interface CategoryCard {
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Mise mensuelle <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Mise mensuelle' : 'Monthly contribution' }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -206,22 +206,22 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Nombre de participants <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Nombre de participants' : 'Number of participants' }} <span class="text-negative">*</span></label>
                                                 <p-inputnumber [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date de début <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de début' : 'Start date' }} <span class="text-negative">*</span></label>
                                                 <input pInputText type="date" [(ngModel)]="assetForm.tontineStartDate"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date de collecte de ma mise</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de collecte de ma mise' : 'My payout date' }}</label>
                                                 <input pInputText type="date" [(ngModel)]="assetForm.tontineCollectionDate"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Statut</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Statut' : 'Status' }}</label>
                                                 <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
@@ -234,10 +234,10 @@ interface CategoryCard {
                                                 <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
                                                     <i class="pi pi-calculator text-brand-700 dark:text-brand-300"></i>
                                                     <div>
-                                                        <p class="text-xs text-surface-400 mb-0.5">Valeur accumulée estimée</p>
+                                                        <p class="text-xs text-surface-400 mb-0.5">{{ isFr() ? 'Valeur accumulée estimée' : 'Estimated accumulated value' }}</p>
                                                         <p class="font-bold text-brand-700 dark:text-brand-300">
                                                             {{ tontineCurrentValue() | number:'1.0-0' }} {{ curSymbol() }}
-                                                            <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} mois × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                                            <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} {{ isFr() ? 'mois' : 'mo' }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -247,13 +247,13 @@ interface CategoryCard {
                                         <!-- MOBILE MONEY -->
                                         @if (assetForm.category === 'mobile_money') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Opérateur <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Opérateur' : 'Provider' }} <span class="text-negative">*</span></label>
                                                 <p-select [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
-                                                    placeholder="Sélectionner l'opérateur"
+                                                    [placeholder]="isFr() ? 'Sélectionner l\\'opérateur' : 'Select provider'"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Solde actuel <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Solde actuel' : 'Current balance' }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -262,20 +262,20 @@ interface CategoryCard {
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
                                                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300"></i>
-                                                Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.
+                                                {{ isFr() ? 'Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.' : 'Wave / Orange Money API integration planned — automatic updates coming soon.' }}
                                             </div>
                                         }
 
                                         <!-- QUANTITY-BASED -->
                                         @if (isQuantityBased()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Quantité</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Quantité' : 'Quantity' }}</label>
                                                 <p-inputnumber [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Prix d'achat unitaire <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Prix d\\'achat unitaire' : 'Unit purchase price' }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -283,7 +283,7 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Valeur actuelle unitaire <span class="text-surface-400 text-xs">(optionnel)</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Valeur actuelle unitaire' : 'Current unit value' }} <span class="text-surface-400 text-xs">{{ isFr() ? '(optionnel)' : '(optional)' }}</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
@@ -296,7 +296,7 @@ interface CategoryCard {
                                         @if (assetForm.category === 'cash' || assetForm.category === 'savings_account') {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    {{ assetForm.category === 'cash' ? 'Solde actuel' : 'Montant de l\\'épargne' }} <span class="text-negative">*</span>
+                                                    {{ assetForm.category === 'cash' ? (isFr() ? 'Solde actuel' : 'Current balance') : (isFr() ? 'Montant de l\\'épargne' : 'Savings amount') }} <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
@@ -305,7 +305,7 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Banque</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Banque' : 'Bank' }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.institution"
                                                        [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
@@ -316,7 +316,7 @@ interface CategoryCard {
                                         @if (!isQuantityBased() && !isSimpleBalanceCategory() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    Valeur d'achat / initiale
+                                                    {{ isFr() ? 'Valeur d\\'achat / initiale' : 'Purchase / initial value' }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
                                                         <span class="text-negative">*</span>
                                                     }
@@ -329,9 +329,9 @@ interface CategoryCard {
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    Valeur actuelle
+                                                    {{ isFr() ? 'Valeur actuelle' : 'Current value' }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
-                                                        <span class="text-surface-400 text-xs">(optionnel)</span>
+                                                        <span class="text-surface-400 text-xs">{{ isFr() ? '(optionnel)' : '(optional)' }}</span>
                                                     } @else {
                                                         <span class="text-negative">*</span>
                                                     }
@@ -347,7 +347,7 @@ interface CategoryCard {
                                         <!-- Purchase date -->
                                         @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Date d'achat</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date d\\'achat' : 'Purchase date' }}</label>
                                                 <input pInputText type="date" [(ngModel)]="assetForm.purchaseDate"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
@@ -365,20 +365,20 @@ interface CategoryCard {
                                         <!-- Real estate specific -->
                                         @if (assetForm.category === 'real_estate') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Superficie (m²)</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Superficie (m²)' : 'Area (m²)' }}</label>
                                                 <p-inputnumber [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
                                                 <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                                    <span class="text-surface-500 dark:text-surface-400 text-xs">Prix au m² (achat)</span>
+                                                    <span class="text-surface-500 dark:text-surface-400 text-xs">{{ isFr() ? 'Prix au m² (achat)' : 'Price per m² (purchase)' }}</span>
                                                     <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
                                                         {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
                                                     </span>
                                                 </div>
                                             }
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">Région / Localité</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Région / Localité' : 'Region / Location' }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
@@ -394,7 +394,7 @@ interface CategoryCard {
                                                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 {{ selectedCard()?.bgClass ?? 'bg-surface-200 dark:bg-surface-700' }}">
                                                     <i class="pi {{ selectedCard()?.icon ?? 'pi-box' }} text-2xl {{ selectedCard()?.textClass ?? 'text-surface-500' }}"></i>
                                                 </div>
-                                                <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || 'Actif' }}</span>
+                                                <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || (isFr() ? 'Actif' : 'Asset') }}</span>
                                                 <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 mt-1">
                                                     <app-amount [value]="toEur(totalValue())" />
                                                 </span>
@@ -402,7 +402,7 @@ interface CategoryCard {
                                         </div>
 
                                         <div>
-                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Propriétaires</h3>
+                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ isFr() ? 'Propriétaires' : 'Owners' }}</h3>
                                             <div class="space-y-3">
                                                 @for (owner of assetForm.owners; track owner.name) {
                                                     <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
@@ -427,13 +427,13 @@ interface CategoryCard {
                                         </div>
 
                                         <div>
-                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">Co-propriétaires</h3>
+                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ isFr() ? 'Co-propriétaires' : 'Co-owners' }}</h3>
                                             <button type="button" (click)="addMember()"
                                                     class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-primary hover:bg-primary/5 transition-all w-full">
                                                 <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
                                                     <i class="pi pi-plus text-surface-400"></i>
                                                 </div>
-                                                <span class="text-surface-600 dark:text-surface-300">Ajouter un co-propriétaire</span>
+                                                <span class="text-surface-600 dark:text-surface-300">{{ isFr() ? 'Ajouter un co-propriétaire' : 'Add a co-owner' }}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -448,13 +448,13 @@ interface CategoryCard {
             @if (currentStep() >= 1) {
                 <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-surface-200 dark:border-surface-700">
                     @if (currentStep() === 1) {
-                        <button pButton type="button" label="Suivant" class="omaad-cta !rounded-full px-8"
+                        <button pButton type="button" [label]="isFr() ? 'Suivant' : 'Next'" class="omaad-cta !rounded-full px-8"
                                 [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
                     } @else {
-                        <button pButton type="button" label="Retour" [outlined]="true"
+                        <button pButton type="button" [label]="isFr() ? 'Retour' : 'Back'" [outlined]="true"
                                 class="!rounded-full !border-surface-300 dark:!border-surface-600"
                                 (click)="previousStep()"></button>
-                        <button pButton type="button" label="Enregistrer"
+                        <button pButton type="button" [label]="isFr() ? 'Enregistrer' : 'Save'"
                                 class="omaad-cta !rounded-full"
                                 [loading]="isSubmitting()" (click)="submitAsset()"></button>
                     }
@@ -479,7 +479,7 @@ export class AddAssetPage implements OnInit {
     currentStep = signal(0);
     isSubmitting = signal(false);
     selectedCategory = signal<AssetCategory | ''>('');
-    searchQuery = '';
+    searchQuery = signal('');
 
     assetForm: AssetFormData = {
         name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
@@ -528,19 +528,24 @@ export class AddAssetPage implements OnInit {
         ];
     });
 
-    mobileMoneyProviders = [
-        { label: 'Wave', value: 'Wave' },
-        { label: 'Orange Money', value: 'Orange Money' },
-        { label: 'Free Money', value: 'Free Money' },
-        { label: 'Expresso', value: 'Expresso' },
-        { label: 'Autre', value: 'Autre' }
-    ];
+    get mobileMoneyProviders() {
+        return [
+            { label: 'Wave', value: 'Wave' },
+            { label: 'Orange Money', value: 'Orange Money' },
+            { label: 'Free Money', value: 'Free Money' },
+            { label: 'Expresso', value: 'Expresso' },
+            { label: this.isFr() ? 'Autre' : 'Other', value: 'Autre' },
+        ];
+    }
 
-    tontineStatusOptions = [
-        { label: 'En cours', value: 'en_cours' },
-        { label: "J'ai reçu ma mise", value: 'mise_recue' },
-        { label: 'Terminée', value: 'termine' }
-    ];
+    get tontineStatusOptions() {
+        const fr = this.isFr();
+        return [
+            { label: fr ? 'En cours' : 'In progress', value: 'en_cours' },
+            { label: fr ? "J'ai reçu ma mise" : 'I received my payout', value: 'mise_recue' },
+            { label: fr ? 'Terminée' : 'Completed', value: 'termine' },
+        ];
+    }
 
     tontineFrequencyOptions = computed(() => this.isFr()
         ? [{ label: 'Mensuelle', value: 'monthly' }, { label: 'Hebdomadaire', value: 'weekly' }]
@@ -549,7 +554,7 @@ export class AddAssetPage implements OnInit {
     selectedCard = computed(() => this.categoryCards().find(c => c.value === this.selectedCategory()) ?? null);
 
     filteredCategories = computed(() => {
-        const q = this.searchQuery.toLowerCase().trim();
+        const q = this.searchQuery().toLowerCase().trim();
         const cards = this.categoryCards();
         if (!q) return cards;
         return cards.filter(c =>
@@ -734,7 +739,8 @@ export class AddAssetPage implements OnInit {
     }
 
     addMember(): void {
-        this.messageService.add({ severity: 'info', summary: 'Bientôt disponible', detail: 'La gestion des co-propriétaires sera disponible prochainement', life: 3000 });
+        const fr = this.isFr();
+        this.messageService.add({ severity: 'info', summary: fr ? 'Bientôt disponible' : 'Coming soon', detail: fr ? 'La gestion des co-propriétaires sera disponible prochainement' : 'Co-owner management will be available soon', life: 3000 });
     }
 
     async submitAsset(): Promise<void> {
@@ -796,14 +802,16 @@ export class AddAssetPage implements OnInit {
             }
 
             await this.patrimoineService.createAsset(assetData);
-            this.messageService.add({ severity: 'success', summary: 'Succès', detail: 'Actif ajouté avec succès', life: 3000 });
+            const fr = this.isFr();
+            this.messageService.add({ severity: 'success', summary: fr ? 'Succès' : 'Success', detail: fr ? 'Actif ajouté avec succès' : 'Asset added successfully', life: 3000 });
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
         } catch (error: any) {
             console.error('Error creating asset:', error);
+            const fr = this.isFr();
             const detail = error?.error?.detail
                 ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
-                : "Impossible de créer l'actif";
-            this.messageService.add({ severity: 'error', summary: 'Erreur', detail, life: 6000 });
+                : (fr ? "Impossible de créer l'actif" : 'Could not create the asset');
+            this.messageService.add({ severity: 'error', summary: fr ? 'Erreur' : 'Error', detail, life: 6000 });
         } finally {
             this.isSubmitting.set(false);
         }

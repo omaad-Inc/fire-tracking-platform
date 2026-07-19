@@ -65,7 +65,7 @@ interface DayGroup {
             <div class="flex items-center gap-2">
                 <div class="relative flex-1 min-w-0">
                     <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
-                    <input pInputText [(ngModel)]="search" [placeholder]="t('transactions.searchPlaceholder')"
+                    <input pInputText [ngModel]="search()" (ngModelChange)="search.set($event)" [placeholder]="t('transactions.searchPlaceholder')"
                            class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
                 </div>
                 <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
@@ -154,11 +154,11 @@ interface DayGroup {
                     <i class="pi pi-arrow-right-arrow-left text-xl text-surface-400"></i>
                 </div>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4 px-4">
-                    {{ search || typeFilter() !== 'all'
+                    {{ search() || typeFilter() !== 'all'
                         ? t('transactions.emptyFiltered')
                         : t('transactions.emptyMonth') }}
                 </p>
-                @if (!share.active() && !search && typeFilter() === 'all') {
+                @if (!share.active() && !search() && typeFilter() === 'all') {
                     <button pButton icon="pi pi-plus" [label]="t('transactions.addTransaction')"
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
@@ -441,7 +441,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private _selectedYear  = signal(new Date().getFullYear());
     private _selectedMonth = signal(new Date().getMonth() + 1);
 
-    search     = '';
+    search     = signal('');
     typeFilter = signal<'all' | 'Income' | 'Expense'>('all');
 
     get typeFilters() {
@@ -526,7 +526,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     readonly filteredRecords = computed(() => {
         const ym     = this.selectedYearMonth();
         const filter = this.typeFilter();
-        const q      = this.search.toLowerCase().trim();
+        const q      = this.search().toLowerCase().trim();
 
         return this.allRecords()
             .filter(r => r.date.startsWith(ym))

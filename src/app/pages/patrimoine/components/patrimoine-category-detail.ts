@@ -11,7 +11,6 @@ import { I18nService } from '../../../i18n/i18n.service';
 
 interface GroupConfig {
     id: string;
-    label: string;
     icon: string;
     bg: string;
     color: string;
@@ -22,14 +21,15 @@ interface GroupConfig {
 const BRAND_BG = '#1A2740';
 const BRAND_COLOR = '#1A2740';
 
+// Group labels are resolved via i18n at render time (patrimoine.groups.<id>).
 const GROUPS: GroupConfig[] = [
-    { id: 'real_estate',    label: 'Immobilier',       icon: 'pi pi-building',   bg: BRAND_BG, color: BRAND_COLOR, categories: ['real_estate'] },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds',  icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
-    { id: 'savings',        label: 'Épargne',          icon: 'pi pi-dollar',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
-    { id: 'crypto',         label: 'Crypto',           icon: 'pi pi-bitcoin',    bg: BRAND_BG, color: BRAND_COLOR, categories: ['crypto'] },
-    { id: 'tontine',        label: 'Tontine',          icon: 'pi pi-users',      bg: BRAND_BG, color: BRAND_COLOR, categories: ['tontine'] },
-    { id: 'mobile_money',   label: 'Mobile Money',     icon: 'pi pi-mobile',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['mobile_money'] },
-    { id: 'other',          label: 'Autres',           icon: 'pi pi-box',        bg: BRAND_BG, color: BRAND_COLOR, categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
+    { id: 'real_estate',    icon: 'pi pi-building',   bg: BRAND_BG, color: BRAND_COLOR, categories: ['real_estate'] },
+    { id: 'stocks_bonds',   icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
+    { id: 'savings',        icon: 'pi pi-dollar',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
+    { id: 'crypto',         icon: 'pi pi-bitcoin',    bg: BRAND_BG, color: BRAND_COLOR, categories: ['crypto'] },
+    { id: 'tontine',        icon: 'pi pi-users',      bg: BRAND_BG, color: BRAND_COLOR, categories: ['tontine'] },
+    { id: 'mobile_money',   icon: 'pi pi-mobile',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['mobile_money'] },
+    { id: 'other',          icon: 'pi pi-box',        bg: BRAND_BG, color: BRAND_COLOR, categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -58,14 +58,6 @@ const CATEGORY_BGS: Record<string, string> = {
     other:           BRAND_BG,
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-    real_estate: 'Immobilier', stocks: 'Actions', bonds: 'Obligations',
-    crypto: 'Crypto-monnaies', cash: 'Compte bancaire', retirement: 'Épargne retraite',
-    life_insurance: 'Assurance vie', savings_account: "Livret d'épargne",
-    business: 'Entreprise', vehicle: 'Véhicule',
-    tontine: 'Tontine', mobile_money: 'Mobile Money',
-    collectibles: 'Collections', commodities: 'Matières premières', other: 'Autres',
-};
 
 const DONUT_COLORS_LIGHT = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1', '#08111E', '#71421C'];
 const DONUT_COLORS_DARK  = ['#8A98AE', '#D8A369', '#B6BFCD', '#EBD0B0', '#9C988C', '#C2BDB1', '#DEDAD0', '#F1EDE5', '#4D5F80', '#F4E5D2'];
@@ -117,7 +109,7 @@ function getDonutColors(): string[] {
                         <i [class]="currentGroup?.icon" class="text-white text-2xl"></i>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-sm font-medium text-surface-500 dark:text-surface-400">{{ currentGroup?.label }}</div>
+                        <div class="text-sm font-medium text-surface-500 dark:text-surface-400">{{ currentGroup ? i18n.t('patrimoine.groups.' + currentGroup.id) : '' }}</div>
                         <div class="flex items-center gap-3 mt-0.5 flex-wrap">
                             <app-amount [value]="totalValue" class="text-3xl font-bold text-surface-900 dark:text-surface-0" />
                             @if (totalDeltaAbs !== 0) {
@@ -160,7 +152,7 @@ function getDonutColors(): string[] {
                     } @else if (!lineData) {
                         <div class="relative flex flex-col items-center justify-center h-52 text-center">
                             <i class="pi pi-chart-line text-3xl text-surface-400 mb-3"></i>
-                            <p class="text-surface-500 text-sm">Pas encore de données</p>
+                            <p class="text-surface-500 text-sm">{{ i18n.t('patrimoine.noDataYet') }}</p>
                         </div>
                     } @else {
                         <div class="relative mb-3">
@@ -176,7 +168,7 @@ function getDonutColors(): string[] {
                 <!-- Donut chart -->
                 <div class="xl:col-span-5 relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
                     <div class="relative flex items-center justify-between mb-4">
-                        <span class="font-semibold text-surface-900 dark:text-surface-0">Répartition</span>
+                        <span class="font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.allocation') }}</span>
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
                     </div>
 
@@ -216,7 +208,7 @@ function getDonutColors(): string[] {
                 @if (items.length === 0) {
                     <div class="flex flex-col items-center justify-center py-16 text-center rounded-2xl border border-dashed border-surface-300 dark:border-surface-700">
                         <i class="pi pi-box text-3xl text-surface-400 mb-3"></i>
-                        <p class="text-surface-500 text-sm">Aucun actif dans cette catégorie</p>
+                        <p class="text-surface-500 text-sm">{{ i18n.t('patrimoine.noAssetsInCategory') }}</p>
                     </div>
                 } @else {
                     <div class="space-y-3">
@@ -267,7 +259,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     private patrimoineService = inject(PatrimoineService);
     private dashboardService = inject(DashboardService);
     private cs = inject(CurrencyService);
-    private i18n = inject(I18nService);
+    i18n = inject(I18nService);
 
     // ── State (plain properties, not signals — avoids effect timing issues) ──
     loading = true;
@@ -471,7 +463,11 @@ export class PatrimoineCategoryDetailPage implements OnInit {
 
     getCategoryIcon(cat?: string): string  { return CATEGORY_ICONS[cat ?? ''] ?? 'pi pi-box'; }
     getCategoryBg(cat?: string): string    { return CATEGORY_BGS[cat ?? ''] ?? '#64748b'; }
-    getCategoryLabel(cat?: string): string { return CATEGORY_LABELS[cat ?? ''] ?? cat ?? ''; }
+    getCategoryLabel(cat?: string): string {
+        if (!cat) return '';
+        const label = this.i18n.t('assetCategories.' + cat);
+        return label === 'assetCategories.' + cat ? cat : label;
+    }
 
     assetLink(id: number): any[] {
         return this.nav.link('pages', 'patrimoine', 'assets', id);

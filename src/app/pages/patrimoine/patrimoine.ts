@@ -29,14 +29,15 @@ const GROUP_BG = '#1A2740';
 // Allocation donut palette (navy / ochre / warm-grey spread).
 const DONUT_COLORS = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#2C3E5E', '#9C988C', '#71421C', '#8A98AE'];
 
+// Group labels are resolved via i18n at render time (patrimoine.groups.<id>).
 const GROUPS = [
-    { id: 'real_estate',    label: 'Immobilier',        icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
-    { id: 'stocks_bonds',   label: 'Actions & Fonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
-    { id: 'savings',        label: 'Épargne',           icon: 'pi pi-dollar',     bg: GROUP_BG, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
-    { id: 'crypto',         label: 'Crypto',            icon: 'pi pi-bitcoin',    bg: GROUP_BG, categories: ['crypto'] },
-    { id: 'tontine',        label: 'Tontine',           icon: 'pi pi-users',      bg: GROUP_BG, categories: ['tontine'] },
-    { id: 'mobile_money',   label: 'Mobile Money',      icon: 'pi pi-mobile',     bg: GROUP_BG, categories: ['mobile_money'] },
-    { id: 'other',          label: 'Autres',            icon: 'pi pi-box',        bg: GROUP_BG, categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
+    { id: 'real_estate',    icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
+    { id: 'stocks_bonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
+    { id: 'savings',        icon: 'pi pi-dollar',     bg: GROUP_BG, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
+    { id: 'crypto',         icon: 'pi pi-bitcoin',    bg: GROUP_BG, categories: ['crypto'] },
+    { id: 'tontine',        icon: 'pi pi-users',      bg: GROUP_BG, categories: ['tontine'] },
+    { id: 'mobile_money',   icon: 'pi pi-mobile',     bg: GROUP_BG, categories: ['mobile_money'] },
+    { id: 'other',          icon: 'pi pi-box',        bg: GROUP_BG, categories: ['business', 'vehicle', 'collectibles', 'commodities', 'other'] },
 ];
 
 @Component({
@@ -50,7 +51,7 @@ const GROUPS = [
             <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div class="min-w-0">
-                        <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">Patrimoine net</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ i18n.t('patrimoine.netWorth') }}</span>
                         <div class="flex items-center gap-3 mt-1 flex-wrap">
                             <app-amount [value]="netWorth()" class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-0" />
                             @if (assetDeltaAbs() !== 0) {
@@ -65,11 +66,11 @@ const GROUPS = [
                     </div>
                     <div class="flex items-center gap-6 sm:gap-8">
                         <div>
-                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">Actifs</div>
+                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">{{ i18n.t('patrimoine.assets.title') }}</div>
                             <div class="font-semibold text-surface-900 dark:text-surface-0"><app-amount [value]="totalAssets()" /></div>
                         </div>
                         <div>
-                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">Passifs</div>
+                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">{{ i18n.t('patrimoine.liabilities') }}</div>
                             <div class="font-semibold" [ngClass]="totalDebts() > 0 ? 'text-negative' : 'text-surface-900 dark:text-surface-0'">
                                 <app-amount [value]="totalDebts()" [prefix]="totalDebts() > 0 ? '-' : ''" />
                             </div>
@@ -80,7 +81,7 @@ const GROUPS = [
                 @if (hasMultiCurrency()) {
                     <!-- Currency exposure — where net worth sits across currencies -->
                     <div class="mt-4 pt-4 border-t border-surface-200 dark:border-surface-700">
-                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-2">Exposition par devise</div>
+                        <div class="text-surface-500 dark:text-surface-400 text-xs mb-2">{{ i18n.t('patrimoine.currencyExposure') }}</div>
                         <div class="flex h-2 rounded-full overflow-hidden mb-2">
                             @for (e of currencyExposure(); track e.currency; let i = $index) {
                                 <div [style.width.%]="e.pct"
@@ -108,8 +109,8 @@ const GROUPS = [
                 </div>
                 <div class="col-span-12 xl:col-span-4 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 flex flex-col">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="font-semibold text-surface-900 dark:text-surface-0">Répartition</span>
-                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ categoryGroups().length }} catégorie{{ categoryGroups().length > 1 ? 's' : '' }}</span>
+                        <span class="font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.allocation') }}</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ categoryGroups().length }} {{ categoryGroups().length > 1 ? i18n.t('patrimoine.units.categoryOther') : i18n.t('patrimoine.units.categoryOne') }}</span>
                     </div>
                     @if (donutData(); as dd) {
                         <div class="flex-1 flex items-center justify-center py-2">
@@ -121,14 +122,14 @@ const GROUPS = [
                                         <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="h.value" /></span>
                                         <span class="text-brand-700 dark:text-ochre-400 text-sm font-semibold mt-0.5">{{ h.pct }} %</span>
                                     } @else {
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs">Total actifs</span>
+                                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ i18n.t('patrimoine.allocationTotal') }}</span>
                                         <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="totalAssets()" /></span>
                                     }
                                 </div>
                             </div>
                         </div>
                     } @else {
-                        <div class="flex-1 flex items-center justify-center text-surface-400 text-sm py-10">Aucun actif</div>
+                        <div class="flex-1 flex items-center justify-center text-surface-400 text-sm py-10">{{ i18n.t('patrimoine.noAssetsShort') }}</div>
                     }
                 </div>
             </div>
@@ -136,7 +137,7 @@ const GROUPS = [
             <!-- Actifs section -->
             <div>
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Actifs</h2>
+                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('patrimoine.assets.title') }}</h2>
                     @if (!loadingGroups()) {
                         <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                             <app-amount [value]="totalAssets()" />
@@ -155,7 +156,7 @@ const GROUPS = [
                         <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                             <i class="pi pi-box text-2xl text-surface-400"></i>
                         </div>
-                        <p class="text-surface-500 text-sm">Aucun actif enregistré</p>
+                        <p class="text-surface-500 text-sm">{{ i18n.t('patrimoine.noAssetsRecorded') }}</p>
                     </div>
                 } @else {
                     <div class="space-y-3">
@@ -170,7 +171,7 @@ const GROUPS = [
                                     <div class="min-w-0">
                                         <div class="font-semibold text-surface-900 dark:text-surface-0">{{ group.label }}</div>
                                         <div class="text-surface-500 dark:text-surface-400 text-sm">
-                                            {{ group.assetCount }} actif{{ group.assetCount > 1 ? 's' : '' }} · {{ groupSharePct(group) }}%
+                                            {{ group.assetCount }} {{ group.assetCount > 1 ? i18n.t('patrimoine.units.assetOther') : i18n.t('patrimoine.units.assetOne') }} · {{ groupSharePct(group) }}%
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +203,7 @@ const GROUPS = [
             <!-- Passifs section -->
             <div>
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">Passifs</h2>
+                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('patrimoine.liabilities') }}</h2>
                     @if (!loadingDebts() && totalDebts() > 0) {
                         <span class="text-negative text-sm font-medium">
                             <app-amount [value]="totalDebts()" prefix="-" />
@@ -214,7 +215,7 @@ const GROUPS = [
                     <div class="h-[76px] bg-surface-200 dark:bg-surface-700 rounded-2xl animate-pulse"></div>
                 } @else if (totalDebts() === 0) {
                     <div class="p-5 rounded-2xl border border-dashed border-surface-300 dark:border-surface-700 text-center text-surface-500 text-sm">
-                        Aucune dette enregistrée
+                        {{ i18n.t('patrimoine.noDebtsRecorded') }}
                     </div>
                 } @else {
                     <button (click)="navigateToDebts()"
@@ -225,9 +226,9 @@ const GROUPS = [
                                 <i class="pi pi-credit-card text-white text-lg"></i>
                             </div>
                             <div>
-                                <div class="font-semibold text-surface-900 dark:text-surface-0">Emprunts</div>
+                                <div class="font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.loans') }}</div>
                                 <div class="text-surface-500 dark:text-surface-400 text-sm">
-                                    {{ debtsCount() }} dette{{ debtsCount() > 1 ? 's' : '' }}
+                                    {{ debtsCount() }} {{ debtsCount() > 1 ? i18n.t('patrimoine.units.debtOther') : i18n.t('patrimoine.units.debtOne') }}
                                 </div>
                             </div>
                         </div>
@@ -247,6 +248,7 @@ const GROUPS = [
 export class Patrimoine implements OnInit, OnDestroy {
     private router = inject(Router);
     private nav = inject(NavService);
+    i18n = inject(I18nService);
     private patrimoineService = inject(PatrimoineService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
@@ -267,7 +269,8 @@ export class Patrimoine implements OnInit, OnDestroy {
                 const totalDeltaAbs = items.reduce((s, i) => s + (i.deltaAbs ?? 0), 0);
                 const purchaseTotal = items.reduce((s, i) => s + Math.max(0, i.value - (i.deltaAbs ?? 0)), 0);
                 const totalDeltaPct = purchaseTotal > 0 ? (totalDeltaAbs / purchaseTotal) * 100 : 0;
-                return { ...g, totalValue, totalDeltaAbs, totalDeltaPct, assetCount: items.length } as CategoryGroupCard;
+                const label = this.i18n.t('patrimoine.groups.' + g.id);
+                return { ...g, label, totalValue, totalDeltaAbs, totalDeltaPct, assetCount: items.length } as CategoryGroupCard;
             })
             .filter((g): g is CategoryGroupCard => g !== null);
     });

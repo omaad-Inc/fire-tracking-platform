@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, from, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ShareContextService, PublicPortfolioBundle } from './share-context.service';
@@ -630,8 +630,14 @@ export class ApiService {
     }
 
     // ========== TRANSACTIONS ==========
-    getTransactions(skip = 0, limit = 100, type?: TransactionType): Observable<Transaction[]> {
-        const s = this.shared<Transaction[]>(b => type ? b.transactions.filter(t => t.type === type) : b.transactions);
+    getTransactions(
+        skip = 0,
+        limit = 100,
+        type?: TransactionType,
+        startDate?: string,
+        endDate?: string,
+    ): Observable<Transaction[]> {
+        const s = this.shared<Transaction[]>(b => this.filterBundleTransactions(b.transactions, type, startDate, endDate));
         if (s) return s;
         let params = new HttpParams()
             .set('skip', skip.toString())
@@ -639,7 +645,53 @@ export class ApiService {
         if (type) {
             params = params.set('type', type);
         }
+        if (startDate) {
+            params = params.set('start_date', startDate);
+        }
+        if (endDate) {
+            params = params.set('end_date', endDate);
+        }
         return this.http.get<Transaction[]>(`${this.apiUrl}/transactions`, { params });
+    }
+
+    /**
+     * Fetch EVERY transaction (optionally filtered by type and/or date range),
+     * paginating past the server's per-page cap so callers never silently
+     * truncate history. Share mode returns the frozen bundle (filtered) in one shot.
+     *
+     * Note: this pulls the full set into memory — correct and cheap at current
+     * data volumes. Server-side per-month aggregation is tracked in P2-BE-5.
+     */
+    getAllTransactions(type?: TransactionType, startDate?: string, endDate?: string): Observable<Transaction[]> {
+        const s = this.shared<Transaction[]>(b => this.filterBundleTransactions(b.transactions, type, startDate, endDate));
+        if (s) return s;
+        return from(this.fetchAllTransactions(type, startDate, endDate));
+    }
+
+    private filterBundleTransactions(
+        txs: Transaction[],
+        type?: TransactionType,
+        startDate?: string,
+        endDate?: string,
+    ): Transaction[] {
+        let out = type ? txs.filter(t => t.type === type) : txs;
+        if (startDate) out = out.filter(t => t.date >= startDate);
+        if (endDate) out = out.filter(t => t.date <= endDate);
+        return out;
+    }
+
+    private async fetchAllTransactions(
+        type?: TransactionType,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<Transaction[]> {
+        const page = 200; // well under the server's 500 cap
+        const all: Transaction[] = [];
+        for (let skip = 0; ; skip += page) {
+            const batch = await firstValueFrom(this.getTransactions(skip, page, type, startDate, endDate));
+            all.push(...batch);
+            if (batch.length < page) return all;
+        }
     }
 
     getTransaction(id: number): Observable<Transaction> {
