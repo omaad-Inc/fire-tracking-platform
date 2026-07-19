@@ -13,6 +13,12 @@ export class I18nService {
 
     lang = signal<Lang>(this.detectLang());
 
+    constructor() {
+        // Keep <html lang> in sync from the very first render so screen readers
+        // use the right pronunciation (EN pages were read with FR phonetics).
+        this.syncHtmlLang(this.lang());
+    }
+
     private detectLang(): Lang {
         // 1. localStorage
         if (typeof window !== 'undefined') {
@@ -25,8 +31,15 @@ export class I18nService {
         return 'fr';
     }
 
+    private syncHtmlLang(l: Lang): void {
+        if (typeof document !== 'undefined') {
+            document.documentElement.lang = l;
+        }
+    }
+
     setLang(l: Lang): void {
         this.lang.set(l);
+        this.syncHtmlLang(l);
         if (typeof window !== 'undefined') {
             localStorage.setItem(LANG_KEY, l);
         }

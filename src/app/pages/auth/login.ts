@@ -182,7 +182,8 @@ import { I18nService } from '../../i18n/i18n.service';
                             <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">{{ t('auth.twofa.subtitle') }}</p>
                         </div>
                         <div>
-                            <input pInputText type="text" inputmode="numeric" autocomplete="one-time-code"
+                            <label for="mfaCode" class="sr-only">{{ t('auth.twofa.title') }}</label>
+                            <input pInputText id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code"
                                    [placeholder]="t('auth.twofa.codePlaceholder')"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none tracking-widest text-center"
                                    [(ngModel)]="mfaCode" name="mfaCode" [disabled]="isLoading()" (keyup.enter)="submit2fa()" />

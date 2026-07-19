@@ -27,6 +27,7 @@ export const FR = {
     loadErrorTitle: 'Données indisponibles',
     loadErrorBody: 'Impossible de charger ces données pour le moment. Vérifiez votre connexion et réessayez.',
     retry: 'Réessayer',
+    skipToContent: 'Aller au contenu principal',
   },
   menu: {
     navigation: 'Navigation',

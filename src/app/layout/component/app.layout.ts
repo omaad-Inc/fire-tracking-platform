@@ -15,18 +15,25 @@ import { PinLockComponent } from '../../core/components/pin-lock.component';
 import { PinService } from '../../core/services/pin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ShareContextService } from '../../core/services/share-context.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
     imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, QuickAddSheet, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
-        <app-topbar></app-topbar>
-        <app-sidebar></app-sidebar>
+        <!-- Skip link: first focusable element; visually hidden until focused -->
+        <a href="#main-content" (click)="focusMain($event)"
+           class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[2000]
+                  focus:px-4 focus:py-2 focus:rounded-lg focus:bg-brand-700 focus:text-white focus:font-semibold">
+            {{ i18n.t('common.skipToContent') }}
+        </a>
+        <app-topbar role="banner"></app-topbar>
+        <app-sidebar role="navigation" [attr.aria-label]="i18n.t('menu.navigation')"></app-sidebar>
         <div class="layout-main-container">
-            <div class="layout-main">
+            <main id="main-content" tabindex="-1" class="layout-main outline-none">
                 <router-outlet></router-outlet>
-            </div>
+            </main>
         </div>
         <div class="layout-mask animate-fadein"></div>
         <app-mobile-nav></app-mobile-nav>
@@ -56,6 +63,16 @@ export class AppLayout implements OnInit, OnDestroy {
     pinService     = inject(PinService);
     private authService = inject(AuthService);
     share          = inject(ShareContextService);
+    i18n           = inject(I18nService);
+
+    /** Skip-link handler: move focus into the main region (a bare #hash
+     *  jump scrolls but doesn't move keyboard focus). */
+    focusMain(event: Event): void {
+        event.preventDefault();
+        const main = document.getElementById('main-content');
+        main?.focus();
+        main?.scrollIntoView();
+    }
 
     private visibilityHandler = () => {
         if (document.hidden) {

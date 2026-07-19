@@ -27,6 +27,7 @@ export const EN = {
     loadErrorTitle: 'Data unavailable',
     loadErrorBody: 'We couldn\'t load this data right now. Check your connection and try again.',
     retry: 'Retry',
+    skipToContent: 'Skip to main content',
   },
   menu: {
     navigation: 'Navigation',

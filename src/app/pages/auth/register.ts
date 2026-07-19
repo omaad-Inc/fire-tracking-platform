@@ -147,7 +147,7 @@ import { I18nService } from '../../i18n/i18n.service';
 
                         <!-- Password mismatch warning -->
                         @if (password && confirmPassword && password !== confirmPassword) {
-                            <div class="text-negative text-sm flex items-center gap-2">
+                            <div role="alert" class="text-negative text-sm flex items-center gap-2">
                                 <i class="pi pi-exclamation-circle"></i>
                                 {{ t('auth.register.mismatch') }}
                             </div>
