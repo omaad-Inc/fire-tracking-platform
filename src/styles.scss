@@ -4,3 +4,12 @@
 @use './assets/layout/layout.scss';
 @use './assets/layout/design-system';
 @use 'primeicons/primeicons.css';
+
+/* Masque la scrollbar des rangées de filtres horizontales (comparateur SGI, etc.) */
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}

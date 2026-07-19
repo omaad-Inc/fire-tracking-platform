@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /fr/auth
+Disallow: /en/auth
+Disallow: /share/
+Disallow: /g/
+
+Sitemap: https://omaad.africa/sitemap.xml

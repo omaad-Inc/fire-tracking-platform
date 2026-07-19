@@ -17,8 +17,12 @@ export interface DebtRecord {
     type: 'Debt' | 'Receivable';
     category: DebtCategory;
     name: string;
-    total: number;
-    paid: number; // paid (for Debt) or received (for Receivable)
+    total: number;        // EUR base — for lists/sums/net-worth math
+    paid: number;         // EUR base — paid (for Debt) or received (for Receivable)
+    /** The debt's own currency + amounts in it — used by the edit form. */
+    currency?: string;
+    nativeTotal?: number;
+    nativePaid?: number;
     interestRate: number; // %
     monthlyPayment?: number;
     frequency: 'Mensuel' | 'Unique' | 'Libre';
@@ -80,20 +84,37 @@ export class DebtsService {
      */
     private refreshRecords(): void {
         if (this.recordsRequest$) return; // Already refreshing
-        
-        this.recordsRequest$ = this.api.getDebts().pipe(
+
+        this.recordsRequest$ = this.createRecordsRequest();
+    }
+
+    /**
+     * Build the shared records request. On failure: fall back to the cache if
+     * one exists, otherwise LET THE ERROR SURFACE so widgets can render an
+     * error+retry card instead of a fake-empty "no debts 🎉" state. The
+     * in-flight handle is reset in all outcomes so retry works.
+     */
+    private createRecordsRequest(): Observable<DebtRecord[]> {
+        const request$ = this.api.getDebts().pipe(
             map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
             catchError(error => {
                 console.error('Error fetching debts:', error);
-                return of(this.recordsCache?.data || []);
+                if (this.recordsCache) return of(this.recordsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        firstValueFrom(this.recordsRequest$).then(data => {
-            this.recordsCache = { data, timestamp: Date.now() };
-            this.recordsRequest$ = null;
-        });
+
+        firstValueFrom(request$)
+            .then(data => {
+                this.recordsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.recordsRequest$ = null;
+            });
+
+        return request$;
     }
 
     /**
@@ -109,23 +130,9 @@ export class DebtsService {
         if (this.recordsRequest$) {
             return this.recordsRequest$;
         }
-        
-        // Create new request
-        this.recordsRequest$ = this.api.getDebts().pipe(
-            map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
-            catchError(error => {
-                console.error('Error fetching debts:', error);
-                return of(this.recordsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.recordsRequest$).then(data => {
-            this.recordsCache = { data, timestamp: Date.now() };
-            this.recordsRequest$ = null;
-        });
-        
+
+        // Create new request (errors surface when there is no cache to serve)
+        this.recordsRequest$ = this.createRecordsRequest();
         return this.recordsRequest$;
     }
 
@@ -147,18 +154,18 @@ export class DebtsService {
      */
     async addRecord(record: DebtRecord): Promise<DebtRecord> {
         try {
-            // Convert amounts from the user's display currency (e.g. FCFA) to the
-            // backend's base currency (EUR) before persisting.
-            const toBase = (v: number) => this.currencyService.toBaseAmount(v);
-
+            // Debts are stored NATIVE (like assets/transactions): the amounts the
+            // user typed in their display currency go through unconverted, tagged
+            // with that currency code — FX happens at read time.
             const debtData: DebtCreate = {
                 name: record.name,
                 type: record.type === 'Debt' ? 'i_owe' : 'owed_to_me',
                 category: record.category || this.inferCategory(record.name),
-                initial_amount: toBase(record.total),
-                current_amount: toBase(record.total - record.paid),
+                initial_amount: record.total,
+                current_amount: record.total - record.paid,
+                currency: this.currencyService.config().code,
                 interest_rate: record.interestRate || 0,
-                monthly_payment: record.monthlyPayment ? toBase(record.monthlyPayment) : 0,
+                monthly_payment: record.monthlyPayment || 0,
                 creditor_name: record.creditor,
                 description: record.note,
                 start_date: record.date
@@ -185,15 +192,15 @@ export class DebtsService {
         if (!record.id) throw new Error('Missing id');
 
         try {
-            // Same conversion as addRecord — user edits in their display currency.
-            const toBase = (v: number) => this.currencyService.toBaseAmount(v);
-
+            // The edit form is prefilled with the debt's NATIVE amounts
+            // (nativeTotal/nativePaid), so what comes back is native too —
+            // no conversion; the debt keeps its original currency.
             const debtData: DebtUpdate = {
                 name: record.name,
-                initial_amount: toBase(record.total),
-                current_amount: toBase(record.total - record.paid),
+                initial_amount: record.total,
+                current_amount: record.total - record.paid,
                 interest_rate: record.interestRate,
-                monthly_payment: record.monthlyPayment ? toBase(record.monthlyPayment) : undefined,
+                monthly_payment: record.monthlyPayment || undefined,
                 creditor_name: record.creditor,
                 description: record.note
             };
@@ -236,9 +243,13 @@ export class DebtsService {
      */
     async addPayment(id: string, amount: number): Promise<DebtRecord> {
         try {
-            // amount is entered in display currency — convert to EUR before sending.
-            const baseAmount = this.currencyService.toBaseAmount(amount);
-            const debt = await firstValueFrom(this.api.makePayment(parseInt(id), baseAmount));
+            // amount is entered in the DISPLAY currency; the backend subtracts it
+            // from current_amount, which is in the DEBT's native currency —
+            // convert display -> EUR -> debt-native.
+            const debtCurrency = this.recordsCache?.data.find(r => r.id === id)?.currency || 'EUR';
+            const eur = this.currencyService.toBaseAmount(amount);
+            const nativeAmount = eur * this.currencyService.rateOf(debtCurrency);
+            const debt = await firstValueFrom(this.api.makePayment(parseInt(id), nativeAmount));
             const mapped = this.mapDebtToRecord(debt);
             // Invalidate cache
             this.invalidateRecordsCache();
@@ -284,12 +295,9 @@ export class DebtsService {
      */
     private refreshStats(): void {
         if (this.statsRequest$) return; // Already refreshing
-        
-        this.statsRequest$ = this.getStats$();
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
+
+        // getStats$ assigns this.statsRequest$ and handles caching/reset.
+        this.getStats$();
     }
     
     /**
@@ -325,7 +333,11 @@ export class DebtsService {
                 let lastPaymentDate = '';
                 if (debtsWithPayments.length > 0) {
                     const mostRecentDebt = debtsWithPayments[0];
-                    lastPaymentAmount = mostRecentDebt.monthlyPayment || mostRecentDebt.paid;
+                    // monthlyPayment is stored native (edit-form value); paid is
+                    // already EUR base — convert the former before displaying.
+                    lastPaymentAmount = mostRecentDebt.monthlyPayment
+                        ? this.currencyService.toEurFromNative(mostRecentDebt.monthlyPayment, mostRecentDebt.currency)
+                        : mostRecentDebt.paid;
                     lastPaymentDate = mostRecentDebt.date;
                 }
                 
@@ -341,21 +353,25 @@ export class DebtsService {
             }),
             catchError(error => {
                 console.error('Error fetching stats:', error);
-                return of(this.statsCache?.data || {
-                    totalDebt: 0,
-                    paidAmount: 0,
-                    receivables: 0
-                });
+                // Stale stats beat no stats — but NEVER fabricate zeros on
+                // failure; the error surfaces so the widget shows retry.
+                if (this.statsCache) return of(this.statsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        // Cache the result
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
-        
+
+        // Cache the result; reset the in-flight handle in all outcomes so a
+        // retry after failure issues a fresh request.
+        firstValueFrom(this.statsRequest$)
+            .then(data => {
+                this.statsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.statsRequest$ = null;
+            });
+
         return this.statsRequest$;
     }
 
@@ -363,14 +379,20 @@ export class DebtsService {
 
     private mapDebtToRecord(debt: Debt): DebtRecord {
         const paidAmount = debt.initial_amount - debt.current_amount;
+        // Native → EUR base at the API boundary (same as assets/transactions);
+        // keep native values for the edit form.
+        const toEur = (v: number) => this.currencyService.toEurFromNative(v, debt.currency);
         return {
             id: debt.id.toString(),
             date: debt.start_date || new Date().toISOString().split('T')[0],
             type: debt.type === 'i_owe' ? 'Debt' : 'Receivable',
             category: debt.category,
             name: debt.name,
-            total: debt.initial_amount,
-            paid: paidAmount > 0 ? paidAmount : 0,
+            total: toEur(debt.initial_amount),
+            paid: toEur(paidAmount > 0 ? paidAmount : 0),
+            currency: debt.currency || 'EUR',
+            nativeTotal: debt.initial_amount,
+            nativePaid: paidAmount > 0 ? paidAmount : 0,
             interestRate: debt.interest_rate || 0,
             monthlyPayment: debt.monthly_payment || undefined,
             frequency: debt.monthly_payment ? 'Mensuel' : 'Libre',

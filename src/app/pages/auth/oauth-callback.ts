@@ -39,28 +39,49 @@ export class OAuthCallback implements OnInit {
     error = '';
 
     ngOnInit(): void {
-        // Check for token in URL (from backend redirect)
         const params = this.route.snapshot.queryParams;
-        
-        // Backend sends 'token' parameter, not 'access_token'
-        const token = params['token'] || params['access_token'];
-        
-        if (token) {
-            // Token received from backend OAuth callback
-            this.handleTokenResponse(token);
+
+        // Scrub the single-use code from the address bar/history immediately.
+        if (params['code'] || params['token']) {
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+
+        if (params['code']) {
+            // Backend redirects with a one-time exchange code, never the token.
+            this.handleCodeExchange(params['code']);
+        } else if (params['token'] || params['access_token']) {
+            // Legacy path: a not-yet-redeployed backend may still send the
+            // token directly. Remove once the code-exchange backend is live.
+            this.handleTokenResponse(params['token'] || params['access_token']);
         } else if (params['error']) {
             // OAuth error
             this.error = params['error_description'] || params['error'] || 'Authentication failed';
         } else {
-            // No token and no error - might be direct access
+            // No code and no error - might be direct access
             this.error = 'Invalid callback. Please try logging in again.';
         }
+    }
+
+    private handleCodeExchange(code: string): void {
+        this.message = 'Completing authentication...';
+        this.authService.exchangeOAuthCode(code).subscribe({
+            next: (res) => {
+                if (!res?.access_token) {
+                    this.error = 'Authentication failed. Please try logging in again.';
+                    return;
+                }
+                this.handleTokenResponse(res.access_token);
+            },
+            error: (err) => {
+                this.error = err.message || 'Authentication failed. Please try logging in again.';
+            }
+        });
     }
 
     private handleTokenResponse(token: string): void {
         this.message = 'Setting up your account...';
         this.tokenService.setToken(token);
-        
+
         // Fetch user info
         this.authService.getCurrentUser().subscribe({
             next: () => {

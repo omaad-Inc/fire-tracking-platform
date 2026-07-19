@@ -816,15 +816,18 @@ export class SecuritySettings implements OnInit {
 
         this.savingPassword.set(true);
         try {
-            await firstValueFrom(this.apiService.changePassword({
+            const res = await firstValueFrom(this.apiService.changePassword({
                 current_password: this.pwForm.current,
                 new_password:     this.pwForm.newPw,
             }));
+            // The backend revokes every session on password change and hands
+            // this device a fresh token — adopt it so we stay signed in.
+            if (res?.access_token) this.tokenService.setToken(res.access_token);
             this.msgService.add({ severity: 'success', summary: this.t('security.passwordChanged'),
                 detail: this.t('security.passwordChangedDetail'), life: 4000 });
             this.closePasswordDialog();
         } catch (err: any) {
-            const detail = err?.error?.detail === 'Invalid current password'
+            const detail = err?.error?.detail === 'Incorrect current password'
                 ? this.t('security.currentPwIncorrect')
                 : this.t('security.changeError');
             this.msgService.add({ severity: 'error', summary: this.t('security.error'), detail, life: 5000 });

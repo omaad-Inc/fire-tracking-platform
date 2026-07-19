@@ -18,6 +18,7 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { NavService } from '../../core/services/nav.service';
 import { ShareContextService } from '../../core/services/share-context.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { AssetsStateService } from '../service/assets-state.service';
 import { GoalAddDialogComponent, GoalSavePayload } from './components/goal-add-dialog';
 import { GoalAllocateDialogComponent, AllocatePayload } from './components/goal-allocate-dialog';
@@ -31,6 +32,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
         CommonModule,
         ButtonModule, ToastModule, ConfirmDialogModule, DialogModule,
         AppAmountComponent, GoalAddDialogComponent, GoalAllocateDialogComponent,
+        LoadErrorComponent,
     ],
     providers: [MessageService, ConfirmationService],
     template: `
@@ -93,8 +95,13 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                 </div>
             }
 
-            <!-- Not found -->
-            @if (!loading() && !goal()) {
+            <!-- Load failure (network/500) — distinct from a real 404 -->
+            @if (!loading() && !goal() && loadError()) {
+                <app-load-error (retry)="retryLoad()" />
+            }
+
+            <!-- Not found (actual 404: goal deleted or wrong link) -->
+            @if (!loading() && !goal() && !loadError()) {
                 <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 text-center py-12">
                     <div class="relative w-16 h-16 mx-auto rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-flag text-2xl text-surface-400"></i>
@@ -384,6 +391,8 @@ export class GoalDetailPage implements OnInit, OnDestroy {
     private stateSub?: Subscription;
 
     loading = signal(true);
+    loadError = signal(false);
+    private lastLoadedId: number | null = null;
     loadingContributions = signal(false);
     saving = signal(false);
     allocating = signal(false);
@@ -529,12 +538,25 @@ export class GoalDetailPage implements OnInit, OnDestroy {
             this.contributions.set(contributions);
             this.liquidAssets.set(assets);
             this.heroFallback.set(null);
-        } catch (err) {
+            this.loadError.set(false);
+            this.lastLoadedId = id;
+        } catch (err: any) {
             console.error('Error loading goal detail:', err);
+            // Only a real 404 means "goal deleted" — any other failure
+            // (network, 500) shows an error+retry card, not the 404 view.
             this.goal.set(null);
+            this.loadError.set(err?.status !== 404);
+            this.lastLoadedId = id;
         } finally {
             this.loading.set(false);
             this.loadingContributions.set(false);
+        }
+    }
+
+    retryLoad() {
+        if (this.lastLoadedId != null) {
+            this.loadError.set(false);
+            this.loadAll(this.lastLoadedId);
         }
     }
 

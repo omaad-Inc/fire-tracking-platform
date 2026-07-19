@@ -37,6 +37,32 @@ export class TokenService {
 
     constructor() {
         this.loadFromStorage();
+        this.syncAcrossTabs();
+    }
+
+    /**
+     * Keep the token/user signals in sync when ANOTHER tab writes
+     * localStorage (login, logout, or a token rotation via /auth/refresh).
+     * Without this, a tab holding a rotated-out token keeps sending it and
+     * gets 401s once the server revokes it.
+     */
+    private syncAcrossTabs(): void {
+        if (typeof window === 'undefined' || !window.localStorage) return;
+        window.addEventListener('storage', (e: StorageEvent) => {
+            if (e.key === TOKEN_KEY) {
+                this._token.set(e.newValue);
+            } else if (e.key === USER_KEY) {
+                try {
+                    this._user.set(e.newValue ? JSON.parse(e.newValue) : null);
+                } catch {
+                    this._user.set(null);
+                }
+            } else if (e.key === null) {
+                // localStorage.clear() in another tab
+                this._token.set(null);
+                this._user.set(null);
+            }
+        });
     }
 
     private loadFromStorage(): void {

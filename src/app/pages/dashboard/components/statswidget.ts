@@ -7,12 +7,13 @@ import { NavService } from '../../../core/services/nav.service';
 import { DashboardService, DashboardStats, FIREProgress } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     standalone: true,
     selector: 'app-stats-widget',
-    imports: [CommonModule, RouterModule, AppAmountComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <!-- Loading State -->
         @if (loading()) {
@@ -54,17 +55,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
             </div>
         } @else if (loadError()) {
             <div class="col-span-12">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900 p-6 flex flex-col items-center text-center gap-3">
-                    <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-negative-50 dark:bg-negative-500/15">
-                        <i class="pi pi-exclamation-triangle text-negative-600 dark:text-negative-400 text-xl"></i>
-                    </div>
-                    <div class="font-semibold text-surface-900 dark:text-surface-0">{{ t('dashboard.stats.errorTitle') }}</div>
-                    <div class="text-sm text-surface-500 dark:text-surface-400 max-w-sm">{{ t('dashboard.stats.errorBody') }}</div>
-                    <button type="button" (click)="retry()"
-                            class="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold transition-colors">
-                        <i class="pi pi-refresh text-xs"></i>{{ t('dashboard.stats.retry') }}
-                    </button>
-                </div>
+                <app-load-error [title]="t('dashboard.stats.errorTitle')" [body]="t('dashboard.stats.errorBody')" (retry)="retry()" />
             </div>
         } @else {
             <!-- KPI Card 1 - Patrimoine -->

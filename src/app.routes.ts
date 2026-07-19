@@ -52,6 +52,10 @@ export const appRoutes: Routes = [
     { path: ':lang/fire-africa/welcome', loadComponent: () => import('./app/pages/landing/components/fire-africa-welcome').then(m => m.FireAfricaWelcome) },
     { path: ':lang/tools/fire-simulator', loadComponent: () => import('./app/pages/landing/components/fire-simulator').then(m => m.FireSimulator) },
     { path: ':lang/tools/compound-interest', loadComponent: () => import('./app/pages/landing/components/compound-calculator').then(m => m.CompoundCalculator) },
+
+    // Outil public SEO (FR, sans préfixe :lang, prérendu au build) — comparateur des 41 SGI de la BRVM.
+    { path: 'outils/comparateur-sgi-brvm', loadComponent: () => import('./app/pages/tools/comparateur-sgi-brvm/comparateur-sgi-brvm.page').then(m => m.ComparateurSgiBrvmPage) },
+    { path: 'outils/comparateur-sgi-brvm/sgi/:id', loadComponent: () => import('./app/pages/tools/comparateur-sgi-brvm/sgi-detail.page').then(m => m.SgiDetailPage) },
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },
     { path: ':lang/faq', loadComponent: () => import('./app/pages/landing/components/faq').then(m => m.FaqPage) },

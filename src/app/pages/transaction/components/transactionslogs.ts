@@ -16,6 +16,7 @@ import {
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
 import { PatrimoineService } from '../../service/patrimoine.service';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -35,7 +36,8 @@ interface DayGroup {
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule,
         InputTextModule, InputNumberModule, SelectModule,
-        ToastModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent
+        ToastModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent,
+        LoadErrorComponent
     ],
     providers: [MessageService, ConfirmationService],
     template: `
@@ -148,6 +150,8 @@ interface DayGroup {
                     <div class="h-[62px] bg-surface-100 dark:bg-surface-800 rounded-xl animate-pulse"></div>
                 }
             </div>
+        } @else if (loadError()) {
+            <app-load-error (retry)="retryLoad()" />
         } @else if (dayGroups().length === 0) {
             <div class="flex flex-col items-center justify-center py-16 text-center">
                 <div class="w-14 h-14 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
@@ -434,6 +438,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
 
     // ── State ─────────────────────────────────────────────────────
     loading   = signal(true);
+    loadError = signal(false);
     isSaving  = signal(false);
     submitted = false;
 
@@ -579,11 +584,20 @@ export class TransactionLogs implements OnInit, OnDestroy {
         try {
             const recs = await this.transactionsService.getRecords();
             this.allRecords.set(recs);
+            this.loadError.set(false);
             this.emitMonth();
             this.loadAccounts();
+        } catch (error) {
+            console.error('Error loading transactions:', error);
+            // Explicit error+retry instead of a fake-empty transaction log.
+            if (this.allRecords().length === 0) this.loadError.set(true);
         } finally {
             this.loading.set(false);
         }
+    }
+
+    retryLoad() {
+        this.load();
     }
 
     private async loadAccounts() {

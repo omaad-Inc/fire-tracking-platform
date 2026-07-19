@@ -1,1 +1,4 @@
-/* /index.html 200
+# Les fichiers statiques existants (pages prérendues /outils/**, index.html
+# de la racine, assets) sont servis en priorité par Netlify ; tout le reste
+# (routes SPA : /fr/**, /share/**, …) retombe sur le shell client-side.
+/* /index.csr.html 200

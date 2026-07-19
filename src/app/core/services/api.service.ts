@@ -370,6 +370,8 @@ export interface Debt {
     description: string | null;
     initial_amount: number;
     current_amount: number;
+    /** ISO 4217 code the amounts are denominated in (native currency). */
+    currency: string;
     interest_rate: number | null;
     monthly_payment: number | null;
     next_payment_date: string | null;
@@ -391,6 +393,7 @@ export interface DebtCreate {
     description?: string;
     initial_amount: number;
     current_amount: number;
+    currency?: string;
     interest_rate?: number;
     monthly_payment?: number;
     next_payment_date?: string;
@@ -406,6 +409,7 @@ export interface DebtUpdate {
     description?: string;
     initial_amount?: number;
     current_amount?: number;
+    currency?: string;
     interest_rate?: number;
     monthly_payment?: number;
     next_payment_date?: string;
@@ -894,8 +898,10 @@ export class ApiService {
         return this.http.patch(`${this.apiUrl}/users/me`, data);
     }
 
-    changePassword(data: PasswordChange): Observable<any> {
-        return this.http.post(`${this.apiUrl}/users/me/password`, data);
+    changePassword(data: PasswordChange): Observable<{ message: string; access_token: string; token_type: string }> {
+        return this.http.put<{ message: string; access_token: string; token_type: string }>(
+            `${this.apiUrl}/users/me/password`, data
+        );
     }
 
     updateFIRESettings(data: FIRESettings): Observable<any> {

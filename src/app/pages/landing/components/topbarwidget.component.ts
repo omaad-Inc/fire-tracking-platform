@@ -87,6 +87,17 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Visualise la puissance des intérêts composés', 'Visualize the power of compound interest') }}</div>
                         </div>
                     </a>
+                    <a routerLink="/outils/comparateur-sgi-brvm" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
+                            <span class="text-base">🏦</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Compare les frais des 41 SGI de la BRVM', 'Compare fees of all 41 BRVM brokers') }}</div>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- About dropdown -->
@@ -285,6 +296,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                        class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <i class="pi pi-chart-bar mr-2"></i><span>{{ _('Intérêts composés', 'Compound Interest') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/outils/comparateur-sgi-brvm" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <span class="mr-2">🏦</span><span>{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</span>
                     </a>
                 </li>
             </ul>

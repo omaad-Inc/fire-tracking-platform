@@ -7,6 +7,7 @@ import { NavService } from '../../../core/services/nav.service';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 
 interface DebtDisplay {
     id: string;
@@ -24,7 +25,7 @@ interface DebtDisplay {
 @Component({
     standalone: true,
     selector: 'app-debts-overview',
-    imports: [CommonModule, RouterModule, AppAmountComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex justify-between items-center mb-6">
@@ -52,6 +53,9 @@ interface DebtDisplay {
                         </div>
                     }
                 </div>
+            } @else if (loadError()) {
+                <!-- NEVER show "no debts 🎉" on a failed load — that's a false financial state -->
+                <app-load-error (retry)="loadDebts()" />
             } @else if (debts().length === 0) {
                 <div class="relative flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-positive/10 flex items-center justify-center mb-4">
@@ -105,6 +109,7 @@ export class DebtsOverview implements OnInit, OnDestroy {
     
     private subscription?: Subscription;
     loading = signal(true);
+    loadError = signal(false);
     debts = signal<DebtDisplay[]>([]);
 
     async ngOnInit() {
@@ -120,10 +125,11 @@ export class DebtsOverview implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
     }
 
-    private async loadDebts() {
+    async loadDebts() {
         this.loading.set(true);
         try {
             const records = await this.debtsService.getRecords();
+            this.loadError.set(false);
             
             if (records.length > 0) {
                 // All debts share the same neutral chrome — only the icon glyph
@@ -161,7 +167,8 @@ export class DebtsOverview implements OnInit, OnDestroy {
             }
         } catch (error) {
             console.error('Error loading debts:', error);
-            this.debts.set([]);
+            // Explicit error+retry instead of the fake "no debts 🎉" state.
+            if (this.debts().length === 0) this.loadError.set(true);
         } finally {
             this.loading.set(false);
         }

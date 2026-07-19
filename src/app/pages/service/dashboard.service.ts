@@ -3,6 +3,7 @@ import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs'
 import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
 import { isDarkMode } from '../../core/theme/chart-theme';
 import { I18nService } from '../../i18n/i18n.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
 export interface DashboardStats {
     netWorth: number;
@@ -115,6 +116,7 @@ function getExpenseColors(): string[] {
 @Injectable({ providedIn: 'root' })
 export class DashboardService {
     private api = inject(ApiService);
+    private currencyService = inject(CurrencyService);
     private i18n = inject(I18nService);
 
     /** Asset-category display label via i18n (assetCategories.*), key fallback. */
@@ -351,16 +353,25 @@ export class DashboardService {
      * months = 0 → all-time view: starts 3 months before the earliest purchase_date.
      * months > 0 → last N months.
      */
-    private async computeProgressionClientSide(months: number): Promise<{
+    private async computeProgressionClientSide(months: number, categories?: string[]): Promise<{
         labels: string[];
         assets: number[];
         debts: number[];
         netWorth: number[];
     }> {
-        const [assets, debts] = await Promise.all([
+        const [allAssets, debts] = await Promise.all([
             firstValueFrom(this.api.getAssets(0, 200)),
-            firstValueFrom(this.api.getDebts(0, 100))
+            // The category view charts assets only — skip the debts request.
+            categories ? Promise.resolve([]) : firstValueFrom(this.api.getDebts(0, 100))
         ]);
+        const assets = categories
+            ? allAssets.filter(a => categories.includes(a.category ?? ''))
+            : allAssets;
+
+        // Values from the API are NATIVE (multi-currency) — every figure must
+        // go through FX to the EUR base before being summed or interpolated.
+        const toEur = (v: number, c: string | null | undefined) =>
+            this.currencyService.toEurFromNative(v, c);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -408,22 +419,25 @@ export class DashboardService {
 
             let totalAssets = 0;
             for (const asset of assets) {
+                const currentEur = toEur(asset.current_value, asset.currency);
                 if (!asset.purchase_date) {
-                    totalAssets += asset.current_value;
+                    totalAssets += currentEur;
                     continue;
                 }
                 const assetStart = new Date(asset.purchase_date);
                 if (assetStart <= pointDate) {
                     if (isCurrentMonth) {
                         // This IS the current value — no interpolation needed
-                        totalAssets += asset.current_value;
+                        totalAssets += currentEur;
                     } else {
                         // Historical point: interpolate linearly from purchase to current
-                        const purchaseVal = asset.purchase_value ?? asset.current_value;
+                        const purchaseVal = asset.purchase_value != null
+                            ? toEur(asset.purchase_value, asset.currency)
+                            : currentEur;
                         const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
                         const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
                         const pct = Math.min(1, elapsed / totalDays);
-                        totalAssets += purchaseVal + (asset.current_value - purchaseVal) * pct;
+                        totalAssets += purchaseVal + (currentEur - purchaseVal) * pct;
                     }
                 }
                 // asset not yet acquired at this point → skip (value = 0)
@@ -433,7 +447,7 @@ export class DashboardService {
             for (const debt of debts) {
                 if (debt.type === 'i_owe') {
                     const monthly = debt.monthly_payment ?? 0;
-                    totalDebts += debt.current_amount + monthly * monthsAgo;
+                    totalDebts += toEur(debt.current_amount + monthly * monthsAgo, debt.currency);
                 }
             }
 
@@ -458,6 +472,23 @@ export class DashboardService {
         const cached = this.getCached<ChartDataPoint[]>(KEY);
 
         const fetch = async () => {
+            // Prefer the backend's snapshot-based progression (FX-correct and
+            // reuses the /dashboard/summary payload when available) over
+            // client-side interpolation; fall back to the client computation
+            // when the endpoint is unavailable or for all-time (months=0).
+            try {
+                if (months > 0) {
+                    const rows = await firstValueFrom(this.api.getWorthProgression(months));
+                    if (rows?.length) {
+                        const result: ChartDataPoint[] = rows.map(r => ({
+                            label: this.formatDateLabel(r.date),
+                            value: Math.round(r.net_worth),
+                        }));
+                        this.setCache(KEY, result);
+                        return result;
+                    }
+                }
+            } catch { /* fall through to the client-side computation */ }
             try {
                 const { labels, netWorth } = await this.computeProgressionClientSide(months);
                 const result: ChartDataPoint[] = labels.map((label, idx) => ({ label, value: netWorth[idx] }));
@@ -542,70 +573,10 @@ export class DashboardService {
     }
 
     private async computeCategoryProgressionClientSide(categories: string[], months: number): Promise<ChartDataPoint[]> {
-        const all = await firstValueFrom(this.api.getAssets(0, 200));
-        const assets = all.filter(a => categories.includes(a.category ?? ''));
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        let startDate: Date;
-        if (months === 0) {
-            let earliest = new Date(today);
-            for (const asset of assets) {
-                if (asset.purchase_date) {
-                    const d = new Date(asset.purchase_date);
-                    if (d < earliest) earliest = d;
-                }
-            }
-            startDate = new Date(earliest.getFullYear(), earliest.getMonth() - 3, 1);
-        } else {
-            startDate = new Date(today.getFullYear(), today.getMonth() - (months - 1), 1);
-        }
-
-        const pointDates: Date[] = [];
-        let cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-        while (cur <= today) {
-            pointDates.push(new Date(cur));
-            cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
-        }
-
-        const MONTH_NAMES = this.monthNames();
-        const result: ChartDataPoint[] = [];
-
-        for (let idx = 0; idx < pointDates.length; idx++) {
-            const pointDate = pointDates[idx];
-            const isCurrentMonth =
-                pointDate.getFullYear() === today.getFullYear() &&
-                pointDate.getMonth() === today.getMonth();
-
-            let total = 0;
-            for (const asset of assets) {
-                if (!asset.purchase_date) {
-                    total += asset.current_value;
-                    continue;
-                }
-                const assetStart = new Date(asset.purchase_date);
-                if (assetStart <= pointDate) {
-                    if (isCurrentMonth) {
-                        total += asset.current_value;
-                    } else {
-                        const purchaseVal = asset.purchase_value ?? asset.current_value;
-                        const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
-                        const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
-                        const pct = Math.min(1, elapsed / totalDays);
-                        total += purchaseVal + (asset.current_value - purchaseVal) * pct;
-                    }
-                }
-            }
-            const month = pointDate.getMonth();
-            const showYear = month === 0 || idx === 0;
-            result.push({
-                label: showYear ? `${MONTH_NAMES[month]} ${pointDate.getFullYear()}` : MONTH_NAMES[month],
-                value: Math.round(total)
-            });
-        }
-
-        return result;
+        // Same engine as the net-worth progression, filtered to the category
+        // group and charting the assets series only.
+        const { labels, assets } = await this.computeProgressionClientSide(months, categories);
+        return labels.map((label, idx) => ({ label, value: assets[idx] }));
     }
 
     // ==================== PRIVATE HELPERS ====================

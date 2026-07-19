@@ -97,20 +97,37 @@ export class SavingsService {
      */
     private refreshGoals(): void {
         if (this.goalsRequest$) return; // Already refreshing
-        
-        this.goalsRequest$ = this.api.getSavingGoals().pipe(
+
+        this.goalsRequest$ = this.createGoalsRequest();
+    }
+
+    /**
+     * Build the shared goals request. On failure: fall back to the cache if
+     * one exists, otherwise LET THE ERROR SURFACE so widgets can render an
+     * error+retry card instead of a fake-empty state. The in-flight handle
+     * is reset in all outcomes so retry works.
+     */
+    private createGoalsRequest(): Observable<SavingsGoalDisplay[]> {
+        const request$ = this.api.getSavingGoals().pipe(
             map(goals => goals.map((goal, index) => this.mapGoalToDisplay(goal, index))),
             catchError(error => {
                 console.error('Error fetching saving goals:', error);
-                return of(this.goalsCache?.data || []);
+                if (this.goalsCache) return of(this.goalsCache.data);
+                throw error;
             }),
             shareReplay(1)
         );
-        
-        firstValueFrom(this.goalsRequest$).then(data => {
-            this.goalsCache = { data, timestamp: Date.now() };
-            this.goalsRequest$ = null;
-        });
+
+        firstValueFrom(request$)
+            .then(data => {
+                this.goalsCache = { data, timestamp: Date.now() };
+            })
+            .catch(() => { /* surfaced to subscribers */ })
+            .finally(() => {
+                this.goalsRequest$ = null;
+            });
+
+        return request$;
     }
 
     /**
@@ -126,23 +143,9 @@ export class SavingsService {
         if (this.goalsRequest$) {
             return this.goalsRequest$;
         }
-        
-        // Create new request
-        this.goalsRequest$ = this.api.getSavingGoals().pipe(
-            map(goals => goals.map((goal, index) => this.mapGoalToDisplay(goal, index))),
-            catchError(error => {
-                console.error('Error fetching saving goals:', error);
-                return of(this.goalsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.goalsRequest$).then(data => {
-            this.goalsCache = { data, timestamp: Date.now() };
-            this.goalsRequest$ = null;
-        });
-        
+
+        // Create new request (errors surface when there is no cache to serve)
+        this.goalsRequest$ = this.createGoalsRequest();
         return this.goalsRequest$;
     }
 

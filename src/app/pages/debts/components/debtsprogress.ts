@@ -14,6 +14,7 @@ import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { ShareContextService } from '../../../core/services/share-context.service';
 
 @Component({
@@ -22,8 +23,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
     imports: [
         CommonModule, FormsModule, ButtonModule, ToastModule,
         InputTextModule, SelectModule, InputNumberModule,
-        DialogModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent
-    ],
+        DialogModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent, LoadErrorComponent],
     providers: [MessageService, ConfirmationService],
     template: `
         <p-toast position="top-center" />
@@ -64,6 +64,11 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <div class="h-[110px] bg-surface-100 dark:bg-surface-800 rounded-2xl animate-pulse"></div>
                 }
             </div>
+        }
+
+        <!-- ── Load failure — never render as "no debts" ── -->
+        @else if (loadError()) {
+            <app-load-error (retry)="loadFromService()" />
         }
 
         <!-- ── Empty ── -->
@@ -216,7 +221,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ t('debts.fields.total') }} <span class="text-negative">*</span>
-                            <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
+                            <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
@@ -228,7 +233,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ record.type === 'Debt' ? t('debts.alreadyPaid') : t('debts.alreadyReceived') }}
-                            <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
+                            <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
@@ -363,6 +368,7 @@ export class DebtsProgress implements OnInit {
     submitted = false;
 
     private allRecords = signal<DebtRecord[]>([]);
+    loadError = signal(false);
     record!: DebtRecord;
 
     search     = signal('');
@@ -399,7 +405,15 @@ export class DebtsProgress implements OnInit {
     loadFromService() {
         this.loading.set(true);
         this.debtsService.getRecords()
-            .then(data => this.allRecords.set(data))
+            .then(data => {
+                this.allRecords.set(data);
+                this.loadError.set(false);
+            })
+            .catch(error => {
+                console.error('Error loading debts:', error);
+                // Explicit error+retry instead of a fake-empty debts list.
+                if (this.allRecords().length === 0) this.loadError.set(true);
+            })
             .finally(() => this.loading.set(false));
     }
 
@@ -410,8 +424,23 @@ export class DebtsProgress implements OnInit {
         this.productDialog = true;
     }
 
+    /** Currency shown next to the amount inputs: the debt's own currency when
+     *  editing, the display currency for a new debt. Falls back to the raw
+     *  ISO code when it differs from the display currency's symbol. */
+    formCurrencyLabel(): string {
+        const displayCode = this.cs.config().code;
+        const code = this.isEdit ? (this.record.currency || 'EUR') : displayCode;
+        return code === displayCode ? this.cs.config().symbol : code;
+    }
+
     editRecord(record: DebtRecord) {
-        this.record = { ...record };
+        // Edit in the debt's NATIVE currency (what was typed at creation) —
+        // prefilling the EUR-base values showed a FCFA user EUR numbers.
+        this.record = {
+            ...record,
+            total: record.nativeTotal ?? record.total,
+            paid: record.nativePaid ?? record.paid,
+        };
         this.submitted = false;
         this.isEdit = true;
         this.productDialog = true;

@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { SavingsService, SavingsGoalDisplay } from '../../service/savings.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 
@@ -23,7 +24,7 @@ interface GoalDisplay {
 @Component({
     standalone: true,
     selector: 'app-savings-progress',
-    imports: [CommonModule, RouterModule, AppAmountComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
             <div class="relative flex justify-between items-center mb-6">
@@ -51,6 +52,8 @@ interface GoalDisplay {
                         </div>
                     }
                 </div>
+            } @else if (loadError()) {
+                <app-load-error (retry)="loadGoals()" />
             } @else if (goals().length === 0) {
                 <div class="relative flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
@@ -106,6 +109,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
     
     private subscription?: Subscription;
     loading = signal(true);
+    loadError = signal(false);
     goals = signal<GoalDisplay[]>([]);
 
     async ngOnInit() {
@@ -121,7 +125,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
     }
 
-    private async loadGoals() {
+    async loadGoals() {
         this.loading.set(true);
         try {
             const gs = await this.savingsService.getGoals();
@@ -152,9 +156,11 @@ export class SavingsProgress implements OnInit, OnDestroy {
                 .slice(0, 4);
 
             this.goals.set(mapped);
+            this.loadError.set(false);
         } catch (error) {
             console.error('Error loading goals:', error);
-            this.goals.set([]);
+            // Explicit error+retry instead of a fake "no goals" state.
+            if (this.goals().length === 0) this.loadError.set(true);
         } finally {
             this.loading.set(false);
         }
