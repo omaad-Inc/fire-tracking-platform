@@ -308,6 +308,11 @@ export const EN = {
     manageAccount: 'Manage my account',
     help: 'Help',
     getHelp: 'Get help',
+    memberSince: 'Omaad member since {{date}}',
+    upgradeProTitle: 'Upgrade to Omaad Pro',
+    upgradeProDesc: 'Unlock advanced features',
+    myOmaad: 'My Omaad',
+    myConnections: 'My connections',
     account: {
       myProfile: 'My profile',
       profilePicture: 'Profile picture',
@@ -438,6 +443,8 @@ export const EN = {
   },
   broker: {
     connections: 'My connections',
+    syncFailed: 'Sync failed',
+    deleteFailed: 'Delete failed',
     addAccount: 'Add an account',
     refreshNote: 'Refresh rates vary by institution. If your data looks outdated, try re-syncing.',
     actionRequired: 'Action required',

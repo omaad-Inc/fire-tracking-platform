@@ -48,7 +48,7 @@ import { environment } from '../../../environments/environment';
                     <div class="min-w-0">
                         <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 truncate">{{ userName() }}</h2>
                         <p class="text-sm text-surface-500 dark:text-surface-400">
-                            Membre Omaad depuis {{ memberSince() }}
+                            {{ t('settings.memberSince', { date: memberSince() }) }}
                         </p>
                     </div>
                 </div>
@@ -63,15 +63,15 @@ import { environment } from '../../../environments/environment';
                             <i class="pi pi-crown text-warm-900"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">Passer à Omaad Pro</p>
-                            <p class="text-xs text-surface-600 dark:text-ochre-400/70">Débloquez les fonctionnalités avancées</p>
+                            <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">{{ t('settings.upgradeProTitle') }}</p>
+                            <p class="text-xs text-surface-600 dark:text-ochre-400/70">{{ t('settings.upgradeProDesc') }}</p>
                         </div>
                         <i class="pi pi-chevron-right text-ochre-500 dark:text-ochre-400 text-xs shrink-0"></i>
                     </div>
                 </a>
 
                 <!-- Section: Mon Omaad -->
-                <h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wide mb-3 px-1">Mon Omaad</h3>
+                <h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wide mb-3 px-1">{{ t('settings.myOmaad') }}</h3>
                 <div class="mb-8 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 overflow-hidden divide-y divide-surface-100 dark:divide-surface-800">
                     @for (item of mainMenuItems; track item.route) {
                         <a [routerLink]="item.route"
@@ -113,7 +113,7 @@ import { environment } from '../../../environments/environment';
                 <!-- Version -->
                 <div class="text-center pb-8">
                     <p class="text-xs text-surface-400 dark:text-surface-500">
-                        Omaad Wealth · v1.0.0 · <span class="text-positive">●</span> production
+                        Omaad Wealth · v{{ appVersion }}
                     </p>
                 </div>
             }
@@ -150,6 +150,7 @@ import { environment } from '../../../environments/environment';
 export class Settings implements OnInit {
     private router       = inject(Router);
     private i18n         = inject(I18nService);
+    appVersion = environment.version;
     private tokenService = inject(TokenService);
     private authService  = inject(AuthService);
 
@@ -189,15 +190,16 @@ export class Settings implements OnInit {
         const u = this.user();
         if (!u?.created_at) return '';
         const d = new Date(u.created_at);
-        return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
+        return d.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
     });
 
     get mainMenuItems() {
         return [
-            { route: 'account',     icon: 'pi-user',      label: 'Mon compte' },
-            { route: 'security',    icon: 'pi-shield',    label: 'Sécurité' },
-            { route: 'connections', icon: 'pi-link',      label: 'Mes connexions' },
-            { route: 'preferences', icon: 'pi-cog',       label: 'Préférences' },
+            { route: 'account',     icon: 'pi-user',      label: this.t('menu.myAccount') },
+            { route: 'security',    icon: 'pi-shield',    label: this.t('menu.security') },
+            { route: 'connections', icon: 'pi-link',      label: this.t('settings.myConnections') },
+            { route: 'preferences', icon: 'pi-cog',       label: this.t('menu.preferences') },
         ];
     }
 

@@ -308,6 +308,11 @@ export const FR = {
     manageAccount: 'Gérer mon compte',
     help: 'Aide',
     getHelp: 'Obtenir de l\'aide',
+    memberSince: 'Membre Omaad depuis {{date}}',
+    upgradeProTitle: 'Passer à Omaad Pro',
+    upgradeProDesc: 'Débloquez les fonctionnalités avancées',
+    myOmaad: 'Mon Omaad',
+    myConnections: 'Mes connexions',
     account: {
       myProfile: 'Mon profil',
       profilePicture: 'Photo de profil',
@@ -438,6 +443,8 @@ export const FR = {
   },
   broker: {
     connections: 'Mes connexions',
+    syncFailed: 'Synchronisation échouée',
+    deleteFailed: 'Suppression échouée',
     addAccount: 'Ajouter un compte',
     refreshNote: 'Les taux de rafraîchissement varient selon l\'institution. Si vos données semblent obsolètes, lancez une re-synchronisation.',
     actionRequired: 'Action requise',
