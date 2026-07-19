@@ -67,14 +67,24 @@ export class AppMenu {
             },
             // Separator
             { separator: true },
-            // Goals — both lifetime (FIRE) and short-term goals merged here
+            // Goals — lifetime FIRE, wealth score, and short-term goals
             {
                 label: this.t('menu.fireSection'),
                 items: [
                     {
+                        label: this.t('menu.fire'),
+                        icon: 'pi pi-fw pi-chart-line',
+                        routerLink: this.link('pages', 'fire')
+                    },
+                    {
                         label: this.t('menu.myGoals'),
                         icon: 'pi pi-fw pi-bullseye',
                         routerLink: this.link('pages', 'goals')
+                    },
+                    {
+                        label: this.t('menu.wealthScore'),
+                        icon: 'pi pi-fw pi-gauge',
+                        routerLink: this.link('pages', 'wealth-score')
                     }
                 ]
             },

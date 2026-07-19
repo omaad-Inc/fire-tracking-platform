@@ -131,7 +131,13 @@ const GROUPS = [
                             </div>
                         </div>
                     } @else {
-                        <div class="flex-1 flex items-center justify-center text-surface-400 text-sm py-10">{{ i18n.t('patrimoine.noAssetsShort') }}</div>
+                        <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-10">
+                            <span class="text-surface-400 text-sm">{{ i18n.t('patrimoine.noAssetsShort') }}</span>
+                            <button (click)="navigateToAddAsset()"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold transition-colors">
+                                <i class="pi pi-plus text-xs"></i>{{ i18n.t('patrimoine.addFirstAsset') }}
+                            </button>
+                        </div>
                     }
                 </div>
             </div>
@@ -156,11 +162,18 @@ const GROUPS = [
                 } @else if (assetsLoadError()) {
                     <app-load-error (retry)="retryAssets()" />
                 } @else if (categoryGroups().length === 0) {
-                    <div class="flex flex-col items-center justify-center py-16 text-center rounded-2xl border border-dashed border-surface-300 dark:border-surface-700">
-                        <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
-                            <i class="pi pi-box text-2xl text-surface-400"></i>
+                    <!-- Activation moment: an empty portfolio must drive the user
+                         straight into the add-asset wizard, not dead-end. -->
+                    <div class="flex flex-col items-center justify-center py-16 px-6 text-center rounded-2xl border border-dashed border-surface-300 dark:border-surface-700">
+                        <div class="w-16 h-16 rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
+                            <i class="pi pi-box text-2xl text-brand-700 dark:text-ochre-400"></i>
                         </div>
-                        <p class="text-surface-500 text-sm">{{ i18n.t('patrimoine.noAssetsRecorded') }}</p>
+                        <h3 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('patrimoine.emptyStateTitle') }}</h3>
+                        <p class="text-surface-500 dark:text-surface-400 text-sm max-w-sm mb-5">{{ i18n.t('patrimoine.emptyStateDesc') }}</p>
+                        <button (click)="navigateToAddAsset()"
+                                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold transition-colors">
+                            <i class="pi pi-plus text-xs"></i>{{ i18n.t('patrimoine.addFirstAsset') }}
+                        </button>
                     </div>
                 } @else {
                     <div class="space-y-3">
@@ -411,5 +424,9 @@ export class Patrimoine implements OnInit, OnDestroy {
 
     navigateToDebts() {
         this.nav.go('pages', 'debts');
+    }
+
+    navigateToAddAsset() {
+        this.nav.go('pages', 'patrimoine', 'add-asset');
     }
 }
