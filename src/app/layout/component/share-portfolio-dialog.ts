@@ -61,11 +61,11 @@ const ALL_CATEGORIES = [
                     <div class="flex flex-wrap gap-2 mb-5">
                         @for (c of allCategories; track c) {
                             <button (click)="toggleCat(c)"
-                                    class="px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors"
-                                    [class.bg-ochre-500]="isSelected(c)" [class.text-warm-900]="isSelected(c)"
-                                    [class.bg-surface-100]="!isSelected(c)" [class.dark:bg-surface-800]="!isSelected(c)"
-                                    [class.text-surface-500]="!isSelected(c)">
-                                {{ catLabel(c) }}
+                                    class="px-3.5 py-1.5 rounded-full text-sm font-medium transition-all border"
+                                    [ngClass]="isSelected(c)
+                                        ? 'bg-brand-50 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 border-brand-300 dark:border-ochre-500/40'
+                                        : 'bg-transparent text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
+                                @if (isSelected(c)) { <i class="pi pi-check text-[10px] mr-1"></i> }{{ catLabel(c) }}
                             </button>
                         }
                     </div>
@@ -118,7 +118,7 @@ const ALL_CATEGORIES = [
                             </button>
                         } @else { <span></span> }
                         <button (click)="generate()" [disabled]="busy()"
-                                class="px-5 py-2.5 rounded-xl bg-ochre-500 hover:bg-ochre-400 text-warm-900 text-sm font-bold disabled:opacity-60">
+                                class="px-5 py-2.5 rounded-xl omaad-cta !text-sm !font-semibold disabled:opacity-60">
                             @if (busy()) { <i class="pi pi-spin pi-spinner"></i> } @else { {{ current() ? t('shareDialog.regenerate') : t('shareDialog.generate') }} }
                         </button>
                     </div>
