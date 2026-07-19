@@ -894,8 +894,10 @@ export class ApiService {
         return this.http.patch(`${this.apiUrl}/users/me`, data);
     }
 
-    changePassword(data: PasswordChange): Observable<any> {
-        return this.http.post(`${this.apiUrl}/users/me/password`, data);
+    changePassword(data: PasswordChange): Observable<{ message: string; access_token: string; token_type: string }> {
+        return this.http.put<{ message: string; access_token: string; token_type: string }>(
+            `${this.apiUrl}/users/me/password`, data
+        );
     }
 
     updateFIRESettings(data: FIRESettings): Observable<any> {
