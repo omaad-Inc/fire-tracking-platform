@@ -271,9 +271,7 @@ export class QuickAddSheet {
 
     /** Localized category label; falls back to CATEGORY_CONFIG then the key. */
     catLabel(c: string): string {
-        const path = `categories.${c}`;
-        const label = this.i18n.t(path);
-        return label !== path ? label : (CATEGORY_CONFIG[c]?.label ?? c);
+        return this.i18n.categoryLabel(c);
     }
 
     goAddAccount() {
