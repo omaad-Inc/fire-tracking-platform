@@ -1,82 +1,101 @@
-import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, switchMap, retry, timer, of, map, finalize, shareReplay } from 'rxjs';
 import { TokenService } from '../services/token.service';
+import { AuthService } from '../services/auth.service';
+import { SKIP_AUTH } from './http-context.tokens';
 
-// Get token set time from window (set by TokenService)
-const getTokenSetTime = (): number | null => {
-    if (typeof window !== 'undefined' && (window as any).__tokenSetTime) {
-        return (window as any).__tokenSetTime;
+// SKIP_AUTH re-exported for existing importers.
+export { SKIP_AUTH };
+
+/** A 401 within this window of login is treated as a race, not a dead session. */
+const JUST_LOGGED_IN_GRACE_MS = 5000;
+
+/** Transient statuses worth retrying on an idempotent GET (flaky mobile links). */
+const RETRYABLE_GET_STATUSES = new Set([0, 502, 503, 504]);
+
+/**
+ * Shared in-flight refresh: concurrent 401s trigger ONE /auth/refresh, and all
+ * replay with its result. Module scope is fine — functional interceptors are
+ * effectively singletons. Resolves to the new token, or null if refresh failed.
+ */
+let refreshInFlight$: Observable<string | null> | null = null;
+
+function runRefresh(authService: AuthService, tokenService: TokenService): Observable<string | null> {
+    if (!refreshInFlight$) {
+        refreshInFlight$ = authService.refreshToken().pipe(
+            map(res => res?.access_token ?? tokenService.getToken()),
+            catchError(() => of(null)),
+            finalize(() => { refreshInFlight$ = null; }),
+            shareReplay(1),
+        );
     }
-    return null;
-};
+    return refreshInFlight$;
+}
 
-export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const tokenService = inject(TokenService);
+    const authService = inject(AuthService);
     const router = inject(Router);
-    const token = tokenService.getToken();
 
-    // Clone request and add auth header if token exists
-    let authReq = req;
-    if (token) {
-        authReq = req.clone({
-            setHeaders: {
-                Authorization: `Bearer ${token}`
-            }
-        });
+    const skipAuth = req.context.get(SKIP_AUTH);
+    const token = tokenService.getToken();
+    const authReq = token && !skipAuth
+        ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+        : req;
+
+    let handled = next(authReq);
+
+    // Retry transient failures on idempotent GETs (many users are on flaky
+    // mobile networks). Non-transient errors (incl. 401/4xx) rethrow immediately.
+    if (req.method === 'GET' && !skipAuth) {
+        handled = handled.pipe(
+            retry({
+                count: 2,
+                delay: (error, attempt) => {
+                    if (error instanceof HttpErrorResponse && RETRYABLE_GET_STATUSES.has(error.status)) {
+                        return timer(300 * attempt); // 300ms, then 600ms
+                    }
+                    throw error;
+                },
+                resetOnSuccess: true,
+            }),
+        );
     }
 
-    return next(authReq).pipe(
+    return handled.pipe(
         catchError((error: HttpErrorResponse) => {
-            if (error.status === 401) {
-                const currentUrl = router.url;
-                const isAuthPage = currentUrl.includes('/auth/login') || 
-                                  currentUrl.includes('/auth/register') ||
-                                  currentUrl.includes('/auth/oauth');
-                
-                // Don't clear token or redirect if we're on an auth page
-                // This prevents clearing tokens during login/registration flow
-                if (!isAuthPage) {
-                    // Don't clear token if it was just set (within last 5 seconds)
-                    // This prevents race conditions during login
-                    const tokenSetTime = getTokenSetTime();
-                    const timeSinceTokenSet = tokenSetTime ? Date.now() - tokenSetTime : Infinity;
-                    const isRecentLogin = timeSinceTokenSet < 5000; // 5 seconds
-                    
-                    if (isRecentLogin) {
-                        console.warn('401 received shortly after login - not clearing token (might be race condition)', {
-                            timeSinceTokenSet,
-                            currentUrl,
-                            error: error.message
-                        });
-                        return throwError(() => error);
-                    }
-                    
-                    // Only clear token if we're on a protected route
-                    // This prevents clearing tokens during initial navigation
-                    const isProtectedRoute = currentUrl.match(/^\/(fr|en)(\/|$)/) && 
-                                           !currentUrl.includes('/landing') &&
-                                           !currentUrl.includes('/notfound');
-                    
-                    if (isProtectedRoute) {
-                        console.warn('401 Unauthorized - clearing token and redirecting to login', {
-                            currentUrl,
-                            hasToken: !!token,
-                            error: error.message
-                        });
-                        tokenService.clear();
-                        if (typeof window !== 'undefined') {
-                            (window as any).__tokenSetTime = null;
-                        }
-                        const currentLang = currentUrl.match(/^\/(fr|en)/)?.[1] || 'fr';
-                        router.navigate([`/${currentLang}/auth/login`], {
-                            queryParams: { returnUrl: currentUrl }
-                        });
-                    }
-                }
+            // Only a 401 on an authed request is our concern.
+            if (error.status !== 401 || skipAuth || !token) {
+                return throwError(() => error);
             }
-            return throwError(() => error);
-        })
+
+            // Attempt one shared refresh, then replay the original request.
+            return runRefresh(authService, tokenService).pipe(
+                switchMap((newToken) => {
+                    if (newToken) {
+                        const replay = authReq.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } });
+                        return next(replay);
+                    }
+                    // Refresh failed. A 401 right after login is usually a race
+                    // (token not yet propagated) — don't nuke the session for it.
+                    const setAt = tokenService.tokenSetAt();
+                    const justLoggedIn = setAt != null && (Date.now() - setAt) < JUST_LOGGED_IN_GRACE_MS;
+                    if (!justLoggedIn) {
+                        forceLogin(tokenService, router);
+                    }
+                    return throwError(() => error);
+                }),
+            );
+        }),
     );
 };
+
+/** Clear the dead session and route to login, preserving where the user was. */
+function forceLogin(tokenService: TokenService, router: Router): void {
+    tokenService.clear();
+    const currentUrl = router.url;
+    const lang = currentUrl.match(/^\/(fr|en)/)?.[1] || 'fr';
+    router.navigate([`/${lang}/auth/login`], { queryParams: { returnUrl: currentUrl } });
+}

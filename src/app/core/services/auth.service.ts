@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { SKIP_AUTH } from '../interceptors/http-context.tokens';
 import { Observable, tap, catchError, throwError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService, User } from './token.service';
@@ -223,10 +224,12 @@ export class AuthService {
     }
 
     /**
-     * Refresh access token
+     * Refresh access token. Marked SKIP_AUTH so the interceptor doesn't try to
+     * refresh-on-401 the refresh call itself (which would recurse forever).
      */
     refreshToken(): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, {}).pipe(
+        const context = new HttpContext().set(SKIP_AUTH, true);
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, {}, { context }).pipe(
             tap(response => {
                 if (response.access_token) this.tokenService.setToken(response.access_token);
             }),
