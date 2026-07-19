@@ -3,11 +3,12 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AiAssistantService } from '../../core/services/ai-assistant.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 
 @Component({
     selector: 'app-ai-assistant-panel',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FocusTrapDirective],
     template: `
         <!-- Full panel (open and not minimized) -->
         @if (svc.visible()) {
@@ -25,6 +26,9 @@ import { I18nService } from '../../i18n/i18n.service';
                 [class.ai-panel-narrow]="!svc.expanded()"
                 role="dialog"
                 aria-modal="true"
+                [attr.aria-label]="i18n.t('aiAssistant.title')"
+                [appFocusTrap]="svc.visible()"
+                (keydown.escape)="svc.hide()"
             >
                 <!-- Header -->
                 <header class="relative flex items-center gap-2 px-3 py-3 border-b border-surface-200 dark:border-surface-700">

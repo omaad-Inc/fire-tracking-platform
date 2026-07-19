@@ -1,9 +1,10 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
-import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
+import { ApiService, DashboardSummary, FireMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
 import { isDarkMode } from '../../core/theme/chart-theme';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { CACHE_RESET } from '../../core/services/cache-reset.token';
 
 export interface DashboardStats {
     netWorth: number;
@@ -118,6 +119,12 @@ export class DashboardService {
     private api = inject(ApiService);
     private currencyService = inject(CurrencyService);
     private i18n = inject(I18nService);
+
+    constructor() {
+        // Clear cached user data on logout/login (see CACHE_RESET). Root
+        // singleton → lives for the app, so no teardown needed.
+        inject(CACHE_RESET).subscribe(() => this.invalidateCache());
+    }
 
     /** Asset-category display label via i18n (assetCategories.*), key fallback. */
     private assetCategoryLabel(cat: string): string {
@@ -234,13 +241,28 @@ export class DashboardService {
     /**
      * Get dashboard stats (simplified)
      */
+    /**
+     * One `/dashboard/summary` request shared across getStats/getFIREMetrics
+     * (and anything else that needs it). The dashboard used to fire ~8 calls —
+     * summary AND a separate /fire-metrics (which is currently 500-ing) — with
+     * no dedup, so concurrent widgets double-requested. This memoizes the
+     * in-flight promise so a burst collapses to a single network call.
+     */
+    private summaryInFlight: Promise<DashboardSummary> | null = null;
+    private fetchSummary(): Promise<DashboardSummary> {
+        if (this.summaryInFlight) return this.summaryInFlight;
+        this.summaryInFlight = firstValueFrom(this.api.getDashboardSummary())
+            .finally(() => { this.summaryInFlight = null; });
+        return this.summaryInFlight;
+    }
+
     async getStats(): Promise<DashboardStats> {
         const KEY = 'stats';
         const cached = this.getCached<DashboardStats>(KEY);
 
         const fetch = async () => {
             try {
-                const summary = await firstValueFrom(this.api.getDashboardSummary());
+                const summary = await this.fetchSummary();
                 const result: DashboardStats = {
                     netWorth: summary.net_worth,
                     netWorthChange: summary.net_worth_change_30d,
@@ -278,21 +300,19 @@ export class DashboardService {
 
         const fetch = async () => {
             try {
-                const raw: any = await firstValueFrom(this.api.getFIREMetrics());
+                // Derive from the typed summary.fire_metrics (backend
+                // FireMetricsSummary). One canonical field-name set end-to-end —
+                // no more `?? ` guessing across a drifted contract (P1-18).
+                const fm: FireMetrics = (await this.fetchSummary()).fire_metrics;
                 const result: FIREProgress = {
-                    // /dashboard/fire-metrics returns total_net_worth; /dashboard/summary returns current_net_worth
-                    currentNetWorth: raw.total_net_worth ?? raw.current_net_worth ?? 0,
-                    targetAmount: raw.fire_target ?? 0,
-                    // Pydantic schema uses fire_progress_percentage; summary dict uses progress_percentage
-                    progressPct: raw.fire_progress_percentage ?? raw.progress_percentage ?? 0,
-                    yearsToFire: raw.years_to_fire ?? null,
-                    // Pydantic schema uses fire_date; summary dict uses estimated_fire_date
-                    estimatedDate: raw.fire_date ?? raw.estimated_fire_date ?? null,
-                    monthlyPassiveIncomeNeeded: raw.monthly_passive_income_needed ?? 0,
-                    // Pydantic schema uses passive_income; summary dict uses current_passive_income
-                    currentPassiveIncome: raw.passive_income ?? raw.current_passive_income ?? 0,
-                    // Pydantic schema uses savings_rate; summary dict uses monthly_savings_rate
-                    savingsRate: raw.savings_rate ?? raw.monthly_savings_rate ?? 0
+                    currentNetWorth: fm.current_net_worth,
+                    targetAmount: fm.fire_target,
+                    progressPct: fm.progress_percentage,
+                    yearsToFire: fm.years_to_fire,
+                    estimatedDate: fm.estimated_fire_date,
+                    monthlyPassiveIncomeNeeded: fm.monthly_passive_income_needed,
+                    currentPassiveIncome: fm.current_passive_income,
+                    savingsRate: fm.monthly_savings_rate
                 };
                 this.setCache(KEY, result);
                 return result;

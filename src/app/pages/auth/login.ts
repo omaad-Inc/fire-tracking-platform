@@ -1,8 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
@@ -16,7 +15,7 @@ import { I18nService } from '../../i18n/i18n.service';
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [ButtonModule, CheckboxModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, ToastModule],
+    imports: [ButtonModule, InputTextModule, PasswordModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, ToastModule],
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
@@ -63,7 +62,7 @@ import { I18nService } from '../../i18n/i18n.service';
                     <!-- Divider -->
                     <div class="flex items-center gap-4 my-8">
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
-                        <span class="text-surface-400 dark:text-surface-500 text-sm uppercase tracking-wider">{{ t('auth.login.orEmail') }}</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-sm uppercase tracking-wider">{{ t('auth.login.orEmail') }}</span>
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
@@ -87,11 +86,18 @@ import { I18nService } from '../../i18n/i18n.service';
                         <div>
                             <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.emailLabel') }}</label>
                             <input pInputText id="email" type="email"
+                                   autocomplete="email"
                                    [placeholder]="t('auth.login.emailPlaceholder')"
-                                   class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
-                                          focus:!border-brand-700 focus:!shadow-none"
-                                   [(ngModel)]="email" name="email" required 
+                                   class="w-full !bg-transparent !border-0 !border-b !rounded-none !px-0 !py-3 focus:!shadow-none"
+                                   [ngClass]="emailError() ? '!border-negative focus:!border-negative' : '!border-surface-300 dark:!border-surface-600 focus:!border-brand-700'"
+                                   [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" required
+                                   [attr.aria-invalid]="emailError() ? 'true' : null"
+                                   [attr.aria-describedby]="emailError() ? 'email-error' : null"
+                                   (blur)="emailTouched.set(true)"
                                    [disabled]="isLoading()" />
+                            @if (emailError()) {
+                                <small id="email-error" role="alert" class="text-negative text-xs mt-1 block">{{ emailError() }}</small>
+                            }
                         </div>
 
                         <div>
@@ -99,13 +105,18 @@ import { I18nService } from '../../i18n/i18n.service';
                             <p-password id="password"
                                         [(ngModel)]="password"
                                         name="password"
+                                        [attr.autocomplete]="'current-password'"
                                         [placeholder]="t('auth.login.passwordPlaceholder')"
-                                        [toggleMask]="true" 
+                                        [toggleMask]="true"
                                         [feedback]="false"
                                         [disabled]="isLoading()"
+                                        (onBlur)="passwordTouched.set(true)"
                                         styleClass="w-full"
                                         inputStyleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none">
                             </p-password>
+                            @if (passwordTouched() && !password) {
+                                <small id="password-error" role="alert" class="text-negative text-xs mt-1 block">{{ t('auth.login.passwordRequired') }}</small>
+                            }
                         </div>
 
                         <button pButton pRipple [label]="t('auth.login.submit')"
@@ -113,7 +124,7 @@ import { I18nService } from '../../i18n/i18n.service';
                                 [loading]="isLoading()"
                                 class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta
                                        disabled:opacity-50"
-                                [disabled]="!email || !password || isLoading()">
+                                [disabled]="!email() || !password || isLoading()">
                         </button>
 
                         <div class="text-center">
@@ -133,7 +144,7 @@ import { I18nService } from '../../i18n/i18n.service';
                                        [placeholder]="t('auth.login.phonePlaceholder')"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none"
                                        [(ngModel)]="phone" name="phone" [disabled]="isLoading()" />
-                                <p class="text-surface-400 dark:text-surface-500 text-xs mt-2">{{ t('auth.login.phoneHint') }}</p>
+                                <p class="text-surface-500 dark:text-surface-400 text-xs mt-2">{{ t('auth.login.phoneHint') }}</p>
                             </div>
                             <button pButton pRipple [label]="t('auth.login.sendCode')" type="button"
                                     [loading]="isLoading()"
@@ -171,7 +182,8 @@ import { I18nService } from '../../i18n/i18n.service';
                             <p class="text-surface-500 dark:text-surface-400 text-sm mt-1">{{ t('auth.twofa.subtitle') }}</p>
                         </div>
                         <div>
-                            <input pInputText type="text" inputmode="numeric" autocomplete="one-time-code"
+                            <label for="mfaCode" class="sr-only">{{ t('auth.twofa.title') }}</label>
+                            <input pInputText id="mfaCode" type="text" inputmode="numeric" autocomplete="one-time-code"
                                    [placeholder]="t('auth.twofa.codePlaceholder')"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none tracking-widest text-center"
                                    [(ngModel)]="mfaCode" name="mfaCode" [disabled]="isLoading()" (keyup.enter)="submit2fa()" />
@@ -318,9 +330,24 @@ export class Login {
 
     t(key: string): string { return this.i18n.t(key); }
 
-    email = '';
+    // `email` is a signal so the inline-validation computed below re-runs as
+    // the user types (a plain field would leave the error stale — the P0-3 bug).
+    email = signal('');
     password = '';
     currentLang = '/fr';
+
+    // Inline validation (parity with register): show a field error only once
+    // the user has left the field or attempted submit — not while typing.
+    emailTouched = signal(false);
+    passwordTouched = signal(false);
+    private readonly EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    readonly emailError = computed<string | null>(() => {
+        if (!this.emailTouched()) return null;
+        const email = this.email().trim();
+        if (!email) return this.t('auth.login.emailRequired');
+        if (!this.EMAIL_RE.test(email)) return this.t('auth.login.emailInvalid');
+        return null;
+    });
 
     // Phone/OTP login (an additional method alongside email)
     authMode = signal<'email' | 'phone'>('email');
@@ -411,10 +438,13 @@ export class Login {
     }
 
     onSubmit(): void {
-        if (!this.email || !this.password) return;
+        // Surface inline errors if the user submits an incomplete/invalid form.
+        this.emailTouched.set(true);
+        this.passwordTouched.set(true);
+        if (this.emailError() || !this.password) return;
 
         this.isLoading.set(true);
-        this.authService.login({ email: this.email, password: this.password }).subscribe({
+        this.authService.login({ email: this.email().trim(), password: this.password }).subscribe({
             next: (authResponse) => {
                 // 2FA on → password was correct, but we need a code next.
                 if (authResponse?.mfa_required && authResponse?.mfa_token) {

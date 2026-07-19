@@ -30,9 +30,13 @@ export interface User {
 export class TokenService {
     private _token = signal<string | null>(null);
     private _user = signal<User | null>(null);
+    /** Epoch ms of the last setToken() — replaces the window.__tokenSetTime
+     *  global the interceptor used for its just-logged-in grace window. */
+    private _tokenSetAt = signal<number | null>(null);
 
     readonly token = this._token.asReadonly();
     readonly user = this._user.asReadonly();
+    readonly tokenSetAt = this._tokenSetAt.asReadonly();
     readonly isAuthenticated = () => !!this._token();
 
     constructor() {
@@ -93,12 +97,10 @@ export class TokenService {
 
     setToken(token: string): void {
         this._token.set(token);
+        this._tokenSetAt.set(Date.now());
         if (typeof window !== 'undefined' && window.localStorage) {
             try {
                 localStorage.setItem(TOKEN_KEY, token);
-                // Update token set time for interceptor
-                (window as any).__tokenSetTime = Date.now();
-                console.debug('Token saved to localStorage at', new Date().toISOString());
             } catch (e) {
                 console.error('Failed to save token to localStorage:', e);
             }
@@ -115,6 +117,7 @@ export class TokenService {
     clear(): void {
         this._token.set(null);
         this._user.set(null);
+        this._tokenSetAt.set(null);
         if (typeof window !== 'undefined' && window.localStorage) {
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(USER_KEY);

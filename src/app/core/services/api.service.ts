@@ -435,7 +435,12 @@ export interface WorthProgression {
     net_worth: number;
 }
 
-export interface FIREMetrics {
+/**
+ * Canonical FIRE-metrics contract — matches the backend `FireMetricsSummary`
+ * Pydantic schema nested in GET /dashboard/summary. One field-name set
+ * end-to-end (P1-18); the old `?? ` field-name guessing chain is gone.
+ */
+export interface FireMetrics {
     current_net_worth: number;
     fire_target: number;
     progress_percentage: number;
@@ -445,6 +450,8 @@ export interface FIREMetrics {
     monthly_passive_income_needed: number;
     current_passive_income: number;
 }
+/** @deprecated legacy alias — use FireMetrics. */
+export type FIREMetrics = FireMetrics;
 
 export interface DashboardSummary {
     total_assets: number;
@@ -457,7 +464,7 @@ export interface DashboardSummary {
     savings_rate: number;
     asset_distribution: AssetDistribution[];
     worth_progression: WorthProgression[];
-    fire_metrics: FIREMetrics;
+    fire_metrics: FireMetrics;
 }
 
 // ============================================
@@ -871,9 +878,9 @@ export class ApiService {
             ?? this.http.get<DashboardSummary>(`${this.apiUrl}/dashboard/summary`);
     }
 
-    getFIREMetrics(): Observable<FIREMetrics> {
-        return this.shared<FIREMetrics>(b => b.fire_metrics)
-            ?? this.http.get<FIREMetrics>(`${this.apiUrl}/dashboard/fire-metrics`);
+    getFIREMetrics(): Observable<FireMetrics> {
+        return this.shared<FireMetrics>(b => b.fire_metrics)
+            ?? this.http.get<FireMetrics>(`${this.apiUrl}/dashboard/fire-metrics`);
     }
 
     getAssetDistribution(): Observable<AssetDistribution[]> {

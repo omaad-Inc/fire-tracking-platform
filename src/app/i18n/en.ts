@@ -27,6 +27,7 @@ export const EN = {
     loadErrorTitle: 'Data unavailable',
     loadErrorBody: 'We couldn\'t load this data right now. Check your connection and try again.',
     retry: 'Retry',
+    skipToContent: 'Skip to main content',
   },
   menu: {
     navigation: 'Navigation',
@@ -852,6 +853,7 @@ export const EN = {
     },
   },
   quickAdd: {
+    title: 'Add a transaction',
     fabLabel: 'Add',
     titleExpense: 'New expense',
     titleIncome: 'New income',
@@ -1170,6 +1172,9 @@ export const EN = {
       emailPlaceholder: 'Your email address',
       passwordLabel: 'Password',
       passwordPlaceholder: 'Your password',
+      emailRequired: 'Enter your email address.',
+      emailInvalid: 'Enter a valid email address.',
+      passwordRequired: 'Enter your password.',
       submit: 'Sign in',
       forgot: 'Forgot password?',
       trustSecure: 'Secure',

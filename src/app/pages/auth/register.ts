@@ -87,6 +87,7 @@ import { I18nService } from '../../i18n/i18n.service';
                             <div>
                                 <label for="firstName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.firstName') }}</label>
                                 <input pInputText id="firstName" type="text"
+                                       autocomplete="given-name"
                                        [placeholder]="t('auth.register.firstNamePlaceholder')"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-brand-700 focus:!shadow-none"
@@ -95,6 +96,7 @@ import { I18nService } from '../../i18n/i18n.service';
                             <div>
                                 <label for="lastName" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.lastName') }}</label>
                                 <input pInputText id="lastName" type="text"
+                                       autocomplete="family-name"
                                        [placeholder]="t('auth.register.lastNamePlaceholder')"
                                        class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                               focus:!border-brand-700 focus:!shadow-none"
@@ -105,10 +107,11 @@ import { I18nService } from '../../i18n/i18n.service';
                         <div>
                             <label for="email" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.register.emailLabel') }}</label>
                             <input pInputText id="email" type="email"
+                                   autocomplete="email"
                                    [placeholder]="t('auth.register.emailPlaceholder')"
                                    class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
                                           focus:!border-brand-700 focus:!shadow-none"
-                                   [(ngModel)]="email" name="email" required 
+                                   [(ngModel)]="email" name="email" required
                                    [disabled]="isLoading()" />
                         </div>
 
@@ -117,8 +120,9 @@ import { I18nService } from '../../i18n/i18n.service';
                             <p-password id="password"
                                         [(ngModel)]="password"
                                         name="password"
+                                        [attr.autocomplete]="'new-password'"
                                         [placeholder]="t('auth.register.passwordPlaceholder')"
-                                        [toggleMask]="true" 
+                                        [toggleMask]="true"
                                         [feedback]="true"
                                         [disabled]="isLoading()"
                                         styleClass="w-full"
@@ -131,8 +135,9 @@ import { I18nService } from '../../i18n/i18n.service';
                             <p-password id="confirmPassword"
                                         [(ngModel)]="confirmPassword"
                                         name="confirmPassword"
+                                        [attr.autocomplete]="'new-password'"
                                         [placeholder]="t('auth.register.confirmPlaceholder')"
-                                        [toggleMask]="true" 
+                                        [toggleMask]="true"
                                         [feedback]="false"
                                         [disabled]="isLoading()"
                                         styleClass="w-full"
@@ -142,7 +147,7 @@ import { I18nService } from '../../i18n/i18n.service';
 
                         <!-- Password mismatch warning -->
                         @if (password && confirmPassword && password !== confirmPassword) {
-                            <div class="text-negative text-sm flex items-center gap-2">
+                            <div role="alert" class="text-negative text-sm flex items-center gap-2">
                                 <i class="pi pi-exclamation-circle"></i>
                                 {{ t('auth.register.mismatch') }}
                             </div>
@@ -407,12 +412,14 @@ export class Register {
                     detail: this.t('auth.register.createdDetail'),
                     life: 4000
                 });
-                // Clear the token - user should login manually
-                this.authService.logout();
-                // Redirect to login page after a short delay
-                setTimeout(() => {
-                    this.router.navigate([this.currentLang, 'auth', 'login']);
-                }, 1500);
+                // Keep the token the server just minted and go straight into
+                // the app (mirrors the OTP flow) — the old code called
+                // logout(), discarding the token and forcing a second manual
+                // login. If email verification (P2) later lands, route to a
+                // "verify your email" state here instead.
+                const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                this.router.navigate([returnUrl], { replaceUrl: true });
+                this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
             },
             error: (error) => {
                 this.isLoading.set(false);

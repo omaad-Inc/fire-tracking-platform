@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LayoutService } from '../service/layout.service';
@@ -111,7 +112,8 @@ export class AppTopbar implements OnInit {
 
     constructor() {
         this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd)
+            filter(event => event instanceof NavigationEnd),
+            takeUntilDestroyed(),
         ).subscribe(() => {
             this.lang = this.getCurrentLang();
         });

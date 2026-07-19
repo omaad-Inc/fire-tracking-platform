@@ -27,6 +27,7 @@ export const FR = {
     loadErrorTitle: 'Données indisponibles',
     loadErrorBody: 'Impossible de charger ces données pour le moment. Vérifiez votre connexion et réessayez.',
     retry: 'Réessayer',
+    skipToContent: 'Aller au contenu principal',
   },
   menu: {
     navigation: 'Navigation',
@@ -852,6 +853,7 @@ export const FR = {
     },
   },
   quickAdd: {
+    title: 'Ajouter une transaction',
     fabLabel: 'Ajouter',
     titleExpense: 'Nouvelle dépense',
     titleIncome: 'Nouvelle entrée',
@@ -1170,6 +1172,9 @@ export const FR = {
       emailPlaceholder: 'Votre adresse email',
       passwordLabel: 'Mot de passe',
       passwordPlaceholder: 'Votre mot de passe',
+      emailRequired: 'Saisissez votre adresse email.',
+      emailInvalid: 'Saisissez une adresse email valide.',
+      passwordRequired: 'Saisissez votre mot de passe.',
       submit: 'Se connecter',
       forgot: 'Mot de passe oublié ?',
       trustSecure: 'Sécurisé',

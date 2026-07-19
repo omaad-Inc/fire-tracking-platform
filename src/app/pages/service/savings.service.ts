@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, shareReplay, switchMap } from 'rxjs';
 import { ApiService, SavingGoal, SavingGoalCreate, SavingGoalUpdate, Transaction } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { CACHE_RESET } from '../../core/services/cache-reset.token';
 
 export interface SavingRecord {
     id?: string;
@@ -65,6 +66,11 @@ export class SavingsService {
     private transactionsRequest$: Observable<SavingRecord[]> | null = null;
     private statsRequest$: Observable<SavingsStatsSummary> | null = null;
     private progressRequest$: Observable<SavingsSeriesPoint[]> | null = null;
+
+    constructor() {
+        // Clear cached user data on logout/login (see CACHE_RESET).
+        inject(CACHE_RESET).subscribe(() => this.clearCache());
+    }
 
     // ==================== SAVING GOALS ====================
 

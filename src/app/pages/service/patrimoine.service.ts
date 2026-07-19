@@ -4,6 +4,7 @@ import { ApiService, Asset, AssetCreate, AssetUpdate } from '../../core/services
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AssetsStateService } from './assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
+import { CACHE_RESET } from '../../core/services/cache-reset.token';
 
 interface CacheEntry<T> {
     data: T;
@@ -48,6 +49,8 @@ export class PatrimoineService {
             this.assetsCache = null;
             this.assetsRequest$ = null;
         });
+        // Clear cached user data on logout/login (see CACHE_RESET).
+        inject(CACHE_RESET).subscribe(() => this.clearCache());
     }
 
     /**
