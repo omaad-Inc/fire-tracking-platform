@@ -330,8 +330,8 @@ export class AccountSettings implements OnInit {
         if (file.size > 5 * 1024 * 1024) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Erreur',
-                detail: 'La photo doit faire moins de 5 Mo.',
+                summary: this.t('common.error'),
+                detail: this.t('settings.account.photoTooLarge'),
                 life: 5000
             });
             return;
@@ -342,8 +342,8 @@ export class AccountSettings implements OnInit {
         if (!allowedTypes.includes(file.type)) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Erreur',
-                detail: 'Format non supporté. Utilisez JPEG, PNG, GIF ou WebP.',
+                summary: this.t('common.error'),
+                detail: this.t('settings.account.photoFormatError'),
                 life: 5000
             });
             return;
@@ -363,8 +363,8 @@ export class AccountSettings implements OnInit {
                         this.isUploadingAvatar.set(false);
                         this.messageService.add({
                             severity: 'success',
-                            summary: 'Photo mise à jour',
-                            detail: 'Votre photo de profil a été modifiée.',
+                            summary: this.t('settings.account.photoUpdatedTitle'),
+                            detail: this.t('settings.account.photoUpdatedDetail'),
                             life: 3000
                         });
                     }
@@ -374,8 +374,8 @@ export class AccountSettings implements OnInit {
                 this.isUploadingAvatar.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: error?.error?.detail || 'Impossible de télécharger la photo.',
+                    summary: this.t('common.error'),
+                    detail: error?.error?.detail || this.t('settings.account.photoUploadFailed'),
                     life: 5000
                 });
             }
@@ -397,8 +397,8 @@ export class AccountSettings implements OnInit {
                             next: () => {
                                 this.messageService.add({
                                     severity: 'success',
-                                    summary: 'Photo supprimée',
-                                    detail: 'Votre photo de profil a été retirée.',
+                                    summary: this.t('settings.account.photoRemovedTitle'),
+                                    detail: this.t('settings.account.photoRemovedDetail'),
                                     life: 3000
                                 });
                             }
@@ -407,8 +407,8 @@ export class AccountSettings implements OnInit {
                     error: (error) => {
                         this.messageService.add({
                             severity: 'error',
-                            summary: 'Erreur',
-                            detail: error?.error?.detail || 'Impossible de supprimer la photo.',
+                            summary: this.t('common.error'),
+                            detail: error?.error?.detail || this.t('settings.account.photoRemoveFailed'),
                             life: 5000
                         });
                     }
@@ -429,8 +429,8 @@ export class AccountSettings implements OnInit {
                         this.isSaving.set(false);
                         this.messageService.add({
                             severity: 'success',
-                            summary: 'Profil mis à jour',
-                            detail: 'Vos informations ont été enregistrées.',
+                            summary: this.t('settings.account.profileUpdatedTitle'),
+                            detail: this.t('settings.account.profileUpdatedDetail'),
                             life: 3000
                         });
                     }
@@ -440,8 +440,8 @@ export class AccountSettings implements OnInit {
                 this.isSaving.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: error?.error?.detail || 'Impossible de mettre à jour le profil.',
+                    summary: this.t('common.error'),
+                    detail: error?.error?.detail || this.t('settings.account.profileUpdateFailed'),
                     life: 5000
                 });
             }
@@ -481,8 +481,8 @@ export class AccountSettings implements OnInit {
                 this.isDeleting.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: error?.error?.detail || 'Impossible de supprimer le compte.',
+                    summary: this.t('common.error'),
+                    detail: error?.error?.detail || this.t('settings.account.deleteAccountFailed'),
                     life: 5000
                 });
             }

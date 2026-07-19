@@ -32,8 +32,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <i class="pi pi-flag text-brand-700 dark:text-ochre-400 text-xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">Mon objectif financier</h2>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm m-0">Le capital que vous voulez atteindre — entièrement optionnel</p>
+                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('fireSettings.title') }}</h2>
+                    <p class="text-surface-500 dark:text-surface-400 text-sm m-0">{{ i18n.t('fireSettings.subtitle') }}</p>
                 </div>
             </div>
 
@@ -41,39 +41,37 @@ import { I18nService } from '../../../i18n/i18n.service';
             <div class="relative flex items-start gap-3 p-4 mb-6 bg-brand-700/10 dark:bg-brand-300/15 border border-brand-100 dark:border-brand-800 rounded-xl">
                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 flex-shrink-0"></i>
                 <div class="text-sm text-surface-700 dark:text-surface-300 leading-relaxed">
-                    <span class="font-semibold text-brand-700 dark:text-ochre-400">À quoi ça sert ?</span>
-                    <span class="ml-1">C'est simplement un cap que vous vous fixez : le montant total d'épargne et d'investissements à partir duquel vos revenus passifs (loyers, dividendes, intérêts…) couvrent vos dépenses de vie. Une fois ce cap atteint, vous n'êtes plus obligé de travailler pour vivre.</span>
+                    <span class="font-semibold text-brand-700 dark:text-ochre-400">{{ i18n.t('fireSettings.whatFor') }}</span>
+                    <span class="ml-1">{{ i18n.t('fireSettings.whatForDesc') }}</span>
                     <br/>
-                    <span class="text-surface-500 dark:text-surface-500 text-xs mt-1 block">Cet objectif est facultatif. L'appli fonctionne parfaitement sans.</span>
+                    <span class="text-surface-500 dark:text-surface-500 text-xs mt-1 block">{{ i18n.t('fireSettings.optionalNote') }}</span>
                 </div>
             </div>
 
             <!-- Auto-calculation section -->
             <div class="relative mb-6">
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Calculer mon objectif automatiquement</h3>
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('fireSettings.autoCalcTitle') }}</h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
-                    Renseignez vos dépenses annuelles et nous calculerons le capital à atteindre.
-                    La règle utilisée : votre capital doit être environ 25× vos dépenses annuelles
-                    pour que les rendements couvrent vos frais de vie sans puiser dans le capital.
+                    {{ i18n.t('fireSettings.autoCalcDesc') }}
                 </p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
-                            Dépenses annuelles <span class="text-surface-400">({{ cs.config().symbol }})</span>
+                            {{ i18n.t('fireSettings.annualExpenses') }} <span class="text-surface-400">({{ cs.config().symbol }})</span>
                         </label>
                         <p-inputnumber
                             [ngModel]="annualExpenses()" (ngModelChange)="annualExpenses.set($event); onCalcChange()"
                             [min]="0"
                             mode="decimal"
                             [minFractionDigits]="0" [maxFractionDigits]="0"
-                            placeholder="Ex : 15 000 000"
+                            [placeholder]="i18n.t('fireSettings.annualExpensesPlaceholder')"
                             inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             styleClass="w-full"
                         />
-                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Logement, alimentation, transport, loisirs… sur 12 mois</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">{{ i18n.t('fireSettings.annualExpensesHint') }}</p>
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">Taux de rendement attendu (%)</label>
+                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('fireSettings.returnRate') }}</label>
                         <p-inputnumber
                             [ngModel]="withdrawalRate()" (ngModelChange)="withdrawalRate.set($event); onCalcChange()"
                             [min]="1"
@@ -85,7 +83,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             styleClass="w-full"
                         />
-                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">Le rendement annuel moyen que vous espérez de vos placements (4 % est une référence prudente)</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-1">{{ i18n.t('fireSettings.returnRateHint') }}</p>
                     </div>
                 </div>
 
@@ -95,13 +93,13 @@ import { I18nService } from '../../../i18n/i18n.service';
                 @if (autoTarget() > 0) {
                     <div class="mt-4 p-4 bg-positive/10 border border-positive-100 dark:border-positive-700/40 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
-                            <span class="text-surface-700 dark:text-surface-300 text-sm block">{{ _('Votre nombre FIRE estimé', 'Your estimated FIRE number') }}</span>
+                            <span class="text-surface-700 dark:text-surface-300 text-sm block">{{ i18n.t('fireSettings.estimatedFireNumber') }}</span>
                             <span class="text-2xl font-bold text-positive dark:text-positive-400">
                                 {{ cs.formatNumber(autoTarget()) }} {{ cs.config().symbol }}
                             </span>
                         </div>
                         <button pButton type="button"
-                                [label]="_('Découvrir mon nombre FIRE', 'Discover my FIRE number')"
+                                [label]="i18n.t('fireSettings.discoverFireNumber')"
                                 icon="pi pi-sparkles"
                                 (click)="applyAutoTarget()"
                                 class="omaad-cta !rounded-full !px-6 !py-3 !font-semibold whitespace-nowrap shrink-0">
@@ -110,7 +108,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     @if (justApplied) {
                         <p class="mt-2 text-xs font-medium text-positive dark:text-positive-400 flex items-center gap-1.5">
                             <i class="pi pi-arrow-down text-[10px]"></i>
-                            {{ _('Pré-rempli dans « Capital cible » — vérifiez puis Enregistrez.', 'Pre-filled into “Target capital” — review, then Save.') }}
+                            {{ i18n.t('fireSettings.prefilledNote') }}
                         </p>
                     }
                 }
@@ -121,23 +119,23 @@ import { I18nService } from '../../../i18n/i18n.service';
             <!-- Manual target -->
             <div class="relative mb-6">
                 <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">
-                    Capital cible <span class="text-surface-400 font-normal text-base">({{ cs.config().symbol }})</span>
+                    {{ i18n.t('fireSettings.targetCapital') }} <span class="text-surface-400 font-normal text-base">({{ cs.config().symbol }})</span>
                 </h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
-                    Pré-rempli depuis le calcul ci-dessus, ou saisissez directement votre propre objectif.
+                    {{ i18n.t('fireSettings.targetCapitalDesc') }}
                 </p>
                 <p-inputnumber
                     [(ngModel)]="fireTarget"
                     [min]="0"
                     mode="decimal"
                     [minFractionDigits]="0" [maxFractionDigits]="0"
-                    placeholder="Ex : 375 000 000"
+                    [placeholder]="i18n.t('fireSettings.targetCapitalPlaceholder')"
                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                     styleClass="w-full md:w-1/2"
                 />
                 @if (fireTarget && fireTarget > 0) {
                     <p class="text-xs text-surface-400 dark:text-surface-500 mt-2">
-                        Votre objectif actuel :
+                        {{ i18n.t('fireSettings.currentGoal') }}
                         <!-- fireTarget is already in display currency — format directly, do NOT use app-amount which would double-convert -->
                         <span class="font-semibold text-positive dark:text-positive-400">
                             {{ cs.formatNumber(fireTarget) }} {{ cs.config().symbol }}
@@ -150,16 +148,16 @@ import { I18nService } from '../../../i18n/i18n.service';
 
             <!-- Target date (optional) -->
             <div class="relative mb-8">
-                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">Date cible <span class="text-sm font-normal text-surface-400">(facultatif)</span></h3>
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('fireSettings.targetDate') }} <span class="text-sm font-normal text-surface-400">{{ i18n.t('fireSettings.optional') }}</span></h3>
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
-                    La date à laquelle vous aimeriez atteindre cet objectif. Laissez vide si vous ne vous êtes pas fixé d'échéance.
+                    {{ i18n.t('fireSettings.targetDateDesc') }}
                 </p>
                 <p-datepicker
                     [(ngModel)]="targetDate"
                     [showIcon]="true"
                     [showButtonBar]="true"
                     dateFormat="dd/mm/yy"
-                    placeholder="Sélectionner une date"
+                    [placeholder]="i18n.t('fireSettings.selectDate')"
                     styleClass="w-full md:w-1/2"
                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                 />
@@ -169,7 +167,7 @@ import { I18nService } from '../../../i18n/i18n.service';
             <div class="relative flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                 <button pButton
                         type="button"
-                        label="Enregistrer"
+                        [label]="i18n.t('common.save')"
                         icon="pi pi-check"
                         [loading]="isSaving()"
                         (click)="save()"
@@ -178,7 +176,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 @if (hasExistingTarget) {
                     <button pButton
                             type="button"
-                            label="Supprimer l'objectif"
+                            [label]="i18n.t('fireSettings.deleteGoal')"
                             icon="pi pi-trash"
                             severity="danger"
                             [outlined]="true"
@@ -201,7 +199,7 @@ export class FireSettings implements OnInit {
     private messageService   = inject(MessageService);
     private router           = inject(Router);
     cs = inject(CurrencyService);
-    private i18n = inject(I18nService);
+    i18n = inject(I18nService);
 
     annualExpenses = signal<number | null>(null);
     withdrawalRate = signal<number | null>(4.0);
@@ -298,8 +296,8 @@ export class FireSettings implements OnInit {
                 this.isSaving.set(false);
                 this.messageService.add({
                     severity: 'success',
-                    summary: 'Objectif enregistré',
-                    detail: 'Votre objectif financier a été mis à jour.',
+                    summary: this.i18n.t('fireSettings.savedTitle'),
+                    detail: this.i18n.t('fireSettings.savedDetail'),
                     life: 2000
                 });
                 setTimeout(() => {
@@ -310,8 +308,8 @@ export class FireSettings implements OnInit {
                 this.isSaving.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: err.message || 'Impossible de sauvegarder les paramètres.',
+                    summary: this.i18n.t('common.error'),
+                    detail: err.message || this.i18n.t('fireSettings.saveFailedDetail'),
                     life: 5000
                 });
             }
@@ -344,8 +342,8 @@ export class FireSettings implements OnInit {
                 this.assetsState.notifyAssetsUpdated();
                 this.messageService.add({
                     severity: 'info',
-                    summary: 'Objectif supprimé',
-                    detail: 'Votre objectif financier a été retiré. L\'appli continue de fonctionner normalement.',
+                    summary: this.i18n.t('fireSettings.deletedTitle'),
+                    detail: this.i18n.t('fireSettings.deletedDetail'),
                     life: 3000
                 });
             },
