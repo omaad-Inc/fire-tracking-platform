@@ -151,8 +151,8 @@ export class TransactionsService {
      */
     private refreshRecords(): void {
         if (this.recordsRequest$) return; // Already refreshing
-        
-        this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
+
+        this.recordsRequest$ = this.api.getAllTransactions().pipe(
             map(transactions => transactions
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
@@ -183,7 +183,7 @@ export class TransactionsService {
         }
         
         // Create new request
-        this.recordsRequest$ = this.api.getTransactions(0, 100).pipe(
+        this.recordsRequest$ = this.api.getAllTransactions().pipe(
             map(transactions => transactions
                 .map(t => this.mapTransactionToRecord(t))),
             catchError(error => {
@@ -208,7 +208,7 @@ export class TransactionsService {
     async getRecordsByType(type: 'Income' | 'Expense'): Promise<TransactionRecord[]> {
         try {
             const apiType: TransactionType = type === 'Income' ? 'income' : 'expense';
-            const transactions = await firstValueFrom(this.api.getTransactions(0, 100, apiType));
+            const transactions = await firstValueFrom(this.api.getAllTransactions(apiType));
             return transactions.map(t => this.mapTransactionToRecord(t));
         } catch (error) {
             console.error('Error fetching transactions by type:', error);
@@ -530,10 +530,14 @@ export class TransactionsService {
      * the complete picture of where money goes.
      */
     async getMonthlySummary(yearMonth: string): Promise<MonthlySummary> {
-        // Fetch everything — no category filter
+        // Fetch only the selected month, server-side date-filtered and un-capped
+        // (paginated past the per-page limit). No category filter — the Reports
+        // chart must show income + ALL expense categories, incl. investment/savings.
+        const start = `${yearMonth}-01`;
+        const end = `${yearMonth}-31`; // string upper-bound; safe for 28/30/31-day months
         let allTxs: Transaction[];
         try {
-            allTxs = await firstValueFrom(this.api.getTransactions(0, 500));
+            allTxs = await firstValueFrom(this.api.getAllTransactions(undefined, start, end));
         } catch {
             // Fallback to filtered records if the API call fails
             const records = await this.getRecords();

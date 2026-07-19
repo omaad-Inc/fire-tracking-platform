@@ -239,9 +239,9 @@ export class SavingsService {
     private refreshTransactions(): void {
         if (this.transactionsRequest$) return; // Already refreshing
         
-        this.transactionsRequest$ = this.api.getTransactions(0, 100).pipe(
+        this.transactionsRequest$ = this.api.getAllTransactions().pipe(
             map(transactions => {
-                const savingsTransactions = transactions.filter(t => 
+                const savingsTransactions = transactions.filter(t =>
                     t.category === 'savings' || t.category === 'investment'
                 );
                 return savingsTransactions.map(t => this.mapTransactionToRecord(t));
@@ -274,9 +274,9 @@ export class SavingsService {
         }
         
         // Create new request
-        this.transactionsRequest$ = this.api.getTransactions(0, 100).pipe(
+        this.transactionsRequest$ = this.api.getAllTransactions().pipe(
             map(transactions => {
-                const savingsTransactions = transactions.filter(t => 
+                const savingsTransactions = transactions.filter(t =>
                     t.category === 'savings' || t.category === 'investment'
                 );
                 return savingsTransactions.map(t => this.mapTransactionToRecord(t));
