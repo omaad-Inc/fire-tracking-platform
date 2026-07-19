@@ -52,7 +52,7 @@
       "name": "api-freshness",
       "urls": [
         "/api/**",
-        "https://fire-tracking-backend.vercel.app/api/**"
+        "https://fire-tracking-backend.onrender.com/api/**"
       ],
       "cacheConfig": {
         "strategy": "freshness",
@@ -65,7 +65,7 @@
       "name": "api-performance",
       "urls": [
         "/api/static/**",
-        "https://fire-tracking-backend.vercel.app/api/static/**"
+        "https://fire-tracking-backend.onrender.com/api/static/**"
       ],
       "cacheConfig": {
         "strategy": "performance",
