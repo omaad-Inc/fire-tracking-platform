@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Observable } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
@@ -17,8 +18,10 @@ import { ApiService } from '../../../core/services/api.service';
 @Component({
     selector: 'app-settings-preferences',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule],
+    imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule, ToastModule],
+    providers: [MessageService],
     template: `
+        <p-toast position="top-center" />
         <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
             <!-- Language & Region -->
             <div class="relative mb-8">
