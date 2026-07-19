@@ -14,7 +14,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div class="grid grid-cols-12 gap-8 lg:gap-12">
                         <!-- Brand -->
                         <div class="col-span-12 lg:col-span-4">
-                            <a (click)="navigateTo('home')" class="flex items-center gap-3 cursor-pointer mb-6 group">
+                            <a [routerLink]="[currentLang, 'landing']" fragment="home" class="flex items-center gap-3 cursor-pointer mb-6 group no-underline">
                                 <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
                                      class="w-12 h-12">
                                 <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad Wealth</span>
@@ -36,10 +36,10 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
                             <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.productTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a (click)="navigateTo('features')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productFeatures') }}</a></li>
-                                <li><a (click)="navigateTo('highlights')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.productDashboard') }}</a></li>
-                                <li><a (click)="navigateTo('projection')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Projection patrimoniale', 'Wealth projection') }}</a></li>
-                                <li><a (click)="navigateTo('pricing')" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Tarifs', 'Pricing') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'landing']" fragment="features" class="text-warm-400 hover:text-white transition-colors cursor-pointer no-underline">{{ t('landing.footer.productFeatures') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'landing']" fragment="highlights" class="text-warm-400 hover:text-white transition-colors cursor-pointer no-underline">{{ t('landing.footer.productDashboard') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'landing']" fragment="projection" class="text-warm-400 hover:text-white transition-colors cursor-pointer no-underline">{{ _('Projection patrimoniale', 'Wealth projection') }}</a></li>
+                                <li><a [routerLink]="[currentLang, 'landing']" fragment="pricing" class="text-warm-400 hover:text-white transition-colors cursor-pointer no-underline">{{ _('Tarifs', 'Pricing') }}</a></li>
                             </ul>
                         </div>
 
@@ -118,8 +118,4 @@ export class FooterWidget {
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
     get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
-
-    navigateTo(fragment: string) {
-        this.router.navigate([this.currentLang + '/landing'], { fragment });
-    }
 }

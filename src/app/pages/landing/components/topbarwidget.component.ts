@@ -20,35 +20,38 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         </a>
 
         <!-- Desktop Navigation -->
-        <nav class="hidden lg:flex items-center gap-2 mx-auto">
-            <a (click)="navigateTo('home')" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+        <nav class="hidden lg:flex items-center gap-2 mx-auto" [attr.aria-label]="_('Navigation principale', 'Main navigation')">
+            <a [routerLink]="[currentLang, 'landing']" fragment="home" pRipple
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.home') }}
             </a>
-            <a (click)="navigateTo('features')" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+            <a [routerLink]="[currentLang, 'landing']" fragment="features" pRipple
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.features') }}
             </a>
-            <a (click)="navigateTo('pricing')" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+            <a [routerLink]="[currentLang, 'landing']" fragment="pricing" pRipple
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
             </a>
-            <!-- Resources dropdown -->
-            <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)">
-                <a pRipple
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+            <!-- Resources disclosure (click-toggle; hover for mouse) -->
+            <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)"
+                 (keydown.escape)="toolsOpen.set(false)">
+                <button type="button" pRipple
+                   (click)="toolsOpen.set(!toolsOpen()); aboutOpen.set(false)"
+                   aria-haspopup="true" [attr.aria-expanded]="toolsOpen()"
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0
                           hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                           transition-all duration-200 cursor-pointer">
                     {{ _('Ressources', 'Resources') }}
                     <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
                        [class.rotate-180]="toolsOpen()"></i>
-                </a>
+                </button>
                 <div [class.hidden]="!toolsOpen()"
                      class="absolute top-full left-0 mt-1 w-72 rounded-xl
                             bg-surface-0 dark:bg-surface-800
@@ -100,16 +103,19 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     </a>
                 </div>
             </div>
-            <!-- About dropdown -->
-            <div class="relative" (mouseenter)="aboutOpen.set(true)" (mouseleave)="aboutOpen.set(false)">
-                <a pRipple
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+            <!-- About disclosure (click-toggle; hover for mouse) -->
+            <div class="relative" (mouseenter)="aboutOpen.set(true)" (mouseleave)="aboutOpen.set(false)"
+                 (keydown.escape)="aboutOpen.set(false)">
+                <button type="button" pRipple
+                   (click)="aboutOpen.set(!aboutOpen()); toolsOpen.set(false)"
+                   aria-haspopup="true" [attr.aria-expanded]="aboutOpen()"
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0
                           hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                           transition-all duration-200 cursor-pointer">
                     {{ t('landing.nav.about') }}
                     <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
                        [class.rotate-180]="aboutOpen()"></i>
-                </a>
+                </button>
                 <div [class.hidden]="!aboutOpen()"
                      class="absolute top-full left-0 mt-1 w-[36rem] rounded-2xl
                             bg-surface-0 dark:bg-surface-800
@@ -204,11 +210,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         </div>
 
         <!-- Mobile Menu Toggle -->
-        <a pButton [text]="true" severity="secondary" [rounded]="true" pRipple
+        <button type="button" pButton [text]="true" severity="secondary" [rounded]="true" pRipple
            class="lg:!hidden !p-2 shrink-0"
+           aria-haspopup="true" [attr.aria-expanded]="mobileMenuOpen()"
+           [attr.aria-label]="_('Menu', 'Menu')"
            (click)="mobileMenuOpen.set(!mobileMenuOpen())">
             <i class="pi !text-xl" [ngClass]="mobileMenuOpen() ? 'pi-times' : 'pi-bars'"></i>
-        </a>
+        </button>
 
         <!-- Mobile Dropdown -->
         <div [class.hidden]="!mobileMenuOpen()"
@@ -217,22 +225,22 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                     shadow-lg border border-surface-200/50 dark:border-surface-700/50 p-4">
             <ul class="list-none p-0 m-0 flex flex-col gap-1">
                 <li>
-                    <a (click)="navigateTo('home')" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                    <a [routerLink]="[currentLang, 'landing']" fragment="home" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <i class="pi pi-home mr-2"></i><span>{{ t('landing.nav.home') }}</span>
                     </a>
                 </li>
                 <li>
-                    <a (click)="navigateTo('features')" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                    <a [routerLink]="[currentLang, 'landing']" fragment="features" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <i class="pi pi-th-large mr-2"></i><span>{{ t('landing.nav.features') }}</span>
                     </a>
                 </li>
                 <li>
-                    <a (click)="navigateTo('pricing')" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                    <a [routerLink]="[currentLang, 'landing']" fragment="pricing" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <i class="pi pi-tag mr-2"></i><span>{{ t('landing.nav.pricing') }}</span>
                     </a>
@@ -369,11 +377,6 @@ export class TopbarWidget {
             darkTheme: next,
             themeMode: next ? 'dark' : 'light',
         }));
-    }
-
-    navigateTo(fragment: string) {
-        this.mobileMenuOpen.set(false);
-        this.router.navigate([this.currentLang + '/landing'], { fragment });
     }
 
     switchLang() {
