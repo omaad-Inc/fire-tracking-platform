@@ -1,4 +1,5 @@
 import { Component, ElementRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -125,7 +126,10 @@ export class AppSidebar {
 
     constructor(public el: ElementRef) {
         this.lang = this.getCurrentLang();
-        this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe(() => {
+        this.router.events.pipe(
+            filter(e => e instanceof NavigationEnd),
+            takeUntilDestroyed(),
+        ).subscribe(() => {
             this.lang = this.getCurrentLang();
             this.userMenuOpen.set(false);
         });

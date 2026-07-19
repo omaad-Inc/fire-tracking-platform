@@ -1,4 +1,5 @@
 import { Component, effect, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { I18nService } from '../../i18n/i18n.service';
@@ -31,7 +32,8 @@ export class AppMenu {
     constructor(private router: Router, private i18n: I18nService) {
         // Listen to route changes to update language
         this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd)
+            filter(event => event instanceof NavigationEnd),
+            takeUntilDestroyed(),
         ).subscribe(() => {
             this.updateMenu();
         });

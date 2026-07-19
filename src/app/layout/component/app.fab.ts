@@ -1,4 +1,5 @@
-import { Component, inject, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, inject, Output, EventEmitter, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -39,13 +40,14 @@ export class AppFab implements OnInit {
     @Output() action = new EventEmitter<void>();
 
     private router = inject(Router);
+    private destroyRef = inject(DestroyRef);
     readonly i18n = inject(I18nService);
     showFab = true;
 
     ngOnInit() {
         this.updateVisibility(this.router.url);
         this.router.events
-            .pipe(filter(e => e instanceof NavigationEnd))
+            .pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
             .subscribe((e: NavigationEnd) => this.updateVisibility(e.urlAfterRedirects));
     }
 

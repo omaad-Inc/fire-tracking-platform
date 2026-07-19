@@ -1,4 +1,5 @@
 import { Component, Renderer2, ViewChild, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
@@ -83,7 +84,10 @@ export class AppLayout implements OnInit, OnDestroy {
             }
         });
 
-        this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+        this.router.events.pipe(
+            filter((event) => event instanceof NavigationEnd),
+            takeUntilDestroyed(),
+        ).subscribe(() => {
             this.hideMenu();
         });
     }

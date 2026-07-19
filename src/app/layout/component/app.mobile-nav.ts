@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { inject } from '@angular/core';
@@ -309,7 +310,8 @@ export class AppMobileNav implements OnInit {
     ) {
         // Listen to route changes
         this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd)
+            filter(event => event instanceof NavigationEnd),
+            takeUntilDestroyed(),
         ).subscribe((event: NavigationEnd) => {
             this.currentUrl = event.urlAfterRedirects;
             this.closeMore();      // never leave the sheet open after navigating

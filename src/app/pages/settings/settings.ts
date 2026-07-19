@@ -1,4 +1,5 @@
-import { Component, OnInit, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -149,6 +150,7 @@ import { environment } from '../../../environments/environment';
 })
 export class Settings implements OnInit {
     private router       = inject(Router);
+    private destroyRef   = inject(DestroyRef);
     private i18n         = inject(I18nService);
     appVersion = environment.version;
     private tokenService = inject(TokenService);
@@ -209,7 +211,7 @@ export class Settings implements OnInit {
         this.i18n.setLang(this.lang as 'fr' | 'en');
         this.updateActiveChild(this.router.url);
         this.router.events
-            .pipe(filter(e => e instanceof NavigationEnd))
+            .pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
             .subscribe((e: NavigationEnd) => this.updateActiveChild(e.urlAfterRedirects));
     }
 
