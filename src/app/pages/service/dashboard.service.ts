@@ -241,13 +241,28 @@ export class DashboardService {
     /**
      * Get dashboard stats (simplified)
      */
+    /**
+     * One `/dashboard/summary` request shared across getStats/getFIREMetrics
+     * (and anything else that needs it). The dashboard used to fire ~8 calls —
+     * summary AND a separate /fire-metrics (which is currently 500-ing) — with
+     * no dedup, so concurrent widgets double-requested. This memoizes the
+     * in-flight promise so a burst collapses to a single network call.
+     */
+    private summaryInFlight: Promise<DashboardSummary> | null = null;
+    private fetchSummary(): Promise<DashboardSummary> {
+        if (this.summaryInFlight) return this.summaryInFlight;
+        this.summaryInFlight = firstValueFrom(this.api.getDashboardSummary())
+            .finally(() => { this.summaryInFlight = null; });
+        return this.summaryInFlight;
+    }
+
     async getStats(): Promise<DashboardStats> {
         const KEY = 'stats';
         const cached = this.getCached<DashboardStats>(KEY);
 
         const fetch = async () => {
             try {
-                const summary = await firstValueFrom(this.api.getDashboardSummary());
+                const summary = await this.fetchSummary();
                 const result: DashboardStats = {
                     netWorth: summary.net_worth,
                     netWorthChange: summary.net_worth_change_30d,
@@ -285,21 +300,19 @@ export class DashboardService {
 
         const fetch = async () => {
             try {
-                const raw: any = await firstValueFrom(this.api.getFIREMetrics());
+                // Derive from summary.fire_metrics — the dedicated /fire-metrics
+                // endpoint is redundant (summary already carries these) and is
+                // currently 500-ing in prod. One request feeds the whole card.
+                const raw: any = (await this.fetchSummary()).fire_metrics ?? {};
                 const result: FIREProgress = {
-                    // /dashboard/fire-metrics returns total_net_worth; /dashboard/summary returns current_net_worth
-                    currentNetWorth: raw.total_net_worth ?? raw.current_net_worth ?? 0,
+                    currentNetWorth: raw.current_net_worth ?? raw.total_net_worth ?? 0,
                     targetAmount: raw.fire_target ?? 0,
-                    // Pydantic schema uses fire_progress_percentage; summary dict uses progress_percentage
-                    progressPct: raw.fire_progress_percentage ?? raw.progress_percentage ?? 0,
+                    progressPct: raw.progress_percentage ?? raw.fire_progress_percentage ?? 0,
                     yearsToFire: raw.years_to_fire ?? null,
-                    // Pydantic schema uses fire_date; summary dict uses estimated_fire_date
-                    estimatedDate: raw.fire_date ?? raw.estimated_fire_date ?? null,
+                    estimatedDate: raw.estimated_fire_date ?? raw.fire_date ?? null,
                     monthlyPassiveIncomeNeeded: raw.monthly_passive_income_needed ?? 0,
-                    // Pydantic schema uses passive_income; summary dict uses current_passive_income
-                    currentPassiveIncome: raw.passive_income ?? raw.current_passive_income ?? 0,
-                    // Pydantic schema uses savings_rate; summary dict uses monthly_savings_rate
-                    savingsRate: raw.savings_rate ?? raw.monthly_savings_rate ?? 0
+                    currentPassiveIncome: raw.current_passive_income ?? raw.passive_income ?? 0,
+                    savingsRate: raw.monthly_savings_rate ?? raw.savings_rate ?? 0
                 };
                 this.setCache(KEY, result);
                 return result;
