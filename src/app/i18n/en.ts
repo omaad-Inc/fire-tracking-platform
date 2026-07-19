@@ -1355,7 +1355,7 @@ export const EN = {
       h3Item1: 'Secure hosting',
       h3Item2: 'Zero ads, zero tracking',
       h3Item3: 'Full deletion on request',
-      h3S1Title: 'End-to-end encryption',
+      h3S1Title: 'Encrypted in transit (TLS 1.3)',
       h3S1Desc: 'SSL/TLS communications',
       h3S2Title: 'Data never sold',
       h3S2Desc: 'No third party access',
