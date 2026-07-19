@@ -43,7 +43,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                 </div>
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('menu.financialGoal') }}</h1>
-                    <p class="text-warm-500 dark:text-warm-400 text-sm m-0">Construis. Protège. Règne.</p>
+                    <p class="text-warm-500 dark:text-warm-400 text-sm m-0">{{ i18n.t('fire.tagline') }}</p>
                 </div>
             </div>
 
@@ -53,9 +53,9 @@ import { FireSettings } from '../settings/components/fire-settings';
                     <div class="relative w-20 h-20 mx-auto rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
                         <i class="pi pi-flag text-3xl text-brand-700 dark:text-ochre-400"></i>
                     </div>
-                    <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ i18n.lang() === 'fr' ? 'Définissez votre objectif financier' : 'Set your financial goal' }}</h2>
+                    <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ i18n.t('fire.setGoalTitle') }}</h2>
                     <p class="relative text-warm-500 dark:text-warm-400 text-sm max-w-md mx-auto mb-6">
-                        Le capital à atteindre pour que vos revenus passifs couvrent vos dépenses — et que vous ayez le choix de travailler ou non.
+                        {{ i18n.t('fire.setGoalDesc') }}
                     </p>
                 </div>
             }
@@ -84,27 +84,27 @@ import { FireSettings } from '../settings/components/fire-settings';
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
                                 <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ progressPct() | number:'1.1-1' }}%</span>
-                                <span class="text-warm-500 dark:text-warm-400 text-xs mt-1">vers FIRE</span>
+                                <span class="text-warm-500 dark:text-warm-400 text-xs mt-1">{{ i18n.t('fire.towardsFire') }}</span>
                             </div>
                         </div>
 
                         <!-- Main numbers -->
                         <div class="flex-1 text-center lg:text-left">
-                            <p class="text-warm-500 dark:text-warm-400 text-sm mb-1">Patrimoine net actuel</p>
+                            <p class="text-warm-500 dark:text-warm-400 text-sm mb-1">{{ i18n.t('fire.currentNetWorth') }}</p>
                             <div class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3">
                                 <app-amount [value]="fire()!.currentNetWorth" />
                             </div>
                             <p class="text-warm-500 dark:text-warm-400 text-sm">
-                                sur un objectif de
+                                {{ i18n.t('fire.onTargetOf') }}
                                 <span class="font-semibold text-ochre-600 dark:text-ochre-400">
                                     <app-amount [value]="fire()!.targetAmount!" />
                                 </span>
                             </p>
                             @if (remaining() > 0) {
                                 <p class="text-warm-500 dark:text-warm-400 text-sm mt-1">
-                                    Encore <span class="font-semibold text-surface-900 dark:text-surface-0">
+                                    {{ i18n.t('fire.stillPrefix') }} <span class="font-semibold text-surface-900 dark:text-surface-0">
                                         <app-amount [value]="remaining()" />
-                                    </span> à constituer
+                                    </span> {{ i18n.t('fire.stillSuffix') }}
                                 </p>
                             }
                         </div>
@@ -115,29 +115,29 @@ import { FireSettings } from '../settings/components/fire-settings';
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
                     <!-- Years to FIRE -->
                     <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Années restantes</p>
+                        <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">{{ i18n.t('fire.yearsRemaining') }}</p>
                         @if (fire()!.yearsToFire != null) {
                             <div class="relative text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
                                 {{ fire()!.yearsToFire | number:'1.0-1' }}
-                                <span class="text-surface-400 text-base font-normal ml-1">{{ fire()!.yearsToFire === 1 ? 'an' : 'ans' }}</span>
+                                <span class="text-surface-400 text-base font-normal ml-1">{{ fire()!.yearsToFire === 1 ? i18n.t('fire.yearOne') : i18n.t('fire.yearOther') }}</span>
                             </div>
                             @if (fire()!.estimatedDate) {
                                 <p class="relative text-surface-400 text-xs mt-1 truncate">~ {{ formatDate(fire()!.estimatedDate!) }}</p>
                             }
                         } @else {
                             <div class="relative text-2xl text-surface-400">—</div>
-                            <p class="relative text-surface-400 text-xs mt-1">Augmentez votre épargne pour estimer</p>
+                            <p class="relative text-surface-400 text-xs mt-1">{{ i18n.t('fire.increaseSavingsToEstimate') }}</p>
                         }
                     </div>
 
                     <!-- Monthly passive income at FIRE -->
                     <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">Revenus passifs visés</p>
+                        <p class="relative text-surface-500 text-xs uppercase tracking-wide mb-2 truncate">{{ i18n.t('fire.passiveIncomeTarget') }}</p>
                         @if ((fire()!.monthlyPassiveIncomeNeeded) > 0) {
                             <div class="relative text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">
                                 <app-amount [value]="fire()!.monthlyPassiveIncomeNeeded!" />
                             </div>
-                            <p class="relative text-surface-400 text-xs mt-1 truncate">par mois (estimé)</p>
+                            <p class="relative text-surface-400 text-xs mt-1 truncate">{{ i18n.t('fire.perMonthEstimated') }}</p>
                         } @else {
                             <div class="relative text-2xl text-surface-400">—</div>
                         }
@@ -145,7 +145,7 @@ import { FireSettings } from '../settings/components/fire-settings';
 
                     <!-- Savings rate -->
                     <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6 text-center h-full min-h-[140px] flex flex-col justify-center">
-                        <p class="relative text-warm-500 dark:text-warm-400 text-xs uppercase tracking-wide mb-2 truncate">Taux d'épargne</p>
+                        <p class="relative text-warm-500 dark:text-warm-400 text-xs uppercase tracking-wide mb-2 truncate">{{ i18n.t('fire.savingsRate') }}</p>
                         @if ((fire()!.savingsRate) > 0) {
                             <div class="relative text-3xl font-bold truncate"
                                  [class.text-positive]="(fire()!.savingsRate) >= 20"
@@ -154,13 +154,13 @@ import { FireSettings } from '../settings/components/fire-settings';
                                 {{ fire()!.savingsRate | number:'1.0-1' }}%
                             </div>
                             <p class="relative text-warm-400 text-xs mt-1 truncate">
-                                @if ((fire()!.savingsRate) >= 20) { Excellent rythme }
-                                @else if ((fire()!.savingsRate) >= 10) { Bon rythme }
-                                @else { À améliorer }
+                                @if ((fire()!.savingsRate) >= 20) { {{ i18n.t('fire.paceExcellent') }} }
+                                @else if ((fire()!.savingsRate) >= 10) { {{ i18n.t('fire.paceGood') }} }
+                                @else { {{ i18n.t('fire.paceImprove') }} }
                             </p>
                         } @else {
                             <div class="relative text-2xl text-warm-400">—</div>
-                            <p class="relative text-warm-400 text-xs mt-1">Ajoutez des transactions</p>
+                            <p class="relative text-warm-400 text-xs mt-1">{{ i18n.t('fire.addTransactions') }}</p>
                         }
                     </div>
                 </div>
@@ -238,7 +238,7 @@ export class FireDashboardPage implements OnInit, OnDestroy {
 
     formatDate(iso: string): string {
         const d = new Date(iso);
-        const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
-        return `${months[d.getMonth()]} ${d.getFullYear()}`;
+        const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
+        return d.toLocaleDateString(locale, { month: 'short', year: 'numeric' });
     }
 }
