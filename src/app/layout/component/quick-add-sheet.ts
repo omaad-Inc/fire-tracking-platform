@@ -11,6 +11,7 @@ import { PatrimoineService } from '../../pages/service/patrimoine.service';
 import { AssetsStateService } from '../../pages/service/assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 
 /** Monetary asset categories usable as a transaction account. Mirrors
  *  TransactionLogs.MONETARY_CATEGORIES — keep the two in sync. */
@@ -26,7 +27,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
 @Component({
     selector: 'app-quick-add-sheet',
     standalone: true,
-    imports: [CommonModule, ToastModule],
+    imports: [CommonModule, ToastModule, FocusTrapDirective],
     providers: [MessageService],
     template: `
         <p-toast position="top-center" key="quickadd" />
@@ -45,6 +46,9 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                         px-5 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]"
                  [class.translate-y-0]="open()"
                  [class.translate-y-full]="!open()"
+                 role="dialog" aria-modal="true" [attr.aria-label]="i18n.t('quickAdd.title')"
+                 [appFocusTrap]="open()" [inert]="!open()"
+                 (keydown.escape)="close.emit()"
                  (click)="$event.stopPropagation()">
 
                 <!-- Grab handle -->

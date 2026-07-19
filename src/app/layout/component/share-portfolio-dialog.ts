@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, PortfolioShareInfo } from '../../core/services/api.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 
 const ALL_CATEGORIES = [
     'real_estate', 'stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'cash',
@@ -19,11 +20,14 @@ const ALL_CATEGORIES = [
 @Component({
     selector: 'app-share-portfolio-dialog',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, FocusTrapDirective],
     template: `
         @if (open) {
         <div class="fixed inset-0 z-[1100] flex items-start justify-center overflow-y-auto bg-black/40 backdrop-blur-sm p-4" (click)="close.emit()">
-            <div class="w-full max-w-2xl bg-surface-0 dark:bg-surface-900 rounded-3xl shadow-2xl my-8 overflow-hidden" (click)="$event.stopPropagation()">
+            <div class="w-full max-w-2xl bg-surface-0 dark:bg-surface-900 rounded-3xl shadow-2xl my-8 overflow-hidden"
+                 role="dialog" aria-modal="true" [attr.aria-label]="t('shareDialog.title')"
+                 [appFocusTrap]="open" (keydown.escape)="close.emit()"
+                 (click)="$event.stopPropagation()">
                 <!-- Header -->
                 <div class="flex items-center justify-between px-6 pt-6 pb-3">
                     <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0">{{ t('shareDialog.title') }}</h2>

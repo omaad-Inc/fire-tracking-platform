@@ -852,6 +852,7 @@ export const FR = {
     },
   },
   quickAdd: {
+    title: 'Ajouter une transaction',
     fabLabel: 'Ajouter',
     titleExpense: 'Nouvelle dépense',
     titleIncome: 'Nouvelle entrée',

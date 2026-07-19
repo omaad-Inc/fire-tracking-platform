@@ -1,15 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PinService } from '../services/pin.service';
+import { FocusTrapDirective } from '../a11y/focus-trap.directive';
 
 @Component({
     selector: 'app-pin-lock',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FocusTrapDirective],
     template: `
         <!-- Full-screen lock overlay -->
         <div class="fixed inset-0 z-[9999] flex flex-col items-center justify-center
                     bg-warm-900 select-none"
+             role="dialog" aria-modal="true" aria-label="PIN"
+             [appFocusTrap]="true"
              style="touch-action: none;">
 
             <!-- Background glow -->
