@@ -123,6 +123,13 @@ export class DashboardService {
         return label === 'assetCategories.' + cat ? cat : label;
     }
 
+    /** Locale-aware short month names (indexed 0-11) for chart labels. */
+    private monthNames(): string[] {
+        return this.i18n.lang() === 'fr'
+            ? ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc']
+            : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    }
+
     // ── Cache (5-minute TTL, stale-while-revalidate) ──────────────────────────
     private readonly CACHE_TTL = 5 * 60 * 1000;
     private _cache: Record<string, { data: any; ts: number }> = {};
@@ -383,7 +390,7 @@ export class DashboardService {
             cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
         }
 
-        const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const MONTH_NAMES = this.monthNames();
         const labels: string[] = [];
         const assetsArr: number[] = [];
         const debtsArr: number[] = [];
@@ -562,7 +569,7 @@ export class DashboardService {
             cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
         }
 
-        const MONTH_NAMES = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const MONTH_NAMES = this.monthNames();
         const result: ChartDataPoint[] = [];
 
         for (let idx = 0; idx < pointDates.length; idx++) {
@@ -605,7 +612,7 @@ export class DashboardService {
 
     private formatDateLabel(dateStr: string): string {
         const date = new Date(dateStr);
-        const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const months = this.monthNames();
         return `${months[date.getMonth()]} ${date.getFullYear()}`;
     }
 
