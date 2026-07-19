@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
-import { ApiService, DashboardSummary, FIREMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
+import { ApiService, DashboardSummary, FireMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
 import { isDarkMode } from '../../core/theme/chart-theme';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../core/services/currency.service';
@@ -300,19 +300,19 @@ export class DashboardService {
 
         const fetch = async () => {
             try {
-                // Derive from summary.fire_metrics — the dedicated /fire-metrics
-                // endpoint is redundant (summary already carries these) and is
-                // currently 500-ing in prod. One request feeds the whole card.
-                const raw: any = (await this.fetchSummary()).fire_metrics ?? {};
+                // Derive from the typed summary.fire_metrics (backend
+                // FireMetricsSummary). One canonical field-name set end-to-end —
+                // no more `?? ` guessing across a drifted contract (P1-18).
+                const fm: FireMetrics = (await this.fetchSummary()).fire_metrics;
                 const result: FIREProgress = {
-                    currentNetWorth: raw.current_net_worth ?? raw.total_net_worth ?? 0,
-                    targetAmount: raw.fire_target ?? 0,
-                    progressPct: raw.progress_percentage ?? raw.fire_progress_percentage ?? 0,
-                    yearsToFire: raw.years_to_fire ?? null,
-                    estimatedDate: raw.estimated_fire_date ?? raw.fire_date ?? null,
-                    monthlyPassiveIncomeNeeded: raw.monthly_passive_income_needed ?? 0,
-                    currentPassiveIncome: raw.current_passive_income ?? raw.passive_income ?? 0,
-                    savingsRate: raw.monthly_savings_rate ?? raw.savings_rate ?? 0
+                    currentNetWorth: fm.current_net_worth,
+                    targetAmount: fm.fire_target,
+                    progressPct: fm.progress_percentage,
+                    yearsToFire: fm.years_to_fire,
+                    estimatedDate: fm.estimated_fire_date,
+                    monthlyPassiveIncomeNeeded: fm.monthly_passive_income_needed,
+                    currentPassiveIncome: fm.current_passive_income,
+                    savingsRate: fm.monthly_savings_rate
                 };
                 this.setCache(KEY, result);
                 return result;
