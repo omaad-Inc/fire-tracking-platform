@@ -221,7 +221,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ t('debts.fields.total') }} <span class="text-negative">*</span>
-                            <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
+                            <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
@@ -233,7 +233,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ record.type === 'Debt' ? t('debts.alreadyPaid') : t('debts.alreadyReceived') }}
-                            <span class="text-surface-400 font-normal ml-1">({{ cs.config().symbol }})</span>
+                            <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
@@ -424,8 +424,23 @@ export class DebtsProgress implements OnInit {
         this.productDialog = true;
     }
 
+    /** Currency shown next to the amount inputs: the debt's own currency when
+     *  editing, the display currency for a new debt. Falls back to the raw
+     *  ISO code when it differs from the display currency's symbol. */
+    formCurrencyLabel(): string {
+        const displayCode = this.cs.config().code;
+        const code = this.isEdit ? (this.record.currency || 'EUR') : displayCode;
+        return code === displayCode ? this.cs.config().symbol : code;
+    }
+
     editRecord(record: DebtRecord) {
-        this.record = { ...record };
+        // Edit in the debt's NATIVE currency (what was typed at creation) —
+        // prefilling the EUR-base values showed a FCFA user EUR numbers.
+        this.record = {
+            ...record,
+            total: record.nativeTotal ?? record.total,
+            paid: record.nativePaid ?? record.paid,
+        };
         this.submitted = false;
         this.isEdit = true;
         this.productDialog = true;

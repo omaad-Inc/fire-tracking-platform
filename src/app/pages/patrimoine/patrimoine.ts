@@ -10,6 +10,7 @@ import { AssetsStateService } from '../service/assets-state.service';
 import { ApiService, Debt } from '../../core/services/api.service';
 import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
+import { CurrencyService } from '../../core/services/currency.service';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 
 interface CategoryGroupCard {
@@ -256,6 +257,7 @@ export class Patrimoine implements OnInit, OnDestroy {
     i18n = inject(I18nService);
     private patrimoineService = inject(PatrimoineService);
     private apiService = inject(ApiService);
+    private currencyService = inject(CurrencyService);
     private stateService = inject(AssetsStateService);
     private subscription?: Subscription;
 
@@ -283,7 +285,9 @@ export class Patrimoine implements OnInit, OnDestroy {
     });
 
     totalAssets = computed(() => this.allAssets().reduce((s, a) => s + a.value, 0));
-    totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe').reduce((s, d) => s + d.current_amount, 0));
+    // Debts are stored in their native currency — convert to EUR base to sum.
+    totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe')
+        .reduce((s, d) => s + this.currencyService.toEurFromNative(d.current_amount, d.currency), 0));
     debtsCount = computed(() => this.debts().filter(d => d.type === 'i_owe').length);
 
     // ── Currency exposure — how net worth splits across currencies ──

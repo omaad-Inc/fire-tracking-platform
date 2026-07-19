@@ -370,6 +370,8 @@ export interface Debt {
     description: string | null;
     initial_amount: number;
     current_amount: number;
+    /** ISO 4217 code the amounts are denominated in (native currency). */
+    currency: string;
     interest_rate: number | null;
     monthly_payment: number | null;
     next_payment_date: string | null;
@@ -391,6 +393,7 @@ export interface DebtCreate {
     description?: string;
     initial_amount: number;
     current_amount: number;
+    currency?: string;
     interest_rate?: number;
     monthly_payment?: number;
     next_payment_date?: string;
@@ -406,6 +409,7 @@ export interface DebtUpdate {
     description?: string;
     initial_amount?: number;
     current_amount?: number;
+    currency?: string;
     interest_rate?: number;
     monthly_payment?: number;
     next_payment_date?: string;

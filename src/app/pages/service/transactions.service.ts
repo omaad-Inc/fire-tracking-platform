@@ -562,17 +562,20 @@ export class TransactionsService {
             return { month: yearMonth, income, expenses, net: income-expenses, count: monthRecords.length, byCategory };
         }
 
-        // Map ALL transactions for the selected month — income and ALL expense categories
+        // Map ALL transactions for the selected month — income and ALL expense categories.
+        // Amounts from the raw API are NATIVE (multi-currency): every sum must go
+        // through FX to the EUR base first — 650 000 XOF + 1 000 EUR is not "651 000".
         const monthTxs = allTxs.filter(t => t.date.startsWith(yearMonth));
+        const toEur = (t: Transaction) => this.currencyService.toEurFromNative(t.amount, t.currency);
 
-        const income   = monthTxs.filter(t => t.type === 'income') .reduce((s, t) => s + t.amount, 0);
-        const expenses = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+        const income   = monthTxs.filter(t => t.type === 'income') .reduce((s, t) => s + toEur(t), 0);
+        const expenses = monthTxs.filter(t => t.type === 'expense').reduce((s, t) => s + toEur(t), 0);
         const count    = monthTxs.length;
 
         const byCat: Record<string, number> = {};
         for (const t of monthTxs.filter(t => t.type === 'expense')) {
             const cat = t.category || 'other_expense';
-            byCat[cat] = (byCat[cat] || 0) + t.amount;
+            byCat[cat] = (byCat[cat] || 0) + toEur(t);
         }
 
         const byCategory = Object.entries(byCat)
