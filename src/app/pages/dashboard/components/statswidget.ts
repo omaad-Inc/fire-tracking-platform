@@ -8,51 +8,17 @@ import { DashboardService, DashboardStats, FIREProgress } from '../../service/da
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
+import { SkeletonCardComponent } from '../../../core/components/skeleton-card.component';
 import { CurrencyService } from '../../../core/services/currency.service';
 
 @Component({
     standalone: true,
     selector: 'app-stats-widget',
-    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent, SkeletonCardComponent],
     template: `
         <!-- Loading State -->
         @if (loading()) {
-            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1">
-                            <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
-                            <div class="h-8 bg-surface-200 dark:bg-surface-700 rounded w-32"></div>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-surface-200 dark:bg-surface-700"></div>
-                    </div>
-                    <div class="h-6 bg-surface-200 dark:bg-surface-700 rounded w-40"></div>
-                </div>
-            </div>
-            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1">
-                            <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
-                            <div class="h-8 bg-surface-200 dark:bg-surface-700 rounded w-32"></div>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-surface-200 dark:bg-surface-700"></div>
-                    </div>
-                    <div class="h-6 bg-surface-200 dark:bg-surface-700 rounded w-40"></div>
-                </div>
-            </div>
-            <div class="col-span-12 sm:col-span-6 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 p-5 animate-pulse">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex-1">
-                            <div class="h-4 bg-surface-200 dark:bg-surface-700 rounded w-24 mb-2"></div>
-                            <div class="h-8 bg-surface-200 dark:bg-surface-700 rounded w-32"></div>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-surface-200 dark:bg-surface-700"></div>
-                    </div>
-                    <div class="h-6 bg-surface-200 dark:bg-surface-700 rounded w-40"></div>
-                </div>
-            </div>
+            <app-skeleton-card [count]="3" />
         } @else if (loadError()) {
             <div class="col-span-12">
                 <app-load-error [title]="t('dashboard.stats.errorTitle')" [body]="t('dashboard.stats.errorBody')" (retry)="retry()" />
