@@ -197,11 +197,11 @@ export class WealthScoreWidget implements OnInit {
             labels: this.axes.map(a => this.t(a.labelKey)),
             datasets: [{
                 data,
-                borderColor: after ? '#C77B3C' : '#6366f1',
-                backgroundColor: after ? 'rgba(199, 123, 60, 0.18)' : 'rgba(99, 102, 241, 0.12)',
+                borderColor: after ? '#C77B3C' : '#8A98AE',
+                backgroundColor: after ? 'rgba(199, 123, 60, 0.18)' : 'rgba(138, 152, 174, 0.12)',
                 borderWidth: 2.5,
-                pointBackgroundColor: after ? '#C77B3C' : '#6366f1',
-                pointBorderColor: after ? '#C77B3C' : '#6366f1',
+                pointBackgroundColor: after ? '#C77B3C' : '#8A98AE',
+                pointBorderColor: after ? '#C77B3C' : '#8A98AE',
                 pointRadius: 4,
                 pointHoverRadius: 6,
             }]

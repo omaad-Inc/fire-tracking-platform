@@ -33,7 +33,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                         <span class="text-positive-400 font-bold">43%</span>
                                     </div>
                                     <div class="h-4 bg-warm-800 rounded-full overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r from-brand-700 via-cyan-500 to-positive-500 rounded-full" style="width: 43%"></div>
+                                        <div class="h-full bg-gradient-to-r from-brand-700 via-ochre-400 to-positive-500 rounded-full" style="width: 43%"></div>
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
