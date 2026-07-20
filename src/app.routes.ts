@@ -4,7 +4,6 @@ import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeEn from '@angular/common/locales/en';
 import { LOCALE_ID } from '@angular/core';
-import { AppLayout } from './app/layout/component/app.layout';
 import { authGuard } from './app/core/guards/auth.guard';
 import { shareBootstrapGuard } from './app/core/guards/share.guard';
 
@@ -78,7 +77,7 @@ export const appRoutes: Routes = [
     { path: 'share/:token/unavailable', loadComponent: () => import('./app/pages/share/share-unavailable').then(m => m.ShareUnavailable) },
     {
         path: 'share/:token',
-        component: AppLayout,
+        loadComponent: () => import('./app/layout/component/app.layout').then(m => m.AppLayout),
         canActivate: [shareBootstrapGuard],
         children: [
             { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
@@ -89,7 +88,7 @@ export const appRoutes: Routes = [
     // Main app with layout (protected routes)
     {
         path: ':lang',
-        component: AppLayout,
+        loadComponent: () => import('./app/layout/component/app.layout').then(m => m.AppLayout),
         canActivate: [authGuard],
         providers: [
             {

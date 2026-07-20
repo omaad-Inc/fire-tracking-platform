@@ -16,6 +16,7 @@ import { PinService } from '../../core/services/pin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ShareContextService } from '../../core/services/share-context.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { applyChartDefaults } from '../../core/theme/chart-theme';
 
 @Component({
     selector: 'app-layout',
@@ -87,6 +88,10 @@ export class AppLayout implements OnInit, OnDestroy {
         public renderer: Renderer2,
         public router: Router
     ) {
+        // Apply Chart.js global defaults now that we're inside the authenticated
+        // shell (dashboard/patrimoine/goals/wealth all live here). Idempotent, and
+        // keeps Chart.js off the anonymous landing/login path (P2-FE-4).
+        applyChartDefaults();
         this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
             if (!this.menuOutsideClickListener) {
                 this.menuOutsideClickListener = this.renderer.listen('document', 'click', (event) => {

@@ -138,3 +138,40 @@ export function isDarkMode(): boolean {
     return document.documentElement.classList.contains('app-dark')
         || document.body.classList.contains('app-dark');
 }
+
+/**
+ * Apply the brand-tokenized Chart.js global defaults (font + tooltip styling).
+ *
+ * P2-FE-4: this used to run at app bootstrap in app.config.ts, so Chart.js was
+ * pulled into the critical path on EVERY page — including the landing and login,
+ * which have no charts. It now runs on demand, called by the first chart-bearing
+ * component to render (idempotent — the guard makes every later call a no-op),
+ * so anonymous/landing/login sessions never fetch Chart.js. The dynamic import
+ * also keeps it off the eager graph and runs AFTER PrimeNG's <p-chart> has
+ * registered Chart.js (avoids the historical white-screen crash).
+ */
+let chartDefaultsApplied = false;
+export function applyChartDefaults(): void {
+    if (chartDefaultsApplied) return;
+    chartDefaultsApplied = true;
+    import('chart.js').then(({ Chart }) => {
+        Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
+        Object.assign(Chart.defaults.plugins.tooltip, {
+            backgroundColor: 'rgba(20, 19, 15, 0.95)',
+            titleColor: '#FAF8F4',
+            bodyColor: '#DEDAD0',
+            titleFont: { weight: 'bold' as const, size: 13 },
+            bodyFont: { size: 12 },
+            padding: { top: 10, bottom: 10, left: 14, right: 14 },
+            cornerRadius: 10,
+            borderColor: 'rgba(199, 123, 60, 0.25)',
+            borderWidth: 1,
+            displayColors: true,
+            boxWidth: 8,
+            boxHeight: 8,
+            boxPadding: 4,
+            usePointStyle: true,
+            caretSize: 6,
+        });
+    }).catch(() => { /* Chart.js not available */ });
+}

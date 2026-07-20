@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { ChartModule } from 'primeng/chart';
 import { I18nService } from '../../../i18n/i18n.service';
+import { applyChartDefaults } from '../../../core/theme/chart-theme';
 
 const BEFORE_DATA = [30, 55, 10, 15, 20];
 const AFTER_DATA  = [75, 70, 60, 85, 65];
@@ -151,6 +152,7 @@ export class WealthScoreWidget implements OnInit {
     }
 
     ngOnInit(): void {
+        applyChartDefaults(); // Chart.js defaults on demand (P2-FE-4)
         this.buildChartData();
         this.chartOptions = {
             responsive: true,
