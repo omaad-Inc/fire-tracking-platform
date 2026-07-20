@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, catchError, of, firstValueFrom, shareReplay, switchMap } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { ApiService, SavingGoal, SavingGoalCreate, SavingGoalUpdate, Transaction } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
+import { cachedResource } from '../../core/util/cached-resource';
 
 export interface SavingRecord {
     id?: string;
@@ -43,29 +44,28 @@ const GOAL_COLORS = [
     { bg: 'bg-brand-700', text: 'text-brand-700 dark:text-brand-300' },
 ];
 
-interface CacheEntry<T> {
-    data: T;
-    timestamp: number;
-}
-
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
 @Injectable({ providedIn: 'root' })
 export class SavingsService {
     private api             = inject(ApiService);
     private currencyService = inject(CurrencyService);
-    
-    // Cache storage
-    private goalsCache: CacheEntry<SavingsGoalDisplay[]> | null = null;
-    private transactionsCache: CacheEntry<SavingRecord[]> | null = null;
-    private statsCache: CacheEntry<SavingsStatsSummary> | null = null;
-    private progressCache: CacheEntry<SavingsSeriesPoint[]> | null = null;
-    
-    // Request deduplication - store ongoing requests
-    private goalsRequest$: Observable<SavingsGoalDisplay[]> | null = null;
-    private transactionsRequest$: Observable<SavingRecord[]> | null = null;
-    private statsRequest$: Observable<SavingsStatsSummary> | null = null;
-    private progressRequest$: Observable<SavingsSeriesPoint[]> | null = null;
+
+    // Shared cachedResource per entity (P2-FE-1). Stats are a pure derivation of
+    // goals + savings transactions, so there is no separate stats cache.
+    private goalsResource = cachedResource<SavingsGoalDisplay[]>(
+        () => firstValueFrom(this.api.getSavingGoals().pipe(
+            map(goals => goals.map((g, i) => this.mapGoalToDisplay(g, i))),
+        )),
+    );
+    private transactionsResource = cachedResource<SavingRecord[]>(
+        () => firstValueFrom(this.api.getAllTransactions().pipe(
+            map(txs => txs
+                .filter(t => t.category === 'savings' || t.category === 'investment')
+                .map(t => this.mapTransactionToRecord(t))),
+        )),
+    );
+    private progressResource = cachedResource<SavingsSeriesPoint[]>(
+        () => this.computeProgressClientSide(),
+    );
 
     constructor() {
         // Clear cached user data on logout/login (see CACHE_RESET).
@@ -74,97 +74,17 @@ export class SavingsService {
 
     // ==================== SAVING GOALS ====================
 
-    /**
-     * Get all saving goals (with caching)
-     */
-    async getGoals(): Promise<SavingsGoalDisplay[]> {
-        // Return cached data immediately if available and fresh
-        if (this.goalsCache && this.isCacheValid(this.goalsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.goalsCache)) {
-                this.refreshGoals();
-            }
-            return this.goalsCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.goalsCache) {
-            // Refresh in background
-            this.refreshGoals();
-            return this.goalsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getGoals$());
-    }
-    
-    /**
-     * Refresh goals in background
-     */
-    private refreshGoals(): void {
-        if (this.goalsRequest$) return; // Already refreshing
-
-        this.goalsRequest$ = this.createGoalsRequest();
+    /** Get all saving goals (cached). */
+    getGoals(): Promise<SavingsGoalDisplay[]> {
+        return this.goalsResource.load();
     }
 
-    /**
-     * Build the shared goals request. On failure: fall back to the cache if
-     * one exists, otherwise LET THE ERROR SURFACE so widgets can render an
-     * error+retry card instead of a fake-empty state. The in-flight handle
-     * is reset in all outcomes so retry works.
-     */
-    private createGoalsRequest(): Observable<SavingsGoalDisplay[]> {
-        const request$ = this.api.getSavingGoals().pipe(
-            map(goals => goals.map((goal, index) => this.mapGoalToDisplay(goal, index))),
-            catchError(error => {
-                console.error('Error fetching saving goals:', error);
-                if (this.goalsCache) return of(this.goalsCache.data);
-                throw error;
-            }),
-            shareReplay(1)
-        );
-
-        firstValueFrom(request$)
-            .then(data => {
-                this.goalsCache = { data, timestamp: Date.now() };
-            })
-            .catch(() => { /* surfaced to subscribers */ })
-            .finally(() => {
-                this.goalsRequest$ = null;
-            });
-
-        return request$;
-    }
-
-    /**
-     * Get saving goals as Observable (with caching and deduplication)
-     */
-    getGoals$(): Observable<SavingsGoalDisplay[]> {
-        // Return cached data immediately if available
-        if (this.goalsCache && this.isCacheValid(this.goalsCache)) {
-            return of(this.goalsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.goalsRequest$) {
-            return this.goalsRequest$;
-        }
-
-        // Create new request (errors surface when there is no cache to serve)
-        this.goalsRequest$ = this.createGoalsRequest();
-        return this.goalsRequest$;
-    }
-
-    /**
-     * Create a new saving goal
-     */
+    /** Create a new saving goal. */
     async createGoal(data: SavingGoalCreate): Promise<SavingsGoalDisplay | null> {
         try {
             const goal = await firstValueFrom(this.api.createSavingGoal(data));
             const displayGoal = this.mapGoalToDisplay(goal, 0);
-            this.invalidateGoalsCache();
-            this.invalidateProgressCache(); // current_amount affects the chart immediately
-            this.invalidateStatsCache();
+            this.invalidateGoalDerived();
             return displayGoal;
         } catch (error) {
             console.error('Error creating saving goal:', error);
@@ -172,16 +92,12 @@ export class SavingsService {
         }
     }
 
-    /**
-     * Update a saving goal
-     */
+    /** Update a saving goal. */
     async updateGoal(id: number, data: SavingGoalUpdate): Promise<SavingsGoalDisplay | null> {
         try {
             const goal = await firstValueFrom(this.api.updateSavingGoal(id, data));
             const displayGoal = this.mapGoalToDisplay(goal, 0);
-            this.invalidateGoalsCache();
-            this.invalidateProgressCache(); // updated current_amount must be reflected in chart
-            this.invalidateStatsCache();
+            this.invalidateGoalDerived();
             return displayGoal;
         } catch (error) {
             console.error('Error updating saving goal:', error);
@@ -189,15 +105,11 @@ export class SavingsService {
         }
     }
 
-    /**
-     * Delete a saving goal
-     */
+    /** Delete a saving goal. */
     async deleteGoal(id: number): Promise<void> {
         try {
             await firstValueFrom(this.api.deleteSavingGoal(id));
-            this.invalidateGoalsCache();
-            this.invalidateProgressCache();
-            this.invalidateStatsCache();
+            this.invalidateGoalDerived();
         } catch (error) {
             console.error('Error deleting saving goal:', error);
             throw error;
@@ -218,223 +130,55 @@ export class SavingsService {
 
     // ==================== TRANSACTIONS (Savings-related) ====================
 
-    /**
-     * Get savings-related transactions (with caching)
-     */
-    async getTransactions(): Promise<SavingRecord[]> {
-        // Return cached data immediately if available and fresh
-        if (this.transactionsCache && this.isCacheValid(this.transactionsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.transactionsCache)) {
-                this.refreshTransactions();
-            }
-            return this.transactionsCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.transactionsCache) {
-            // Refresh in background
-            this.refreshTransactions();
-            return this.transactionsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getTransactions$());
-    }
-    
-    /**
-     * Refresh transactions in background
-     */
-    private refreshTransactions(): void {
-        if (this.transactionsRequest$) return; // Already refreshing
-        
-        this.transactionsRequest$ = this.api.getAllTransactions().pipe(
-            map(transactions => {
-                const savingsTransactions = transactions.filter(t =>
-                    t.category === 'savings' || t.category === 'investment'
-                );
-                return savingsTransactions.map(t => this.mapTransactionToRecord(t));
-            }),
-            catchError(error => {
-                console.error('Error fetching transactions:', error);
-                return of(this.transactionsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        firstValueFrom(this.transactionsRequest$).then(data => {
-            this.transactionsCache = { data, timestamp: Date.now() };
-            this.transactionsRequest$ = null;
-        });
-    }
-    
-    /**
-     * Get transactions as Observable (with caching and deduplication)
-     */
-    getTransactions$(): Observable<SavingRecord[]> {
-        // Return cached data immediately if available
-        if (this.transactionsCache && this.isCacheValid(this.transactionsCache)) {
-            return of(this.transactionsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.transactionsRequest$) {
-            return this.transactionsRequest$;
-        }
-        
-        // Create new request
-        this.transactionsRequest$ = this.api.getAllTransactions().pipe(
-            map(transactions => {
-                const savingsTransactions = transactions.filter(t =>
-                    t.category === 'savings' || t.category === 'investment'
-                );
-                return savingsTransactions.map(t => this.mapTransactionToRecord(t));
-            }),
-            catchError(error => {
-                console.error('Error fetching transactions:', error);
-                return of(this.transactionsCache?.data || []);
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.transactionsRequest$).then(data => {
-            this.transactionsCache = { data, timestamp: Date.now() };
-            this.transactionsRequest$ = null;
-        });
-        
-        return this.transactionsRequest$;
+    /** Get savings-related transactions (cached). */
+    getTransactions(): Promise<SavingRecord[]> {
+        return this.transactionsResource.load();
     }
 
     /**
-     * Get statistics summary from API (with caching)
-     * Total Savings = Sum of all saving goals current amounts
-     * This Month Saving = Sum of all deposits this month - withdrawals this month
-     * Average Monthly Saving = Average of all deposits per month
+     * Statistics summary — a pure derivation of the cached goals + transactions.
+     *  - Total Savings      = Σ goal current amounts
+     *  - This Month Saving  = deposits − withdrawals this month
+     *  - Avg Monthly Saving = mean of monthly deposit totals
      */
     async getStatsSummary(): Promise<SavingsStatsSummary> {
-        // Return cached data immediately if available and fresh
-        if (this.statsCache && this.isCacheValid(this.statsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.statsCache)) {
-                this.refreshStats();
-            }
-            return this.statsCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.statsCache) {
-            // Refresh in background
-            this.refreshStats();
-            return this.statsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getStatsSummary$());
-    }
-    
-    /**
-     * Refresh stats in background
-     */
-    private refreshStats(): void {
-        if (this.statsRequest$) return; // Already refreshing
-        
-        this.statsRequest$ = this.getStatsSummary$();
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
-    }
-    
-    /**
-     * Get stats as Observable (with caching and deduplication)
-     */
-    getStatsSummary$(): Observable<SavingsStatsSummary> {
-        // Return cached data immediately if available
-        if (this.statsCache && this.isCacheValid(this.statsCache)) {
-            return of(this.statsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.statsRequest$) {
-            return this.statsRequest$;
-        }
-        
-        // Create new request
-        this.statsRequest$ = this.api.getSavingGoals().pipe(
-            switchMap(goals => {
-                const goalsDisplay = goals.map((goal, index) => this.mapGoalToDisplay(goal, index));
-                return this.getTransactions$().pipe(
-                    map(transactions => {
-                        const totalSavings = goalsDisplay.reduce((sum, g) => sum + g.current, 0);
-                        
-                        const currentMonth = new Date().toISOString().slice(0, 7);
-                        const thisMonthTransactions = transactions.filter(t => t.date.startsWith(currentMonth));
-                        const thisMonthDeposits = thisMonthTransactions
-                            .filter(t => t.type === 'Deposit')
-                            .reduce((sum, t) => sum + t.amount, 0);
-                        const thisMonthWithdrawals = thisMonthTransactions
-                            .filter(t => t.type === 'Withdrawal')
-                            .reduce((sum, t) => sum + t.amount, 0);
-                        const thisMonthSaving = thisMonthDeposits - thisMonthWithdrawals;
-                        
-                        const depositsByMonth = new Map<string, number>();
-                        transactions
-                            .filter(t => t.type === 'Deposit')
-                            .forEach(t => {
-                                const month = t.date.slice(0, 7);
-                                depositsByMonth.set(month, (depositsByMonth.get(month) || 0) + t.amount);
-                            });
-                        
-                        const monthlyTotals = Array.from(depositsByMonth.values());
-                        const avgMonthlySaving = monthlyTotals.length > 0 
-                            ? monthlyTotals.reduce((a, b) => a + b, 0) / monthlyTotals.length 
-                            : 0;
-                        
-                        return { totalSavings, thisMonthSaving, avgMonthlySaving };
-                    })
-                );
-            }),
-            catchError(error => {
-                console.error('Error fetching stats:', error);
-                return of(this.statsCache?.data || { totalSavings: 0, thisMonthSaving: 0, avgMonthlySaving: 0 });
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
-        
-        return this.statsRequest$;
+        const [goals, transactions] = await Promise.all([
+            this.goalsResource.load(),
+            this.transactionsResource.load(),
+        ]);
+
+        const totalSavings = goals.reduce((sum, g) => sum + g.current, 0);
+
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const thisMonthTransactions = transactions.filter(t => t.date.startsWith(currentMonth));
+        const thisMonthDeposits = thisMonthTransactions
+            .filter(t => t.type === 'Deposit')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const thisMonthWithdrawals = thisMonthTransactions
+            .filter(t => t.type === 'Withdrawal')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const thisMonthSaving = thisMonthDeposits - thisMonthWithdrawals;
+
+        const depositsByMonth = new Map<string, number>();
+        transactions
+            .filter(t => t.type === 'Deposit')
+            .forEach(t => {
+                const month = t.date.slice(0, 7);
+                depositsByMonth.set(month, (depositsByMonth.get(month) || 0) + t.amount);
+            });
+        const monthlyTotals = Array.from(depositsByMonth.values());
+        const avgMonthlySaving = monthlyTotals.length > 0
+            ? monthlyTotals.reduce((a, b) => a + b, 0) / monthlyTotals.length
+            : 0;
+
+        return { totalSavings, thisMonthSaving, avgMonthlySaving };
     }
 
-    /**
-     * Get savings progression series (with caching)
-     */
-    async getProgressSeries(): Promise<SavingsSeriesPoint[]> {
-        // Return cached data immediately if available and fresh
-        if (this.progressCache && this.isCacheValid(this.progressCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.progressCache)) {
-                this.refreshProgress();
-            }
-            return this.progressCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.progressCache) {
-            // Refresh in background
-            this.refreshProgress();
-            return this.progressCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getProgressSeries$());
+    /** Get savings progression series (cached, computed client-side). */
+    getProgressSeries(): Promise<SavingsSeriesPoint[]> {
+        return this.progressResource.load();
     }
-    
+
     /**
      * Compute savings progression client-side from goals.
      * Always shows 12 months of history so the graph is always visible, even for
@@ -443,7 +187,7 @@ export class SavingsService {
      * 12 months ago, whichever is earlier.
      */
     private async computeProgressClientSide(): Promise<SavingsSeriesPoint[]> {
-        let goals: import('../../core/services/api.service').SavingGoal[];
+        let goals: SavingGoal[];
         try {
             goals = await firstValueFrom(this.api.getSavingGoals(0, 200));
         } catch {
@@ -483,7 +227,6 @@ export class SavingsService {
         if (lastMonth.getMonth() !== now.getMonth() || lastMonth.getFullYear() !== now.getFullYear()) {
             monthPoints.push(new Date(now));
         } else {
-            // Replace last monthly point with today so value = 100%
             monthPoints[monthPoints.length - 1] = new Date(now);
         }
 
@@ -494,7 +237,6 @@ export class SavingsService {
             for (const g of goals) {
                 if (g.current_amount <= 0) continue;
 
-                // Effective start: earlier of goal creation or fixedStart
                 const goalCreated = new Date(g.created_at);
                 goalCreated.setDate(1);
                 goalCreated.setHours(0, 0, 0, 0);
@@ -519,59 +261,6 @@ export class SavingsService {
         });
     }
 
-    /**
-     * Refresh progress in background
-     */
-    private refreshProgress(): void {
-        if (this.progressRequest$) return;
-        this.progressRequest$ = of(null).pipe(
-            switchMap(() => new Observable<SavingsSeriesPoint[]>(obs => {
-                this.computeProgressClientSide().then(data => {
-                    obs.next(data);
-                    obs.complete();
-                }).catch(() => {
-                    obs.next(this.progressCache?.data || []);
-                    obs.complete();
-                });
-            })),
-            shareReplay(1)
-        );
-        firstValueFrom(this.progressRequest$).then(data => {
-            this.progressCache = { data, timestamp: Date.now() };
-            this.progressRequest$ = null;
-        });
-    }
-
-    /**
-     * Get progress series as Observable (with caching — client-side computation)
-     */
-    getProgressSeries$(): Observable<SavingsSeriesPoint[]> {
-        if (this.progressCache && this.isCacheValid(this.progressCache)) {
-            return of(this.progressCache.data);
-        }
-        if (this.progressRequest$) return this.progressRequest$;
-
-        this.progressRequest$ = of(null).pipe(
-            switchMap(() => new Observable<SavingsSeriesPoint[]>(obs => {
-                this.computeProgressClientSide().then(data => {
-                    obs.next(data);
-                    obs.complete();
-                }).catch(() => {
-                    obs.next(this.progressCache?.data || []);
-                    obs.complete();
-                });
-            })),
-            shareReplay(1)
-        );
-
-        firstValueFrom(this.progressRequest$).then(data => {
-            this.progressCache = { data, timestamp: Date.now() };
-            this.progressRequest$ = null;
-        });
-
-        return this.progressRequest$;
-    }
-
     // ==================== LEGACY METHODS (for backward compatibility) ====================
 
     addTransaction(record: SavingRecord): Promise<SavingRecord> {
@@ -583,12 +272,10 @@ export class SavingsService {
             description: record.note,
             date: record.date
         };
-        
+
         return firstValueFrom(this.api.createTransaction(transactionData)).then(t => {
             const mapped = this.mapTransactionToRecord(t);
-            // Invalidate cache
-            this.invalidateTransactionsCache();
-            this.invalidateStatsCache();
+            this.invalidateTransactionDerived();
             return mapped;
         });
     }
@@ -596,35 +283,40 @@ export class SavingsService {
     updateTransaction(record: SavingRecord): Promise<SavingRecord> {
         if (!record.id) return Promise.reject(new Error('Missing id'));
 
-        // Same conversion as addTransaction.
         const transactionData = {
             type: record.type === 'Deposit' ? 'income' as const : 'expense' as const,
             amount: this.currencyService.toBaseAmount(record.amount),
             description: record.note,
             date: record.date
         };
-        
+
         return firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData)).then(t => {
             const mapped = this.mapTransactionToRecord(t);
-            // Invalidate cache
-            this.invalidateTransactionsCache();
-            this.invalidateStatsCache();
+            this.invalidateTransactionDerived();
             return mapped;
         });
     }
 
     deleteTransactions(ids: string[]): Promise<void> {
-        const deletePromises = ids.map(id => 
+        const deletePromises = ids.map(id =>
             firstValueFrom(this.api.deleteTransaction(parseInt(id)))
         );
         return Promise.all(deletePromises).then(() => {
-            // Invalidate cache
-            this.invalidateTransactionsCache();
-            this.invalidateStatsCache();
+            this.invalidateTransactionDerived();
         });
     }
 
     // ==================== PRIVATE HELPERS ====================
+
+    /** A goal write invalidates the goal list AND the progression chart (which reads current_amount). */
+    private invalidateGoalDerived(): void {
+        this.goalsResource.invalidate();
+        this.progressResource.invalidate();
+    }
+
+    private invalidateTransactionDerived(): void {
+        this.transactionsResource.invalidate();
+    }
 
     private mapGoalToDisplay(goal: SavingGoal, index: number): SavingsGoalDisplay {
         const colors = GOAL_COLORS[index % GOAL_COLORS.length];
@@ -650,44 +342,11 @@ export class SavingsService {
             note: t.description ?? undefined
         };
     }
-    
-    // ==================== CACHE HELPERS ====================
-    
-    private isCacheValid<T>(cache: CacheEntry<T>): boolean {
-        return Date.now() - cache.timestamp < CACHE_TTL;
-    }
-    
-    private isCacheStale<T>(cache: CacheEntry<T>): boolean {
-        return Date.now() - cache.timestamp >= CACHE_TTL;
-    }
-    
-    private invalidateGoalsCache(): void {
-        this.goalsCache = null;
-        this.goalsRequest$ = null;
-    }
-    
-    private invalidateTransactionsCache(): void {
-        this.transactionsCache = null;
-        this.transactionsRequest$ = null;
-    }
-    
-    private invalidateStatsCache(): void {
-        this.statsCache = null;
-        this.statsRequest$ = null;
-    }
-    
-    private invalidateProgressCache(): void {
-        this.progressCache = null;
-        this.progressRequest$ = null;
-    }
-    
-    /**
-     * Clear all caches (useful for logout or manual refresh)
-     */
+
+    /** Clear all caches on logout/login (prevents cross-user cache bleed — P1-10). */
     clearCache(): void {
-        this.invalidateGoalsCache();
-        this.invalidateTransactionsCache();
-        this.invalidateStatsCache();
-        this.invalidateProgressCache();
+        this.goalsResource.reset();
+        this.transactionsResource.reset();
+        this.progressResource.reset();
     }
 }
