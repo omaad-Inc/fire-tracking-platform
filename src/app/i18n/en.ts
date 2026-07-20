@@ -1,4 +1,6 @@
-export const EN = {
+import type { Dict } from './fr';
+
+export const EN: Dict = {
   common: {
     viewMore: 'View more',
     search: 'Search...',
@@ -1726,4 +1728,4 @@ export const EN = {
       ctaTagline: 'Build. Protect. Reign.',
     },
   },
-} as const;
+};

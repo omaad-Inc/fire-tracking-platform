@@ -5,7 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
-import { isDarkMode } from '../../../core/theme/chart-theme';
+import { isDarkMode, applyChartDefaults } from '../../../core/theme/chart-theme';
 import { LayoutService } from '../../../layout/service/layout.service';
 
 interface YearPoint {
@@ -393,6 +393,8 @@ export class CompoundCalculator {
     private router = inject(Router);
     private platformId = inject(PLATFORM_ID);
     layoutService = inject(LayoutService);
+
+    constructor() { applyChartDefaults(); } // Chart.js defaults on demand (P2-FE-4)
 
     readonly currentYear = new Date().getFullYear();
 

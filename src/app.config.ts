@@ -1,6 +1,7 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, DEFAULT_CURRENCY_CODE, LOCALE_ID, isDevMode } from '@angular/core';
+import { ApplicationConfig, DEFAULT_CURRENCY_CODE, LOCALE_ID, isDevMode, inject, provideAppInitializer } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
+import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
@@ -46,6 +47,12 @@ export const appConfig: ApplicationConfig = {
         providePrimeNG({ theme: { preset: OmaadPreset, options: { darkModeSelector: '.app-dark' } } }),
         { provide: LOCALE_ID, useValue: 'fr-FR' },
         { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' },
+        // Await the active locale's dictionary before first render so t() is
+        // populated (P2-FE-3 lazy dictionaries) — including during prerender.
+        provideAppInitializer(() => {
+            const i18n = inject(I18nService);
+            return i18n.loadLang(i18n.lang());
+        }),
         provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
@@ -56,29 +63,6 @@ export const appConfig: ApplicationConfig = {
 // Register French locale data for pipes (currency, date, number)
 registerLocaleData(localeFr);
 
-// ── Chart.js global defaults ─────────────────────────────────────────
-// Dynamic import so Chart.js is only loaded when needed (not at app bootstrap).
-// This prevents the white-screen crash caused by importing Chart.js before
-// PrimeNG's <p-chart> registers the required Chart.js components.
-import('chart.js').then(({ Chart }) => {
-    Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif";
-    // Brand-tokenized tooltip — warm-black bg + cream text + ochre border.
-    // Matches `chartTheme.tooltip` in core/theme/chart-theme.ts.
-    Object.assign(Chart.defaults.plugins.tooltip, {
-        backgroundColor: 'rgba(20, 19, 15, 0.95)',
-        titleColor: '#FAF8F4',
-        bodyColor: '#DEDAD0',
-        titleFont: { weight: 'bold' as const, size: 13 },
-        bodyFont: { size: 12 },
-        padding: { top: 10, bottom: 10, left: 14, right: 14 },
-        cornerRadius: 10,
-        borderColor: 'rgba(199, 123, 60, 0.25)',
-        borderWidth: 1,
-        displayColors: true,
-        boxWidth: 8,
-        boxHeight: 8,
-        boxPadding: 4,
-        usePointStyle: true,
-        caretSize: 6,
-    });
-}).catch(() => { /* Chart.js not available */ });
+// Chart.js global defaults are applied lazily by the first chart component to
+// render (see `applyChartDefaults()` in core/theme/chart-theme.ts) so Chart.js
+// stays off the landing/login critical path entirely (P2-FE-4).

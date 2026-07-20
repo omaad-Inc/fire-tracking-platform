@@ -1729,3 +1729,12 @@ export const FR = {
     },
   },
 } as const;
+
+/**
+ * The dictionary shape, with every leaf widened from its FR literal to `string`.
+ * FR is the reference locale; EN is typed as `Dict` so the compiler lists every
+ * key EN is missing or has spare (P2-FE-3) — `EN as any` used to hide those gaps,
+ * which rendered raw key paths at runtime.
+ */
+type DeepStringify<T> = { [K in keyof T]: T[K] extends string ? string : DeepStringify<T[K]> };
+export type Dict = DeepStringify<typeof FR>;
