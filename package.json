@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "prerender:routes": "node tools/generate-prerender-routes.mjs",
+    "i18n:guard": "node tools/i18n-guard.mjs",
     "build": "npm run prerender:routes && ng build",
     "build:pwa": "npm run prerender:routes && ng build --configuration production",
     "serve:pwa": "npx http-server dist/omaad-wealth/browser -p 8080 -c-1",

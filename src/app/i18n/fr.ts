@@ -520,6 +520,7 @@ export const FR = {
     },
   },
   dashboard: {
+    pageTitle: 'Synthèse',
     recentTransactions: 'Transactions récentes',
     debtsOverview: 'Vue globale des dettes',
     savingsProgress: 'Progression de l\'épargne',
@@ -872,6 +873,7 @@ export const FR = {
     noAccountTitle: 'Aucun compte',
     noAccountDesc: 'Ajoutez d\'abord un compte espèces, épargne ou mobile money pour enregistrer des transactions.',
     noAccountCta: 'Ajouter un compte',
+    accountLabel: 'Compte',
   },
   tontine: {
     scheduleTitle: 'Calendrier des tours',
@@ -984,6 +986,7 @@ export const FR = {
     typeLabel: 'Type',
     namePlaceholder: 'Ex: Prêt immobilier, Ami...',
     nameRequired: 'Le nom est requis',
+    totalRequired: 'Le montant doit être supérieur à 0',
     alreadyPaid: 'Déjà payé',
     alreadyReceived: 'Déjà reçu',
     chooseFrequency: 'Choisir une fréquence',

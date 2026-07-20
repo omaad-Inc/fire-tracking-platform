@@ -522,6 +522,7 @@ export const EN: Dict = {
     },
   },
   dashboard: {
+    pageTitle: 'Overview',
     recentTransactions: 'Recent transactions',
     debtsOverview: 'Debts overview',
     savingsProgress: 'Savings progress',
@@ -874,6 +875,7 @@ export const EN: Dict = {
     noAccountTitle: 'No account yet',
     noAccountDesc: 'Add a cash, savings or mobile-money account first to log transactions.',
     noAccountCta: 'Add an account',
+    accountLabel: 'Account',
   },
   tontine: {
     scheduleTitle: 'Cycle schedule',
@@ -986,6 +988,7 @@ export const EN: Dict = {
     typeLabel: 'Type',
     namePlaceholder: 'e.g. Mortgage, Friend...',
     nameRequired: 'Name is required',
+    totalRequired: 'Amount must be greater than 0',
     alreadyPaid: 'Already paid',
     alreadyReceived: 'Already received',
     chooseFrequency: 'Choose a frequency',

@@ -227,6 +227,9 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                        @if (submitted && !(record.total > 0)) {
+                            <small class="text-negative text-xs mt-1">{{ t('debts.totalRequired') }}</small>
+                        }
                     </div>
 
                     <!-- Paid -->
@@ -262,8 +265,9 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <!-- Date -->
                     <div class="flex flex-col gap-1 sm:col-span-2">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.date') }}</label>
-                        <input type="date" pInputText [(ngModel)]="record.date"
-                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                        <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
+                                      dateFormat="yy-mm-dd" styleClass="w-full"
+                                      inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
                 </div>
             </ng-template>
@@ -370,6 +374,12 @@ export class DebtsProgress implements OnInit {
     private allRecords = signal<DebtRecord[]>([]);
     loadError = signal(false);
     record!: DebtRecord;
+    /** Date bound to the p-datepicker; `record.date` (string) is synced on save. */
+    editDate: Date | null = null;
+
+    private toDateStr(d: Date | null): string {
+        return d ? d.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    }
 
     search     = signal('');
     typeFilter = signal<'all' | 'Debt' | 'Receivable'>('all');
@@ -419,6 +429,7 @@ export class DebtsProgress implements OnInit {
 
     openNew() {
         this.record = { date: new Date().toISOString().split('T')[0], type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+        this.editDate = new Date();
         this.submitted = false;
         this.isEdit = false;
         this.productDialog = true;
@@ -441,6 +452,7 @@ export class DebtsProgress implements OnInit {
             total: record.nativeTotal ?? record.total,
             paid: record.nativePaid ?? record.paid,
         };
+        this.editDate = record.date ? new Date(record.date) : new Date();
         this.submitted = false;
         this.isEdit = true;
         this.productDialog = true;
@@ -475,7 +487,11 @@ export class DebtsProgress implements OnInit {
 
     async saveRecord() {
         this.submitted = true;
-        if (!this.record.name?.trim()) return;
+        // Match the transaction form's rigor: a debt/receivable must have a name
+        // AND a positive amount — a zero-amount debt is meaningless (P2-FE-9).
+        if (!this.record.name?.trim() || !(this.record.total > 0)) return;
+        // Sync the p-datepicker Date back into the string the API expects.
+        this.record.date = this.toDateStr(this.editDate);
 
         this.isSaving.set(true);
         try {

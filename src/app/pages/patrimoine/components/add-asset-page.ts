@@ -6,9 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AssetCreate, AssetCategory } from '../../../core/services/api.service';
+import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes.guard';
 import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -56,7 +58,7 @@ interface CategoryCard {
     standalone: true,
     imports: [
         CommonModule, FormsModule, ButtonModule, InputTextModule,
-        SelectModule, InputNumberModule, ToastModule, AppAmountComponent, DecimalPipe
+        SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe
     ],
     providers: [MessageService],
     template: `
@@ -212,13 +214,15 @@ interface CategoryCard {
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de début' : 'Start date' }} <span class="text-negative">*</span></label>
-                                                <input pInputText type="date" [(ngModel)]="assetForm.tontineStartDate"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                <p-datepicker [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                       dateFormat="yy-mm-dd" styleClass="w-full"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de collecte de ma mise' : 'My payout date' }}</label>
-                                                <input pInputText type="date" [(ngModel)]="assetForm.tontineCollectionDate"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                <p-datepicker [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                       dateFormat="yy-mm-dd" styleClass="w-full"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Statut' : 'Status' }}</label>
@@ -348,8 +352,9 @@ interface CategoryCard {
                                         @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date d\\'achat' : 'Purchase date' }}</label>
-                                                <input pInputText type="date" [(ngModel)]="assetForm.purchaseDate"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                <p-datepicker [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                       dateFormat="yy-mm-dd" styleClass="w-full"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
                                             </div>
                                         }
 
@@ -463,7 +468,7 @@ interface CategoryCard {
         </div>
     `
 })
-export class AddAssetPage implements OnInit {
+export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private location = inject(Location);
@@ -478,6 +483,8 @@ export class AddAssetPage implements OnInit {
     lang = 'fr';
     currentStep = signal(0);
     isSubmitting = signal(false);
+    /** Set true right before the post-save navigation so the guard stays silent. */
+    private justSaved = false;
     selectedCategory = signal<AssetCategory | ''>('');
     searchQuery = signal('');
 
@@ -488,6 +495,19 @@ export class AddAssetPage implements OnInit {
         tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
         surfaceM2: 0, region: '', currency: this.cs.config().code
     };
+
+    // p-datepicker binds a Date, but assetForm stores dates as 'YYYY-MM-DD'
+    // strings (that's what the API + the truthy checks expect). These accessors
+    // bridge the two so the whole app can standardize on <p-datepicker> (P2-FE-9)
+    // without changing the form's string source of truth.
+    private toDateStr(d: Date | null): string { return d ? d.toISOString().split('T')[0] : ''; }
+    private toDateObj(s: string): Date | null { return s ? new Date(s) : null; }
+    get purchaseDateObj(): Date | null { return this.toDateObj(this.assetForm.purchaseDate); }
+    set purchaseDateObj(d: Date | null) { this.assetForm.purchaseDate = this.toDateStr(d); }
+    get tontineStartDateObj(): Date | null { return this.toDateObj(this.assetForm.tontineStartDate); }
+    set tontineStartDateObj(d: Date | null) { this.assetForm.tontineStartDate = this.toDateStr(d); }
+    get tontineCollectionDateObj(): Date | null { return this.toDateObj(this.assetForm.tontineCollectionDate); }
+    set tontineCollectionDateObj(d: Date | null) { this.assetForm.tontineCollectionDate = this.toDateStr(d); }
 
     /** Currencies the user can hold an asset in. */
     readonly currencyOptions = [
@@ -595,6 +615,23 @@ export class AddAssetPage implements OnInit {
         } else {
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
         }
+    }
+
+    /** True once a name/category/amount has been entered but not yet saved. */
+    private hasUnsavedInput(): boolean {
+        const f = this.assetForm;
+        return !this.justSaved && (
+            !!f.name?.trim() || !!this.selectedCategory() ||
+            f.purchasePrice > 0 || f.currentPrice > 0
+        );
+    }
+
+    /** Route guard hook (P2-FE-9): confirm before abandoning a half-filled wizard. */
+    canDeactivate(): boolean {
+        if (!this.hasUnsavedInput()) return true;
+        return confirm(this.isFr()
+            ? 'Vous avez des modifications non enregistrées. Quitter quand même ?'
+            : 'You have unsaved changes. Leave anyway?');
     }
 
     resetForm(): void {
@@ -802,6 +839,7 @@ export class AddAssetPage implements OnInit {
             }
 
             await this.patrimoineService.createAsset(assetData);
+            this.justSaved = true; // don't prompt "unsaved changes" on the success navigation
             const fr = this.isFr();
             this.messageService.add({ severity: 'success', summary: fr ? 'Succès' : 'Success', detail: fr ? 'Actif ajouté avec succès' : 'Asset added successfully', life: 3000 });
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);

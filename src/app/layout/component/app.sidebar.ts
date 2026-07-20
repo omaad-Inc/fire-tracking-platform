@@ -55,6 +55,8 @@ import { environment } from '../../../environments/environment';
             <div class="sidebar-user-footer relative">
                 <button type="button"
                         class="sidebar-user-button"
+                        aria-haspopup="menu"
+                        [attr.aria-expanded]="userMenuOpen()"
                         (click)="userMenuOpen.set(!userMenuOpen())">
                     <div class="sidebar-avatar">
                         @if (avatarUrl) {
@@ -68,7 +70,7 @@ import { environment } from '../../../environments/environment';
                     <div class="sidebar-user-info">
                         <div class="sidebar-user-name">{{ userFirstName }}</div>
                     </div>
-                    <i class="pi pi-ellipsis-v sidebar-user-toggle"></i>
+                    <i class="pi pi-ellipsis-v sidebar-user-toggle" aria-hidden="true"></i>
                 </button>
 
                 <!-- User dropdown menu (popover above the footer button) -->

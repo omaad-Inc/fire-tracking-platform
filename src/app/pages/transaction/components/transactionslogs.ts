@@ -66,8 +66,9 @@ interface DayGroup {
             <!-- Row 2: search + type filter -->
             <div class="flex items-center gap-2">
                 <div class="relative flex-1 min-w-0">
-                    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none"></i>
+                    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none" aria-hidden="true"></i>
                     <input pInputText [ngModel]="search()" (ngModelChange)="search.set($event)" [placeholder]="t('transactions.searchPlaceholder')"
+                           [attr.aria-label]="t('transactions.searchPlaceholder')" type="search"
                            class="w-full !pl-9 !py-2.5 !rounded-xl !text-sm" />
                 </div>
                 <div class="flex items-center gap-0.5 bg-surface-100 dark:bg-surface-800 rounded-xl p-1 shrink-0">
@@ -284,10 +285,10 @@ interface DayGroup {
                     <!-- Amount + Date row -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-1">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">
+                            <label for="tx-amount" class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ t('transactions.form.amount') }} <span class="text-surface-400 font-normal">({{ curSymbol() }})</span>
                             </label>
-                            <p-inputnumber [(ngModel)]="form.amount" mode="decimal"
+                            <p-inputnumber [(ngModel)]="form.amount" mode="decimal" inputId="tx-amount"
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
                                            styleClass="w-full"
                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
@@ -296,8 +297,8 @@ interface DayGroup {
                             }
                         </div>
                         <div class="flex flex-col gap-1">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.date') }}</label>
-                            <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
+                            <label for="tx-date" class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.date') }}</label>
+                            <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true" inputId="tx-date"
                                           dateFormat="yy-mm-dd" styleClass="w-full"
                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                             @if (submitted && !editDate) {
@@ -308,17 +309,17 @@ interface DayGroup {
 
                     <!-- Currency -->
                     <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.currency') }}</label>
-                        <p-select [(ngModel)]="form.currency" [options]="currencyOptions"
+                        <label for="tx-currency" class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.currency') }}</label>
+                        <p-select [(ngModel)]="form.currency" [options]="currencyOptions" inputId="tx-currency"
                                   optionLabel="label" optionValue="value" appendTo="body" styleClass="w-full" />
                     </div>
 
                     <!-- Description -->
                     <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">
+                        <label for="tx-desc" class="text-sm text-surface-500 dark:text-surface-400">
                             {{ t('transactions.form.description') }} <span class="text-surface-400 font-normal">{{ t('transactions.form.optional') }}</span>
                         </label>
-                        <input pInputText [(ngModel)]="form.remarks"
+                        <input pInputText id="tx-desc" [(ngModel)]="form.remarks"
                                [placeholder]="t('transactions.form.descriptionPlaceholder')"
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
@@ -327,26 +328,26 @@ interface DayGroup {
                         <!-- Transfer: From → To account pickers -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="flex flex-col gap-1">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">
+                                <label for="tx-from" class="text-sm text-surface-500 dark:text-surface-400">
                                     {{ t('transactions.form.from') }}
                                     @if (submitted && !form.fromAccountId) {
                                         <span class="text-negative ml-2 text-xs">{{ t('transactions.form.required') }}</span>
                                     }
                                 </label>
-                                <p-select [(ngModel)]="form.fromAccountId" [options]="accountOptions()"
+                                <p-select [(ngModel)]="form.fromAccountId" [options]="accountOptions()" inputId="tx-from"
                                           optionLabel="label" optionValue="value"
                                           [placeholder]="t('transactions.form.sourceAccount')" [filter]="accountOptions().length > 6"
                                           appendTo="body" styleClass="w-full"
                                           [emptyMessage]="t('transactions.form.noMonetaryAccount')" />
                             </div>
                             <div class="flex flex-col gap-1">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">
+                                <label for="tx-to" class="text-sm text-surface-500 dark:text-surface-400">
                                     {{ t('transactions.form.to') }}
                                     @if (submitted && !form.toAccountId) {
                                         <span class="text-negative ml-2 text-xs">{{ t('transactions.form.required') }}</span>
                                     }
                                 </label>
-                                <p-select [(ngModel)]="form.toAccountId" [options]="accountOptions()"
+                                <p-select [(ngModel)]="form.toAccountId" [options]="accountOptions()" inputId="tx-to"
                                           optionLabel="label" optionValue="value"
                                           [placeholder]="t('transactions.form.destAccount')" [filter]="accountOptions().length > 6"
                                           appendTo="body" styleClass="w-full"
@@ -359,13 +360,13 @@ interface DayGroup {
                     } @else {
                         <!-- Account selector -->
                         <div class="flex flex-col gap-1">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">
+                            <label for="tx-account" class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ t('transactions.form.account') }}
                                 @if (submitted && !form.accountId) {
                                     <span class="text-negative ml-2 text-xs">{{ t('transactions.form.required') }}</span>
                                 }
                             </label>
-                            <p-select [(ngModel)]="form.accountId" [options]="accountOptions()"
+                            <p-select [(ngModel)]="form.accountId" [options]="accountOptions()" inputId="tx-account"
                                       optionLabel="label" optionValue="value"
                                       [placeholder]="t('transactions.form.selectAccount')" [filter]="accountOptions().length > 6"
                                       appendTo="body" styleClass="w-full"

@@ -127,8 +127,9 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
 
                     <!-- Account selector -->
                     <div class="flex items-center gap-2 my-3">
-                        <i class="pi pi-wallet text-surface-400 text-sm"></i>
-                        <select class="flex-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-3 py-2 text-sm text-surface-900 dark:text-surface-0 border-0 focus:outline-none"
+                        <i class="pi pi-wallet text-surface-400 text-sm" aria-hidden="true"></i>
+                        <select class="flex-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-3 py-2 text-sm text-surface-900 dark:text-surface-0 border-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700 dark:focus-visible:outline-ochre-400"
+                                [attr.aria-label]="i18n.t('quickAdd.accountLabel')"
                                 [value]="accountId() ?? ''" (change)="onAccountChange($event)">
                             @for (a of accounts(); track a.value) {
                                 <option [value]="a.value" [selected]="a.value === accountId()">{{ a.label }}</option>
