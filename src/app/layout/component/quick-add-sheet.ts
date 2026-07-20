@@ -8,7 +8,6 @@ import {
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../pages/service/transactions.service';
 import { PatrimoineService } from '../../pages/service/patrimoine.service';
-import { AssetsStateService } from '../../pages/service/assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
@@ -170,7 +169,6 @@ export class QuickAddSheet {
 
     private txService = inject(TransactionsService);
     private patrimoineService = inject(PatrimoineService);
-    private state = inject(AssetsStateService);
     private cs = inject(CurrencyService);
     private router = inject(Router);
     private toast = inject(MessageService);
@@ -311,7 +309,8 @@ export class QuickAddSheet {
         try {
             await this.txService.addRecord(record);
             localStorage.setItem(LAST_ACCOUNT_KEY, String(this.accountId()));
-            this.state.notifyTransactionsUpdated();
+            // TransactionsService.addRecord() now fires notifyTransactionsUpdated()
+            // itself (single source), so widgets refresh without a second emit here.
             this.toast.add({
                 key: 'quickadd', severity: 'success',
                 summary: this.i18n.t('quickAdd.saved'), life: 1800,

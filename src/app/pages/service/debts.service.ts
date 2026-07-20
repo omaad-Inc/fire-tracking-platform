@@ -1,16 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
-import { ApiService, Debt, DebtCreate, DebtUpdate, DebtType, DebtCategory } from '../../core/services/api.service';
+import { firstValueFrom, map } from 'rxjs';
+import { ApiService, Debt, DebtCreate, DebtUpdate, DebtCategory } from '../../core/services/api.service';
 import { AssetsStateService } from './assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
-
-interface CacheEntry<T> {
-    data: T;
-    timestamp: number;
-}
-
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+import { cachedResource } from '../../core/util/cached-resource';
 
 export interface DebtRecord {
     id?: string;
@@ -44,107 +38,28 @@ export interface DebtsStatsSummary {
 
 @Injectable({ providedIn: 'root' })
 export class DebtsService {
-    private api           = inject(ApiService);
-    private stateService  = inject(AssetsStateService);
+    private api             = inject(ApiService);
+    private stateService    = inject(AssetsStateService);
     private currencyService = inject(CurrencyService);
-    
-    // Cache storage
-    private recordsCache: CacheEntry<DebtRecord[]> | null = null;
-    private statsCache: CacheEntry<DebtsStatsSummary> | null = null;
+
+    /** Single source of truth for the debt list (shared cachedResource — P2-FE-1). */
+    private recordsResource = cachedResource<DebtRecord[]>(
+        () => firstValueFrom(this.api.getDebts().pipe(
+            map(debts => debts.map(d => this.mapDebtToRecord(d))),
+        )),
+    );
 
     constructor() {
         // Clear cached user data on logout/login (see CACHE_RESET).
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }
 
-    // Request deduplication
-    private recordsRequest$: Observable<DebtRecord[]> | null = null;
-    private statsRequest$: Observable<DebtsStatsSummary> | null = null;
-
-    /**
-     * Get all debt records (with caching)
-     */
-    async getRecords(): Promise<DebtRecord[]> {
-        // Return cached data immediately if available and fresh
-        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.recordsCache)) {
-                this.refreshRecords();
-            }
-            return this.recordsCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.recordsCache) {
-            // Refresh in background
-            this.refreshRecords();
-            return this.recordsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getRecords$());
-    }
-    
-    /**
-     * Refresh records in background
-     */
-    private refreshRecords(): void {
-        if (this.recordsRequest$) return; // Already refreshing
-
-        this.recordsRequest$ = this.createRecordsRequest();
+    /** Get all debt records (cached: TTL + stale-while-revalidate + dedup). */
+    getRecords(): Promise<DebtRecord[]> {
+        return this.recordsResource.load();
     }
 
-    /**
-     * Build the shared records request. On failure: fall back to the cache if
-     * one exists, otherwise LET THE ERROR SURFACE so widgets can render an
-     * error+retry card instead of a fake-empty "no debts 🎉" state. The
-     * in-flight handle is reset in all outcomes so retry works.
-     */
-    private createRecordsRequest(): Observable<DebtRecord[]> {
-        const request$ = this.api.getDebts().pipe(
-            map(debts => debts.map(debt => this.mapDebtToRecord(debt))),
-            catchError(error => {
-                console.error('Error fetching debts:', error);
-                if (this.recordsCache) return of(this.recordsCache.data);
-                throw error;
-            }),
-            shareReplay(1)
-        );
-
-        firstValueFrom(request$)
-            .then(data => {
-                this.recordsCache = { data, timestamp: Date.now() };
-            })
-            .catch(() => { /* surfaced to subscribers */ })
-            .finally(() => {
-                this.recordsRequest$ = null;
-            });
-
-        return request$;
-    }
-
-    /**
-     * Get debts as Observable (with caching and deduplication)
-     */
-    getRecords$(): Observable<DebtRecord[]> {
-        // Return cached data immediately if available
-        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
-            return of(this.recordsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.recordsRequest$) {
-            return this.recordsRequest$;
-        }
-
-        // Create new request (errors surface when there is no cache to serve)
-        this.recordsRequest$ = this.createRecordsRequest();
-        return this.recordsRequest$;
-    }
-
-    /**
-     * Get a single debt by ID
-     */
+    /** Get a single debt by ID (direct, uncached). */
     async getRecord(id: number): Promise<DebtRecord | null> {
         try {
             const debt = await firstValueFrom(this.api.getDebt(id));
@@ -155,9 +70,7 @@ export class DebtsService {
         }
     }
 
-    /**
-     * Create a new debt
-     */
+    /** Create a new debt. */
     async addRecord(record: DebtRecord): Promise<DebtRecord> {
         try {
             // Debts are stored NATIVE (like assets/transactions): the amounts the
@@ -176,14 +89,10 @@ export class DebtsService {
                 description: record.note,
                 start_date: record.date
             };
-            
+
             const debt = await firstValueFrom(this.api.createDebt(debtData));
             const mapped = this.mapDebtToRecord(debt);
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
-            // Notify that debts have been updated
-            this.stateService.notifyDebtsUpdated();
+            this.markDebtsChanged();
             return mapped;
         } catch (error) {
             console.error('Error creating debt:', error);
@@ -191,9 +100,7 @@ export class DebtsService {
         }
     }
 
-    /**
-     * Update a debt
-     */
+    /** Update a debt. */
     async updateRecord(record: DebtRecord): Promise<DebtRecord> {
         if (!record.id) throw new Error('Missing id');
 
@@ -210,14 +117,10 @@ export class DebtsService {
                 creditor_name: record.creditor,
                 description: record.note
             };
-            
+
             const debt = await firstValueFrom(this.api.updateDebt(parseInt(record.id), debtData));
             const mapped = this.mapDebtToRecord(debt);
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
-            // Notify that debts have been updated
-            this.stateService.notifyDebtsUpdated();
+            this.markDebtsChanged();
             return mapped;
         } catch (error) {
             console.error('Error updating debt:', error);
@@ -225,43 +128,31 @@ export class DebtsService {
         }
     }
 
-    /**
-     * Delete debts by IDs
-     */
+    /** Delete debts by IDs. */
     async deleteRecords(ids: string[]): Promise<void> {
         try {
-            await Promise.all(ids.map(id => 
+            await Promise.all(ids.map(id =>
                 firstValueFrom(this.api.deleteDebt(parseInt(id)))
             ));
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
-            // Notify that debts have been updated
-            this.stateService.notifyDebtsUpdated();
+            this.markDebtsChanged();
         } catch (error) {
             console.error('Error deleting debts:', error);
             throw error;
         }
     }
 
-    /**
-     * Add payment to a debt
-     */
+    /** Add a payment to a debt. */
     async addPayment(id: string, amount: number): Promise<DebtRecord> {
         try {
             // amount is entered in the DISPLAY currency; the backend subtracts it
             // from current_amount, which is in the DEBT's native currency —
             // convert display -> EUR -> debt-native.
-            const debtCurrency = this.recordsCache?.data.find(r => r.id === id)?.currency || 'EUR';
+            const debtCurrency = this.recordsResource.peek()?.find(r => r.id === id)?.currency || 'EUR';
             const eur = this.currencyService.toBaseAmount(amount);
             const nativeAmount = eur * this.currencyService.rateOf(debtCurrency);
             const debt = await firstValueFrom(this.api.makePayment(parseInt(id), nativeAmount));
             const mapped = this.mapDebtToRecord(debt);
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
-            // Notify that debts have been updated
-            this.stateService.notifyDebtsUpdated();
+            this.markDebtsChanged();
             return mapped;
         } catch (error) {
             console.error('Error making payment:', error);
@@ -270,115 +161,54 @@ export class DebtsService {
     }
 
     /**
-     * Get debt statistics (with caching)
-     * - totalDebt: Sum of all remaining debt amounts when type is "Debt" (what I still owe)
-     * - paidAmount: The last payment made (most recent)
-     * - receivables: Sum of all remaining receivable amounts when type is "Receivable" (what others owe me)
+     * Debt statistics — a pure derivation of the cached list (no second cache).
+     * - totalDebt: remaining amount across active "Debt" rows (what I still owe)
+     * - paidAmount: the most recent payment made
+     * - receivables: remaining amount across active "Receivable" rows (owed to me)
+     * Errors surface through the resource (cold failure rejects → widget retries).
      */
     async getStats(): Promise<DebtsStatsSummary> {
-        // Return cached data immediately if available and fresh
-        if (this.statsCache && this.isCacheValid(this.statsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.statsCache)) {
-                this.refreshStats();
-            }
-            return this.statsCache.data;
+        const debts = await this.recordsResource.load();
+
+        const totalDebt = debts
+            .filter(d => d.type === 'Debt' && !d.isPaidOff)
+            .reduce((sum, d) => sum + (d.total - d.paid), 0);
+
+        const receivables = debts
+            .filter(d => d.type === 'Receivable' && !d.isPaidOff)
+            .reduce((sum, d) => sum + (d.total - d.paid), 0);
+
+        const debtsWithPayments = debts
+            .filter(d => d.type === 'Debt' && d.paid > 0)
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        let lastPaymentAmount = 0;
+        let lastPaymentDate = '';
+        if (debtsWithPayments.length > 0) {
+            const mostRecentDebt = debtsWithPayments[0];
+            // monthlyPayment is stored native (edit-form value); paid is already
+            // EUR base — convert the former before displaying.
+            lastPaymentAmount = mostRecentDebt.monthlyPayment
+                ? this.currencyService.toEurFromNative(mostRecentDebt.monthlyPayment, mostRecentDebt.currency)
+                : mostRecentDebt.paid;
+            lastPaymentDate = mostRecentDebt.date;
         }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.statsCache) {
-            // Refresh in background
-            this.refreshStats();
-            return this.statsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getStats$());
+
+        return {
+            totalDebt,
+            paidAmount: lastPaymentAmount,
+            receivables,
+            totalDebtChange: 0,
+            paidAmountChange: lastPaymentAmount,
+            receivablesChange: receivables,
+            lastPaymentDate,
+        };
     }
-    
-    /**
-     * Refresh stats in background
-     */
-    private refreshStats(): void {
-        if (this.statsRequest$) return; // Already refreshing
 
-        // getStats$ assigns this.statsRequest$ and handles caching/reset.
-        this.getStats$();
-    }
-    
-    /**
-     * Get stats as Observable (with caching and deduplication)
-     */
-    getStats$(): Observable<DebtsStatsSummary> {
-        // Return cached data immediately if available
-        if (this.statsCache && this.isCacheValid(this.statsCache)) {
-            return of(this.statsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.statsRequest$) {
-            return this.statsRequest$;
-        }
-        
-        // Create new request
-        this.statsRequest$ = this.getRecords$().pipe(
-            map(debts => {
-                const totalDebt = debts
-                    .filter(d => d.type === 'Debt' && !d.isPaidOff)
-                    .reduce((sum, d) => sum + (d.total - d.paid), 0);
-                
-                const receivables = debts
-                    .filter(d => d.type === 'Receivable' && !d.isPaidOff)
-                    .reduce((sum, d) => sum + (d.total - d.paid), 0);
-                
-                const debtsWithPayments = debts
-                    .filter(d => d.type === 'Debt' && d.paid > 0)
-                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                
-                let lastPaymentAmount = 0;
-                let lastPaymentDate = '';
-                if (debtsWithPayments.length > 0) {
-                    const mostRecentDebt = debtsWithPayments[0];
-                    // monthlyPayment is stored native (edit-form value); paid is
-                    // already EUR base — convert the former before displaying.
-                    lastPaymentAmount = mostRecentDebt.monthlyPayment
-                        ? this.currencyService.toEurFromNative(mostRecentDebt.monthlyPayment, mostRecentDebt.currency)
-                        : mostRecentDebt.paid;
-                    lastPaymentDate = mostRecentDebt.date;
-                }
-                
-                return {
-                    totalDebt,
-                    paidAmount: lastPaymentAmount,
-                    receivables,
-                    totalDebtChange: 0,
-                    paidAmountChange: lastPaymentAmount,
-                    receivablesChange: receivables,
-                    lastPaymentDate
-                };
-            }),
-            catchError(error => {
-                console.error('Error fetching stats:', error);
-                // Stale stats beat no stats — but NEVER fabricate zeros on
-                // failure; the error surfaces so the widget shows retry.
-                if (this.statsCache) return of(this.statsCache.data);
-                throw error;
-            }),
-            shareReplay(1)
-        );
-
-        // Cache the result; reset the in-flight handle in all outcomes so a
-        // retry after failure issues a fresh request.
-        firstValueFrom(this.statsRequest$)
-            .then(data => {
-                this.statsCache = { data, timestamp: Date.now() };
-            })
-            .catch(() => { /* surfaced to subscribers */ })
-            .finally(() => {
-                this.statsRequest$ = null;
-            });
-
-        return this.statsRequest$;
+    /** A write happened: drop cache freshness and notify subscribers. */
+    private markDebtsChanged(): void {
+        this.recordsResource.invalidate();
+        this.stateService.notifyDebtsUpdated();
     }
 
     // ==================== PRIVATE HELPERS ====================
@@ -430,32 +260,9 @@ export class DebtsService {
         }
         return 'other';
     }
-    
-    // ==================== CACHE HELPERS ====================
-    
-    private isCacheValid<T>(cache: CacheEntry<T>): boolean {
-        return Date.now() - cache.timestamp < CACHE_TTL;
-    }
-    
-    private isCacheStale<T>(cache: CacheEntry<T>): boolean {
-        return Date.now() - cache.timestamp >= CACHE_TTL;
-    }
-    
-    private invalidateRecordsCache(): void {
-        this.recordsCache = null;
-        this.recordsRequest$ = null;
-    }
-    
-    private invalidateStatsCache(): void {
-        this.statsCache = null;
-        this.statsRequest$ = null;
-    }
-    
-    /**
-     * Clear all caches (useful for logout or manual refresh)
-     */
+
+    /** Clear all caches on logout/login (prevents cross-user cache bleed — P1-10). */
     clearCache(): void {
-        this.invalidateRecordsCache();
-        this.invalidateStatsCache();
+        this.recordsResource.reset();
     }
 }

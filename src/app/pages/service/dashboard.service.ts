@@ -1,10 +1,13 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable, map, catchError, of, firstValueFrom, forkJoin } from 'rxjs';
 import { ApiService, DashboardSummary, FireMetrics, AssetDistribution, WorthProgression, Asset, Debt } from '../../core/services/api.service';
+import { merge } from 'rxjs';
 import { isDarkMode } from '../../core/theme/chart-theme';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
+import { AssetsStateService } from './assets-state.service';
+import { cachedResource, CachedResource } from '../../core/util/cached-resource';
 
 export interface DashboardStats {
     netWorth: number;
@@ -120,10 +123,28 @@ export class DashboardService {
     private currencyService = inject(CurrencyService);
     private i18n = inject(I18nService);
 
+    private stateService = inject(AssetsStateService);
+
     constructor() {
         // Clear cached user data on logout/login (see CACHE_RESET). Root
-        // singleton → lives for the app, so no teardown needed.
-        inject(CACHE_RESET).subscribe(() => this.invalidateCache());
+        // singleton → lives for the app, so no teardown needed. reset() (not
+        // invalidate) so the next user never sees the previous user's summary.
+        inject(CACHE_RESET).subscribe(() => this.resetAll());
+
+        // Any data mutation (add/edit/delete of a transaction, asset, debt, or
+        // savings goal) must drop the dashboard's cached summary so the KPIs
+        // refetch fresh — otherwise adding a transaction left the net-worth /
+        // monthly-flux / FIRE cards showing 5-minute-stale numbers (the P0-2
+        // staleness bug class this task exists to kill). Widgets already reload
+        // on these same events; this ensures the reload sees fresh data. This
+        // subscription is registered at construction, before any widget's
+        // ngOnInit reload, so invalidation always precedes the refetch.
+        merge(
+            this.stateService.assetsUpdated$,
+            this.stateService.debtsUpdated$,
+            this.stateService.savingsUpdated$,
+            this.stateService.transactionsUpdated$,
+        ).subscribe(() => this.invalidateCache());
     }
 
     /** Asset-category display label via i18n (assetCategories.*), key fallback. */
@@ -139,30 +160,40 @@ export class DashboardService {
             : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     }
 
-    // ── Cache (5-minute TTL, stale-while-revalidate) ──────────────────────────
-    private readonly CACHE_TTL = 5 * 60 * 1000;
-    private _cache: Record<string, { data: any; ts: number }> = {};
+    // ── Cache (shared cachedResource — P2-FE-1) ───────────────────────────────
+    // One resource for the /dashboard/summary payload (getStats + getFIREMetrics
+    // both derive from it — the resource's in-flight promise collapses that burst
+    // to a single request). Parameterized progression series each get their own
+    // lazily-created resource, keyed by args, in `progressionResources`.
+    private summaryResource = cachedResource<DashboardSummary>(
+        () => firstValueFrom(this.api.getDashboardSummary()),
+    );
+    private progressionResources = new Map<string, CachedResource<ChartDataPoint[]>>();
 
-    private isFresh(key: string): boolean {
-        const entry = this._cache[key];
-        return !!entry && (Date.now() - entry.ts) < this.CACHE_TTL;
+    private progression(key: string, fetcher: () => Promise<ChartDataPoint[]>): CachedResource<ChartDataPoint[]> {
+        let r = this.progressionResources.get(key);
+        if (!r) { r = cachedResource(fetcher); this.progressionResources.set(key, r); }
+        return r;
     }
 
-    private getCached<T>(key: string): T | null {
-        return this._cache[key]?.data ?? null;
-    }
-
-    private setCache(key: string, data: any): void {
-        this._cache[key] = { data, ts: Date.now() };
-    }
-
+    /** Drop freshness on all dashboard caches so the next read refetches (write events). */
     invalidateCache(): void {
-        this._cache = {};
+        this.summaryResource.invalidate();
+        this.progressionResources.forEach(r => r.invalidate());
     }
 
-    /** Check synchronously whether a specific cache key has data (avoids skeleton flash) */
+    /** Clear all dashboard caches back to empty (logout — prevents cross-user bleed). */
+    private resetAll(): void {
+        this.summaryResource.reset();
+        this.progressionResources.forEach(r => r.reset());
+        this.progressionResources.clear();
+        this._dashboardData.set(null);
+    }
+
+    /** Whether the summary (stats/fire) is already cached — avoids skeleton flash. */
     hasCached(key: string): boolean {
-        return this._cache[key]?.data != null;
+        if (key === 'stats' || key === 'fire') return this.summaryResource.hasData();
+        return this.progressionResources.get(key)?.hasData() ?? false;
     }
 
     // Reactive state
@@ -213,9 +244,11 @@ export class DashboardService {
     async loadDashboard(): Promise<void> {
         this._loading.set(true);
         this._error.set(null);
-        
+
         try {
-            const summary = await firstValueFrom(this.api.getDashboardSummary());
+            // Route through the shared resource so this dedups with any
+            // concurrent getStats()/getFIREMetrics() into one summary request.
+            const summary = await this.summaryResource.load();
             this._dashboardData.set(summary);
         } catch (error) {
             console.error('Error loading dashboard:', error);
@@ -239,97 +272,42 @@ export class DashboardService {
     }
 
     /**
-     * Get dashboard stats (simplified)
+     * Dashboard stats — derived from the shared summary resource. The resource
+     * handles TTL + stale-while-revalidate + in-flight dedup, and on a cold
+     * failure its load() rejects so the KPI widget shows an error+retry card
+     * instead of a fake "0 FCFA" net worth (P1-5). getStats() + getFIREMetrics()
+     * fired together collapse to ONE /dashboard/summary request.
      */
-    /**
-     * One `/dashboard/summary` request shared across getStats/getFIREMetrics
-     * (and anything else that needs it). The dashboard used to fire ~8 calls —
-     * summary AND a separate /fire-metrics (which is currently 500-ing) — with
-     * no dedup, so concurrent widgets double-requested. This memoizes the
-     * in-flight promise so a burst collapses to a single network call.
-     */
-    private summaryInFlight: Promise<DashboardSummary> | null = null;
-    private fetchSummary(): Promise<DashboardSummary> {
-        if (this.summaryInFlight) return this.summaryInFlight;
-        this.summaryInFlight = firstValueFrom(this.api.getDashboardSummary())
-            .finally(() => { this.summaryInFlight = null; });
-        return this.summaryInFlight;
-    }
-
     async getStats(): Promise<DashboardStats> {
-        const KEY = 'stats';
-        const cached = this.getCached<DashboardStats>(KEY);
-
-        const fetch = async () => {
-            try {
-                const summary = await this.fetchSummary();
-                const result: DashboardStats = {
-                    netWorth: summary.net_worth,
-                    netWorthChange: summary.net_worth_change_30d,
-                    netWorthChangePct: summary.net_worth_change_percentage,
-                    totalAssets: summary.total_assets,
-                    totalDebts: summary.total_debts,
-                    savingsRate: summary.savings_rate,
-                    monthlyIncome: summary.monthly_income,
-                    monthlyExpenses: summary.monthly_expenses
-                };
-                this.setCache(KEY, result);
-                return result;
-            } catch (e) {
-                // Serve stale cache if we have it, otherwise LET IT THROW so
-                // the KPI widget shows an error+retry card instead of a fake
-                // "0 FCFA" net worth (P1-5 — verified this was leaking zeros).
-                if (cached) return cached;
-                throw e;
-            }
+        const summary = await this.summaryResource.load();
+        return {
+            netWorth: summary.net_worth,
+            netWorthChange: summary.net_worth_change_30d,
+            netWorthChangePct: summary.net_worth_change_percentage,
+            totalAssets: summary.total_assets,
+            totalDebts: summary.total_debts,
+            savingsRate: summary.savings_rate,
+            monthlyIncome: summary.monthly_income,
+            monthlyExpenses: summary.monthly_expenses,
         };
-
-        if (cached) {
-            if (!this.isFresh(KEY)) fetch(); // revalidate in background
-            return cached;
-        }
-        return fetch();
     }
 
     /**
-     * Get FIRE metrics
+     * FIRE metrics — derived from the same summary resource (one canonical
+     * field-name set end-to-end — no `??` guessing across a drifted contract, P1-18).
      */
     async getFIREMetrics(): Promise<FIREProgress> {
-        const KEY = 'fire';
-        const cached = this.getCached<FIREProgress>(KEY);
-
-        const fetch = async () => {
-            try {
-                // Derive from the typed summary.fire_metrics (backend
-                // FireMetricsSummary). One canonical field-name set end-to-end —
-                // no more `?? ` guessing across a drifted contract (P1-18).
-                const fm: FireMetrics = (await this.fetchSummary()).fire_metrics;
-                const result: FIREProgress = {
-                    currentNetWorth: fm.current_net_worth,
-                    targetAmount: fm.fire_target,
-                    progressPct: fm.progress_percentage,
-                    yearsToFire: fm.years_to_fire,
-                    estimatedDate: fm.estimated_fire_date,
-                    monthlyPassiveIncomeNeeded: fm.monthly_passive_income_needed,
-                    currentPassiveIncome: fm.current_passive_income,
-                    savingsRate: fm.monthly_savings_rate
-                };
-                this.setCache(KEY, result);
-                return result;
-            } catch (e) {
-                // Stale cache beats nothing, but on a cold failure LET IT THROW
-                // so callers show an error/empty state, not fabricated 0% FIRE
-                // progress (P1-5). Callers (statswidget, fire pages) all catch.
-                if (cached) return cached;
-                throw e;
-            }
+        const fm: FireMetrics = (await this.summaryResource.load()).fire_metrics;
+        return {
+            currentNetWorth: fm.current_net_worth,
+            targetAmount: fm.fire_target,
+            progressPct: fm.progress_percentage,
+            yearsToFire: fm.years_to_fire,
+            estimatedDate: fm.estimated_fire_date,
+            monthlyPassiveIncomeNeeded: fm.monthly_passive_income_needed,
+            currentPassiveIncome: fm.current_passive_income,
+            savingsRate: fm.monthly_savings_rate,
         };
-
-        if (cached) {
-            if (!this.isFresh(KEY)) fetch();
-            return cached;
-        }
-        return fetch();
     }
 
     /**
@@ -488,10 +466,7 @@ export class DashboardService {
      * Get worth progression for line chart (client-side interpolation)
      */
     async getWorthProgression(months: number = 12): Promise<ChartDataPoint[]> {
-        const KEY = `progression_${months}`;
-        const cached = this.getCached<ChartDataPoint[]>(KEY);
-
-        const fetch = async () => {
+        return this.progression(`progression_${months}`, async () => {
             // Prefer the backend's snapshot-based progression (FX-correct and
             // reuses the /dashboard/summary payload when available) over
             // client-side interpolation; fall back to the client computation
@@ -500,30 +475,17 @@ export class DashboardService {
                 if (months > 0) {
                     const rows = await firstValueFrom(this.api.getWorthProgression(months));
                     if (rows?.length) {
-                        const result: ChartDataPoint[] = rows.map(r => ({
-                            label: this.formatDateLabel(r.date),
-                            value: Math.round(r.net_worth),
-                        }));
-                        this.setCache(KEY, result);
-                        return result;
+                        return rows.map(r => ({ label: this.formatDateLabel(r.date), value: Math.round(r.net_worth) }));
                     }
                 }
             } catch { /* fall through to the client-side computation */ }
             try {
                 const { labels, netWorth } = await this.computeProgressionClientSide(months);
-                const result: ChartDataPoint[] = labels.map((label, idx) => ({ label, value: netWorth[idx] }));
-                this.setCache(KEY, result);
-                return result;
+                return labels.map((label, idx) => ({ label, value: netWorth[idx] }));
             } catch {
-                return cached ?? [];
+                return [];
             }
-        };
-
-        if (cached) {
-            if (!this.isFresh(KEY)) fetch();
-            return cached;
-        }
-        return fetch();
+        }).load();
     }
 
     /**
@@ -547,49 +509,27 @@ export class DashboardService {
      * Get total assets progression — Patrimoine Total Brut (client-side interpolation)
      */
     async getTotalAssetsProgression(months: number = 12): Promise<ChartDataPoint[]> {
-        const KEY = `assets_progression_${months}`;
-        const cached = this.getCached<ChartDataPoint[]>(KEY);
-
-        const fetch = async () => {
+        return this.progression(`assets_progression_${months}`, async () => {
             try {
                 const { labels, assets } = await this.computeProgressionClientSide(months);
-                const result: ChartDataPoint[] = labels.map((label, idx) => ({ label, value: assets[idx] }));
-                this.setCache(KEY, result);
-                return result;
+                return labels.map((label, idx) => ({ label, value: assets[idx] }));
             } catch {
-                return cached ?? [];
+                return [];
             }
-        };
-
-        if (cached) {
-            if (!this.isFresh(KEY)) fetch();
-            return cached;
-        }
-        return fetch();
+        }).load();
     }
 
     /**
      * Get progression for a specific category group (filtered assets only)
      */
     async getCategoryProgression(categories: string[], months: number = 0): Promise<ChartDataPoint[]> {
-        const KEY = `cat_progression_${categories.join('_')}_${months}`;
-        const cached = this.getCached<ChartDataPoint[]>(KEY);
-
-        const fetch = async () => {
+        return this.progression(`cat_progression_${categories.join('_')}_${months}`, async () => {
             try {
-                const result = await this.computeCategoryProgressionClientSide(categories, months);
-                this.setCache(KEY, result);
-                return result;
+                return await this.computeCategoryProgressionClientSide(categories, months);
             } catch {
-                return cached ?? [];
+                return [];
             }
-        };
-
-        if (cached) {
-            if (!this.isFresh(KEY)) fetch();
-            return cached;
-        }
-        return fetch();
+        }).load();
     }
 
     private async computeCategoryProgressionClientSide(categories: string[], months: number): Promise<ChartDataPoint[]> {

@@ -1,16 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, catchError, of, firstValueFrom, shareReplay } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { ApiService, Transaction, TransactionCreate, TransactionUpdate, TransactionType, TransactionCategory } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
-
-interface CacheEntry<T> {
-    data: T;
-    timestamp: number;
-}
-
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+import { AssetsStateService } from './assets-state.service';
+import { cachedResource } from '../../core/util/cached-resource';
 
 export interface TransactionRecord {
     id?: string;
@@ -116,14 +111,18 @@ export class TransactionsService {
     private api             = inject(ApiService);
     private currencyService = inject(CurrencyService);
     private i18n            = inject(I18nService);
+    private state           = inject(AssetsStateService);
 
-    // Cache storage
-    private recordsCache: CacheEntry<TransactionRecord[]> | null = null;
-    private statsCache: CacheEntry<TransactionStats> | null = null;
-    
-    // Request deduplication
-    private recordsRequest$: Observable<TransactionRecord[]> | null = null;
-    private statsRequest$: Observable<TransactionStats> | null = null;
+    /**
+     * The single source of truth for the transaction list. TTL + SWR + in-flight
+     * dedup + error surfacing all live in the shared cachedResource now (P2-FE-1);
+     * stats are a pure derivation of this list, so there is no separate stats cache.
+     */
+    private recordsResource = cachedResource<TransactionRecord[]>(
+        () => firstValueFrom(this.api.getAllTransactions().pipe(
+            map(txs => txs.map(t => this.mapTransactionToRecord(t))),
+        )),
+    );
 
     constructor() {
         // Clear cached user data on logout/login (see CACHE_RESET).
@@ -131,90 +130,14 @@ export class TransactionsService {
     }
 
     /**
-     * Get all transactions (with caching)
+     * Get all transactions (cached: TTL + stale-while-revalidate + dedup).
      */
-    async getRecords(): Promise<TransactionRecord[]> {
-        // Return cached data immediately if available and fresh
-        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.recordsCache)) {
-                this.refreshRecords();
-            }
-            return this.recordsCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.recordsCache) {
-            // Refresh in background
-            this.refreshRecords();
-            return this.recordsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getRecords$());
-    }
-    
-    /**
-     * Refresh records in background
-     */
-    private refreshRecords(): void {
-        if (this.recordsRequest$) return; // Already refreshing
-
-        this.recordsRequest$ = this.createRecordsRequest();
+    getRecords(): Promise<TransactionRecord[]> {
+        return this.recordsResource.load();
     }
 
     /**
-     * Build the shared records request. On failure: fall back to the cache if
-     * one exists (stale data beats no data), otherwise LET THE ERROR SURFACE —
-     * swallowing it into [] made outages render as "you have no transactions",
-     * which on a finance app reads as data loss. The in-flight handle is reset
-     * in all outcomes so a later retry issues a fresh request.
-     */
-    private createRecordsRequest(): Observable<TransactionRecord[]> {
-        const request$ = this.api.getAllTransactions().pipe(
-            map(transactions => transactions
-                .map(t => this.mapTransactionToRecord(t))),
-            catchError(error => {
-                console.error('Error fetching transactions:', error);
-                if (this.recordsCache) return of(this.recordsCache.data);
-                throw error;
-            }),
-            shareReplay(1)
-        );
-
-        firstValueFrom(request$)
-            .then(data => {
-                this.recordsCache = { data, timestamp: Date.now() };
-            })
-            .catch(() => { /* surfaced to subscribers */ })
-            .finally(() => {
-                this.recordsRequest$ = null;
-            });
-
-        return request$;
-    }
-
-    /**
-     * Get transactions as Observable (with caching and deduplication)
-     */
-    getRecords$(): Observable<TransactionRecord[]> {
-        // Return cached data immediately if available
-        if (this.recordsCache && this.isCacheValid(this.recordsCache)) {
-            return of(this.recordsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.recordsRequest$) {
-            return this.recordsRequest$;
-        }
-
-        // Create new request (errors surface when there is no cache to serve)
-        this.recordsRequest$ = this.createRecordsRequest();
-        return this.recordsRequest$;
-    }
-
-    /**
-     * Get transactions by type
+     * Get transactions by type (direct, uncached — a rarely used filtered view).
      */
     async getRecordsByType(type: 'Income' | 'Expense'): Promise<TransactionRecord[]> {
         try {
@@ -228,19 +151,11 @@ export class TransactionsService {
     }
 
     /**
-     * Get recent transactions (last N) (with caching)
+     * Get recent transactions (last N), sorted newest-first, off the cached list.
      */
     async getRecentTransactions(limit: number = 10): Promise<TransactionRecord[]> {
-        // Use cached records if available
-        if (this.recordsCache) {
-            return this.recordsCache.data
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-                .slice(0, limit);
-        }
-        
-        // Otherwise fetch fresh
-        const transactions = await this.getRecords();
-        return transactions
+        const records = await this.recordsResource.load();
+        return [...records]
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
             .slice(0, limit);
     }
@@ -297,9 +212,7 @@ export class TransactionsService {
 
             const transaction = await firstValueFrom(this.api.createTransaction(transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
+            this.markTransactionsChanged();
             return mapped;
         } catch (error) {
             console.error('Error creating transaction:', error);
@@ -340,9 +253,7 @@ export class TransactionsService {
 
             const transaction = await firstValueFrom(this.api.updateTransaction(parseInt(record.id), transactionData));
             const mapped = this.mapTransactionToRecord(transaction);
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
+            this.markTransactionsChanged();
             return mapped;
         } catch (error) {
             console.error('Error updating transaction:', error);
@@ -355,12 +266,10 @@ export class TransactionsService {
      */
     async deleteRecords(ids: string[]): Promise<void> {
         try {
-            await Promise.all(ids.map(id => 
+            await Promise.all(ids.map(id =>
                 firstValueFrom(this.api.deleteTransaction(parseInt(id)))
             ));
-            // Invalidate cache
-            this.invalidateRecordsCache();
-            this.invalidateStatsCache();
+            this.markTransactionsChanged();
         } catch (error) {
             console.error('Error deleting transactions:', error);
             throw error;
@@ -368,93 +277,37 @@ export class TransactionsService {
     }
 
     /**
-     * Get transaction statistics (with caching)
+     * Transaction statistics — a pure derivation of the cached list (no second
+     * cache). Errors surface through the resource: a cold failure rejects so the
+     * caller can show error+retry, never a fabricated all-zero stat line.
      */
     async getStats(): Promise<TransactionStats> {
-        // Return cached data immediately if available and fresh
-        if (this.statsCache && this.isCacheValid(this.statsCache)) {
-            // Refresh in background if stale
-            if (this.isCacheStale(this.statsCache)) {
-                this.refreshStats();
-            }
-            return this.statsCache.data;
-        }
-        
-        // Return cached data even if stale (stale-while-revalidate)
-        if (this.statsCache) {
-            // Refresh in background
-            this.refreshStats();
-            return this.statsCache.data;
-        }
-        
-        // No cache, fetch fresh data
-        return firstValueFrom(this.getStats$());
+        const transactions = await this.recordsResource.load();
+        const totalIncome = transactions
+            .filter(t => t.type === 'Income')
+            .reduce((sum, t) => sum + t.amount, 0);
+        const totalExpenses = transactions
+            .filter(t => t.type === 'Expense')
+            .reduce((sum, t) => sum + t.amount, 0);
+        return {
+            totalIncome,
+            totalExpenses,
+            balance: totalIncome - totalExpenses,
+            transactionCount: transactions.length,
+        };
     }
-    
+
     /**
-     * Refresh stats in background
+     * A write happened: drop cache freshness (next read refetches) and notify
+     * every subscriber (dashboard, recent-tx widget, …) so the change shows
+     * immediately with no 5-minute staleness. Mirrors DebtsService /
+     * PatrimoineService, which already fire their own notify on writes — this
+     * makes TransactionsService consistent and removes the need for callers to
+     * fire notifyTransactionsUpdated() themselves.
      */
-    private refreshStats(): void {
-        if (this.statsRequest$) return; // Already refreshing
-        
-        this.statsRequest$ = this.getStats$();
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
-    }
-    
-    /**
-     * Get stats as Observable (with caching and deduplication)
-     */
-    getStats$(): Observable<TransactionStats> {
-        // Return cached data immediately if available
-        if (this.statsCache && this.isCacheValid(this.statsCache)) {
-            return of(this.statsCache.data);
-        }
-        
-        // Deduplicate simultaneous requests
-        if (this.statsRequest$) {
-            return this.statsRequest$;
-        }
-        
-        // Create new request
-        this.statsRequest$ = this.getRecords$().pipe(
-            map(transactions => {
-                const totalIncome = transactions
-                    .filter(t => t.type === 'Income')
-                    .reduce((sum, t) => sum + t.amount, 0);
-                
-                const totalExpenses = transactions
-                    .filter(t => t.type === 'Expense')
-                    .reduce((sum, t) => sum + t.amount, 0);
-                
-                return {
-                    totalIncome,
-                    totalExpenses,
-                    balance: totalIncome - totalExpenses,
-                    transactionCount: transactions.length
-                };
-            }),
-            catchError(error => {
-                console.error('Error calculating stats:', error);
-                return of(this.statsCache?.data || {
-                    totalIncome: 0,
-                    totalExpenses: 0,
-                    balance: 0,
-                    transactionCount: 0
-                });
-            }),
-            shareReplay(1)
-        );
-        
-        // Cache the result
-        firstValueFrom(this.statsRequest$).then(data => {
-            this.statsCache = { data, timestamp: Date.now() };
-            this.statsRequest$ = null;
-        });
-        
-        return this.statsRequest$;
+    private markTransactionsChanged(): void {
+        this.recordsResource.invalidate();
+        this.state.notifyTransactionsUpdated();
     }
 
     // ==================== PRIVATE HELPERS ====================
@@ -510,26 +363,6 @@ export class TransactionsService {
             if (n.includes('remboursement') || n.includes('dette') || n.includes('crédit')) return 'debt_payment';
             return 'other_expense';
         }
-    }
-    
-    // ==================== CACHE HELPERS ====================
-    
-    private isCacheValid<T>(cache: CacheEntry<T>): boolean {
-        return Date.now() - cache.timestamp < CACHE_TTL;
-    }
-    
-    private isCacheStale<T>(cache: CacheEntry<T>): boolean {
-        return Date.now() - cache.timestamp >= CACHE_TTL;
-    }
-    
-    private invalidateRecordsCache(): void {
-        this.recordsCache = null;
-        this.recordsRequest$ = null;
-    }
-    
-    private invalidateStatsCache(): void {
-        this.statsCache = null;
-        this.statsRequest$ = null;
     }
     
     /**
@@ -598,10 +431,9 @@ export class TransactionsService {
     }
 
     /**
-     * Clear all caches (useful for logout or manual refresh)
+     * Clear all caches on logout/login (prevents cross-user cache bleed — P1-10).
      */
     clearCache(): void {
-        this.invalidateRecordsCache();
-        this.invalidateStatsCache();
+        this.recordsResource.reset();
     }
 }
