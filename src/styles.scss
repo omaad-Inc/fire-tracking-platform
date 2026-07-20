@@ -13,3 +13,16 @@
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
+
+/* Respect users who ask for less motion (P2-A11Y-2): near-instant animations,
+   transitions and smooth-scroll so nothing spins, slides, or auto-scrolls. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

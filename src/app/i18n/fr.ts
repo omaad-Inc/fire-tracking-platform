@@ -414,8 +414,11 @@ export const FR = {
   },
   topbar: {
     notifications: 'Notifications',
-    logout: 'Se déconnecter',
+    logout: 'Déconnexion',
     addAssets: 'Ajouter un actif',
+    toggleTheme: 'Basculer le mode sombre',
+    showAmounts: 'Afficher les montants',
+    hideAmounts: 'Masquer les montants',
   },
   addAssets: {
     title: 'Ajouter un actif',

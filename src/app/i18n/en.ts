@@ -416,6 +416,9 @@ export const EN = {
     notifications: 'Notifications',
     logout: 'Log out',
     addAssets: 'Add asset',
+    toggleTheme: 'Toggle dark mode',
+    showAmounts: 'Show amounts',
+    hideAmounts: 'Hide amounts',
   },
   addAssets: {
     title: 'Add an asset',
