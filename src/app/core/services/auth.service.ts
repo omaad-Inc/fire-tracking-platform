@@ -131,8 +131,19 @@ export class AuthService {
         return this.http.post<{ backup_codes: string[] }>(`${this.apiUrl}/auth/2fa/enable`, { code }).pipe(catchError(this.handleError));
     }
 
-    disable2fa(code: string): Observable<void> {
-        return this.http.post<void>(`${this.apiUrl}/auth/2fa/disable`, { code }).pipe(catchError(this.handleError));
+    /** Disable 2FA. Local accounts must also confirm their password (P2-BE-8). */
+    disable2fa(code: string, password?: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/2fa/disable`, { code, password }).pipe(catchError(this.handleError));
+    }
+
+    /** Confirm email ownership via the token from the verification email (P2-BE-9). */
+    verifyEmail(token: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/verify-email`, { token }).pipe(catchError(this.handleError));
+    }
+
+    /** Re-send the verification email to the signed-in user (P2-BE-9). */
+    resendVerification(): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/resend-verification`, {}).pipe(catchError(this.handleError));
     }
 
     // ── Login history & session revocation ──────────────────────────────────

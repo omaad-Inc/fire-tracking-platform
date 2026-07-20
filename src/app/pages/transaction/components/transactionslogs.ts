@@ -447,13 +447,14 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private _selectedMonth = signal(new Date().getMonth() + 1);
 
     search     = signal('');
-    typeFilter = signal<'all' | 'Income' | 'Expense'>('all');
+    typeFilter = signal<'all' | 'Income' | 'Expense' | 'Transfer'>('all');
 
     get typeFilters() {
         return [
-            { label: this.t('transactions.filterAll'),      value: 'all'     as const },
-            { label: this.t('transactions.kpi.income'),     value: 'Income'  as const },
-            { label: this.t('transactions.kpi.expenses'),   value: 'Expense' as const },
+            { label: this.t('transactions.filterAll'),      value: 'all'      as const },
+            { label: this.t('transactions.kpi.income'),     value: 'Income'   as const },
+            { label: this.t('transactions.kpi.expenses'),   value: 'Expense'  as const },
+            { label: this.t('transactions.form.transfer'),  value: 'Transfer' as const },
         ];
     }
 

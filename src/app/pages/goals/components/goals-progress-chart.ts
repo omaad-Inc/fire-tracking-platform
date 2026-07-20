@@ -48,7 +48,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                     <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl"><app-amount [value]="currentValue()" /></div>
                 </div>
                 <div class="relative">
-                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[250px]" />
+                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[250px]" role="img" [attr.aria-label]="chartAriaLabel()" />
                 </div>
             }
         </div>
@@ -98,6 +98,11 @@ export class SavingsProgress implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.subscription?.unsubscribe();
+    }
+
+    /** Screen-reader summary of the line chart (canvas exposes nothing to AT). */
+    chartAriaLabel(): string {
+        return `${this.i18n.t('savings.evolution')}: ${this.cs.format(this.currentValue(), 0)}`;
     }
 
     setRange(months: number) {

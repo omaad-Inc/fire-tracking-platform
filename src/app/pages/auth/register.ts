@@ -389,7 +389,7 @@ export class Register {
             this.confirmPassword && 
             this.acceptTerms && 
             this.password === this.confirmPassword &&
-            this.password.length >= 8
+            this.password.length >= 12
         );
     }
 

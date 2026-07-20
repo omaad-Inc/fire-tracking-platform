@@ -36,16 +36,18 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
         <div class="layout-topbar-actions">
             <!-- Desktop ONLY: dark mode toggle -->
             <div class="layout-config-menu hidden lg:flex">
-                <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-                    <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+                <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()"
+                        [attr.aria-label]="t('topbar.toggleTheme')" [title]="t('topbar.toggleTheme')">
+                    <i aria-hidden="true" [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                 </button>
             </div>
 
             @if (!share.active()) {
                 <!-- Eye icon (privacy toggle) -->
                 <button type="button" class="layout-topbar-action" (click)="privacyService.toggle()"
-                        [title]="privacyService.hidden() ? 'Afficher les montants' : 'Masquer les montants'">
-                    <i class="pi" [ngClass]="privacyService.hidden() ? 'pi-eye-slash' : 'pi-eye'"></i>
+                        [attr.aria-label]="privacyService.hidden() ? t('topbar.showAmounts') : t('topbar.hideAmounts')"
+                        [title]="privacyService.hidden() ? t('topbar.showAmounts') : t('topbar.hideAmounts')">
+                    <i aria-hidden="true" class="pi" [ngClass]="privacyService.hidden() ? 'pi-eye-slash' : 'pi-eye'"></i>
                 </button>
 
                 <!-- Share portfolio -->

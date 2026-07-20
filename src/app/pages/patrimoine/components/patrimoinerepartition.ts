@@ -15,7 +15,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
     template: `
         <div class="flex-1 flex flex-col items-center justify-center">
             <div class="relative w-full max-w-[280px] mx-auto mb-6">
-                <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full"></p-chart>
+                <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" class="w-full" role="img" [attr.aria-label]="chartAriaLabel()"></p-chart>
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div class="text-center">
                         <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ t('patrimoine.repartition.total') }}</span>
@@ -112,6 +112,14 @@ export class PatrimoineRepartitionComponent implements OnDestroy {
             maintainAspectRatio: true,
             responsive: true
         };
+    }
+
+    /** Screen-reader summary of the allocation (canvas exposes nothing to AT). */
+    chartAriaLabel(): string {
+        const items = this._items || [];
+        if (!items.length) return this.t('patrimoine.repartition.total');
+        const parts = items.map((it, i) => `${it.name} ${this.getPercent(i)}%`);
+        return `${this.t('patrimoine.repartition.total')}: ${parts.join(', ')}`;
     }
 
     formatTotal(): string { return this.cs.format(this.total, 0); }

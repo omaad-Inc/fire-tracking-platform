@@ -171,8 +171,10 @@ import { firstValueFrom } from 'rxjs';
                                     <div class="mt-2 space-y-2">
                                         <input pInputText type="text" inputmode="numeric" [(ngModel)]="disableCode" name="disableCode" [placeholder]="t('security.2fa.disableCodePlaceholder')"
                                                class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-2 focus:!border-brand-700 tracking-widest text-center text-sm" />
+                                        <input *ngIf="!isGoogleUser()" pInputText type="password" [(ngModel)]="disablePassword" name="disablePassword" [placeholder]="t('security.2fa.disablePasswordPlaceholder')"
+                                               class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-2 focus:!border-brand-700 text-sm" />
                                         <div class="flex gap-2">
-                                            <button class="flex-1 px-3 py-2 rounded-xl bg-negative text-white text-xs font-semibold disabled:opacity-50" [disabled]="!disableCode.trim() || twofaBusy()" (click)="confirmTwofaDisable()">{{ t('security.2fa.confirmDisable') }}</button>
+                                            <button class="flex-1 px-3 py-2 rounded-xl bg-negative text-white text-xs font-semibold disabled:opacity-50" [disabled]="!disableCode.trim() || (!isGoogleUser() && !disablePassword) || twofaBusy()" (click)="confirmTwofaDisable()">{{ t('security.2fa.confirmDisable') }}</button>
                                             <button class="px-3 py-2 rounded-xl border border-surface-300 dark:border-surface-600 text-xs text-surface-500" (click)="showTwofaDisable.set(false)">{{ t('common.cancel') }}</button>
                                         </div>
                                     </div>
@@ -671,6 +673,7 @@ export class SecuritySettings implements OnInit {
     showTwofaDisable = signal(false);
     twofaCode   = '';
     disableCode = '';
+    disablePassword = '';
 
     private loadTwofaStatus(): void {
         this.twofaLoading.set(true);
@@ -711,13 +714,17 @@ export class SecuritySettings implements OnInit {
     confirmTwofaDisable(): void {
         const code = this.disableCode.trim();
         if (!code || this.twofaBusy()) return;
+        // Local accounts must also confirm their password (P2-BE-8).
+        const password = this.isGoogleUser() ? undefined : this.disablePassword;
+        if (!this.isGoogleUser() && !password) return;
         this.twofaBusy.set(true);
-        this.authService.disable2fa(code).subscribe({
+        this.authService.disable2fa(code, password).subscribe({
             next: () => {
                 this.twofaBusy.set(false);
                 this.twofaEnabled.set(false);
                 this.showTwofaDisable.set(false);
                 this.disableCode = '';
+                this.disablePassword = '';
                 this.toast2fa(this.t('security.2fa.disabled'), 'success');
             },
             error: err => { this.twofaBusy.set(false); this.toast2fa(err?.message || this.t('security.2fa.invalidCode'), 'error'); },
