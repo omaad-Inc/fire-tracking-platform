@@ -165,7 +165,8 @@ import { AxisScore } from '../../core/services/api.service';
 
                             <!-- Radar chart -->
                             <div class="w-full max-w-[360px] mx-auto">
-                                <p-chart type="radar" [data]="chartData" [options]="chartOptions" class="w-full"></p-chart>
+                                <p-chart type="radar" [data]="chartData" [options]="chartOptions" class="w-full"
+                                         role="img" [attr.aria-label]="chartAriaLabel()"></p-chart>
                             </div>
                         </div>
                     </div>
@@ -266,6 +267,11 @@ export class WealthScorePage implements OnInit {
     }
 
     t(key: string): string { return this.i18n.t(key); }
+
+    /** Screen-reader summary of the radar; per-axis scores render as text below. */
+    chartAriaLabel(): string {
+        return `${this.t('nav.wealthScore')}: ${this.scoreService.totalScore()}/100`;
+    }
 
     async ngOnInit() {
         await this.scoreService.load();

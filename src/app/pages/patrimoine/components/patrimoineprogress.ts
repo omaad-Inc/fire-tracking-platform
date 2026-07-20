@@ -50,7 +50,7 @@ import { ApiService } from '../../../core/services/api.service';
                     <div class="text-surface-900 dark:text-surface-0 font-bold text-3xl"><app-amount [value]="currentValue()" /></div>
                 </div>
                 <div class="relative">
-                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[180px] md:min-h-[250px]" />
+                    <p-chart type="line" [data]="data" [options]="options" class="w-full min-h-[180px] md:min-h-[250px]" role="img" [attr.aria-label]="chartAriaLabel()" />
                 </div>
             }
         </div>
@@ -111,7 +111,12 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.subscription?.unsubscribe();
     }
-    
+
+    /** Screen-reader summary of the line chart (canvas exposes nothing to AT). */
+    chartAriaLabel(): string {
+        return `${this.i18n.t('patrimoine.grossWorth')}: ${this.cs.format(this.currentValue(), 0)}`;
+    }
+
     private async loadData() {
         this.loading.set(true);
         try {
