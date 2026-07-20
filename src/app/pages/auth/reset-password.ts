@@ -126,7 +126,7 @@ export class ResetPassword {
 
     canSubmit(): boolean {
         return (
-            this.newPassword.length >= 8 &&
+            this.newPassword.length >= 12 &&
             this.newPassword === this.confirmPassword
         );
     }
