@@ -4,6 +4,7 @@ import { Observable, of, throwError, from, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ShareContextService, PublicPortfolioBundle } from './share-context.service';
+import { User } from './token.service';
 
 // ============================================
 // ASSET INTERFACES
@@ -574,7 +575,7 @@ export class ApiService {
     getPublicPortfolio(token: string, code?: string): Observable<PublicPortfolioBundle> {
         let params = new HttpParams();
         if (code) params = params.set('code', code);
-        return this.http.get<{ meta: any; snapshot: PublicPortfolioBundle }>(
+        return this.http.get<{ meta: unknown; snapshot: PublicPortfolioBundle }>(
             `${this.apiUrl}/public/portfolio/${token}`, { params },
         ).pipe(map(r => r.snapshot));
     }
@@ -628,9 +629,11 @@ export class ApiService {
     }
 
     // ========== TONTINE CYCLES ==========
-    getTontineSchedule(assetId: number): Observable<TontineSchedule> {
-        // Not carried in the public bundle — yield an empty schedule in share mode.
-        if (this.share.active()) return of(null as unknown as TontineSchedule);
+    getTontineSchedule(assetId: number): Observable<TontineSchedule | null> {
+        // Not carried in the public bundle — yield null in share mode (callers
+        // already handle a null schedule; the old `null as unknown as X` cast
+        // lied to the type system and invited NPEs).
+        if (this.share.active()) return of(null);
         return this.http.get<TontineSchedule>(`${this.apiUrl}/assets/${assetId}/tontine`);
     }
 
@@ -901,8 +904,8 @@ export class ApiService {
     }
 
     // ========== USER PROFILE ==========
-    updateProfile(data: UserUpdate): Observable<any> {
-        return this.http.patch(`${this.apiUrl}/users/me`, data);
+    updateProfile(data: UserUpdate): Observable<User> {
+        return this.http.patch<User>(`${this.apiUrl}/users/me`, data);
     }
 
     changePassword(data: PasswordChange): Observable<{ message: string; access_token: string; token_type: string }> {
@@ -911,18 +914,18 @@ export class ApiService {
         );
     }
 
-    updateFIRESettings(data: FIRESettings): Observable<any> {
-        return this.http.put(`${this.apiUrl}/users/me/fire-settings`, data);
+    updateFIRESettings(data: FIRESettings): Observable<User> {
+        return this.http.put<User>(`${this.apiUrl}/users/me/fire-settings`, data);
     }
 
-    uploadAvatar(file: File): Observable<any> {
+    uploadAvatar(file: File): Observable<User> {
         const formData = new FormData();
         formData.append('file', file);
-        return this.http.post(`${this.apiUrl}/users/me/avatar`, formData);
+        return this.http.post<User>(`${this.apiUrl}/users/me/avatar`, formData);
     }
 
-    deleteAvatar(): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/users/me/avatar`);
+    deleteAvatar(): Observable<User> {
+        return this.http.delete<User>(`${this.apiUrl}/users/me/avatar`);
     }
 
     deleteAccount(): Observable<void> {
