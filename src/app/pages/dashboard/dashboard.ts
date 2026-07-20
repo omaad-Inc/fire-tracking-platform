@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
 import { TransactionsService } from '../service/transactions.service';
 import { TokenService } from '../../core/services/token.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -20,6 +21,10 @@ import { TokenService } from '../../core/services/token.service';
         RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
     ],
     template: `
+        <!-- One <h1> per page for a correct heading hierarchy; visually hidden
+             since the KPI cards carry the visible titles (P2-A11Y-2). -->
+        <h1 class="sr-only">{{ t('dashboard.pageTitle') }}</h1>
+
         <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {
             <div class="pb-6">
@@ -65,6 +70,9 @@ export class Dashboard implements OnInit {
     private transactionsService = inject(TransactionsService);
     private tokenService        = inject(TokenService);
     private router              = inject(Router);
+    private i18n                = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     showOnboarding  = signal(false);
     hasAssets       = signal(false);

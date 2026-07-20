@@ -522,6 +522,7 @@ export const EN: Dict = {
     },
   },
   dashboard: {
+    pageTitle: 'Overview',
     recentTransactions: 'Recent transactions',
     debtsOverview: 'Debts overview',
     savingsProgress: 'Savings progress',
@@ -874,6 +875,7 @@ export const EN: Dict = {
     noAccountTitle: 'No account yet',
     noAccountDesc: 'Add a cash, savings or mobile-money account first to log transactions.',
     noAccountCta: 'Add an account',
+    accountLabel: 'Account',
   },
   tontine: {
     scheduleTitle: 'Cycle schedule',
