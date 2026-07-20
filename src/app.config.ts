@@ -1,6 +1,7 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, DEFAULT_CURRENCY_CODE, LOCALE_ID, isDevMode } from '@angular/core';
+import { ApplicationConfig, DEFAULT_CURRENCY_CODE, LOCALE_ID, isDevMode, inject, provideAppInitializer } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
+import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
@@ -46,6 +47,12 @@ export const appConfig: ApplicationConfig = {
         providePrimeNG({ theme: { preset: OmaadPreset, options: { darkModeSelector: '.app-dark' } } }),
         { provide: LOCALE_ID, useValue: 'fr-FR' },
         { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' },
+        // Await the active locale's dictionary before first render so t() is
+        // populated (P2-FE-3 lazy dictionaries) — including during prerender.
+        provideAppInitializer(() => {
+            const i18n = inject(I18nService);
+            return i18n.loadLang(i18n.lang());
+        }),
         provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
