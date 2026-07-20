@@ -986,6 +986,7 @@ export const EN: Dict = {
     typeLabel: 'Type',
     namePlaceholder: 'e.g. Mortgage, Friend...',
     nameRequired: 'Name is required',
+    totalRequired: 'Amount must be greater than 0',
     alreadyPaid: 'Already paid',
     alreadyReceived: 'Already received',
     chooseFrequency: 'Choose a frequency',

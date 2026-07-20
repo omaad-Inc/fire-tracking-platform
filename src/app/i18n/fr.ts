@@ -984,6 +984,7 @@ export const FR = {
     typeLabel: 'Type',
     namePlaceholder: 'Ex: Prêt immobilier, Ami...',
     nameRequired: 'Le nom est requis',
+    totalRequired: 'Le montant doit être supérieur à 0',
     alreadyPaid: 'Déjà payé',
     alreadyReceived: 'Déjà reçu',
     chooseFrequency: 'Choisir une fréquence',
