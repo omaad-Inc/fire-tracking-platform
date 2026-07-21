@@ -24,10 +24,11 @@ import { join } from 'node:path';
 const ROOT = 'src/app';
 const ACCENTED = /[àâäéèêëïîôöùûüÿçœÀÂÄÉÈÊËÏÎÔÖÙÛÜŸÇŒ]/;
 
-// Files still on the legacy isFr() ternary mechanism (full migration = P3-11).
-// This list may SHRINK but never grow.
+// Files still on the legacy isFr() ternary mechanism. This list may SHRINK but
+// never grow. All in-app components have been migrated to i18n.t()
+// (P2-CONSISTENCY-1); only the landing/legal/blog marketing pages remain, whose
+// long-form FR prose is not yet dictionary-backed (tracked with P4-SEO).
 const ISFR_GRANDFATHERED = new Set([
-    'pages/patrimoine/components/asset-detail.ts',
     'pages/landing/components/legal-mentions.ts',
     'pages/landing/components/legal-privacy.ts',
     'pages/landing/components/legal-terms.ts',
