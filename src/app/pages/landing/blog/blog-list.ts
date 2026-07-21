@@ -7,6 +7,7 @@ import { FooterWidget } from '../components/footerwidget';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { BLOG_POSTS, BlogPost } from './posts';
 
 @Component({
@@ -127,6 +128,7 @@ export class BlogList {
     private router = inject(Router);
     private i18n   = inject(I18nService);
     private seo    = inject(SeoService);
+    private analytics = inject(AnalyticsService);
 
     posts: BlogPost[] = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date));
     selectedTag = signal<string | null>(null);
@@ -151,6 +153,7 @@ export class BlogList {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.seo.applyLocalized({ lang: this.lang as Lang, ...SEO_PAGES.blog });
+        this.analytics.trackPublic('blog_view', { view: 'list', lang: this.lang });
     }
 
     formatDate(iso: string): string {

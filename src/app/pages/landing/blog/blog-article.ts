@@ -9,6 +9,7 @@ import { TopbarWidget } from '../components/topbarwidget.component';
 import { FooterWidget } from '../components/footerwidget';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { BLOG_POSTS, BlogPost, findPostBySlug } from './posts';
 
 /** Shape of the JSON files in assets/newsletters/edition-NNN-blocks.json. */
@@ -189,6 +190,7 @@ export class BlogArticle implements OnInit, OnDestroy {
     private sanitizer = inject(DomSanitizer);
     private i18n      = inject(I18nService);
     private seo       = inject(SeoService);
+    private analytics = inject(AnalyticsService);
 
     post    = signal<BlogPost | undefined>(undefined);
     loading = signal(true);
@@ -238,6 +240,7 @@ export class BlogArticle implements OnInit, OnDestroy {
         // Per-article SEO from the post metadata (set synchronously so it lands
         // in the prerendered HTML even if the content fetch below fails).
         this.applyArticleSeo(p);
+        this.analytics.trackPublic('blog_view', { view: 'article', slug: p.slug, lang: this.lang });
 
         try {
             const doc = await firstValueFrom(this.http.get<NewsletterDoc>(p.contentPath));

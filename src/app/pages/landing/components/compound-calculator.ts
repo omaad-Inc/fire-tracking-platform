@@ -10,6 +10,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
 import type { Lang } from '../../../i18n/i18n.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 
 interface YearPoint {
     year: number;
@@ -396,6 +397,7 @@ export class CompoundCalculator {
     private router = inject(Router);
     private seo = inject(SeoService);
     private platformId = inject(PLATFORM_ID);
+    private analytics = inject(AnalyticsService);
     layoutService = inject(LayoutService);
 
     constructor() {
@@ -403,6 +405,7 @@ export class CompoundCalculator {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         const lang = (match ? match[1] : 'fr') as Lang;
         this.seo.applyLocalized({ lang, ...SEO_PAGES.compoundInterest });
+        this.analytics.trackPublic('tool_view', { tool: 'compound-interest', lang });
     }
 
     readonly currentYear = new Date().getFullYear();

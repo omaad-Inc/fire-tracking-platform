@@ -113,10 +113,10 @@ export class LegalPrivacyPage {
             },
             {
                 id: 'cookies',
-                title: fr ? 'Cookies' : 'Cookies',
+                title: fr ? 'Cookies & mesure d\'audience' : 'Cookies & analytics',
                 body: fr
-                    ? 'Omaad utilise uniquement des cookies fonctionnels (session, préférences). Aucun cookie publicitaire ni de tracking tiers. Le détail est disponible sur demande.'
-                    : 'Omaad only uses functional cookies (session, preferences). No advertising or third-party tracking cookies. Details available on request.',
+                    ? 'Omaad utilise uniquement des cookies fonctionnels (session, préférences). Aucun cookie publicitaire ni de tracking tiers.\nNotre mesure d\'audience est first-party et sans cookie : nous comptons de façon anonyme les pages vues du site public (accueil, blog, outils) via nos propres serveurs, sans identifiant persistant, sans profilage et sans partage avec des tiers.\nSi tu laisses ton email sur la liste d\'attente, il est utilisé uniquement pour te prévenir du lancement (désinscription en un clic).'
+                    : 'Omaad only uses functional cookies (session, preferences). No advertising or third-party tracking cookies.\nOur analytics are first-party and cookieless: we count public-site page views (home, blog, tools) anonymously through our own servers, with no persistent identifier, no profiling and no third-party sharing.\nIf you leave your email on the waitlist, it is used only to notify you at launch (unsubscribe in one click).',
             },
         ];
     });

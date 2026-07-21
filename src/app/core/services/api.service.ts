@@ -580,6 +580,12 @@ export class ApiService {
         ).pipe(map(r => r.snapshot));
     }
 
+    // ========== WAITLIST / LEADS (public, no auth) ==========
+    /** Capture a pre-launch waitlist email (public funnel). Idempotent server-side. */
+    submitLead(email: string, source: string, locale: string): Observable<{ ok: boolean }> {
+        return this.http.post<{ ok: boolean }>(`${this.apiUrl}/leads`, { email, source, locale });
+    }
+
     // ========== FX RATES ==========
     /** Public conversion rates relative to EUR base (see backend /fx/rates). */
     getFxRates(): Observable<FxRatesResponse> {
