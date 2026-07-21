@@ -41,9 +41,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
     const skipAuth = req.context.get(SKIP_AUTH);
     const token = tokenService.getToken();
+    // withCredentials so the httpOnly refresh cookie rides along to
+    // /auth/refresh + /auth/logout (P4-SEC-1). Set even for SKIP_AUTH requests
+    // (the refresh call is SKIP_AUTH but must still send the cookie). The cookie
+    // is path-scoped to /auth server-side, so it's a no-op on other endpoints.
     const authReq = token && !skipAuth
-        ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-        : req;
+        ? req.clone({ withCredentials: true, setHeaders: { Authorization: `Bearer ${token}` } })
+        : req.clone({ withCredentials: true });
 
     let handled = next(authReq);
 
