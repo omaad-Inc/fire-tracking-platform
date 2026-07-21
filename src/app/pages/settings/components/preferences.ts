@@ -80,7 +80,7 @@ import { ApiService } from '../../../core/services/api.service';
                                 </div>
                             </ng-template>
                         </p-select>
-                        <p class="text-xs text-surface-400 mt-1">Taux de référence : 1 EUR = 655,957 FCFA ≈ 1,08 USD</p>
+                        <p class="text-xs text-surface-400 mt-1">{{ t('settings.preferences.fxReference') }}</p>
                     </div>
                 </div>
             </div>
@@ -156,10 +156,10 @@ import { ApiService } from '../../../core/services/api.service';
             <div class="relative mb-8">
                 <div class="flex items-center gap-3 mb-6">
                     <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.notifications') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wide">Bientôt</span>
+                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wide">{{ t('settings.preferences.comingSoonBadge') }}</span>
                 </div>
 
-                <div class="space-y-3 opacity-50 pointer-events-none select-none" title="Bientôt disponible">
+                <div class="space-y-3 opacity-50 pointer-events-none select-none" [title]="t('settings.preferences.comingSoonTitle')">
                     @for (notif of notificationItems; track notif.key) {
                         <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
                             <div class="flex items-center gap-4">
@@ -177,7 +177,7 @@ import { ApiService } from '../../../core/services/api.service';
                 </div>
                 <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 flex items-center gap-1.5">
                     <i class="pi pi-info-circle"></i>
-                    La gestion des notifications sera disponible dans une prochaine mise à jour.
+                    {{ t('settings.preferences.notificationsHint') }}
                 </p>
             </div>
 

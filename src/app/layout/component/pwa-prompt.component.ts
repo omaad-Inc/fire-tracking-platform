@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { PwaService } from '../service/pwa.service';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-pwa-prompt',
@@ -14,10 +15,10 @@ import { PwaService } from '../service/pwa.service';
                         bg-brand-700 shadow-md animate-slide-down">
                 <div class="flex items-center gap-2.5">
                     <i class="pi pi-refresh text-white text-sm"></i>
-                    <span class="text-white font-medium text-sm">Nouvelle version disponible</span>
+                    <span class="text-white font-medium text-sm">{{ t('pwaPrompt.updateAvailable') }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button pButton label="Mettre à jour" size="small"
+                    <button pButton [label]="t('pwaPrompt.update')" size="small"
                             (click)="pwaService.applyUpdate()"
                             class="!bg-white !text-brand-700 dark:text-brand-300 !border-0 !py-1 !px-3 !text-xs !font-semibold !rounded-lg"></button>
                     <button (click)="dismissUpdate()" class="text-white/70 hover:text-white p-1">
@@ -42,18 +43,18 @@ import { PwaService } from '../service/pwa.service';
                             <img src="assets/brand/omaad-icon-mono-white.svg" alt="Omaad" class="w-7 h-7">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm leading-tight">Installer Omaad</p>
-                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Accès rapide et mode hors-ligne</p>
+                            <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm leading-tight">{{ t('pwaPrompt.installTitle') }}</p>
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ t('pwaPrompt.installSub') }}</p>
                         </div>
                         <button (click)="dismissInstall()" class="text-surface-400 hover:text-surface-600 p-0.5 -mt-0.5 shrink-0">
                             <i class="pi pi-times text-xs"></i>
                         </button>
                     </div>
                     <div class="flex gap-2 mt-3">
-                        <button pButton label="Installer" icon="pi pi-download"
+                        <button pButton [label]="t('pwaPrompt.install')" icon="pi pi-download"
                                 (click)="installApp()"
                                 class="flex-1 !bg-brand-700 hover:!bg-brand-800 !border-0 !text-white !py-2.5 !text-sm !font-semibold !rounded-xl"></button>
-                        <button pButton label="Plus tard" [outlined]="true"
+                        <button pButton [label]="t('pwaPrompt.later')" [outlined]="true"
                                 (click)="dismissInstall()"
                                 class="!py-2.5 !text-sm !rounded-xl !border-surface-300 dark:!border-surface-600"></button>
                     </div>
@@ -66,10 +67,10 @@ import { PwaService } from '../service/pwa.service';
                         <div class="w-7 h-7 rounded-lg bg-brand-700 flex items-center justify-center">
                             <i class="pi pi-download text-white text-xs"></i>
                         </div>
-                        <span class="text-surface-900 dark:text-surface-0 font-medium text-sm">Installer Omaad pour un accès rapide</span>
+                        <span class="text-surface-900 dark:text-surface-0 font-medium text-sm">{{ t('pwaPrompt.installBar') }}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button pButton label="Installer" size="small"
+                        <button pButton [label]="t('pwaPrompt.install')" size="small"
                                 (click)="installApp()"
                                 class="!bg-brand-700 hover:!bg-brand-800 !text-white !border-0 !py-1 !px-3 !text-xs !font-semibold !rounded-lg"></button>
                         <button (click)="dismissInstall()" class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 p-1">
@@ -95,6 +96,9 @@ import { PwaService } from '../service/pwa.service';
 })
 export class PwaPromptComponent {
     pwaService = inject(PwaService);
+    private i18n = inject(I18nService);
+
+    t(key: string): string { return this.i18n.t(key); }
 
     showInstallBanner = true;
     showUpdateBanner = true;

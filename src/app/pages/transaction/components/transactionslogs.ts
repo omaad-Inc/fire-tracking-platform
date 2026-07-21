@@ -186,7 +186,9 @@ interface DayGroup {
                             </span>
                             <div class="flex-1 h-px bg-surface-200 dark:bg-surface-800"></div>
                             <span class="text-xs text-surface-400 dark:text-surface-500">
-                                {{ group.records.length }} opération{{ group.records.length > 1 ? 's' : '' }}
+                                {{ group.records.length === 1
+                                    ? t('transactions.opCountOne', { n: group.records.length })
+                                    : t('transactions.opCountMany', { n: group.records.length }) }}
                             </span>
                         </div>
 
@@ -455,7 +457,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
         this.router.navigate([], { relativeTo: this.route, queryParams: params, queryParamsHandling: 'merge', replaceUrl: true });
     });
 
-    t(key: string): string { return this.i18n.t(key); }
+    t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
     private dateLocale(): string { return this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR'; }
 
     @Output() monthChanged = new EventEmitter<string>();
