@@ -10,7 +10,7 @@ export class I18nService {
     // Dictionaries load on demand (P2-FE-3): only the active locale ships in the
     // initial graph; the other is a separate lazy chunk fetched on switch. The
     // active locale is awaited by an APP_INITIALIZER (see app.config.ts) so t()
-    // is populated before first render — including during prerender.
+    // is populated before first render, including during prerender.
     private dicts: Partial<Record<Lang, Dict>> = {};
     private loading: Partial<Record<Lang, Promise<void>>> = {};
     private warned = new Set<string>();
@@ -51,8 +51,7 @@ export class I18nService {
     }
 
     /**
-     * Switch language. Loads the target dictionary FIRST, then flips the signal —
-     * so the UI never renders raw key paths for a not-yet-loaded locale.
+     * Switch language. Loads the target dictionary FIRST, then flips the signal, * so the UI never renders raw key paths for a not-yet-loaded locale.
      */
     setLang(l: Lang): void {
         this.syncHtmlLang(l);

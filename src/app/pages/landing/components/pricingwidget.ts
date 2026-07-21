@@ -63,7 +63,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="relative h-full">
                             <div class="absolute -inset-4 bg-ochre-500/10 blur-2xl rounded-2xl"></div>
                             <div class="relative h-full bg-surface-0 dark:bg-surface-800 rounded-2xl p-8 border-2 border-ochre-500 shadow-sm">
-                                <!-- "Populaire" badge removed until it's true (no paid users pre-launch) — P0-7 -->
+                                <!-- "Populaire" badge removed until it's true (no paid users pre-launch), P0-7 -->
                                 <div class="mb-6 pt-2">
                                     <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
                                         <i class="pi pi-crown text-brand-700 dark:text-ochre-400 text-xl"></i>

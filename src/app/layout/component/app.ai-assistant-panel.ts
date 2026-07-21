@@ -1,4 +1,4 @@
-// Omaad AI Assistant — slide-out panel (Monarch-style)
+// Omaad AI Assistant, slide-out panel (Monarch-style)
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AiAssistantService } from '../../core/services/ai-assistant.service';
@@ -151,7 +151,7 @@ import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 
                 <!-- Body -->
                 <div class="flex-1 overflow-y-auto px-5 py-6 space-y-5">
-                    <!-- Coming-soon notice — clearly visible preview banner -->
+                    <!-- Coming-soon notice, clearly visible preview banner -->
                     <div class="ai-coming-soon-notice flex items-start gap-2.5 rounded-xl px-3.5 py-3">
                         <i class="pi pi-info-circle mt-0.5 shrink-0"></i>
                         <div class="text-sm leading-snug">
@@ -223,7 +223,7 @@ import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
     styles: [`
         :host { display: contents; }
 
-        /* Header badge — small ochre pill next to the chat title */
+        /* Header badge, small ochre pill next to the chat title */
         .ai-coming-soon-badge {
             display: inline-flex;
             align-items: center;
@@ -243,7 +243,7 @@ import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
             color: #D4945A;
         }
 
-        /* Body notice banner — clearly visible "preview only" callout */
+        /* Body notice banner, clearly visible "preview only" callout */
         .ai-coming-soon-notice {
             background: rgba(199, 123, 60, 0.08);
             border: 1px solid rgba(199, 123, 60, 0.25);

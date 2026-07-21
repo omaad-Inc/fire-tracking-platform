@@ -19,7 +19,7 @@ import { environment } from '../../../environments/environment';
     imports: [CommonModule, RouterModule, AvatarModule, DividerModule, AppMenu],
     template: `
         <div class="layout-sidebar">
-            <!-- Logo header — click to toggle sidebar; hover swaps logo for hamburger -->
+            <!-- Logo header, click to toggle sidebar; hover swaps logo for hamburger -->
             <button type="button" class="sidebar-logo" (click)="layoutService.onMenuToggle()" aria-label="Toggle sidebar">
                 <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="sidebar-logo-img" />
                 <svg class="sidebar-logo-toggle" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

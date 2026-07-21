@@ -12,8 +12,8 @@ export interface TransactionRecord {
     date: string;
     name: string;
     type: 'Income' | 'Expense' | 'Transfer';
-    amount: number;          // EUR base — for display (rendered via <app-amount>) and summaries
-    nativeAmount?: number;   // amount in `currency` — for the edit form
+    amount: number;          // EUR base, for display (rendered via <app-amount>) and summaries
+    nativeAmount?: number;   // amount in `currency`, for the edit form
     currency?: string;       // native currency the transaction was entered in
     remarks?: string;
     category?: string;
@@ -60,7 +60,7 @@ export interface CategoryConfig {
 export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     // Brand-tokenized: every category uses a shade from the chartTheme
     // categorical palette (navy + ochre + warm-greys). The icon glyph and
-    // label do the differentiation work — colours just have to be distinct
+    // label do the differentiation work, colours just have to be distinct
     // enough for chart slice readability.
     salary:        { label: 'Salaire',        icon: 'pi pi-briefcase',              color: '#1A2740', bg: 'bg-warm-100 dark:bg-warm-800' },
     freelance:     { label: 'Freelance',      icon: 'pi pi-code',                   color: '#4D5F80', bg: 'bg-warm-100 dark:bg-warm-800' },
@@ -137,7 +137,7 @@ export class TransactionsService {
     }
 
     /**
-     * Get transactions by type (direct, uncached — a rarely used filtered view).
+     * Get transactions by type (direct, uncached, a rarely used filtered view).
      */
     async getRecordsByType(type: 'Income' | 'Expense'): Promise<TransactionRecord[]> {
         try {
@@ -227,7 +227,7 @@ export class TransactionsService {
         if (!record.id) throw new Error('Missing id');
 
         try {
-            // Native-currency storage — same as addRecord.
+            // Native-currency storage, same as addRecord.
             const nativeAmount = record.amount;
             const currency = record.currency || 'EUR';
             const transactionData: TransactionUpdate = record.type === 'Transfer'
@@ -277,7 +277,7 @@ export class TransactionsService {
     }
 
     /**
-     * Transaction statistics — a pure derivation of the cached list (no second
+     * Transaction statistics, a pure derivation of the cached list (no second
      * cache). Errors surface through the resource: a cold failure rejects so the
      * caller can show error+retry, never a fabricated all-zero stat line.
      */
@@ -301,7 +301,7 @@ export class TransactionsService {
      * A write happened: drop cache freshness (next read refetches) and notify
      * every subscriber (dashboard, recent-tx widget, …) so the change shows
      * immediately with no 5-minute staleness. Mirrors DebtsService /
-     * PatrimoineService, which already fire their own notify on writes — this
+     * PatrimoineService, which already fire their own notify on writes, this
      * makes TransactionsService consistent and removes the need for callers to
      * fire notifyTransactionsUpdated() themselves.
      */
@@ -368,14 +368,13 @@ export class TransactionsService {
     /**
      * Compute a monthly summary for the Reports page.
      *
-     * Unlike getRecords(), this fetches ALL transactions directly from the API —
-     * including 'investment' and 'savings' categories that are deliberately
+     * Unlike getRecords(), this fetches ALL transactions directly from the API, * including 'investment' and 'savings' categories that are deliberately
      * excluded from the main transactions list. The Reports chart must show
      * the complete picture of where money goes.
      */
     async getMonthlySummary(yearMonth: string): Promise<MonthlySummary> {
         // Fetch only the selected month, server-side date-filtered and un-capped
-        // (paginated past the per-page limit). No category filter — the Reports
+        // (paginated past the per-page limit). No category filter, the Reports
         // chart must show income + ALL expense categories, incl. investment/savings.
         const start = `${yearMonth}-01`;
         const end = `${yearMonth}-31`; // string upper-bound; safe for 28/30/31-day months
@@ -401,9 +400,9 @@ export class TransactionsService {
             return { month: yearMonth, income, expenses, net: income-expenses, count: monthRecords.length, byCategory };
         }
 
-        // Map ALL transactions for the selected month — income and ALL expense categories.
+        // Map ALL transactions for the selected month, income and ALL expense categories.
         // Amounts from the raw API are NATIVE (multi-currency): every sum must go
-        // through FX to the EUR base first — 650 000 XOF + 1 000 EUR is not "651 000".
+        // through FX to the EUR base first, 650 000 XOF + 1 000 EUR is not "651 000".
         const monthTxs = allTxs.filter(t => t.date.startsWith(yearMonth));
         const toEur = (t: Transaction) => this.currencyService.toEurFromNative(t.amount, t.currency);
 
@@ -431,7 +430,7 @@ export class TransactionsService {
     }
 
     /**
-     * Clear all caches on logout/login (prevents cross-user cache bleed — P1-10).
+     * Clear all caches on logout/login (prevents cross-user cache bleed, P1-10).
      */
     clearCache(): void {
         this.recordsResource.reset();

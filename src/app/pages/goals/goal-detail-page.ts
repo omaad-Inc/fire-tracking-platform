@@ -95,7 +95,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                 </div>
             }
 
-            <!-- Load failure (network/500) — distinct from a real 404 -->
+            <!-- Load failure (network/500), distinct from a real 404 -->
             @if (!loading() && !goal() && loadError()) {
                 <app-load-error (retry)="retryLoad()" />
             }
@@ -171,9 +171,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (remaining() != null) {
                                 <app-amount [value]="remaining()!" />
-                            } @else {
-                                —
-                            }
+                            } @else {, }
                         </div>
                         <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.kpi.leftToSave') }}</div>
                     </div>
@@ -181,9 +179,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (monthlyNeeded() != null) {
                                 <app-amount [value]="monthlyNeeded()!" />
-                            } @else {
-                                —
-                            }
+                            } @else {, }
                         </div>
                         <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthlyNeeded') }}</div>
                     </div>
@@ -191,9 +187,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         <div class="relative text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 truncate">
                             @if (monthsLeft() != null) {
                                 {{ monthsLeft() }}
-                            } @else {
-                                —
-                            }
+                            } @else {, }
                         </div>
                         <div class="relative text-xs text-surface-500 dark:text-surface-400 mt-1 truncate">{{ i18n.t('goals.detail.monthsLeft') }}</div>
                     </div>
@@ -202,7 +196,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                 <!-- Two-column body -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-                    <!-- LEFT — main column: Activity + (optional) note -->
+                    <!-- LEFT, main column: Activity + (optional) note -->
                     <div class="lg:col-span-2 flex flex-col gap-4">
 
                         <!-- Activity log -->
@@ -296,7 +290,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                         }
                     </div>
 
-                    <!-- RIGHT — details panel -->
+                    <!-- RIGHT, details panel -->
                     <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 self-start">
                         <h3 class="relative font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
                             {{ i18n.t('goals.detail.details') }}
@@ -311,12 +305,12 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                                 <dd class="text-sm font-medium text-surface-900 dark:text-surface-0">
                                     @if (g.target_amount > 0) {
                                         <app-amount [value]="g.target_amount" />
-                                    } @else { — }
+                                    } @else {, }
                                 </dd>
                             </div>
                             <div class="flex items-center justify-between py-3">
                                 <dt class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('goals.fields.targetDate') }}</dt>
-                                <dd class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ formattedDate() || '—' }}</dd>
+                                <dd class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ formattedDate() || ', ' }}</dd>
                             </div>
                             <div class="flex items-center justify-between py-3">
                                 <dt class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('goals.detail.template') }}</dt>
@@ -542,7 +536,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
             this.lastLoadedId = id;
         } catch (err: any) {
             console.error('Error loading goal detail:', err);
-            // Only a real 404 means "goal deleted" — any other failure
+            // Only a real 404 means "goal deleted", any other failure
             // (network, 500) shows an error+retry card, not the 404 view.
             this.goal.set(null);
             this.loadError.set(err?.status !== 404);

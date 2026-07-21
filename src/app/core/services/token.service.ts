@@ -30,7 +30,7 @@ export interface User {
 export class TokenService {
     private _token = signal<string | null>(null);
     private _user = signal<User | null>(null);
-    /** Epoch ms of the last setToken() — replaces the window.__tokenSetTime
+    /** Epoch ms of the last setToken(), replaces the window.__tokenSetTime
      *  global the interceptor used for its just-logged-in grace window. */
     private _tokenSetAt = signal<number | null>(null);
 

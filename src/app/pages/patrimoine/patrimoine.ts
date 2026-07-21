@@ -24,7 +24,7 @@ interface CategoryGroupCard {
     assetCount: number;
 }
 
-// All asset groups share the same solid brand navy — the icon glyph
+// All asset groups share the same solid brand navy, the icon glyph
 // differentiates the category, not the color. (Phase 2 identity rule.)
 const GROUP_BG = '#1A2740';
 
@@ -81,7 +81,7 @@ const GROUPS = [
                 </div>
 
                 @if (hasMultiCurrency()) {
-                    <!-- Currency exposure — where net worth sits across currencies -->
+                    <!-- Currency exposure, where net worth sits across currencies -->
                     <div class="mt-4 pt-4 border-t border-surface-200 dark:border-surface-700">
                         <div class="text-surface-500 dark:text-surface-400 text-xs mb-2">{{ i18n.t('patrimoine.currencyExposure') }}</div>
                         <div class="flex h-2 rounded-full overflow-hidden mb-2">
@@ -298,12 +298,12 @@ export class Patrimoine implements OnInit, OnDestroy {
     });
 
     totalAssets = computed(() => this.allAssets().reduce((s, a) => s + a.value, 0));
-    // Debts are stored in their native currency — convert to EUR base to sum.
+    // Debts are stored in their native currency, convert to EUR base to sum.
     totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe')
         .reduce((s, d) => s + this.currencyService.toEurFromNative(d.current_amount, d.currency), 0));
     debtsCount = computed(() => this.debts().filter(d => d.type === 'i_owe').length);
 
-    // ── Currency exposure — how net worth splits across currencies ──
+    // ── Currency exposure, how net worth splits across currencies ──
     // Shown only when the user actually holds more than one currency.
     currencyExposure = computed(() => {
         const byCcy: Record<string, number> = {};
@@ -388,7 +388,7 @@ export class Patrimoine implements OnInit, OnDestroy {
             this.assetsLoadError.set(false);
         } catch (error) {
             console.error('Error loading assets:', error);
-            // Explicit error+retry — a fake-empty portfolio reads as data loss.
+            // Explicit error+retry, a fake-empty portfolio reads as data loss.
             if (this.allAssets().length === 0) this.assetsLoadError.set(true);
         } finally {
             this.loadingGroups.set(false);
@@ -403,7 +403,7 @@ export class Patrimoine implements OnInit, OnDestroy {
             this.debtsLoadError.set(false);
         } catch (error) {
             console.error('Error loading debts:', error);
-            // Explicit error+retry — "no debts" on failure understates liabilities.
+            // Explicit error+retry, "no debts" on failure understates liabilities.
             if (this.debts().length === 0) this.debtsLoadError.set(true);
         } finally {
             this.loadingDebts.set(false);

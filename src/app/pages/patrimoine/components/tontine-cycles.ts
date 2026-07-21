@@ -183,7 +183,7 @@ export class TontineCyclesComponent implements OnInit {
     }
 
     fmtDate(iso: string): string {
-        if (!iso) return '—';
+        if (!iso) return ', ';
         const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
         return new Date(iso).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
     }

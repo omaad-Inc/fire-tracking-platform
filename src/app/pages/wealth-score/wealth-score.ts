@@ -36,7 +36,7 @@ import { AxisScore } from '../../core/services/api.service';
                 </button>
             </div>
 
-            <!-- Explanation card — what the score means, what's a good score, how it updates -->
+            <!-- Explanation card, what the score means, what's a good score, how it updates -->
             <div class="mb-6 overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 border-l-4 border-l-ochre-500">
                 <button
                     type="button"
@@ -116,8 +116,7 @@ import { AxisScore } from '../../core/services/api.service';
                                             <strong class="text-surface-900 dark:text-surface-0">
                                                 {{ t('landing.wealthScore.help.bands.' + band.key + 'Label') }}
                                             </strong>
-                                            <span class="text-surface-600 dark:text-surface-400">
-                                                — {{ t('landing.wealthScore.help.bands.' + band.key + 'Desc') }}
+                                            <span class="text-surface-600 dark:text-surface-400">, {{ t('landing.wealthScore.help.bands.' + band.key + 'Desc') }}
                                             </span>
                                         </div>
                                     </div>
@@ -139,7 +138,7 @@ import { AxisScore } from '../../core/services/api.service';
             </div>
 
             @if (scoreService.loading() && !scoreService.hasData()) {
-                <!-- Skeleton reserving the radar + axis-list layout (P3-9) — no spinner→content jump -->
+                <!-- Skeleton reserving the radar + axis-list layout (P3-9), no spinner→content jump -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-pulse">
                     <div class="h-72 rounded-2xl bg-surface-100 dark:bg-surface-800"></div>
                     <div class="space-y-3">
@@ -240,7 +239,7 @@ export class WealthScorePage implements OnInit {
     chartData: any = {};
     chartOptions: any = {};
 
-    // Help card — collapsible explanation panel, state persisted in localStorage
+    // Help card, collapsible explanation panel, state persisted in localStorage
     private readonly HELP_STORAGE_KEY = 'omaad_wealth_score_help_open';
     helpOpen = signal(this.loadHelpState());
 

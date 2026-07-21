@@ -1,4 +1,4 @@
-// Lightweight client for POST /api/v1/events. Fire-and-forget — analytics
+// Lightweight client for POST /api/v1/events. Fire-and-forget, analytics
 // failures must never block a user action.
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';

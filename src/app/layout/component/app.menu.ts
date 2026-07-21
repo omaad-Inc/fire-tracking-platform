@@ -69,7 +69,7 @@ export class AppMenu {
             },
             // Separator
             { separator: true },
-            // Goals — lifetime FIRE, wealth score, and short-term goals
+            // Goals, lifetime FIRE, wealth score, and short-term goals
             {
                 label: this.t('menu.fireSection'),
                 items: [
@@ -105,7 +105,7 @@ export class AppMenu {
             },
         ];
 
-        // AI Assistant — only in the authenticated app (not a public share).
+        // AI Assistant, only in the authenticated app (not a public share).
         if (!this.share.active()) {
             this.model.push(
                 { separator: true },

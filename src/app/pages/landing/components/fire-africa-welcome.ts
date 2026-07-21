@@ -46,8 +46,8 @@ import { RippleModule } from 'primeng/ripple';
                 <div class="rounded-2xl px-8 py-6 mb-10 text-left bg-brand-800/60 border border-brand-700/40">
                     <p class="text-base leading-relaxed text-surface-300">
                         {{ isFr
-                            ? 'On construit aussi une plateforme de gestion patrimoniale pour la diaspora africaine et la zone UEMOA. La bêta privée arrive bientôt — les abonnés FIRE Africa seront les premiers informés.'
-                            : 'We are also building a wealth management platform for the African diaspora and the WAEMU zone. Private beta is coming soon — FIRE Africa subscribers will be the first to know.' }}
+                            ? 'On construit aussi une plateforme de gestion patrimoniale pour la diaspora africaine et la zone UEMOA. La bêta privée arrive bientôt, les abonnés FIRE Africa seront les premiers informés.'
+                            : 'We are also building a wealth management platform for the African diaspora and the WAEMU zone. Private beta is coming soon, FIRE Africa subscribers will be the first to know.' }}
                     </p>
                 </div>
 

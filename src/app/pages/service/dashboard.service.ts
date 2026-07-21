@@ -43,12 +43,12 @@ export interface AssetAllocation {
     color: string;
 }
 
-// Brand-tokenized chart palette — navy + ochre + warm-grays.
+// Brand-tokenized chart palette, navy + ochre + warm-grays.
 // Light and dark variants so donut slices remain visible on both backgrounds.
 const CATEGORY_COLORS_LIGHT: Record<string, string> = {
     'real_estate':    '#1A2740', // brand-700 (anchor)
-    'stocks_brvm':    '#C77B3C', // ochre-500 (accent — BRVM identity)
-    'stocks_intl':    '#8B4F26', // deep ochre — international stocks
+    'stocks_brvm':    '#C77B3C', // ochre-500 (accent, BRVM identity)
+    'stocks_intl':    '#8B4F26', // deep ochre, international stocks
     'bonds':          '#4D5F80', // brand-400
     'crypto':         '#D8A369', // ochre-400
     'cash':           '#3D3B35', // warm-700
@@ -66,8 +66,8 @@ const CATEGORY_COLORS_LIGHT: Record<string, string> = {
 
 const CATEGORY_COLORS_DARK: Record<string, string> = {
     'real_estate':    '#8A98AE', // brand-300
-    'stocks_brvm':    '#D8A369', // ochre-400 — BRVM identity
-    'stocks_intl':    '#B98856', // mid-ochre — international stocks
+    'stocks_brvm':    '#D8A369', // ochre-400, BRVM identity
+    'stocks_intl':    '#B98856', // mid-ochre, international stocks
     'bonds':          '#B6BFCD', // brand-200
     'crypto':         '#EBD0B0', // ochre-200
     'cash':           '#9C988C', // warm-400
@@ -133,7 +133,7 @@ export class DashboardService {
 
         // Any data mutation (add/edit/delete of a transaction, asset, debt, or
         // savings goal) must drop the dashboard's cached summary so the KPIs
-        // refetch fresh — otherwise adding a transaction left the net-worth /
+        // refetch fresh, otherwise adding a transaction left the net-worth /
         // monthly-flux / FIRE cards showing 5-minute-stale numbers (the P0-2
         // staleness bug class this task exists to kill). Widgets already reload
         // on these same events; this ensures the reload sees fresh data. This
@@ -160,9 +160,9 @@ export class DashboardService {
             : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     }
 
-    // ── Cache (shared cachedResource — P2-FE-1) ───────────────────────────────
+    // ── Cache (shared cachedResource, P2-FE-1) ───────────────────────────────
     // One resource for the /dashboard/summary payload (getStats + getFIREMetrics
-    // both derive from it — the resource's in-flight promise collapses that burst
+    // both derive from it, the resource's in-flight promise collapses that burst
     // to a single request). Parameterized progression series each get their own
     // lazily-created resource, keyed by args, in `progressionResources`.
     private summaryResource = cachedResource<DashboardSummary>(
@@ -182,7 +182,7 @@ export class DashboardService {
         this.progressionResources.forEach(r => r.invalidate());
     }
 
-    /** Clear all dashboard caches back to empty (logout — prevents cross-user bleed). */
+    /** Clear all dashboard caches back to empty (logout, prevents cross-user bleed). */
     private resetAll(): void {
         this.summaryResource.reset();
         this.progressionResources.forEach(r => r.reset());
@@ -190,7 +190,7 @@ export class DashboardService {
         this._dashboardData.set(null);
     }
 
-    /** Whether the summary (stats/fire) is already cached — avoids skeleton flash. */
+    /** Whether the summary (stats/fire) is already cached, avoids skeleton flash. */
     hasCached(key: string): boolean {
         if (key === 'stats' || key === 'fire') return this.summaryResource.hasData();
         return this.progressionResources.get(key)?.hasData() ?? false;
@@ -272,7 +272,7 @@ export class DashboardService {
     }
 
     /**
-     * Dashboard stats — derived from the shared summary resource. The resource
+     * Dashboard stats, derived from the shared summary resource. The resource
      * handles TTL + stale-while-revalidate + in-flight dedup, and on a cold
      * failure its load() rejects so the KPI widget shows an error+retry card
      * instead of a fake "0 FCFA" net worth (P1-5). getStats() + getFIREMetrics()
@@ -293,8 +293,8 @@ export class DashboardService {
     }
 
     /**
-     * FIRE metrics — derived from the same summary resource (one canonical
-     * field-name set end-to-end — no `??` guessing across a drifted contract, P1-18).
+     * FIRE metrics, derived from the same summary resource (one canonical
+     * field-name set end-to-end, no `??` guessing across a drifted contract, P1-18).
      */
     async getFIREMetrics(): Promise<FIREProgress> {
         const fm: FireMetrics = (await this.summaryResource.load()).fire_metrics;
@@ -359,14 +359,14 @@ export class DashboardService {
     }> {
         const [allAssets, debts] = await Promise.all([
             firstValueFrom(this.api.getAssets(0, 200)),
-            // The category view charts assets only — skip the debts request.
+            // The category view charts assets only, skip the debts request.
             categories ? Promise.resolve([]) : firstValueFrom(this.api.getDebts(0, 100))
         ]);
         const assets = categories
             ? allAssets.filter(a => categories.includes(a.category ?? ''))
             : allAssets;
 
-        // Values from the API are NATIVE (multi-currency) — every figure must
+        // Values from the API are NATIVE (multi-currency), every figure must
         // go through FX to the EUR base before being summed or interpolated.
         const toEur = (v: number, c: string | null | undefined) =>
             this.currencyService.toEurFromNative(v, c);
@@ -410,7 +410,7 @@ export class DashboardService {
             const pointDate = pointDates[idx];
             const monthsAgo = lastIdx - idx; // how many months before current
 
-            // For the current month point, use actual current values — no interpolation
+            // For the current month point, use actual current values, no interpolation
             const isCurrentMonth =
                 pointDate.getFullYear() === today.getFullYear() &&
                 pointDate.getMonth() === today.getMonth();
@@ -425,7 +425,7 @@ export class DashboardService {
                 const assetStart = new Date(asset.purchase_date);
                 if (assetStart <= pointDate) {
                     if (isCurrentMonth) {
-                        // This IS the current value — no interpolation needed
+                        // This IS the current value, no interpolation needed
                         totalAssets += currentEur;
                     } else {
                         // Historical point: interpolate linearly from purchase to current
@@ -506,7 +506,7 @@ export class DashboardService {
     }
 
     /**
-     * Get total assets progression — Patrimoine Total Brut (client-side interpolation)
+     * Get total assets progression, Patrimoine Total Brut (client-side interpolation)
      */
     async getTotalAssetsProgression(months: number = 12): Promise<ChartDataPoint[]> {
         return this.progression(`assets_progression_${months}`, async () => {

@@ -297,7 +297,7 @@ import { I18nService } from '../../i18n/i18n.service';
                             <span class="text-ochre-400">de votre patrimoine</span>
                         </h2>
                         <p class="text-warm-400 max-w-md mx-auto mb-10 leading-relaxed">
-                            Patrimoine, épargne, dettes, objectif FIRE — tout est centralisé pour que vous preniez les bonnes décisions.
+                            Patrimoine, épargne, dettes, objectif FIRE, tout est centralisé pour que vous preniez les bonnes décisions.
                         </p>
 
                         <!-- Value Props -->
@@ -331,13 +331,13 @@ export class Login {
     t(key: string): string { return this.i18n.t(key); }
 
     // `email` is a signal so the inline-validation computed below re-runs as
-    // the user types (a plain field would leave the error stale — the P0-3 bug).
+    // the user types (a plain field would leave the error stale, the P0-3 bug).
     email = signal('');
     password = '';
     currentLang = '/fr';
 
     // Inline validation (parity with register): show a field error only once
-    // the user has left the field or attempted submit — not while typing.
+    // the user has left the field or attempted submit, not while typing.
     emailTouched = signal(false);
     passwordTouched = signal(false);
     private readonly EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

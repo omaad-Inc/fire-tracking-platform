@@ -123,7 +123,7 @@ interface NavItem {
         .nav-icon-wrapper i {
             font-size: 1.15rem;
             transition: all 0.3s ease;
-            color: #6E6A60; /* warm-500 — 5.39:1 on white (was #8A98AE, 2.92:1, failed AA) */
+            color: #6E6A60; /* warm-500, 5.39:1 on white (was #8A98AE, 2.92:1, failed AA) */
         }
 
         .nav-icon-wrapper.active {
@@ -139,12 +139,12 @@ interface NavItem {
         .nav-label {
             font-size: 0.65rem;
             font-weight: 500;
-            color: #6E6A60; /* warm-500 — 5.39:1 on white (was #8A98AE, 2.92:1) */
+            color: #6E6A60; /* warm-500, 5.39:1 on white (was #8A98AE, 2.92:1) */
             transition: color 0.3s ease;
         }
 
         .nav-item.active .nav-label {
-            color: #95541F; /* ochre-700 — 5.89:1 text (was ochre-500 #C77B3C, 3.32:1) */
+            color: #95541F; /* ochre-700, 5.89:1 text (was ochre-500 #C77B3C, 3.32:1) */
             font-weight: 700;
         }
 
@@ -271,7 +271,7 @@ interface NavItem {
         }
 
         :host-context(.app-dark) .nav-icon-wrapper i {
-            color: #9AA7BB; /* was #5A6478 — too dark on the navy sheet; ~6:1 now */
+            color: #9AA7BB; /* was #5A6478, too dark on the navy sheet; ~6:1 now */
         }
 
         :host-context(.app-dark) .nav-icon-wrapper.active {
@@ -283,7 +283,7 @@ interface NavItem {
         }
 
         :host-context(.app-dark) .nav-label {
-            color: #9AA7BB; /* was #5A6478 — too dark on the navy sheet; ~6:1 now */
+            color: #9AA7BB; /* was #5A6478, too dark on the navy sheet; ~6:1 now */
         }
 
         :host-context(.app-dark) .nav-item.active .nav-label {

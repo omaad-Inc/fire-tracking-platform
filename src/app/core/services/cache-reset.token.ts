@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
  * cached for up to 5 min on a shared device). Now:
  *   - AuthService fires `inject(CACHE_RESET).next()` on logout/login.
  *   - Each feature service subscribes and clears its own cache.
- * A newly added cached service auto-participates just by subscribing — no
+ * A newly added cached service auto-participates just by subscribing, no
  * edit to AuthService required.
  */
 export const CACHE_RESET = new InjectionToken<Subject<void>>('CACHE_RESET', {

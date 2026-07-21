@@ -153,7 +153,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
             const cs = this.cs;
             const isDark = document.documentElement.classList.contains('app-dark');
 
-            // Brand-tokenized chart palette — single source of truth in
+            // Brand-tokenized chart palette, single source of truth in
             // core/theme/chart-theme.ts. Inlined here to avoid breaking the
             // build dependency graph.
             const borderColor = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700

@@ -38,7 +38,7 @@ export interface AllocatePayload {
         >
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <!-- Header tile: navy for "into the goal", ochre for "out of the goal" — semantic and minimal -->
+                    <!-- Header tile: navy for "into the goal", ochre for "out of the goal", semantic and minimal -->
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center"
                          [ngClass]="mode() === 'contribute'
                             ? 'bg-brand-700 dark:bg-brand-300'

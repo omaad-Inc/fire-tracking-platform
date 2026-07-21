@@ -42,9 +42,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
                     </div>
                     <div class="relative flex items-center gap-2 mt-auto">
                         @if ((stats()?.netWorthChangePct ?? 0) === 0) {
-                            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-surface-500/10 text-surface-500 text-sm font-semibold">
-                                —
-                            </span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-lg bg-surface-500/10 text-surface-500 text-sm font-semibold">, </span>
                         } @else if ((stats()?.netWorthChangePct ?? 0) > 0) {
                             <span class="inline-flex items-center px-2 py-1 rounded-lg bg-positive/10 text-positive text-sm font-semibold">
                                 <i class="pi pi-arrow-up text-xs mr-1"></i>
@@ -206,7 +204,7 @@ export class StatsWidget implements OnInit, OnDestroy {
         return (s.totalAssets ?? 0) - (s.totalDebts ?? 0);
     });
 
-    /** Absolute net worth in EUR — for <app-amount> which handles Math.abs internally */
+    /** Absolute net worth in EUR, for <app-amount> which handles Math.abs internally */
     readonly absNetWorth = computed(() => Math.abs(this.realNetWorth()));
     
     monthlySavings = signal(0);
@@ -266,7 +264,7 @@ export class StatsWidget implements OnInit, OnDestroy {
             this.savingsRatePct.set(pct);
             this.loadError.set(false);
         } catch {
-            // Never fabricate a "0" net worth on failure — show an explicit error with retry.
+            // Never fabricate a "0" net worth on failure, show an explicit error with retry.
             // Fake zeros on a finance dashboard read as "you have nothing", which destroys trust.
             if (!this.stats()) {
                 this.loadError.set(true);

@@ -31,7 +31,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                  [class]="stat.highlight
                                     ? 'text-ochre-500 dark:text-ochre-400'
                                     : 'text-brand-700 dark:text-ochre-400'">
-                                {{ animated() ? t(stat.valueKey) : '—' }}
+                                {{ animated() ? t(stat.valueKey) : ', ' }}
                             </div>
                             <div class="text-sm text-surface-600 dark:text-surface-400 leading-snug max-w-[180px] mx-auto">
                                 {{ t(stat.labelKey) }}

@@ -54,7 +54,7 @@ interface DebtDisplay {
                     }
                 </div>
             } @else if (loadError()) {
-                <!-- NEVER show "no debts 🎉" on a failed load — that's a false financial state -->
+                <!-- NEVER show "no debts 🎉" on a failed load, that's a false financial state -->
                 <app-load-error (retry)="loadDebts()" />
             } @else if (debts().length === 0) {
                 <div class="relative flex flex-col items-center justify-center py-8 text-center">
@@ -132,7 +132,7 @@ export class DebtsOverview implements OnInit, OnDestroy {
             this.loadError.set(false);
             
             if (records.length > 0) {
-                // All debts share the same neutral chrome — only the icon glyph
+                // All debts share the same neutral chrome, only the icon glyph
                 // differentiates the category. Progress bar uses the brand color.
                 const sharedChrome = {
                     bgClass: 'bg-brand-100 dark:bg-brand-700/20',

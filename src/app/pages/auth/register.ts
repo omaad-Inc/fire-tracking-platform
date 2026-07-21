@@ -327,7 +327,7 @@ export class Register {
     acceptTerms = false;
     currentLang = '/fr';
 
-    // Phone signup (an additional method alongside email — kept coequal).
+    // Phone signup (an additional method alongside email, kept coequal).
     authMode = signal<'email' | 'phone'>('email');
     phone = '';
     otpCode = '';
@@ -413,7 +413,7 @@ export class Register {
                     life: 4000
                 });
                 // Keep the token the server just minted and go straight into
-                // the app (mirrors the OTP flow) — the old code called
+                // the app (mirrors the OTP flow), the old code called
                 // logout(), discarding the token and forcing a second manual
                 // login. If email verification (P2) later lands, route to a
                 // "verify your email" state here instead.

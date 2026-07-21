@@ -8,7 +8,7 @@ import { ShareContextService } from '../services/share-context.service';
 /**
  * Bootstraps the PUBLIC shared portfolio at /share/:token. Fetches the frozen
  * bundle once and puts the app into share mode, so the everyday AppLayout +
- * pages render read-only from the snapshot — no login required.
+ * pages render read-only from the snapshot, no login required.
  *
  * Routes to the code gate (passcode-protected) or the unavailable screen
  * (expired / revoked / not-found) instead of activating.
@@ -20,7 +20,7 @@ export const shareBootstrapGuard: CanActivateFn = async (route) => {
 
     const token = route.paramMap.get('token') ?? route.parent?.paramMap.get('token') ?? '';
 
-    // Already loaded (internal navigation between shared pages) — don't refetch.
+    // Already loaded (internal navigation between shared pages), don't refetch.
     if (share.active() && share.token() === token && share.bundle()) return true;
 
     try {

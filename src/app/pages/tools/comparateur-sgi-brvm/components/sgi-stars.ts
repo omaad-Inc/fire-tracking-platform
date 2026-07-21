@@ -20,7 +20,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
                 <span class="ml-1 text-xs font-medium tabular-nums text-surface-500 dark:text-surface-400">{{ noteLabel() }}</span>
             </span>
         } @else {
-            <span class="text-surface-400 dark:text-surface-500">—</span>
+            <span class="text-surface-400 dark:text-surface-500">, </span>
         }
     `
 })

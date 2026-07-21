@@ -443,7 +443,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private route  = inject(ActivatedRoute);
     /** Guard so the URL-sync effect doesn't clobber incoming params before ngOnInit reads them. */
     private urlReady = false;
-    /** Deep-link the month/type/search filters into the URL (P3-8) — shareable + survives refresh. */
+    /** Deep-link the month/type/search filters into the URL (P3-8), shareable + survives refresh. */
     private syncUrl = effect(() => {
         const params = {
             month: this._selectedMonth(),

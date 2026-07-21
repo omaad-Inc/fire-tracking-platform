@@ -8,7 +8,7 @@ import { PlansSettings } from './components/plans';
 import { ConnectionsSettings } from './components/connections';
 
 // FireSettings is still imported by /pages/fire (the deep-dive page); we just
-// no longer expose it as a /settings/fire route — FIRE configuration happens
+// no longer expose it as a /settings/fire route, FIRE configuration happens
 // inline on /pages/fire to avoid two surfaces for the same thing.
 
 export default [
@@ -16,7 +16,7 @@ export default [
         path: '',
         component: Settings,
         children: [
-            // No default redirect — mobile shows the nav list, desktop shows a placeholder
+            // No default redirect, mobile shows the nav list, desktop shows a placeholder
             { path: 'account',     component: AccountSettings     },
             { path: 'security',    component: SecuritySettings    },
             { path: 'preferences', component: PreferencesSettings },

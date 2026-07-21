@@ -27,7 +27,7 @@ export class PatrimoineService {
     private stateService = inject(AssetsStateService);
     private currency = inject(CurrencyService);
 
-    /** Single source of truth for the asset list (shared cachedResource — P2-FE-1). */
+    /** Single source of truth for the asset list (shared cachedResource, P2-FE-1). */
     private assetsResource = cachedResource<PatrimoineAssetItemDto[]>(
         () => firstValueFrom(this.api.getAssets().pipe(
             map(assets => assets.map(a => this.mapAssetToDto(a))),
@@ -166,7 +166,7 @@ export class PatrimoineService {
         return this.assetsResource.peek() ?? [];
     }
 
-    /** Clear all caches on logout/login (prevents cross-user cache bleed — P1-10). */
+    /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
         this.assetsResource.reset();
     }

@@ -7,16 +7,16 @@ const SESSION_ACTIVE_KEY = 'omaad_session_active';  // sessionStorage: survives 
 const MAX_ATTEMPTS = 5;
 
 /**
- * PIN Lock Service — manages the 4-digit PIN lock for the app.
+ * PIN Lock Service, manages the 4-digit PIN lock for the app.
  *
  * Security model:
- * - PIN is never stored in plain text — only a SHA-256(salt + pin) hash
+ * - PIN is never stored in plain text, only a SHA-256(salt + pin) hash
  * - Salt is a random 16-char hex string, generated once per device
  * - After 5 failed attempts, the service triggers a forced logout
  * - The lock screen is an overlay that prevents any app interaction
  * - Auto-locks when the app goes to background (configurable delay)
  *
- * The PIN is purely local (no backend) — it protects against someone
+ * The PIN is purely local (no backend), it protects against someone
  * picking up your unlocked phone, not against a forensic attack.
  */
 @Injectable({ providedIn: 'root' })
@@ -83,7 +83,7 @@ export class PinService {
 
         const hash = await this.hashPin(salt, pin);
         if (hash === storedHash) {
-            // Success — unlock and mark session as active (survives page refresh)
+            // Success, unlock and mark session as active (survives page refresh)
             this.locked.set(false);
             this.failedAttempts.set(0);
             try { sessionStorage.setItem(SESSION_ACTIVE_KEY, '1'); } catch {}
@@ -105,14 +105,14 @@ export class PinService {
 
     // ── Lock/unlock ──────────────────────────────────────────────────
 
-    /** Lock the app (show lock screen) — only on mobile-sized screens */
+    /** Lock the app (show lock screen), only on mobile-sized screens */
     lock(): void {
         if (this.isPinSet() && this.isMobile()) {
             this.locked.set(true);
         }
     }
 
-    /** Called when the app is ready (e.g. after login) — locks if PIN is set and on mobile.
+    /** Called when the app is ready (e.g. after login), locks if PIN is set and on mobile.
      *  Uses sessionStorage to skip lock on page refresh (session flag survives refresh
      *  but is cleared when the tab/browser closes → cold start locks as expected). */
     initLockOnStartup(): void {
@@ -120,12 +120,12 @@ export class PinService {
 
         try {
             if (sessionStorage.getItem(SESSION_ACTIVE_KEY)) {
-                // Page refresh within an active session — don't lock
+                // Page refresh within an active session, don't lock
                 return;
             }
         } catch {}
 
-        // Cold start (new tab or browser reopen) — lock
+        // Cold start (new tab or browser reopen), lock
         this.locked.set(true);
     }
 

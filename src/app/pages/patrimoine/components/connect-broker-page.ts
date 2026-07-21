@@ -63,7 +63,7 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                         <p class="text-surface-500 dark:text-surface-400 text-sm mb-8">{{ t('addAssets.methodPicker.title') }}</p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <!-- Connect card (primary — left) -->
+                            <!-- Connect card (primary, left) -->
                             <button type="button" (click)="chooseConnect()"
                                     class="relative flex flex-col justify-between rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
                                            hover:border-brand-300 dark:hover:border-brand-700
@@ -91,7 +91,7 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                                 </div>
                             </button>
 
-                            <!-- Manual card (secondary — right) -->
+                            <!-- Manual card (secondary, right) -->
                             <button type="button" (click)="chooseManual()"
                                     class="relative flex flex-col justify-between rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800
                                            hover:border-brand-300 dark:hover:border-brand-700

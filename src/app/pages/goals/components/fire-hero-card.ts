@@ -14,7 +14,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
  * Compact "lifetime goal" card surfaced at the top of the Goals page.
  *
  * Visual: circular progress on the left + key numbers on the right + a single
- * action — "Voir le détail" — that navigates to /pages/fire (the deep-dive
+ * action, "Voir le détail", that navigates to /pages/fire (the deep-dive
  * page where the user can both inspect FIRE metrics and configure them inline).
  *
  * When no FIRE target is set, renders an empty state with a single
@@ -27,7 +27,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
 
-            <!-- Header / badge — ochre = "premium accent", reserved for FIRE -->
+            <!-- Header / badge, ochre = "premium accent", reserved for FIRE -->
             <div class="relative flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide font-semibold px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400">
@@ -128,7 +128,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
                         }
                     </div>
 
-                    <!-- Right: action — vertically centered -->
+                    <!-- Right: action, vertically centered -->
                     <div class="shrink-0 self-center w-full lg:w-auto">
                         <p-button
                             icon="pi pi-arrow-up-right"
@@ -205,7 +205,7 @@ export class FireHeroCardComponent implements OnInit, OnDestroy {
         this.nav.go('pages', 'fire');
     }
 
-    /** Empty-state CTA — same destination as the configured-state action. */
+    /** Empty-state CTA, same destination as the configured-state action. */
     goConfigure() {
         this.goDetails();
     }

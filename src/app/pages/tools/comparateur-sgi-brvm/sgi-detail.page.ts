@@ -30,7 +30,7 @@ import { PDF_BASE, SGIS, Sgi, fmtPct, getById, isFree } from './sgi-data';
                          style="background: radial-gradient(700px 360px at 90% -30%, rgba(199,123,60,0.22), transparent 60%), linear-gradient(160deg,#1b2a4a,#13203a)">
                         <div class="mb-4 flex flex-wrap items-center gap-3">
                             <span class="rounded-full border border-ochre-400/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ochre-300">
-                                {{ s.pays || '—' }}
+                                {{ s.pays || ', ' }}
                             </span>
                             <app-sgi-stars [note]="s.note" />
                         </div>
@@ -121,7 +121,7 @@ import { PDF_BASE, SGIS, Sgi, fmtPct, getById, isFree } from './sgi-data';
                     <!-- RELATED -->
                     @if (related().length > 0) {
                         <section class="mt-12">
-                            <h2 class="mb-4 text-xl font-bold text-surface-900 dark:text-surface-0">Autres SGI — {{ s.pays }}</h2>
+                            <h2 class="mb-4 text-xl font-bold text-surface-900 dark:text-surface-0">Autres SGI, {{ s.pays }}</h2>
                             <div class="flex flex-wrap gap-3">
                                 @for (r of related(); track r.id) {
                                     <a [routerLink]="['/outils/comparateur-sgi-brvm/sgi', r.id]"
@@ -168,14 +168,14 @@ export class SgiDetailPage {
     });
 
     constructor() {
-        // SEO par fiche — l'effect se rejoue quand on navigue de fiche en fiche
+        // SEO par fiche, l'effect se rejoue quand on navigue de fiche en fiche
         // (les liens « Autres SGI » réutilisent la même instance de composant).
         effect(() => {
             const s = this.sgi();
             if (!s) return;
             const courtage = fmtPct(s.courtage_pct);
             this.seo.apply({
-                title: `${s.nom} — frais et tarifs SGI BRVM (${s.pays}) | Omaad`,
+                title: `${s.nom}, frais et tarifs SGI BRVM (${s.pays}) | Omaad`,
                 description:
                     s.tarif_status === 'complet'
                         ? `Grille tarifaire officielle de ${s.nom} (SGI, ${s.pays}) : courtage ${courtage}, droits de garde, tenue de compte. Comparez avec les 41 SGI de la BRVM.`

@@ -4,8 +4,7 @@ import { SgiCompareService } from '../compare.service';
 import { COMPARE_ROWS, Sgi, findFee, isFree } from '../sgi-data';
 
 /**
- * Barre flottante (dès 2 SGI sélectionnées) + tableau comparatif en dialog —
- * équivalent des CompareBar/CompareModal de l'app React d'origine.
+ * Barre flottante (dès 2 SGI sélectionnées) + tableau comparatif en dialog, * équivalent des CompareBar/CompareModal de l'app React d'origine.
  */
 @Component({
     selector: 'app-sgi-compare-panel',
@@ -52,7 +51,7 @@ import { COMPARE_ROWS, Sgi, findFee, isFree } from '../sgi-data';
                             <td class="sticky left-0 min-w-[130px] border-b border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-3 text-left text-[11.5px] font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400">Note</td>
                             @for (s of compare.list(); track s.id) {
                                 <td class="border-b border-surface-200 dark:border-surface-700 p-3 align-top text-surface-900 dark:text-surface-100">
-                                    {{ s.note != null ? noteLabel(s) : '—' }}
+                                    {{ s.note != null ? noteLabel(s) : ', ' }}
                                 </td>
                             }
                         </tr>
@@ -62,7 +61,7 @@ import { COMPARE_ROWS, Sgi, findFee, isFree } from '../sgi-data';
                                 @for (s of compare.list(); track s.id) {
                                     <td class="border-b border-surface-200 dark:border-surface-700 p-3 align-top"
                                         [class]="isBest(row.key, s) ? 'font-bold text-positive' : 'text-surface-900 dark:text-surface-100'">
-                                        {{ fee(s, row.key) || '—' }}{{ isBest(row.key, s) ? ' ✓' : '' }}
+                                        {{ fee(s, row.key) || ', ' }}{{ isBest(row.key, s) ? ' ✓' : '' }}
                                     </td>
                                 }
                             </tr>

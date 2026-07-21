@@ -116,7 +116,7 @@ export class DebtsStats implements OnInit, OnDestroy {
             this.loadError.set(false);
         } catch (error) {
             console.error('Error loading debt stats:', error);
-            // Explicit error+retry — fake zeros on money cards read as data loss.
+            // Explicit error+retry, fake zeros on money cards read as data loss.
             if (!this.stats()) this.loadError.set(true);
         } finally {
             this.loading.set(false);

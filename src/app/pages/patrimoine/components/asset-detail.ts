@@ -117,7 +117,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                 </div>
             </div>
 
-            <!-- KPI Row — category-aware tiles, all on the standard card surface -->
+            <!-- KPI Row, category-aware tiles, all on the standard card surface -->
             <div class="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-3 mb-6" style="grid-auto-rows: 1fr;">
                 @switch (formShape()) {
                     @case ('TONTINE') {
@@ -127,7 +127,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (asset()!.tontine_monthly_contribution != null) {
                                     <app-amount [value]="asset()!.tontine_monthly_contribution!" />
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'par cycle' : 'per cycle' }}</p>
@@ -135,7 +135,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         <div class="detail-surface kpi-tile">
                             <p class="kpi-label">{{ isFr() ? 'Participants' : 'Participants' }}</p>
                             <div class="kpi-value">
-                                {{ asset()!.tontine_participants ?? '—' }}
+                                {{ asset()!.tontine_participants ?? ', ' }}
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'membres du groupe' : 'group members' }}</p>
                         </div>
@@ -152,7 +152,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         <div class="detail-surface kpi-tile">
                             <p class="kpi-label">{{ isFr() ? 'Opérateur' : 'Provider' }}</p>
                             <div class="kpi-value truncate max-w-full">
-                                {{ asset()!.mobile_money_operator || '—' }}
+                                {{ asset()!.mobile_money_operator || ', ' }}
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'portefeuille mobile' : 'mobile wallet' }}</p>
                         </div>
@@ -171,7 +171,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         <div class="detail-surface kpi-tile">
                             <p class="kpi-label">{{ isFr() ? 'Institution' : 'Institution' }}</p>
                             <div class="kpi-value truncate max-w-full">
-                                {{ asset()!.institution || '—' }}
+                                {{ asset()!.institution || ', ' }}
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'où sont vos fonds' : 'where your funds are' }}</p>
                         </div>
@@ -193,7 +193,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (displayQuantity() != null) {
                                     {{ displayQuantity() | number:'1.0-6' }}
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'parts détenues' : 'units held' }}</p>
@@ -204,7 +204,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (displayQuantity() != null && displayQuantity()! > 0) {
                                     <app-amount [value]="valueEur() / displayQuantity()!" />
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'cours actuel estimé' : 'current estimated price' }}</p>
@@ -217,7 +217,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 </div>
                                 <p class="kpi-sub">{{ isFr() ? 'depuis l\\'achat' : 'since purchase' }}</p>
                             } @else {
-                                <div class="kpi-value text-surface-400">—</div>
+                                <div class="kpi-value text-surface-400">, </div>
                                 <p class="kpi-sub">{{ isFr() ? 'renseignez le prix d\\'achat' : 'enter the purchase price' }}</p>
                             }
                         </div>
@@ -229,7 +229,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (asset()!.surface_m2) {
                                     {{ asset()!.surface_m2 }} m²
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'surface habitable' : 'living area' }}</p>
@@ -240,7 +240,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (asset()!.surface_m2 && asset()!.surface_m2! > 0) {
                                     <app-amount [value]="valueEur() / asset()!.surface_m2!" />
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'valeur courante estimée' : 'current estimated value' }}</p>
@@ -251,14 +251,14 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (asset()!.rental_income) {
                                     <app-amount [value]="asset()!.rental_income!" />
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'par mois' : 'per month' }}</p>
                         </div>
                     }
                     @default {
-                        <!-- TOTAL_VALUE — retirement, life insurance, business, vehicle, collectibles, other -->
+                        <!-- TOTAL_VALUE, retirement, life insurance, business, vehicle, collectibles, other -->
                         <div class="detail-surface kpi-tile">
                             <p class="kpi-label">P&amp;L</p>
                             @if (gainLoss() !== null) {
@@ -267,7 +267,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 </div>
                                 <p class="kpi-sub">{{ isFr() ? 'depuis l\\'achat' : 'since purchase' }}</p>
                             } @else {
-                                <div class="kpi-value text-surface-400">—</div>
+                                <div class="kpi-value text-surface-400">, </div>
                                 <p class="kpi-sub">{{ isFr() ? 'renseignez le prix d\\'achat' : 'enter the purchase price' }}</p>
                             }
                         </div>
@@ -277,7 +277,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                 @if (asset()!.purchase_value) {
                                     <app-amount [value]="asset()!.purchase_value!" />
                                 } @else {
-                                    <span class="text-surface-400">—</span>
+                                    <span class="text-surface-400">, </span>
                                 }
                             </div>
                             <p class="kpi-sub">
@@ -287,7 +287,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         <div class="detail-surface kpi-tile">
                             <p class="kpi-label">{{ isFr() ? 'Institution' : 'Institution' }}</p>
                             <div class="kpi-value truncate max-w-full">
-                                {{ asset()!.institution || '—' }}
+                                {{ asset()!.institution || ', ' }}
                             </div>
                             <p class="kpi-sub">{{ isFr() ? 'où l\\'actif est détenu' : 'where the asset is held' }}</p>
                         </div>
@@ -295,9 +295,9 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                 }
             </div>
 
-            <!-- Specifications — Informations générales (premium spec list) + per-category card -->
+            <!-- Specifications, Informations générales (premium spec list) + per-category card -->
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <!-- Informations générales — premium icon-row layout -->
+                <!-- Informations générales, premium icon-row layout -->
                 <div class="detail-surface">
                     <div class="flex items-center justify-between px-5 py-4 border-b border-surface-200 dark:border-surface-700">
                         <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -353,25 +353,25 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ isFr() ? 'Agence' : 'Agency' }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { <span class="text-surface-400">—</span> }
+                                                @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ isFr() ? 'Notaire' : 'Notary' }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { <span class="text-surface-400">—</span> }
+                                                @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ isFr() ? 'Rénovation' : 'Renovation' }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { <span class="text-surface-400">—</span> }
+                                                @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ isFr() ? 'Ameublement' : 'Furnishing' }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { <span class="text-surface-400">—</span> }
+                                                @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                     </div>
@@ -437,7 +437,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ isFr() ? 'Opérateur' : 'Provider' }}</p>
                                         <p class="text-sm font-bold text-surface-900 dark:text-surface-0">
-                                            {{ asset()!.mobile_money_operator || '—' }}
+                                            {{ asset()!.mobile_money_operator || ', ' }}
                                         </p>
                                     </div>
                                 </div>
@@ -453,7 +453,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                             </div>
                             <div class="mx-5 mb-5 p-3 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800 flex items-start gap-2 text-xs text-surface-500">
                                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5"></i>
-                                <span>{{ isFr() ? 'Intégration API Wave / Orange Money prévue — synchronisations automatiques à venir.' : 'Wave / Orange Money API integration planned — automatic syncing coming soon.' }}</span>
+                                <span>{{ isFr() ? 'Intégration API Wave / Orange Money prévue, synchronisations automatiques à venir.' : 'Wave / Orange Money API integration planned, automatic syncing coming soon.' }}</span>
                             </div>
                         </div>
                     }
@@ -469,7 +469,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ isFr() ? 'Institution' : 'Institution' }}</p>
-                                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ asset()!.institution || '—' }}</p>
+                                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ asset()!.institution || ', ' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 py-3 border-b border-surface-100 dark:border-surface-800">
@@ -478,7 +478,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ isFr() ? 'Liquidité' : 'Liquidity' }}</p>
-                                        <p class="text-sm font-semibold text-positive">{{ isFr() ? 'Immédiate — retrait sans préavis' : 'Immediate — withdraw without notice' }}</p>
+                                        <p class="text-sm font-semibold text-positive">{{ isFr() ? 'Immédiate, retrait sans préavis' : 'Immediate, withdraw without notice' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3 py-3">
@@ -494,7 +494,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         </div>
                     }
                     @default {
-                        <!-- TOTAL_VALUE — show a simple "Suivi" card so the right column is never empty -->
+                        <!-- TOTAL_VALUE, show a simple "Suivi" card so the right column is never empty -->
                         <div class="detail-surface">
                             <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700">
                                 <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">{{ isFr() ? 'Suivi' : 'Tracking' }}</h3>
@@ -859,7 +859,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
             background: #0f172a;                              /* surface-900 */
         }
 
-        /* KPI tile layout — flex column, centered, fixed padding */
+        /* KPI tile layout, flex column, centered, fixed padding */
         .kpi-tile {
             padding: 1rem 1.25rem;
             display: flex;
@@ -924,7 +924,7 @@ export class AssetDetailPage implements OnInit {
         this.cs.toEurFromNative(this.asset()?.current_value ?? 0, this.asset()?.currency)
     );
 
-    /** Symbol of the asset's own (native) currency — the edit form works in it. */
+    /** Symbol of the asset's own (native) currency, the edit form works in it. */
     assetSymbol(): string {
         const c = (this.asset()?.currency || 'EUR').toUpperCase();
         return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
@@ -952,7 +952,7 @@ export class AssetDetailPage implements OnInit {
     readonly QUANTITY_CATEGORIES = ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'collectibles', 'commodities'];
     isQuantityBased = computed(() => this.QUANTITY_CATEGORIES.includes(this.asset()?.category ?? ''));
 
-    /** The form shape for the currently-loaded asset — drives the edit modal switch. */
+    /** The form shape for the currently-loaded asset, drives the edit modal switch. */
     formShape = computed<AssetFormShape>(() => {
         const cat = this.asset()?.category;
         return cat ? getAssetFormShape(cat) : 'TOTAL_VALUE';
@@ -1006,7 +1006,7 @@ export class AssetDetailPage implements OnInit {
         return json === '{}' ? null : json;
     }
 
-    /** Quantity to display — reads from quantity field OR notes JSON. */
+    /** Quantity to display, reads from quantity field OR notes JSON. */
     readonly displayQuantity = computed(() => {
         const a = this.asset();
         return a ? this.readQuantity(a) : null;
@@ -1078,7 +1078,7 @@ export class AssetDetailPage implements OnInit {
             case 'mise_recue': return (fr ? 'Mise reçue' : 'Payout received') + ' ✓';
             case 'termine':    return fr ? 'Terminée' : 'Completed';
             case 'en_cours':   return fr ? 'En cours' : 'In progress';
-            default:           return '—';
+            default:           return ', ';
         }
     });
 
@@ -1091,7 +1091,7 @@ export class AssetDetailPage implements OnInit {
         }
     });
 
-    // ─── Premium spec list rows — one source of truth per card ──────────
+    // ─── Premium spec list rows, one source of truth per card ──────────
     private liquidLabel(isLiquid: boolean | null | undefined): string {
         const fr = this.isFr();
         return isLiquid ? (fr ? 'Disponible immédiatement' : 'Available immediately') : (fr ? 'Différée' : 'Deferred');
@@ -1157,7 +1157,7 @@ export class AssetDetailPage implements OnInit {
         }
         // Always have at least one row
         if (!rows.length) {
-            rows.push({ label: fr ? 'Localisation' : 'Location', value: '—', icon: 'pi-map-marker' });
+            rows.push({ label: fr ? 'Localisation' : 'Location', value: ', ', icon: 'pi-map-marker' });
         }
         return rows;
     });
@@ -1274,7 +1274,7 @@ export class AssetDetailPage implements OnInit {
     }
 
     formatShortDate(dt: string): string {
-        if (!dt) return '—';
+        if (!dt) return ', ';
         const [y, m, d] = dt.split('-');
         return `${d}/${m}/${y}`;
     }
@@ -1379,7 +1379,7 @@ export class AssetDetailPage implements OnInit {
             payload.surface_m2     = f.surfaceM2;
             payload.rental_income  = f.rentalIncome;
         } else {
-            // TOTAL_VALUE — retirement, life insurance, business, vehicle, collectibles, other
+            // TOTAL_VALUE, retirement, life insurance, business, vehicle, collectibles, other
             payload.institution    = f.institution || null;
             payload.purchase_value = f.purchaseValue;
             payload.purchase_date  = this.toIsoDate(f.purchaseDate);
@@ -1414,7 +1414,7 @@ export class AssetDetailPage implements OnInit {
                 this.stateService.notifyAssetsUpdated();
                 this.messageService.add({ severity: 'success', summary: this.isFr() ? 'Modifié' : 'Updated', detail: this.isFr() ? 'Actif mis à jour avec succès.' : 'Asset updated successfully.', life: 3000 });
 
-                // Background re-fetch — keep locally-saved quantity if server hasn't propagated yet
+                // Background re-fetch, keep locally-saved quantity if server hasn't propagated yet
                 this.apiService.getAsset(a.id).subscribe({
                     next: (fresh: Asset) => {
                         this.asset.set({
