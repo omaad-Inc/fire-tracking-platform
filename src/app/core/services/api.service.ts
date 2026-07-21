@@ -796,14 +796,6 @@ export class ApiService {
         return this.http.delete<void>(`${this.apiUrl}/savings/${id}`);
     }
 
-    /** @deprecated — use `contributeToGoal` (with asset_id) */
-    addContribution(goalId: number, amount: number): Observable<GoalContribution> {
-        if (this.share.active()) return this.readonlyBlock;
-        return this.http.post<GoalContribution>(
-            `${this.apiUrl}/savings/${goalId}/contribute`,
-            { amount },
-        );
-    }
 
     listLiquidAssets(): Observable<LiquidAsset[]> {
         const s = this.shared<LiquidAsset[]>(b => (b.assets as any[]).filter(a => a.is_liquid) as LiquidAsset[]);
