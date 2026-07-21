@@ -1,16 +1,330 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url><loc>https://omaad.africa</loc></url>
-    <url><loc>https://omaad.africa/fr/landing</loc></url>
-    <url><loc>https://omaad.africa/en/landing</loc></url>
-    <url><loc>https://omaad.africa/fr/blog</loc></url>
-    <url><loc>https://omaad.africa/en/blog</loc></url>
-    <url><loc>https://omaad.africa/fr/faq</loc></url>
-    <url><loc>https://omaad.africa/fr/qui-sommes-nous</loc></url>
-    <url><loc>https://omaad.africa/fr/tools/fire-simulator</loc></url>
-    <url><loc>https://omaad.africa/fr/tools/compound-interest</loc></url>
-    <url><loc>https://omaad.africa/en/tools/fire-simulator</loc></url>
-    <url><loc>https://omaad.africa/en/tools/compound-interest</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://omaad.africa/fr/landing</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/landing"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/landing"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/landing"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/landing</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/landing"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/landing"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/landing"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/faq</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/faq"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/faq"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/faq"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/faq</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/faq"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/faq"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/faq"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/qui-sommes-nous</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/qui-sommes-nous"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/qui-sommes-nous"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/qui-sommes-nous"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/qui-sommes-nous</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/qui-sommes-nous"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/qui-sommes-nous"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/qui-sommes-nous"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/legal/mentions</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/legal/mentions"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/legal/mentions"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/legal/mentions"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/legal/mentions</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/legal/mentions"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/legal/mentions"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/legal/mentions"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/legal/privacy</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/legal/privacy"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/legal/privacy"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/legal/privacy"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/legal/privacy</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/legal/privacy"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/legal/privacy"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/legal/privacy"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/legal/terms</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/legal/terms"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/legal/terms"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/legal/terms"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/legal/terms</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/legal/terms"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/legal/terms"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/legal/terms"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/tools/fire-simulator</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/tools/fire-simulator"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/tools/fire-simulator"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/tools/fire-simulator"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/tools/fire-simulator</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/tools/fire-simulator"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/tools/fire-simulator"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/tools/fire-simulator"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/tools/compound-interest</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/tools/compound-interest"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/tools/compound-interest"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/tools/compound-interest"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/tools/compound-interest</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/tools/compound-interest"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/tools/compound-interest"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/tools/compound-interest"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/fire-africa/welcome</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/fire-africa/welcome"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/fire-africa/welcome"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/fire-africa/welcome"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/fire-africa/welcome</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/fire-africa/welcome"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/fire-africa/welcome"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/fire-africa/welcome"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/cest-quoi-fire</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/cest-quoi-fire"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/cest-quoi-fire"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/cest-quoi-fire"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/cest-quoi-fire</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/cest-quoi-fire"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/cest-quoi-fire"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/cest-quoi-fire"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/tontine-et-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/tontine-et-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/tontine-et-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/tontine-et-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/tontine-et-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/tontine-et-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/tontine-et-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/tontine-et-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/pea-diaspora</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/pea-diaspora"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/pea-diaspora"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/pea-diaspora"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/pea-diaspora</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/pea-diaspora"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/pea-diaspora"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/pea-diaspora"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/preparer-retraite-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/preparer-retraite-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/preparer-retraite-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/preparer-retraite-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/preparer-retraite-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/preparer-retraite-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/preparer-retraite-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/preparer-retraite-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/100k-fcfa-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/100k-fcfa-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/100k-fcfa-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/100k-fcfa-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/100k-fcfa-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/100k-fcfa-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/100k-fcfa-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/100k-fcfa-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/trading-vs-dca</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/trading-vs-dca"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/trading-vs-dca"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/trading-vs-dca"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/trading-vs-dca</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/trading-vs-dca"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/trading-vs-dca"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/trading-vs-dca"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/dca-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/dca-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/dca-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/dca-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/dca-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/dca-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/dca-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/dca-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/comparer-sgi-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/comparer-sgi-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/comparer-sgi-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/comparer-sgi-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/comparer-sgi-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/comparer-sgi-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/comparer-sgi-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/comparer-sgi-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/indices-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/indices-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/indices-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/indices-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/indices-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/indices-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/indices-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/indices-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/brvm-vs-sp500</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/brvm-vs-sp500"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/brvm-vs-sp500"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/brvm-vs-sp500"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/brvm-vs-sp500</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/brvm-vs-sp500"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/brvm-vs-sp500"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/brvm-vs-sp500"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/brvm-vs-cac-stoxx</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/brvm-vs-cac-stoxx"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/brvm-vs-cac-stoxx"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/brvm-vs-cac-stoxx"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/brvm-vs-cac-stoxx</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/brvm-vs-cac-stoxx"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/brvm-vs-cac-stoxx"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/brvm-vs-cac-stoxx"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/brvm-securisee-mythe</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/brvm-securisee-mythe"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/brvm-securisee-mythe"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/brvm-securisee-mythe"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/brvm-securisee-mythe</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/brvm-securisee-mythe"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/brvm-securisee-mythe"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/brvm-securisee-mythe"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/regle-4-pourcent</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/regle-4-pourcent"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/regle-4-pourcent"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/regle-4-pourcent"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/regle-4-pourcent</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/regle-4-pourcent"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/regle-4-pourcent"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/regle-4-pourcent"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/frais-fcp-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/frais-fcp-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/frais-fcp-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/frais-fcp-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/frais-fcp-brvm</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/frais-fcp-brvm"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/frais-fcp-brvm"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/frais-fcp-brvm"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/fcp-vs-actions-directes</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/fcp-vs-actions-directes"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/fcp-vs-actions-directes"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/fcp-vs-actions-directes"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/fcp-vs-actions-directes</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/fcp-vs-actions-directes"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/fcp-vs-actions-directes"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/fcp-vs-actions-directes"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/gestion-mandat-vs-libre</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/gestion-mandat-vs-libre"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/gestion-mandat-vs-libre"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/gestion-mandat-vs-libre"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/gestion-mandat-vs-libre</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/gestion-mandat-vs-libre"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/gestion-mandat-vs-libre"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/gestion-mandat-vs-libre"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/special-dakar-immo</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/special-dakar-immo"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/special-dakar-immo"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/special-dakar-immo"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/special-dakar-immo</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/special-dakar-immo"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/special-dakar-immo"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/special-dakar-immo"/>
+    </url>
     <url><loc>https://omaad.africa/outils/comparateur-sgi-brvm</loc></url>
     <url><loc>https://omaad.africa/outils/comparateur-sgi-brvm/sgi/bsic-capital-sa</loc></url>
     <url><loc>https://omaad.africa/outils/comparateur-sgi-brvm/sgi/societe-africaine-dingenierie-et-dintermediation-financiere-sa2if</loc></url>

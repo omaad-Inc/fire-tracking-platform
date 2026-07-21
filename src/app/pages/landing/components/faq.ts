@@ -1,10 +1,12 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { TopbarWidget } from './topbarwidget.component';
 import { FooterWidget } from './footerwidget';
-import { I18nService } from '../../../i18n/i18n.service';
+import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { SEO_PAGES } from '../../../core/services/seo-content';
 
 interface FaqEntry {
     id: string;
@@ -113,9 +115,10 @@ interface FaqCategory {
         </div>
     `
 })
-export class FaqPage {
+export class FaqPage implements OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private seo = inject(SeoService);
 
     selectedCategory = signal<string | null>(null);
     private openIds = signal<Set<string>>(new Set());
@@ -251,8 +254,23 @@ export class FaqPage {
 
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        const lang = match ? match[1] : 'fr';
-        this.i18n.setLang(lang as 'fr' | 'en');
+        const lang = (match ? match[1] : 'fr') as Lang;
+        this.i18n.setLang(lang);
+
+        this.seo.applyLocalized({ lang, ...SEO_PAGES.faq });
+        this.seo.setJsonLd('jsonld-faq', {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: this.categories().flatMap(c => c.entries).map(e => ({
+                '@type': 'Question',
+                name: e.question,
+                acceptedAnswer: { '@type': 'Answer', text: e.answer },
+            })),
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.seo.removeJsonLd('jsonld-faq');
     }
 
     isOpen(id: string): boolean {

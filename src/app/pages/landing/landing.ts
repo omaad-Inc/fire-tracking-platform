@@ -16,6 +16,9 @@ import { HowItWorksWidget } from './components/howitworkswidget';
 import { WealthScoreWidget } from './components/wealthscorewidget';
 import { SocialProofWidget } from './components/socialproofwidget';
 import { I18nService, Lang } from '../../i18n/i18n.service';
+import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
+import { SEO_PAGES } from '../../core/services/seo-content';
+import { OnDestroy } from '@angular/core';
 
 @Component({
     selector: 'app-landing',
@@ -61,9 +64,10 @@ import { I18nService, Lang } from '../../i18n/i18n.service';
         }
     `]
 })
-export class Landing {
+export class Landing implements OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private seo = inject(SeoService);
 
     currentLang = '/fr';
 
@@ -73,6 +77,32 @@ export class Landing {
         this.currentLang = '/' + lang;
         // Sync i18n service with the URL language on every navigation to this page
         this.i18n.setLang(lang);
+
+        // Per-route SEO (prerendered into the initial HTML for crawlers).
+        this.seo.applyLocalized({ lang, ...SEO_PAGES.landing });
+
+        // Site-wide structured data lives on the home page.
+        this.seo.setJsonLd('jsonld-organization', {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'Omaad',
+            url: SITE_ORIGIN,
+            logo: `${SITE_ORIGIN}/icons/omaad-app-icon-512.png`,
+        });
+        this.seo.setJsonLd('jsonld-software', {
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'Omaad',
+            applicationCategory: 'FinanceApplication',
+            operatingSystem: 'Web, iOS, Android',
+            description: SEO_PAGES.landing[lang].description,
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'XOF' },
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.seo.removeJsonLd('jsonld-organization');
+        this.seo.removeJsonLd('jsonld-software');
     }
 
     t(key: string): string { return this.i18n.t(key); }

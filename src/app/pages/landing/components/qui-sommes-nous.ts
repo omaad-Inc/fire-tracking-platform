@@ -6,6 +6,8 @@ import { RippleModule } from 'primeng/ripple';
 import { TopbarWidget } from './topbarwidget.component';
 import { FooterWidget } from './footerwidget';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { SEO_PAGES } from '../../../core/services/seo-content';
 
 @Component({
     selector: 'app-qui-sommes-nous',
@@ -313,6 +315,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
 export class QuiSommesNousPage {
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private seo = inject(SeoService);
 
     currentLang = '/fr';
 
@@ -343,6 +346,9 @@ export class QuiSommesNousPage {
         const lang = (match ? match[1] : 'fr') as Lang;
         this.currentLang = '/' + lang;
         this.i18n.setLang(lang);
+        // Both /qui-sommes-nous and /about route here; canonical is always
+        // /qui-sommes-nous (SEO_PAGES.about.path) so the alias doesn't split rank.
+        this.seo.applyLocalized({ lang, ...SEO_PAGES.about });
     }
 
     t(key: string): string { return this.i18n.t(key); }
