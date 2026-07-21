@@ -1,5 +1,5 @@
-import { Component, inject, signal, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, ElementRef, AfterViewInit, OnDestroy, NgZone, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
@@ -47,6 +47,7 @@ export class SocialProofWidget implements AfterViewInit, OnDestroy {
     private i18n = inject(I18nService);
     private el = inject(ElementRef);
     private zone = inject(NgZone);
+    private platformId = inject(PLATFORM_ID);
     private observer?: IntersectionObserver;
 
     animated = signal(false);
@@ -61,6 +62,12 @@ export class SocialProofWidget implements AfterViewInit, OnDestroy {
     t(key: string): string { return this.i18n.t(key); }
 
     ngAfterViewInit(): void {
+        // During prerender/SSR there is no IntersectionObserver; render the
+        // final (animated-in) state so crawlers get the stats in the HTML.
+        if (!isPlatformBrowser(this.platformId)) {
+            this.animated.set(true);
+            return;
+        }
         this.zone.runOutsideAngular(() => {
             this.observer = new IntersectionObserver(
                 ([entry]) => {

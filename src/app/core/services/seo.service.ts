@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import type { Lang } from '../../i18n/i18n.service';
 
 export interface SeoConfig {
     title: string;
@@ -12,7 +13,24 @@ export interface SeoConfig {
     ogType?: 'website' | 'article';
 }
 
-const SITE_ORIGIN = 'https://omaad.africa';
+/** One page's title + description in a single locale. */
+export interface SeoText {
+    title: string;
+    description: string;
+}
+
+/** Localized SEO for a bilingual (FR/EN) route. */
+export interface LocalizedSeo {
+    lang: Lang;
+    /** Path AFTER the `/:lang` prefix, starting with `/` (e.g. `/blog`, `/faq`); `/landing` for the home page. */
+    path: string;
+    fr: SeoText;
+    en: SeoText;
+    image?: string;
+    ogType?: 'website' | 'article';
+}
+
+export const SITE_ORIGIN = 'https://omaad.africa';
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og/omaad-og-1200x630.png`;
 
 /**
@@ -42,6 +60,47 @@ export class SeoService {
         this.meta.updateTag({ name: 'twitter:image', content: cfg.image ?? DEFAULT_OG_IMAGE });
 
         this.setCanonical(cfg.canonical);
+    }
+
+    /**
+     * Apply per-route SEO for a bilingual FR/EN page: sets title/description/
+     * canonical for the active locale, an `og:locale`, and the FR/EN/x-default
+     * `hreflang` alternate links so Google serves the right language per region.
+     */
+    applyLocalized(cfg: LocalizedSeo): void {
+        const cur = cfg.lang === 'en' ? cfg.en : cfg.fr;
+        // Set <html lang> via the injected DOCUMENT so it's correct in the
+        // prerendered HTML too (the app's global-`document` sync is a no-op
+        // during SSR, leaving every prerendered page at the index.html default).
+        this.doc.documentElement.setAttribute('lang', cfg.lang);
+        this.apply({
+            title: cur.title,
+            description: cur.description,
+            canonical: `${SITE_ORIGIN}/${cfg.lang}${cfg.path}`,
+            image: cfg.image,
+            ogType: cfg.ogType,
+        });
+        this.meta.updateTag({ property: 'og:locale', content: cfg.lang === 'en' ? 'en_US' : 'fr_FR' });
+        this.setAlternates(cfg.path);
+    }
+
+    /**
+     * Emit `<link rel="alternate" hreflang>` for the FR and EN twins of a page
+     * plus an `x-default` (FR). Idempotent: clears prior alternates first so
+     * navigations don't stack stale links.
+     */
+    setAlternates(path: string): void {
+        this.doc.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((n) => n.remove());
+        const add = (hreflang: string, href: string) => {
+            const link = this.doc.createElement('link');
+            link.setAttribute('rel', 'alternate');
+            link.setAttribute('hreflang', hreflang);
+            link.setAttribute('href', href);
+            this.doc.head.appendChild(link);
+        };
+        add('fr', `${SITE_ORIGIN}/fr${path}`);
+        add('en', `${SITE_ORIGIN}/en${path}`);
+        add('x-default', `${SITE_ORIGIN}/fr${path}`);
     }
 
     private setCanonical(url: string): void {
