@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { LayoutService } from './app/layout/service/layout.service';
 import { AuthService } from './app/core/services/auth.service';
@@ -9,14 +9,11 @@ import { AuthService } from './app/core/services/auth.service';
     imports: [RouterModule],
     template: `<router-outlet></router-outlet>`
 })
-export class AppComponent implements OnInit {
-    // Inject LayoutService to initialize theme (dark mode + slate surface) on app start
+export class AppComponent {
+    // Injected for their constructor side-effects: LayoutService applies the
+    // saved theme (dark mode + slate surface) on app start. Auth is deliberately
+    // NOT initialized here — the auth guard checks it per-route, so an early
+    // network blip can't clear a valid token.
     private layoutService = inject(LayoutService);
     private authService = inject(AuthService);
-
-    ngOnInit(): void {
-        // Don't initialize auth on startup - let the guard handle it
-        // This prevents clearing valid tokens due to network issues
-        // The auth guard will check authentication when routes are accessed
-    }
 }

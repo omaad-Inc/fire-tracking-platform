@@ -28,4 +28,4 @@ interface Google {
     };
 }
 
-declare var google: Google;
+declare const google: Google;
