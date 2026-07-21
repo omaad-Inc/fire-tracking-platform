@@ -99,7 +99,7 @@ interface FaqCategory {
                     <p class="text-brand-200 mb-5">
                         {{ isFr()
                             ? 'Écrivez-nous, on répond personnellement à chaque message.'
-                            : 'Write to us — every message gets a personal reply.' }}
+                            : 'Write to us, every message gets a personal reply.' }}
                     </p>
                     <a href="mailto:contact@omaad.africa"
                        class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ochre-500 hover:bg-ochre-400 text-warm-900 font-semibold transition-all">
@@ -154,8 +154,8 @@ export class FaqPage {
                         id: 'p4',
                         question: fr ? 'Omaad fonctionne-t-il sur mobile ?' : 'Does Omaad work on mobile?',
                         answer: fr
-                            ? 'Oui. Omaad est une PWA — tu peux l\'installer sur ton téléphone depuis le navigateur, sans passer par l\'App Store ou le Play Store. L\'expérience est optimisée pour mobile et desktop.'
-                            : 'Yes. Omaad is a PWA — you can install it on your phone directly from your browser, no App Store or Play Store needed. The experience is optimized for both mobile and desktop.',
+                            ? 'Oui. Omaad est une PWA, tu peux l\'installer sur ton téléphone depuis le navigateur, sans passer par l\'App Store ou le Play Store. L\'expérience est optimisée pour mobile et desktop.'
+                            : 'Yes. Omaad is a PWA, you can install it on your phone directly from your browser, no App Store or Play Store needed. The experience is optimized for both mobile and desktop.',
                     },
                 ],
             },
@@ -167,8 +167,8 @@ export class FaqPage {
                         id: 'pr1',
                         question: fr ? 'Omaad est-il gratuit ?' : 'Is Omaad free?',
                         answer: fr
-                            ? 'Oui. Le plan Gratuit reste gratuit pour toujours — actifs illimités, suivi des transactions, objectifs d\'épargne, gestion des dettes. Les plans Pro et Premium ajoutent des fonctionnalités avancées (rapports automatiques, alertes, synchronisation bancaire) mais ne sont pas obligatoires.'
-                            : 'Yes. The Free plan stays free forever — unlimited assets, transaction tracking, savings goals, debt management. Pro and Premium plans add advanced features (automated reports, alerts, bank sync) but are not required.',
+                            ? 'Oui. Le plan Gratuit reste gratuit pour toujours, actifs illimités, suivi des transactions, objectifs d\'épargne, gestion des dettes. Les plans Pro et Premium ajoutent des fonctionnalités avancées (rapports automatiques, alertes, synchronisation bancaire) mais ne sont pas obligatoires.'
+                            : 'Yes. The Free plan stays free forever, unlimited assets, transaction tracking, savings goals, debt management. Pro and Premium plans add advanced features (automated reports, alerts, bank sync) but are not required.',
                     },
                     {
                         id: 'pr2',
@@ -221,8 +221,8 @@ export class FaqPage {
                         id: 'f1',
                         question: fr ? 'C\'est quoi le mouvement FIRE ?' : 'What is the FIRE movement?',
                         answer: fr
-                            ? 'FIRE (Financial Independence, Retire Early) est un mouvement né aux États-Unis dans les années 1990. L\'idée : quand tes revenus passifs couvrent tes dépenses, tu es libre — peu importe ton âge. La newsletter FIRE Africa adapte ces principes à la réalité de la diaspora africaine et de l\'UEMOA.'
-                            : 'FIRE (Financial Independence, Retire Early) is a movement born in the US in the 1990s. The idea: when your passive income covers your expenses, you are free — regardless of age. The FIRE Africa newsletter adapts these principles to the African diaspora and UEMOA reality.',
+                            ? 'FIRE (Financial Independence, Retire Early) est un mouvement né aux États-Unis dans les années 1990. L\'idée : quand tes revenus passifs couvrent tes dépenses, tu es libre, peu importe ton âge. La newsletter FIRE Africa adapte ces principes à la réalité de la diaspora africaine et de l\'UEMOA.'
+                            : 'FIRE (Financial Independence, Retire Early) is a movement born in the US in the 1990s. The idea: when your passive income covers your expenses, you are free, regardless of age. The FIRE Africa newsletter adapts these principles to the African diaspora and UEMOA reality.',
                     },
                     {
                         id: 'f2',

@@ -17,7 +17,7 @@ const RETRYABLE_GET_STATUSES = new Set([0, 502, 503, 504]);
 
 /**
  * Shared in-flight refresh: concurrent 401s trigger ONE /auth/refresh, and all
- * replay with its result. Module scope is fine — functional interceptors are
+ * replay with its result. Module scope is fine, functional interceptors are
  * effectively singletons. Resolves to the new token, or null if refresh failed.
  */
 let refreshInFlight$: Observable<string | null> | null = null;
@@ -79,7 +79,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                         return next(replay);
                     }
                     // Refresh failed. A 401 right after login is usually a race
-                    // (token not yet propagated) — don't nuke the session for it.
+                    // (token not yet propagated), don't nuke the session for it.
                     const setAt = tokenService.tokenSetAt();
                     const justLoggedIn = setAt != null && (Date.now() - setAt) < JUST_LOGGED_IN_GRACE_MS;
                     if (!justLoggedIn) {

@@ -49,10 +49,10 @@ export class CurrencyService {
                 this.liveRates.set(res.rates);
                 try { localStorage.setItem(FX_CACHE_KEY, JSON.stringify({ rates: res.rates, as_of: res.as_of })); } catch {}
             }
-        } catch { /* offline / endpoint down — fallback rates remain */ }
+        } catch { /* offline / endpoint down, fallback rates remain */ }
     }
 
-    /** Current currency code — the shared portfolio's currency in share mode,
+    /** Current currency code, the shared portfolio's currency in share mode,
      *  otherwise the logged-in user's preference. */
     readonly currencyCode = computed<string>(() =>
         this.share.active()
@@ -60,7 +60,7 @@ export class CurrencyService {
             : (this.tokenService.user()?.preferred_currency || 'XOF')
     );
 
-    /** Current currency config — live rate overrides the hardcoded fallback. */
+    /** Current currency config, live rate overrides the hardcoded fallback. */
     readonly config = computed<CurrencyConfig>(() => {
         const base = CURRENCIES[this.currencyCode()] ?? CURRENCIES['EUR'];
         const live = this.liveRates()[base.code];
@@ -121,8 +121,7 @@ export class CurrencyService {
 
     /** Format a EUR value as a localized amount + the app's currency symbol.
      *  Uses decimal formatting + our own symbol (FCFA / € / $) instead of Intl's
-     *  currency style, so XOF renders as "FCFA" everywhere — not Intl's "F CFA" —
-     *  matching app-amount and the rest of the UI. Symbol trails the number
+     *  currency style, so XOF renders as "FCFA" everywhere, not Intl's "F CFA", *  matching app-amount and the rest of the UI. Symbol trails the number
      *  (FR / West-African convention). */
     format(eurValue: number, fractionDigits = 0): string {
         const { symbol, locale } = this.config();

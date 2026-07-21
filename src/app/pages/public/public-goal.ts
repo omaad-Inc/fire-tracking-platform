@@ -14,7 +14,7 @@ const RATES: Record<string, { rate: number; locale: string }> = {
 };
 
 /**
- * Public, read-only view of a shared savings goal — no login required.
+ * Public, read-only view of a shared savings goal, no login required.
  * Someone's family opens /g/<token> and sees only the goal's progress
  * (name, image, %, amounts) and a gentle invite to Omaad. Nothing else.
  */

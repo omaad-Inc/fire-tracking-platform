@@ -3,7 +3,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 /**
  * Façade YouTube légère (pattern « lite-youtube ») : au chargement on ne rend
- * qu'une miniature `<img>` + bouton play — l'iframe (lourde, bloquante) n'est
+ * qu'une miniature `<img>` + bouton play, l'iframe (lourde, bloquante) n'est
  * injectée qu'au clic. Indispensable pour le budget perf mobile de la page SEO.
  */
 @Component({

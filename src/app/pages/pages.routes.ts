@@ -4,7 +4,7 @@ import { unsavedChangesGuard } from '../core/guards/unsaved-changes.guard';
 // Each feature page is lazy-loaded as its own chunk so tapping "Transactions"
 // no longer downloads Patrimoine, Debts, FIRE, Goals and Wealth Score too.
 export default [
-    { path: 'plans', loadComponent: () => import('./settings/components/plans').then(m => m.PlansSettings) },       // Standalone — no settings sidebar
+    { path: 'plans', loadComponent: () => import('./settings/components/plans').then(m => m.PlansSettings) },       // Standalone, no settings sidebar
     { path: 'transaction', loadComponent: () => import('./transaction/transaction').then(m => m.Transaction) },
     { path: 'patrimoine', loadComponent: () => import('./patrimoine/patrimoine').then(m => m.Patrimoine) },
     { path: 'fire', loadComponent: () => import('./fire/fire-dashboard').then(m => m.FireDashboardPage) },

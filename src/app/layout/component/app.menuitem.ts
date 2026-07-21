@@ -89,7 +89,7 @@ export class AppMenuitem {
     ) {
         // takeUntilDestroyed (constructor injection context) tears all three
         // down when the menu item is destroyed. The router.events one used to
-        // leak — menu items are recreated on every navigation, so each nav
+        // leak, menu items are recreated on every navigation, so each nav
         // added a permanent subscriber.
         this.layoutService.menuSource$.pipe(takeUntilDestroyed()).subscribe((value) => {
             Promise.resolve(null).then(() => {

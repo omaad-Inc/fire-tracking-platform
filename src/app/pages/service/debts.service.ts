@@ -12,9 +12,9 @@ export interface DebtRecord {
     type: 'Debt' | 'Receivable';
     category: DebtCategory;
     name: string;
-    total: number;        // EUR base — for lists/sums/net-worth math
-    paid: number;         // EUR base — paid (for Debt) or received (for Receivable)
-    /** The debt's own currency + amounts in it — used by the edit form. */
+    total: number;        // EUR base, for lists/sums/net-worth math
+    paid: number;         // EUR base, paid (for Debt) or received (for Receivable)
+    /** The debt's own currency + amounts in it, used by the edit form. */
     currency?: string;
     nativeTotal?: number;
     nativePaid?: number;
@@ -42,7 +42,7 @@ export class DebtsService {
     private stateService    = inject(AssetsStateService);
     private currencyService = inject(CurrencyService);
 
-    /** Single source of truth for the debt list (shared cachedResource — P2-FE-1). */
+    /** Single source of truth for the debt list (shared cachedResource, P2-FE-1). */
     private recordsResource = cachedResource<DebtRecord[]>(
         () => firstValueFrom(this.api.getDebts().pipe(
             map(debts => debts.map(d => this.mapDebtToRecord(d))),
@@ -75,7 +75,7 @@ export class DebtsService {
         try {
             // Debts are stored NATIVE (like assets/transactions): the amounts the
             // user typed in their display currency go through unconverted, tagged
-            // with that currency code — FX happens at read time.
+            // with that currency code, FX happens at read time.
             const debtData: DebtCreate = {
                 name: record.name,
                 type: record.type === 'Debt' ? 'i_owe' : 'owed_to_me',
@@ -106,8 +106,7 @@ export class DebtsService {
 
         try {
             // The edit form is prefilled with the debt's NATIVE amounts
-            // (nativeTotal/nativePaid), so what comes back is native too —
-            // no conversion; the debt keeps its original currency.
+            // (nativeTotal/nativePaid), so what comes back is native too, // no conversion; the debt keeps its original currency.
             const debtData: DebtUpdate = {
                 name: record.name,
                 initial_amount: record.total,
@@ -145,8 +144,7 @@ export class DebtsService {
     async addPayment(id: string, amount: number): Promise<DebtRecord> {
         try {
             // amount is entered in the DISPLAY currency; the backend subtracts it
-            // from current_amount, which is in the DEBT's native currency —
-            // convert display -> EUR -> debt-native.
+            // from current_amount, which is in the DEBT's native currency, // convert display -> EUR -> debt-native.
             const debtCurrency = this.recordsResource.peek()?.find(r => r.id === id)?.currency || 'EUR';
             const eur = this.currencyService.toBaseAmount(amount);
             const nativeAmount = eur * this.currencyService.rateOf(debtCurrency);
@@ -161,7 +159,7 @@ export class DebtsService {
     }
 
     /**
-     * Debt statistics — a pure derivation of the cached list (no second cache).
+     * Debt statistics, a pure derivation of the cached list (no second cache).
      * - totalDebt: remaining amount across active "Debt" rows (what I still owe)
      * - paidAmount: the most recent payment made
      * - receivables: remaining amount across active "Receivable" rows (owed to me)
@@ -187,7 +185,7 @@ export class DebtsService {
         if (debtsWithPayments.length > 0) {
             const mostRecentDebt = debtsWithPayments[0];
             // monthlyPayment is stored native (edit-form value); paid is already
-            // EUR base — convert the former before displaying.
+            // EUR base, convert the former before displaying.
             lastPaymentAmount = mostRecentDebt.monthlyPayment
                 ? this.currencyService.toEurFromNative(mostRecentDebt.monthlyPayment, mostRecentDebt.currency)
                 : mostRecentDebt.paid;
@@ -261,7 +259,7 @@ export class DebtsService {
         return 'other';
     }
 
-    /** Clear all caches on logout/login (prevents cross-user cache bleed — P1-10). */
+    /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
         this.recordsResource.reset();
     }

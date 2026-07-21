@@ -24,7 +24,7 @@ type NewsletterBlock =
     | { type: 'paragraph'; plaintext: string }
     | { type: 'html'; html: string };
 
-/** A block ready for template rendering — html field pre-sanitized. */
+/** A block ready for template rendering, html field pre-sanitized. */
 interface RenderableBlock {
     kind: 'h2' | 'h3' | 'paragraphs' | 'html';
     text?: string;
@@ -208,8 +208,8 @@ export class BlogArticle implements OnInit {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.lang = match ? match[1] : 'fr';
 
-        // Subscribe (not snapshot) so navigations within /blog/:slug — which reuse
-        // this component instance — trigger a reload of the new article.
+        // Subscribe (not snapshot) so navigations within /blog/:slug, which reuse
+        // this component instance, trigger a reload of the new article.
         this.route.paramMap.subscribe(params => {
             const slug = params.get('slug') ?? '';
             this.loadPost(slug);
@@ -259,7 +259,7 @@ export class BlogArticle implements OnInit {
                 const paragraphs = b.plaintext.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean);
                 return { kind: 'paragraphs', paragraphs };
             }
-            // Inline-styled email HTML written in-repo by the author — trusted.
+            // Inline-styled email HTML written in-repo by the author, trusted.
             return { kind: 'html', safeHtml: this.sanitizer.bypassSecurityTrustHtml(b.html) };
         });
     }

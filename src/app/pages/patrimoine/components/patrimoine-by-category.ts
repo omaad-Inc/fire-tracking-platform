@@ -14,7 +14,7 @@ interface GroupConfig {
     color: string;
 }
 
-// All groups share the brand color — the icon glyph is the differentiator.
+// All groups share the brand color, the icon glyph is the differentiator.
 const GROUP_COLOR = '#1A2740'; // brand-700
 
 const GROUPS: GroupConfig[] = [
@@ -46,7 +46,7 @@ const CATEGORY_ICONS: Record<string, string> = {
     other:           'pi pi-box',
 };
 
-// All asset rows share the same brand gradient — the icon glyph is what
+// All asset rows share the same brand gradient, the icon glyph is what
 // differentiates the category, not the tile color.
 const ICON_BGS = [
     '#1A2740',
@@ -144,7 +144,7 @@ const ICON_BGS = [
                                         {{ item.deltaPct >= 0 ? '+' : '' }}{{ item.deltaPct | number:'1.1-1' }}%
                                     </span>
                                 } @else {
-                                    <span class="text-surface-400 text-xs">—</span>
+                                    <span class="text-surface-400 text-xs">, </span>
                                 }
                                 <i class="pi pi-chevron-right text-surface-400 text-xs ml-1 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
                             </div>

@@ -201,7 +201,7 @@ interface PlanFeature {
                                         @if (row.free === true) {
                                             <i class="pi pi-check text-positive text-xs"></i>
                                         } @else if (row.free === false) {
-                                            <span class="text-surface-400">—</span>
+                                            <span class="text-surface-400">, </span>
                                         } @else {
                                             <span class="text-surface-600 dark:text-surface-400 text-xs">{{ row.free }}</span>
                                         }
@@ -210,7 +210,7 @@ interface PlanFeature {
                                         @if (row.pro === true) {
                                             <i class="pi pi-check text-ochre-500 text-xs"></i>
                                         } @else if (row.pro === false) {
-                                            <span class="text-surface-400">—</span>
+                                            <span class="text-surface-400">, </span>
                                         } @else {
                                             <span class="text-ochre-500 text-xs font-medium">{{ row.pro }}</span>
                                         }
@@ -219,7 +219,7 @@ interface PlanFeature {
                                         @if (row.premium === true) {
                                             <i class="pi pi-check text-brand-700 dark:text-brand-300 text-xs"></i>
                                         } @else if (row.premium === false) {
-                                            <span class="text-surface-400">—</span>
+                                            <span class="text-surface-400">, </span>
                                         } @else {
                                             <span class="text-brand-700 dark:text-brand-300 text-xs font-medium">{{ row.premium }}</span>
                                         }

@@ -23,7 +23,7 @@ import { Sgi, findFee, fmtPct } from '../sgi-data';
 
             <div class="mb-3.5 flex items-center justify-between gap-2.5">
                 <span class="rounded-full border border-ochre-300 dark:border-ochre-700/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ochre-600 dark:text-ochre-400">
-                    {{ sgi().pays || '—' }}
+                    {{ sgi().pays || ', ' }}
                 </span>
                 <app-sgi-stars [note]="sgi().note" />
             </div>
@@ -37,7 +37,7 @@ import { Sgi, findFee, fmtPct } from '../sgi-data';
                 <div class="my-4 border-y border-surface-200 dark:border-surface-700 py-4">
                     <div class="mb-1 text-[10.5px] uppercase tracking-[0.16em] text-surface-500 dark:text-surface-400">Courtage / transaction</div>
                     <div class="text-[38px] font-extrabold leading-none tabular-nums text-brand-700 dark:text-surface-0">
-                        {{ courtage() || '—' }}
+                        {{ courtage() || ', ' }}
                     </div>
                 </div>
             } @else {

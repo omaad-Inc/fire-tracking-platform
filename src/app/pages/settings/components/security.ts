@@ -130,7 +130,7 @@ import { firstValueFrom } from 'rxjs';
                     } @else if (twofaLoading()) {
                         <div class="flex justify-center py-6"><i class="pi pi-spin pi-spinner text-surface-400"></i></div>
                     } @else if (twofaBackupCodes()) {
-                        <!-- Backup codes — shown once -->
+                        <!-- Backup codes, shown once -->
                         <div class="p-4 rounded-2xl bg-ochre-50 dark:bg-ochre-900/15 border border-ochre-100 dark:border-ochre-700/40">
                             <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">{{ t('security.2fa.backupTitle') }}</p>
                             <p class="text-xs text-surface-500 dark:text-surface-400 mb-3">{{ t('security.2fa.backupDesc') }}</p>
@@ -211,7 +211,7 @@ import { firstValueFrom } from 'rxjs';
 
                 <div class="p-5">
                     @if (!pinService.isPinSet()) {
-                        <!-- PIN not set — setup flow -->
+                        <!-- PIN not set, setup flow -->
                         @if (!pinSetupActive) {
                             <div class="flex items-center justify-between p-4 rounded-2xl border border-dashed border-surface-300 dark:border-surface-600">
                                 <div class="flex items-center gap-3">
@@ -526,12 +526,12 @@ export class SecuritySettings implements OnInit {
             await new Promise(r => setTimeout(r, 200));
 
             if (this.pinSetupStep === 'new') {
-                // First entry — move to confirm step
+                // First entry, move to confirm step
                 this.pinSetupFirstEntry = this.pinSetupInput;
                 this.pinSetupInput = '';
                 this.pinSetupStep = 'confirm';
             } else {
-                // Confirm step — check match
+                // Confirm step, check match
                 if (this.pinSetupInput === this.pinSetupFirstEntry) {
                     await this.pinService.setPin(this.pinSetupInput);
                     this.msgService.add({ severity: 'success', summary: this.t('security.pinEnabled'), detail: this.t('security.pinEnabledDetail'), life: 3000 });
@@ -793,7 +793,7 @@ export class SecuritySettings implements OnInit {
     }
 
     formatDate(isoDate?: string): string {
-        if (!isoDate) return '—';
+        if (!isoDate) return ', ';
         const d = new Date(isoDate);
         return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
@@ -828,7 +828,7 @@ export class SecuritySettings implements OnInit {
                 new_password:     this.pwForm.newPw,
             }));
             // The backend revokes every session on password change and hands
-            // this device a fresh token — adopt it so we stay signed in.
+            // this device a fresh token, adopt it so we stay signed in.
             if (res?.access_token) this.tokenService.setToken(res.access_token);
             this.msgService.add({ severity: 'success', summary: this.t('security.passwordChanged'),
                 detail: this.t('security.passwordChangedDetail'), life: 4000 });

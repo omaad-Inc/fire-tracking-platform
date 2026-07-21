@@ -88,8 +88,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 </div>
 
                 <!-- Auto-calculated result -->
-                <!-- autoTarget() returns a display-currency value (annualExpenses is in display currency)
-                     — format directly, do NOT use app-amount which expects EUR and would double-convert -->
+                <!-- autoTarget() returns a display-currency value (annualExpenses is in display currency), format directly, do NOT use app-amount which expects EUR and would double-convert -->
                 @if (autoTarget() > 0) {
                     <div class="mt-4 p-4 bg-positive/10 border border-positive-100 dark:border-positive-700/40 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
@@ -136,7 +135,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 @if (fireTarget && fireTarget > 0) {
                     <p class="text-xs text-surface-400 dark:text-surface-500 mt-2">
                         {{ i18n.t('fireSettings.currentGoal') }}
-                        <!-- fireTarget is already in display currency — format directly, do NOT use app-amount which would double-convert -->
+                        <!-- fireTarget is already in display currency, format directly, do NOT use app-amount which would double-convert -->
                         <span class="font-semibold text-positive dark:text-positive-400">
                             {{ cs.formatNumber(fireTarget) }} {{ cs.config().symbol }}
                         </span>
@@ -226,7 +225,7 @@ export class FireSettings implements OnInit {
     ngOnInit() {
         const user = this.tokenService.user();
         if (user) {
-            // API stores amounts in EUR — convert to display currency so the
+            // API stores amounts in EUR, convert to display currency so the
             // user sees their preferred currency in the input fields.
             const toDisplay = (v: number | null | undefined) =>
                 v != null ? Math.round(this.cs.convert(v)) : null;
@@ -241,7 +240,7 @@ export class FireSettings implements OnInit {
     }
 
     onCalcChange() {
-        // No longer auto-fills the target — the explicit "Discover my FIRE number"
+        // No longer auto-fills the target, the explicit "Discover my FIRE number"
         // button does that. Editing the inputs just clears the applied hint.
         this.justApplied = false;
     }

@@ -27,7 +27,7 @@ import { PwaService } from '../service/pwa.service';
             </div>
         }
 
-        <!-- Install PWA — floating bottom card on mobile, top bar on desktop -->
+        <!-- Install PWA, floating bottom card on mobile, top bar on desktop -->
         @if (showInstallBanner && pwaService.canInstall() && !pwaService.isRunningStandalone()) {
             <div class="fixed z-[60] animate-slide-up
                         bottom-24 left-4 right-4

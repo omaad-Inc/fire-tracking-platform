@@ -34,7 +34,7 @@ import { BLOG_POSTS, BlogPost } from './posts';
                     <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
                         {{ isFr()
                             ? 'Toutes les éditions de la newsletter FIRE Africa : analyses BRVM, stratégies patrimoine et chiffres de la diaspora.'
-                            : 'Every edition of the FIRE Africa newsletter — BRVM analyses, wealth strategies, and numbers from the diaspora.' }}
+                            : 'Every edition of the FIRE Africa newsletter, BRVM analyses, wealth strategies, and numbers from the diaspora.' }}
                     </p>
                 </header>
 

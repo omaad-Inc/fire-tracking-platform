@@ -189,7 +189,7 @@ interface CategoryCard {
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
 
-                                        <!-- Currency (always) — the native currency the amounts below are entered in -->
+                                        <!-- Currency (always), the native currency the amounts below are entered in -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Devise' : 'Currency' }}</label>
                                             <p-select [(ngModel)]="assetForm.currency" [options]="currencyOptions"
@@ -266,7 +266,7 @@ interface CategoryCard {
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
                                                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300"></i>
-                                                {{ isFr() ? 'Intégration API Wave / Orange Money prévue — mises à jour automatiques à venir.' : 'Wave / Orange Money API integration planned — automatic updates coming soon.' }}
+                                                {{ isFr() ? 'Intégration API Wave / Orange Money prévue, mises à jour automatiques à venir.' : 'Wave / Orange Money API integration planned, automatic updates coming soon.' }}
                                             </div>
                                         }
 
@@ -522,7 +522,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
     }
 
-    // Uniform chrome — icon glyph differentiates the asset type, not the color.
+    // Uniform chrome, icon glyph differentiates the asset type, not the color.
     private static readonly CARD_BG = 'bg-warm-100 dark:bg-warm-800';
     private static readonly CARD_FG = 'text-warm-700 dark:text-warm-300';
 
@@ -798,7 +798,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                 assetData = {
                     name: f.name, category: 'tontine', currency: cur,
                     current_value: f.tontineMonthlyContribution * months,
-                    // New dedicated tontine columns — no more overloading purchase_*.
+                    // New dedicated tontine columns, no more overloading purchase_*.
                     tontine_monthly_contribution: f.tontineMonthlyContribution,
                     tontine_participants: f.tontineParticipants,
                     tontine_frequency: f.tontineFrequency,
@@ -814,7 +814,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                     is_liquid: true,
                 };
             } else if (f.category === 'cash' || f.category === 'savings_account') {
-                // Simple-balance shape: no purchase event — current_value is THE value.
+                // Simple-balance shape: no purchase event, current_value is THE value.
                 assetData = {
                     name: f.name, category: f.category as AssetCategory, currency: cur,
                     current_value: f.currentPrice,

@@ -77,15 +77,15 @@ export class LegalPrivacyPage {
                 id: 'controller',
                 title: fr ? 'Responsable du traitement' : 'Data controller',
                 body: fr
-                    ? 'Omaad collecte et traite tes données personnelles dans le cadre de la fourniture de l\'application de gestion patrimoniale Omaad Wealth et de la newsletter FIRE Africa.\nResponsable : Mbaye SENE — contact@omaad.africa.'
-                    : 'Omaad collects and processes your personal data as part of providing the Omaad Wealth wealth management app and the FIRE Africa newsletter.\nController: Mbaye SENE — contact@omaad.africa.',
+                    ? 'Omaad collecte et traite tes données personnelles dans le cadre de la fourniture de l\'application de gestion patrimoniale Omaad Wealth et de la newsletter FIRE Africa.\nResponsable : Mbaye SENE, contact@omaad.africa.'
+                    : 'Omaad collects and processes your personal data as part of providing the Omaad Wealth wealth management app and the FIRE Africa newsletter.\nController: Mbaye SENE, contact@omaad.africa.',
             },
             {
                 id: 'collected',
                 title: fr ? 'Données collectées' : 'Data collected',
                 body: fr
-                    ? 'Nous collectons uniquement les données nécessaires au service :\n• Compte : email, prénom, nom, mot de passe (haché bcrypt), photo de profil optionnelle.\n• Patrimoine : actifs, transactions, dettes, objectifs d\'épargne — saisis manuellement.\n• Préférences : devise, langue, fuseau horaire, choix de thème.\n• Techniques : adresse IP, type de navigateur, journaux applicatifs (anonymisés).'
-                    : 'We collect only what the service needs:\n• Account: email, first name, last name, password (bcrypt-hashed), optional profile picture.\n• Wealth: assets, transactions, debts, savings goals — entered manually.\n• Preferences: currency, language, timezone, theme.\n• Technical: IP address, browser type, application logs (anonymized).',
+                    ? 'Nous collectons uniquement les données nécessaires au service :\n• Compte : email, prénom, nom, mot de passe (haché bcrypt), photo de profil optionnelle.\n• Patrimoine : actifs, transactions, dettes, objectifs d\'épargne, saisis manuellement.\n• Préférences : devise, langue, fuseau horaire, choix de thème.\n• Techniques : adresse IP, type de navigateur, journaux applicatifs (anonymisés).'
+                    : 'We collect only what the service needs:\n• Account: email, first name, last name, password (bcrypt-hashed), optional profile picture.\n• Wealth: assets, transactions, debts, savings goals, entered manually.\n• Preferences: currency, language, timezone, theme.\n• Technical: IP address, browser type, application logs (anonymized).',
             },
             {
                 id: 'purposes',

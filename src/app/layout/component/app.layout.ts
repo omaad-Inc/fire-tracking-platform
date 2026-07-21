@@ -46,7 +46,7 @@ import { applyChartDefaults } from '../../core/theme/chart-theme';
             <app-ai-assistant-panel></app-ai-assistant-panel>
             <app-pwa-prompt></app-pwa-prompt>
 
-            <!-- PIN Lock Screen — covers everything when locked -->
+            <!-- PIN Lock Screen, covers everything when locked -->
             @if (pinService.locked()) {
                 <app-pin-lock />
             }

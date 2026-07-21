@@ -94,7 +94,7 @@ export class Dashboard implements OnInit {
         this.hasFireGoal.set(fireTarget > 0);
 
         // Only guide a truly brand-new user. As soon as ANY step is done,
-        // the user has grasped the tool — stop showing the onboarding guide.
+        // the user has grasped the tool, stop showing the onboarding guide.
         // (A future config agent will take over richer guidance from here.)
         const anyDone = this.hasAssets() || this.hasTransactions() || this.hasFireGoal();
         this.showOnboarding.set(!anyDone);

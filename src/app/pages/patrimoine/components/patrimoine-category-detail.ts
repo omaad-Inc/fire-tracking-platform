@@ -41,7 +41,7 @@ const CATEGORY_ICONS: Record<string, string> = {
     collectibles: 'pi pi-star', commodities: 'pi pi-box', other: 'pi pi-box',
 };
 
-// Every category gets the same navy gradient — icon glyph differentiates.
+// Every category gets the same navy gradient, icon glyph differentiates.
 const CATEGORY_BGS: Record<string, string> = {
     real_estate:     BRAND_BG,
     stocks:          BRAND_BG,
@@ -266,7 +266,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     private cs = inject(CurrencyService);
     i18n = inject(I18nService);
 
-    // ── State (plain properties, not signals — avoids effect timing issues) ──
+    // ── State (plain properties, not signals, avoids effect timing issues) ──
     loading = true;
     loadError = false;
     loadingChart = false;
@@ -303,7 +303,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         const categoryId = this.route.snapshot.paramMap.get('categoryId') ?? '';
         this.currentGroup = GROUPS.find(g => g.id === categoryId) ?? null;
 
-        // Load assets — surface failures as an error+retry card, never as an
+        // Load assets, surface failures as an error+retry card, never as an
         // empty category (fake-empty money pages read as data loss).
         let all: PatrimoineAssetItemDto[];
         try {
@@ -372,7 +372,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     }
 
     private buildLineChart(points: ChartDataPoint[]) {
-        // Brand-tokenized chart line — same in light + dark, switching shade.
+        // Brand-tokenized chart line, same in light + dark, switching shade.
         const isDark = document.documentElement.classList.contains('app-dark');
         const color = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
         const textMuted = isDark ? '#9C988C' : '#6E6A60';   // warm-400 / warm-500
@@ -458,7 +458,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         this.donutOptions = {
             cutout: '72%',
             maintainAspectRatio: false,
-            // Hovering a slice drives the center label (Finary-style) — no legend, no tooltip.
+            // Hovering a slice drives the center label (Finary-style), no legend, no tooltip.
             plugins: {
                 legend: { display: false },
                 tooltip: { enabled: false },

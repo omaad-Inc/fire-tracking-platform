@@ -19,7 +19,7 @@ const SORTS = [
 ] as const;
 type SortKey = (typeof SORTS)[number]['k'];
 
-const PAGE_TITLE = 'Comparateur des 41 SGI de la BRVM — frais, ouverture, garde (gratuit) | Omaad';
+const PAGE_TITLE = 'Comparateur des 41 SGI de la BRVM, frais, ouverture, garde (gratuit) | Omaad';
 const PAGE_DESC =
     "Compare gratuitement les grilles tarifaires officielles des 41 SGI (courtiers) de la BRVM : frais d'ouverture, courtage, droits de garde, tenue de compte. Sans inscription.";
 const CANONICAL = 'https://omaad.africa/outils/comparateur-sgi-brvm';
@@ -49,10 +49,10 @@ const FAQ: { q: string; a: string }[] = [
 
 const CRITERIA: { t: string; d: string }[] = [
     { t: "L'agrément AMF-UMOA", d: "Le filtre non négociable. Seule une SGI agréée (ex-CREPMF) peut détenir tes titres en toute sécurité. Ne passe jamais par un intermédiaire non agréé." },
-    { t: 'Les frais de courtage', d: "Prélevés à chaque achat/vente. D'une SGI à l'autre, ils vont d'environ 0,65 % à 1 % — soit, pour les mêmes ordres, un écart qui peut peser lourd sur le long terme." },
+    { t: 'Les frais de courtage', d: "Prélevés à chaque achat/vente. D'une SGI à l'autre, ils vont d'environ 0,65 % à 1 %, soit, pour les mêmes ordres, un écart qui peut peser lourd sur le long terme." },
     { t: "Le dépôt minimum à l'ouverture", d: "Très variable selon la SGI. Il détermine si tu peux commencer petit. Regarde aussi les éventuels frais d'ouverture de compte." },
     { t: 'Droits de garde & tenue de compte', d: 'Les frais récurrents (conservation des titres, tenue de compte) grignotent le rendement année après année. Plusieurs SGI offrent la tenue de compte gratuite.' },
-    { t: "L'accès à distance / diaspora", d: "Toutes les SGI n'acceptent pas les dossiers depuis l'étranger. Vérifie l'ouverture en ligne et l'acceptation des non-résidents — un atout clé pour la diaspora." },
+    { t: "L'accès à distance / diaspora", d: "Toutes les SGI n'acceptent pas les dossiers depuis l'étranger. Vérifie l'ouverture en ligne et l'acceptation des non-résidents, un atout clé pour la diaspora." },
     { t: 'La plateforme', d: "Passage d'ordres en ligne, application mobile, suivi du portefeuille en temps réel : le confort fait que tu investis vraiment, au lieu de procrastiner." },
     { t: 'Le service client & le conseil', d: "Réactivité (WhatsApp, e-mail), qualité de l'accompagnement et des analyses. Précieux quand on débute et qu'on part de zéro." }
 ];
@@ -71,7 +71,7 @@ const CRITERIA: { t: string; d: string }[] = [
                 <!-- ═══ HERO ═══ -->
                 <header class="pb-4 pt-8 sm:pt-12">
                     <div class="mb-5 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.30em] text-ochre-600 dark:text-ochre-400">
-                        <span class="h-px w-8 bg-ochre-500"></span> Omaad — Outils
+                        <span class="h-px w-8 bg-ochre-500"></span> Omaad, Outils
                     </div>
                     <h1 class="max-w-[18ch] text-[clamp(34px,6vw,64px)] font-bold leading-[1.05] tracking-tight text-surface-900 dark:text-surface-0">
                         Comparateur des <em class="not-italic text-ochre-600 dark:text-ochre-400">41 SGI</em> de la BRVM
@@ -191,8 +191,8 @@ const CRITERIA: { t: string; d: string }[] = [
                     </h2>
                     <div class="mt-5 space-y-4 text-[15.5px] leading-relaxed text-surface-600 dark:text-surface-300">
                         <p>
-                            Pour investir à la BRVM — la Bourse Régionale des Valeurs Mobilières, commune aux 8 pays de
-                            l'UEMOA —, impossible de passer un ordre directement : il faut obligatoirement ouvrir un
+                            Pour investir à la BRVM, la Bourse Régionale des Valeurs Mobilières, commune aux 8 pays de
+                            l'UEMOA, impossible de passer un ordre directement : il faut obligatoirement ouvrir un
                             compte-titres auprès d'une <strong class="text-surface-900 dark:text-surface-0">SGI (Société de Gestion et
                             d'Intermédiation)</strong> agréée par l'AMF-UMOA, le régulateur du marché financier régional.
                         </p>
@@ -266,7 +266,7 @@ const CRITERIA: { t: string; d: string }[] = [
                         <p>
                             Les tarifs affichés proviennent des <strong class="text-surface-900 dark:text-surface-0">grilles tarifaires
                             officielles des SGI, homologuées par l'AMF-UMOA</strong> (ex-CREPMF), collectées et recoupées
-                            manuellement : chaque grille a été lue et saisie à la main depuis le PDF officiel — y compris
+                            manuellement : chaque grille a été lue et saisie à la main depuis le PDF officiel, y compris
                             des documents scannés. Aucun chiffre n'est estimé ni extrapolé, et chaque tarif renvoie à son
                             PDF source, consultable depuis la fiche de la SGI. La liste des SGI (nom, pays, note) provient
                             du répertoire public de richbourse.com.
@@ -325,7 +325,7 @@ const CRITERIA: { t: string; d: string }[] = [
                 <footer class="mx-auto mt-16 max-w-[820px] border-t border-surface-200 dark:border-surface-700 py-9 text-[13px] text-surface-500 dark:text-surface-400">
                     <p class="max-w-[75ch]">{{ meta.avertissement }}</p>
                     <p class="mt-2 text-[12px]">Source : {{ meta.source }} · Mise à jour {{ meta.maj }}.</p>
-                    <p class="mt-3.5 text-[15px] italic text-ochre-600 dark:text-ochre-400">Devenez le roi de votre patrimoine. — FIRE Africa × Omaad</p>
+                    <p class="mt-3.5 text-[15px] italic text-ochre-600 dark:text-ochre-400">Devenez le roi de votre patrimoine., FIRE Africa × Omaad</p>
                 </footer>
             </main>
 
@@ -350,7 +350,7 @@ export class ComparateurSgiBrvmPage implements OnDestroy {
         { t: "Frais d'ouverture et dépôt minimum", d: "Souvent 0 F, parfois plusieurs centaines de milliers de FCFA selon la SGI. C'est le ticket d'entrée : il détermine si tu peux commencer petit." },
         { t: 'Courtage par ordre', d: "De 0,2 % à 1 % selon la SGI, auxquels s'ajoute 0,3 % de commission de bourse fixe, identique partout. Prélevé à chaque achat et à chaque vente." },
         { t: 'Droits de garde', d: 'De 0,05 % à 0,5 % par an selon la SGI : la conservation de tes titres, facturée chaque année sur la valeur du portefeuille.' },
-        { t: 'Tenue de compte', d: "De 0 à 25 000 F par an. Plusieurs SGI l'offrent — sur le long terme, la différence se voit." }
+        { t: 'Tenue de compte', d: "De 0 à 25 000 F par an. Plusieurs SGI l'offrent, sur le long terme, la différence se voit." }
     ];
 
     // ── état de l'outil (mêmes règles que l'app React d'origine) ──

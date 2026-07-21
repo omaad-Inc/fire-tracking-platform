@@ -144,7 +144,7 @@ export class RecentTransactionsWidget implements OnInit, OnDestroy {
         'other_expense': 'pi pi-ellipsis-h',
     };
 
-    /** Used by the template — derived from the icon map + uniform chrome colors. */
+    /** Used by the template, derived from the icon map + uniform chrome colors. */
     private categoryConfig = new Proxy({} as { [key: string]: { icon: string; bgClass: string; iconClass: string } }, {
         get: (_t, key: string) => ({
             icon: this.categoryIcons[key] ?? 'pi pi-arrow-right-arrow-left',
@@ -178,7 +178,7 @@ export class RecentTransactionsWidget implements OnInit, OnDestroy {
             this.loadError.set(false);
         } catch (error) {
             console.error('Error loading transactions:', error);
-            // Show an explicit error+retry — a fake-empty list would read as
+            // Show an explicit error+retry, a fake-empty list would read as
             // "no transactions" on a network blip.
             if (this.transactions().length === 0) this.loadError.set(true);
         } finally {

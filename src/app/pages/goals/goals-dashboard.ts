@@ -57,7 +57,7 @@ import { progressPercent } from './goal-utils';
                 />
             </div>
 
-            <!-- FIRE hero (lifetime goal — always visible) -->
+            <!-- FIRE hero (lifetime goal, always visible) -->
             <app-fire-hero-card />
 
             <!-- KPIs -->

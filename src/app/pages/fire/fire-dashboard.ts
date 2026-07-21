@@ -65,7 +65,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                 <!-- Hero progress card -->
                 <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-8">
                     <div class="relative flex flex-col lg:flex-row items-center gap-8">
-                        <!-- Circular progress — navy → ochre, the lifetime journey -->
+                        <!-- Circular progress, navy → ochre, the lifetime journey -->
                         <div class="relative shrink-0">
                             <svg width="180" height="180" viewBox="0 0 180 180" class="-rotate-90">
                                 <circle cx="90" cy="90" r="78" fill="none"
@@ -125,7 +125,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                                 <p class="relative text-surface-400 text-xs mt-1 truncate">~ {{ formatDate(fire()!.estimatedDate!) }}</p>
                             }
                         } @else {
-                            <div class="relative text-2xl text-surface-400">—</div>
+                            <div class="relative text-2xl text-surface-400">, </div>
                             <p class="relative text-surface-400 text-xs mt-1">{{ i18n.t('fire.increaseSavingsToEstimate') }}</p>
                         }
                     </div>
@@ -139,7 +139,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                             </div>
                             <p class="relative text-surface-400 text-xs mt-1 truncate">{{ i18n.t('fire.perMonthEstimated') }}</p>
                         } @else {
-                            <div class="relative text-2xl text-surface-400">—</div>
+                            <div class="relative text-2xl text-surface-400">, </div>
                         }
                     </div>
 
@@ -159,7 +159,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                                 @else { {{ i18n.t('fire.paceImprove') }} }
                             </p>
                         } @else {
-                            <div class="relative text-2xl text-warm-400">—</div>
+                            <div class="relative text-2xl text-warm-400">, </div>
                             <p class="relative text-warm-400 text-xs mt-1">{{ i18n.t('fire.addTransactions') }}</p>
                         }
                     </div>
@@ -173,7 +173,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                 </div>
             }
 
-            <!-- Settings (always visible — to configure or update target) -->
+            <!-- Settings (always visible, to configure or update target) -->
             <app-fire-settings />
         </div>
     `

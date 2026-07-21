@@ -37,7 +37,7 @@ export interface SavingsGoalDisplay {
     status?: string;
 }
 
-// Legacy color palette — no longer applied (the Goals UI uses photos +
+// Legacy color palette, no longer applied (the Goals UI uses photos +
 // uniform navy chrome). Kept here only so existing widget code that still
 // reads `colorClass` / `textColorClass` doesn't crash.
 const GOAL_COLORS = [
@@ -136,7 +136,7 @@ export class SavingsService {
     }
 
     /**
-     * Statistics summary — a pure derivation of the cached goals + transactions.
+     * Statistics summary, a pure derivation of the cached goals + transactions.
      *  - Total Savings      = Σ goal current amounts
      *  - This Month Saving  = deposits − withdrawals this month
      *  - Avg Monthly Saving = mean of monthly deposit totals
@@ -246,7 +246,7 @@ export class SavingsService {
 
                 const spanMs = Math.max(1, now.getTime() - effectiveStart.getTime());
                 const elapsedMs = Math.max(0, pt.getTime() - effectiveStart.getTime());
-                // Slightly accelerating curve: pct^1.15 — slow start, faster end
+                // Slightly accelerating curve: pct^1.15, slow start, faster end
                 const pct = Math.min(1, elapsedMs / spanMs);
                 total += g.current_amount * Math.pow(pct, 1.15);
             }
@@ -343,7 +343,7 @@ export class SavingsService {
         };
     }
 
-    /** Clear all caches on logout/login (prevents cross-user cache bleed — P1-10). */
+    /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
         this.goalsResource.reset();
         this.transactionsResource.reset();

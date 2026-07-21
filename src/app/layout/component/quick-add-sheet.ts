@@ -13,7 +13,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 
 /** Monetary asset categories usable as a transaction account. Mirrors
- *  TransactionLogs.MONETARY_CATEGORIES — keep the two in sync. */
+ *  TransactionLogs.MONETARY_CATEGORIES, keep the two in sync. */
 const MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
 const LAST_ACCOUNT_KEY = 'omaad_quick_account';
 
@@ -21,7 +21,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
  * Sub-5-second transaction entry: a slide-up sheet with a numpad, an
  * income/expense toggle, the user's 3 most-used categories (with a full
  * grid on demand) and their last-used account pre-selected. No 5-field
- * modal — manual entry is the only ingestion path, so it has to be fast.
+ * modal, manual entry is the only ingestion path, so it has to be fast.
  */
 @Component({
     selector: 'app-quick-add-sheet',

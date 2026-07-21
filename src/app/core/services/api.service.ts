@@ -250,7 +250,7 @@ export interface SavingGoal {
     share_token?: string | null;
     created_at: string;
     updated_at: string;
-    // Legacy/optional — not returned by the backend, kept for compat with older callers
+    // Legacy/optional, not returned by the backend, kept for compat with older callers
     currency?: string;
     status?: SavingStatus;
     notes?: string | null;
@@ -275,11 +275,11 @@ export interface PublicGoal {
     owner_name: string | null;
 }
 
-// ── Portfolio sharing ("Bilan partageable") — public, Finary-style ───────
+// ── Portfolio sharing ("Bilan partageable"), public, Finary-style ───────
 export interface PortfolioShareInfo {
     id: number;
     token: string;
-    share_path: string;         // "/share/<token>" — prefix with the origin
+    share_path: string;         // "/share/<token>", prefix with the origin
     categories: string[] | null;
     share_budget: boolean;
     hide_values: boolean;
@@ -437,7 +437,7 @@ export interface WorthProgression {
 }
 
 /**
- * Canonical FIRE-metrics contract — matches the backend `FireMetricsSummary`
+ * Canonical FIRE-metrics contract, matches the backend `FireMetricsSummary`
  * Pydantic schema nested in GET /dashboard/summary. One field-name set
  * end-to-end (P1-18); the old `?? ` field-name guessing chain is gone.
  */
@@ -451,7 +451,7 @@ export interface FireMetrics {
     monthly_passive_income_needed: number;
     current_passive_income: number;
 }
-/** @deprecated legacy alias — use FireMetrics. */
+/** @deprecated legacy alias, use FireMetrics. */
 export type FIREMetrics = FireMetrics;
 
 export interface DashboardSummary {
@@ -630,7 +630,7 @@ export class ApiService {
 
     // ========== TONTINE CYCLES ==========
     getTontineSchedule(assetId: number): Observable<TontineSchedule | null> {
-        // Not carried in the public bundle — yield null in share mode (callers
+        // Not carried in the public bundle, yield null in share mode (callers
         // already handle a null schedule; the old `null as unknown as X` cast
         // lied to the type system and invited NPEs).
         if (this.share.active()) return of(null);
@@ -673,7 +673,7 @@ export class ApiService {
      * paginating past the server's per-page cap so callers never silently
      * truncate history. Share mode returns the frozen bundle (filtered) in one shot.
      *
-     * Note: this pulls the full set into memory — correct and cheap at current
+     * Note: this pulls the full set into memory, correct and cheap at current
      * data volumes. Server-side per-month aggregation is tracked in P2-BE-5.
      */
     getAllTransactions(type?: TransactionType, startDate?: string, endDate?: string): Observable<Transaction[]> {

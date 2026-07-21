@@ -35,8 +35,8 @@ interface OnboardingStep {
                     </h2>
                     <p class="text-brand-100 text-sm sm:text-base max-w-md mx-auto">
                         {{ isFr()
-                            ? 'Construis. Protège. Règne. — Commencez par ces 3 étapes pour prendre le contrôle de votre patrimoine.'
-                            : 'Build. Protect. Reign. — Start with these 3 steps to take control of your wealth.' }}
+                            ? 'Construis. Protège. Règne., Commencez par ces 3 étapes pour prendre le contrôle de votre patrimoine.'
+                            : 'Build. Protect. Reign., Start with these 3 steps to take control of your wealth.' }}
                     </p>
                 </div>
             </div>
@@ -134,8 +134,8 @@ export class OnboardingComponent {
                 icon: 'pi-plus',
                 iconBg: 'bg-brand-700 dark:bg-brand-300',
                 title: fr ? 'Ajoutez un actif'      : 'Add an asset',
-                desc:  fr ? 'Immobilier, épargne, actions, tontine — commencez par ajouter votre premier actif.'
-                          : 'Real estate, savings, stocks, tontine — start by adding your first asset.',
+                desc:  fr ? 'Immobilier, épargne, actions, tontine, commencez par ajouter votre premier actif.'
+                          : 'Real estate, savings, stocks, tontine, start by adding your first asset.',
                 cta:   fr ? 'Ajouter'               : 'Add',
                 action: () => this.addAsset.emit(),
             },
@@ -143,8 +143,8 @@ export class OnboardingComponent {
                 icon: 'pi-arrow-right-arrow-left',
                 iconBg: 'bg-brand-700 dark:bg-brand-300',
                 title: fr ? 'Enregistrez une transaction' : 'Record a transaction',
-                desc:  fr ? 'Salaire, loyer, courses — suivez vos revenus et dépenses.'
-                          : 'Salary, rent, groceries — track your income and expenses.',
+                desc:  fr ? 'Salaire, loyer, courses, suivez vos revenus et dépenses.'
+                          : 'Salary, rent, groceries, track your income and expenses.',
                 cta:   fr ? 'Commencer'                   : 'Start',
                 action: () => this.router.navigate(['/', this.lang, 'pages', 'transaction']),
             },

@@ -1,7 +1,7 @@
 import dataset from './data/sgi.json';
 
 /**
- * Données du comparateur SGI — migrées TELLES QUELLES depuis l'app React
+ * Données du comparateur SGI, migrées TELLES QUELLES depuis l'app React
  * (comparateur-sgi-brvm). `sgi.json` est une copie byte-identique du fichier
  * source ; aucun chiffre ne doit être modifié à la main ici.
  */

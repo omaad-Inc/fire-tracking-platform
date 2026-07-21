@@ -66,7 +66,7 @@ interface AxisInsight {
                             <span class="text-xl font-medium text-surface-500 dark:text-surface-400 ml-1">{{ t('landing.wealthScore.scoreLabel') }}</span>
                         </div>
 
-                        <!-- Radar chart — hand-rolled inline SVG (no Chart.js on landing, P3-5) -->
+                        <!-- Radar chart, hand-rolled inline SVG (no Chart.js on landing, P3-5) -->
                         <div class="w-full max-w-[360px] mx-auto">
                             <svg viewBox="0 0 410 310" class="w-full" role="img" [attr.aria-label]="radarAria()">
                                 <!-- grid rings -->

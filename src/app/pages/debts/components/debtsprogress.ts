@@ -66,7 +66,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
             </div>
         }
 
-        <!-- ── Load failure — never render as "no debts" ── -->
+        <!-- ── Load failure, never render as "no debts" ── -->
         @else if (loadError()) {
             <app-load-error (retry)="loadFromService()" />
         }
@@ -445,8 +445,7 @@ export class DebtsProgress implements OnInit {
     }
 
     editRecord(record: DebtRecord) {
-        // Edit in the debt's NATIVE currency (what was typed at creation) —
-        // prefilling the EUR-base values showed a FCFA user EUR numbers.
+        // Edit in the debt's NATIVE currency (what was typed at creation), // prefilling the EUR-base values showed a FCFA user EUR numbers.
         this.record = {
             ...record,
             total: record.nativeTotal ?? record.total,
@@ -488,7 +487,7 @@ export class DebtsProgress implements OnInit {
     async saveRecord() {
         this.submitted = true;
         // Match the transaction form's rigor: a debt/receivable must have a name
-        // AND a positive amount — a zero-amount debt is meaningless (P2-FE-9).
+        // AND a positive amount, a zero-amount debt is meaningless (P2-FE-9).
         if (!this.record.name?.trim() || !(this.record.total > 0)) return;
         // Sync the p-datepicker Date back into the string the API expects.
         this.record.date = this.toDateStr(this.editDate);

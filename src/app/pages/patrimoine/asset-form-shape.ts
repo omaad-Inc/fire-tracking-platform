@@ -1,16 +1,16 @@
 /**
- * Maps each AssetCategory to a "form shape" — the set of fields that
+ * Maps each AssetCategory to a "form shape", the set of fields that
  * make sense to edit/create for that category. The same shape is used
  * by the add-asset wizard and the edit modal so they stay in sync.
  */
 import { AssetCategory } from '../../core/services/api.service';
 
 export type AssetFormShape =
-    | 'TONTINE'           // Tontine — collective savings, monthly contribution + cycle
-    | 'MOBILE_MONEY'      // Mobile Money — operator + current balance
-    | 'SIMPLE_BALANCE'    // Cash, savings account — just a balance, no purchase event
-    | 'QUANTITY_BASED'    // Stocks, bonds, crypto, commodities — quantity × unit price
-    | 'REAL_ESTATE'       // Real estate — surface, fees, rental, etc.
+    | 'TONTINE'           // Tontine, collective savings, monthly contribution + cycle
+    | 'MOBILE_MONEY'      // Mobile Money, operator + current balance
+    | 'SIMPLE_BALANCE'    // Cash, savings account, just a balance, no purchase event
+    | 'QUANTITY_BASED'    // Stocks, bonds, crypto, commodities, quantity × unit price
+    | 'REAL_ESTATE'       // Real estate, surface, fees, rental, etc.
     | 'TOTAL_VALUE';      // Retirement, life insurance, business, vehicle, collectibles, other
 
 export function getAssetFormShape(category: AssetCategory): AssetFormShape {
@@ -35,10 +35,10 @@ export function getAssetFormShape(category: AssetCategory): AssetFormShape {
     }
 }
 
-/** Tontine status values — keep in sync with the dropdown options in the add wizard. */
+/** Tontine status values, keep in sync with the dropdown options in the add wizard. */
 export type TontineStatus = 'en_cours' | 'mise_recue' | 'termine';
 
-/** Mobile money operators — keep in sync with `mobileMoneyProviders` in add-asset-page. */
+/** Mobile money operators, keep in sync with `mobileMoneyProviders` in add-asset-page. */
 export const MOBILE_MONEY_OPERATORS = [
     'Wave',
     'Orange Money',

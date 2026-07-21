@@ -6,7 +6,7 @@
  * the primary series. A second accent (ochre) is reserved for highlights
  * (selected slice, comparison series). Categorical palettes for things
  * like the asset-distribution donut use a warm-gray scale so the data
- * itself — not the colors — does the storytelling.
+ * itself, not the colors, does the storytelling.
  *
  * Usage:
  *
@@ -14,7 +14,7 @@
  *   const t = chartTheme(this.isDark());
  *   const data = { datasets: [{ borderColor: t.series.primary, ... }] };
  *
- * `isDark` is read from the body/html `.app-dark` class — see
+ * `isDark` is read from the body/html `.app-dark` class, see
  * `LayoutService.isDarkTheme()` for the canonical signal.
  */
 
@@ -25,14 +25,14 @@ export interface ChartThemeTokens {
     textMuted: string;
     /** Gridline / very subtle divider color. */
     grid: string;
-    /** Card surface — used to fill chart backgrounds when needed. */
+    /** Card surface, used to fill chart backgrounds when needed. */
     surface: string;
 
-    /** Standardized series palette — use these, not raw hex. */
+    /** Standardized series palette, use these, not raw hex. */
     series: {
         primary: string;          // brand-700 / brand-300 in dark
         primarySoft: string;      // 12% opacity for area fills
-        accent: string;           // ochre — for the "highlighted" line/slice
+        accent: string;           // ochre, for the "highlighted" line/slice
         accentSoft: string;       // ochre 12% opacity
         positive: string;         // gains
         negative: string;         // losses
@@ -42,12 +42,12 @@ export interface ChartThemeTokens {
 
     /**
      * Categorical palette for things like asset-distribution donuts.
-     * Warm-gray steps with a single brand accent — the highlighted slice
+     * Warm-gray steps with a single brand accent, the highlighted slice
      * uses `series.primary`, all others walk through this scale.
      */
     categorical: string[];
 
-    /** Tooltip styling — overrides Chart.js defaults globally. */
+    /** Tooltip styling, overrides Chart.js defaults globally. */
     tooltip: {
         background: string;
         titleColor: string;
@@ -99,7 +99,7 @@ const DARK: ChartThemeTokens = {
     surface: '#14130F',
 
     series: {
-        primary: '#8A98AE',         // brand-300 — high contrast on dark bg
+        primary: '#8A98AE',         // brand-300, high contrast on dark bg
         primarySoft: 'rgba(138, 152, 174, 0.18)',
         accent: '#D8A369',           // ochre-400 (slightly desaturated for dark)
         accentSoft: 'rgba(216, 163, 105, 0.18)',
@@ -143,9 +143,9 @@ export function isDarkMode(): boolean {
  * Apply the brand-tokenized Chart.js global defaults (font + tooltip styling).
  *
  * P2-FE-4: this used to run at app bootstrap in app.config.ts, so Chart.js was
- * pulled into the critical path on EVERY page — including the landing and login,
+ * pulled into the critical path on EVERY page, including the landing and login,
  * which have no charts. It now runs on demand, called by the first chart-bearing
- * component to render (idempotent — the guard makes every later call a no-op),
+ * component to render (idempotent, the guard makes every later call a no-op),
  * so anonymous/landing/login sessions never fetch Chart.js. The dynamic import
  * also keeps it off the eager graph and runs AFTER PrimeNG's <p-chart> has
  * registered Chart.js (avoids the historical white-screen crash).

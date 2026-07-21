@@ -12,16 +12,16 @@ import { Observable, firstValueFrom, isObservable } from 'rxjs';
  * signals-first implementation they all share.
  *
  * Contract:
- *   - `data`   — last value that loaded successfully (null before the first).
- *   - `status` — 'idle' | 'loading' | 'success' | 'error'. 'error' is set ONLY
+ *   - `data`, last value that loaded successfully (null before the first).
+ *   - `status`, 'idle' | 'loading' | 'success' | 'error'. 'error' is set ONLY
  *                on a COLD failure (nothing cached to serve), which is what lets
  *                widgets render the P1-5 error+retry card instead of a
  *                fake-empty "you have no data / 0 FCFA" state.
- *   - `load()` — honours TTL + stale-while-revalidate; concurrent callers share
+ *   - `load()`, honours TTL + stale-while-revalidate; concurrent callers share
  *                one in-flight request (dedup).
- *   - `invalidate()` — for write events: forces the NEXT load to refetch while
+ *   - `invalidate()`, for write events: forces the NEXT load to refetch while
  *                keeping the last value visible (no skeleton flash).
- *   - `reset()` — for logout (CACHE_RESET): clears the value so the next user
+ *   - `reset()`, for logout (CACHE_RESET): clears the value so the next user
  *                never sees the previous user's cached financials (P1-10).
  */
 
@@ -46,11 +46,11 @@ export interface CachedResource<T> {
     load(force?: boolean): Promise<T>;
     /** Drop freshness so the next load() refetches; KEEP the last value (no flash). For write events. */
     invalidate(): void;
-    /** Clear everything back to idle. For logout — prevents cross-user cache bleed. */
+    /** Clear everything back to idle. For logout, prevents cross-user cache bleed. */
     reset(): void;
     /** Seed the cache with a value directly (e.g. after an optimistic mutation). */
     set(value: T): void;
-    /** Synchronous peek at the cached value (null if none) — for no-flash pre-population. */
+    /** Synchronous peek at the cached value (null if none), for no-flash pre-population. */
     peek(): T | null;
     /** Whether a cached value currently exists. */
     hasData(): boolean;
@@ -69,7 +69,7 @@ export function cachedResource<T>(
     const _error = signal<unknown>(null);
 
     let stamp = 0;              // time of the last successful load
-    let dirty = false;          // invalidate() sets this — the next load must refetch
+    let dirty = false;          // invalidate() sets this, the next load must refetch
     let inFlight: Promise<T> | null = null;
 
     const hasData = (): boolean => _data() !== null;
@@ -89,7 +89,7 @@ export function cachedResource<T>(
                 return value;
             })
             .catch(err => {
-                // Serve the last good value if we have one — a network blip must
+                // Serve the last good value if we have one, a network blip must
                 // not wipe the UI to a fake-empty/zero state (P1-5). Only a COLD
                 // failure (nothing cached) surfaces as an error the caller retries.
                 if (hasData()) {

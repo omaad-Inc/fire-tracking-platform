@@ -262,7 +262,7 @@ export class PreferencesSettings implements OnInit {
     selectedLanguage = 'fr';
     selectedCurrency = 'XOF';
 
-    // Notification items — disabled/coming soon (no backend support yet)
+    // Notification items, disabled/coming soon (no backend support yet)
     readonly notificationItems = [
         { key: 'email',   label: 'settings.preferences.emailNotifications',  desc: 'settings.preferences.emailNotificationsDesc',  icon: 'pi-envelope',              bg: 'bg-brand-700 dark:bg-brand-300'   },
         { key: 'push',    label: 'settings.preferences.pushNotifications',   desc: 'settings.preferences.pushNotificationsDesc',   icon: 'pi-bell',                  bg: 'bg-positive'  },

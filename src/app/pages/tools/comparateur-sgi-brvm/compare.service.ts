@@ -5,7 +5,7 @@ const MAX_SELECTION = 4;
 
 /**
  * Sélection partagée entre la liste, les fiches SGI, la barre de comparaison
- * et le tableau comparatif — même logique que l'app React d'origine
+ * et le tableau comparatif, même logique que l'app React d'origine
  * (max 4 SGI, uniquement celles au tarif complet).
  */
 @Injectable({ providedIn: 'root' })

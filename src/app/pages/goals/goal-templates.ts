@@ -1,6 +1,6 @@
 /**
  * Goal templates with bundled photos. Each template is a starting point
- * for goal creation — name, image and color are pre-filled, then the user
+ * for goal creation, name, image and color are pre-filled, then the user
  * can override anything in step 2 of the wizard.
  */
 
@@ -27,7 +27,7 @@ export interface GoalTemplate {
      * Tailwind gradient classes used for the template's icon-tile accent.
      *
      * In the redesigned (Midnight + Ochre) identity all templates share the
-     * same brand-tone gradient — the template's photo is what visually
+     * same brand-tone gradient, the template's photo is what visually
      * distinguishes one goal type from another, NOT the icon-tile color.
      */
     gradient: string;

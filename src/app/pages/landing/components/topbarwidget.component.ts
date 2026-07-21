@@ -16,25 +16,25 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
             <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
                      class="w-10 h-10 md:w-12 md:h-12">
-            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad Wealth</span>
+            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad</span>
         </a>
 
         <!-- Desktop Navigation -->
         <nav class="hidden lg:flex items-center gap-2 mx-auto" [attr.aria-label]="_('Navigation principale', 'Main navigation')">
             <a [routerLink]="[currentLang, 'landing']" fragment="home" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline whitespace-nowrap
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.home') }}
             </a>
             <a [routerLink]="[currentLang, 'landing']" fragment="features" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline whitespace-nowrap
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.features') }}
             </a>
             <a [routerLink]="[currentLang, 'landing']" fragment="pricing" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
+               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline whitespace-nowrap
                       hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                       transition-all duration-200 cursor-pointer">
                 {{ t('landing.nav.pricing') }}
@@ -45,7 +45,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <button type="button" pRipple
                    (click)="toolsOpen.set(!toolsOpen()); aboutOpen.set(false)"
                    aria-haspopup="true" [attr.aria-expanded]="toolsOpen()"
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0 whitespace-nowrap
                           hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                           transition-all duration-200 cursor-pointer">
                     {{ _('Ressources', 'Resources') }}
@@ -109,7 +109,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <button type="button" pRipple
                    (click)="aboutOpen.set(!aboutOpen()); toolsOpen.set(false)"
                    aria-haspopup="true" [attr.aria-expanded]="aboutOpen()"
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0
+                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0 whitespace-nowrap
                           hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
                           transition-all duration-200 cursor-pointer">
                     {{ t('landing.nav.about') }}
@@ -122,7 +122,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             shadow-lg border border-surface-200 dark:border-surface-700
                             p-3 z-30">
                     <div class="grid grid-cols-2 gap-3">
-                        <!-- PART 1 — featured team card (generic placeholder, swap for real team photo later) -->
+                        <!-- PART 1, featured team card (generic placeholder, swap for real team photo later) -->
                         <a [routerLink]="[currentLang, aboutSlug]" (click)="aboutOpen.set(false)" pRipple
                            class="group block rounded-xl overflow-hidden border border-surface-200 dark:border-surface-700
                                   hover:border-brand-500/50 dark:hover:border-ochre-500/50 transition-all duration-200">
@@ -136,7 +136,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             </div>
                         </a>
 
-                        <!-- PART 2 — links list -->
+                        <!-- PART 2, links list -->
                         <div class="flex flex-col">
                             <span class="px-3 pt-1.5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
                                 {{ _('Découvrir', 'Discover') }}
@@ -362,7 +362,7 @@ export class TopbarWidget {
         this.currentLang = '/' + this.lang;
         // Ensure service lang matches URL (in case localStorage differs)
         this.i18n.setLang(this.lang);
-        // Theme is no longer forced here — the navbar light/dark toggle controls it,
+        // Theme is no longer forced here, the navbar light/dark toggle controls it,
         // and the saved preference (localStorage via LayoutService) applies on load.
     }
 
@@ -386,7 +386,7 @@ export class TopbarWidget {
         this.i18n.setLang(newLang);
         this.lang = newLang;
         this.currentLang = '/' + newLang;
-        // Stay on the current page — just swap the language prefix in the URL
+        // Stay on the current page, just swap the language prefix in the URL
         const currentUrl = this.router.url;
         const newUrl = currentUrl.replace(/^\/(fr|en)/, '/' + newLang);
         this.router.navigateByUrl(newUrl);

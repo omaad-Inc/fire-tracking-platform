@@ -129,7 +129,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
         this.loading.set(true);
         try {
             const gs = await this.savingsService.getGoals();
-            // Uniform chrome — icon glyph differentiates the goal, not the color.
+            // Uniform chrome, icon glyph differentiates the goal, not the color.
             const sharedChrome = {
                 bgClass: 'bg-brand-100 dark:bg-brand-700/20',
                 iconClass: 'text-brand-700 dark:text-ochre-400',

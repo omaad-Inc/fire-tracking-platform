@@ -47,7 +47,7 @@ export class AppAmountComponent implements OnDestroy {
         return eurValue * this.cs.config().rate;
     });
 
-    // The animated current value — starts at 0 and counts up
+    // The animated current value, starts at 0 and counts up
     private animatedValue = signal(0);
     private animFrameId = 0;
     private hasAnimated = false;

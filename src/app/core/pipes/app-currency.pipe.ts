@@ -12,7 +12,7 @@ export class AppCurrencyPipe implements PipeTransform {
     private cs = inject(CurrencyService);
 
     transform(value: number | null | undefined, fractionDigits = 0): string {
-        if (value == null) return '—';
+        if (value == null) return ', ';
         return this.cs.format(value, fractionDigits);
     }
 }

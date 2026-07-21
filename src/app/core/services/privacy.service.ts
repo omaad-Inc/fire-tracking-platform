@@ -3,7 +3,7 @@ import { Injectable, signal } from '@angular/core';
 const STORAGE_KEY = 'omaad_privacy_hidden';
 
 /**
- * Global privacy mode — hides all financial amounts across the app.
+ * Global privacy mode, hides all financial amounts across the app.
  *
  * When `hidden()` is true, `<app-amount>` renders `•••••` instead of the real number.
  * Toggled via the eye icon in the topbar. Persisted in localStorage so

@@ -21,7 +21,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <div class="h-20"></div>
 
             <!-- ════════════════════════════════
-                 BLOC 1 — Hero (text + founder photos)
+                 BLOC 1, Hero (text + founder photos)
             ════════════════════════════════ -->
             <section class="bg-surface-0 dark:bg-surface-900 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -66,7 +66,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 2 — Notre histoire (texte + portrait + signature)
+                 BLOC 2, Notre histoire (texte + portrait + signature)
             ════════════════════════════════ -->
             <section class="bg-surface-50 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-3xl mx-auto">
@@ -87,7 +87,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             </strong>
                         </p>
                     </div>
-                    <!-- Signature (no photo — founders already shown in hero & team) -->
+                    <!-- Signature (no photo, founders already shown in hero & team) -->
                     <div class="mt-10">
                         <div class="text-xl font-bold italic text-surface-900 dark:text-white tracking-tight">
                             {{ t('landing.about.historySignature') }}
@@ -98,7 +98,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 3 — Omaad en chiffres (cards premium, canvas sombre)
+                 BLOC 3, Omaad en chiffres (cards premium, canvas sombre)
             ════════════════════════════════ -->
             <section class="bg-brand-950 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto">
@@ -126,7 +126,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 4 — Nos principes (6 cards)
+                 BLOC 4, Nos principes (6 cards)
             ════════════════════════════════ -->
             <section id="principes" class="bg-surface-0 dark:bg-surface-900 py-20 md:py-28 px-6 lg:px-20 scroll-mt-24">
                 <div class="max-w-6xl mx-auto">
@@ -153,7 +153,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 5 — Confiance & sécurité
+                 BLOC 5, Confiance & sécurité
             ════════════════════════════════ -->
             <section id="securite" class="bg-surface-50 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20 scroll-mt-24">
                 <div class="max-w-6xl mx-auto">
@@ -180,7 +180,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 6 — L'équipe (founders + ghost)
+                 BLOC 6, L'équipe (founders + ghost)
             ════════════════════════════════ -->
             <section class="bg-surface-0 dark:bg-surface-900 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-5xl mx-auto">
@@ -246,7 +246,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 7 — Contact
+                 BLOC 7, Contact
             ════════════════════════════════ -->
             <section id="contact" class="bg-surface-50 dark:bg-surface-950 py-16 md:py-20 px-6 lg:px-20 border-y border-surface-200 dark:border-surface-800 scroll-mt-24">
                 <div class="max-w-3xl mx-auto text-center">
@@ -264,7 +264,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </section>
 
             <!-- ════════════════════════════════
-                 BLOC 8 — CTA final + showcase produit
+                 BLOC 8, CTA final + showcase produit
             ════════════════════════════════ -->
             <section class="relative overflow-hidden bg-brand-950 dark:bg-surface-950 py-20 md:py-24 px-6 lg:px-20">
                 <div class="relative max-w-5xl mx-auto text-center">
@@ -299,7 +299,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 <span class="w-3 h-3 rounded-full bg-ochre-400/70"></span>
                                 <span class="w-3 h-3 rounded-full bg-positive-500/70"></span>
                             </div>
-                            <img src="assets/product/home_product.webp" alt="Omaad Wealth — dashboard"
+                            <img src="assets/product/home_product.webp" alt="Omaad Wealth, dashboard"
                                  class="w-full block" loading="lazy" />
                         </div>
                     </div>

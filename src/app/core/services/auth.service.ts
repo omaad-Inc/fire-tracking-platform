@@ -90,7 +90,7 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login/json`, data).pipe(
             tap(response => {
                 // When 2FA is on, the server returns a challenge (mfa_required)
-                // instead of a token — the login component then asks for a code.
+                // instead of a token, the login component then asks for a code.
                 if (response?.access_token) {
                     this.clearAllCaches();
                     this.tokenService.setToken(response.access_token);
@@ -160,7 +160,7 @@ export class AuthService {
     }
 
     /**
-     * Request a phone OTP (an additional login method — email login stays intact).
+     * Request a phone OTP (an additional login method, email login stays intact).
      */
     requestOtp(phone: string): Observable<{ sent: boolean }> {
         return this.http.post<{ sent: boolean }>(`${this.apiUrl}/auth/otp/request`, { phone }).pipe(
@@ -260,11 +260,10 @@ export class AuthService {
     /**
      * URL that starts the Google OAuth flow on the backend. The backend
      * redirects to Google's consent screen, then back to
-     * `/auth/callback?code=...` (a single-use 60s exchange code — never the
+     * `/auth/callback?code=...` (a single-use 60s exchange code, never the
      * real token), handled by OAuthCallback via exchangeOAuthCode().
      *
-     * Bind this to a plain `<a [href]>` rather than `(click)` + `window.location` —
-     * an anchor lets the browser navigate synchronously, without racing Angular's
+     * Bind this to a plain `<a [href]>` rather than `(click)` + `window.location`, * an anchor lets the browser navigate synchronously, without racing Angular's
      * change detection, and supports right-click → "open in new tab".
      */
     get googleAuthUrl(): string {
@@ -289,7 +288,7 @@ export class AuthService {
     }
 
     /**
-     * Logout — revoke this device's token server-side (fire-and-forget),
+     * Logout, revoke this device's token server-side (fire-and-forget),
      * then clear local state and redirect. Without the server call the JWT
      * would stay valid until it expires even after "logging out".
      */

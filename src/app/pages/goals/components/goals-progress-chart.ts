@@ -149,7 +149,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
         const cs = this.cs;
 
-        // Brand-700 (light) / brand-300 (dark) — matches the chart-theme primary series.
+        // Brand-700 (light) / brand-300 (dark), matches the chart-theme primary series.
         const isDark = document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark');
         const borderColor = isDark ? '#8A98AE' : '#1A2740';
 

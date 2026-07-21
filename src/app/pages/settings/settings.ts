@@ -17,7 +17,7 @@ import { environment } from '../../../environments/environment';
         <div class="min-h-screen max-w-3xl mx-auto">
 
             <!-- ═══════════════════════════════════════════
-                 MASTER VIEW — settings menu list
+                 MASTER VIEW, settings menu list
                  Visible when NO sub-route is active
             ═══════════════════════════════════════════ -->
             @if (!hasActiveChild()) {
@@ -120,7 +120,7 @@ import { environment } from '../../../environments/environment';
             }
 
             <!-- ═══════════════════════════════════════════
-                 DETAIL VIEW — sub-page content
+                 DETAIL VIEW, sub-page content
                  Visible when a sub-route IS active
             ═══════════════════════════════════════════ -->
             @if (hasActiveChild()) {
