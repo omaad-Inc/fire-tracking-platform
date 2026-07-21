@@ -143,6 +143,13 @@ interface DayGroup {
                     </div>
                 </div>
             </div>
+        } @else {
+            <!-- Reserve the KPI-row height while loading so the list doesn't jump (P3-9) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                @for (i of [1, 2, 3, 4]; track i) {
+                    <div class="h-[86px] rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-100 dark:bg-surface-800 animate-pulse"></div>
+                }
+            </div>
         }
 
         <!-- ── Transaction list ───────────────────────────────────── -->

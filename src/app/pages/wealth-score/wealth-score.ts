@@ -139,8 +139,14 @@ import { AxisScore } from '../../core/services/api.service';
             </div>
 
             @if (scoreService.loading() && !scoreService.hasData()) {
-                <div class="flex items-center justify-center py-20">
-                    <i class="pi pi-spin pi-spinner text-4xl text-surface-400"></i>
+                <!-- Skeleton reserving the radar + axis-list layout (P3-9) — no spinner→content jump -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-pulse">
+                    <div class="h-72 rounded-2xl bg-surface-100 dark:bg-surface-800"></div>
+                    <div class="space-y-3">
+                        @for (i of [1, 2, 3, 4, 5]; track i) {
+                            <div class="h-16 rounded-2xl bg-surface-100 dark:bg-surface-800"></div>
+                        }
+                    </div>
                 </div>
             } @else if (!scoreService.hasData()) {
                 <div class="text-center py-16 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
