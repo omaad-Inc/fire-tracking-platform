@@ -145,7 +145,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     </div>
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-brand-700"></div><span class="text-warm-300 text-sm">Actions (PEA)</span></div>
+                                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-brand-700"></div><span class="text-warm-300 text-sm">Actions (BRVM)</span></div>
                                             <span class="text-warm-400 text-sm">5%</span>
                                         </div>
                                         <div class="h-2 bg-warm-800 rounded-full"><div class="h-full bg-brand-700 rounded-full" style="width: 5%"></div></div>

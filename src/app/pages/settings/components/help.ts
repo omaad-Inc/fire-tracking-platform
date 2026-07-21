@@ -188,7 +188,7 @@ export class HelpSettings {
             {
                 label: this.i18n.t('help.resources.helpCenterLabel'),
                 desc:  this.i18n.t('help.resources.helpCenterDesc'),
-                url:   'https://help.omaad.app',
+                url:   'https://help.omaad.africa',
                 icon:  'pi-book',  color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15',
             },
             {
@@ -230,7 +230,7 @@ export class HelpSettings {
         const user = this.tokenService.user();
         const payload = {
             fullName: user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] : 'Utilisateur',
-            email: user?.email || 'no-reply@omaad.app',
+            email: user?.email || 'no-reply@omaad.africa',
             company: 'Omaad Wealth (Support)',
             needType: this.contactForm.subject,
             message: this.contactForm.message

@@ -94,8 +94,8 @@ export class LegalMentionsPage {
         const fr = this.isFr();
         return {
             publisher: fr
-                ? 'Omaad — projet personnel en pré-lancement.\nFondateur : Mbaye SENE.\nSite : omaad.app\nE-mail : contact@omaad.africa'
-                : 'Omaad — personal project in pre-launch.\nFounder: Mbaye SENE.\nSite: omaad.app\nEmail: contact@omaad.africa',
+                ? 'Omaad — projet personnel en pré-lancement.\nFondateur : Mbaye SENE.\nSite : omaad.africa\nE-mail : contact@omaad.africa'
+                : 'Omaad — personal project in pre-launch.\nFounder: Mbaye SENE.\nSite: omaad.africa\nEmail: contact@omaad.africa',
             director: fr
                 ? 'Mbaye SENE, fondateur d\'Omaad.'
                 : 'Mbaye SENE, founder of Omaad.',
