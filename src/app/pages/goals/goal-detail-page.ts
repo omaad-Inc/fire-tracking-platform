@@ -595,7 +595,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
                 const cur = this.goal();
                 if (cur) this.goal.set({ ...cur, share_token: res.share_token });
             },
-            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: 'Omaad', detail: this.i18n.t('goals.share.error'), life: 4000 }); },
+            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.share.error'), life: 4000 }); },
         });
     }
 
@@ -619,9 +619,9 @@ export class GoalDetailPage implements OnInit, OnDestroy {
                 this.shareUrl.set('');
                 const cur = this.goal();
                 if (cur) this.goal.set({ ...cur, share_token: null });
-                this.message.add({ severity: 'success', summary: 'Omaad', detail: this.i18n.t('goals.share.revoked'), life: 4000 });
+                this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.share.revoked'), life: 4000 });
             },
-            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: 'Omaad', detail: this.i18n.t('goals.share.error'), life: 4000 }); },
+            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.share.error'), life: 4000 }); },
         });
     }
 
@@ -629,7 +629,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         if (this.liquidAssets().length === 0) {
             this.message.add({
                 severity: 'warn',
-                summary: this.i18n.t('common.error'),
+                summary: this.i18n.t('common.warning'),
                 detail: this.i18n.t('goals.allocate.noLiquidAssetsToast'),
                 life: 5000,
             });

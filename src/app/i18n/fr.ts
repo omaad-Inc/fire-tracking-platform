@@ -718,6 +718,7 @@ export const FR = {
     savedTitle: 'Objectif enregistré',
     savedDetail: 'Votre objectif financier a été mis à jour.',
     saveFailedDetail: 'Impossible de sauvegarder les paramètres.',
+    deleteFailedDetail: 'Impossible de supprimer l\'objectif.',
     deletedTitle: 'Objectif supprimé',
     deletedDetail: 'Votre objectif financier a été retiré. L\'appli continue de fonctionner normalement.',
   },

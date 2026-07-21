@@ -534,10 +534,10 @@ export class SecuritySettings implements OnInit {
                 // Confirm step, check match
                 if (this.pinSetupInput === this.pinSetupFirstEntry) {
                     await this.pinService.setPin(this.pinSetupInput);
-                    this.msgService.add({ severity: 'success', summary: this.t('security.pinEnabled'), detail: this.t('security.pinEnabledDetail'), life: 3000 });
+                    this.msgService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('security.pinEnabledDetail'), life: 3000 });
                     this.pinSetupActive = false;
                 } else {
-                    this.msgService.add({ severity: 'error', summary: this.t('security.pinMismatch'), detail: this.t('security.pinMismatchDetail'), life: 4000 });
+                    this.msgService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('security.pinMismatchDetail'), life: 4000 });
                     this.pinSetupInput = '';
                     this.pinSetupStep = 'new';
                     this.pinSetupFirstEntry = '';
@@ -554,7 +554,7 @@ export class SecuritySettings implements OnInit {
 
     removePin() {
         this.pinService.removePin();
-        this.msgService.add({ severity: 'success', summary: this.t('security.pinRemoved'), detail: this.t('security.pinRemovedDetail'), life: 3000 });
+        this.msgService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('security.pinRemovedDetail'), life: 3000 });
     }
 
     onLockDelayChange(event: Event) {
@@ -632,10 +632,10 @@ export class SecuritySettings implements OnInit {
         this.authService.logoutOtherDevices().subscribe({
             next: () => {
                 this.signingOut.set(false);
-                this.msgService.add({ severity: 'success', summary: 'Omaad', detail: this.t('security.sessions.signedOutOthers'), life: 4000 });
+                this.msgService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('security.sessions.signedOutOthers'), life: 4000 });
                 this.loadLoginHistory();
             },
-            error: err => { this.signingOut.set(false); this.msgService.add({ severity: 'error', summary: 'Omaad', detail: err?.message || this.t('security.2fa.error'), life: 4000 }); },
+            error: err => { this.signingOut.set(false); this.msgService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('security.2fa.error'), life: 4000 }); },
         });
     }
 
@@ -732,7 +732,7 @@ export class SecuritySettings implements OnInit {
     }
 
     private toast2fa(detail: string, severity: 'success' | 'error'): void {
-        this.msgService.add({ severity, summary: 'Omaad', detail, life: 4000 });
+        this.msgService.add({ severity, summary: severity === 'success' ? this.t('common.success') : this.t('common.error'), detail, life: 4000 });
     }
 
     // ── Login icon: google = logo SVG inside span, email = pi-sign-in ──
@@ -816,7 +816,7 @@ export class SecuritySettings implements OnInit {
         if (!this.pwForm.current || !this.pwForm.newPw || !this.pwForm.confirm) return;
         if (this.pwForm.newPw !== this.pwForm.confirm) return;
         if (this.passwordRules.some(r => !r.valid(this.pwForm.newPw))) {
-            this.msgService.add({ severity: 'warn', summary: this.t('security.weakPassword'),
+            this.msgService.add({ severity: 'warn', summary: this.t('common.warning'),
                 detail: this.t('security.weakPasswordDetail'), life: 4000 });
             return;
         }
@@ -830,14 +830,14 @@ export class SecuritySettings implements OnInit {
             // The backend revokes every session on password change and hands
             // this device a fresh token, adopt it so we stay signed in.
             if (res?.access_token) this.tokenService.setToken(res.access_token);
-            this.msgService.add({ severity: 'success', summary: this.t('security.passwordChanged'),
+            this.msgService.add({ severity: 'success', summary: this.t('common.success'),
                 detail: this.t('security.passwordChangedDetail'), life: 4000 });
             this.closePasswordDialog();
         } catch (err: any) {
             const detail = err?.error?.detail === 'Incorrect current password'
                 ? this.t('security.currentPwIncorrect')
                 : this.t('security.changeError');
-            this.msgService.add({ severity: 'error', summary: this.t('security.error'), detail, life: 5000 });
+            this.msgService.add({ severity: 'error', summary: this.t('common.error'), detail, life: 5000 });
         } finally {
             this.savingPassword.set(false);
         }

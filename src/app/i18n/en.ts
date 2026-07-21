@@ -720,6 +720,7 @@ export const EN: Dict = {
     savedTitle: 'Goal saved',
     savedDetail: 'Your financial goal has been updated.',
     saveFailedDetail: 'Could not save settings.',
+    deleteFailedDetail: 'Could not delete the goal.',
     deletedTitle: 'Goal removed',
     deletedDetail: 'Your financial goal was removed. The app keeps working normally.',
   },

@@ -743,7 +743,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.updated'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
             } else {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
@@ -758,11 +758,11 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? this.t('transactions.form.income') : this.t('transactions.form.expense'))),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
-                this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.saved'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
             }
             this.dialogVisible = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: this.t('transactions.toast.error'),
+            this.messageService.add({ severity: 'error', summary: this.t('common.error'),
                 detail: err?.message || this.t('transactions.toast.saveError'), life: 5000 });
         } finally {
             this.isSaving.set(false);
@@ -782,9 +782,9 @@ export class TransactionLogs implements OnInit, OnDestroy {
                 try {
                     await this.transactionsService.deleteRecords([rec.id]);
                     this.allRecords.update(rs => rs.filter(r => r.id !== rec.id));
-                    this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.deleted'), detail: this.t('transactions.toast.deletedDetail'), life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.deletedDetail'), life: 3000 });
                 } catch {
-                    this.messageService.add({ severity: 'error', summary: this.t('transactions.toast.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
+                    this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
                 }
             }
         });

@@ -376,11 +376,11 @@ export class Login {
             next: () => {
                 this.isLoading.set(false);
                 this.otpSent.set(true);
-                this.messageService.add({ severity: 'success', summary: 'Omaad', detail: this.t('auth.login.codeSent'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('auth.login.codeSent'), life: 3000 });
             },
             error: (err) => {
                 this.isLoading.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('auth.login.failedSummary'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
+                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
             }
         });
     }
@@ -394,7 +394,7 @@ export class Login {
             next: () => this.finishLogin(),
             error: (err) => {
                 this.isLoading.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('auth.login.failedSummary'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
+                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
             }
         });
     }
@@ -412,7 +412,7 @@ export class Login {
             },
             error: (err) => {
                 this.isLoading.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('auth.login.failedSummary'), detail: err?.message || this.t('auth.twofa.invalidCode'), life: 5000 });
+                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('auth.twofa.invalidCode'), life: 5000 });
             }
         });
     }
@@ -459,7 +459,7 @@ export class Login {
                     this.isLoading.set(false);
                     this.messageService.add({
                         severity: 'error',
-                        summary: this.t('auth.login.failedSummary'),
+                        summary: this.t('common.error'),
                         detail: this.t('auth.login.invalidResponse'),
                         life: 5000
                     });
@@ -475,7 +475,7 @@ export class Login {
                         this.isLoading.set(false);
                         this.messageService.add({
                             severity: 'error',
-                            summary: this.t('auth.login.failedSummary'),
+                            summary: this.t('common.error'),
                             detail: this.t('auth.login.couldNotComplete'),
                             life: 5000
                         });
@@ -502,7 +502,7 @@ export class Login {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: this.t('auth.login.failedSummary'),
+                    summary: this.t('common.error'),
                     detail: error.message || this.t('auth.login.invalidCredentials'),
                     life: 5000
                 });

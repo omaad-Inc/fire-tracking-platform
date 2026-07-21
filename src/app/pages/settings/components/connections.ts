@@ -222,7 +222,7 @@ export class ConnectionsSettings implements OnInit {
         try {
             const updated = await firstValueFrom(this.api.syncBrokerConnection(conn.id));
             this.connections.update(list => list.map(c => c.id === conn.id ? updated : c));
-            this.messageService.add({ severity: 'info', summary: this.t('broker.syncTriggered'), life: 3000 });
+            this.messageService.add({ severity: 'info', summary: this.t('common.info'), detail: this.t('broker.syncTriggered'), life: 3000 });
         } catch {
             this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('broker.syncFailed'), life: 4000 });
         }
@@ -244,7 +244,7 @@ export class ConnectionsSettings implements OnInit {
         try {
             await firstValueFrom(this.api.deleteBrokerConnection(conn.id));
             this.connections.update(list => list.filter(c => c.id !== conn.id));
-            this.messageService.add({ severity: 'success', summary: this.t('broker.deleteSuccess'), life: 3000 });
+            this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('broker.deleteSuccess'), life: 3000 });
         } catch {
             this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('broker.deleteFailed'), life: 4000 });
         }

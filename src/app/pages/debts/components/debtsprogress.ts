@@ -476,9 +476,9 @@ export class DebtsProgress implements OnInit {
                 try {
                     await this.debtsService.deleteRecords([record.id]);
                     this.allRecords.update(rs => rs.filter(r => r.id !== record.id));
-                    this.messageService.add({ severity: 'success', summary: this.t('debts.toast.deleted'), detail: this.t('debts.toast.deletedDetail'), life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.deletedDetail'), life: 3000 });
                 } catch {
-                    this.messageService.add({ severity: 'error', summary: this.t('debts.toast.error'), detail: this.t('debts.toast.deleteError'), life: 4000 });
+                    this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('debts.toast.deleteError'), life: 4000 });
                 }
             }
         });
@@ -497,15 +497,15 @@ export class DebtsProgress implements OnInit {
             if (this.record.id) {
                 const updated = await this.debtsService.updateRecord(this.record);
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: this.t('debts.toast.updated'), detail: this.t('debts.toast.updatedDetail'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.updatedDetail'), life: 3000 });
             } else {
                 const created = await this.debtsService.addRecord(this.record);
                 this.allRecords.update(rs => [...rs, created]);
-                this.messageService.add({ severity: 'success', summary: this.t('debts.toast.created'), detail: this.t('debts.toast.createdDetail'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.createdDetail'), life: 3000 });
             }
             this.productDialog = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: this.t('debts.toast.error'), detail: err?.message || this.t('debts.toast.saveError'), life: 5000 });
+            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('debts.toast.saveError'), life: 5000 });
         } finally {
             this.isSaving.set(false);
         }
@@ -536,10 +536,10 @@ export class DebtsProgress implements OnInit {
         try {
             const updated = await this.debtsService.addPayment(this.paymentRecord.id, this.addPaymentAmount!);
             this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-            this.messageService.add({ severity: 'success', summary: this.t('debts.toast.paymentAdded'), detail: this.t('debts.toast.paymentAddedDetail'), life: 3000 });
+            this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.paymentAddedDetail'), life: 3000 });
             this.closeAddPaymentDialog();
         } catch {
-            this.messageService.add({ severity: 'error', summary: this.t('debts.toast.error'), detail: this.t('debts.toast.paymentError'), life: 4000 });
+            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('debts.toast.paymentError'), life: 4000 });
         }
     }
 }

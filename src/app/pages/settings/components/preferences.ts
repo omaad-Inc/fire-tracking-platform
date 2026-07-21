@@ -243,7 +243,7 @@ export class PreferencesSettings implements OnInit {
             },
             error: () => {
                 this.exporting.set(false);
-                this.messageService.add({ severity: 'error', summary: 'Omaad', detail: this.t('settings.preferences.exportError'), life: 4000 });
+                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('settings.preferences.exportError'), life: 4000 });
             }
         });
     }
