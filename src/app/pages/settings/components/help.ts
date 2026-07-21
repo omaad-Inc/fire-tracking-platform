@@ -241,7 +241,7 @@ export class HelpSettings {
                 this.isSending.set(false);
                 this.messageService.add({
                     severity: 'success',
-                    summary: this.i18n.t('help.sendSuccessTitle'),
+                    summary: this.i18n.t('common.success'),
                     detail: this.i18n.t('help.sendSuccessDetail'),
                     life: 5000
                 });

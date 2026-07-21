@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PinService } from '../services/pin.service';
 import { FocusTrapDirective } from '../a11y/focus-trap.directive';
+import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
     selector: 'app-pin-lock',
@@ -26,11 +27,13 @@ import { FocusTrapDirective } from '../a11y/focus-trap.directive';
                 </div>
 
                 <!-- Title -->
-                <h2 class="text-white text-lg font-semibold mb-1">Entrez votre code PIN</h2>
+                <h2 class="text-white text-lg font-semibold mb-1">{{ t('pinLock.title') }}</h2>
                 <p class="text-warm-500 text-sm mb-8">
                     @if (pinService.failedAttempts() > 0) {
                         <span class="text-negative">
-                            Code incorrect · {{ 5 - pinService.failedAttempts() }} tentative{{ 5 - pinService.failedAttempts() !== 1 ? 's' : '' }} restante{{ 5 - pinService.failedAttempts() !== 1 ? 's' : '' }}
+                            {{ attemptsLeft() === 1
+                                ? t('pinLock.attemptsOne', { n: attemptsLeft() })
+                                : t('pinLock.attemptsMany', { n: attemptsLeft() }) }}
                         </span>
                     } @else {
                         Omaad
@@ -70,7 +73,7 @@ import { FocusTrapDirective } from '../a11y/focus-trap.directive';
                 <!-- Forgot PIN -->
                 <button (click)="onForgotPin()"
                         class="mt-8 text-ochre-500/80 hover:text-ochre-400 text-sm font-medium transition-colors">
-                    Code PIN oublié ?
+                    {{ t('pinLock.forgot') }}
                 </button>
             </div>
         </div>
@@ -114,6 +117,14 @@ import { FocusTrapDirective } from '../a11y/focus-trap.directive';
 })
 export class PinLockComponent {
     pinService = inject(PinService);
+    private i18n = inject(I18nService);
+
+    t(key: string, params?: Record<string, string | number>): string {
+        return this.i18n.t(key, params);
+    }
+
+    /** Attempts remaining before the 5-try lockout (used for singular/plural copy). */
+    attemptsLeft(): number { return 5 - this.pinService.failedAttempts(); }
 
     enteredDigits = signal<string[]>([]);
     shaking       = signal(false);
@@ -160,7 +171,7 @@ export class PinLockComponent {
 
     onForgotPin() {
         // Forgot PIN = force logout (re-authenticate to reset)
-        if (confirm('Vous serez déconnecté. Vous pourrez reconfigurer votre PIN après reconnexion.')) {
+        if (confirm(this.t('pinLock.forgotConfirm'))) {
             this.pinService.removePin();
             this.pinService.onForcedLogout?.();
         }

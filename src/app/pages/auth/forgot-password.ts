@@ -107,7 +107,7 @@ export class ForgotPassword {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: this.t('auth.forgot.errSummary'),
+                    summary: this.t('common.error'),
                     detail: error.message || this.t('auth.forgot.errDetail'),
                     life: 5000
                 });

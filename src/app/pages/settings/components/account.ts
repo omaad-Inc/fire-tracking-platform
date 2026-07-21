@@ -363,7 +363,7 @@ export class AccountSettings implements OnInit {
                         this.isUploadingAvatar.set(false);
                         this.messageService.add({
                             severity: 'success',
-                            summary: this.t('settings.account.photoUpdatedTitle'),
+                            summary: this.t('common.success'),
                             detail: this.t('settings.account.photoUpdatedDetail'),
                             life: 3000
                         });
@@ -397,7 +397,7 @@ export class AccountSettings implements OnInit {
                             next: () => {
                                 this.messageService.add({
                                     severity: 'success',
-                                    summary: this.t('settings.account.photoRemovedTitle'),
+                                    summary: this.t('common.success'),
                                     detail: this.t('settings.account.photoRemovedDetail'),
                                     life: 3000
                                 });
@@ -429,7 +429,7 @@ export class AccountSettings implements OnInit {
                         this.isSaving.set(false);
                         this.messageService.add({
                             severity: 'success',
-                            summary: this.t('settings.account.profileUpdatedTitle'),
+                            summary: this.t('common.success'),
                             detail: this.t('settings.account.profileUpdatedDetail'),
                             life: 3000
                         });
@@ -471,7 +471,7 @@ export class AccountSettings implements OnInit {
                 this.showDeleteDialog = false;
                 this.messageService.add({
                     severity: 'success',
-                    summary: this.t('settings.account.deleteAccount'),
+                    summary: this.t('common.success'),
                     detail: this.t('settings.account.deleteSuccessDetail'),
                     life: 3000
                 });

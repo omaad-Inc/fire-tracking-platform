@@ -295,7 +295,7 @@ export class FireSettings implements OnInit {
                 this.isSaving.set(false);
                 this.messageService.add({
                     severity: 'success',
-                    summary: this.i18n.t('fireSettings.savedTitle'),
+                    summary: this.i18n.t('common.success'),
                     detail: this.i18n.t('fireSettings.savedDetail'),
                     life: 2000
                 });
@@ -341,7 +341,7 @@ export class FireSettings implements OnInit {
                 this.assetsState.notifyAssetsUpdated();
                 this.messageService.add({
                     severity: 'info',
-                    summary: this.i18n.t('fireSettings.deletedTitle'),
+                    summary: this.i18n.t('common.info'),
                     detail: this.i18n.t('fireSettings.deletedDetail'),
                     life: 3000
                 });
@@ -350,8 +350,8 @@ export class FireSettings implements OnInit {
                 this.isClearing.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: 'Erreur',
-                    detail: err.message || 'Impossible de supprimer l\'objectif.',
+                    summary: this.i18n.t('common.error'),
+                    detail: err.message || this.i18n.t('fireSettings.deleteFailedDetail'),
                     life: 5000
                 });
             }

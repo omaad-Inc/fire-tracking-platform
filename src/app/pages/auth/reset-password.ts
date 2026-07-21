@@ -147,7 +147,7 @@ export class ResetPassword {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: this.t('auth.reset.errSummary'),
+                    summary: this.t('common.error'),
                     detail: error.message || this.t('auth.reset.errDetail'),
                     life: 6000
                 });

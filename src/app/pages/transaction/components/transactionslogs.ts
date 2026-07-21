@@ -186,7 +186,9 @@ interface DayGroup {
                             </span>
                             <div class="flex-1 h-px bg-surface-200 dark:bg-surface-800"></div>
                             <span class="text-xs text-surface-400 dark:text-surface-500">
-                                {{ group.records.length }} opération{{ group.records.length > 1 ? 's' : '' }}
+                                {{ group.records.length === 1
+                                    ? t('transactions.opCountOne', { n: group.records.length })
+                                    : t('transactions.opCountMany', { n: group.records.length }) }}
                             </span>
                         </div>
 
@@ -455,7 +457,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
         this.router.navigate([], { relativeTo: this.route, queryParams: params, queryParamsHandling: 'merge', replaceUrl: true });
     });
 
-    t(key: string): string { return this.i18n.t(key); }
+    t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
     private dateLocale(): string { return this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR'; }
 
     @Output() monthChanged = new EventEmitter<string>();
@@ -741,7 +743,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.updated'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
             } else {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
@@ -756,11 +758,11 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? this.t('transactions.form.income') : this.t('transactions.form.expense'))),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
-                this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.saved'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
             }
             this.dialogVisible = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: this.t('transactions.toast.error'),
+            this.messageService.add({ severity: 'error', summary: this.t('common.error'),
                 detail: err?.message || this.t('transactions.toast.saveError'), life: 5000 });
         } finally {
             this.isSaving.set(false);
@@ -780,9 +782,9 @@ export class TransactionLogs implements OnInit, OnDestroy {
                 try {
                     await this.transactionsService.deleteRecords([rec.id]);
                     this.allRecords.update(rs => rs.filter(r => r.id !== rec.id));
-                    this.messageService.add({ severity: 'success', summary: this.t('transactions.toast.deleted'), detail: this.t('transactions.toast.deletedDetail'), life: 3000 });
+                    this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.deletedDetail'), life: 3000 });
                 } catch {
-                    this.messageService.add({ severity: 'error', summary: this.t('transactions.toast.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
+                    this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
                 }
             }
         });

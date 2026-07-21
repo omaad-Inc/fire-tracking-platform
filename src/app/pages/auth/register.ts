@@ -354,11 +354,11 @@ export class Register {
             next: () => {
                 this.isLoading.set(false);
                 this.otpSent.set(true);
-                this.messageService.add({ severity: 'success', summary: 'Omaad', detail: this.t('auth.login.codeSent'), life: 3000 });
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('auth.login.codeSent'), life: 3000 });
             },
             error: (err) => {
                 this.isLoading.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('auth.register.failedSummary'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
+                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
             }
         });
     }
@@ -377,7 +377,7 @@ export class Register {
             },
             error: (err) => {
                 this.isLoading.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('auth.register.failedSummary'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
+                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('auth.login.otpError'), life: 5000 });
             }
         });
     }
@@ -408,7 +408,7 @@ export class Register {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'success',
-                    summary: this.t('auth.register.createdSummary'),
+                    summary: this.t('common.success'),
                     detail: this.t('auth.register.createdDetail'),
                     life: 4000
                 });
@@ -425,7 +425,7 @@ export class Register {
                 this.isLoading.set(false);
                 this.messageService.add({
                     severity: 'error',
-                    summary: this.t('auth.register.failedSummary'),
+                    summary: this.t('common.error'),
                     detail: error.message || this.t('auth.register.failedDetail'),
                     life: 5000
                 });

@@ -314,13 +314,13 @@ export class QuickAddSheet {
             // itself (single source), so widgets refresh without a second emit here.
             this.toast.add({
                 key: 'quickadd', severity: 'success',
-                summary: this.i18n.t('quickAdd.saved'), life: 1800,
+                summary: this.i18n.t('common.success'), detail: this.i18n.t('quickAdd.saved'), life: 1800,
             });
             this.close.emit();
         } catch {
             this.toast.add({
                 key: 'quickadd', severity: 'error',
-                summary: this.i18n.t('quickAdd.saveError'), life: 2500,
+                summary: this.i18n.t('common.error'), detail: this.i18n.t('quickAdd.saveError'), life: 2500,
             });
         } finally {
             this.saving.set(false);
