@@ -4,7 +4,9 @@ import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { TopbarWidget } from '../components/topbarwidget.component';
 import { FooterWidget } from '../components/footerwidget';
-import { I18nService } from '../../../i18n/i18n.service';
+import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { SEO_PAGES } from '../../../core/services/seo-content';
 import { BLOG_POSTS, BlogPost } from './posts';
 
 @Component({
@@ -124,6 +126,7 @@ import { BLOG_POSTS, BlogPost } from './posts';
 export class BlogList {
     private router = inject(Router);
     private i18n   = inject(I18nService);
+    private seo    = inject(SeoService);
 
     posts: BlogPost[] = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date));
     selectedTag = signal<string | null>(null);
@@ -147,6 +150,7 @@ export class BlogList {
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.lang = match ? match[1] : 'fr';
+        this.seo.applyLocalized({ lang: this.lang as Lang, ...SEO_PAGES.blog });
     }
 
     formatDate(iso: string): string {

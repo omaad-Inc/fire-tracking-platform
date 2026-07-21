@@ -7,6 +7,9 @@ import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { isDarkMode, applyChartDefaults } from '../../../core/theme/chart-theme';
 import { LayoutService } from '../../../layout/service/layout.service';
+import type { Lang } from '../../../i18n/i18n.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { SEO_PAGES } from '../../../core/services/seo-content';
 
 interface YearPoint {
     year: number;
@@ -391,10 +394,16 @@ interface YearPoint {
 })
 export class CompoundCalculator {
     private router = inject(Router);
+    private seo = inject(SeoService);
     private platformId = inject(PLATFORM_ID);
     layoutService = inject(LayoutService);
 
-    constructor() { applyChartDefaults(); } // Chart.js defaults on demand (P2-FE-4)
+    constructor() {
+        applyChartDefaults(); // Chart.js defaults on demand (P2-FE-4)
+        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
+        const lang = (match ? match[1] : 'fr') as Lang;
+        this.seo.applyLocalized({ lang, ...SEO_PAGES.compoundInterest });
+    }
 
     readonly currentYear = new Date().getFullYear();
 

@@ -2,6 +2,9 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
+import type { Lang } from '../../../i18n/i18n.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { SEO_PAGES } from '../../../core/services/seo-content';
 
 @Component({
     selector: 'app-fire-africa-welcome',
@@ -75,6 +78,13 @@ import { RippleModule } from 'primeng/ripple';
 })
 export class FireAfricaWelcome {
     private router = inject(Router);
+    private seo = inject(SeoService);
+
+    constructor() {
+        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
+        const lang = (match ? match[1] : 'fr') as Lang;
+        this.seo.applyLocalized({ lang, ...SEO_PAGES.fireAfricaWelcome });
+    }
 
     get currentLang(): string {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);

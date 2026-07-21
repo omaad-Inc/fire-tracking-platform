@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { TopbarWidget } from './topbarwidget.component';
 import { FooterWidget } from './footerwidget';
-import { I18nService } from '../../../i18n/i18n.service';
+import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { SeoService } from '../../../core/services/seo.service';
+import { SEO_PAGES } from '../../../core/services/seo-content';
 
 @Component({
     selector: 'app-legal-terms',
@@ -61,6 +63,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 export class LegalTermsPage {
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private seo = inject(SeoService);
 
     readonly isFr = computed(() => this.i18n.lang() === 'fr');
     readonly updated = '14/05/2026';
@@ -130,6 +133,7 @@ export class LegalTermsPage {
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         const lang = match ? match[1] : 'fr';
-        this.i18n.setLang(lang as 'fr' | 'en');
+        this.i18n.setLang(lang as Lang);
+        this.seo.applyLocalized({ lang: lang as Lang, ...SEO_PAGES.legalTerms });
     }
 }

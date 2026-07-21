@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -7,7 +7,8 @@ import { RippleModule } from 'primeng/ripple';
 import { firstValueFrom } from 'rxjs';
 import { TopbarWidget } from '../components/topbarwidget.component';
 import { FooterWidget } from '../components/footerwidget';
-import { I18nService } from '../../../i18n/i18n.service';
+import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { BLOG_POSTS, BlogPost, findPostBySlug } from './posts';
 
 /** Shape of the JSON files in assets/newsletters/edition-NNN-blocks.json. */
@@ -181,12 +182,13 @@ interface RenderableBlock {
         </div>
     `
 })
-export class BlogArticle implements OnInit {
+export class BlogArticle implements OnInit, OnDestroy {
     private route     = inject(ActivatedRoute);
     private router    = inject(Router);
     private http      = inject(HttpClient);
     private sanitizer = inject(DomSanitizer);
     private i18n      = inject(I18nService);
+    private seo       = inject(SeoService);
 
     post    = signal<BlogPost | undefined>(undefined);
     loading = signal(true);
@@ -233,6 +235,10 @@ export class BlogArticle implements OnInit {
             return;
         }
 
+        // Per-article SEO from the post metadata (set synchronously so it lands
+        // in the prerendered HTML even if the content fetch below fails).
+        this.applyArticleSeo(p);
+
         try {
             const doc = await firstValueFrom(this.http.get<NewsletterDoc>(p.contentPath));
             this.blocks.set(this.toRenderable(doc.blocks));
@@ -241,6 +247,34 @@ export class BlogArticle implements OnInit {
         } finally {
             this.loading.set(false);
         }
+    }
+
+    private applyArticleSeo(p: BlogPost): void {
+        const text = { title: `${p.title} — Omaad`, description: p.excerpt };
+        const path = `/blog/${p.slug}`;
+        // Editions are written in French; both locale URLs serve the same
+        // content, so FR/EN SEO text is identical but hreflang alternates + a
+        // per-locale canonical still ship.
+        this.seo.applyLocalized({ lang: this.lang as Lang, path, fr: text, en: text, image: p.coverImage, ogType: 'article' });
+        this.seo.setJsonLd('jsonld-article', {
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: p.title,
+            description: p.excerpt,
+            datePublished: p.date,
+            image: p.coverImage,
+            author: { '@type': 'Organization', name: 'Omaad' },
+            publisher: {
+                '@type': 'Organization',
+                name: 'Omaad',
+                logo: { '@type': 'ImageObject', url: `${SITE_ORIGIN}/icons/omaad-app-icon-512.png` },
+            },
+            mainEntityOfPage: `${SITE_ORIGIN}/${this.lang}${path}`,
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.seo.removeJsonLd('jsonld-article');
     }
 
     formatDate(iso: string): string {
