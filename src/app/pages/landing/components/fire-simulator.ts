@@ -10,6 +10,8 @@ import { LayoutService } from '../../../layout/service/layout.service';
 import type { Lang } from '../../../i18n/i18n.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { WaitlistWidget } from './waitlistwidget';
 
 interface YearProjection {
     year: number;
@@ -23,7 +25,7 @@ interface YearProjection {
     standalone: true,
     imports: [
         CommonModule, FormsModule, RouterModule, ChartModule,
-        ButtonModule, RippleModule
+        ButtonModule, RippleModule, WaitlistWidget
     ],
     template: `
         <div class="min-h-screen bg-surface-0 dark:bg-surface-900 relative overflow-hidden">
@@ -382,6 +384,11 @@ interface YearProjection {
                     </div>
                 </div>
 
+                <!-- Lead capture (no export to gate; email-capture CTA instead) -->
+                <div class="max-w-3xl mx-auto mt-12">
+                    <app-waitlist source="simulator" variant="simulator" />
+                </div>
+
                 <!-- Footer -->
                 <div class="text-center mt-16 pb-8">
                     <div class="flex items-center justify-center gap-2 mb-3 opacity-50">
@@ -452,6 +459,7 @@ export class FireSimulator {
     private router = inject(Router);
     private seo = inject(SeoService);
     private platformId = inject(PLATFORM_ID);
+    private analytics = inject(AnalyticsService);
     layoutService = inject(LayoutService);
 
     constructor() {
@@ -459,6 +467,7 @@ export class FireSimulator {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         const lang = (match ? match[1] : 'fr') as Lang;
         this.seo.applyLocalized({ lang, ...SEO_PAGES.fireSimulator });
+        this.analytics.trackPublic('tool_view', { tool: 'fire-simulator', lang });
     }
 
     readonly Infinity = Infinity;

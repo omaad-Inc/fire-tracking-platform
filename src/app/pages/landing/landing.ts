@@ -15,15 +15,17 @@ import { PainCalculatorWidget } from './components/paincalculatorwidget';
 import { HowItWorksWidget } from './components/howitworkswidget';
 import { WealthScoreWidget } from './components/wealthscorewidget';
 import { SocialProofWidget } from './components/socialproofwidget';
+import { WaitlistWidget } from './components/waitlistwidget';
 import { I18nService, Lang } from '../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { SEO_PAGES } from '../../core/services/seo-content';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { OnDestroy } from '@angular/core';
 
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, FireProjectionWidget, PainCalculatorWidget, HowItWorksWidget, WealthScoreWidget, SocialProofWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
+    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, FireProjectionWidget, PainCalculatorWidget, HowItWorksWidget, WealthScoreWidget, SocialProofWidget, WaitlistWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
     template: `
         <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
             <div id="home" class="landing-wrapper overflow-hidden">
@@ -48,6 +50,12 @@ import { OnDestroy } from '@angular/core';
                 <highlights-widget />
                 <!-- Urgency close: "what does waiting cost me?", right before pricing -->
                 <pain-calculator-widget />
+
+                <!-- Lead capture right after the calculators (P4-ANALYTICS-1) -->
+                <div class="max-w-[1600px] mx-auto px-6 lg:px-10 py-12 sm:py-16">
+                    <app-waitlist source="landing" />
+                </div>
+
                 <pricing-widget />
 
                 <footer-widget />
@@ -68,6 +76,7 @@ export class Landing implements OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
     private seo = inject(SeoService);
+    private analytics = inject(AnalyticsService);
 
     currentLang = '/fr';
 
@@ -80,6 +89,7 @@ export class Landing implements OnDestroy {
 
         // Per-route SEO (prerendered into the initial HTML for crawlers).
         this.seo.applyLocalized({ lang, ...SEO_PAGES.landing });
+        this.analytics.trackPublic('landing_view', { lang });
 
         // Site-wide structured data lives on the home page.
         this.seo.setJsonLd('jsonld-organization', {
