@@ -114,7 +114,7 @@ import { environment } from '../../../environments/environment';
                 <!-- Version -->
                 <div class="text-center pb-8">
                     <p class="text-xs text-surface-400 dark:text-surface-500">
-                        Omaad Wealth · v{{ appVersion }}
+                        Omaad · v{{ appVersion }}
                     </p>
                 </div>
             }

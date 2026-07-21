@@ -157,7 +157,7 @@ interface FaqItem {
             <!-- ── Version info ─────────────────────────────────── -->
             <div class="text-center py-2">
                 <p class="text-xs text-surface-400 dark:text-surface-500">
-                    Omaad Wealth · v{{ appVersion }}
+                    Omaad · v{{ appVersion }}
                 </p>
             </div>
         </div>
@@ -231,7 +231,7 @@ export class HelpSettings {
         const payload = {
             fullName: user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email?.split('@')[0] : 'Utilisateur',
             email: user?.email || 'no-reply@omaad.africa',
-            company: 'Omaad Wealth (Support)',
+            company: 'Omaad (Support)',
             needType: this.contactForm.subject,
             message: this.contactForm.message
         };
