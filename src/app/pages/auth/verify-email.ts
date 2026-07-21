@@ -21,7 +21,7 @@ type VerifyState = 'verifying' | 'success' | 'error' | 'no-token';
                 </a>
 
                 <div *ngIf="state() === 'verifying'" class="py-6">
-                    <i class="pi pi-spin pi-spinner text-3xl text-primary" aria-hidden="true"></i>
+                    <i class="pi pi-spin pi-spinner text-3xl text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
                     <p class="mt-4 text-surface-600 dark:text-surface-400">{{ t('auth.verify.verifying') }}</p>
                 </div>
 
@@ -42,7 +42,7 @@ type VerifyState = 'verifying' | 'success' | 'error' | 'no-token';
                             class="p-button w-full mb-3" [loading]="busy()"
                             [label]="t('auth.verify.resend')" (click)="resend()"></button>
                     <p *ngIf="resent()" class="text-sm text-positive mb-3">{{ t('auth.verify.resendSent') }}</p>
-                    <a [routerLink]="[currentLang, 'auth', 'login']" class="text-sm text-primary hover:underline">{{ t('auth.verify.backToLogin') }}</a>
+                    <a [routerLink]="[currentLang, 'auth', 'login']" class="text-sm text-brand-700 dark:text-ochre-400 hover:underline">{{ t('auth.verify.backToLogin') }}</a>
                 </div>
             </div>
         </div>

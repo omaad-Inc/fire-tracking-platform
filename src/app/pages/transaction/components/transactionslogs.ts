@@ -211,7 +211,7 @@ interface DayGroup {
                                     <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
                                          [ngClass]="rec.type === 'Transfer' ? 'text-surface-500 dark:text-surface-400' : (rec.type === 'Income' ? 'text-positive' : 'text-negative')">
-                                        {{ rec.type === 'Transfer' ? '⇄ ' : (rec.type === 'Income' ? '+' : '−') }}<app-amount [value]="rec.amount" />
+                                        @if (rec.type === 'Transfer') { <i class="pi pi-arrow-right-arrow-left text-xs mr-1" aria-hidden="true"></i> }<app-amount [value]="rec.amount" [prefix]="rec.type === 'Transfer' ? '' : (rec.type === 'Income' ? '+' : '−')" />
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
                                     <div *ngIf="!share.active()" class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

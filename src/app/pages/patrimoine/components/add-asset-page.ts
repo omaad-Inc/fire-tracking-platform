@@ -159,19 +159,19 @@ interface CategoryCard {
                                 <div class="flex lg:flex-col gap-3">
                                     <button type="button"
                                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
-                                            [ngClass]="currentStep() === 1 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
+                                            [ngClass]="currentStep() === 1 ? 'bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
                                             (click)="goToStep(1)">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                                              [ngClass]="currentStep() === 1 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
+                                              [ngClass]="currentStep() === 1 ? 'bg-brand-700 text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
                                         <span class="text-sm">{{ isFr() ? 'Informations' : 'Details' }}</span>
                                     </button>
                                     <button type="button"
                                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
-                                            [ngClass]="currentStep() === 2 ? 'bg-primary/10 text-primary font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
+                                            [ngClass]="currentStep() === 2 ? 'bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'"
                                             (click)="goToStep(2)"
                                             [disabled]="!isStep1Valid()">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                                              [ngClass]="currentStep() === 2 ? 'bg-primary text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
+                                              [ngClass]="currentStep() === 2 ? 'bg-brand-700 text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
                                         <span class="text-sm">{{ isFr() ? 'Répartition' : 'Ownership' }}</span>
                                     </button>
                                 </div>
@@ -186,7 +186,7 @@ interface CategoryCard {
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Nom de l\\'actif' : 'Asset name' }} <span class="text-negative">*</span></label>
                                             <input pInputText [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
-                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
 
                                         <!-- Currency (always) — the native currency the amounts below are entered in -->
@@ -203,26 +203,26 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Mise mensuelle' : 'Monthly contribution' }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Nombre de participants' : 'Number of participants' }} <span class="text-negative">*</span></label>
                                                 <p-inputnumber [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de début' : 'Start date' }} <span class="text-negative">*</span></label>
                                                 <p-datepicker [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de collecte de ma mise' : 'My payout date' }}</label>
                                                 <p-datepicker [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Statut' : 'Status' }}</label>
@@ -260,7 +260,7 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Solde actuel' : 'Current balance' }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
@@ -276,13 +276,13 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Quantité' : 'Quantity' }}</label>
                                                 <p-inputnumber [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Prix d\\'achat unitaire' : 'Unit purchase price' }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
@@ -290,7 +290,7 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Valeur actuelle unitaire' : 'Current unit value' }} <span class="text-surface-400 text-xs">{{ isFr() ? '(optionnel)' : '(optional)' }}</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
@@ -304,7 +304,7 @@ interface CategoryCard {
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
@@ -312,7 +312,7 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Banque' : 'Bank' }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.institution"
                                                        [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                         }
 
@@ -327,7 +327,7 @@ interface CategoryCard {
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
@@ -342,7 +342,7 @@ interface CategoryCard {
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary !pr-16" />
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
                                                     <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
                                                 </div>
                                             </div>
@@ -354,7 +354,7 @@ interface CategoryCard {
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date d\\'achat' : 'Purchase date' }}</label>
                                                 <p-datepicker [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                         }
 
@@ -363,7 +363,7 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                         }
 
@@ -372,7 +372,7 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Superficie (m²)' : 'Area (m²)' }}</label>
                                                 <p-inputnumber [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
                                                 <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
@@ -385,7 +385,7 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Région / Localité' : 'Region / Location' }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-primary" />
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                         }
                                     </div>
@@ -434,7 +434,7 @@ interface CategoryCard {
                                         <div>
                                             <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ isFr() ? 'Co-propriétaires' : 'Co-owners' }}</h3>
                                             <button type="button" (click)="addMember()"
-                                                    class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-primary hover:bg-primary/5 transition-all w-full">
+                                                    class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-brand-700 hover:bg-brand-700/5 transition-all w-full">
                                                 <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
                                                     <i class="pi pi-plus text-surface-400"></i>
                                                 </div>
