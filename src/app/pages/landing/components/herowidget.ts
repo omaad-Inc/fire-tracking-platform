@@ -18,8 +18,8 @@ import { I18nService } from '../../../i18n/i18n.service';
 
             <div class="relative z-10 max-w-[1600px] mx-auto w-full px-6 lg:px-10 py-12">
                 <div class="grid grid-cols-12 gap-y-10 lg:gap-8 items-center">
-                    <!-- Left Content -->
-                    <div class="col-span-12 lg:col-span-6 min-w-0 text-center lg:text-left">
+                    <!-- Left Content (indented on desktop so the headline starts under the "d" of Omaad) -->
+                    <div class="col-span-12 lg:col-span-6 min-w-0 text-center lg:text-left lg:pl-32">
                         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 mb-8">
                             <span class="w-2 h-2 rounded-full bg-positive-500"></span>
                             <span class="text-surface-600 dark:text-surface-300 text-sm font-medium tracking-wide">{{ t('landing.hero.badge') }}</span>
@@ -27,8 +27,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-surface-900 dark:text-white leading-[1.1] tracking-tight mb-6">
                             <span class="block text-ochre-600 dark:text-ochre-400">{{ t('landing.hero.h1a') }}</span>
-                            <span class="block">{{ t('landing.hero.h1b') }}</span>
-                            <span class="block">{{ t('landing.hero.h1c') }}</span>
+                            <span class="block">{{ t('landing.hero.h1b') }} {{ t('landing.hero.h1c') }}</span>
                         </h1>
 
                         <p class="text-lg md:text-xl text-surface-600 dark:text-surface-300 leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">

@@ -1325,7 +1325,7 @@ export const EN: Dict = {
       h1b: 'of your',
       h1c: 'wealth',
       description: 'Your assets here and back home, real estate, BRVM, tontine, mobile money, in one place, in FCFA and euros.',
-      descriptionHighlight: 'Omaad Wealth',
+      descriptionHighlight: 'Omaad',
       descriptionSuffix: 'gives you the keys to your financial sovereignty.',
       stat1Value: 'Free',
       stat1Label: 'Zero commitment',

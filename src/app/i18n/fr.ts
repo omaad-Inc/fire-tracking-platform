@@ -1323,7 +1323,7 @@ export const FR = {
       h1b: 'de votre',
       h1c: 'patrimoine',
       description: 'Vos actifs ici et au pays, immobilier, BRVM, tontine, mobile money, réunis en un seul endroit, en FCFA et en euros.',
-      descriptionHighlight: 'Omaad Wealth',
+      descriptionHighlight: 'Omaad',
       descriptionSuffix: 'vous donne les clés de votre souveraineté financière.',
       stat1Value: 'Gratuit',
       stat1Label: 'Zéro engagement',
