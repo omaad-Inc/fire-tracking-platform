@@ -77,7 +77,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <div class="w-2.5 h-2.5 rounded-full bg-negative/70"></div>
                                     <div class="w-2.5 h-2.5 rounded-full bg-ochre-500/70"></div>
                                     <div class="w-2.5 h-2.5 rounded-full bg-positive/70"></div>
-                                    <span class="ml-3 text-warm-500 text-xs">omaad.app</span>
+                                    <span class="ml-3 text-warm-500 text-xs">omaad.africa</span>
                                     <div class="ml-auto w-6 h-6 rounded-full bg-brand-700 flex items-center justify-center">
                                         <span class="text-white text-[8px] font-bold">MS</span>
                                     </div>

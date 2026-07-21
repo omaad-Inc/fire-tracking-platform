@@ -224,7 +224,7 @@ import { I18nService } from '../../i18n/i18n.service';
                                 <div class="flex-1 flex justify-center">
                                     <div class="bg-warm-700/50 rounded-lg px-4 py-1 text-warm-400 text-xs flex items-center gap-2">
                                         <i class="pi pi-lock text-positive-400"></i>
-                                        omaad.app
+                                        omaad.africa
                                     </div>
                                 </div>
                             </div>

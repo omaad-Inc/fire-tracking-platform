@@ -1,11 +1,9 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
-import { ChartModule } from 'primeng/chart';
 import { I18nService } from '../../../i18n/i18n.service';
-import { applyChartDefaults } from '../../../core/theme/chart-theme';
 
 const BEFORE_DATA = [30, 55, 10, 15, 20];
 const AFTER_DATA  = [75, 70, 60, 85, 65];
@@ -21,7 +19,7 @@ interface AxisInsight {
 @Component({
     selector: 'wealth-score-widget',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule, RippleModule, ChartModule],
+    imports: [CommonModule, RouterModule, ButtonModule, RippleModule],
     template: `
         <section id="wealth-score" class="py-20 md:py-28 px-6 lg:px-20 bg-surface-50 dark:bg-surface-900 overflow-hidden">
             <div class="max-w-6xl mx-auto">
@@ -68,9 +66,35 @@ interface AxisInsight {
                             <span class="text-xl font-medium text-surface-500 dark:text-surface-400 ml-1">{{ t('landing.wealthScore.scoreLabel') }}</span>
                         </div>
 
-                        <!-- Radar chart -->
-                        <div class="w-full max-w-[380px] mx-auto">
-                            <p-chart type="radar" [data]="chartData" [options]="chartOptions" class="w-full"></p-chart>
+                        <!-- Radar chart — hand-rolled inline SVG (no Chart.js on landing, P3-5) -->
+                        <div class="w-full max-w-[360px] mx-auto">
+                            <svg viewBox="0 0 410 310" class="w-full" role="img" [attr.aria-label]="radarAria()">
+                                <!-- grid rings -->
+                                @for (ring of rings; track $index) {
+                                    <polygon [attr.points]="ring" fill="none" stroke-width="1"
+                                             class="stroke-surface-200 dark:stroke-surface-700" />
+                                }
+                                <!-- axis spokes -->
+                                @for (s of spokes; track $index) {
+                                    <line [attr.x1]="s.x1" [attr.y1]="s.y1" [attr.x2]="s.x2" [attr.y2]="s.y2"
+                                          stroke-width="1" class="stroke-surface-200 dark:stroke-surface-700" />
+                                }
+                                <!-- data polygon -->
+                                <polygon [attr.points]="radarPolygon()" [attr.fill]="seriesFill()"
+                                         [attr.stroke]="seriesColor()" stroke-width="2.5" stroke-linejoin="round"
+                                         class="transition-all duration-500 ease-out" />
+                                <!-- vertices -->
+                                @for (v of radarVertices(); track $index) {
+                                    <circle [attr.cx]="v.x" [attr.cy]="v.y" r="4.5" [attr.fill]="seriesColor()"
+                                            class="transition-all duration-500 ease-out" />
+                                }
+                                <!-- axis labels -->
+                                @for (lbl of axisLabels; track lbl.key) {
+                                    <text [attr.x]="lbl.x" [attr.y]="lbl.y" [attr.text-anchor]="lbl.anchor"
+                                          dominant-baseline="middle"
+                                          class="fill-surface-600 dark:fill-surface-300 font-semibold" style="font-size:10px">{{ t(lbl.key) }}</text>
+                                }
+                            </svg>
                         </div>
                     </div>
 
@@ -122,7 +146,7 @@ interface AxisInsight {
         </section>
     `
 })
-export class WealthScoreWidget implements OnInit {
+export class WealthScoreWidget {
     private i18n = inject(I18nService);
     private router = inject(Router);
 
@@ -136,8 +160,38 @@ export class WealthScoreWidget implements OnInit {
         { labelKey: 'landing.wealthScore.axisDiversification',  insightKey: 'landing.wealthScore.insightDiversification',  before: BEFORE_DATA[4], after: AFTER_DATA[4], icon: 'pi-th-large' },
     ];
 
-    chartData: any = {};
-    chartOptions: any = {};
+    // ── Radar geometry (hand-rolled SVG, 5 axes, pentagon) ────────────────────
+    private readonly CX = 205;
+    private readonly CY = 152;
+    private readonly R = 98;
+    private theta(i: number): number { return (-90 + i * 72) * Math.PI / 180; }
+    private polar(frac: number, i: number): { x: number; y: number } {
+        const t = this.theta(i);
+        return { x: this.CX + this.R * frac * Math.cos(t), y: this.CY + this.R * frac * Math.sin(t) };
+    }
+    private pentagon(frac: number): string {
+        return this.axes.map((_, i) => { const p = this.polar(frac, i); return `${p.x.toFixed(1)},${p.y.toFixed(1)}`; }).join(' ');
+    }
+    /** Concentric grid rings at 25/50/75/100%. */
+    readonly rings = [0.25, 0.5, 0.75, 1].map(f => this.pentagon(f));
+    /** Spokes from centre to each axis tip. */
+    readonly spokes = this.axes.map((_, i) => { const p = this.polar(1, i); return { x1: this.CX, y1: this.CY, x2: p.x.toFixed(1), y2: p.y.toFixed(1) }; });
+    /** Axis label anchors just outside each tip. */
+    readonly axisLabels = this.axes.map((a, i) => {
+        const p = this.polar(1.14, i);
+        const c = Math.cos(this.theta(i));
+        return { key: a.labelKey, x: p.x.toFixed(1), y: p.y.toFixed(1), anchor: c > 0.15 ? 'start' : c < -0.15 ? 'end' : 'middle' };
+    });
+
+    private data = computed(() => this.showAfter() ? AFTER_DATA : BEFORE_DATA);
+    readonly radarPolygon = computed(() => this.data().map((v, i) => { const p = this.polar(v / 100, i); return `${p.x.toFixed(1)},${p.y.toFixed(1)}`; }).join(' '));
+    readonly radarVertices = computed(() => this.data().map((v, i) => { const p = this.polar(v / 100, i); return { x: p.x.toFixed(1), y: p.y.toFixed(1) }; }));
+    readonly seriesColor = computed(() => this.showAfter() ? '#C77B3C' : '#8A98AE');
+    readonly seriesFill = computed(() => this.showAfter() ? 'rgba(199,123,60,0.18)' : 'rgba(138,152,174,0.14)');
+    /** Screen-reader alternative to the radar (dataviz check 6). */
+    readonly radarAria = computed(() =>
+        (this.showAfter() ? this.t('landing.wealthScore.toggleAfter') : this.t('landing.wealthScore.toggleBefore')) + ': ' +
+        this.axes.map((a, i) => `${this.t(a.labelKey)} ${this.data()[i]}/100`).join(', '));
 
     get currentLang(): string {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -148,64 +202,6 @@ export class WealthScoreWidget implements OnInit {
 
     setShowAfter(val: boolean): void {
         this.showAfter.set(val);
-        this.buildChartData();
-    }
-
-    ngOnInit(): void {
-        applyChartDefaults(); // Chart.js defaults on demand (P2-FE-4)
-        this.buildChartData();
-        this.chartOptions = {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                    titleColor: '#fff',
-                    bodyColor: '#cbd5e1',
-                    borderColor: 'rgba(148, 163, 184, 0.3)',
-                    borderWidth: 1,
-                    cornerRadius: 8,
-                    padding: 12,
-                    callbacks: {
-                        label: (ctx: any) => `${ctx.raw}/100`
-                    }
-                }
-            },
-            scales: {
-                r: {
-                    min: 0,
-                    max: 100,
-                    ticks: { display: false, stepSize: 25 },
-                    grid: { color: 'rgba(148, 163, 184, 0.25)', circular: true },
-                    angleLines: { color: 'rgba(148, 163, 184, 0.25)' },
-                    pointLabels: {
-                        color: 'rgba(71, 85, 105, 0.9)',
-                        font: { size: 12, weight: '600' },
-                    }
-                }
-            },
-            animation: { duration: 600, easing: 'easeOutQuart' }
-        };
-    }
-
-    private buildChartData(): void {
-        const after = this.showAfter();
-        const data = after ? AFTER_DATA : BEFORE_DATA;
-
-        this.chartData = {
-            labels: this.axes.map(a => this.t(a.labelKey)),
-            datasets: [{
-                data,
-                borderColor: after ? '#C77B3C' : '#6366f1',
-                backgroundColor: after ? 'rgba(199, 123, 60, 0.18)' : 'rgba(99, 102, 241, 0.12)',
-                borderWidth: 2.5,
-                pointBackgroundColor: after ? '#C77B3C' : '#6366f1',
-                pointBorderColor: after ? '#C77B3C' : '#6366f1',
-                pointRadius: 4,
-                pointHoverRadius: 6,
-            }]
-        };
     }
 
     scoreColor(val: number): string {

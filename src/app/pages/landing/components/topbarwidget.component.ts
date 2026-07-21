@@ -13,7 +13,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
     imports: [RouterModule, StyleClassModule, ButtonModule, RippleModule, CommonModule],
     template: `
         <!-- Logo (pulled flush-left, Finary-style) -->
-        <a class="flex items-center gap-2 cursor-pointer group shrink-0 -ml-4 md:-ml-8 lg:-ml-16" [routerLink]="[currentLang, 'landing']" fragment="home">
+        <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
             <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
                      class="w-10 h-10 md:w-12 md:h-12">
             <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad Wealth</span>
@@ -178,7 +178,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         </nav>
 
         <!-- Desktop CTA -->
-        <div class="hidden lg:flex items-center gap-3 shrink-0 -mr-6 md:-mr-12 lg:-mr-24">
+        <div class="hidden lg:flex items-center gap-3 shrink-0">
             <!-- Theme toggle -->
             <button (click)="toggleDarkMode()" pRipple
                     class="flex items-center justify-center w-9 h-9 rounded-full border border-surface-300 dark:border-surface-600

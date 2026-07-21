@@ -111,9 +111,6 @@ export default {
                 card:    '0 1px 3px rgba(20, 19, 15, 0.05), 0 1px 2px rgba(20, 19, 15, 0.04)',
                 lifted:  '0 8px 24px rgba(15, 26, 46, 0.10), 0 4px 12px rgba(20, 19, 15, 0.04)',
             },
-            fontFeatureSettings: {
-                tnum: '"tnum" 1, "lnum" 1',
-            },
             // Premium weight depth: light (labels/secondary) + extrabold (display).
             fontWeight: {
                 light: '300',
