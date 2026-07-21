@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, signal, computed, inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, effect, Output, EventEmitter } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -142,6 +143,13 @@ interface DayGroup {
                     </div>
                 </div>
             </div>
+        } @else {
+            <!-- Reserve the KPI-row height while loading so the list doesn't jump (P3-9) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                @for (i of [1, 2, 3, 4]; track i) {
+                    <div class="h-[86px] rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-100 dark:bg-surface-800 animate-pulse"></div>
+                }
+            </div>
         }
 
         <!-- ── Transaction list ───────────────────────────────────── -->
@@ -210,7 +218,7 @@ interface DayGroup {
                                     <!-- Amount -->
                                     <div class="text-sm font-bold shrink-0"
                                          [ngClass]="rec.type === 'Transfer' ? 'text-surface-500 dark:text-surface-400' : (rec.type === 'Income' ? 'text-positive' : 'text-negative')">
-                                        {{ rec.type === 'Transfer' ? '⇄ ' : (rec.type === 'Income' ? '+' : '−') }}<app-amount [value]="rec.amount" />
+                                        @if (rec.type === 'Transfer') { <i class="pi pi-arrow-right-arrow-left text-xs mr-1" aria-hidden="true"></i> }<app-amount [value]="rec.amount" [prefix]="rec.type === 'Transfer' ? '' : (rec.type === 'Income' ? '+' : '−')" />
                                     </div>
                                     <!-- Actions: always visible on mobile, hover-reveal on desktop -->
                                     <div *ngIf="!share.active()" class="flex gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
@@ -431,6 +439,21 @@ export class TransactionLogs implements OnInit, OnDestroy {
     cs = inject(CurrencyService);
     private i18n = inject(I18nService);
     share = inject(ShareContextService);
+    private router = inject(Router);
+    private route  = inject(ActivatedRoute);
+    /** Guard so the URL-sync effect doesn't clobber incoming params before ngOnInit reads them. */
+    private urlReady = false;
+    /** Deep-link the month/type/search filters into the URL (P3-8) — shareable + survives refresh. */
+    private syncUrl = effect(() => {
+        const params = {
+            month: this._selectedMonth(),
+            year: this._selectedYear(),
+            type: this.typeFilter() === 'all' ? null : this.typeFilter(),
+            q: this.search() || null,
+        };
+        if (!this.urlReady || this.share.active()) return;
+        this.router.navigate([], { relativeTo: this.route, queryParams: params, queryParamsHandling: 'merge', replaceUrl: true });
+    });
 
     t(key: string): string { return this.i18n.t(key); }
     private dateLocale(): string { return this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR'; }
@@ -572,6 +595,18 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private sub?: Subscription;
 
     ngOnInit() {
+        // Restore filters from the URL (P3-8) before enabling the write-back effect.
+        const qp = this.route.snapshot.queryParamMap;
+        const mo = Number(qp.get('month'));
+        if (mo >= 1 && mo <= 12) this._selectedMonth.set(mo);
+        const yr = Number(qp.get('year'));
+        if (yr > 2000 && yr < 3000) this._selectedYear.set(yr);
+        const ty = qp.get('type');
+        if (ty === 'Income' || ty === 'Expense' || ty === 'Transfer') this.typeFilter.set(ty);
+        const q = qp.get('q');
+        if (q) this.search.set(q);
+        this.urlReady = true;
+
         this.load();
         // Reflect a quick-add from the FAB without leaving the page.
         this.sub = this.state.transactionsUpdated$.subscribe(() => this.load());

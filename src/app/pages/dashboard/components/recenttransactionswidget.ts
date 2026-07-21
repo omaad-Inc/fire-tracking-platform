@@ -82,7 +82,7 @@ interface TransactionDisplay {
                             </div>
                             <div class="flex flex-col items-end ml-4">
                                 <span class="font-bold" [ngClass]="tx.isTransfer ? 'text-surface-500 dark:text-surface-400' : (tx.amount < 0 ? 'text-negative' : 'text-positive')">
-                                    <app-amount [value]="tx.amount" [prefix]="tx.isTransfer ? '⇄ ' : (tx.amount >= 0 ? '+' : '-')" />
+                                    @if (tx.isTransfer) { <i class="pi pi-arrow-right-arrow-left text-xs mr-1" aria-hidden="true"></i> }<app-amount [value]="tx.amount" [prefix]="tx.isTransfer ? '' : (tx.amount >= 0 ? '+' : '-')" />
                                 </span>
                                 <span class="text-surface-400 dark:text-surface-500 text-xs mt-1">{{ tx.date }}</span>
                             </div>
