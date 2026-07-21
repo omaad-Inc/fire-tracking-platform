@@ -72,15 +72,15 @@ export class TokenService {
     private loadFromStorage(): void {
         if (typeof window !== 'undefined' && window.localStorage) {
             try {
-                const token = localStorage.getItem(TOKEN_KEY);
+                // P4-SEC-1: the access token is no longer persisted. Purge any
+                // legacy token left by a pre-cutover build so it can't linger in
+                // storage. The session is restored from the httpOnly refresh
+                // cookie by the auth guard (/auth/refresh) instead.
+                localStorage.removeItem(TOKEN_KEY);
+
+                // The user profile is not a secret — keep it for a flash-free
+                // paint; it's re-fetched after refresh.
                 const userStr = localStorage.getItem(USER_KEY);
-                
-                if (token) {
-                    this._token.set(token);
-                    console.debug('Token loaded from localStorage');
-                } else {
-                    console.debug('No token found in localStorage');
-                }
                 if (userStr) {
                     try {
                         this._user.set(JSON.parse(userStr));
@@ -96,15 +96,11 @@ export class TokenService {
     }
 
     setToken(token: string): void {
+        // P4-SEC-1: the access token lives in MEMORY only — never localStorage
+        // (so an XSS payload can't read it). It's re-obtained on load/expiry via
+        // the httpOnly refresh cookie (/auth/refresh).
         this._token.set(token);
         this._tokenSetAt.set(Date.now());
-        if (typeof window !== 'undefined' && window.localStorage) {
-            try {
-                localStorage.setItem(TOKEN_KEY, token);
-            } catch (e) {
-                console.error('Failed to save token to localStorage:', e);
-            }
-        }
     }
 
     setUser(user: User): void {
