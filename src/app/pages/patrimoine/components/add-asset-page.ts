@@ -74,7 +74,7 @@ interface CategoryCard {
                 <div class="flex-1 min-w-0">
                     <h1 class="font-bold text-surface-900 dark:text-surface-0 m-0"
                         [ngClass]="currentStep() === 0 ? 'text-2xl' : 'text-xl'">
-                        @if (currentStep() === 0) { {{ isFr() ? 'Compléter mon patrimoine' : 'Complete my portfolio' }} }
+                        @if (currentStep() === 0) { {{ t('addAssets.wizard.headerComplete') }} }
                         @if (currentStep() === 1) {
                             <span class="flex items-center gap-2">
                                 @if (selectedCard()) {
@@ -82,10 +82,10 @@ interface CategoryCard {
                                         <i class="pi {{ selectedCard()!.icon }} {{ selectedCard()!.textClass }} text-sm"></i>
                                     </span>
                                 }
-                                {{ selectedCard()?.label ?? (isFr() ? 'Informations' : 'Details') }}
+                                {{ selectedCard()?.label ?? (t('addAssets.wizard.details')) }}
                             </span>
                         }
-                        @if (currentStep() === 2) { {{ isFr() ? 'Répartition' : 'Ownership' }} }
+                        @if (currentStep() === 2) { {{ t('addAssets.wizard.ownership') }} }
                     </h1>
                 </div>
                 <!-- Step dots (only on form steps) -->
@@ -110,7 +110,7 @@ interface CategoryCard {
                             <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
                             <input pInputText
                                    [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
-                                   [placeholder]="isFr() ? 'Rechercher un type d\\'actif...' : 'Search an asset type...'"
+                                   [placeholder]="t('addAssets.searchPlaceholder')"
                                    class="w-full !pl-11 !py-3.5 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-sm" />
                         </div>
 
@@ -144,7 +144,7 @@ interface CategoryCard {
                         @if (filteredCategories().length === 0) {
                             <div class="text-center py-12 text-surface-400">
                                 <i class="pi pi-search text-2xl mb-3 block"></i>
-                                <p class="text-sm">{{ isFr() ? 'Aucun type d\\'actif trouvé' : 'No asset type found' }}</p>
+                                <p class="text-sm">{{ t('addAssets.wizard.noTypeFound') }}</p>
                             </div>
                         }
                     </div>
@@ -163,7 +163,7 @@ interface CategoryCard {
                                             (click)="goToStep(1)">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                                               [ngClass]="currentStep() === 1 ? 'bg-brand-700 text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">1</span>
-                                        <span class="text-sm">{{ isFr() ? 'Informations' : 'Details' }}</span>
+                                        <span class="text-sm">{{ t('addAssets.wizard.details') }}</span>
                                     </button>
                                     <button type="button"
                                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
@@ -172,7 +172,7 @@ interface CategoryCard {
                                             [disabled]="!isStep1Valid()">
                                         <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                                               [ngClass]="currentStep() === 2 ? 'bg-brand-700 text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">2</span>
-                                        <span class="text-sm">{{ isFr() ? 'Répartition' : 'Ownership' }}</span>
+                                        <span class="text-sm">{{ t('addAssets.wizard.ownership') }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -184,14 +184,14 @@ interface CategoryCard {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <!-- Name (always) -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Nom de l\\'actif' : 'Asset name' }} <span class="text-negative">*</span></label>
+                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
                                             <input pInputText [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
 
                                         <!-- Currency (always), the native currency the amounts below are entered in -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Devise' : 'Currency' }}</label>
+                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currency') }}</label>
                                             <p-select [(ngModel)]="assetForm.currency" [options]="currencyOptions"
                                                       optionLabel="label" optionValue="value" appendTo="body"
                                                       styleClass="w-full" />
@@ -200,7 +200,7 @@ interface CategoryCard {
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Mise mensuelle' : 'Monthly contribution' }} <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
@@ -208,29 +208,29 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Nombre de participants' : 'Number of participants' }} <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
                                                 <p-inputnumber [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de début' : 'Start date' }} <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
                                                 <p-datepicker [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date de collecte de ma mise' : 'My payout date' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
                                                 <p-datepicker [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Statut' : 'Status' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
                                                 <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Fréquence' : 'Frequency' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
                                                 <p-select [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
@@ -238,10 +238,10 @@ interface CategoryCard {
                                                 <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
                                                     <i class="pi pi-calculator text-brand-700 dark:text-brand-300"></i>
                                                     <div>
-                                                        <p class="text-xs text-surface-400 mb-0.5">{{ isFr() ? 'Valeur accumulée estimée' : 'Estimated accumulated value' }}</p>
+                                                        <p class="text-xs text-surface-400 mb-0.5">{{ t('addAssets.wizard.estimatedAccumulated') }}</p>
                                                         <p class="font-bold text-brand-700 dark:text-brand-300">
                                                             {{ tontineCurrentValue() | number:'1.0-0' }} {{ curSymbol() }}
-                                                            <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} {{ isFr() ? 'mois' : 'mo' }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                                            <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} {{ t('addAssets.wizard.moShort') }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -251,13 +251,13 @@ interface CategoryCard {
                                         <!-- MOBILE MONEY -->
                                         @if (assetForm.category === 'mobile_money') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Opérateur' : 'Provider' }} <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.provider') }} <span class="text-negative">*</span></label>
                                                 <p-select [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
-                                                    [placeholder]="isFr() ? 'Sélectionner l\\'opérateur' : 'Select provider'"
+                                                    [placeholder]="t('addAssets.wizard.selectProvider')"
                                                     styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Solde actuel' : 'Current balance' }} <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
@@ -266,20 +266,20 @@ interface CategoryCard {
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
                                                 <i class="pi pi-info-circle text-brand-700 dark:text-brand-300"></i>
-                                                {{ isFr() ? 'Intégration API Wave / Orange Money prévue, mises à jour automatiques à venir.' : 'Wave / Orange Money API integration planned, automatic updates coming soon.' }}
+                                                {{ t('addAssets.wizard.mobileMoneyNote') }}
                                             </div>
                                         }
 
                                         <!-- QUANTITY-BASED -->
                                         @if (isQuantityBased()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Quantité' : 'Quantity' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
                                                 <p-inputnumber [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Prix d\\'achat unitaire' : 'Unit purchase price' }} <span class="text-negative">*</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
@@ -287,7 +287,7 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Valeur actuelle unitaire' : 'Current unit value' }} <span class="text-surface-400 text-xs">{{ isFr() ? '(optionnel)' : '(optional)' }}</span></label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }} <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
@@ -300,7 +300,7 @@ interface CategoryCard {
                                         @if (assetForm.category === 'cash' || assetForm.category === 'savings_account') {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    {{ assetForm.category === 'cash' ? (isFr() ? 'Solde actuel' : 'Current balance') : (isFr() ? 'Montant de l\\'épargne' : 'Savings amount') }} <span class="text-negative">*</span>
+                                                    {{ assetForm.category === 'cash' ? (t('addAssets.wizard.currentBalance')) : (t('addAssets.wizard.savingsAmount')) }} <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
@@ -309,7 +309,7 @@ interface CategoryCard {
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Banque' : 'Bank' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.bank') }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.institution"
                                                        [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
@@ -320,7 +320,7 @@ interface CategoryCard {
                                         @if (!isQuantityBased() && !isSimpleBalanceCategory() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    {{ isFr() ? 'Valeur d\\'achat / initiale' : 'Purchase / initial value' }}
+                                                    {{ t('addAssets.wizard.purchaseInitialValue') }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
                                                         <span class="text-negative">*</span>
                                                     }
@@ -333,9 +333,9 @@ interface CategoryCard {
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
-                                                    {{ isFr() ? 'Valeur actuelle' : 'Current value' }}
+                                                    {{ t('addAssets.fields.currentValue') }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
-                                                        <span class="text-surface-400 text-xs">{{ isFr() ? '(optionnel)' : '(optional)' }}</span>
+                                                        <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span>
                                                     } @else {
                                                         <span class="text-negative">*</span>
                                                     }
@@ -351,7 +351,7 @@ interface CategoryCard {
                                         <!-- Purchase date -->
                                         @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Date d\\'achat' : 'Purchase date' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
                                                 <p-datepicker [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
@@ -370,20 +370,20 @@ interface CategoryCard {
                                         <!-- Real estate specific -->
                                         @if (assetForm.category === 'real_estate') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Superficie (m²)' : 'Area (m²)' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
                                                 <p-inputnumber [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
                                                 <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                                    <span class="text-surface-500 dark:text-surface-400 text-xs">{{ isFr() ? 'Prix au m² (achat)' : 'Price per m² (purchase)' }}</span>
+                                                    <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.pricePerM2') }}</span>
                                                     <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
                                                         {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
                                                     </span>
                                                 </div>
                                             }
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ isFr() ? 'Région / Localité' : 'Region / Location' }}</label>
+                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
                                                 <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
@@ -399,7 +399,7 @@ interface CategoryCard {
                                                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 {{ selectedCard()?.bgClass ?? 'bg-surface-200 dark:bg-surface-700' }}">
                                                     <i class="pi {{ selectedCard()?.icon ?? 'pi-box' }} text-2xl {{ selectedCard()?.textClass ?? 'text-surface-500' }}"></i>
                                                 </div>
-                                                <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || (isFr() ? 'Actif' : 'Asset') }}</span>
+                                                <span class="text-surface-500 dark:text-surface-400 text-sm">{{ assetForm.name || (t('addAssets.wizard.assetFallback')) }}</span>
                                                 <span class="text-2xl font-bold text-surface-900 dark:text-surface-0 mt-1">
                                                     <app-amount [value]="toEur(totalValue())" />
                                                 </span>
@@ -407,7 +407,7 @@ interface CategoryCard {
                                         </div>
 
                                         <div>
-                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ isFr() ? 'Propriétaires' : 'Owners' }}</h3>
+                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ t('addAssets.wizard.owners') }}</h3>
                                             <div class="space-y-3">
                                                 @for (owner of assetForm.owners; track owner.name) {
                                                     <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
@@ -432,13 +432,13 @@ interface CategoryCard {
                                         </div>
 
                                         <div>
-                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ isFr() ? 'Co-propriétaires' : 'Co-owners' }}</h3>
+                                            <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-4">{{ t('addAssets.wizard.coOwners') }}</h3>
                                             <button type="button" (click)="addMember()"
                                                     class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-brand-700 hover:bg-brand-700/5 transition-all w-full">
                                                 <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
                                                     <i class="pi pi-plus text-surface-400"></i>
                                                 </div>
-                                                <span class="text-surface-600 dark:text-surface-300">{{ isFr() ? 'Ajouter un co-propriétaire' : 'Add a co-owner' }}</span>
+                                                <span class="text-surface-600 dark:text-surface-300">{{ t('addAssets.wizard.addCoOwner') }}</span>
                                             </button>
                                         </div>
                                     </div>
@@ -453,13 +453,13 @@ interface CategoryCard {
             @if (currentStep() >= 1) {
                 <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-surface-200 dark:border-surface-700">
                     @if (currentStep() === 1) {
-                        <button pButton type="button" [label]="isFr() ? 'Suivant' : 'Next'" class="omaad-cta !rounded-full px-8"
+                        <button pButton type="button" [label]="t('addAssets.wizard.next')" class="omaad-cta !rounded-full px-8"
                                 [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
                     } @else {
-                        <button pButton type="button" [label]="isFr() ? 'Retour' : 'Back'" [outlined]="true"
+                        <button pButton type="button" [label]="t('common.back')" [outlined]="true"
                                 class="!rounded-full !border-surface-300 dark:!border-surface-600"
                                 (click)="previousStep()"></button>
-                        <button pButton type="button" [label]="isFr() ? 'Enregistrer' : 'Save'"
+                        <button pButton type="button" [label]="t('common.save')"
                                 class="omaad-cta !rounded-full"
                                 [loading]="isSubmitting()" (click)="submitAsset()"></button>
                     }
@@ -478,7 +478,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private i18n = inject(I18nService);
     cs = inject(CurrencyService);
 
-    readonly isFr = computed(() => this.i18n.lang() === 'fr');
+    t(key: string): string { return this.i18n.t(key); }
 
     lang = 'fr';
     currentStep = signal(0);
@@ -527,25 +527,31 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private static readonly CARD_FG = 'text-warm-700 dark:text-warm-300';
 
     categoryCards = computed<CategoryCard[]>(() => {
-        const fr = this.isFr();
+        const t = (k: string) => this.i18n.t(k);
         const bg = AddAssetPage.CARD_BG;
         const fg = AddAssetPage.CARD_FG;
-        return [
-            { value: 'real_estate',     label: fr ? 'Immobilier'              : 'Real estate',          desc: fr ? 'Appartement, terrain...'        : 'Apartment, land...',        icon: 'pi-home',       bgClass: bg, textClass: fg },
-            { value: 'stocks_brvm',     label: fr ? 'Actions BRVM'            : 'BRVM stocks',          desc: fr ? 'Marchés UEMOA, SGI...'          : 'WAEMU markets, SGI...',     icon: 'pi-chart-line', bgClass: bg, textClass: fg },
-            { value: 'stocks_intl',     label: fr ? 'Actions internationales' : 'International stocks', desc: fr ? 'Bourses européennes, ETF...'    : 'European markets, ETFs...', icon: 'pi-globe',      bgClass: bg, textClass: fg },
-            { value: 'bonds',           label: fr ? 'Obligations'             : 'Bonds',                desc: fr ? 'Bons du trésor...'              : 'Treasury bonds...',         icon: 'pi-percentage', bgClass: bg, textClass: fg },
-            { value: 'crypto',          label: fr ? 'Crypto'                  : 'Crypto',               desc: fr ? 'Bitcoin, USDT...'               : 'Bitcoin, USDT...',          icon: 'pi-bolt',       bgClass: bg, textClass: fg },
-            { value: 'cash',            label: fr ? 'Compte bancaire'         : 'Bank account',         desc: fr ? 'Compte courant, compte chèque'  : 'Checking account',          icon: 'pi-wallet',     bgClass: bg, textClass: fg },
-            { value: 'life_insurance',  label: fr ? 'Assurance vie'           : 'Life insurance',       desc: fr ? 'Contrats vie...'                : 'Life policies...',          icon: 'pi-shield',     bgClass: bg, textClass: fg },
-            { value: 'savings_account', label: fr ? 'Livret épargne'          : 'Savings account',      desc: fr ? 'Livret A, CEL...'               : 'Savings, CEL...',           icon: 'pi-book',       bgClass: bg, textClass: fg },
-            { value: 'vehicle',         label: fr ? 'Véhicule'                : 'Vehicle',              desc: fr ? 'Voiture, moto...'               : 'Car, motorcycle...',        icon: 'pi-car',        bgClass: bg, textClass: fg },
-            { value: 'tontine',         label: fr ? 'Tontine'                 : 'Tontine',              desc: fr ? 'Épargne collective'             : 'Collective savings',        icon: 'pi-users',      bgClass: bg, textClass: fg },
-            { value: 'mobile_money',    label: 'Mobile Money',                                          desc: fr ? 'Wave, Orange Money...'          : 'Wave, Orange Money...',     icon: 'pi-mobile',     bgClass: bg, textClass: fg },
-            { value: 'collectibles',    label: fr ? 'Collections'             : 'Collectibles',         desc: fr ? 'Art, bijoux, montres...'        : 'Art, jewelry, watches...',  icon: 'pi-star',       bgClass: bg, textClass: fg },
-            { value: 'commodities',     label: fr ? 'Matières prem.'          : 'Commodities',          desc: fr ? 'Or, café, pétrole...'           : 'Gold, coffee, oil...',      icon: 'pi-box',        bgClass: bg, textClass: fg },
-            { value: 'other',           label: fr ? 'Autres'                  : 'Other',                desc: fr ? 'Tout autre actif'               : 'Any other asset',           icon: 'pi-ellipsis-h', bgClass: bg, textClass: fg },
+        const values: { value: AssetCategory; icon: string }[] = [
+            { value: 'real_estate',     icon: 'pi-home' },
+            { value: 'stocks_brvm',     icon: 'pi-chart-line' },
+            { value: 'stocks_intl',     icon: 'pi-globe' },
+            { value: 'bonds',           icon: 'pi-percentage' },
+            { value: 'crypto',          icon: 'pi-bolt' },
+            { value: 'cash',            icon: 'pi-wallet' },
+            { value: 'life_insurance',  icon: 'pi-shield' },
+            { value: 'savings_account', icon: 'pi-book' },
+            { value: 'vehicle',         icon: 'pi-car' },
+            { value: 'tontine',         icon: 'pi-users' },
+            { value: 'mobile_money',    icon: 'pi-mobile' },
+            { value: 'collectibles',    icon: 'pi-star' },
+            { value: 'commodities',     icon: 'pi-box' },
+            { value: 'other',           icon: 'pi-ellipsis-h' },
         ];
+        return values.map(v => ({
+            value: v.value,
+            label: t(`addAssets.wizard.cards.${v.value}.label`),
+            desc:  t(`addAssets.wizard.cards.${v.value}.desc`),
+            icon: v.icon, bgClass: bg, textClass: fg,
+        }));
     });
 
     get mobileMoneyProviders() {
@@ -554,22 +560,23 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             { label: 'Orange Money', value: 'Orange Money' },
             { label: 'Free Money', value: 'Free Money' },
             { label: 'Expresso', value: 'Expresso' },
-            { label: this.isFr() ? 'Autre' : 'Other', value: 'Autre' },
+            { label: this.i18n.t('addAssets.wizard.other'), value: 'Autre' },
         ];
     }
 
     get tontineStatusOptions() {
-        const fr = this.isFr();
+        const t = (k: string) => this.i18n.t(k);
         return [
-            { label: fr ? 'En cours' : 'In progress', value: 'en_cours' },
-            { label: fr ? "J'ai reçu ma mise" : 'I received my payout', value: 'mise_recue' },
-            { label: fr ? 'Terminée' : 'Completed', value: 'termine' },
+            { label: t('addAssets.wizard.tontineStatus.en_cours'), value: 'en_cours' },
+            { label: t('addAssets.wizard.tontineStatus.mise_recue'), value: 'mise_recue' },
+            { label: t('addAssets.wizard.tontineStatus.termine'), value: 'termine' },
         ];
     }
 
-    tontineFrequencyOptions = computed(() => this.isFr()
-        ? [{ label: 'Mensuelle', value: 'monthly' }, { label: 'Hebdomadaire', value: 'weekly' }]
-        : [{ label: 'Monthly', value: 'monthly' }, { label: 'Weekly', value: 'weekly' }]);
+    tontineFrequencyOptions = computed(() => [
+        { label: this.i18n.t('addAssets.wizard.freq.monthly'), value: 'monthly' },
+        { label: this.i18n.t('addAssets.wizard.freq.weekly'), value: 'weekly' },
+    ]);
 
     selectedCard = computed(() => this.categoryCards().find(c => c.value === this.selectedCategory()) ?? null);
 
@@ -629,9 +636,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     /** Route guard hook (P2-FE-9): confirm before abandoning a half-filled wizard. */
     canDeactivate(): boolean {
         if (!this.hasUnsavedInput()) return true;
-        return confirm(this.isFr()
-            ? 'Vous avez des modifications non enregistrées. Quitter quand même ?'
-            : 'You have unsaved changes. Leave anyway?');
+        return confirm(this.i18n.t('addAssets.wizard.unsavedConfirm'));
     }
 
     resetForm(): void {
@@ -673,52 +678,24 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
     }
 
+    private static readonly NAME_PH_CATS = ['tontine', 'mobile_money', 'real_estate', 'stocks_brvm', 'stocks_intl', 'crypto', 'vehicle'];
     namePlaceholder(): string {
-        const fr = this.isFr();
-        const p: Partial<Record<AssetCategory, string>> = fr ? {
-            tontine: 'Ex: Tontine Famille Diallo', mobile_money: 'Ex: Compte Wave',
-            real_estate: 'Ex: Appartement Dakar',
-            stocks_brvm: 'Ex: Actions SONATEL', stocks_intl: 'Ex: ETF MSCI World, Apple',
-            crypto: 'Ex: Bitcoin', vehicle: 'Ex: Toyota Hilux 2021',
-        } : {
-            tontine: 'Ex: Diallo family tontine', mobile_money: 'Ex: Wave account',
-            real_estate: 'Ex: Dakar apartment',
-            stocks_brvm: 'Ex: SONATEL shares', stocks_intl: 'Ex: MSCI World ETF, Apple',
-            crypto: 'Ex: Bitcoin', vehicle: 'Ex: Toyota Hilux 2021',
-        };
-        return p[this.assetForm.category as AssetCategory] ?? (fr ? 'Ex: Nom de l\'actif' : 'Ex: Asset name');
+        const cat = this.assetForm.category;
+        const key = AddAssetPage.NAME_PH_CATS.includes(cat) ? `addAssets.wizard.namePh.${cat}` : 'addAssets.wizard.namePh.default';
+        return this.i18n.t(key);
     }
 
+    private static readonly INST_LABEL_CATS = ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'savings_account', 'cash', 'life_insurance', 'real_estate'];
     institutionLabel(): string {
-        const fr = this.isFr();
-        const l: Partial<Record<AssetCategory, string>> = fr ? {
-            stocks_brvm: 'SGI / Courtier', stocks_intl: 'Courtier / Banque',
-            bonds: 'Émetteur / Banque', crypto: 'Plateforme / Exchange',
-            savings_account: 'Banque', cash: 'Banque', life_insurance: 'Assureur', real_estate: 'Agence / Notaire',
-        } : {
-            stocks_brvm: 'SGI / Broker', stocks_intl: 'Broker / Bank',
-            bonds: 'Issuer / Bank', crypto: 'Platform / Exchange',
-            savings_account: 'Bank', cash: 'Bank', life_insurance: 'Insurer', real_estate: 'Agency / Notary',
-        };
-        return l[this.assetForm.category as AssetCategory] ?? (fr ? 'Institution' : 'Institution');
+        const cat = this.assetForm.category;
+        const key = AddAssetPage.INST_LABEL_CATS.includes(cat) ? `addAssets.wizard.instLabel.${cat}` : 'addAssets.wizard.instLabel.default';
+        return this.i18n.t(key);
     }
 
+    private static readonly INST_PH_CATS = ['stocks_brvm', 'stocks_intl', 'crypto', 'savings_account', 'cash', 'life_insurance', 'real_estate'];
     institutionPlaceholder(): string {
-        const fr = this.isFr();
-        const p: Partial<Record<AssetCategory, string>> = fr ? {
-            stocks_brvm: 'Ex: SGI Jokko FI, CGF Bourse...',
-            stocks_intl: 'Ex: Trade Republic, BoursoBank...',
-            crypto: 'Ex: Binance, Coinbase...',
-            savings_account: 'Ex: CBAO, BHS...', cash: 'Ex: SGBS, Ecobank...',
-            life_insurance: 'Ex: AXA, SANLAM...', real_estate: 'Ex: Cabinet Tall Immobilier',
-        } : {
-            stocks_brvm: 'Ex: Jokko FI, CGF Bourse...',
-            stocks_intl: 'Ex: Trade Republic, BoursoBank...',
-            crypto: 'Ex: Binance, Coinbase...',
-            savings_account: 'Ex: CBAO, BHS...', cash: 'Ex: SGBS, Ecobank...',
-            life_insurance: 'Ex: AXA, SANLAM...', real_estate: 'Ex: Tall Real Estate',
-        };
-        return p[this.assetForm.category as AssetCategory] ?? '';
+        const cat = this.assetForm.category;
+        return AddAssetPage.INST_PH_CATS.includes(cat) ? this.i18n.t(`addAssets.wizard.instPh.${cat}`) : '';
     }
 
     totalValue(): number {
@@ -776,8 +753,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     addMember(): void {
-        const fr = this.isFr();
-        this.messageService.add({ severity: 'info', summary: fr ? 'Bientôt disponible' : 'Coming soon', detail: fr ? 'La gestion des co-propriétaires sera disponible prochainement' : 'Co-owner management will be available soon', life: 3000 });
+        this.messageService.add({ severity: 'info', summary: this.i18n.t('common.info'), detail: this.i18n.t('addAssets.wizard.coOwnerSoon'), life: 3000 });
     }
 
     async submitAsset(): Promise<void> {
@@ -840,16 +816,14 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
             await this.patrimoineService.createAsset(assetData);
             this.justSaved = true; // don't prompt "unsaved changes" on the success navigation
-            const fr = this.isFr();
-            this.messageService.add({ severity: 'success', summary: fr ? 'Succès' : 'Success', detail: fr ? 'Actif ajouté avec succès' : 'Asset added successfully', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('addAssets.wizard.addSuccess'), life: 3000 });
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
         } catch (error: any) {
             console.error('Error creating asset:', error);
-            const fr = this.isFr();
             const detail = error?.error?.detail
                 ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
-                : (fr ? "Impossible de créer l'actif" : 'Could not create the asset');
-            this.messageService.add({ severity: 'error', summary: fr ? 'Erreur' : 'Error', detail, life: 6000 });
+                : this.i18n.t('addAssets.wizard.addError');
+            this.messageService.add({ severity: 'error', summary: this.i18n.t('common.error'), detail, life: 6000 });
         } finally {
             this.isSubmitting.set(false);
         }
