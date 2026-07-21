@@ -36,7 +36,6 @@ const ISFR_GRANDFATHERED = new Set([
     'pages/landing/components/faq.ts',
     'pages/landing/blog/blog-list.ts',
     'pages/landing/blog/blog-article.ts',
-    'pages/dashboard/components/onboarding.ts',
     'pages/landing/components/fire-simulator.ts',
     'pages/landing/components/fire-africa-welcome.ts',
     'pages/landing/components/compound-calculator.ts',

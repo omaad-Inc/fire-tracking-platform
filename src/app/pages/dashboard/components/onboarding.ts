@@ -27,16 +27,14 @@ interface OnboardingStep {
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 mb-4">
                         <span class="w-2 h-2 rounded-full bg-positive-500"></span>
                         <span class="text-white/80 text-xs font-medium">
-                            {{ isFr() ? 'Bienvenue sur Omaad' : 'Welcome to Omaad' }}
+                            {{ t('onboarding.welcome') }}
                         </span>
                     </div>
                     <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">
-                        {{ isFr() ? 'Bonjour' : 'Hello' }} {{ firstName() }} !
+                        {{ t('onboarding.hello') }} {{ firstName() }} !
                     </h2>
                     <p class="text-brand-100 text-sm sm:text-base max-w-md mx-auto">
-                        {{ isFr()
-                            ? 'Construis. Protège. Règne., Commencez par ces 3 étapes pour prendre le contrôle de votre patrimoine.'
-                            : 'Build. Protect. Reign., Start with these 3 steps to take control of your wealth.' }}
+                        {{ t('onboarding.intro') }}
                     </p>
                 </div>
             </div>
@@ -77,7 +75,7 @@ interface OnboardingStep {
                                 </span>
                             } @else {
                                 <span class="text-xs font-semibold text-positive">
-                                    {{ isFr() ? 'Fait !' : 'Done !' }}
+                                    {{ t('onboarding.done') }}
                                 </span>
                             }
                         </div>
@@ -88,7 +86,7 @@ interface OnboardingStep {
                 <div class="flex justify-center mt-6">
                     <button (click)="dismiss()"
                             class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 text-xs transition-colors cursor-pointer">
-                        {{ isFr() ? 'Masquer ce guide' : 'Hide this guide' }}
+                        {{ t('onboarding.hide') }}
                     </button>
                 </div>
             </div>
@@ -107,7 +105,7 @@ export class OnboardingComponent {
     @Output() addAsset  = new EventEmitter<void>();
     @Output() dismissed = new EventEmitter<void>();
 
-    readonly isFr = computed(() => this.i18n.lang() === 'fr');
+    t(key: string): string { return this.i18n.t(key); }
 
     completedSteps = computed(() => {
         const set = new Set<number>();
@@ -128,33 +126,30 @@ export class OnboardingComponent {
     }
 
     steps = computed<OnboardingStep[]>(() => {
-        const fr = this.isFr();
+        const t = (k: string) => this.i18n.t(k);
         return [
             {
                 icon: 'pi-plus',
                 iconBg: 'bg-brand-700 dark:bg-brand-300',
-                title: fr ? 'Ajoutez un actif'      : 'Add an asset',
-                desc:  fr ? 'Immobilier, épargne, actions, tontine, commencez par ajouter votre premier actif.'
-                          : 'Real estate, savings, stocks, tontine, start by adding your first asset.',
-                cta:   fr ? 'Ajouter'               : 'Add',
+                title: t('onboarding.step1Title'),
+                desc:  t('onboarding.step1Desc'),
+                cta:   t('onboarding.step1Cta'),
                 action: () => this.addAsset.emit(),
             },
             {
                 icon: 'pi-arrow-right-arrow-left',
                 iconBg: 'bg-brand-700 dark:bg-brand-300',
-                title: fr ? 'Enregistrez une transaction' : 'Record a transaction',
-                desc:  fr ? 'Salaire, loyer, courses, suivez vos revenus et dépenses.'
-                          : 'Salary, rent, groceries, track your income and expenses.',
-                cta:   fr ? 'Commencer'                   : 'Start',
+                title: t('onboarding.step2Title'),
+                desc:  t('onboarding.step2Desc'),
+                cta:   t('onboarding.step2Cta'),
                 action: () => this.router.navigate(['/', this.lang, 'pages', 'transaction']),
             },
             {
                 icon: 'pi-flag',
                 iconBg: 'bg-ochre-500',
-                title: fr ? 'Définissez votre objectif' : 'Set your goal',
-                desc:  fr ? 'Configurez votre objectif FIRE pour savoir où vous allez.'
-                          : 'Configure your FIRE goal so you know where you\'re heading.',
-                cta:   fr ? 'Configurer'                : 'Configure',
+                title: t('onboarding.step3Title'),
+                desc:  t('onboarding.step3Desc'),
+                cta:   t('onboarding.step3Cta'),
                 action: () => this.router.navigate(['/', this.lang, 'pages', 'fire']),
             },
         ];
