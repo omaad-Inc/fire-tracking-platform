@@ -33,7 +33,7 @@ import { FocusTrapDirective } from '../a11y/focus-trap.directive';
                             Code incorrect · {{ 5 - pinService.failedAttempts() }} tentative{{ 5 - pinService.failedAttempts() !== 1 ? 's' : '' }} restante{{ 5 - pinService.failedAttempts() !== 1 ? 's' : '' }}
                         </span>
                     } @else {
-                        Omaad Wealth
+                        Omaad
                     }
                 </p>
 

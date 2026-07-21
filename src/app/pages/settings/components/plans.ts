@@ -23,7 +23,7 @@ interface PlanFeature {
             <div class="text-center mb-2">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ochre-100 dark:bg-ochre-900/30 border border-ochre-300/60 dark:border-ochre-700/40 mb-4">
                     <i class="pi pi-crown text-ochre-500 text-xs"></i>
-                    <span class="text-ochre-600 dark:text-ochre-300 text-sm font-semibold">Omaad Wealth</span>
+                    <span class="text-ochre-600 dark:text-ochre-300 text-sm font-semibold">Omaad</span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">
                     {{ isFr() ? 'Choisissez votre plan' : 'Choose your plan' }}

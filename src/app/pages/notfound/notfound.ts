@@ -70,7 +70,7 @@ import { I18nService } from '../../i18n/i18n.service';
                 <!-- Brand footer -->
                 <div class="mt-16 flex items-center justify-center gap-2 opacity-40">
                     <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="w-6 h-6">
-                    <span class="text-surface-500 text-sm font-medium">Omaad Wealth</span>
+                    <span class="text-surface-500 text-sm font-medium">Omaad</span>
                 </div>
             </div>
         </div>

@@ -17,7 +17,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <a [routerLink]="[currentLang, 'landing']" fragment="home" class="flex items-center gap-3 cursor-pointer mb-6 group no-underline">
                                 <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
                                      class="w-12 h-12">
-                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad Wealth</span>
+                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad</span>
                             </a>
                             <p class="text-warm-400 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
                             <div class="flex gap-3">
@@ -83,7 +83,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div class="text-warm-500 text-sm text-center md:text-left">
-                            © {{ currentYear }} Omaad Wealth. {{ t('landing.footer.copyright') }}
+                            © {{ currentYear }} Omaad. {{ t('landing.footer.copyright') }}
                             <span class="text-warm-600">{{ t('landing.footer.madeWith') }}</span>
                             <i class="pi pi-heart-fill text-negative mx-1"></i>
                             <span class="text-warm-600">{{ t('landing.footer.forFreedom') }}</span>

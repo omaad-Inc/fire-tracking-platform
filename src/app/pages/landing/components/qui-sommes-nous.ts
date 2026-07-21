@@ -299,7 +299,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                                 <span class="w-3 h-3 rounded-full bg-ochre-400/70"></span>
                                 <span class="w-3 h-3 rounded-full bg-positive-500/70"></span>
                             </div>
-                            <img src="assets/product/home_product.webp" alt="Omaad Wealth, dashboard"
+                            <img src="assets/product/home_product.webp" alt="Omaad, dashboard"
                                  class="w-full block" loading="lazy" />
                         </div>
                     </div>
