@@ -13,6 +13,11 @@ import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
     standalone: true,
     selector: 'app-skeleton-card',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    // display:contents so each skeleton card becomes a direct grid item of the
+    // parent grid (the StatsWidget host is display:contents too). Without this
+    // the cards are trapped inside <app-skeleton-card> and collapse to a narrow
+    // column, then snap into the grid when data arrives — a visible layout jump.
+    host: { class: 'contents' },
     template: `
         @for (i of items; track i) {
             <div [class]="cellClass">
