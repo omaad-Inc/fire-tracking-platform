@@ -460,6 +460,36 @@ export interface ImportCommitResult {
     skipped: number;
 }
 
+// ── Import pipeline (Sprint 3: broker PDF -> holdings/assets) ────────────────
+export interface HoldingPreviewItem {
+    name: string;
+    category: AssetCategory;
+    current_value: number;
+    currency: string;
+    quantity: number | null;
+    purchase_value: number | null;
+    institution: string | null;
+}
+
+export interface HoldingsPreviewResponse {
+    holdings: HoldingPreviewItem[];
+    text: string;                      // raw extracted text (truncated) for manual review
+}
+
+export interface HoldingCommitItem {
+    name: string;
+    category: AssetCategory;
+    current_value: number;             // must be >= 0
+    currency?: string;                 // strict ISO code (default "XOF")
+    quantity?: number | null;
+    purchase_value?: number | null;    // >= 0 when present
+    institution?: string | null;
+}
+
+export interface HoldingCommitRequest {
+    items: HoldingCommitItem[];
+}
+
 // ============================================
 // DEBT INTERFACES
 // ============================================
@@ -1116,6 +1146,27 @@ export class ApiService {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.post<ImportCommitResult>(
             `${this.apiUrl}/imports/transactions/commit`, req);
+    }
+
+    /**
+     * Parse a broker PDF into a preview of holdings plus the raw extracted text
+     * (fallback for manual entry). Nothing is written.
+     */
+    parseImportHoldings(file: File, currency = 'XOF', institution?: string | null): Observable<HoldingsPreviewResponse> {
+        if (this.share.active()) return this.readonlyBlock;
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('currency', currency);
+        if (institution) fd.append('institution', institution);
+        return this.http.post<HoldingsPreviewResponse>(
+            `${this.apiUrl}/imports/holdings/parse`, fd);
+    }
+
+    /** Commit reviewed holdings as new assets. */
+    commitImportHoldings(req: HoldingCommitRequest): Observable<ImportCommitResult> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<ImportCommitResult>(
+            `${this.apiUrl}/imports/holdings/commit`, req);
     }
 }
 

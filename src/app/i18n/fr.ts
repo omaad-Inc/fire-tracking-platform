@@ -662,6 +662,8 @@ export const FR = {
       manualDesc: 'Ajoutez vos actions une par une et suivez vos positions.',
       connectTitle: 'Connecter mon compte',
       connectDesc: 'Synchronisez automatiquement vos positions depuis votre courtier.',
+      importTitle: 'Importer depuis un relevé PDF',
+      importDesc: 'Téléversez le relevé de votre courtier, nous en extrayons vos positions.',
     },
     institutionList: {
       title: 'Connecter un compte',
@@ -684,6 +686,24 @@ export const FR = {
     markets: {
       brvm: 'Actions BRVM',
       intl: 'Actions internationales',
+    },
+    holdingsImport: {
+      title: 'Importer un relevé de portefeuille',
+      currency: 'Devise',
+      institution: 'Courtier / institution',
+      institutionPlaceholder: 'Ex : CGF Bourse, SGI...',
+      file: 'Relevé PDF',
+      filePlaceholder: 'Choisir un fichier PDF',
+      parse: 'Extraire les positions',
+      willImport: '{{n}} à importer',
+      addRow: 'Ajouter une ligne',
+      category: 'Type',
+      rawText: 'Afficher le texte brut extrait',
+      emptyParse: 'Aucune position pour le moment. Ajoutez une ligne manuellement ou consultez le texte brut ci-dessous.',
+      emptyParseHint: 'Nous n\'avons pas pu détecter les positions automatiquement. Ajoutez-les manuellement depuis le texte brut.',
+      commit: 'Importer {{n}}',
+      done: '{{created}} position(s) importée(s)',
+      commitError: 'Impossible d\'importer les positions.',
     },
     wizard: {
       headerComplete: 'Compléter mon patrimoine',

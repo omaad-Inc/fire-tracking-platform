@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ApiService, BrokerProvider } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { HoldingsImportDialog } from './holdings-import-dialog';
 import { firstValueFrom } from 'rxjs';
 
 type Market = 'brvm' | 'intl';
@@ -26,10 +27,11 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
 @Component({
     selector: 'app-connect-broker-page',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ToastModule],
+    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ToastModule, HoldingsImportDialog],
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
+        <app-holdings-import-dialog #holdingsImport (imported)="onHoldingsImported()" />
 
         <div class="flex flex-col min-h-[calc(100vh-8rem)]">
             <!-- Header -->
@@ -115,6 +117,21 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                                 </div>
                             </button>
                         </div>
+
+                        <!-- Import from a PDF statement: the working path today
+                             (secure live sync is S9). Sits under the two cards. -->
+                        <button type="button" (click)="openHoldingsImport()" data-testid="holdings-import-open"
+                                class="mt-5 w-full flex items-center gap-4 p-5 rounded-2xl border border-surface-200 dark:border-surface-800
+                                       bg-surface-0 dark:bg-surface-900 hover:border-brand-300 dark:hover:border-brand-700 transition-all text-left group">
+                            <div class="w-12 h-12 rounded-2xl bg-ochre-100 dark:bg-ochre-500/15 flex items-center justify-center shrink-0">
+                                <i class="pi pi-file-pdf text-xl text-ochre-600 dark:text-ochre-400"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-bold text-surface-900 dark:text-surface-0">{{ t('addAssets.methodPicker.importTitle') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-sm">{{ t('addAssets.methodPicker.importDesc') }}</div>
+                            </div>
+                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors shrink-0"></i>
+                        </button>
                     </div>
                 }
 
@@ -205,6 +222,11 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                                 class="omaad-cta !rounded-full w-full !py-3"
                                 (click)="chooseManual()">
                         </button>
+                        <button pButton type="button" [outlined]="true" icon="pi pi-file-pdf"
+                                [label]="t('addAssets.methodPicker.importTitle')"
+                                class="!rounded-full w-full !py-3 mt-3"
+                                (click)="openHoldingsImport()">
+                        </button>
                     </div>
                 }
             </div>
@@ -217,6 +239,8 @@ export class ConnectBrokerPage implements OnInit {
     private apiService = inject(ApiService);
     private i18n = inject(I18nService);
     private messageService = inject(MessageService);
+
+    @ViewChild('holdingsImport') holdingsImport!: HoldingsImportDialog;
 
     lang = 'fr';
     step = signal<FlowStep>('method');
@@ -300,6 +324,16 @@ export class ConnectBrokerPage implements OnInit {
 
     chooseConnect(): void {
         this.step.set('institutions');
+    }
+
+    /** Open the PDF holdings-import wizard, defaulting the currency to the market. */
+    openHoldingsImport(): void {
+        this.holdingsImport.open(this.market() === 'intl' ? 'EUR' : 'XOF');
+    }
+
+    /** A holdings import created assets: return to the portfolio to show them. */
+    onHoldingsImported(): void {
+        this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
     }
 
     selectInstitution(inst: BrokerInstitution): void {

@@ -664,6 +664,8 @@ export const EN: Dict = {
       manualDesc: 'Add your stocks one by one and track your positions.',
       connectTitle: 'Link my account',
       connectDesc: 'Automatically sync your positions from your broker.',
+      importTitle: 'Import from a PDF statement',
+      importDesc: 'Upload your broker statement and we extract your holdings.',
     },
     institutionList: {
       title: 'Link an account',
@@ -686,6 +688,24 @@ export const EN: Dict = {
     markets: {
       brvm: 'BRVM stocks',
       intl: 'International stocks',
+    },
+    holdingsImport: {
+      title: 'Import a portfolio statement',
+      currency: 'Currency',
+      institution: 'Broker / institution',
+      institutionPlaceholder: 'e.g. CGF Bourse, SGI...',
+      file: 'PDF statement',
+      filePlaceholder: 'Choose a PDF file',
+      parse: 'Extract holdings',
+      willImport: '{{n}} to import',
+      addRow: 'Add a line',
+      category: 'Type',
+      rawText: 'Show the raw extracted text',
+      emptyParse: 'No holdings yet. Add a line manually or check the raw text below.',
+      emptyParseHint: 'We could not detect holdings automatically. Add them manually from the raw text.',
+      commit: 'Import {{n}}',
+      done: 'Imported {{created}} holding(s)',
+      commitError: 'Could not import the holdings.',
     },
     wizard: {
       headerComplete: 'Complete my portfolio',
