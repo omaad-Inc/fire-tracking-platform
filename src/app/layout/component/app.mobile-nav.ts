@@ -340,6 +340,7 @@ export class AppMobileNav implements OnInit {
             { label: this.t('menu.fire'),        icon: 'pi pi-chart-line',   route: this.nav.link('pages', 'fire') },
             { label: this.t('menu.wealthScore'), icon: 'pi pi-gauge',        route: this.nav.link('pages', 'wealth-score') },
             { label: this.t('menu.debts'),       icon: 'pi pi-credit-card',  route: this.nav.link('pages', 'debts') },
+            { label: this.t('menu.insights'),    icon: 'pi pi-chart-bar',    route: this.nav.link('pages', 'insights') },
         ];
     }
 

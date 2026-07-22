@@ -101,6 +101,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-credit-card',
                         routerLink: this.link('pages', 'debts')
                     },
+                    {
+                        label: this.t('menu.insights'),
+                        icon: 'pi pi-fw pi-chart-bar',
+                        routerLink: this.link('pages', 'insights')
+                    },
                 ]
             },
         ];

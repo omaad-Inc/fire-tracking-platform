@@ -16,6 +16,7 @@ export default [
     { path: 'patrimoine/category/:categoryId', loadComponent: () => import('./patrimoine/components/patrimoine-category-detail').then(m => m.PatrimoineCategoryDetailPage) },
     { path: 'patrimoine/assets/:id', loadComponent: () => import('./patrimoine/components/asset-detail').then(m => m.AssetDetailPage) },
     { path: 'debts', loadComponent: () => import('./debts/debtsdashboard').then(m => m.DebtsDashboard) },
+    { path: 'insights', loadComponent: () => import('./insights/insights').then(m => m.InsightsPage) },
     { path: 'settings', loadChildren: () => import('./settings/settings.routes') },
     // Unknown child path: send the user to the not-found page in their CURRENT language
     // (functional redirect so we don't hardcode /fr and don't break relative resolution).
