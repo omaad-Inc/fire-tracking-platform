@@ -1,0 +1,42 @@
+name: CI
+
+# Lint, unit tests, and a full production build (which also runs the i18n
+# parity guard and prerender-route generation) on every push/PR to the main
+# branches. Netlify builds from `master`; this gate keeps `develop` honest.
+on:
+  push:
+    branches: [develop, main, master]
+  pull_request:
+    branches: [develop, main, master]
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # karma.conf.js launches ChromeHeadlessNoSandbox; point it at the Chrome
+      # preinstalled on the GitHub runner image.
+      CHROME_BIN: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:ci
+
+      - name: Build (i18n guard + prerender + ng build)
+        run: npm run build
