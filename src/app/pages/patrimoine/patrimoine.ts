@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
@@ -46,6 +46,7 @@ const GROUPS = [
 @Component({
     selector: 'app-patrimoine',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent, LoadErrorComponent, SectionHeaderComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">

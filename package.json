@@ -14,7 +14,8 @@
     "test": "ng test",
     "icons": "node ./tools/generate-icons.mjs",
     "lint": "eslint src",
-    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox"
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
+    "e2e:smoke": "playwright test"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,7 @@
     "@angular/cli": "^19.0.6",
     "@angular/compiler-cli": "^19.0.0",
     "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.61.1",
     "@types/jasmine": "~5.1.0",
     "angular-eslint": "^19.8.1",
     "autoprefixer": "^10.4.20",
