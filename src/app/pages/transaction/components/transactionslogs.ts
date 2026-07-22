@@ -24,6 +24,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { ShareContextService } from '../../../core/services/share-context.service';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { CsvImportDialog } from './csv-import-dialog';
 
 interface DayGroup {
     dateKey: string;
@@ -38,12 +39,13 @@ interface DayGroup {
         CommonModule, FormsModule, ButtonModule, DialogModule,
         InputTextModule, InputNumberModule, SelectModule,
         ToastModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent,
-        LoadErrorComponent
+        LoadErrorComponent, CsvImportDialog
     ],
     providers: [MessageService, ConfirmationService],
     template: `
         <p-toast position="top-center" />
         <p-confirmDialog />
+        <app-csv-import-dialog #csvImport (imported)="onImported()" />
 
         <!-- ── Top bar ───────────────────────────────────────────── -->
         <div class="flex flex-col gap-2 mb-5">
@@ -60,6 +62,9 @@ interface DayGroup {
                             [disabled]="isCurrentMonth()"></button>
                 </div>
                 <div class="flex-1"></div>
+                <button *ngIf="!share.active()" pButton icon="pi pi-upload" [label]="t('transactions.import.action')"
+                        [outlined]="true" class="!rounded-xl !px-4 !py-2 !text-sm !font-semibold"
+                        (click)="csvImport.open()" data-testid="csv-import-open"></button>
                 <button *ngIf="!share.active()" pButton icon="pi pi-plus" [label]="t('transactions.add')"
                         class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
@@ -636,6 +641,14 @@ export class TransactionLogs implements OnInit, OnDestroy {
     }
 
     retryLoad() {
+        this.load();
+    }
+
+    /** A CSV import committed rows outside TransactionsService: drop the stale
+     *  cache, reload the log, and notify other widgets (dashboard, recent tx). */
+    onImported() {
+        this.transactionsService.clearCache();
+        this.state.notifyTransactionsUpdated();
         this.load();
     }
 
