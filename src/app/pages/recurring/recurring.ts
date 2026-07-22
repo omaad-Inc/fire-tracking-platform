@@ -45,9 +45,9 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
         } @else {
             <div class="flex items-center justify-end gap-2 mb-4">
                 <button pButton [outlined]="true" size="small" icon="pi pi-bolt"
-                        [label]="t('recurring.runNow')" (click)="runNow()"></button>
+                        [label]="t('recurring.runNow')" (click)="runNow()" data-testid="recurring-run"></button>
                 <button pButton size="small" icon="pi pi-plus"
-                        [label]="t('recurring.add')" (click)="openAdd()" styleClass="omaad-cta !rounded-xl"></button>
+                        [label]="t('recurring.add')" (click)="openAdd()" styleClass="omaad-cta !rounded-xl" data-testid="recurring-add"></button>
             </div>
         }
 
@@ -106,7 +106,7 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.amount') }}</label>
-                    <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="2" styleClass="w-full" inputStyleClass="w-full" />
+                    <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="2" styleClass="w-full" inputStyleClass="w-full" data-testid="recurring-amount" />
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.account') }}</label>
@@ -128,7 +128,7 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
             <ng-template #footer>
                 <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="dialog = false"></button>
                 <button pButton [label]="t('common.save')" [loading]="saving()" (click)="save()"
-                        styleClass="omaad-cta"></button>
+                        styleClass="omaad-cta" data-testid="recurring-save"></button>
             </ng-template>
         </p-dialog>
     `,
