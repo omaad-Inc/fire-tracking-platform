@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -35,12 +35,21 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
     providers: [MessageService],
     template: `
         <p-toast />
-        <app-page-header icon="pi-sync" [title]="t('recurring.title')" [subtitle]="t('recurring.subtitle')">
-            <button actions pButton [outlined]="true" size="small" icon="pi pi-bolt"
-                    [label]="t('recurring.runNow')" (click)="runNow()"></button>
-            <button actions pButton size="small" icon="pi pi-plus"
-                    [label]="t('recurring.add')" (click)="openAdd()" styleClass="omaad-cta !rounded-xl"></button>
-        </app-page-header>
+        @if (!embedded) {
+            <app-page-header icon="pi-sync" [title]="t('recurring.title')" [subtitle]="t('recurring.subtitle')">
+                <button actions pButton [outlined]="true" size="small" icon="pi pi-bolt"
+                        [label]="t('recurring.runNow')" (click)="runNow()"></button>
+                <button actions pButton size="small" icon="pi pi-plus"
+                        [label]="t('recurring.add')" (click)="openAdd()" styleClass="omaad-cta !rounded-xl"></button>
+            </app-page-header>
+        } @else {
+            <div class="flex items-center justify-end gap-2 mb-4">
+                <button pButton [outlined]="true" size="small" icon="pi pi-bolt"
+                        [label]="t('recurring.runNow')" (click)="runNow()"></button>
+                <button pButton size="small" icon="pi pi-plus"
+                        [label]="t('recurring.add')" (click)="openAdd()" styleClass="omaad-cta !rounded-xl"></button>
+            </div>
+        }
 
         @if (error()) {
             <app-load-error (retry)="load()" />
@@ -129,6 +138,10 @@ export class RecurringPage implements OnInit {
     private i18n = inject(I18nService);
     private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
+
+    /** When shown inside another page (e.g. the Transactions tab), skip the big
+     *  page header and render a compact action toolbar instead. */
+    @Input() embedded = false;
 
     rules = signal<RecurringRule[]>([]);
     accounts = signal<LiquidAsset[]>([]);

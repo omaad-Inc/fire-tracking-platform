@@ -6,7 +6,6 @@ import { unsavedChangesGuard } from '../core/guards/unsaved-changes.guard';
 export default [
     { path: 'plans', loadComponent: () => import('./settings/components/plans').then(m => m.PlansSettings) },       // Standalone, no settings sidebar
     { path: 'transaction', loadComponent: () => import('./transaction/transaction').then(m => m.Transaction) },
-    { path: 'recurring', loadComponent: () => import('./recurring/recurring').then(m => m.RecurringPage) },
     { path: 'patrimoine', loadComponent: () => import('./patrimoine/patrimoine').then(m => m.Patrimoine) },
     { path: 'fire', loadComponent: () => import('./fire/fire-dashboard').then(m => m.FireDashboardPage) },
     { path: 'goals', loadComponent: () => import('./goals/goals-dashboard').then(m => m.GoalsDashboardPage) },
