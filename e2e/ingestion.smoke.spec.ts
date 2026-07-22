@@ -70,7 +70,7 @@ test('CSV import: upload -> map -> parse -> review -> commit', async ({ page }) 
     await page.goto(`/${LANG}/pages/transaction`);
 
     await page.getByTestId('csv-import-open').click();
-    await expect(page.getByTestId('csv-import-dialog')).toBeVisible();
+    await expect(page.getByTestId('csv-import-account')).toBeVisible();
 
     // Pick the target monetary account (seeded demo has liquid accounts).
     await pickFirstOption(page, 'csv-import-account');
@@ -99,7 +99,7 @@ test('CSV import: upload -> map -> parse -> review -> commit', async ({ page }) 
 
     await page.getByTestId('csv-import-commit').click();
     await expect(successToast(page)).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('csv-import-dialog')).toBeHidden();
+    await expect(page.getByTestId('csv-import-commit')).toBeHidden();
 
     // Cleanup: remove the two imported transactions so demo data stays pristine.
     const token = await accessToken(page);
@@ -109,6 +109,32 @@ test('CSV import: upload -> map -> parse -> review -> commit', async ({ page }) 
             await apiDelete(page.request, `/transactions/${t.id}`, token);
         }
     }
+});
+
+// ── 1b. CSV import via drag-and-drop onto the dropzone ───────────────────────
+test('CSV import: drag-and-drop a file onto the dropzone', async ({ page }) => {
+    await login(page);
+    await page.goto(`/${LANG}/pages/transaction`);
+
+    await page.getByTestId('csv-import-open').click();
+    await expect(page.getByTestId('csv-import-account')).toBeVisible();
+
+    // Simulate a real browser file drop (OS drag can't be automated; a
+    // DataTransfer carrying a File is the documented Playwright equivalent).
+    const csv = 'Date,Libelle,Montant,Devise\n2023-02-01,Drop test,1000,XOF';
+    const dropzone = page.locator('label').filter({ has: page.getByTestId('csv-import-file') });
+    const dt = await page.evaluateHandle((content) => {
+        const d = new DataTransfer();
+        d.items.add(new File([content], 'dropped.csv', { type: 'text/csv' }));
+        return d;
+    }, csv);
+    await dropzone.dispatchEvent('dragover', { dataTransfer: dt });
+    await dropzone.dispatchEvent('drop', { dataTransfer: dt });
+
+    // The drop was handled (not swallowed by a browser navigation): the filename
+    // shows and preview-columns loaded, so Next enables.
+    await expect(page.getByText('dropped.csv')).toBeVisible();
+    await expect(page.getByTestId('csv-import-next')).toBeEnabled({ timeout: 15_000 });
 });
 
 // ── 2. Recurring add -> run -> materialize ───────────────────────────────────
@@ -142,7 +168,7 @@ test('Holdings import: upload PDF -> parse -> review -> commit', async ({ page }
     await page.goto(`/${LANG}/pages/patrimoine/connect-broker?market=brvm`);
 
     await page.getByTestId('holdings-import-open').click();
-    await expect(page.getByTestId('holdings-import-dialog')).toBeVisible();
+    await expect(page.getByTestId('holdings-import-institution')).toBeVisible();
 
     // Tag the institution so cleanup can find exactly these assets.
     await page.getByTestId('holdings-import-institution').fill(HOLDING_INSTITUTION);
@@ -154,16 +180,18 @@ test('Holdings import: upload PDF -> parse -> review -> commit', async ({ page }
     await expect(page.getByTestId('holdings-import-review-row')).toHaveCount(3, { timeout: 15_000 });
 
     await page.getByTestId('holdings-import-commit').click();
-    await expect(successToast(page)).toBeVisible({ timeout: 15_000 });
-    // On success we return to Patrimoine.
+    // Success outcome = we navigate back to Patrimoine, where the new holdings
+    // show. The dialog's own success toast is intentionally NOT asserted: the
+    // navigation unmounts the dialog (and its <p-toast>) immediately, so the
+    // destination page — plus the assets themselves — is the confirmation.
     await expect(page).toHaveURL(/\/pages\/patrimoine(\?|$)/, { timeout: 15_000 });
 
-    // Cleanup: delete the assets this import created.
+    // Verify the assets were really created, then clean them up.
     const token = await accessToken(page);
     if (token) {
         const assets: any[] = await apiGet(page.request, '/assets?limit=500', token);
-        for (const a of assets.filter(a => a.institution === HOLDING_INSTITUTION && HOLDING_NAMES.includes(a.name))) {
-            await apiDelete(page.request, `/assets/${a.id}`, token);
-        }
+        const created = assets.filter(a => a.institution === HOLDING_INSTITUTION && HOLDING_NAMES.includes(a.name));
+        expect(created.length).toBeGreaterThan(0);
+        for (const a of created) await apiDelete(page.request, `/assets/${a.id}`, token);
     }
 });

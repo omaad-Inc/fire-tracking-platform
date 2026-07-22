@@ -56,7 +56,7 @@ interface ReviewRow extends TxnPreviewItem {
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-dialog [(visible)]="visible" [modal]="true" [draggable]="false" [dismissableMask]="true"
+        <p-dialog [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [draggable]="false" [dismissableMask]="true"
                   [style]="{ width: '95vw', maxWidth: '860px' }" [header]="t('transactions.import.title')"
                   styleClass="!rounded-2xl" (onHide)="reset()" data-testid="csv-import-dialog">
 
@@ -92,8 +92,11 @@ interface ReviewRow extends TxnPreviewItem {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.import.file') }}</label>
                         <label class="flex items-center justify-center gap-2 h-24 rounded-xl border-2 border-dashed
-                                      border-surface-300 dark:border-surface-700 cursor-pointer
-                                      hover:border-brand-500 transition-colors text-surface-500 dark:text-surface-400">
+                                      cursor-pointer transition-colors text-surface-500 dark:text-surface-400"
+                               [class]="dragOver()
+                                   ? 'border-brand-500 bg-brand-50/60 dark:bg-brand-900/30'
+                                   : 'border-surface-300 dark:border-surface-700 hover:border-brand-500'"
+                               (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
                             <i class="pi pi-upload"></i>
                             <span>{{ file() ? file()!.name : t('transactions.import.filePlaceholder') }}</span>
                             <input type="file" accept=".csv,text/csv" class="hidden"
@@ -236,7 +239,7 @@ interface ReviewRow extends TxnPreviewItem {
             }
 
             <ng-template #footer>
-                <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="visible = false"></button>
+                <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="visible.set(false)"></button>
                 @if (step() === 'upload') {
                     <button pButton [label]="t('common.next')" [disabled]="!canLeaveUpload()"
                             (click)="goMap()" styleClass="omaad-cta" data-testid="csv-import-next"></button>
@@ -275,7 +278,7 @@ export class CsvImportDialog implements OnInit {
         { label: '1 234,56', value: ',' },
     ];
 
-    visible = false;
+    visible = signal(false);
     step = signal<Step>('upload');
     stepIndex = signal(0);
     amountMode = signal<AmountMode>('single');
@@ -284,6 +287,7 @@ export class CsvImportDialog implements OnInit {
     accountId: number | null = null;
     file = signal<File | null>(null);
     headers = signal<string[]>([]);
+    dragOver = signal(false);
 
     previewing = signal(false);
     parsing = signal(false);
@@ -305,7 +309,7 @@ export class CsvImportDialog implements OnInit {
     open() {
         this.reset();
         this.accountId = this.accounts()[0]?.id ?? null;
-        this.visible = true;
+        this.visible.set(true);
     }
 
     reset() {
@@ -337,7 +341,22 @@ export class CsvImportDialog implements OnInit {
 
     onFile(ev: Event) {
         const input = ev.target as HTMLInputElement;
-        const f = input.files?.[0];
+        this.handleFile(input.files?.[0]);
+    }
+
+    // Drag-and-drop. preventDefault on dragover is REQUIRED for drop to fire;
+    // without it (and on drop) the browser navigates to the dropped file,
+    // unloading the SPA and dropping the in-memory session.
+    onDragOver(ev: DragEvent) { ev.preventDefault(); this.dragOver.set(true); }
+    onDragLeave(ev: DragEvent) { ev.preventDefault(); this.dragOver.set(false); }
+    onDrop(ev: DragEvent) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.dragOver.set(false);
+        this.handleFile(ev.dataTransfer?.files?.[0]);
+    }
+
+    private handleFile(f: File | null | undefined) {
         if (!f) return;
         this.file.set(f);
         this.headers.set([]);
@@ -441,7 +460,7 @@ export class CsvImportDialog implements OnInit {
         }).subscribe({
             next: (res) => {
                 this.committing.set(false);
-                this.visible = false;
+                this.visible.set(false);
                 this.toast.add({
                     severity: 'success',
                     summary: this.t('transactions.import.done', { created: res.created, skipped: res.skipped }),
