@@ -65,59 +65,10 @@
     <meta name="twitter:title" content="Omaad — Patrimoine, épargne et indépendance financière"/>
     <meta name="twitter:description" content="Votre patrimoine, votre épargne et votre objectif FIRE dans une seule application."/>
     <meta name="twitter:image" content="https://omaad.africa/og/omaad-og-1200x630.png"/>
-
-    <!-- Apply the saved theme BEFORE first paint so there is no white/theme
-         flash on cold load. Mirrors LayoutService (localStorage 'omaad-layout-config',
-         '.app-dark' on <html>). Browser-only; a no-op during prerender. -->
-    <script>
-        (function () {
-            try {
-                var raw = localStorage.getItem('omaad-layout-config');
-                var dark = false;
-                if (raw) {
-                    var c = JSON.parse(raw);
-                    if (c.themeMode === 'dark') dark = true;
-                    else if (c.themeMode === 'light') dark = false;
-                    else if (c.themeMode === 'system') dark = matchMedia('(prefers-color-scheme: dark)').matches;
-                    else dark = !!c.darkTheme;
-                }
-                if (dark) document.documentElement.classList.add('app-dark');
-            } catch (e) { /* first visit / storage blocked: default light */ }
-        })();
-    </script>
-
-    <!-- Pre-boot splash: shows instantly (no JS/network) so a mobile PWA cold
-         start or hard refresh never shows a blank white screen. Angular replaces
-         #omaad-splash when it renders into <app-root>. Theme-aware + safe-area. -->
-    <style>
-        :root { --omaad-splash-bg: #ffffff; --omaad-splash-fg: #1A2740; --omaad-splash-accent: #C77B3C; }
-        html.app-dark { --omaad-splash-bg: #0F1A2E; --omaad-splash-fg: #ffffff; }
-        html, body { margin: 0; background: var(--omaad-splash-bg); }
-        #omaad-splash {
-            position: fixed; inset: 0; z-index: 2147483647;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.25rem;
-            background: var(--omaad-splash-bg); color: var(--omaad-splash-fg);
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-        }
-        #omaad-splash .omaad-word { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; }
-        #omaad-splash .omaad-bar { width: 44px; height: 3px; border-radius: 999px; background: rgba(199,123,60,.22); overflow: hidden; }
-        #omaad-splash .omaad-bar::after {
-            content: ''; display: block; height: 100%; width: 40%; border-radius: 999px;
-            background: var(--omaad-splash-accent); animation: omaad-slide 1s ease-in-out infinite;
-        }
-        @keyframes omaad-slide { 0% { transform: translateX(-110%); } 100% { transform: translateX(260%); } }
-        @media (prefers-reduced-motion: reduce) { #omaad-splash .omaad-bar::after { animation: none; width: 100%; } }
-    </style>
 </head>
 
 <body>
-    <app-root>
-        <div id="omaad-splash">
-            <div class="omaad-word">Omaad</div>
-            <div class="omaad-bar" role="progressbar" aria-label="Chargement"></div>
-        </div>
-    </app-root>
+    <app-root></app-root>
     <noscript>
         <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
             <h1>JavaScript requis</h1>
