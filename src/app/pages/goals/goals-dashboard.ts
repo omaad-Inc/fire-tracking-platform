@@ -16,6 +16,7 @@ import { GoalAddDialogComponent, GoalSavePayload } from './components/goal-add-d
 import { FireHeroCardComponent } from './components/fire-hero-card';
 import { SavingsProgress } from './components/goals-progress-chart';
 import { progressPercent } from './goal-utils';
+import { PageHeaderComponent } from '../../core/ui';
 
 @Component({
     selector: 'app-goals-dashboard',
@@ -29,33 +30,25 @@ import { progressPercent } from './goal-utils';
         GoalAddDialogComponent,
         FireHeroCardComponent,
         SavingsProgress,
+        PageHeaderComponent,
     ],
     providers: [MessageService, ConfirmationService],
     template: `
         <div class="flex flex-col gap-6">
             <!-- Header -->
-            <div class="flex items-center justify-between gap-4 flex-wrap">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
-                        <i class="pi pi-flag-fill text-brand-700 dark:text-ochre-400 text-xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-0 m-0">
-                            {{ i18n.t('goals.title') }}
-                        </h1>
-                        <p class="text-surface-500 dark:text-surface-400 text-sm m-0">
-                            {{ i18n.t('goals.subtitle') }}
-                        </p>
-                    </div>
-                </div>
+            <app-page-header
+                icon="pi-flag-fill"
+                [title]="i18n.t('goals.title')"
+                [subtitle]="i18n.t('goals.subtitle')">
                 <p-button
+                    actions
                     *ngIf="!share.active()"
                     icon="pi pi-plus"
                     [label]="i18n.t('goals.add')"
                     (onClick)="openAdd()"
                     styleClass="omaad-cta !rounded-xl"
                 />
-            </div>
+            </app-page-header>
 
             <!-- FIRE hero (lifetime goal, always visible) -->
             <app-fire-hero-card />

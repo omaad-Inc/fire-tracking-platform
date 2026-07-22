@@ -17,7 +17,7 @@ import {
         StatCardComponent, EmptyStateComponent, ChipComponent,
     ],
     template: `
-        <app-page-header eyebrow="Patrimoine" title="Mes actifs" subtitle="Vue d'ensemble">
+        <app-page-header icon="pi-flag-fill" eyebrow="Patrimoine" title="Mes actifs" subtitle="Vue d'ensemble">
             <button actions>Ajouter</button>
         </app-page-header>
         <app-section-header title="Répartition" subtitle="Par catégorie"></app-section-header>
@@ -40,6 +40,8 @@ describe('design-system UI primitives', () => {
         const el: HTMLElement = fixture.nativeElement;
 
         expect(el.querySelector('app-page-header h1')?.textContent).toContain('Mes actifs');
+        // Leading icon medallion renders when `icon` is provided.
+        expect(el.querySelector('app-page-header i.pi-flag-fill')).toBeTruthy();
         expect(el.querySelector('app-section-header h2')?.textContent).toContain('Répartition');
         expect(el.querySelector('app-stat-card')?.textContent).toContain('12 345');
         // Trend renders with a sign.
