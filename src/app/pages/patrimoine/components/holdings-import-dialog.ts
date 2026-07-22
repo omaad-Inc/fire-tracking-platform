@@ -69,8 +69,11 @@ interface HoldingRow extends HoldingPreviewItem {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('addAssets.holdingsImport.file') }}</label>
                         <label class="flex items-center justify-center gap-2 h-24 rounded-xl border-2 border-dashed
-                                      border-surface-300 dark:border-surface-700 cursor-pointer
-                                      hover:border-brand-500 transition-colors text-surface-500 dark:text-surface-400">
+                                      cursor-pointer transition-colors text-surface-500 dark:text-surface-400"
+                               [class]="dragOver()
+                                   ? 'border-brand-500 bg-brand-50/60 dark:bg-brand-900/30'
+                                   : 'border-surface-300 dark:border-surface-700 hover:border-brand-500'"
+                               (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
                             <i class="pi pi-file-pdf"></i>
                             <span>{{ file() ? file()!.name : t('addAssets.holdingsImport.filePlaceholder') }}</span>
                             <input type="file" accept="application/pdf,.pdf" class="hidden"
@@ -189,6 +192,7 @@ export class HoldingsImportDialog {
     currency = 'XOF';
     institution: string | null = null;
     file = signal<File | null>(null);
+    dragOver = signal(false);
 
     parsing = signal(false);
     committing = signal(false);
@@ -220,7 +224,22 @@ export class HoldingsImportDialog {
 
     onFile(ev: Event) {
         const input = ev.target as HTMLInputElement;
-        const f = input.files?.[0];
+        this.handleFile(input.files?.[0]);
+    }
+
+    // Drag-and-drop. preventDefault on dragover is REQUIRED for drop to fire;
+    // without it (and on drop) the browser navigates to the dropped file,
+    // unloading the SPA and dropping the in-memory session.
+    onDragOver(ev: DragEvent) { ev.preventDefault(); this.dragOver.set(true); }
+    onDragLeave(ev: DragEvent) { ev.preventDefault(); this.dragOver.set(false); }
+    onDrop(ev: DragEvent) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.dragOver.set(false);
+        this.handleFile(ev.dataTransfer?.files?.[0]);
+    }
+
+    private handleFile(f: File | null | undefined) {
         if (f) { this.file.set(f); this.parseError.set(null); }
     }
 
