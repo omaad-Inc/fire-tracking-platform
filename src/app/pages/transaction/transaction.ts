@@ -3,14 +3,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TransactionLogs }     from './components/transactionslogs';
 import { TransactionsSummary } from './components/transactionssummary';
 import { RecurringPage }       from '../recurring/recurring';
+import { BudgetPage }          from '../budget/budget';
 import { I18nService }         from '../../i18n/i18n.service';
 
-type TxTab = 'transactions' | 'recurring';
+type TxTab = 'transactions' | 'recurring' | 'budgets';
 
 @Component({
     selector: 'app-transaction-page',
     standalone: true,
-    imports: [TransactionLogs, TransactionsSummary, RecurringPage],
+    imports: [TransactionLogs, TransactionsSummary, RecurringPage, BudgetPage],
     template: `
         <!-- Segmented tabs: recurring lives here (a companion of transactions),
              not as a separate nav destination — works the same on mobile. -->
@@ -24,6 +25,10 @@ type TxTab = 'transactions' | 'recurring';
                         (click)="setTab('recurring')" [class]="tabClass('recurring')">
                     {{ t('menu.recurring') }}
                 </button>
+                <button role="tab" [attr.aria-selected]="tab() === 'budgets'"
+                        (click)="setTab('budgets')" [class]="tabClass('budgets')" data-testid="tab-budgets">
+                    {{ t('menu.budgets') }}
+                </button>
             </div>
         </div>
 
@@ -36,8 +41,10 @@ type TxTab = 'transactions' | 'recurring';
                     <app-transactions-summary [yearMonth]="selectedMonth()" />
                 </div>
             </div>
-        } @else {
+        } @else if (tab() === 'recurring') {
             <app-recurring [embedded]="true" />
+        } @else {
+            <app-budget [embedded]="true" />
         }
     `
 })
@@ -47,7 +54,9 @@ export class Transaction {
     private i18n = inject(I18nService);
     t(key: string): string { return this.i18n.t(key); }
 
-    tab = signal<TxTab>(this.route.snapshot.queryParamMap.get('view') === 'recurring' ? 'recurring' : 'transactions');
+    tab = signal<TxTab>((['recurring', 'budgets'].includes(this.route.snapshot.queryParamMap.get('view') ?? '')
+        ? this.route.snapshot.queryParamMap.get('view')
+        : 'transactions') as TxTab);
 
     selectedMonth = signal(
         (() => {
@@ -61,7 +70,7 @@ export class Transaction {
         // Keep the view deep-linkable / back-consistent without a full navigation.
         this.router.navigate([], {
             relativeTo: this.route,
-            queryParams: { view: tab === 'recurring' ? 'recurring' : null },
+            queryParams: { view: tab === 'transactions' ? null : tab },
             queryParamsHandling: 'merge',
             replaceUrl: true,
         });

@@ -395,6 +395,105 @@ export interface RecurringRuleCreate {
     end_date?: string | null;
 }
 
+// ── Budgets (Sprint 4) ──────────────────────────────────────────────────────
+export type BudgetPeriod = 'monthly';
+
+export interface Budget {
+    id: number;
+    category: TransactionCategory;
+    period: BudgetPeriod;
+    limit_amount: number | null;       // envelope model
+    percent_of_income: number | null;  // flexible model
+    currency: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface BudgetCreate {
+    category: TransactionCategory;
+    period?: BudgetPeriod;
+    limit_amount?: number | null;
+    percent_of_income?: number | null;
+    currency?: string;
+}
+
+export interface BudgetUpdate {
+    limit_amount?: number | null;
+    percent_of_income?: number | null;
+    currency?: string;
+    is_active?: boolean;
+}
+
+export interface BudgetStatus {
+    budget_id: number;
+    category: TransactionCategory;
+    model: 'envelope' | 'flexible';
+    budgeted: number;      // effective cap, EUR base
+    spent: number;         // category spend in the period, EUR base
+    remaining: number;
+    percent_used: number;
+    over_budget: boolean;
+}
+
+export interface BudgetStatusResponse {
+    period: string;        // YYYY-MM
+    total_budgeted: number;
+    total_spent: number;
+    items: BudgetStatus[];
+}
+
+// ── Insights + alerts (Sprint 4) ────────────────────────────────────────────
+export interface CategoryDelta {
+    category: TransactionCategory;
+    amount: number;
+    prev_amount: number;
+    delta: number;
+    delta_pct: number | null;
+}
+
+export interface TrendPoint {
+    period: string;        // YYYY-MM
+    income: number;
+    expenses: number;
+    net: number;
+}
+
+export interface InsightAnomaly {
+    category: TransactionCategory;
+    amount: number;
+    average: number;
+    ratio: number;
+}
+
+export interface InsightsResponse {
+    period: string;
+    income: number;
+    expenses: number;
+    net: number;
+    savings_rate: number;
+    expenses_by_category: CategoryDelta[];
+    trend: TrendPoint[];
+    anomalies: InsightAnomaly[];
+}
+
+export interface FinancialAlert {
+    kind: 'over_budget' | 'near_limit' | 'anomaly';
+    severity: 'high' | 'medium';
+    category: TransactionCategory;
+    spent: number | null;
+    budgeted: number | null;
+    percent_used: number | null;
+    amount: number | null;
+    average: number | null;
+    ratio: number | null;
+}
+
+export interface AlertsResponse {
+    period: string;
+    alerts: FinancialAlert[];
+}
+
 // ── Import pipeline (Sprint 3: CSV -> transactions) ─────────────────────────
 /**
  * Column mapping sent (JSON-encoded) in the `mapping` form field of
@@ -1167,6 +1266,45 @@ export class ApiService {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.post<ImportCommitResult>(
             `${this.apiUrl}/imports/holdings/commit`, req);
+    }
+
+    // ── Budgets (Sprint 4) ──────────────────────────────────────────────────
+    listBudgets(): Observable<Budget[]> {
+        return this.http.get<Budget[]>(`${this.apiUrl}/budgets`);
+    }
+
+    getBudgetStatus(period?: string): Observable<BudgetStatusResponse> {
+        let params = new HttpParams();
+        if (period) params = params.set('period', period);
+        return this.http.get<BudgetStatusResponse>(`${this.apiUrl}/budgets/status`, { params });
+    }
+
+    createBudget(data: BudgetCreate): Observable<Budget> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<Budget>(`${this.apiUrl}/budgets`, data);
+    }
+
+    updateBudget(id: number, data: BudgetUpdate): Observable<Budget> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.patch<Budget>(`${this.apiUrl}/budgets/${id}`, data);
+    }
+
+    deleteBudget(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.delete<void>(`${this.apiUrl}/budgets/${id}`);
+    }
+
+    // ── Insights (Sprint 4) ─────────────────────────────────────────────────
+    getInsights(period?: string, months = 6): Observable<InsightsResponse> {
+        let params = new HttpParams().set('months', months.toString());
+        if (period) params = params.set('period', period);
+        return this.http.get<InsightsResponse>(`${this.apiUrl}/insights`, { params });
+    }
+
+    getFinancialAlerts(period?: string): Observable<AlertsResponse> {
+        let params = new HttpParams();
+        if (period) params = params.set('period', period);
+        return this.http.get<AlertsResponse>(`${this.apiUrl}/insights/alerts`, { params });
     }
 }
 
