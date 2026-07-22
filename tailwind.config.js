@@ -118,11 +118,16 @@ export default {
             },
             // Semantic type scale — tight leading + negative tracking for display sizes.
             // (Additive; standard text-xs…text-7xl still available.)
+            // Landing/hero: display, display-sm. In-app: title (page H1),
+            // heading (section / card group), subheading (card title). eyebrow
+            // is the uppercase label above a title. Body copy uses text-base/sm.
             fontSize: {
                 eyebrow:      ['0.75rem',  { lineHeight: '1',    letterSpacing: '0.08em'  }],
                 'display':    ['3.5rem',   { lineHeight: '1.05', letterSpacing: '-0.025em' }],
                 'display-sm': ['2.75rem',  { lineHeight: '1.1',  letterSpacing: '-0.02em' }],
                 title:        ['2rem',     { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+                heading:      ['1.5rem',   { lineHeight: '1.25', letterSpacing: '-0.015em' }],
+                subheading:   ['1.25rem',  { lineHeight: '1.3',  letterSpacing: '-0.01em' }],
             },
             // Named motion curves so transitions feel intentional & consistent.
             transitionTimingFunction: {

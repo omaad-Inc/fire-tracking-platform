@@ -12,6 +12,7 @@ import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
+import { SectionHeaderComponent } from '../../core/ui';
 
 interface CategoryGroupCard {
     id: string;
@@ -45,7 +46,7 @@ const GROUPS = [
 @Component({
     selector: 'app-patrimoine',
     standalone: true,
-    imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent, LoadErrorComponent],
+    imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent, LoadErrorComponent, SectionHeaderComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
 
@@ -144,14 +145,13 @@ const GROUPS = [
 
             <!-- Actifs section -->
             <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('patrimoine.assets.title') }}</h2>
+                <app-section-header [title]="i18n.t('patrimoine.assets.title')">
                     @if (!loadingGroups()) {
-                        <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                        <span actions class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                             <app-amount [value]="totalAssets()" />
                         </span>
                     }
-                </div>
+                </app-section-header>
 
                 @if (loadingGroups()) {
                     <div class="space-y-3">
@@ -219,14 +219,13 @@ const GROUPS = [
 
             <!-- Passifs section -->
             <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('patrimoine.liabilities') }}</h2>
+                <app-section-header [title]="i18n.t('patrimoine.liabilities')">
                     @if (!loadingDebts() && totalDebts() > 0) {
-                        <span class="text-negative text-sm font-medium">
+                        <span actions class="text-negative text-sm font-medium">
                             <app-amount [value]="totalDebts()" prefix="-" />
                         </span>
                     }
-                </div>
+                </app-section-header>
 
                 @if (loadingDebts()) {
                     <div class="h-[76px] bg-surface-200 dark:bg-surface-700 rounded-2xl animate-pulse"></div>
