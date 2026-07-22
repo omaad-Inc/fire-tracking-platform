@@ -356,6 +356,45 @@ export interface LiquidAsset {
     institution: string | null;
 }
 
+// ── Recurring rules (Sprint 3) ──────────────────────────────────────────────
+export type RecurringFrequency = 'weekly' | 'monthly' | 'yearly';
+
+export interface RecurringRule {
+    id: number;
+    owner_id: number;
+    type: TransactionType;
+    category: TransactionCategory;
+    amount: number;
+    currency: string;
+    description: string | null;
+    merchant: string | null;
+    account_id: number | null;
+    from_account_id: number | null;
+    to_account_id: number | null;
+    frequency: RecurringFrequency;
+    interval: number;
+    start_date: string;
+    next_run_date: string;
+    end_date: string | null;
+    last_run_date: string | null;
+    is_active: boolean;
+}
+
+export interface RecurringRuleCreate {
+    type: TransactionType;
+    category: TransactionCategory;
+    amount: number;
+    currency: string;
+    description?: string | null;
+    account_id?: number | null;
+    from_account_id?: number | null;
+    to_account_id?: number | null;
+    frequency: RecurringFrequency;
+    interval?: number;
+    start_date: string;
+    end_date?: string | null;
+}
+
 // ============================================
 // DEBT INTERFACES
 // ============================================
@@ -961,6 +1000,27 @@ export class ApiService {
     syncBrokerConnection(id: number): Observable<BrokerConnection> {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}/sync`, {});
+    }
+
+    // ── Recurring rules (Sprint 3) ──────────────────────────────────────────
+    listRecurringRules(): Observable<RecurringRule[]> {
+        return this.http.get<RecurringRule[]>(`${this.apiUrl}/recurring`);
+    }
+
+    createRecurringRule(data: RecurringRuleCreate): Observable<RecurringRule> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<RecurringRule>(`${this.apiUrl}/recurring`, data);
+    }
+
+    deleteRecurringRule(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.delete<void>(`${this.apiUrl}/recurring/${id}`);
+    }
+
+    /** Materialize any due transactions for the current user (idempotent). */
+    runRecurring(): Observable<{ created: number }> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<{ created: number }>(`${this.apiUrl}/recurring/run`, {});
     }
 }
 

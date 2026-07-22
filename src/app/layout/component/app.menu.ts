@@ -65,6 +65,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-arrow-right-arrow-left',
                         routerLink: this.link('pages', 'transaction')
                     },
+                    {
+                        label: this.t('menu.recurring'),
+                        icon: 'pi pi-fw pi-sync',
+                        routerLink: this.link('pages', 'recurring')
+                    },
                 ]
             },
             // Separator
