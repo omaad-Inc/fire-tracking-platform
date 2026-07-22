@@ -7,6 +7,7 @@ import { DebtsOverview } from './components/debtsoverviewwidget';
 import { TopMoversWidget } from './components/topmoverswidget';
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
+import { AlertsWidget } from './components/alertswidget';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
 import { TransactionsService } from '../service/transactions.service';
@@ -18,12 +19,16 @@ import { I18nService } from '../../i18n/i18n.service';
     standalone: true,
     imports: [
         CommonModule, StatsWidget, SavingsProgress, DebtsOverview,
-        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
+        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent,
+        AlertsWidget
     ],
     template: `
         <!-- One <h1> per page for a correct heading hierarchy; visually hidden
              since the KPI cards carry the visible titles (P2-A11Y-2). -->
         <h1 class="sr-only">{{ t('dashboard.pageTitle') }}</h1>
+
+        <!-- Attention feed: budget/insight alerts (renders only when there's something to flag) -->
+        <app-alerts-widget />
 
         <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {
