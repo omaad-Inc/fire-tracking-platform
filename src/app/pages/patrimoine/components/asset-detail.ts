@@ -67,6 +67,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                 <div *ngIf="!share.active()" class="flex items-center gap-1.5 shrink-0">
                     <button pButton icon="pi pi-pencil" severity="secondary"
                             [outlined]="true" size="small" (click)="editAsset()"
+                            data-testid="asset-edit-btn"
                             class="!w-9 !h-9 !p-0"></button>
                     <button pButton icon="pi pi-trash" severity="danger"
                             [outlined]="true" size="small" (click)="confirmDelete()"
@@ -562,6 +563,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.assetName') }}</label>
                         <input pInputText [(ngModel)]="editForm.name"
                                [placeholder]="t('assetDetail.assetName')"
+                               data-testid="asset-name-input"
                                class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
 
@@ -831,6 +833,7 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
                     <p-button [label]="t('common.save')" icon="pi pi-check"
                               [loading]="isSaving()"
                               (click)="saveEdit()"
+                              data-testid="asset-save-btn"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
                     <p-button [label]="t('common.cancel')" icon="pi pi-times" [outlined]="true"
                               (click)="editDialog = false"
