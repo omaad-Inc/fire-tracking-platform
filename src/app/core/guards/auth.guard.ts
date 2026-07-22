@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
-import { map, catchError, of, timeout } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { TokenService } from '../services/token.service';
 import { AuthService } from '../services/auth.service';
 import { ShareContextService } from '../services/share-context.service';
@@ -27,10 +27,7 @@ export const authGuard: CanActivateFn = (route, state) => {
     // P4-SEC-1: no in-memory access token (cold load / hard reload). The token
     // is never in localStorage anymore, so try to restore the session from the
     // httpOnly refresh cookie before bouncing to login.
-    // Cap the cold-load refresh so a slow/dead mobile network can't hang the
-    // boot behind the splash — bounce to login instead of an endless spinner.
     return authService.refreshToken().pipe(
-        timeout(8000),
         map(res => (res?.access_token ? true : loginTree)),
         catchError(() => of(loginTree)),
     );

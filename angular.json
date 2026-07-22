@@ -67,7 +67,7 @@
                                 "fonts": true,
                                 "styles": {
                                     "minify": true,
-                                    "inlineCritical": true
+                                    "inlineCritical": false
                                 }
                             },
                             "fileReplacements": [
