@@ -158,9 +158,9 @@ import { I18nService } from '../../i18n/i18n.service';
                             <p-checkbox [(ngModel)]="acceptTerms" [binary]="true" inputId="terms" name="terms" [disabled]="isLoading()"></p-checkbox>
                             <label for="terms" class="text-surface-600 dark:text-surface-400 text-sm leading-relaxed cursor-pointer">
                                 {{ t('auth.register.acceptPre') }}
-                                <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.terms') }}</a>
+                                <a [routerLink]="[currentLang, 'legal', 'terms']" target="_blank" class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.terms') }}</a>
                                 {{ t('auth.register.and') }}
-                                <a class="text-brand-700 dark:text-brand-300 dark:text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.privacy') }}</a>
+                                <a [routerLink]="[currentLang, 'legal', 'privacy']" target="_blank" class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.privacy') }}</a>
                             </label>
                         </div>
 
