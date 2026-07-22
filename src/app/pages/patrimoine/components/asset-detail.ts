@@ -1,17 +1,11 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DatePickerModule } from 'primeng/datepicker';
-import { SelectModule } from 'primeng/select';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset } from '../../../core/services/api.service';
@@ -22,14 +16,15 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { TontineCyclesComponent } from './tontine-cycles';
-import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatus } from '../asset-form-shape';
+import { AssetFormShape, getAssetFormShape, TontineStatus } from '../asset-form-shape';
+import { AssetEditDialogComponent, AssetEditForm } from './asset-edit-dialog';
 
 @Component({
     selector: 'app-asset-detail',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, TagModule, DividerModule,
-              ConfirmDialogModule, ToastModule, DialogModule, InputTextModule, InputNumberModule,
-              DatePickerModule, SelectModule, AppAmountComponent, TontineCyclesComponent],
+    imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule,
+              ConfirmDialogModule, ToastModule, AppAmountComponent, TontineCyclesComponent,
+              AssetEditDialogComponent],
     providers: [ConfirmationService, MessageService],
     template: `
         <p-toast position="top-center" />
@@ -540,307 +535,16 @@ import { AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatu
             </div>
         }
 
-        <!-- ── Edit dialog ── -->
-        <p-dialog [(visible)]="editDialog"
-                  [style]="{ width: '95vw', maxWidth: '680px' }"
-                  [modal]="true" [draggable]="false" [resizable]="false"
-                  styleClass="!rounded-2xl overflow-hidden">
-            <ng-template #header>
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-100 dark:bg-brand-700/20">
-                        <i [class]="categoryIcon()" class="text-brand-700 dark:text-ochre-400"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('assetDetail.editAsset') }}</h3>
-                        <p class="text-surface-500 text-sm m-0">{{ categoryLabel() }}</p>
-                    </div>
-                </div>
-            </ng-template>
-            <ng-template #content>
-                <div class="space-y-6 pt-2">
-                    <!-- Name (shared across all shapes) -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.assetName') }}</label>
-                        <input pInputText [(ngModel)]="editForm.name"
-                               [placeholder]="t('assetDetail.assetName')"
-                               data-testid="asset-name-input"
-                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                    </div>
-
-                    @switch (formShape()) {
-                        <!-- ─────────────── TONTINE ─────────────── -->
-                        @case ('TONTINE') {
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.monthlyContribution') }} <span class="text-negative">*</span></label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.tontineMonthlyContribution"
-                                                       [min]="0" [maxFractionDigits]="0"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.numberOfParticipants') }} <span class="text-negative">*</span></label>
-                                    <p-inputnumber [(ngModel)]="editForm.tontineParticipants"
-                                                   [min]="2" [max]="100"
-                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.startDate') }} <span class="text-negative">*</span></label>
-                                    <p-datepicker [(ngModel)]="editForm.tontineStartDate"
-                                                  [showIcon]="true" [showButtonBar]="true"
-                                                  dateFormat="dd/mm/yy" styleClass="w-full"
-                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.payoutDate') }}</label>
-                                    <p-datepicker [(ngModel)]="editForm.tontineCollectionDate"
-                                                  [showIcon]="true" [showButtonBar]="true"
-                                                  dateFormat="dd/mm/yy" styleClass="w-full"
-                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.status') }}</label>
-                                    <p-select [(ngModel)]="editForm.tontineStatus"
-                                              [options]="tontineStatusOptions"
-                                              optionLabel="label" optionValue="value"
-                                              styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.frequency') }}</label>
-                                    <p-select [(ngModel)]="editForm.tontineFrequency"
-                                              [options]="tontineFrequencyOptions"
-                                              optionLabel="label" optionValue="value"
-                                              styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
-                                </div>
-                            </div>
-
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.accumulatedValue') }} <span class="text-negative">*</span></label>
-                                <div class="relative">
-                                    <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                                   [min]="0" [maxFractionDigits]="2"
-                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                </div>
-                            </div>
-                        }
-
-                        <!-- ─────────────── MOBILE MONEY ─────────────── -->
-                        @case ('MOBILE_MONEY') {
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.provider') }} <span class="text-negative">*</span></label>
-                                    <p-select [(ngModel)]="editForm.mobileMoneyOperator"
-                                              [options]="mobileMoneyOperatorOptions"
-                                              optionLabel="label" optionValue="value"
-                                              [placeholder]="t('assetDetail.selectProvider')"
-                                              styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.currentBalance') }} <span class="text-negative">*</span></label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                        <!-- ─────────────── SIMPLE BALANCE (cash, livret) ─────────────── -->
-                        @case ('SIMPLE_BALANCE') {
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.institution') }}</label>
-                                    <input pInputText [(ngModel)]="editForm.institution"
-                                           [placeholder]="t('assetDetail.bankSavingsPh')"
-                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.currentBalance') }} <span class="text-negative">*</span></label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                        <!-- ─────────────── QUANTITY-BASED (stocks, bonds, crypto, commodities) ─────────────── -->
-                        @case ('QUANTITY_BASED') {
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.institutionBroker') }}</label>
-                                    <input pInputText [(ngModel)]="editForm.institution"
-                                           [placeholder]="t('assetDetail.brokerPlatformPh')"
-                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.quantity') }}</label>
-                                    <p-inputnumber [(ngModel)]="editForm.quantity"
-                                                   [min]="0" [maxFractionDigits]="6"
-                                                   [placeholder]="t('assetDetail.qtyPh')"
-                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.currentValue') }} <span class="text-negative">*</span></label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchasePrice') }}</label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchaseDate') }}</label>
-                                <p-datepicker [(ngModel)]="editForm.purchaseDate"
-                                              [showIcon]="true" [showButtonBar]="true"
-                                              dateFormat="dd/mm/yy" styleClass="w-full"
-                                              inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                            </div>
-                            @if ((editForm.quantity ?? 0) > 0 && editForm.currentValue > 0) {
-                                <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                    <span class="text-surface-500 text-sm">{{ t('assetDetail.currentUnitPrice') }}</span>
-                                    <span class="text-brand-700 dark:text-brand-300 font-semibold">
-                                        {{ editForm.currentValue / editForm.quantity! | number:'1.2-2' }} {{ assetSymbol() }}/part
-                                    </span>
-                                </div>
-                            }
-                        }
-
-                        <!-- ─────────────── REAL ESTATE ─────────────── -->
-                        @case ('REAL_ESTATE') {
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.currentValue') }} <span class="text-negative">*</span></label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchasePrice') }}</label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchaseDate') }}</label>
-                                    <p-datepicker [(ngModel)]="editForm.purchaseDate"
-                                                  [showIcon]="true" [showButtonBar]="true"
-                                                  dateFormat="dd/mm/yy" styleClass="w-full"
-                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.areaM2') }}</label>
-                                    <p-inputnumber [(ngModel)]="editForm.surfaceM2"
-                                                   [min]="0" [maxFractionDigits]="1" suffix=" m²"
-                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.rentalIncomeMo') }}</label>
-                                <div class="relative">
-                                    <p-inputnumber [(ngModel)]="editForm.rentalIncome"
-                                                   [min]="0" [maxFractionDigits]="2"
-                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}/mois</span>
-                                </div>
-                            </div>
-                            @if ((editForm.surfaceM2 ?? 0) > 0 && editForm.currentValue > 0) {
-                                <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                    <span class="text-surface-500 text-sm">{{ t('assetDetail.currentPricePerM2') }}</span>
-                                    <span class="text-brand-700 dark:text-brand-300 font-semibold">
-                                        {{ editForm.currentValue / editForm.surfaceM2! | number:'1.0-0' }} {{ assetSymbol() }}/m²
-                                    </span>
-                                </div>
-                            }
-                        }
-
-                        <!-- ─────────────── TOTAL VALUE (retirement, life ins., business, vehicle, collectibles, other) ─────────────── -->
-                        @default {
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.currentValue') }} <span class="text-negative">*</span></label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.currentValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchasePrice') }}</label>
-                                    <div class="relative">
-                                        <p-inputnumber [(ngModel)]="editForm.purchaseValue"
-                                                       [min]="0" [maxFractionDigits]="2"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                        <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ assetSymbol() }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchaseDate') }}</label>
-                                    <p-datepicker [(ngModel)]="editForm.purchaseDate"
-                                                  [showIcon]="true" [showButtonBar]="true"
-                                                  dateFormat="dd/mm/yy" styleClass="w-full"
-                                                  inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                                <div class="flex flex-col gap-1.5">
-                                    <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.institution') }}</label>
-                                    <input pInputText [(ngModel)]="editForm.institution"
-                                           [placeholder]="t('assetDetail.companyPh')"
-                                           class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-            </ng-template>
-            <ng-template #footer>
-                <div class="flex flex-col gap-2 pt-2 w-full">
-                    <p-button [label]="t('common.save')" icon="pi pi-check"
-                              [loading]="isSaving()"
-                              (click)="saveEdit()"
-                              data-testid="asset-save-btn"
-                              styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button [label]="t('common.cancel')" icon="pi pi-times" [outlined]="true"
-                              (click)="editDialog = false"
-                              styleClass="w-full !rounded-full !py-3" />
-                </div>
-            </ng-template>
-        </p-dialog>
+        <!-- Edit dialog — extracted to app-asset-edit-dialog (Sprint 2 split) -->
+        <app-asset-edit-dialog
+            [asset]="asset()"
+            [(visible)]="editDialog"
+            [form]="editForm"
+            [saving]="isSaving()"
+            [assetSymbol]="assetSymbol()"
+            [categoryIcon]="categoryIcon()"
+            [categoryLabel]="categoryLabel()"
+            (save)="saveEdit()" />
     `,
     styles: [`
         :host { display: block; }
@@ -932,7 +636,7 @@ export class AssetDetailPage implements OnInit {
         const c = (this.asset()?.currency || 'EUR').toUpperCase();
         return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
     }
-    editForm = {
+    editForm: AssetEditForm = {
         name: '',
         currentValue: 0,
         purchaseValue: <number|null>null,
@@ -960,23 +664,6 @@ export class AssetDetailPage implements OnInit {
         const cat = this.asset()?.category;
         return cat ? getAssetFormShape(cat) : 'TOTAL_VALUE';
     });
-
-    get tontineStatusOptions() {
-        return [
-            { value: 'en_cours',   label: this.t('assetDetail.tontineStatusInProgress') },
-            { value: 'mise_recue', label: this.t('assetDetail.tontineStatusReceived') },
-            { value: 'termine',    label: this.t('assetDetail.tontineStatusCompleted') },
-        ];
-    }
-
-    get tontineFrequencyOptions() {
-        return [
-            { value: 'monthly', label: this.t('assetDetail.freqMonthly') },
-            { value: 'weekly',  label: this.t('assetDetail.freqWeekly') },
-        ];
-    }
-
-    readonly mobileMoneyOperatorOptions = MOBILE_MONEY_OPERATORS.map(o => ({ value: o, label: o }));
 
     /**
      * Read quantity from asset.quantity (new schema) OR from asset.notes JSON
