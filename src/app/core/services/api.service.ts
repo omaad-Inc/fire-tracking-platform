@@ -356,6 +356,140 @@ export interface LiquidAsset {
     institution: string | null;
 }
 
+// ── Recurring rules (Sprint 3) ──────────────────────────────────────────────
+export type RecurringFrequency = 'weekly' | 'monthly' | 'yearly';
+
+export interface RecurringRule {
+    id: number;
+    owner_id: number;
+    type: TransactionType;
+    category: TransactionCategory;
+    amount: number;
+    currency: string;
+    description: string | null;
+    merchant: string | null;
+    account_id: number | null;
+    from_account_id: number | null;
+    to_account_id: number | null;
+    frequency: RecurringFrequency;
+    interval: number;
+    start_date: string;
+    next_run_date: string;
+    end_date: string | null;
+    last_run_date: string | null;
+    is_active: boolean;
+}
+
+export interface RecurringRuleCreate {
+    type: TransactionType;
+    category: TransactionCategory;
+    amount: number;
+    currency: string;
+    description?: string | null;
+    account_id?: number | null;
+    from_account_id?: number | null;
+    to_account_id?: number | null;
+    frequency: RecurringFrequency;
+    interval?: number;
+    start_date: string;
+    end_date?: string | null;
+}
+
+// ── Import pipeline (Sprint 3: CSV -> transactions) ─────────────────────────
+/**
+ * Column mapping sent (JSON-encoded) in the `mapping` form field of
+ * POST /imports/transactions/parse. Mirrors the backend `ColumnMapping`
+ * dataclass: a single signed `amount` column OR a split `debit`/`credit` pair.
+ */
+export interface ColumnMapping {
+    date: string;
+    description: string;
+    amount?: string | null;            // single signed-amount column...
+    debit?: string | null;             // ...OR a split debit/credit pair
+    credit?: string | null;
+    currency?: string | null;          // column holding a currency code
+    reference?: string | null;         // column holding a bank reference
+    date_format?: string | null;       // explicit strptime; else auto-detect
+    decimal?: string;                  // decimal separator (default ".")
+    default_currency?: string;         // fallback currency (default "EUR")
+    expense_is_negative?: boolean;     // sign convention for a single amount col
+    delimiter?: string | null;         // override the sniffed delimiter
+}
+
+export interface ColumnsPreviewResponse {
+    headers: string[];
+    sample_rows: Record<string, unknown>[];
+}
+
+export interface TxnPreviewItem {
+    date: string;                      // ISO YYYY-MM-DD
+    amount: number;
+    type: TransactionType;
+    category: TransactionCategory;
+    currency: string;
+    description: string;
+    external_ref: string | null;
+    import_ref: string;
+    is_duplicate: boolean;             // already imported (same import_ref) — skipped
+    possible_duplicate: boolean;       // may match a hand-entered row — soft warning
+}
+
+export interface TxnPreviewResponse {
+    items: TxnPreviewItem[];
+    total: number;
+    duplicates: number;
+}
+
+export interface TxnCommitItem {
+    date: string;                      // ISO YYYY-MM-DD
+    amount: number;                    // must be > 0
+    type: TransactionType;
+    category: TransactionCategory;
+    currency?: string;                 // strict ISO code (default "EUR")
+    description?: string | null;
+    import_ref?: string | null;
+}
+
+export interface TxnCommitRequest {
+    account_id: number;                // the monetary account this statement belongs to
+    items: TxnCommitItem[];
+}
+
+export interface ImportCommitResult {
+    created: number;
+    skipped: number;
+}
+
+// ── Import pipeline (Sprint 3: broker PDF -> holdings/assets) ────────────────
+export interface HoldingPreviewItem {
+    name: string;
+    category: AssetCategory;
+    current_value: number;
+    currency: string;
+    quantity: number | null;
+    purchase_value: number | null;
+    institution: string | null;
+}
+
+export interface HoldingsPreviewResponse {
+    holdings: HoldingPreviewItem[];
+    text: string;                      // raw extracted text (truncated) for manual review
+}
+
+export interface HoldingCommitItem {
+    name: string;
+    category: AssetCategory;
+    current_value: number;             // must be >= 0
+    currency?: string;                 // strict ISO code (default "XOF")
+    quantity?: number | null;
+    purchase_value?: number | null;    // >= 0 when present
+    institution?: string | null;
+}
+
+export interface HoldingCommitRequest {
+    items: HoldingCommitItem[];
+}
+
 // ============================================
 // DEBT INTERFACES
 // ============================================
@@ -961,6 +1095,78 @@ export class ApiService {
     syncBrokerConnection(id: number): Observable<BrokerConnection> {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.post<BrokerConnection>(`${this.apiUrl}/broker/connections/${id}/sync`, {});
+    }
+
+    // ── Recurring rules (Sprint 3) ──────────────────────────────────────────
+    listRecurringRules(): Observable<RecurringRule[]> {
+        return this.http.get<RecurringRule[]>(`${this.apiUrl}/recurring`);
+    }
+
+    createRecurringRule(data: RecurringRuleCreate): Observable<RecurringRule> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<RecurringRule>(`${this.apiUrl}/recurring`, data);
+    }
+
+    deleteRecurringRule(id: number): Observable<void> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.delete<void>(`${this.apiUrl}/recurring/${id}`);
+    }
+
+    /** Materialize any due transactions for the current user (idempotent). */
+    runRecurring(): Observable<{ created: number }> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<{ created: number }>(`${this.apiUrl}/recurring/run`, {});
+    }
+
+    // ── Import pipeline (Sprint 3) ──────────────────────────────────────────
+    /** Upload a CSV and get back its headers + a few sample rows to build a mapping. */
+    previewImportColumns(file: File): Observable<ColumnsPreviewResponse> {
+        if (this.share.active()) return this.readonlyBlock;
+        const fd = new FormData();
+        fd.append('file', file);
+        return this.http.post<ColumnsPreviewResponse>(
+            `${this.apiUrl}/imports/transactions/preview-columns`, fd);
+    }
+
+    /**
+     * Parse a CSV into a dedup-flagged, categorized preview (nothing is written).
+     * `mapping` is JSON-encoded into the `mapping` form field, matching the backend.
+     */
+    parseImportTransactions(file: File, mapping: ColumnMapping): Observable<TxnPreviewResponse> {
+        if (this.share.active()) return this.readonlyBlock;
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('mapping', JSON.stringify(mapping));
+        return this.http.post<TxnPreviewResponse>(
+            `${this.apiUrl}/imports/transactions/parse`, fd);
+    }
+
+    /** Commit reviewed rows to a monetary account (idempotent: dedup via import_ref). */
+    commitImportTransactions(req: TxnCommitRequest): Observable<ImportCommitResult> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<ImportCommitResult>(
+            `${this.apiUrl}/imports/transactions/commit`, req);
+    }
+
+    /**
+     * Parse a broker PDF into a preview of holdings plus the raw extracted text
+     * (fallback for manual entry). Nothing is written.
+     */
+    parseImportHoldings(file: File, currency = 'XOF', institution?: string | null): Observable<HoldingsPreviewResponse> {
+        if (this.share.active()) return this.readonlyBlock;
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('currency', currency);
+        if (institution) fd.append('institution', institution);
+        return this.http.post<HoldingsPreviewResponse>(
+            `${this.apiUrl}/imports/holdings/parse`, fd);
+    }
+
+    /** Commit reviewed holdings as new assets. */
+    commitImportHoldings(req: HoldingCommitRequest): Observable<ImportCommitResult> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<ImportCommitResult>(
+            `${this.apiUrl}/imports/holdings/commit`, req);
     }
 }
 
