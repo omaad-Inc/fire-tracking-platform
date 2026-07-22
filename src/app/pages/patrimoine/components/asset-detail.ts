@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -26,6 +26,7 @@ import { AssetEditDialogComponent, AssetEditForm } from './asset-edit-dialog';
               ConfirmDialogModule, ToastModule, AppAmountComponent, TontineCyclesComponent,
               AssetEditDialogComponent],
     providers: [ConfirmationService, MessageService],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <p-toast position="top-center" />
         <p-confirmdialog />

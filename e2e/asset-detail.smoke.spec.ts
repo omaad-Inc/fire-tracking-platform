@@ -31,6 +31,10 @@ test('asset edit flow: open → change name → save → persists', async ({ pag
 
     await page.goto(`/${LANG}/pages/patrimoine/assets/${ASSET_ID}`);
 
+    // Read-only render: the header name and at least one formatted amount show.
+    await expect(page.locator('h1')).not.toBeEmpty();
+    await expect(page.locator('app-amount').first()).toBeVisible();
+
     const editBtn = page.getByTestId('asset-edit-btn');
     await expect(editBtn).toBeVisible();
     await editBtn.click();
@@ -54,4 +58,17 @@ test('asset edit flow: open → change name → save → persists', async ({ pag
     await page.getByTestId('asset-name-input').fill(original);
     await page.getByTestId('asset-save-btn').locator('button').click();
     await expect(page.locator('h1')).toContainText(original);
+});
+
+test('money pages render (patrimoine + goals) after OnPush', async ({ page }) => {
+    await login(page);
+
+    await page.goto(`/${LANG}/pages/patrimoine`);
+    // Adopted section headers + at least one formatted amount render.
+    await expect(page.locator('app-section-header').first()).toBeVisible();
+    await expect(page.locator('app-amount').first()).toBeVisible();
+
+    await page.goto(`/${LANG}/pages/goals`);
+    // Adopted page header renders with a non-empty title.
+    await expect(page.locator('app-page-header h1')).not.toBeEmpty();
 });
