@@ -45,7 +45,7 @@ interface HoldingRow extends HoldingPreviewItem {
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-dialog [(visible)]="visible" [modal]="true" [draggable]="false" [dismissableMask]="true"
+        <p-dialog [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [draggable]="false" [dismissableMask]="true"
                   [style]="{ width: '95vw', maxWidth: '880px' }" [header]="t('addAssets.holdingsImport.title')"
                   styleClass="!rounded-2xl" (onHide)="reset()" data-testid="holdings-import-dialog">
 
@@ -154,7 +154,7 @@ interface HoldingRow extends HoldingPreviewItem {
             }
 
             <ng-template #footer>
-                <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="visible = false"></button>
+                <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="visible.set(false)"></button>
                 @if (step() === 'upload') {
                     <button pButton [label]="t('addAssets.holdingsImport.parse')" [loading]="parsing()" [disabled]="!file()"
                             (click)="parse()" styleClass="omaad-cta" data-testid="holdings-import-parse"></button>
@@ -183,7 +183,7 @@ export class HoldingsImportDialog {
         { label: 'Dollar ($)', value: 'USD' },
     ];
 
-    visible = false;
+    visible = signal(false);
     step = signal<Step>('upload');
 
     currency = 'XOF';
@@ -201,7 +201,7 @@ export class HoldingsImportDialog {
         this.reset();
         this.currency = currency;
         this.institution = institution ?? null;
-        this.visible = true;
+        this.visible.set(true);
     }
 
     reset() {
@@ -283,7 +283,7 @@ export class HoldingsImportDialog {
         }).subscribe({
             next: (res) => {
                 this.committing.set(false);
-                this.visible = false;
+                this.visible.set(false);
                 this.toast.add({ severity: 'success', summary: this.t('addAssets.holdingsImport.done', { created: res.created }) });
                 this.imported.emit(res.created);
             },

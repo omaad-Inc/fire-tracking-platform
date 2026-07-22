@@ -70,7 +70,7 @@ test('CSV import: upload -> map -> parse -> review -> commit', async ({ page }) 
     await page.goto(`/${LANG}/pages/transaction`);
 
     await page.getByTestId('csv-import-open').click();
-    await expect(page.getByTestId('csv-import-dialog')).toBeVisible();
+    await expect(page.getByTestId('csv-import-account')).toBeVisible();
 
     // Pick the target monetary account (seeded demo has liquid accounts).
     await pickFirstOption(page, 'csv-import-account');
@@ -99,7 +99,7 @@ test('CSV import: upload -> map -> parse -> review -> commit', async ({ page }) 
 
     await page.getByTestId('csv-import-commit').click();
     await expect(successToast(page)).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('csv-import-dialog')).toBeHidden();
+    await expect(page.getByTestId('csv-import-commit')).toBeHidden();
 
     // Cleanup: remove the two imported transactions so demo data stays pristine.
     const token = await accessToken(page);
@@ -142,7 +142,7 @@ test('Holdings import: upload PDF -> parse -> review -> commit', async ({ page }
     await page.goto(`/${LANG}/pages/patrimoine/connect-broker?market=brvm`);
 
     await page.getByTestId('holdings-import-open').click();
-    await expect(page.getByTestId('holdings-import-dialog')).toBeVisible();
+    await expect(page.getByTestId('holdings-import-institution')).toBeVisible();
 
     // Tag the institution so cleanup can find exactly these assets.
     await page.getByTestId('holdings-import-institution').fill(HOLDING_INSTITUTION);

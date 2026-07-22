@@ -56,7 +56,7 @@ interface ReviewRow extends TxnPreviewItem {
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-dialog [(visible)]="visible" [modal]="true" [draggable]="false" [dismissableMask]="true"
+        <p-dialog [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [draggable]="false" [dismissableMask]="true"
                   [style]="{ width: '95vw', maxWidth: '860px' }" [header]="t('transactions.import.title')"
                   styleClass="!rounded-2xl" (onHide)="reset()" data-testid="csv-import-dialog">
 
@@ -236,7 +236,7 @@ interface ReviewRow extends TxnPreviewItem {
             }
 
             <ng-template #footer>
-                <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="visible = false"></button>
+                <button pButton [label]="t('common.cancel')" [outlined]="true" (click)="visible.set(false)"></button>
                 @if (step() === 'upload') {
                     <button pButton [label]="t('common.next')" [disabled]="!canLeaveUpload()"
                             (click)="goMap()" styleClass="omaad-cta" data-testid="csv-import-next"></button>
@@ -275,7 +275,7 @@ export class CsvImportDialog implements OnInit {
         { label: '1 234,56', value: ',' },
     ];
 
-    visible = false;
+    visible = signal(false);
     step = signal<Step>('upload');
     stepIndex = signal(0);
     amountMode = signal<AmountMode>('single');
@@ -305,7 +305,7 @@ export class CsvImportDialog implements OnInit {
     open() {
         this.reset();
         this.accountId = this.accounts()[0]?.id ?? null;
-        this.visible = true;
+        this.visible.set(true);
     }
 
     reset() {
@@ -441,7 +441,7 @@ export class CsvImportDialog implements OnInit {
         }).subscribe({
             next: (res) => {
                 this.committing.set(false);
-                this.visible = false;
+                this.visible.set(false);
                 this.toast.add({
                     severity: 'success',
                     summary: this.t('transactions.import.done', { created: res.created, skipped: res.skipped }),
