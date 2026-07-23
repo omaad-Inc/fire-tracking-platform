@@ -268,6 +268,7 @@ export const EN: Dict = {
     fireSection: 'Goal',
     financialGoal: 'Financial Goal',
     myGoals: 'My Goals',
+    objectives: 'Goals',
     fire: 'FIRE',
     wealthScore: 'Wealth Score',
     more: 'More',

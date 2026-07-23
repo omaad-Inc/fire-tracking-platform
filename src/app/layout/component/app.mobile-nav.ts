@@ -33,26 +33,27 @@ import { filter } from 'rxjs/operators';
             <a
                 *ngFor="let item of navItems"
                 [routerLink]="item.route"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: item.route.length <= 2 }"
                 class="nav-item"
+                [class.active]="isItemActive(item)"
             >
-                <div class="nav-icon-wrapper" [class.active]="isActive(item.route)">
+                <div class="nav-icon-wrapper" [class.active]="isItemActive(item)">
                     <i [class]="item.icon"></i>
                 </div>
                 <span class="nav-label">{{ item.label }}</span>
                 <!-- Active dot indicator -->
-                <span class="nav-dot" [class.active]="isActive(item.route)"></span>
+                <span class="nav-dot" [class.active]="isItemActive(item)"></span>
             </a>
-            <!-- More: opens the secondary-destinations sheet -->
-            <button type="button" class="nav-item" (click)="toggleMore()"
-                    [attr.aria-expanded]="moreOpen" [attr.aria-label]="t('menu.more')">
-                <div class="nav-icon-wrapper" [class.active]="moreOpen || moreActive()">
-                    <i class="pi pi-ellipsis-h"></i>
-                </div>
-                <span class="nav-label">{{ t('menu.more') }}</span>
-                <span class="nav-dot" [class.active]="moreActive()"></span>
-            </button>
+            <!-- More: only when there are secondary destinations that don't fit the bar -->
+            @if (moreItems.length) {
+                <button type="button" class="nav-item" (click)="toggleMore()"
+                        [attr.aria-expanded]="moreOpen" [attr.aria-label]="t('menu.more')">
+                    <div class="nav-icon-wrapper" [class.active]="moreOpen || moreActive()">
+                        <i class="pi pi-ellipsis-h"></i>
+                    </div>
+                    <span class="nav-label">{{ t('menu.more') }}</span>
+                    <span class="nav-dot" [class.active]="moreActive()"></span>
+                </button>
+            }
         </nav>
     `,
     styles: [`
@@ -332,9 +333,14 @@ export class AppMobileNav implements OnInit {
         this.moreOpen = false;
     }
 
+    /** True when the current route matches any of a hub's owned routes (main + alsoActiveFor). */
+    isItemActive(item: BottomNavItem): boolean {
+        return item.activeRoutes.some(r => this.isActive(r));
+    }
+
     /** True when the current route is one of the "More" destinations. */
     moreActive(): boolean {
-        return this.moreItems.some(i => this.isActive(i.route));
+        return this.moreItems.some(i => this.isItemActive(i));
     }
 
     private getCurrentLang(): 'fr' | 'en' {

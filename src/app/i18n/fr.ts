@@ -266,6 +266,7 @@ export const FR = {
     fireSection: 'Objectif',
     financialGoal: 'Objectif financier',
     myGoals: 'Mes objectifs',
+    objectives: 'Objectifs',
     fire: 'FIRE',
     wealthScore: 'Score Patrimoine',
     more: 'Plus',

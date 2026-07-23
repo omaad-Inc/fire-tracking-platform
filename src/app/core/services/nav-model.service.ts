@@ -53,30 +53,21 @@ export interface BottomNavItem {
 // ── The canonical navigation config ─────────────────────────────────────────
 // Editing THIS is how the sidebar and bottom bar change together. Keep it in
 // sync with the `menu.*` i18n keys (fr.ts / en.ts).
+// S5-3e: five hub destinations. FIRE, Wealth-Score and Debts are no longer
+// top-level entries, they live inside their hubs (Objectifs / Analyses /
+// Patrimoine) and are reached via that hub's tabs or cards. FIRE and
+// Wealth-Score routes redirect to the hub tabs (see pages.routes.ts); Debts
+// stays a route reached from the Patrimoine debts card, so Patrimoine claims it
+// via alsoActiveFor for active-state.
 const SECTIONS: NavSectionDef[] = [
     {
         key: 'navigation',
         labelKey: 'menu.navigation',
         entries: [
             { key: 'dashboard', labelKey: 'menu.dashboard', glyph: 'pi-home', segments: [] },
-            { key: 'patrimony', labelKey: 'menu.patrimony', glyph: 'pi-wallet', segments: ['pages', 'patrimoine'] },
+            { key: 'patrimony', labelKey: 'menu.patrimony', glyph: 'pi-wallet', segments: ['pages', 'patrimoine'], alsoActiveFor: [['pages', 'debts']] },
             { key: 'transactions', labelKey: 'menu.transactions', glyph: 'pi-arrow-right-arrow-left', segments: ['pages', 'transaction'] },
-        ],
-    },
-    {
-        key: 'fireSection',
-        labelKey: 'menu.fireSection',
-        entries: [
-            { key: 'fire', labelKey: 'menu.fire', glyph: 'pi-chart-line', segments: ['pages', 'fire'] },
-            { key: 'myGoals', labelKey: 'menu.myGoals', glyph: 'pi-bullseye', segments: ['pages', 'goals'] },
-            { key: 'wealthScore', labelKey: 'menu.wealthScore', glyph: 'pi-gauge', segments: ['pages', 'wealth-score'] },
-        ],
-    },
-    {
-        key: 'finances',
-        labelKey: 'menu.finances',
-        entries: [
-            { key: 'debts', labelKey: 'menu.debts', glyph: 'pi-credit-card', segments: ['pages', 'debts'] },
+            { key: 'myGoals', labelKey: 'menu.objectives', glyph: 'pi-bullseye', segments: ['pages', 'goals'] },
             { key: 'insights', labelKey: 'menu.insights', glyph: 'pi-chart-bar', segments: ['pages', 'insights'] },
         ],
     },
@@ -89,9 +80,9 @@ const SECTIONS: NavSectionDef[] = [
     },
 ];
 
-// Bottom bar composition, by entry key. BOTTOM_MORE feeds the "Plus" sheet.
-const BOTTOM_PRIMARY = ['dashboard', 'patrimony', 'transactions', 'myGoals'];
-const BOTTOM_MORE = ['fire', 'wealthScore', 'debts', 'insights'];
+// Bottom bar: the five hubs, no overflow (BOTTOM_MORE empty → no "Plus" button).
+const BOTTOM_PRIMARY = ['dashboard', 'patrimony', 'transactions', 'myGoals', 'insights'];
+const BOTTOM_MORE: string[] = [];
 
 @Injectable({ providedIn: 'root' })
 export class NavModelService {
