@@ -349,13 +349,17 @@ export class AppMobileNav implements OnInit {
     }
 
     isActive(route: string[]): boolean {
-        const routePath = route.join('/');
-        // For dashboard (exact match)
+        // nav.link() yields ['/', 'fr', ...], so join('/') gives a leading '//'
+        // ("//fr/pages/goals"); collapse the run to a single slash. Also drop any
+        // query string (?tab=, ?view=) so hub sub-tabs still match their hub route.
+        const routePath = route.join('/').replace(/\/{2,}/g, '/');
+        const url = this.currentUrl.split('?')[0];
         if (route.length <= 2) {
-            return this.currentUrl === routePath || this.currentUrl === routePath + '/';
+            // Home / base route: exact only, so it isn't active on every page.
+            return url === routePath || url === routePath + '/';
         }
-        // For other routes (starts with)
-        return this.currentUrl.startsWith(routePath);
+        // Deeper route: itself or any child (…/assets/:id under patrimoine, etc.).
+        return url === routePath || url.startsWith(routePath + '/');
     }
 
     t(key: string): string {
