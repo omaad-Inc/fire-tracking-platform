@@ -1,6 +1,7 @@
 import { Component, input, computed, inject, signal, effect, OnDestroy } from '@angular/core';
 import { CurrencyService } from '../services/currency.service';
 import { PrivacyService } from '../services/privacy.service';
+import { prefersReducedMotion } from '../theme/chart-theme';
 
 /**
  * Renders a EUR value as a formatted amount with the currency symbol.
@@ -51,6 +52,8 @@ export class AppAmountComponent implements OnDestroy {
     private animatedValue = signal(0);
     private animFrameId = 0;
     private hasAnimated = false;
+    /** Honor the OS reduced-motion setting: show the final value instantly, no count-up. */
+    private reducedMotion = prefersReducedMotion();
 
     // Formatted display string
     displayStr = computed(() => {
@@ -68,8 +71,8 @@ export class AppAmountComponent implements OnDestroy {
             const shouldAnimate = this.animate();
             const isHidden = this.privacy.hidden();
 
-            // Skip animation if privacy mode or already animated
-            if (isHidden || !shouldAnimate || this.hasAnimated || target === 0) {
+            // Skip the count-up under reduced motion, privacy mode, or if already done.
+            if (isHidden || !shouldAnimate || this.reducedMotion || this.hasAnimated || target === 0) {
                 this.animatedValue.set(target);
                 return;
             }

@@ -7,6 +7,7 @@ import { RippleModule } from 'primeng/ripple';
 import { WealthScoreService } from '../service/wealth-score.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { AxisScore } from '../../core/services/api.service';
+import { prefersReducedMotion } from '../../core/theme/chart-theme';
 
 @Component({
     selector: 'app-wealth-score-page',
@@ -391,7 +392,7 @@ export class WealthScorePage implements OnInit {
                     pointLabels: { color: labelColor, font: { size: 12, weight: '600' } },
                 }
             },
-            animation: { duration: 600, easing: 'easeOutQuart' },
+            animation: prefersReducedMotion() ? false : { duration: 600, easing: 'easeOutQuart' },
         };
     }
 }

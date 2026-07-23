@@ -139,6 +139,14 @@ export function isDarkMode(): boolean {
         || document.body.classList.contains('app-dark');
 }
 
+/** True when the user asked the OS for reduced motion. Chart draw-in, count-ups,
+ *  and other decorative motion should be skipped when this is set (S5-4). */
+export function prefersReducedMotion(): boolean {
+    return typeof window !== 'undefined'
+        && typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 /**
  * Apply the brand-tokenized Chart.js global defaults (font + tooltip styling).
  *
@@ -173,5 +181,11 @@ export function applyChartDefaults(): void {
             usePointStyle: true,
             caretSize: 6,
         });
+        // Reduced-motion: kill chart draw-in globally. Covers every chart that
+        // doesn't set its own `animation` (insights line, patrimoine donut, …);
+        // charts that override animation guard it themselves with prefersReducedMotion().
+        if (prefersReducedMotion()) {
+            (Chart.defaults as any).animation = false;
+        }
     }).catch(() => { /* Chart.js not available */ });
 }

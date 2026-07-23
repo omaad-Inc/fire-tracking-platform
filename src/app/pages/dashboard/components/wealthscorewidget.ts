@@ -5,6 +5,7 @@ import { ChartModule } from 'primeng/chart';
 import { WealthScoreService } from '../../service/wealth-score.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
+import { prefersReducedMotion } from '../../../core/theme/chart-theme';
 
 @Component({
     selector: 'app-wealth-score-widget',
@@ -147,7 +148,7 @@ export class WealthScoreDashboardWidget implements OnInit {
                     pointLabels: { display: false },
                 }
             },
-            animation: { duration: 400 },
+            animation: prefersReducedMotion() ? false : { duration: 400 },
         };
     }
 }
