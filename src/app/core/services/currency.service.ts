@@ -143,6 +143,18 @@ export class CurrencyService {
         }).format(displayValue);
     }
 
+    /** Format a value ALREADY in the display currency, WITHOUT converting it again.
+     *  Use for figures computed directly in the display currency (e.g. the FIRE
+     *  number = display-currency annual expenses ÷ withdrawal rate); passing such a
+     *  value to formatNumber() would multiply it by the FX rate a second time. */
+    formatDisplayNumber(displayValue: number | null | undefined, fractionDigits = 0): string {
+        const { locale } = this.config();
+        return new Intl.NumberFormat(locale, {
+            maximumFractionDigits: fractionDigits,
+            minimumFractionDigits: fractionDigits,
+        }).format(displayValue ?? 0);
+    }
+
     /** Y-axis tick formatter for Chart.js (passed as a plain function ref). */
     tickFormatter(): (value: number) => string {
         return (value: number) => {
