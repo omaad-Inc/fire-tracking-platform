@@ -88,13 +88,15 @@ import { I18nService } from '../../../i18n/i18n.service';
                 </div>
 
                 <!-- Auto-calculated result -->
-                <!-- autoTarget() returns a display-currency value (annualExpenses is in display currency), format directly, do NOT use app-amount which expects EUR and would double-convert -->
+                <!-- autoTarget() is ALREADY in the display currency (annualExpenses is), so
+                     format it without converting. formatNumber()/app-amount both convert
+                     EUR→display and would inflate it by the FX rate (e.g. ×655.957 for FCFA). -->
                 @if (autoTarget() > 0) {
                     <div class="mt-4 p-4 bg-positive/10 border border-positive-100 dark:border-positive-700/40 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div>
                             <span class="text-surface-700 dark:text-surface-300 text-sm block">{{ i18n.t('fireSettings.estimatedFireNumber') }}</span>
                             <span class="text-2xl font-bold text-positive dark:text-positive-400">
-                                {{ cs.formatNumber(autoTarget()) }} {{ cs.config().symbol }}
+                                {{ cs.formatDisplayNumber(autoTarget()) }} {{ cs.config().symbol }}
                             </span>
                         </div>
                         <button pButton type="button"
@@ -135,9 +137,10 @@ import { I18nService } from '../../../i18n/i18n.service';
                 @if (fireTarget && fireTarget > 0) {
                     <p class="text-xs text-surface-400 dark:text-surface-500 mt-2">
                         {{ i18n.t('fireSettings.currentGoal') }}
-                        <!-- fireTarget is already in display currency, format directly, do NOT use app-amount which would double-convert -->
+                        <!-- fireTarget is already in the display currency: format without
+                             converting (formatNumber would re-apply the FX rate). -->
                         <span class="font-semibold text-positive dark:text-positive-400">
-                            {{ cs.formatNumber(fireTarget) }} {{ cs.config().symbol }}
+                            {{ cs.formatDisplayNumber(fireTarget) }} {{ cs.config().symbol }}
                         </span>
                     </p>
                 }

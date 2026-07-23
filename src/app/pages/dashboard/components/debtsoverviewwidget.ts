@@ -27,7 +27,7 @@ interface DebtDisplay {
     selector: 'app-debts-overview',
     imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
     template: `
-        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.debtsOverview') }}</div>
                 <a [routerLink]="link('pages', 'debts')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
@@ -57,12 +57,15 @@ interface DebtDisplay {
                 <!-- NEVER show "no debts 🎉" on a failed load, that's a false financial state -->
                 <app-load-error (retry)="loadDebts()" />
             } @else if (debts().length === 0) {
-                <div class="relative flex flex-col items-center justify-center py-8 text-center">
+                <div class="relative flex-1 flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-positive/10 flex items-center justify-center mb-4">
                         <i class="pi pi-check-circle text-2xl text-positive"></i>
                     </div>
-                    <p class="text-surface-600 dark:text-surface-400 mb-2">{{ t('dashboard.noDebts') }}</p>
-                    <p class="text-positive text-sm">{{ t('dashboard.noDebtsCongrats') }}</p>
+                    <p class="text-surface-600 dark:text-surface-400 mb-1">{{ t('dashboard.noDebts') }}</p>
+                    <p class="text-positive text-sm mb-4">{{ t('dashboard.noDebtsCongrats') }}</p>
+                    <a [routerLink]="link('pages', 'debts')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 text-sm">
+                        {{ t('dashboard.trackDebt') }} <i class="pi pi-arrow-right text-xs ml-1"></i>
+                    </a>
                 </div>
             } @else {
                 <ul class="relative list-none p-0 m-0 space-y-4">

@@ -4,15 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { inject } from '@angular/core';
 import { I18nService } from '../../i18n/i18n.service';
-import { NavService } from '../../core/services/nav.service';
+import { NavModelService, BottomNavItem } from '../../core/services/nav-model.service';
 import { filter } from 'rxjs/operators';
-
-interface NavItem {
-    label: string;
-    icon: string;
-    route: string[];
-    active?: boolean;
-}
 
 @Component({
     selector: 'app-mobile-nav',
@@ -40,26 +33,27 @@ interface NavItem {
             <a
                 *ngFor="let item of navItems"
                 [routerLink]="item.route"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{ exact: item.route.length <= 2 }"
                 class="nav-item"
+                [class.active]="isItemActive(item)"
             >
-                <div class="nav-icon-wrapper" [class.active]="isActive(item.route)">
+                <div class="nav-icon-wrapper" [class.active]="isItemActive(item)">
                     <i [class]="item.icon"></i>
                 </div>
                 <span class="nav-label">{{ item.label }}</span>
                 <!-- Active dot indicator -->
-                <span class="nav-dot" [class.active]="isActive(item.route)"></span>
+                <span class="nav-dot" [class.active]="isItemActive(item)"></span>
             </a>
-            <!-- More: opens the secondary-destinations sheet -->
-            <button type="button" class="nav-item" (click)="toggleMore()"
-                    [attr.aria-expanded]="moreOpen" [attr.aria-label]="t('menu.more')">
-                <div class="nav-icon-wrapper" [class.active]="moreOpen || moreActive()">
-                    <i class="pi pi-ellipsis-h"></i>
-                </div>
-                <span class="nav-label">{{ t('menu.more') }}</span>
-                <span class="nav-dot" [class.active]="moreActive()"></span>
-            </button>
+            <!-- More: only when there are secondary destinations that don't fit the bar -->
+            @if (moreItems.length) {
+                <button type="button" class="nav-item" (click)="toggleMore()"
+                        [attr.aria-expanded]="moreOpen" [attr.aria-label]="t('menu.more')">
+                    <div class="nav-icon-wrapper" [class.active]="moreOpen || moreActive()">
+                        <i class="pi pi-ellipsis-h"></i>
+                    </div>
+                    <span class="nav-label">{{ t('menu.more') }}</span>
+                    <span class="nav-dot" [class.active]="moreActive()"></span>
+                </button>
+            }
         </nav>
     `,
     styles: [`
@@ -296,13 +290,13 @@ interface NavItem {
     `]
 })
 export class AppMobileNav implements OnInit {
-    navItems: NavItem[] = [];
+    navItems: BottomNavItem[] = [];
     /** Secondary destinations shown in the "More" sheet (don't fit 5 slots). */
-    moreItems: NavItem[] = [];
+    moreItems: BottomNavItem[] = [];
     moreOpen = false;
     lang = 'fr';
     currentUrl = '';
-    private nav = inject(NavService);
+    private navModel = inject(NavModelService);
 
     constructor(
         private router: Router,
@@ -326,22 +320,9 @@ export class AppMobileNav implements OnInit {
 
     private updateNavItems() {
         this.lang = this.getCurrentLang();
-
-        this.navItems = [
-            { label: this.t('menu.dashboard'),    icon: 'pi pi-home',                    route: this.nav.link() },
-            { label: this.t('menu.patrimony'),    icon: 'pi pi-wallet',                  route: this.nav.link('pages', 'patrimoine') },
-            { label: this.t('menu.transactions'), icon: 'pi pi-arrow-right-arrow-left',  route: this.nav.link('pages', 'transaction') },
-            { label: this.t('menu.myGoals'),      icon: 'pi pi-bullseye',                route: this.nav.link('pages', 'goals') },
-        ];
-
-        // FIRE + Wealth Score are first-class destinations but the bar only
-        // holds ~5 slots on a phone, so they live in the "More" sheet with Debts.
-        this.moreItems = [
-            { label: this.t('menu.fire'),        icon: 'pi pi-chart-line',   route: this.nav.link('pages', 'fire') },
-            { label: this.t('menu.wealthScore'), icon: 'pi pi-gauge',        route: this.nav.link('pages', 'wealth-score') },
-            { label: this.t('menu.debts'),       icon: 'pi pi-credit-card',  route: this.nav.link('pages', 'debts') },
-            { label: this.t('menu.insights'),    icon: 'pi pi-chart-bar',    route: this.nav.link('pages', 'insights') },
-        ];
+        // Single source of truth (shared with the desktop sidebar).
+        this.navItems = this.navModel.bottomPrimary();
+        this.moreItems = this.navModel.bottomMore();
     }
 
     toggleMore() {
@@ -352,9 +333,14 @@ export class AppMobileNav implements OnInit {
         this.moreOpen = false;
     }
 
+    /** True when the current route matches any of a hub's owned routes (main + alsoActiveFor). */
+    isItemActive(item: BottomNavItem): boolean {
+        return item.activeRoutes.some(r => this.isActive(r));
+    }
+
     /** True when the current route is one of the "More" destinations. */
     moreActive(): boolean {
-        return this.moreItems.some(i => this.isActive(i.route));
+        return this.moreItems.some(i => this.isItemActive(i));
     }
 
     private getCurrentLang(): 'fr' | 'en' {
@@ -363,13 +349,17 @@ export class AppMobileNav implements OnInit {
     }
 
     isActive(route: string[]): boolean {
-        const routePath = route.join('/');
-        // For dashboard (exact match)
+        // nav.link() yields ['/', 'fr', ...], so join('/') gives a leading '//'
+        // ("//fr/pages/goals"); collapse the run to a single slash. Also drop any
+        // query string (?tab=, ?view=) so hub sub-tabs still match their hub route.
+        const routePath = route.join('/').replace(/\/{2,}/g, '/');
+        const url = this.currentUrl.split('?')[0];
         if (route.length <= 2) {
-            return this.currentUrl === routePath || this.currentUrl === routePath + '/';
+            // Home / base route: exact only, so it isn't active on every page.
+            return url === routePath || url === routePath + '/';
         }
-        // For other routes (starts with)
-        return this.currentUrl.startsWith(routePath);
+        // Deeper route: itself or any child (…/assets/:id under patrimoine, etc.).
+        return url === routePath || url.startsWith(routePath + '/');
     }
 
     t(key: string): string {

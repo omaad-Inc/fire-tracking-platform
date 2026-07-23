@@ -1,5 +1,8 @@
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ChartModule } from 'primeng/chart';
 
 import { I18nService } from '../../i18n/i18n.service';
@@ -8,6 +11,7 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
+import { WealthScorePage } from '../wealth-score/wealth-score';
 
 @Component({
     selector: 'app-insights',
@@ -15,10 +19,26 @@ import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponen
     imports: [
         CommonModule, ChartModule, AppAmountComponent, LoadErrorComponent,
         PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent,
+        WealthScorePage,
     ],
     template: `
         <app-page-header icon="pi-chart-bar" [title]="t('insights.title')" [subtitle]="t('insights.subtitle')" />
 
+        <!-- Analyses hub tabs: trends/breakdown vs the wealth score. ?tab=score deep-links. -->
+        <div class="mb-5">
+            <div class="inline-flex rounded-xl bg-surface-100 dark:bg-surface-800 p-1" role="tablist">
+                <button role="tab" [attr.aria-selected]="tab() === 'analyses'"
+                        (click)="setTab('analyses')" [class]="tabClass('analyses')">
+                    {{ t('menu.insights') }}
+                </button>
+                <button role="tab" [attr.aria-selected]="tab() === 'score'"
+                        (click)="setTab('score')" [class]="tabClass('score')" data-testid="tab-score">
+                    {{ t('menu.wealthScore') }}
+                </button>
+            </div>
+        </div>
+
+        @if (tab() === 'analyses') {
         @if (error()) {
             <app-load-error (retry)="load()" />
         } @else if (loading()) {
@@ -89,6 +109,14 @@ import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponen
                 }
             </app-ui-card>
         }
+        } @else {
+            <!-- Score tab: the wealth-score page, embedded (its own header hidden). -->
+            @defer (on immediate) {
+                <app-wealth-score-page [embedded]="true" />
+            } @placeholder {
+                <div class="h-96 rounded-2xl bg-surface-100 dark:bg-surface-800 animate-pulse"></div>
+            }
+        }
     `,
 })
 export class InsightsPage implements OnInit {
@@ -97,7 +125,33 @@ export class InsightsPage implements OnInit {
     private api = inject(ApiService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
+
+    /** Analyses hub tab, derived from the URL (?tab=) so it reacts to any navigation
+     *  while mounted (deep-links, redirects, browser back/forward). */
+    tab = toSignal(
+        this.route.queryParamMap.pipe(map((qp): 'analyses' | 'score' => qp.get('tab') === 'score' ? 'score' : 'analyses')),
+        { initialValue: (this.route.snapshot.queryParamMap.get('tab') === 'score' ? 'score' : 'analyses') as 'analyses' | 'score' },
+    );
+
+    setTab(t: 'analyses' | 'score') {
+        // Navigate only; `tab` is derived from the URL.
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { tab: t === 'analyses' ? null : t },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        });
+    }
+
+    tabClass(t: 'analyses' | 'score'): string {
+        const base = 'px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer';
+        return this.tab() === t
+            ? `${base} bg-surface-0 dark:bg-surface-950 text-brand-700 dark:text-ochre-400 shadow-card`
+            : `${base} text-surface-500 dark:text-surface-400`;
+    }
 
     loading = signal(true);
     error = signal(false);
