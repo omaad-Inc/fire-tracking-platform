@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SKIP_AUTH } from '../interceptors/http-context.tokens';
-import { Observable, tap, catchError, throwError, of } from 'rxjs';
+import { Observable, tap, catchError, throwError, of, map, finalize, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService, User } from './token.service';
 import { CACHE_RESET } from './cache-reset.token';
@@ -232,6 +232,43 @@ export class AuthService {
             }),
             catchError(this.handleError)
         );
+    }
+
+    /**
+     * Shared in-flight refresh. Concurrent callers (boot initializer, auth
+     * guard, interceptor pre-flight + refresh-on-401) all await ONE
+     * /auth/refresh round-trip instead of racing their own — this matters:
+     * each round-trip to the backend is expensive, and the refresh rotates
+     * the cookie, so parallel refreshes can invalidate each other.
+     */
+    private refreshInFlight$: Observable<string | null> | null = null;
+
+    /**
+     * Always hits /auth/refresh (single-flight). Use when the current access
+     * token is known-bad (a 401 on an authed request). Resolves to the new
+     * token, or null if the session is dead.
+     */
+    forceRefresh(): Observable<string | null> {
+        if (!this.refreshInFlight$) {
+            this.refreshInFlight$ = this.refreshToken().pipe(
+                // Fall back to any token a concurrent flow (login) set meanwhile.
+                map(res => res?.access_token ?? this.tokenService.getToken()),
+                catchError(() => of(null)),
+                finalize(() => { this.refreshInFlight$ = null; }),
+                shareReplay(1),
+            );
+        }
+        return this.refreshInFlight$;
+    }
+
+    /**
+     * The current in-memory access token, or a shared cookie-based restore
+     * when there is none yet (cold load / hard refresh). Never throws —
+     * resolves to null when the device has no live session.
+     */
+    ensureSession(): Observable<string | null> {
+        const token = this.tokenService.getToken();
+        return token ? of(token) : this.forceRefresh();
     }
 
     /**
