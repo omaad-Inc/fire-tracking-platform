@@ -1127,6 +1127,11 @@ export const FR = {
       startDate: 'Date de début',
     },
   },
+  home: {
+    thisMonth: 'Ce mois-ci',
+    allClear: 'Rien à surveiller ce mois-ci',
+    allClearDesc: 'Vos budgets sont sous contrôle, continuez comme ça.',
+  },
   alerts: {
     title: 'À surveiller',
     viewInsights: 'Voir les analyses',
