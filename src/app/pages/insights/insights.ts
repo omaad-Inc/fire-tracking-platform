@@ -1,6 +1,8 @@
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 import { ChartModule } from 'primeng/chart';
 
 import { I18nService } from '../../i18n/i18n.service';
@@ -127,11 +129,15 @@ export class InsightsPage implements OnInit {
     private router = inject(Router);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
-    /** Analyses hub tab. Seeded from ?tab= so /pages/insights?tab=score deep-links to the score. */
-    tab = signal<'analyses' | 'score'>(this.route.snapshot.queryParamMap.get('tab') === 'score' ? 'score' : 'analyses');
+    /** Analyses hub tab, derived from the URL (?tab=) so it reacts to any navigation
+     *  while mounted (deep-links, redirects, browser back/forward). */
+    tab = toSignal(
+        this.route.queryParamMap.pipe(map((qp): 'analyses' | 'score' => qp.get('tab') === 'score' ? 'score' : 'analyses')),
+        { initialValue: (this.route.snapshot.queryParamMap.get('tab') === 'score' ? 'score' : 'analyses') as 'analyses' | 'score' },
+    );
 
     setTab(t: 'analyses' | 'score') {
-        this.tab.set(t);
+        // Navigate only; `tab` is derived from the URL.
         this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { tab: t === 'analyses' ? null : t },

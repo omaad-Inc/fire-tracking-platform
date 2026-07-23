@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Subscription, firstValueFrom, map } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -183,8 +184,13 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
 
-    /** Objectifs hub tab. Seeded from ?tab= so /pages/goals?tab=fire deep-links to FIRE. */
-    tab = signal<'goals' | 'fire'>(this.route.snapshot.queryParamMap.get('tab') === 'fire' ? 'fire' : 'goals');
+    /** Objectifs hub tab, derived from the URL (?tab=) so it reacts to ANY navigation
+     *  while the page is already mounted, e.g. the FIRE hero's "Voir le détail" which
+     *  hits /pages/fire and redirects to /pages/goals?tab=fire. */
+    tab = toSignal(
+        this.route.queryParamMap.pipe(map((qp): 'goals' | 'fire' => qp.get('tab') === 'fire' ? 'fire' : 'goals')),
+        { initialValue: (this.route.snapshot.queryParamMap.get('tab') === 'fire' ? 'fire' : 'goals') as 'goals' | 'fire' },
+    );
 
     private sub?: Subscription;
 
@@ -208,8 +214,7 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
     }
 
     setTab(t: 'goals' | 'fire') {
-        this.tab.set(t);
-        // Keep the tab in the URL (deep-linkable, back-consistent) without a full nav.
+        // Navigate only; `tab` is derived from the URL and updates from the query param.
         this.router.navigate([], {
             relativeTo: this.route,
             queryParams: { tab: t === 'goals' ? null : t },
