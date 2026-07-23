@@ -1131,6 +1131,14 @@ export const FR = {
     thisMonth: 'Ce mois-ci',
     allClear: 'Rien à surveiller ce mois-ci',
     allClearDesc: 'Vos budgets sont sous contrôle, continuez comme ça.',
+    sections: {
+      situation: 'Votre situation',
+      situationSub: 'Votre score de santé financière et vos dettes.',
+      month: 'Ce mois-ci',
+      monthSub: 'Vos transactions récentes.',
+      goals: 'Objectifs et patrimoine',
+      goalsSub: 'Votre épargne et la performance de vos actifs.',
+    },
   },
   alerts: {
     title: 'À surveiller',

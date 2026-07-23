@@ -7,6 +7,7 @@ import { DebtsOverview } from './components/debtsoverviewwidget';
 import { TopMoversWidget } from './components/topmoverswidget';
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
+import { SectionHeaderComponent } from '../../core/ui/section-header.component';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
 import { TransactionsService } from '../service/transactions.service';
@@ -18,7 +19,8 @@ import { I18nService } from '../../i18n/i18n.service';
     standalone: true,
     imports: [
         CommonModule, HomeHero, SavingsProgress, DebtsOverview,
-        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
+        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent,
+        SectionHeaderComponent
     ],
     template: `
         <!-- One <h1> per page for a correct heading hierarchy; visually hidden
@@ -43,27 +45,41 @@ import { I18nService } from '../../i18n/i18n.service';
             </div>
         }
 
-        <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
-            <!-- Second row: Savings + Debts -->
-            <div class="col-span-12 md:col-span-6 xl:col-span-6">
-                <app-savings-progress />
-            </div>
-            <div class="col-span-12 md:col-span-6 xl:col-span-6">
-                <app-debts-overview />
-            </div>
+        <!-- S5-2: the widgets below are reordered into a deliberate story with
+             higher-altitude band headers (widgets self-title, so headers group
+             rather than repeat): where you stand -> this month -> goals + assets. -->
+        <div class="space-y-8 md:space-y-10">
+            <!-- Band 1: where you stand (health) -->
+            <section>
+                <app-section-header [title]="t('home.sections.situation')" [subtitle]="t('home.sections.situationSub')" />
+                <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
+                    <div class="col-span-12 md:col-span-6">
+                        <app-wealth-score-widget />
+                    </div>
+                    <div class="col-span-12 md:col-span-6">
+                        <app-debts-overview />
+                    </div>
+                </div>
+            </section>
 
-            <!-- Third row: Wealth Score + Top Movers -->
-            <div class="col-span-12 md:col-span-6 xl:col-span-6">
-                <app-wealth-score-widget />
-            </div>
-            <div class="col-span-12 md:col-span-6 xl:col-span-6">
-                <app-top-movers-widget />
-            </div>
-
-            <!-- Fourth row: Recent Transactions -->
-            <div class="col-span-12">
+            <!-- Band 2: this month (activity) -->
+            <section>
+                <app-section-header [title]="t('home.sections.month')" [subtitle]="t('home.sections.monthSub')" />
                 <app-recent-transactions-widget />
-            </div>
+            </section>
+
+            <!-- Band 3: goals + assets -->
+            <section>
+                <app-section-header [title]="t('home.sections.goals')" [subtitle]="t('home.sections.goalsSub')" />
+                <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
+                    <div class="col-span-12 md:col-span-6">
+                        <app-savings-progress />
+                    </div>
+                    <div class="col-span-12 md:col-span-6">
+                        <app-top-movers-widget />
+                    </div>
+                </div>
+            </section>
         </div>
     `
 })

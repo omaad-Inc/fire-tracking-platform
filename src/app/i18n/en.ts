@@ -1133,6 +1133,14 @@ export const EN: Dict = {
     thisMonth: 'This month',
     allClear: 'Nothing to watch this month',
     allClearDesc: 'Your budgets are under control, keep it up.',
+    sections: {
+      situation: 'Where you stand',
+      situationSub: 'Your financial-health score and your debts.',
+      month: 'This month',
+      monthSub: 'Your recent transactions.',
+      goals: 'Goals and assets',
+      goalsSub: 'Your savings progress and how your assets are performing.',
+    },
   },
   alerts: {
     title: 'Needs attention',

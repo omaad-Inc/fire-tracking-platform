@@ -68,11 +68,11 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                          reinforcement of the pill above (which carries the arrow + label), so identity
                          is never color-alone. Static (no draw animation) for reduced-motion safety. -->
                     @if (spark(); as sp) {
-                        <svg class="w-full md:w-48 h-14 shrink-0" [attr.viewBox]="'0 0 ' + sp.W + ' ' + sp.H"
+                        <svg class="w-full md:w-60 h-16 shrink-0 self-end" [attr.viewBox]="'0 0 ' + sp.W + ' ' + sp.H"
                              preserveAspectRatio="none" aria-hidden="true"
                              [ngClass]="trendPct() < 0 ? 'text-negative' : trendPct() > 0 ? 'text-positive' : 'text-surface-400'">
-                            <polygon [attr.points]="sp.area" fill="currentColor" class="opacity-10" />
-                            <polyline [attr.points]="sp.line" fill="none" stroke="currentColor" stroke-width="2"
+                            <polygon [attr.points]="sp.area" fill="currentColor" class="opacity-[0.12]" />
+                            <polyline [attr.points]="sp.line" fill="none" stroke="currentColor" stroke-width="2.25"
                                       stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
                         </svg>
                     }
