@@ -1,13 +1,12 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { StatsWidget } from './components/statswidget';
+import { HomeHero } from './components/homehero';
 import { RecentTransactionsWidget } from './components/recenttransactionswidget';
 import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
 import { TopMoversWidget } from './components/topmoverswidget';
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
-import { AlertsWidget } from './components/alertswidget';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
 import { TransactionsService } from '../service/transactions.service';
@@ -18,17 +17,18 @@ import { I18nService } from '../../i18n/i18n.service';
     selector: 'app-dashboard',
     standalone: true,
     imports: [
-        CommonModule, StatsWidget, SavingsProgress, DebtsOverview,
-        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent,
-        AlertsWidget
+        CommonModule, HomeHero, SavingsProgress, DebtsOverview,
+        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent
     ],
     template: `
         <!-- One <h1> per page for a correct heading hierarchy; visually hidden
              since the KPI cards carry the visible titles (P2-A11Y-2). -->
         <h1 class="sr-only">{{ t('dashboard.pageTitle') }}</h1>
 
-        <!-- Attention feed: budget/insight alerts (renders only when there's something to flag) -->
-        <app-alerts-widget />
+        <!-- S5-1 "Am I okay?" hero: net worth + trend, this-month cash-flow, the one
+             nudge, and FIRE as a secondary indicator. Subsumes the old flat KPI row
+             and the top alerts banner. -->
+        <app-home-hero />
 
         <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {
@@ -44,9 +44,6 @@ import { I18nService } from '../../i18n/i18n.service';
         }
 
         <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
-            <!-- KPI cards row -->
-            <app-stats-widget class="contents" />
-
             <!-- Second row: Savings + Debts -->
             <div class="col-span-12 md:col-span-6 xl:col-span-6">
                 <app-savings-progress />

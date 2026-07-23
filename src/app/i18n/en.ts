@@ -1129,6 +1129,11 @@ export const EN: Dict = {
       startDate: 'Start date',
     },
   },
+  home: {
+    thisMonth: 'This month',
+    allClear: 'Nothing to watch this month',
+    allClearDesc: 'Your budgets are under control, keep it up.',
+  },
   alerts: {
     title: 'Needs attention',
     viewInsights: 'View insights',
