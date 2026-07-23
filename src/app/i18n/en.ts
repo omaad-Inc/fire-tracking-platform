@@ -1139,8 +1139,8 @@ export const EN: Dict = {
       situationSub: 'Your financial-health score and your savings progress.',
       month: 'This month',
       monthSub: 'Your recent transactions.',
-      assets: 'Debts and assets',
-      assetsSub: 'What you owe and how your assets are performing.',
+      debts: 'Your debts',
+      debtsSub: 'What you owe.',
     },
   },
   alerts: {

@@ -4,7 +4,6 @@ import { HomeHero } from './components/homehero';
 import { RecentTransactionsWidget } from './components/recenttransactionswidget';
 import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
-import { TopMoversWidget } from './components/topmoverswidget';
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
 import { SectionHeaderComponent } from '../../core/ui/section-header.component';
@@ -19,7 +18,7 @@ import { I18nService } from '../../i18n/i18n.service';
     standalone: true,
     imports: [
         CommonModule, HomeHero, SavingsProgress, DebtsOverview,
-        RecentTransactionsWidget, TopMoversWidget, WealthScoreDashboardWidget, OnboardingComponent,
+        RecentTransactionsWidget, WealthScoreDashboardWidget, OnboardingComponent,
         SectionHeaderComponent
     ],
     template: `
@@ -74,17 +73,10 @@ import { I18nService } from '../../i18n/i18n.service';
                 <app-recent-transactions-widget />
             </section>
 
-            <!-- Band 3: debts + asset movers -->
+            <!-- Band 3: debts (what you owe), full-width list like recent transactions -->
             <section>
-                <app-section-header [title]="t('home.sections.assets')" [subtitle]="t('home.sections.assetsSub')" />
-                <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
-                    <div class="col-span-12 md:col-span-6">
-                        <app-debts-overview />
-                    </div>
-                    <div class="col-span-12 md:col-span-6">
-                        <app-top-movers-widget />
-                    </div>
-                </div>
+                <app-section-header [title]="t('home.sections.debts')" [subtitle]="t('home.sections.debtsSub')" />
+                <app-debts-overview />
             </section>
         </div>
         }

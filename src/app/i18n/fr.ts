@@ -1137,8 +1137,8 @@ export const FR = {
       situationSub: 'Votre score de santé financière et la progression de votre épargne.',
       month: 'Ce mois-ci',
       monthSub: 'Vos transactions récentes.',
-      assets: 'Dettes et patrimoine',
-      assetsSub: 'Ce que vous devez et la performance de vos actifs.',
+      debts: 'Vos dettes',
+      debtsSub: 'Ce que vous devez.',
     },
   },
   alerts: {
