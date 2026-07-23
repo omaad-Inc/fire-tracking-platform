@@ -26,7 +26,7 @@ interface GoalDisplay {
     selector: 'app-savings-progress',
     imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
     template: `
-        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
+        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.savingsProgress') }}</div>
                 <a [routerLink]="link('pages', 'goals')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
@@ -55,7 +55,7 @@ interface GoalDisplay {
             } @else if (loadError()) {
                 <app-load-error (retry)="loadGoals()" />
             } @else if (goals().length === 0) {
-                <div class="relative flex flex-col items-center justify-center py-8 text-center">
+                <div class="relative flex-1 flex flex-col items-center justify-center py-8 text-center">
                     <div class="w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-4">
                         <i class="pi pi-wallet text-2xl text-surface-400"></i>
                     </div>

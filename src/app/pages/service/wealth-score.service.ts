@@ -18,7 +18,18 @@ export class WealthScoreService {
     readonly axes = computed(() => this._data()?.axes ?? []);
     readonly computedAt = computed(() => this._data()?.computed_at ?? '');
 
-    readonly hasData = computed(() => this._data() !== null);
+    // A freshly-registered user (no assets, no transactions) still gets a
+    // computed score response, but it is all zeros. That is "not enough data
+    // yet", not a real score, so treat an all-zero result as no data. This keeps
+    // the widget on its neutral onboarding state instead of greeting a brand-new
+    // user with a discouraging red 0/100.
+    readonly hasData = computed(() => {
+        const d = this._data();
+        if (!d) return false;
+        const total = d.total_score ?? 0;
+        const anyAxis = (d.axes ?? []).some(a => (a.score ?? 0) > 0);
+        return total > 0 || anyAxis;
+    });
 
     getAxis(name: string): AxisScore | undefined {
         return this.axes().find(a => a.axis === name);

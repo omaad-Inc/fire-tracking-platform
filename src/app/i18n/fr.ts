@@ -871,6 +871,7 @@ export const FR = {
     noRecentTransactions: 'Aucune transaction récente',
     noDebts: 'Aucune dette enregistrée',
     noDebtsCongrats: 'Félicitations !',
+    trackDebt: 'Suivre une dette',
     topMovers: 'Top Movers',
     topMoversSubtitle: 'Meilleures & pires performances',
     noMovers: 'Ajoutez des actifs pour voir les movers',

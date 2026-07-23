@@ -873,6 +873,7 @@ export const EN: Dict = {
     noRecentTransactions: 'No recent transactions',
     noDebts: 'No debts recorded',
     noDebtsCongrats: 'Congratulations!',
+    trackDebt: 'Track a debt',
     topMovers: 'Top Movers',
     topMoversSubtitle: 'Best & worst performers',
     noMovers: 'Add assets to see top movers',

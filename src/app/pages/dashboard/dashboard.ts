@@ -49,9 +49,11 @@ import { I18nService } from '../../i18n/i18n.service';
              higher-altitude band headers (widgets self-title, so headers group
              rather than repeat). Each band pairs HEIGHT-COMPATIBLE widgets so a
              two-up row never puts a tall card (the radar) beside a short one (a
-             one-line debts list), which would leave a hollow gap. The tall radar
-             is paired with the tall movers list; the two shorter money lists
-             (savings + debts) are paired together. -->
+             one-line debts list), which would leave a hollow gap.
+             A brand-new user (onboarding guide showing) does not see this stack of
+             empty cards at all: the home is hero + onboarding until they add their
+             first data, then the story bands appear. -->
+        @if (!showOnboarding()) {
         <div class="space-y-8 md:space-y-10">
             <!-- Band 1: where you stand (health score + savings momentum) -->
             <section>
@@ -85,6 +87,7 @@ import { I18nService } from '../../i18n/i18n.service';
                 </div>
             </section>
         </div>
+        }
     `
 })
 export class Dashboard implements OnInit {
