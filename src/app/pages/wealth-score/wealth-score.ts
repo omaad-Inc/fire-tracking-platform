@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
@@ -14,7 +14,8 @@ import { AxisScore } from '../../core/services/api.service';
     imports: [CommonModule, RouterModule, ChartModule, ButtonModule, RippleModule],
     template: `
         <div class="px-2 md:px-0">
-            <!-- Header -->
+            <!-- Header: hidden when embedded in the Analyses hub (Score tab). -->
+            @if (!embedded) {
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
@@ -35,6 +36,7 @@ import { AxisScore } from '../../core/services/api.service';
                         class="omaad-cta !rounded-xl !px-5 !py-2 !text-sm">
                 </button>
             </div>
+            }
 
             <!-- Explanation card, what the score means, what's a good score, how it updates -->
             <div class="mb-6 overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 border-l-4 border-l-ochre-500">
@@ -232,6 +234,9 @@ import { AxisScore } from '../../core/services/api.service';
     `
 })
 export class WealthScorePage implements OnInit {
+    /** When embedded in the Analyses hub (Score tab), hide the page header. */
+    @Input() embedded = false;
+
     scoreService = inject(WealthScoreService);
     private i18n = inject(I18nService);
     private router = inject(Router);
