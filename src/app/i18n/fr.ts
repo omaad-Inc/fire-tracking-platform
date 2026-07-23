@@ -1133,11 +1133,11 @@ export const FR = {
     allClearDesc: 'Vos budgets sont sous contrôle, continuez comme ça.',
     sections: {
       situation: 'Votre situation',
-      situationSub: 'Votre score de santé financière et vos dettes.',
+      situationSub: 'Votre score de santé financière et la progression de votre épargne.',
       month: 'Ce mois-ci',
       monthSub: 'Vos transactions récentes.',
-      goals: 'Objectifs et patrimoine',
-      goalsSub: 'Votre épargne et la performance de vos actifs.',
+      assets: 'Dettes et patrimoine',
+      assetsSub: 'Ce que vous devez et la performance de vos actifs.',
     },
   },
   alerts: {

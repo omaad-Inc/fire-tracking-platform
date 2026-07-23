@@ -47,9 +47,13 @@ import { I18nService } from '../../i18n/i18n.service';
 
         <!-- S5-2: the widgets below are reordered into a deliberate story with
              higher-altitude band headers (widgets self-title, so headers group
-             rather than repeat): where you stand -> this month -> goals + assets. -->
+             rather than repeat). Each band pairs HEIGHT-COMPATIBLE widgets so a
+             two-up row never puts a tall card (the radar) beside a short one (a
+             one-line debts list), which would leave a hollow gap. The tall radar
+             is paired with the tall movers list; the two shorter money lists
+             (savings + debts) are paired together. -->
         <div class="space-y-8 md:space-y-10">
-            <!-- Band 1: where you stand (health) -->
+            <!-- Band 1: where you stand (health score + savings momentum) -->
             <section>
                 <app-section-header [title]="t('home.sections.situation')" [subtitle]="t('home.sections.situationSub')" />
                 <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
@@ -57,7 +61,7 @@ import { I18nService } from '../../i18n/i18n.service';
                         <app-wealth-score-widget />
                     </div>
                     <div class="col-span-12 md:col-span-6">
-                        <app-debts-overview />
+                        <app-savings-progress />
                     </div>
                 </div>
             </section>
@@ -68,12 +72,12 @@ import { I18nService } from '../../i18n/i18n.service';
                 <app-recent-transactions-widget />
             </section>
 
-            <!-- Band 3: goals + assets -->
+            <!-- Band 3: debts + asset movers -->
             <section>
-                <app-section-header [title]="t('home.sections.goals')" [subtitle]="t('home.sections.goalsSub')" />
+                <app-section-header [title]="t('home.sections.assets')" [subtitle]="t('home.sections.assetsSub')" />
                 <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
                     <div class="col-span-12 md:col-span-6">
-                        <app-savings-progress />
+                        <app-debts-overview />
                     </div>
                     <div class="col-span-12 md:col-span-6">
                         <app-top-movers-widget />

@@ -1135,11 +1135,11 @@ export const EN: Dict = {
     allClearDesc: 'Your budgets are under control, keep it up.',
     sections: {
       situation: 'Where you stand',
-      situationSub: 'Your financial-health score and your debts.',
+      situationSub: 'Your financial-health score and your savings progress.',
       month: 'This month',
       monthSub: 'Your recent transactions.',
-      goals: 'Goals and assets',
-      goalsSub: 'Your savings progress and how your assets are performing.',
+      assets: 'Debts and assets',
+      assetsSub: 'What you owe and how your assets are performing.',
     },
   },
   alerts: {
