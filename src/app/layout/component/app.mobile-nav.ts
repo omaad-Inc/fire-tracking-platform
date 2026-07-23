@@ -4,15 +4,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { inject } from '@angular/core';
 import { I18nService } from '../../i18n/i18n.service';
-import { NavService } from '../../core/services/nav.service';
+import { NavModelService, BottomNavItem } from '../../core/services/nav-model.service';
 import { filter } from 'rxjs/operators';
-
-interface NavItem {
-    label: string;
-    icon: string;
-    route: string[];
-    active?: boolean;
-}
 
 @Component({
     selector: 'app-mobile-nav',
@@ -296,13 +289,13 @@ interface NavItem {
     `]
 })
 export class AppMobileNav implements OnInit {
-    navItems: NavItem[] = [];
+    navItems: BottomNavItem[] = [];
     /** Secondary destinations shown in the "More" sheet (don't fit 5 slots). */
-    moreItems: NavItem[] = [];
+    moreItems: BottomNavItem[] = [];
     moreOpen = false;
     lang = 'fr';
     currentUrl = '';
-    private nav = inject(NavService);
+    private navModel = inject(NavModelService);
 
     constructor(
         private router: Router,
@@ -326,22 +319,9 @@ export class AppMobileNav implements OnInit {
 
     private updateNavItems() {
         this.lang = this.getCurrentLang();
-
-        this.navItems = [
-            { label: this.t('menu.dashboard'),    icon: 'pi pi-home',                    route: this.nav.link() },
-            { label: this.t('menu.patrimony'),    icon: 'pi pi-wallet',                  route: this.nav.link('pages', 'patrimoine') },
-            { label: this.t('menu.transactions'), icon: 'pi pi-arrow-right-arrow-left',  route: this.nav.link('pages', 'transaction') },
-            { label: this.t('menu.myGoals'),      icon: 'pi pi-bullseye',                route: this.nav.link('pages', 'goals') },
-        ];
-
-        // FIRE + Wealth Score are first-class destinations but the bar only
-        // holds ~5 slots on a phone, so they live in the "More" sheet with Debts.
-        this.moreItems = [
-            { label: this.t('menu.fire'),        icon: 'pi pi-chart-line',   route: this.nav.link('pages', 'fire') },
-            { label: this.t('menu.wealthScore'), icon: 'pi pi-gauge',        route: this.nav.link('pages', 'wealth-score') },
-            { label: this.t('menu.debts'),       icon: 'pi pi-credit-card',  route: this.nav.link('pages', 'debts') },
-            { label: this.t('menu.insights'),    icon: 'pi pi-chart-bar',    route: this.nav.link('pages', 'insights') },
-        ];
+        // Single source of truth (shared with the desktop sidebar).
+        this.navItems = this.navModel.bottomPrimary();
+        this.moreItems = this.navModel.bottomMore();
     }
 
     toggleMore() {
