@@ -624,12 +624,17 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         }
     }
 
-    /** True once a name/category/amount has been entered but not yet saved. */
+    /**
+     * True once TYPED input (name or an amount) exists but is not yet saved.
+     * Deliberately does NOT count the category selection: tapping a card is a
+     * free one-tap action, and the BRVM/intl cards immediately navigate to the
+     * connect-broker flow, which false-triggered the "unsaved changes" confirm
+     * on every tap (the guard fired with only the category set).
+     */
     private hasUnsavedInput(): boolean {
         const f = this.assetForm;
         return !this.justSaved && (
-            !!f.name?.trim() || !!this.selectedCategory() ||
-            f.purchasePrice > 0 || f.currentPrice > 0
+            !!f.name?.trim() || f.purchasePrice > 0 || f.currentPrice > 0
         );
     }
 
