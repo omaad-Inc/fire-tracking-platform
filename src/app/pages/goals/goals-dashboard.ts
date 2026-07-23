@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
@@ -17,6 +18,7 @@ import { FireHeroCardComponent } from './components/fire-hero-card';
 import { SavingsProgress } from './components/goals-progress-chart';
 import { progressPercent } from './goal-utils';
 import { PageHeaderComponent } from '../../core/ui';
+import { FireDashboardPage } from '../fire/fire-dashboard';
 
 @Component({
     selector: 'app-goals-dashboard',
@@ -32,6 +34,7 @@ import { PageHeaderComponent } from '../../core/ui';
         FireHeroCardComponent,
         SavingsProgress,
         PageHeaderComponent,
+        FireDashboardPage,
     ],
     providers: [MessageService, ConfirmationService],
     template: `
@@ -43,7 +46,7 @@ import { PageHeaderComponent } from '../../core/ui';
                 [subtitle]="i18n.t('goals.subtitle')">
                 <p-button
                     actions
-                    *ngIf="!share.active()"
+                    *ngIf="!share.active() && tab() === 'goals'"
                     icon="pi pi-plus"
                     [label]="i18n.t('goals.add')"
                     (onClick)="openAdd()"
@@ -51,6 +54,22 @@ import { PageHeaderComponent } from '../../core/ui';
                 />
             </app-page-header>
 
+            <!-- Objectifs hub tabs: goals summary (with the FIRE hero) vs the
+                 detailed FIRE projection. Deep-linkable via ?tab=fire. -->
+            <div>
+                <div class="inline-flex rounded-xl bg-surface-100 dark:bg-surface-800 p-1" role="tablist">
+                    <button role="tab" [attr.aria-selected]="tab() === 'goals'"
+                            (click)="setTab('goals')" [class]="tabClass('goals')">
+                        {{ i18n.t('menu.myGoals') }}
+                    </button>
+                    <button role="tab" [attr.aria-selected]="tab() === 'fire'"
+                            (click)="setTab('fire')" [class]="tabClass('fire')" data-testid="tab-fire">
+                        {{ i18n.t('menu.fire') }}
+                    </button>
+                </div>
+            </div>
+
+            @if (tab() === 'goals') {
             <!-- FIRE hero (lifetime goal, always visible) -->
             <app-fire-hero-card />
 
@@ -131,6 +150,15 @@ import { PageHeaderComponent } from '../../core/ui';
                     }
                 </div>
             }
+            } @else {
+                <!-- FIRE tab: the detailed projection, embedded (its own header hidden).
+                     @defer lazy-loads the heavier FIRE view only when this tab opens. -->
+                @defer (on immediate) {
+                    <app-fire-dashboard [embedded]="true" />
+                } @placeholder {
+                    <div class="animate-pulse bg-surface-100 dark:bg-surface-800 rounded-2xl h-96"></div>
+                }
+            }
         </div>
 
         <!-- Add dialog -->
@@ -152,6 +180,11 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
     share = inject(ShareContextService);
+    private route = inject(ActivatedRoute);
+    private router = inject(Router);
+
+    /** Objectifs hub tab. Seeded from ?tab= so /pages/goals?tab=fire deep-links to FIRE. */
+    tab = signal<'goals' | 'fire'>(this.route.snapshot.queryParamMap.get('tab') === 'fire' ? 'fire' : 'goals');
 
     private sub?: Subscription;
 
@@ -172,6 +205,24 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.sub?.unsubscribe();
+    }
+
+    setTab(t: 'goals' | 'fire') {
+        this.tab.set(t);
+        // Keep the tab in the URL (deep-linkable, back-consistent) without a full nav.
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { tab: t === 'goals' ? null : t },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        });
+    }
+
+    tabClass(t: 'goals' | 'fire'): string {
+        const base = 'px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer';
+        return this.tab() === t
+            ? `${base} bg-surface-0 dark:bg-surface-950 text-brand-700 dark:text-ochre-400 shadow-card`
+            : `${base} text-surface-500 dark:text-surface-400`;
     }
 
     private async loadGoals() {

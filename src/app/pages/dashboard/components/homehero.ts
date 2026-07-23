@@ -137,7 +137,7 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                 </div>
 
                 <!-- FIRE %: secondary indicator, quiet, never the lead -->
-                <a [routerLink]="fireConfigured() ? link('pages','goals') : link('pages','fire')"
+                <a [routerLink]="link('pages','goals')" [queryParams]="{ tab: 'fire' }"
                    class="mt-4 flex items-center gap-3 no-underline group"
                    [attr.aria-label]="t('dashboard.kpi.fireObjectif')">
                     <span class="text-sm text-surface-500 dark:text-surface-400">{{ t('dashboard.kpi.fireObjectif') }}</span>

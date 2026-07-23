@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -22,6 +22,9 @@ import { FireSettings } from '../settings/components/fire-settings';
     template: `
         <div class="flex flex-col gap-6">
 
+            <!-- Breadcrumb + header: hidden when embedded in the Objectifs hub (the
+                 hub's tab bar already provides the title + context). -->
+            @if (!embedded) {
             <!-- Breadcrumb / back -->
             <div class="flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
                 <button
@@ -46,6 +49,7 @@ import { FireSettings } from '../settings/components/fire-settings';
                     <p class="text-warm-500 dark:text-warm-400 text-sm m-0">{{ i18n.t('fire.tagline') }}</p>
                 </div>
             </div>
+            }
 
             <!-- No FIRE target configured -->
             @if (!loading() && (!fire() || (fire()!.targetAmount) === 0)) {
@@ -179,6 +183,9 @@ import { FireSettings } from '../settings/components/fire-settings';
     `
 })
 export class FireDashboardPage implements OnInit, OnDestroy {
+    /** When embedded in the Objectifs hub (FIRE tab), hide the breadcrumb + page header. */
+    @Input() embedded = false;
+
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
     private tokenService = inject(TokenService);
