@@ -165,16 +165,23 @@ export class DashboardService {
     // both derive from it, the resource's in-flight promise collapses that burst
     // to a single request). Parameterized progression series each get their own
     // lazily-created resource, keyed by args, in `progressionResources`.
+    // persistKey (perf S-boot): the last good summary/progression is snapshotted
+    // per-user on the device, so a hard refresh paints real numbers instantly
+    // and revalidates in the background instead of blanking on the network.
     private summaryResource = cachedResource<DashboardSummary>(
         () => firstValueFrom(this.api.getDashboardSummary()),
+        { persistKey: 'dashboard-summary' },
     );
     private progressionResources = new Map<string, CachedResource<ChartDataPoint[]>>();
 
-    private progression(key: string, fetcher: () => Promise<ChartDataPoint[]>): CachedResource<ChartDataPoint[]> {
+    private progression(key: string, fetcher: () => Promise<ChartDataPoint[]>, persist = false): CachedResource<ChartDataPoint[]> {
         let r = this.progressionResources.get(key);
-        if (!r) { r = cachedResource(fetcher); this.progressionResources.set(key, r); }
+        if (!r) { r = cachedResource(fetcher, persist ? { persistKey: key } : {}); this.progressionResources.set(key, r); }
         return r;
     }
+
+    /** Live summary signal (updates when a background revalidation lands). */
+    readonly summaryData = this.summaryResource.data;
 
     /** Drop freshness on all dashboard caches so the next read refetches (write events). */
     invalidateCache(): void {
@@ -279,7 +286,11 @@ export class DashboardService {
      * fired together collapse to ONE /dashboard/summary request.
      */
     async getStats(): Promise<DashboardStats> {
-        const summary = await this.summaryResource.load();
+        return this.statsFromSummary(await this.summaryResource.load());
+    }
+
+    /** Sync summary → stats mapper, shared by getStats() and live-signal consumers. */
+    statsFromSummary(summary: DashboardSummary): DashboardStats {
         return {
             netWorth: summary.net_worth,
             netWorthChange: summary.net_worth_change_30d,
@@ -297,7 +308,12 @@ export class DashboardService {
      * field-name set end-to-end, no `??` guessing across a drifted contract, P1-18).
      */
     async getFIREMetrics(): Promise<FIREProgress> {
-        const fm: FireMetrics = (await this.summaryResource.load()).fire_metrics;
+        return this.fireFromSummary(await this.summaryResource.load());
+    }
+
+    /** Sync summary → FIRE mapper, shared by getFIREMetrics() and live-signal consumers. */
+    fireFromSummary(summary: DashboardSummary): FIREProgress {
+        const fm: FireMetrics = summary.fire_metrics;
         return {
             currentNetWorth: fm.current_net_worth,
             targetAmount: fm.fire_target,
@@ -466,6 +482,15 @@ export class DashboardService {
      * Get worth progression for line chart (client-side interpolation)
      */
     async getWorthProgression(months: number = 12): Promise<ChartDataPoint[]> {
+        return this.worthProgressionResource(months).load();
+    }
+
+    /** Live progression signal (updates when a background revalidation lands). */
+    worthProgressionData(months: number = 12) {
+        return this.worthProgressionResource(months).data;
+    }
+
+    private worthProgressionResource(months: number): CachedResource<ChartDataPoint[]> {
         return this.progression(`progression_${months}`, async () => {
             // Prefer the backend's snapshot-based progression (FX-correct and
             // reuses the /dashboard/summary payload when available) over
@@ -485,7 +510,7 @@ export class DashboardService {
             } catch {
                 return [];
             }
-        }).load();
+        }, true); // persist: the hero sparkline paints instantly on refresh
     }
 
     /**

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subscription, merge } from 'rxjs';
@@ -172,6 +172,25 @@ export class HomeHero implements OnInit, OnDestroy {
     fireProgress = signal<FIREProgress | null>(null);
     series = signal<ChartDataPoint[]>([]);
     alerts = signal<FinancialAlert[]>([]);
+
+    constructor() {
+        // Track the LIVE resource signals, not only loadAll()'s one-shot values:
+        // on a hard refresh the resources first serve the device snapshot (so
+        // the hero paints real numbers instantly) and revalidate in the
+        // background — these effects fold the fresh values in when they land.
+        effect(() => {
+            const summary = this.dashboardService.summaryData();
+            if (!summary) return;
+            this.stats.set(this.dashboardService.statsFromSummary(summary));
+            this.fireProgress.set(this.dashboardService.fireFromSummary(summary));
+            this.loading.set(false);
+            this.loadError.set(false);
+        });
+        effect(() => {
+            const series = this.dashboardService.worthProgressionData(12)();
+            if (series?.length) this.series.set(series);
+        });
+    }
 
     /** Respect the OS reduced-motion preference (disables the number count-up). */
     readonly reducedMotion =
