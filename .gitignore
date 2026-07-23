@@ -46,3 +46,6 @@ Thumbs.db
 /backend/
 .claude/
 CLAUDE.md
+
+# Playwright artifacts
+/test-results/
