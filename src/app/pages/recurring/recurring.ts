@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
@@ -165,10 +164,16 @@ export class RecurringPage implements OnInit {
             .map(f => ({ value: f, label: this.t('recurring.freq.' + f) }));
     }
 
-    async ngOnInit() {
-        // Opportunistic materialization on load (idempotent), then load rules.
-        try { await firstValueFrom(this.api.runRecurring()); } catch { /* backend may lack the route yet */ }
+    ngOnInit() {
+        // Load the rules IMMEDIATELY; the opportunistic materialization runs in
+        // the background (idempotent) and refreshes the list only if it actually
+        // created transactions. Awaiting the run first serialized a slow POST
+        // (DB writes on a slow backend) in front of the whole page render.
         this.load();
+        this.api.runRecurring().subscribe({
+            next: (res) => { if ((res?.created ?? 0) > 0) this.load(); },
+            error: () => { /* backend may lack the route yet */ },
+        });
     }
 
     runNow() {
