@@ -245,15 +245,26 @@ export class AuthService {
 
     /**
      * Always hits /auth/refresh (single-flight). Use when the current access
-     * token is known-bad (a 401 on an authed request). Resolves to the new
-     * token, or null if the session is dead.
+     * token is known-bad (a 401 on an authed request).
+     *
+     * Verdict semantics (premium rule: NEVER log a user out on a hiccup):
+     *   - emits the new token on success;
+     *   - emits null ONLY when the server DEFINITIVELY rejected the session
+     *     (401/403), the one case that justifies clearing it;
+     *   - ERRORS on anything transient (timeout, network, 5xx, a deploy blip,
+     *     a Render cold start): no verdict on the session, callers must keep
+     *     it and let the UI show retryable error states instead.
      */
     forceRefresh(): Observable<string | null> {
         if (!this.refreshInFlight$) {
             this.refreshInFlight$ = this.refreshToken().pipe(
                 // Fall back to any token a concurrent flow (login) set meanwhile.
                 map(res => res?.access_token ?? this.tokenService.getToken()),
-                catchError(() => of(null)),
+                catchError((err: unknown) => {
+                    const status = err instanceof HttpErrorResponse ? err.status : 0;
+                    if (status === 401 || status === 403) return of(null); // session is dead
+                    return throwError(() => err); // transient: not a verdict
+                }),
                 finalize(() => { this.refreshInFlight$ = null; }),
                 shareReplay(1),
             );
@@ -274,6 +285,8 @@ export class AuthService {
     /**
      * Refresh access token. Marked SKIP_AUTH so the interceptor doesn't try to
      * refresh-on-401 the refresh call itself (which would recurse forever).
+     * Errors propagate as the raw HttpErrorResponse: forceRefresh() needs the
+     * status code to tell "session dead" (401/403) from a transient failure.
      */
     refreshToken(): Observable<AuthResponse> {
         const context = new HttpContext().set(SKIP_AUTH, true);
@@ -281,7 +294,6 @@ export class AuthService {
             tap(response => {
                 if (response.access_token) this.tokenService.setToken(response.access_token);
             }),
-            catchError(this.handleError)
         );
     }
 

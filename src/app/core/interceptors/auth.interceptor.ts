@@ -31,14 +31,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }
 
     // Cold load: no in-memory access token yet, but the device has a session
-    // hint (the persisted profile — written at login, cleared at logout). Hold
-    // the request on the SHARED cookie-based restore instead of letting every
-    // boot call burn a doomed 401 round-trip; they all proceed the moment the
-    // one /auth/refresh resolves. No hint → send anonymously as before.
+    // hint (the persisted profile, written at login and cleared at logout).
+    // Hold the request on the SHARED cookie-based restore instead of letting
+    // every boot call burn a doomed 401 round-trip; they all proceed the
+    // moment the one /auth/refresh resolves. No hint: send anonymously.
+    // A TRANSIENT restore failure (timeout/5xx/offline) is no verdict on the
+    // session: send anonymously and let the call fail retryably; the guard
+    // keeps the user logged in.
     const token = tokenService.getToken();
     const token$: Observable<string | null> =
         token ? of(token)
-        : tokenService.getUser() ? authService.ensureSession()
+        : tokenService.getUser() ? authService.ensureSession().pipe(catchError(() => of(null)))
         : of(null);
 
     return token$.pipe(switchMap(tok => dispatch(req, next, tok, tokenService, authService, router, cacheReset)));
@@ -84,18 +87,25 @@ function dispatch(
             }
 
             // Attempt one shared refresh, then replay the original request.
+            // forceRefresh verdicts: a token = replay; null = the session was
+            // DEFINITIVELY rejected (401/403 on the refresh itself); an error
+            // is TRANSIENT (no verdict): surface the original 401 retryably
+            // and NEVER log the user out for it.
             return authService.forceRefresh().pipe(
+                catchError(() => of(undefined)), // transient: no verdict on the session
                 switchMap((newToken) => {
                     if (newToken) {
                         const replay = authReq.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } });
                         return next(replay);
                     }
-                    // Refresh failed. A 401 right after login is usually a race
-                    // (token not yet propagated), don't nuke the session for it.
-                    const setAt = tokenService.tokenSetAt();
-                    const justLoggedIn = setAt != null && (Date.now() - setAt) < JUST_LOGGED_IN_GRACE_MS;
-                    if (!justLoggedIn) {
-                        forceLogin(tokenService, router, cacheReset);
+                    if (newToken === null) {
+                        // Definitive rejection. A 401 right after login is usually a
+                        // race (token not yet propagated), don't nuke the session for it.
+                        const setAt = tokenService.tokenSetAt();
+                        const justLoggedIn = setAt != null && (Date.now() - setAt) < JUST_LOGGED_IN_GRACE_MS;
+                        if (!justLoggedIn) {
+                            forceLogin(tokenService, router, cacheReset);
+                        }
                     }
                     return throwError(() => error);
                 }),

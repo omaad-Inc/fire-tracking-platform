@@ -72,7 +72,9 @@ export const appConfig: ApplicationConfig = {
             if (typeof window === 'undefined') return; // prerender: no session
             const tokenService = inject(TokenService);
             if (tokenService.getUser() && !tokenService.getToken()) {
-                inject(AuthService).ensureSession().subscribe();
+                // Transient failures are no verdict on the session (the guard
+                // owns the logout decision); swallow them here.
+                inject(AuthService).ensureSession().subscribe({ error: () => {} });
             }
         }),
         provideServiceWorker('ngsw-worker.js', {
