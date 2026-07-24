@@ -25,6 +25,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { ShareContextService } from '../../../core/services/share-context.service';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { CsvImportDialog } from './csv-import-dialog';
+import { isTouchDevice } from '../../../core/util/touch';
 
 interface DayGroup {
     dateKey: string;
@@ -313,7 +314,7 @@ interface DayGroup {
                         </div>
                         <div class="flex flex-col gap-1">
                             <label for="tx-date" class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.date') }}</label>
-                            <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true" inputId="tx-date"
+                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true" inputId="tx-date"
                                           dateFormat="yy-mm-dd" styleClass="w-full"
                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                             @if (submitted && !editDate) {
@@ -437,6 +438,9 @@ interface DayGroup {
     `
 })
 export class TransactionLogs implements OnInit, OnDestroy {
+    /** Mobile-safe datepickers: touchUI modal + readonly input (no keyboard). */
+    readonly isTouch = isTouchDevice();
+
     private transactionsService = inject(TransactionsService);
     private patrimoineService   = inject(PatrimoineService);
     private state               = inject(AssetsStateService);

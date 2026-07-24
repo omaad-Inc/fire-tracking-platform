@@ -13,6 +13,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import {
     AssetFormShape, getAssetFormShape, MOBILE_MONEY_OPERATORS, TontineStatus,
 } from '../asset-form-shape';
+import { isTouchDevice } from '../../../core/util/touch';
 
 /** The mutable edit-form model, shared by reference between this dialog and the
  *  asset-detail container (which owns loading + persistence). */
@@ -51,6 +52,9 @@ export interface AssetEditForm {
     templateUrl: './asset-edit-dialog.html',
 })
 export class AssetEditDialogComponent {
+    /** Mobile-safe datepickers: touchUI modal + readonly input (no keyboard). */
+    readonly isTouch = isTouchDevice();
+
     readonly i18n = inject(I18nService);
     t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
 

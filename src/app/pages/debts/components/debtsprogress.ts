@@ -16,6 +16,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { ShareContextService } from '../../../core/services/share-context.service';
+import { isTouchDevice } from '../../../core/util/touch';
 
 @Component({
     standalone: true,
@@ -265,7 +266,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
                     <!-- Date -->
                     <div class="flex flex-col gap-1 sm:col-span-2">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.date') }}</label>
-                        <p-datepicker [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
+                        <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
                                       dateFormat="yy-mm-dd" styleClass="w-full"
                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                     </div>
@@ -348,6 +349,9 @@ import { ShareContextService } from '../../../core/services/share-context.servic
     `
 })
 export class DebtsProgress implements OnInit {
+    /** Mobile-safe datepickers: touchUI modal + readonly input (no keyboard). */
+    readonly isTouch = isTouchDevice();
+
     private debtsService        = inject(DebtsService);
     cs = inject(CurrencyService);
     private messageService      = inject(MessageService);
