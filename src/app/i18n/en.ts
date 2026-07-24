@@ -257,6 +257,7 @@ export const EN: Dict = {
     recurring: 'Recurring',
     budgets: 'Budgets',
     insights: 'Insights',
+    coaching: 'Coaching',
     finances: 'Finances',
     savings: 'Savings',
     debts: 'Debts',
@@ -1150,6 +1151,65 @@ export const EN: Dict = {
     overBudget: '{{cat}}: over budget ({{pct}}%)',
     nearLimit: '{{cat}}: {{pct}}% of budget',
     anomaly: '{{cat}}: unusual spending (×{{ratio}})',
+  },
+  coaching: {
+    allClear: {
+      title: 'All clear',
+      desc: 'No actions recommended right now. Keep it up.',
+    },
+    dismiss: 'Dismiss',
+    emergencyFund: {
+      title: 'Build your emergency fund',
+      detail: 'Your emergency fund covers {{months_covered}} months of expenses. Aim for {{target_months}} months, about {{suggested_monthly}} per month over 6 months.',
+      action: 'Create a goal',
+    },
+    overspending: {
+      title: "You're spending more than you earn",
+      detail: 'You spend more than you make ({{monthly_expenses}} vs {{monthly_income}} per month). Rebalance to free up savings.',
+      action: 'View my budgets',
+    },
+    savingsRate: {
+      title: 'Increase your savings rate',
+      detail: 'Your savings rate is {{savings_rate_pct}}%. Aim for at least {{target_pct}}% to reach your goals faster.',
+      action: 'View my budgets',
+    },
+    debtPressure: {
+      title: 'Your debt load is high',
+      detail: 'Your repayments ({{monthly_payments}} per month) are {{dsr_pct}}% of your income. Above {{threshold_pct}}%, the burden gets heavy.',
+      action: 'View my debts',
+    },
+    concentration: {
+      assetTitle: 'One asset dominates your portfolio',
+      assetDetail: '{{asset_name}} is {{top_share_pct}}% of your net worth ({{top_asset_value}}). Diversifying lowers your risk.',
+      classTitle: 'Diversify your asset classes',
+      classDetail: 'Your wealth is concentrated in a few asset classes. Adding more lowers your risk.',
+      action: 'View my portfolio',
+    },
+    budget: {
+      title: 'Over budget',
+      detail: '{{category}}: {{spent}} spent of {{budgeted}} ({{percent_used}}%). {{over_count}} category(ies) over budget this month.',
+      action: 'View my budgets',
+    },
+    fireUnset: {
+      title: 'Set your FIRE target',
+      detail: "You haven't set a FIRE target yet. Set one to track your progress toward financial independence.",
+      action: 'Configure FIRE',
+    },
+    fireStalled: {
+      title: "Your FIRE goal isn't progressing",
+      detail: "You're not saving right now, so your FIRE goal isn't moving. Free up some monthly savings capacity.",
+      action: 'View my budgets',
+    },
+    fireOffPace: {
+      title: "You're behind your FIRE target",
+      detail: 'At your current pace you would reach your goal around {{projected_year}}, past your {{target_year}} target. Increase your savings to catch up.',
+      action: 'Configure FIRE',
+    },
+    stale: {
+      title: 'Update your accounts',
+      detail: 'No transactions for {{days_since}} days. Update your accounts to keep the numbers accurate.',
+      action: 'Add a transaction',
+    },
   },
   insights: {
     title: 'Insights',
