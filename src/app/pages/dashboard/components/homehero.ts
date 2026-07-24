@@ -123,7 +123,11 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                             </span>
                             <i class="pi pi-chevron-right text-xs text-surface-400 shrink-0"></i>
                         </a>
-                    } @else {
+                    } @else if (coaching.ready()) {
+                        <!-- All-clear ONLY on a confirmed empty result. While coaching is
+                             still loading we show a neutral placeholder: claiming all-clear
+                             mid-fetch would be a false signal that flashes away once the
+                             real recommendation lands. -->
                         <div class="flex items-center gap-3 rounded-xl border border-positive/25 bg-positive/5 p-3">
                             <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-positive/15 text-positive shrink-0">
                                 <i class="pi pi-check"></i>
@@ -133,6 +137,9 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                                 <span class="block text-xs text-surface-500 dark:text-surface-400">{{ t('home.allClearDesc') }}</span>
                             </span>
                         </div>
+                    } @else if (!coaching.failed()) {
+                        <div class="h-[3.75rem] rounded-xl bg-surface-100 dark:bg-surface-800 animate-pulse"
+                             aria-hidden="true"></div>
                     }
                 </div>
 

@@ -26,9 +26,21 @@ export class CoachingService {
     private cs = inject(CurrencyService);
     private state = inject(AssetsStateService);
 
+    // persistKey: recommendations are derived advice over aggregates (within the
+    // approved on-device snapshot mandate), so a hard refresh paints the nudge
+    // and the Conseils tab instantly and revalidates in the background.
     private resource = cachedResource<CoachingRecommendation[]>(
         () => firstValueFrom(this.api.getCoachingRecommendations()).then(r => r.recommendations),
+        { persistKey: 'coaching-recommendations' },
     );
+
+    /** True once a value exists (snapshot-hydrated or fetched). While false the
+     *  UI must show a neutral loading state, NEVER the all-clear: an in-flight
+     *  fetch is not "zero recommendations". */
+    readonly ready = computed(() => this.resource.status() === 'success');
+    /** Cold failure with nothing cached: surfaces should hide the slot rather
+     *  than pulse forever or claim all-clear. */
+    readonly failed = computed(() => this.resource.status() === 'error');
 
     constructor() {
         inject(CACHE_RESET).subscribe(() => this.resource.reset());
