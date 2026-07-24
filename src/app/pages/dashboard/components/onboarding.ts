@@ -1,4 +1,4 @@
-import { Component, inject, computed, input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, computed, input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -16,6 +16,7 @@ interface OnboardingStep {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-onboarding',
     standalone: true,
     imports: [CommonModule, ButtonModule, RippleModule],

@@ -1,4 +1,4 @@
-import { Component, Input, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SavingGoal } from '../../../core/services/api.service';
@@ -10,6 +10,7 @@ import { NavService } from '../../../core/services/nav.service';
 
 @Component({
     selector: 'app-goal-card',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     imports: [CommonModule, AppAmountComponent],
     template: `

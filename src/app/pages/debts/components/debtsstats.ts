@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { DebtsService, DebtsStatsSummary } from '../../service/debts.service';
@@ -8,6 +8,7 @@ import { LoadErrorComponent } from '../../../core/components/load-error.componen
 import { I18nService } from '../../../i18n/i18n.service';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     selector: 'app-debts-stats',
     imports: [CommonModule, AppAmountComponent, LoadErrorComponent],
