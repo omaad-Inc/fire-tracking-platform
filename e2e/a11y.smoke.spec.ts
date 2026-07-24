@@ -6,13 +6,12 @@ import AxeBuilder from '@axe-core/playwright';
  * against WCAG 2.1 A/AA. The audit's named gap was "no a11y testing" — this is
  * the harness.
  *
- * Gate: ZERO `critical` violations (unlabeled controls, nameless buttons,
- * missing image text — genuine blockers). `serious` findings (currently the
- * brand color-contrast set) are logged, not gated: fixing them means re-tuning
- * global brand tokens, an owner design decision tracked separately. Flip
- * GATE_SERIOUS to true once that palette pass lands.
+ * Gate: ZERO `critical` AND ZERO `serious` violations. The S7-1 palette pass
+ * cleared the brand color-contrast set to full WCAG AA (minimal-delta token
+ * tuning: ochre-600, slate surface-500, positive; footer + login fixes), so
+ * the gate now enforces both tiers — any regression fails CI.
  */
-const GATE_SERIOUS = false;
+const GATE_SERIOUS = true;
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 
 const PAGES: Array<[string, string]> = [

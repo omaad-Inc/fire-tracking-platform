@@ -342,12 +342,15 @@ interface YearProjection {
                                 </div>
                             </div>
                             @if (chartData) {
-                                <p-chart type="bar" [data]="chartData" [options]="chartOptions"
-                                         role="img"
-                                         [attr.aria-label]="isFr
-                                            ? 'Projection de votre patrimoine dans le temps : contributions et intérêts cumulés jusqu’à l’objectif FIRE'
-                                            : 'Projection of your wealth over time: contributions and cumulative interest up to your FIRE target'"
-                                         class="w-full" [style]="{ height: '520px' }" />
+                                <!-- role=img + label on the wrapper is the chart's text alternative;
+                                     the canvas subtree is aria-hidden so it isn't announced unlabeled. -->
+                                <div role="img"
+                                     [attr.aria-label]="isFr
+                                        ? 'Projection de votre patrimoine dans le temps : contributions et intérêts cumulés jusqu’à l’objectif FIRE'
+                                        : 'Projection of your wealth over time: contributions and cumulative interest up to your FIRE target'">
+                                    <p-chart type="bar" [data]="chartData" [options]="chartOptions" aria-hidden="true"
+                                             class="w-full" [style]="{ height: '520px' }" />
+                                </div>
                             }
                         </div>
 

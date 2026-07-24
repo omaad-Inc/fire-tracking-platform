@@ -289,7 +289,7 @@ import { I18nService } from '../../i18n/i18n.service';
 
                     <!-- Text Content -->
                     <div class="text-center mt-16">
-                        <p class="text-xs font-semibold tracking-[0.15em] uppercase text-brand-700 dark:text-brand-300 mb-4">
+                        <p class="text-xs font-semibold tracking-[0.15em] uppercase text-brand-200 dark:text-brand-300 mb-4">
                             {{ t('auth.login.asideSlogan') }}
                         </p>
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">

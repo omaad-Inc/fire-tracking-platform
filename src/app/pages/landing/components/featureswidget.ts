@@ -35,7 +35,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <div class="flex flex-wrap gap-3">
                                         <span class="px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-700/40 text-brand-700 dark:text-brand-300 text-sm">Net Worth</span>
                                         <span class="px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-700/40 text-brand-700 dark:text-brand-300 text-sm">Multi-actifs</span>
-                                        <span class="px-3 py-1 rounded-full bg-positive-100 dark:bg-positive-700/40 text-positive dark:text-positive-100 text-sm">Graphiques</span>
+                                        <span class="px-3 py-1 rounded-full bg-positive-100 dark:bg-positive-700/40 text-positive-700 dark:text-positive-100 text-sm">Graphiques</span>
                                     </div>
                                 </div>
                                 <div class="hidden md:block w-48 h-48 rounded-xl bg-brand-100 dark:bg-brand-700/20 p-4">

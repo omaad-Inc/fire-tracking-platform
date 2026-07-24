@@ -82,19 +82,19 @@ import { I18nService } from '../../../i18n/i18n.service';
             <div class="relative border-t border-warm-800">
                 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="text-warm-500 text-sm text-center md:text-left">
+                        <div class="text-warm-400 text-sm text-center md:text-left">
                             © {{ currentYear }} Omaad. {{ t('landing.footer.copyright') }}
-                            <span class="text-warm-600">{{ t('landing.footer.madeWith') }}</span>
+                            <span class="text-warm-400">{{ t('landing.footer.madeWith') }}</span>
                             <i class="pi pi-heart-fill text-negative mx-1"></i>
-                            <span class="text-warm-600">{{ t('landing.footer.forFreedom') }}</span>
+                            <span class="text-warm-400">{{ t('landing.footer.forFreedom') }}</span>
                         </div>
                         <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-2 text-warm-500 text-sm">
+                            <div class="flex items-center gap-2 text-warm-400 text-sm">
                                 <span class="inline-flex rounded-full h-2 w-2 bg-positive-500"></span>
                                 <span>{{ t('landing.footer.available') }}</span>
                             </div>
                             <span class="text-warm-700">•</span>
-                            <div class="flex items-center gap-2 text-warm-500 text-sm">
+                            <div class="flex items-center gap-2 text-warm-400 text-sm">
                                 <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
                                 <span>{{ t('landing.footer.secure') }}</span>
                             </div>
