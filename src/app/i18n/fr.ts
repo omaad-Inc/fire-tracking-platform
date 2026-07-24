@@ -712,6 +712,12 @@ export const FR = {
     wizard: {
       headerComplete: 'Compléter mon patrimoine',
       subtitle: 'Immobilier, BRVM, tontine, mobile money : tout votre patrimoine au même endroit.',
+      detailsOptional: 'Ajouter des détails (optionnel)',
+      detailsHide: 'Masquer les détails',
+      submit: "Ajouter l'actif",
+      successTitle: 'Actif ajouté',
+      viewPatrimoine: 'Voir mon patrimoine',
+      addAnother: 'Ajouter un autre actif',
       details: 'Informations',
       ownership: 'Répartition',
       noTypeFound: 'Aucun type d\'actif trouvé',

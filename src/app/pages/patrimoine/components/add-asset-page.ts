@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, model, signal, computed } from '@angular/core';
 import { CommonModule, DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -17,6 +17,65 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
+
+/**
+ * Tappable currency chip rendered inside an amount input's suffix slot (S7b
+ * PA-2). Replaces the old full-width "Devise" select row: the currency lives
+ * where the money is typed, defaulting to the user's preference, one tap to
+ * change. Self-contained popover (closes on outside click / Escape).
+ */
+@Component({
+    selector: 'app-currency-suffix',
+    standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    host: { '(document:click)': 'close()', '(document:keydown.escape)': 'close()' },
+    template: `
+        <div class="absolute right-0 top-1/2 -translate-y-1/2" (click)="$event.stopPropagation()">
+            <button type="button" (click)="open.set(!open())"
+                    class="inline-flex items-center gap-1 pl-2.5 pr-2 py-1 rounded-full text-xs font-semibold
+                           bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300
+                           hover:bg-ochre-50 hover:text-ochre-700 dark:hover:bg-ochre-500/10 dark:hover:text-ochre-400
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                           transition-colors cursor-pointer"
+                    [attr.aria-label]="ariaLabel()" [attr.aria-expanded]="open()" aria-haspopup="listbox">
+                {{ symbol() }} <i class="pi pi-chevron-down !text-[9px]" aria-hidden="true"></i>
+            </button>
+            @if (open()) {
+                <div class="absolute right-0 top-full mt-1.5 z-20 min-w-[9rem] rounded-xl border border-surface-200 dark:border-surface-700
+                            bg-surface-0 dark:bg-surface-900 shadow-lg py-1" role="listbox" [attr.aria-label]="ariaLabel()">
+                    @for (o of options; track o.value) {
+                        <button type="button" role="option" [attr.aria-selected]="currency() === o.value"
+                                (click)="pick(o.value)"
+                                class="w-full text-left px-3 py-2 text-sm text-surface-700 dark:text-surface-200
+                                       hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer
+                                       flex items-center justify-between gap-3"
+                                [class.font-semibold]="currency() === o.value">
+                            {{ o.label }}
+                            @if (currency() === o.value) { <i class="pi pi-check text-xs text-ochre-500" aria-hidden="true"></i> }
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    `,
+})
+export class CurrencySuffixComponent {
+    currency = model.required<string>();
+    ariaLabel = model('Devise');
+    open = signal(false);
+    readonly options = [
+        { label: 'FCFA (XOF)', value: 'XOF' },
+        { label: 'Euro (€)', value: 'EUR' },
+        { label: 'Dollar ($)', value: 'USD' },
+    ];
+    symbol = computed(() => {
+        const c = this.currency();
+        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+    });
+    pick(v: string) { this.currency.set(v); this.open.set(false); }
+    close() { this.open.set(false); }
+}
 
 interface Owner {
     name: string;
@@ -59,9 +118,17 @@ interface CategoryCard {
     standalone: true,
     imports: [
         CommonModule, FormsModule, ButtonModule, InputTextModule,
-        SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe
+        SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe,
+        CurrencySuffixComponent,
     ],
     providers: [MessageService],
+    styles: [`
+        @keyframes omaad-pop {
+            0% { transform: scale(.6); opacity: 0; }
+            70% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `],
     template: `
         <p-toast position="top-center"></p-toast>
 
@@ -90,7 +157,7 @@ interface CategoryCard {
                     </h1>
                 </div>
                 <!-- Step dots (only on form steps) -->
-                @if (currentStep() >= 1) {
+                @if (currentStep() === 1 || currentStep() === 2) {
                     <div class="flex items-center gap-1.5 shrink-0">
                         @for (s of [1, 2]; track s) {
                             <div class="w-2 h-2 rounded-full transition-all"
@@ -160,7 +227,7 @@ interface CategoryCard {
                 }
 
                 <!-- ===== STEPS 1 & 2: Form ===== -->
-                @if (currentStep() >= 1) {
+                @if (currentStep() === 1 || currentStep() === 2) {
                     <div class="max-w-2xl mx-auto">
                         <div class="flex flex-col lg:flex-row gap-6">
                             <!-- Step sidebar -->
@@ -198,27 +265,23 @@ interface CategoryCard {
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
 
-                                        <!-- Currency (always), the native currency the amounts below are entered in -->
-                                        <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currency') }}</label>
-                                            <p-select [(ngModel)]="assetForm.currency" [options]="currencyOptions"
-                                                      optionLabel="label" optionValue="value" appendTo="body"
-                                                      styleClass="w-full" />
-                                        </div>
+                                        <!-- Currency now lives as a tappable chip inside each amount
+                                             field (PA-2): defaults to the user's preference, one tap
+                                             to change. The old full-width Devise row is gone. -->
 
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
-                                                <p-inputnumber [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
+                                                <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -226,17 +289,6 @@ interface CategoryCard {
                                                 <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
-                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
-                                                       dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
-                                                <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
-                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
@@ -268,9 +320,9 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
@@ -283,24 +335,16 @@ interface CategoryCard {
                                         @if (isQuantityBased()) {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
-                                                <p-inputnumber [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
+                                                <p-inputnumber styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }} <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
-                                                <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                         }
@@ -312,9 +356,9 @@ interface CategoryCard {
                                                     {{ assetForm.category === 'cash' ? (t('addAssets.wizard.currentBalance')) : (t('addAssets.wizard.savingsAmount')) }} <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -335,9 +379,9 @@ interface CategoryCard {
                                                     }
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
@@ -350,54 +394,103 @@ interface CategoryCard {
                                                     }
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                         }
 
-                                        <!-- Purchase date -->
-                                        @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
-                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
-                                                       dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                        }
+                                    </div>
 
-                                        <!-- Institution -->
-                                        @if (isInstitutionBased() && !isSimpleBalanceCategory()) {
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
-                                                <input pInputText [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                        }
+                                    <!-- ===== Détails (optionnel): progressive disclosure (S7b PA-2). Purchase
+                                         date, institution, current unit value, RE specifics and tontine
+                                         secondary fields live here, collapsed by default (§13: never make
+                                         users feel homework is required). ===== -->
+                                    @if (detailsAvailable()) {
+                                        <div class="mt-6">
+                                            <button type="button" (click)="detailsOpen.set(!detailsOpen())"
+                                                    class="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 dark:text-ochre-400
+                                                           hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60 rounded"
+                                                    [attr.aria-expanded]="detailsOpen()">
+                                                <i class="pi text-xs transition-transform duration-200 motion-reduce:transition-none"
+                                                   [ngClass]="detailsOpen() ? 'pi-chevron-down' : 'pi-chevron-right'" aria-hidden="true"></i>
+                                                {{ detailsOpen() ? t('addAssets.wizard.detailsHide') : t('addAssets.wizard.detailsOptional') }}
+                                            </button>
 
-                                        <!-- Real estate specific -->
-                                        @if (assetForm.category === 'real_estate') {
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
-                                                <p-inputnumber [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                            @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
-                                                <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                                    <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.pricePerM2') }}</span>
-                                                    <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
-                                                        {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
-                                                    </span>
+                                            @if (detailsOpen()) {
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                                                    <!-- Current unit value (quantity-based) -->
+                                                    @if (isQuantityBased()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
+                                                            <div class="relative">
+                                                                <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- Purchase date -->
+                                                    @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
+                                                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                                   dateFormat="yy-mm-dd" styleClass="w-full"
+                                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                    }
+
+                                                    <!-- Institution -->
+                                                    @if (isInstitutionBased() && !isSimpleBalanceCategory()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
+                                                            <input pInputText [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
+                                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                    }
+
+                                                    <!-- Tontine secondary fields -->
+                                                    @if (assetForm.category === 'tontine') {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
+                                                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                                   dateFormat="yy-mm-dd" styleClass="w-full"
+                                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
+                                                            <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
+                                                                styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                        </div>
+                                                    }
+
+                                                    <!-- Real estate specifics -->
+                                                    @if (assetForm.category === 'real_estate') {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
+                                                            <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
+                                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                        @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
+                                                            <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
+                                                                <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.pricePerM2') }}</span>
+                                                                <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
+                                                                    {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
+                                                                </span>
+                                                            </div>
+                                                        }
+                                                        <div class="flex flex-col gap-2">
+                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
+                                                            <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
+                                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                    }
                                                 </div>
                                             }
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
-                                                <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                        }
-                                    </div>
+                                        </div>
+                                    }
                                 }
 
                                 <!-- Step 2: Ownership -->
@@ -456,22 +549,51 @@ interface CategoryCard {
                         </div>
                     </div>
                 }
+
+                <!-- ===== STEP 3: Success (PA-2). A rewarding finish instead of a
+                     toast-and-vanish: what was added, and the two next moves. ===== -->
+                @if (currentStep() === 3) {
+                    <div class="max-w-md mx-auto text-center pt-10 sm:pt-16">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-positive/10 flex items-center justify-center mb-6
+                                    animate-[omaad-pop_.35s_ease-out] motion-reduce:animate-none">
+                            <i class="pi pi-check text-3xl text-positive" aria-hidden="true"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('addAssets.wizard.successTitle') }}</h2>
+                        <p class="text-surface-500 dark:text-surface-400 mb-2">{{ assetForm.name }}</p>
+                        <p class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-8">
+                            <app-amount [value]="toEur(totalValue())" />
+                        </p>
+                        <div class="flex flex-col gap-3">
+                            <button pButton type="button" [label]="t('addAssets.wizard.viewPatrimoine')"
+                                    class="omaad-cta !rounded-full w-full" (click)="goToPatrimoine()"></button>
+                            <button pButton type="button" [label]="t('addAssets.wizard.addAnother')" [text]="true"
+                                    class="!rounded-full w-full !text-brand-700 dark:!text-ochre-400" (click)="addAnother()"></button>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <!-- Footer buttons -->
-            @if (currentStep() >= 1) {
-                <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-surface-200 dark:border-surface-700">
-                    @if (currentStep() === 1) {
-                        <button pButton type="button" [label]="t('addAssets.wizard.next')" class="omaad-cta !rounded-full px-8"
-                                [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
-                    } @else {
-                        <button pButton type="button" [label]="t('common.back')" [outlined]="true"
-                                class="!rounded-full !border-surface-300 dark:!border-surface-600"
-                                (click)="previousStep()"></button>
-                        <button pButton type="button" [label]="t('common.save')"
-                                class="omaad-cta !rounded-full"
-                                [loading]="isSubmitting()" (click)="submitAsset()"></button>
-                    }
+            <!-- Sticky CTA bar (PA-2): one always-reachable primary action, full
+                 width on mobile, safe-area aware, quiet blur so content scrolls
+                 beneath it without visual clash. -->
+            @if (currentStep() === 1 || currentStep() === 2) {
+                <div class="sticky bottom-0 z-10 -mx-4 px-4 mt-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]
+                            bg-surface-50/90 dark:bg-surface-950/90 backdrop-blur
+                            border-t border-surface-200 dark:border-surface-800">
+                    <div class="max-w-2xl mx-auto flex items-center gap-3">
+                        @if (currentStep() === 1) {
+                            <button pButton type="button" [label]="t('addAssets.wizard.next')"
+                                    class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
+                                    [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
+                        } @else {
+                            <button pButton type="button" [label]="t('common.back')" [outlined]="true"
+                                    class="!rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
+                                    (click)="previousStep()"></button>
+                            <button pButton type="button" [label]="t('addAssets.wizard.submit')"
+                                    class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
+                                    [loading]="isSubmitting()" (click)="submitAsset()"></button>
+                        }
+                    </div>
                 </div>
             }
         </div>
@@ -495,6 +617,8 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     lang = 'fr';
     currentStep = signal(0);
     isSubmitting = signal(false);
+    /** PA-2 progressive disclosure: optional detail fields, collapsed by default. */
+    detailsOpen = signal(false);
     /** Set true right before the post-save navigation so the guard stays silent. */
     private justSaved = false;
     selectedCategory = signal<AssetCategory | ''>('');
@@ -534,13 +658,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     set tontineCollectionDateObj(d: Date | null) { this.assetForm.tontineCollectionDate = this.toDateStr(d); }
 
     /** Currencies the user can hold an asset in. */
-    readonly currencyOptions = [
-        { label: 'FCFA (XOF)', value: 'XOF' },
-        { label: 'Euro (€)', value: 'EUR' },
-        { label: 'Dollar ($)', value: 'USD' },
-    ];
-
-    /** Symbol for the currently selected asset currency (drives input suffixes). */
+    /** Symbol for the currently selected asset currency (drives inline hints). */
     curSymbol(): string {
         const c = this.assetForm.currency;
         return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
@@ -648,11 +766,25 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     goBack(): void {
-        if (this.currentStep() > 0) {
+        if (this.currentStep() === 3) {
+            // Success screen: back means leave, never back INTO the saved form.
+            this.goToPatrimoine();
+        } else if (this.currentStep() > 0) {
             this.previousStep();
         } else {
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
         }
+    }
+
+    goToPatrimoine(): void {
+        this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
+    }
+
+    /** Success screen: start a fresh add without leaving the wizard. */
+    addAnother(): void {
+        this.justSaved = false;   // fresh form: unsaved-input tracking arms again
+        this.detailsOpen.set(false);
+        this.resetForm();
     }
 
     /**
@@ -691,6 +823,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     selectCategory(value: AssetCategory): void {
         this.assetForm.category = value;
         this.selectedCategory.set(value);
+        this.detailsOpen.set(false); // details stay collapsed per fresh class pick
         const isStocks = value === 'stocks_brvm' || value === 'stocks_intl';
         if (isStocks && !this.route.snapshot.queryParamMap.has('category')) {
             const market = value === 'stocks_brvm' ? 'brvm' : 'intl';
@@ -700,6 +833,11 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         } else {
             this.currentStep.set(1);
         }
+    }
+
+    /** Whether the current class has optional detail fields (PA-2 disclosure). */
+    detailsAvailable(): boolean {
+        return this.assetForm.category !== 'mobile_money' && !this.isSimpleBalanceCategory();
     }
 
     isQuantityBased(): boolean {
@@ -851,9 +989,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             }
 
             await this.patrimoineService.createAsset(assetData);
-            this.justSaved = true; // don't prompt "unsaved changes" on the success navigation
-            this.messageService.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('addAssets.wizard.addSuccess'), life: 3000 });
-            this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
+            this.justSaved = true; // the guard stays silent from here on
+            // PA-2: a rewarding success screen (what was added + next moves)
+            // instead of toast-and-vanish.
+            this.currentStep.set(3);
         } catch (error: any) {
             console.error('Error creating asset:', error);
             const detail = error?.error?.detail
