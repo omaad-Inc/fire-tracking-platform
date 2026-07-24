@@ -103,48 +103,56 @@ interface CategoryCard {
             <!-- Content -->
             <div class="flex-1">
 
-                <!-- ===== STEP 0: Category Picker (Finary-style premium cards) ===== -->
+                <!-- ===== STEP 0: Category Picker (S7b PA-1: store-like catalog) ===== -->
                 @if (currentStep() === 0) {
                     <div class="max-w-4xl mx-auto">
+                        <!-- Aspirational, honest subheader -->
+                        <p class="text-surface-500 dark:text-surface-400 text-[15px] leading-relaxed -mt-3 mb-6">
+                            {{ t('addAssets.wizard.subtitle') }}
+                        </p>
+
                         <!-- Search -->
                         <div class="relative mb-8">
-                            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
+                            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400" aria-hidden="true"></i>
                             <input pInputText
                                    [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
                                    [placeholder]="t('addAssets.searchPlaceholder')"
+                                   [attr.aria-label]="t('addAssets.searchPlaceholder')"
                                    class="w-full !pl-11 !py-3.5 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-sm" />
                         </div>
 
-                        <!-- 2-column Finary-style card grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Catalog grid: one strong duotone icon tile per class, chevron affordance -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             @for (cat of filteredCategories(); track cat.value) {
                                 <button type="button"
                                         (click)="selectCategory(cat.value)"
-                                        class="relative flex items-start gap-0 p-5 rounded-2xl border border-surface-200 dark:border-surface-700
-                                               hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-md
-                                               transition-all text-left group overflow-hidden min-h-[7.5rem]">
-                                    <!-- Background decorative icon (large, faded, top-right) -->
-                                    <div class="absolute -top-2 -right-2 w-20 h-20 rounded-full opacity-[0.07] dark:opacity-[0.1]
-                                                flex items-center justify-center {{ cat.bgClass }}">
-                                        <i class="pi {{ cat.icon }} text-5xl {{ cat.textClass }}"></i>
+                                        class="flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-surface-200 dark:border-surface-700
+                                               bg-surface-0 dark:bg-surface-900
+                                               hover:border-ochre-300 dark:hover:border-ochre-500/50 hover:shadow-card hover:-translate-y-px
+                                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                                               transition-all duration-200 text-left group cursor-pointer">
+                                    <!-- Duotone icon tile -->
+                                    <div class="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl {{ cat.bgClass }}
+                                                flex items-center justify-center
+                                                group-hover:scale-105 transition-transform duration-200 motion-reduce:transform-none">
+                                        <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl sm:text-2xl" aria-hidden="true"></i>
                                     </div>
-                                    <!-- Content -->
-                                    <div class="relative flex-1 pr-10">
-                                        <h3 class="font-bold text-surface-900 dark:text-surface-0 text-[15px] mb-1.5">{{ cat.label }}</h3>
-                                        <p class="text-surface-400 dark:text-surface-500 text-sm leading-relaxed">{{ cat.desc }}</p>
+                                    <!-- Label + descriptor -->
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-bold text-surface-900 dark:text-surface-0 text-[15px] mb-0.5 truncate">{{ cat.label }}</h3>
+                                        <p class="text-surface-400 dark:text-surface-500 text-[13px] leading-snug line-clamp-2 m-0">{{ cat.desc }}</p>
                                     </div>
-                                    <!-- Decorative illustration area (right) -->
-                                    <div class="absolute top-1/2 -translate-y-1/2 right-4 w-14 h-14 rounded-xl {{ cat.bgClass }}
-                                                flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all">
-                                        <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl"></i>
-                                    </div>
+                                    <!-- Chevron affordance -->
+                                    <i class="pi pi-chevron-right text-xs text-surface-300 dark:text-surface-600
+                                              group-hover:text-ochre-500 group-hover:translate-x-0.5
+                                              transition-all duration-200 shrink-0 motion-reduce:transform-none" aria-hidden="true"></i>
                                 </button>
                             }
                         </div>
 
                         @if (filteredCategories().length === 0) {
                             <div class="text-center py-12 text-surface-400">
-                                <i class="pi pi-search text-2xl mb-3 block"></i>
+                                <i class="pi pi-search text-2xl mb-3 block" aria-hidden="true"></i>
                                 <p class="text-sm">{{ t('addAssets.wizard.noTypeFound') }}</p>
                             </div>
                         }
@@ -538,26 +546,31 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
     }
 
-    // Uniform chrome, icon glyph differentiates the asset type, not the color.
-    private static readonly CARD_BG = 'bg-warm-100 dark:bg-warm-800';
-    private static readonly CARD_FG = 'text-warm-700 dark:text-warm-300';
+    // Two-tier duotone chrome (S7b PA-1): the four West-Africa hero classes
+    // (our differentiators: immobilier, BRVM, tontine, mobile money) carry the
+    // ochre accent; every other class stays in the navy/neutral family. One
+    // accent, two families — hierarchy and brand story without rainbow soup.
+    private static readonly HERO_BG = 'bg-gradient-to-br from-ochre-50 to-ochre-100 dark:from-ochre-500/20 dark:to-ochre-500/5';
+    private static readonly HERO_FG = 'text-ochre-700 dark:text-ochre-400';
+    private static readonly CARD_BG = 'bg-gradient-to-br from-brand-50 to-surface-100 dark:from-brand-700/25 dark:to-surface-800';
+    private static readonly CARD_FG = 'text-brand-700 dark:text-brand-300';
 
     categoryCards = computed<CategoryCard[]>(() => {
         const t = (k: string) => this.i18n.t(k);
-        const bg = AddAssetPage.CARD_BG;
-        const fg = AddAssetPage.CARD_FG;
-        const values: { value: AssetCategory; icon: string }[] = [
-            { value: 'real_estate',     icon: 'pi-home' },
-            { value: 'stocks_brvm',     icon: 'pi-chart-line' },
-            { value: 'stocks_intl',     icon: 'pi-globe' },
-            { value: 'bonds',           icon: 'pi-percentage' },
-            { value: 'crypto',          icon: 'pi-bolt' },
+        // WA-first curated order: lead with what makes Omaad different, then
+        // everyday accounts, then the global classes.
+        const values: { value: AssetCategory; icon: string; hero?: boolean }[] = [
+            { value: 'real_estate',     icon: 'pi-home',       hero: true },
+            { value: 'stocks_brvm',     icon: 'pi-chart-line', hero: true },
+            { value: 'tontine',         icon: 'pi-users',      hero: true },
+            { value: 'mobile_money',    icon: 'pi-mobile',     hero: true },
             { value: 'cash',            icon: 'pi-wallet' },
-            { value: 'life_insurance',  icon: 'pi-shield' },
             { value: 'savings_account', icon: 'pi-book' },
+            { value: 'stocks_intl',     icon: 'pi-globe' },
+            { value: 'crypto',          icon: 'pi-bolt' },
+            { value: 'bonds',           icon: 'pi-percentage' },
+            { value: 'life_insurance',  icon: 'pi-shield' },
             { value: 'vehicle',         icon: 'pi-car' },
-            { value: 'tontine',         icon: 'pi-users' },
-            { value: 'mobile_money',    icon: 'pi-mobile' },
             { value: 'collectibles',    icon: 'pi-star' },
             { value: 'commodities',     icon: 'pi-box' },
             { value: 'other',           icon: 'pi-ellipsis-h' },
@@ -566,7 +579,9 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             value: v.value,
             label: t(`addAssets.wizard.cards.${v.value}.label`),
             desc:  t(`addAssets.wizard.cards.${v.value}.desc`),
-            icon: v.icon, bgClass: bg, textClass: fg,
+            icon: v.icon,
+            bgClass: v.hero ? AddAssetPage.HERO_BG : AddAssetPage.CARD_BG,
+            textClass: v.hero ? AddAssetPage.HERO_FG : AddAssetPage.CARD_FG,
         }));
     });
 

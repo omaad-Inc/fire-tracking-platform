@@ -711,6 +711,7 @@ export const FR = {
     },
     wizard: {
       headerComplete: 'Compléter mon patrimoine',
+      subtitle: 'Immobilier, BRVM, tontine, mobile money : tout votre patrimoine au même endroit.',
       details: 'Informations',
       ownership: 'Répartition',
       noTypeFound: 'Aucun type d\'actif trouvé',

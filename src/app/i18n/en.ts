@@ -713,6 +713,7 @@ export const EN: Dict = {
     },
     wizard: {
       headerComplete: 'Complete my portfolio',
+      subtitle: 'Real estate, BRVM, tontine, mobile money: your whole wealth in one place.',
       details: 'Details',
       ownership: 'Ownership',
       noTypeFound: 'No asset type found',
