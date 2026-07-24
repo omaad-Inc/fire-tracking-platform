@@ -12,6 +12,9 @@ import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
 import { WealthScorePage } from '../wealth-score/wealth-score';
+import { CoachingPanel } from './components/coaching-panel';
+
+type HubTab = 'analyses' | 'score' | 'conseils';
 
 @Component({
     selector: 'app-insights',
@@ -19,7 +22,7 @@ import { WealthScorePage } from '../wealth-score/wealth-score';
     imports: [
         CommonModule, ChartModule, AppAmountComponent, LoadErrorComponent,
         PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent,
-        WealthScorePage,
+        WealthScorePage, CoachingPanel,
     ],
     template: `
         <app-page-header icon="pi-chart-bar" [title]="t('insights.title')" [subtitle]="t('insights.subtitle')" />
@@ -34,6 +37,10 @@ import { WealthScorePage } from '../wealth-score/wealth-score';
                 <button role="tab" [attr.aria-selected]="tab() === 'score'"
                         (click)="setTab('score')" [class]="tabClass('score')" data-testid="tab-score">
                     {{ t('menu.wealthScore') }}
+                </button>
+                <button role="tab" [attr.aria-selected]="tab() === 'conseils'"
+                        (click)="setTab('conseils')" [class]="tabClass('conseils')" data-testid="tab-conseils">
+                    {{ t('menu.coaching') }}
                 </button>
             </div>
         </div>
@@ -109,13 +116,16 @@ import { WealthScorePage } from '../wealth-score/wealth-score';
                 }
             </app-ui-card>
         }
-        } @else {
+        } @else if (tab() === 'score') {
             <!-- Score tab: the wealth-score page, embedded (its own header hidden). -->
             @defer (on immediate) {
                 <app-wealth-score-page [embedded]="true" />
             } @placeholder {
                 <div class="h-96 rounded-2xl bg-surface-100 dark:bg-surface-800 animate-pulse"></div>
             }
+        } @else {
+            <!-- Conseils tab: ranked, actionable coaching recommendations (S6-3). -->
+            <app-coaching-panel />
         }
     `,
 })
@@ -131,12 +141,15 @@ export class InsightsPage implements OnInit {
 
     /** Analyses hub tab, derived from the URL (?tab=) so it reacts to any navigation
      *  while mounted (deep-links, redirects, browser back/forward). */
+    private parseTab(raw: string | null): HubTab {
+        return raw === 'score' ? 'score' : raw === 'conseils' ? 'conseils' : 'analyses';
+    }
     tab = toSignal(
-        this.route.queryParamMap.pipe(map((qp): 'analyses' | 'score' => qp.get('tab') === 'score' ? 'score' : 'analyses')),
-        { initialValue: (this.route.snapshot.queryParamMap.get('tab') === 'score' ? 'score' : 'analyses') as 'analyses' | 'score' },
+        this.route.queryParamMap.pipe(map((qp): HubTab => this.parseTab(qp.get('tab')))),
+        { initialValue: this.parseTab(this.route.snapshot.queryParamMap.get('tab')) },
     );
 
-    setTab(t: 'analyses' | 'score') {
+    setTab(t: HubTab) {
         // Navigate only; `tab` is derived from the URL.
         this.router.navigate([], {
             relativeTo: this.route,
@@ -146,7 +159,7 @@ export class InsightsPage implements OnInit {
         });
     }
 
-    tabClass(t: 'analyses' | 'score'): string {
+    tabClass(t: HubTab): string {
         const base = 'px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer';
         return this.tab() === t
             ? `${base} bg-surface-0 dark:bg-surface-950 text-brand-700 dark:text-ochre-400 shadow-card`
