@@ -440,22 +440,20 @@ interface CategoryCard {
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label for="aa-bank" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.bank') }}</label>
-                                                <input pInputText id="aa-bank" [(ngModel)]="assetForm.institution"
-                                                       [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
                                         }
+                                        <!-- PA-4: the bank name is optional and lives in the
+                                             details disclosure; balance essentials stay 2 fields. -->
 
-                                        <!-- TOTAL-VALUE-BASED -->
-                                        @if (!isQuantityBased() && !isSimpleBalanceCategory() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
+                                        <!-- TOTAL-VALUE-BASED (PA-4: purchase value is an essential
+                                             ONLY where owners actually anchor on it, immobilier and
+                                             vehicule; for the rest it is demoted to details per the
+                                             section-13 decision and current value leads alone). -->
+                                        @if (isTotalValueBased()) {
+                                            @if (purchaseLedClass()) {
                                             <div class="flex flex-col gap-2">
                                                 <label for="aa-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.wizard.purchaseInitialValue') }}
-                                                    @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
-                                                        <span class="text-negative">*</span>
-                                                    }
+                                                    <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
@@ -463,6 +461,7 @@ interface CategoryCard {
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
+                                            }
                                             <div class="flex flex-col gap-2">
                                                 <label for="aa-current" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.fields.currentValue') }}
@@ -521,8 +520,21 @@ interface CategoryCard {
                                                         </div>
                                                     }
 
+                                                    <!-- Purchase value, demoted for non-purchase-led
+                                                         total-value classes (PA-4, section-13) -->
+                                                    @if (isTotalValueBased() && !purchaseLedClass()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.purchaseInitialValue') }}</label>
+                                                            <div class="relative">
+                                                                <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                            </div>
+                                                        </div>
+                                                    }
+
                                                     <!-- Institution -->
-                                                    @if (isInstitutionBased() && !isSimpleBalanceCategory()) {
+                                                    @if (isInstitutionBased()) {
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-institution" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
                                                             <input pInputText id="aa-institution" [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
@@ -962,7 +974,23 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
     /** Whether the current class has optional detail fields (PA-2 disclosure). */
     detailsAvailable(): boolean {
-        return this.assetForm.category !== 'mobile_money' && !this.isSimpleBalanceCategory();
+        return this.assetForm.category !== 'mobile_money';
+    }
+
+    /** Valued as one total (not per-unit, not a plain balance, not tontine/momo). */
+    isTotalValueBased(): boolean {
+        return !!this.assetForm.category && !this.isQuantityBased() && !this.isSimpleBalanceCategory()
+            && this.assetForm.category !== 'tontine' && this.assetForm.category !== 'mobile_money';
+    }
+
+    /**
+     * PA-4: classes where the purchase price is the number owners actually
+     * anchor on (and current value is honestly unknowable day-to-day). Only
+     * these keep purchase value as a required essential; everywhere else it
+     * is an optional detail per the section-13 demotion.
+     */
+    purchaseLedClass(): boolean {
+        return this.assetForm.category === 'real_estate' || this.assetForm.category === 'vehicle';
     }
 
     isQuantityBased(): boolean {
