@@ -13,6 +13,7 @@ import { AssetCreate, AssetCategory } from '../../../core/services/api.service';
 import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes.guard';
 import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -146,8 +147,8 @@ interface CategoryCard {
                     @if (currentStep() !== 3) {
                     <h1 class="font-bold text-surface-900 dark:text-surface-0 m-0"
                         [ngClass]="currentStep() === 0 ? 'text-2xl' : 'text-xl'">
-                        @if (currentStep() === 0) { {{ t('addAssets.wizard.headerComplete') }} }
-                        @if (currentStep() === 1) {
+                        @if (currentStep() === 0 && !pathChooser()) { {{ t('addAssets.wizard.headerComplete') }} }
+                        @if ((currentStep() === 0 && pathChooser()) || currentStep() === 1) {
                             <span class="flex items-center gap-2">
                                 @if (selectedCard()) {
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg {{ selectedCard()!.bgClass }}">
@@ -175,8 +176,80 @@ interface CategoryCard {
             <!-- Content -->
             <div class="flex-1">
 
+                <!-- ===== STEP 0b: Dual-path chooser (S7b PA-3). Bank + mobile
+                     money classes open here: an HONEST "coming soon" live-sync
+                     teaser (taps feed the sync_interest event, measuring S9
+                     demand) next to the manual path. Stocks never reach this
+                     block: connect-broker is their dual-path screen. ===== -->
+                @if (currentStep() === 0 && pathChooser()) {
+                    <div class="max-w-3xl mx-auto">
+                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-8">{{ t('addAssets.dualPath.title') }}</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <!-- Sync teaser card (S9): honest, secure-framed, demand-measured -->
+                            <button type="button" (click)="registerSyncInterest()" [attr.aria-pressed]="syncInterestSent()"
+                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
+                                           hover:border-ochre-300 dark:hover:border-ochre-500/50
+                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                                           transition-all text-left group overflow-hidden min-h-64 sm:min-h-80 cursor-pointer">
+                                <div class="relative flex justify-between items-start p-5">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-ochre-50 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 text-xs font-semibold">
+                                        {{ t('addAssets.dualPath.soonChip') }}
+                                    </span>
+                                    <div class="w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shadow-sm">
+                                        <i class="pi {{ pathChooser() === 'mobile_money' ? 'pi-mobile' : 'pi-building-columns' }} text-2xl text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                                <div class="relative p-6 pt-0">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-medium mb-3">
+                                        <i class="pi pi-lock text-[10px]" aria-hidden="true"></i>
+                                        {{ t('addAssets.institutionList.secureConnection') }}
+                                    </span>
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">
+                                        {{ pathChooser() === 'mobile_money' ? t('addAssets.dualPath.syncMomoTitle') : t('addAssets.dualPath.syncBankTitle') }}
+                                    </div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                                        {{ pathChooser() === 'mobile_money' ? t('addAssets.dualPath.syncMomoDesc') : t('addAssets.dualPath.syncBankDesc') }}
+                                    </div>
+                                    @if (syncInterestSent()) {
+                                        <div class="flex items-center gap-2 mt-4 text-positive text-sm font-medium" role="status">
+                                            <i class="pi pi-check-circle" aria-hidden="true"></i>
+                                            {{ t('addAssets.dualPath.thanks') }}
+                                        </div>
+                                    } @else {
+                                        <div class="text-surface-500 dark:text-surface-400 text-xs mt-4">{{ t('addAssets.dualPath.notifyHint') }}</div>
+                                    }
+                                </div>
+                            </button>
+
+                            <!-- Manual card: the path that works today -->
+                            <button type="button" (click)="chooseManualPath()"
+                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800
+                                           hover:border-brand-300 dark:hover:border-brand-700
+                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                                           transition-all text-left group overflow-hidden min-h-64 sm:min-h-80 cursor-pointer">
+                                <div class="relative flex justify-end p-5">
+                                    <div class="w-14 h-14 rounded-2xl bg-surface-100 dark:bg-surface-700 flex items-center justify-center shadow-sm">
+                                        <i class="pi pi-pencil text-2xl text-surface-500 dark:text-surface-400" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                                <div class="relative p-6 pt-0">
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">{{ t('addAssets.dualPath.manualTitle') }}</div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">{{ t('addAssets.dualPath.manualDesc') }}</div>
+                                    <div class="flex justify-end mt-4">
+                                        <div class="w-10 h-10 rounded-full border border-surface-200 dark:border-surface-600 flex items-center justify-center
+                                                    group-hover:border-brand-300 group-hover:bg-brand-50 dark:group-hover:border-brand-700 dark:group-hover:bg-brand-900/40 transition-all">
+                                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                }
+
                 <!-- ===== STEP 0: Category Picker (S7b PA-1: store-like catalog) ===== -->
-                @if (currentStep() === 0) {
+                @if (currentStep() === 0 && !pathChooser()) {
                     <div class="max-w-4xl mx-auto">
                         <!-- Aspirational, honest subheader -->
                         <p class="text-surface-500 dark:text-surface-400 text-[15px] leading-relaxed -mt-3 mb-6">
@@ -616,6 +689,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private messageService = inject(MessageService);
     private tokenService = inject(TokenService);
     private i18n = inject(I18nService);
+    private analytics = inject(AnalyticsService);
     cs = inject(CurrencyService);
 
     t(key: string): string { return this.i18n.t(key); }
@@ -629,6 +703,16 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private justSaved = false;
     selectedCategory = signal<AssetCategory | ''>('');
     searchQuery = signal('');
+    /**
+     * PA-3 dual-path entry: classes whose live sync is S9 open on a chooser
+     * (honest "coming soon" sync teaser + manual card) instead of the form.
+     * Stocks are NOT here: connect-broker IS their dual-path screen (S3-10,
+     * real PDF import). While set, step 0 renders the chooser, and backing
+     * out of the form returns to it.
+     */
+    pathChooser = signal<AssetCategory | ''>('');
+    /** One sync_interest event per chooser visit; flips the teaser to a thank-you state. */
+    syncInterestSent = signal(false);
 
     assetForm: AssetFormData = {
         name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
@@ -784,6 +868,11 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             this.goToPatrimoine();
         } else if (this.currentStep() > 0) {
             this.previousStep();
+        } else if (this.pathChooser()) {
+            // Dual-path chooser: back returns to the catalog.
+            this.pathChooser.set('');
+            this.selectedCategory.set('');
+            this.assetForm.category = '';
         } else {
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
         }
@@ -830,22 +919,45 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             surfaceM2: 0, region: '', currency: this.cs.config().code
         };
         this.selectedCategory.set('');
+        this.pathChooser.set('');
+        this.syncInterestSent.set(false);
         this.currentStep.set(0);
     }
+
+    /** Classes whose live sync ships in S9: they get the teaser chooser. */
+    private static readonly SYNC_TEASER_CLASSES: AssetCategory[] = ['cash', 'savings_account', 'mobile_money'];
 
     selectCategory(value: AssetCategory): void {
         this.assetForm.category = value;
         this.selectedCategory.set(value);
         this.detailsOpen.set(false); // details stay collapsed per fresh class pick
+        // ?category deep-links (connect-broker's "add manually" hand-off) go
+        // straight to the form: the user already chose a path.
+        const deepLink = this.route.snapshot.queryParamMap.has('category');
         const isStocks = value === 'stocks_brvm' || value === 'stocks_intl';
-        if (isStocks && !this.route.snapshot.queryParamMap.has('category')) {
+        if (isStocks && !deepLink) {
             const market = value === 'stocks_brvm' ? 'brvm' : 'intl';
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine', 'connect-broker'], {
                 queryParams: { market }
             });
+        } else if (AddAssetPage.SYNC_TEASER_CLASSES.includes(value) && !deepLink) {
+            this.syncInterestSent.set(false);
+            this.pathChooser.set(value);
         } else {
             this.currentStep.set(1);
         }
+    }
+
+    /** Teaser card tap: log S9 sync demand once, thank the user in place. */
+    registerSyncInterest(): void {
+        if (this.syncInterestSent()) return;
+        this.analytics.track('sync_interest', { category: this.pathChooser() });
+        this.syncInterestSent.set(true);
+    }
+
+    /** Manual card: to the form. pathChooser stays set so back returns here. */
+    chooseManualPath(): void {
+        this.goToStepTop(1);
     }
 
     /** Whether the current class has optional detail fields (PA-2 disclosure). */

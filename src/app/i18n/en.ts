@@ -662,6 +662,18 @@ export const EN: Dict = {
       quantity: 'Quantity',
       institution: 'Institution',
     },
+    dualPath: {
+      title: 'How would you like to add it?',
+      syncBankTitle: 'Connect my bank',
+      syncBankDesc: 'Balance and transactions synced automatically, no typing.',
+      syncMomoTitle: 'Connect Wave / Orange Money',
+      syncMomoDesc: 'Your mobile money balance always up to date, no typing.',
+      soonChip: 'Coming soon',
+      notifyHint: 'Tap to be notified at launch',
+      thanks: 'Thanks! We will tell you as soon as sync arrives.',
+      manualTitle: 'Enter manually',
+      manualDesc: 'Two minutes, editable anytime.',
+    },
     methodPicker: {
       title: 'How would you like to add your stocks?',
       manualTitle: 'Create manually',

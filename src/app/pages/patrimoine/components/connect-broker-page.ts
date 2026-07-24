@@ -78,7 +78,7 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
                                 </div>
                                 <!-- Content bottom -->
                                 <div class="relative p-6 pt-0">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive text-xs font-medium mb-3">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-medium mb-3">
                                         <i class="pi pi-lock text-[10px]"></i>
                                         {{ t('addAssets.institutionList.secureConnection') }}
                                     </span>

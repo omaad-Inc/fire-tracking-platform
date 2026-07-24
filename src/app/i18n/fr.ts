@@ -660,6 +660,18 @@ export const FR = {
       quantity: 'Quantité',
       institution: 'Institution',
     },
+    dualPath: {
+      title: "Comment souhaitez-vous l'ajouter ?",
+      syncBankTitle: 'Connecter ma banque',
+      syncBankDesc: 'Solde et transactions synchronisés automatiquement, sans saisie.',
+      syncMomoTitle: 'Connecter Wave / Orange Money',
+      syncMomoDesc: 'Votre solde mobile money toujours à jour, sans saisie.',
+      soonChip: 'Bientôt disponible',
+      notifyHint: 'Touchez pour être prévenu au lancement',
+      thanks: 'Merci ! Nous vous préviendrons dès que la synchronisation arrive.',
+      manualTitle: 'Saisir manuellement',
+      manualDesc: 'Deux minutes, modifiable à tout moment.',
+    },
     methodPicker: {
       title: 'Comment souhaitez-vous ajouter vos actions ?',
       manualTitle: 'Créer manuellement',

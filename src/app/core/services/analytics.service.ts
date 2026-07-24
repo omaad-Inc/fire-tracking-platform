@@ -10,7 +10,8 @@ export type AnalyticsEventName =
     | 'fire_calculated'
     | 'currency_switched'
     | 'export'
-    | 'share';
+    | 'share'
+    | 'sync_interest';
 
 // Anonymous public-funnel events (POST /events/public, no auth). Mirrors the
 // backend KNOWN_PUBLIC_EVENT_NAMES allowlist.
