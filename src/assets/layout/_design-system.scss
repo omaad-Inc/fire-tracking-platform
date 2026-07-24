@@ -185,6 +185,33 @@
     border-radius: var(--omaad-radius-input) !important;
 }
 
+// ── Quiet form fields (S7b PA-2) ────────────────────────────────────
+// Opt-in wrapper for hairline-row forms (add-asset wizard; asset-edit /
+// goal dialogs can adopt later): transparent fields, no radius or
+// shadow, bottom hairline only (the hairline itself comes from the
+// template's `!border-b` utilities). Required because the global input
+// radius skin above is `!important` and defeats a template-level
+// `!rounded-none` (equal specificity, later source order).
+.omaad-quiet-form {
+    .p-inputtext,
+    .p-select,
+    .p-datepicker-input {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+    // The datepicker's calendar button joins the same hairline row.
+    .p-datepicker-dropdown {
+        border-radius: 0 !important;
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid var(--p-surface-300);
+        color: var(--p-surface-500);
+    }
+    .app-dark & .p-datepicker-dropdown {
+        border-bottom-color: var(--p-surface-600);
+    }
+}
+
 // ── Tabular numbers for monetary values ─────────────────────────────
 app-amount,
 .tnum {

@@ -121,6 +121,7 @@ interface CategoryCard {
         SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe,
         CurrencySuffixComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [MessageService],
     styles: [`
         @keyframes omaad-pop {
@@ -135,11 +136,14 @@ interface CategoryCard {
         <div class="flex flex-col min-h-[calc(100vh-8rem)]">
             <!-- Header -->
             <div class="flex items-center gap-4 mb-6">
-                <button (click)="goBack()"
+                <button (click)="goBack()" [attr.aria-label]="t('common.back')"
                         class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
+                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
                 </button>
                 <div class="flex-1 min-w-0">
+                    <!-- No h1 on the success step: its title lives in the body,
+                         and an empty heading is an axe violation. -->
+                    @if (currentStep() !== 3) {
                     <h1 class="font-bold text-surface-900 dark:text-surface-0 m-0"
                         [ngClass]="currentStep() === 0 ? 'text-2xl' : 'text-xl'">
                         @if (currentStep() === 0) { {{ t('addAssets.wizard.headerComplete') }} }
@@ -155,6 +159,7 @@ interface CategoryCard {
                         }
                         @if (currentStep() === 2) { {{ t('addAssets.wizard.ownership') }} }
                     </h1>
+                    }
                 </div>
                 <!-- Step dots (only on form steps) -->
                 @if (currentStep() === 1 || currentStep() === 2) {
@@ -253,15 +258,16 @@ interface CategoryCard {
                                 </div>
                             </div>
 
-                            <!-- Form content -->
-                            <div class="flex-1">
+                            <!-- Form content (omaad-quiet-form: hairline rows win
+                                 over the global input-radius skin, see _design-system.scss) -->
+                            <div class="flex-1 omaad-quiet-form">
                                 <!-- Step 1: Per-category form -->
                                 @if (currentStep() === 1) {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <!-- Name (always) -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
-                                            <input pInputText [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
+                                            <label for="aa-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
+                                            <input pInputText id="aa-name" [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
 
@@ -272,37 +278,37 @@ interface CategoryCard {
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
+                                                <label for="aa-t-monthly" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                    <p-inputnumber inputId="aa-t-monthly" styleClass="w-full" [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
-                                                <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
+                                                <label for="aa-t-participants" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
+                                                <p-inputnumber inputId="aa-t-participants" styleClass="w-full" [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
-                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                <label for="aa-t-start" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
+                                                <p-datepicker inputId="aa-t-start" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
-                                                <p-select [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
-                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                <label for="aa-t-freq" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
+                                                <p-select inputId="aa-t-freq" [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
+                                                    styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
                                                 <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
                                                     <i class="pi pi-calculator text-brand-700 dark:text-brand-300"></i>
                                                     <div>
-                                                        <p class="text-xs text-surface-400 mb-0.5">{{ t('addAssets.wizard.estimatedAccumulated') }}</p>
+                                                        <p class="text-xs text-surface-600 dark:text-surface-400 mb-0.5">{{ t('addAssets.wizard.estimatedAccumulated') }}</p>
                                                         <p class="font-bold text-brand-700 dark:text-brand-300">
                                                             {{ tontineCurrentValue() | number:'1.0-0' }} {{ curSymbol() }}
-                                                            <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} {{ t('addAssets.wizard.moShort') }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                                            <span class="text-xs font-normal text-surface-600 dark:text-surface-400">({{ tontineMonthsElapsed() }} {{ t('addAssets.wizard.moShort') }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -312,15 +318,15 @@ interface CategoryCard {
                                         <!-- MOBILE MONEY -->
                                         @if (assetForm.category === 'mobile_money') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.provider') }} <span class="text-negative">*</span></label>
-                                                <p-select [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
+                                                <label for="aa-mm-provider" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.provider') }} <span class="text-negative">*</span></label>
+                                                <p-select inputId="aa-mm-provider" [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
                                                     [placeholder]="t('addAssets.wizard.selectProvider')"
-                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                    styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
+                                                <label for="aa-mm-balance" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                    <p-inputnumber inputId="aa-mm-balance" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
@@ -334,15 +340,15 @@ interface CategoryCard {
                                         <!-- QUANTITY-BASED -->
                                         @if (isQuantityBased()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
-                                                <p-inputnumber styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
+                                                <label for="aa-qty" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
+                                                <p-inputnumber inputId="aa-qty" styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
+                                                <label for="aa-unit-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                    <p-inputnumber inputId="aa-unit-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
@@ -352,18 +358,18 @@ interface CategoryCard {
                                         <!-- SIMPLE BALANCE (cash, savings_account) -->
                                         @if (assetForm.category === 'cash' || assetForm.category === 'savings_account') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                                <label for="aa-balance" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ assetForm.category === 'cash' ? (t('addAssets.wizard.currentBalance')) : (t('addAssets.wizard.savingsAmount')) }} <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                    <p-inputnumber inputId="aa-balance" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.bank') }}</label>
-                                                <input pInputText [(ngModel)]="assetForm.institution"
+                                                <label for="aa-bank" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.bank') }}</label>
+                                                <input pInputText id="aa-bank" [(ngModel)]="assetForm.institution"
                                                        [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
                                                        class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
@@ -372,20 +378,20 @@ interface CategoryCard {
                                         <!-- TOTAL-VALUE-BASED -->
                                         @if (!isQuantityBased() && !isSimpleBalanceCategory() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                                <label for="aa-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.wizard.purchaseInitialValue') }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
                                                         <span class="text-negative">*</span>
                                                     }
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                    <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                                <label for="aa-current" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.fields.currentValue') }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
                                                         <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span>
@@ -394,7 +400,7 @@ interface CategoryCard {
                                                     }
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                    <p-inputnumber inputId="aa-current" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
@@ -423,9 +429,9 @@ interface CategoryCard {
                                                     <!-- Current unit value (quantity-based) -->
                                                     @if (isQuantityBased()) {
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
+                                                            <label for="aa-unit-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
                                                             <div class="relative">
-                                                                <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                                <p-inputnumber inputId="aa-unit-cur" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                                 <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                             </div>
@@ -435,8 +441,8 @@ interface CategoryCard {
                                                     <!-- Purchase date -->
                                                     @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
-                                                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                            <label for="aa-buy-date" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
+                                                            <p-datepicker inputId="aa-buy-date" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
                                                                    dateFormat="yy-mm-dd" styleClass="w-full"
                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                                         </div>
@@ -445,8 +451,8 @@ interface CategoryCard {
                                                     <!-- Institution -->
                                                     @if (isInstitutionBased() && !isSimpleBalanceCategory()) {
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
-                                                            <input pInputText [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
+                                                            <label for="aa-institution" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
+                                                            <input pInputText id="aa-institution" [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
                                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                                         </div>
                                                     }
@@ -454,23 +460,23 @@ interface CategoryCard {
                                                     <!-- Tontine secondary fields -->
                                                     @if (assetForm.category === 'tontine') {
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
-                                                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                            <label for="aa-t-payout" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
+                                                            <p-datepicker inputId="aa-t-payout" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
                                                                    dateFormat="yy-mm-dd" styleClass="w-full"
                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                                         </div>
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
-                                                            <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
-                                                                styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                            <label for="aa-t-status" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
+                                                            <p-select inputId="aa-t-status" [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
+                                                                styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                                         </div>
                                                     }
 
                                                     <!-- Real estate specifics -->
                                                     @if (assetForm.category === 'real_estate') {
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
-                                                            <p-inputnumber styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
+                                                            <label for="aa-surface" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
+                                                            <p-inputnumber inputId="aa-surface" styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
                                                                 inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                                         </div>
                                                         @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
@@ -482,8 +488,8 @@ interface CategoryCard {
                                                             </div>
                                                         }
                                                         <div class="flex flex-col gap-2">
-                                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
-                                                            <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
+                                                            <label for="aa-region" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
+                                                            <input pInputText id="aa-region" [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
                                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                                         </div>
                                                     }
@@ -642,7 +648,14 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     // every change-detection pass the moment a date was picked, which spiraled
     // into an infinite write→CD→write loop and froze the whole app (the
     // "can't pick a date on mobile, app dies" bug). Memoized per string.
-    private toDateStr(d: Date | null): string { return d ? d.toISOString().split('T')[0] : ''; }
+    // LOCAL date parts, not toISOString(): the picker hands us local midnight,
+    // and UTC-converting it stores yesterday for any user east of Greenwich
+    // (Paris diaspora picks the 15th, the API gets the 14th).
+    private toDateStr(d: Date | null): string {
+        if (!d) return '';
+        const p = (n: number) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    }
     private dateObjCache = new Map<string, Date>();
     private toDateObj(s: string): Date | null {
         if (!s) return null;
@@ -902,18 +915,24 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return displayValue / this.cs.rateOf(this.assetForm.currency);
     }
 
+    /** Step transitions land at the top of the new step, not mid-scroll. */
+    private goToStepTop(step: number): void {
+        this.currentStep.set(step);
+        if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
+    }
+
     nextStep(): void {
-        if (this.currentStep() === 0 && this.assetForm.category) this.currentStep.set(1);
-        else if (this.currentStep() === 1 && this.isStep1Valid()) this.currentStep.set(2);
+        if (this.currentStep() === 0 && this.assetForm.category) this.goToStepTop(1);
+        else if (this.currentStep() === 1 && this.isStep1Valid()) this.goToStepTop(2);
     }
 
     previousStep(): void {
-        if (this.currentStep() > 0) this.currentStep.update(v => v - 1);
+        if (this.currentStep() > 0) this.goToStepTop(this.currentStep() - 1);
     }
 
     goToStep(step: number): void {
-        if (step === 1 && this.assetForm.category) this.currentStep.set(1);
-        else if (step === 2 && this.isStep1Valid()) this.currentStep.set(2);
+        if (step === 1 && this.assetForm.category) this.goToStepTop(1);
+        else if (step === 2 && this.isStep1Valid()) this.goToStepTop(2);
     }
 
     removeOwner(owner: Owner): void {
@@ -936,7 +955,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
         try {
             const f = this.assetForm;
-            const purchaseDateValue = f.purchaseDate || new Date().toISOString().split('T')[0];
+            const purchaseDateValue = f.purchaseDate || this.toDateStr(new Date());
             let assetData: AssetCreate;
 
             // Amounts are stored in the asset's native currency; the backend
@@ -952,7 +971,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                     tontine_monthly_contribution: f.tontineMonthlyContribution,
                     tontine_participants: f.tontineParticipants,
                     tontine_frequency: f.tontineFrequency,
-                    tontine_start_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
+                    tontine_start_date: f.tontineStartDate || this.toDateStr(new Date()),
                     tontine_collection_date: f.tontineCollectionDate || null,
                     tontine_status: f.tontineStatus,
                 };
@@ -992,7 +1011,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             this.justSaved = true; // the guard stays silent from here on
             // PA-2: a rewarding success screen (what was added + next moves)
             // instead of toast-and-vanish.
-            this.currentStep.set(3);
+            this.goToStepTop(3);
         } catch (error: any) {
             console.error('Error creating asset:', error);
             const detail = error?.error?.detail

@@ -21,6 +21,7 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
             @if (!share.active()) {
                 <!-- Mobile ONLY: User avatar (no sidebar on mobile, so avatar lives here) -->
                 <a [routerLink]="['/'+lang, 'pages', 'settings']"
+                   [attr.aria-label]="t('menu.settings')"
                    class="lg:hidden flex items-center justify-center shrink-0">
                     <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center overflow-hidden">
                         @if (avatarUrl) {
