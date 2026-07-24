@@ -1135,7 +1135,7 @@ export const EN: Dict = {
   home: {
     thisMonth: 'This month',
     allClear: 'Nothing to watch this month',
-    allClearDesc: 'Your budgets are under control, keep it up.',
+    allClearDesc: 'No actions recommended right now, keep it up.',
     sections: {
       situation: 'Where you stand',
       situationSub: 'Your financial-health score and your savings progress.',

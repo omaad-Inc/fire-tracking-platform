@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, computed } from '@angular/core';
 import { firstValueFrom, merge } from 'rxjs';
 
 import { ApiService, CoachingRecommendation } from '../../core/services/api.service';
@@ -8,14 +8,16 @@ import { CACHE_RESET } from '../../core/services/cache-reset.token';
 import { cachedResource } from '../../core/util/cached-resource';
 import { AssetsStateService } from './assets-state.service';
 
-const DISMISSED_KEY = 'omaad_coaching_dismissed';
-
 /**
  * Shared coaching data source (Sprint 6-3). One cached fetch feeds the Conseils
- * tab, the wealth-score axis actions, and the home-hero nudge. Recommendations
- * are dismissible-with-memory (per id, device-local) so a nudge the user has
- * acted on or waved away doesn't nag on every visit; it reappears only if the
- * underlying situation changes the recommendation id.
+ * tab, the wealth-score axis actions, and the home-hero nudge.
+ *
+ * Recommendations are STATE-DRIVEN, not dismissible: each reflects the user's
+ * current finances (an over-budget category, an off-pace goal…) and disappears
+ * only when the underlying situation actually improves. Letting a user click a
+ * live over-budget alert away into a false "all clear" would break trust, so
+ * there is deliberately no dismiss. A proper time-based "snooze" can come later
+ * if wanted, but it must never claim all-clear while a real issue stands.
  */
 @Injectable({ providedIn: 'root' })
 export class CoachingService {
@@ -28,10 +30,8 @@ export class CoachingService {
         () => firstValueFrom(this.api.getCoachingRecommendations()).then(r => r.recommendations),
     );
 
-    private _dismissed = signal<Set<string>>(this.loadDismissed());
-
     constructor() {
-        inject(CACHE_RESET).subscribe(() => { this.resource.reset(); this._dismissed.set(new Set()); });
+        inject(CACHE_RESET).subscribe(() => this.resource.reset());
         // A money mutation can change the advice — drop the cache so the next read refetches.
         merge(
             this.state.assetsUpdated$, this.state.debtsUpdated$,
@@ -39,27 +39,18 @@ export class CoachingService {
         ).subscribe(() => this.resource.invalidate());
     }
 
-    /** Live list (updates when a background revalidation lands), dismissed removed. */
-    readonly recommendations = computed(() => {
-        const dismissed = this._dismissed();
-        return (this.resource.data() ?? []).filter(r => !dismissed.has(r.id));
-    });
+    /** Live list (updates when a background revalidation lands). */
+    readonly recommendations = computed(() => this.resource.data() ?? []);
 
     /** The single highest-ranked recommendation (for the hero nudge), or null. */
     readonly top = computed(() => this.recommendations()[0] ?? null);
 
-    /** The top non-dismissed recommendation for a given wealth-score axis (S6-2). */
+    /** The top recommendation for a given wealth-score axis (S6-2). */
     forAxis(axis: string): CoachingRecommendation | null {
         return this.recommendations().find(r => r.axis === axis) ?? null;
     }
 
     load(): Promise<CoachingRecommendation[]> { return this.resource.load(); }
-
-    dismiss(id: string): void {
-        const next = new Set(this._dismissed()); next.add(id);
-        this._dismissed.set(next);
-        try { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...next])); } catch { /* storage off */ }
-    }
 
     // ── Rendering helpers (resolve i18n keys + params) ───────────────────────
 
@@ -76,12 +67,5 @@ export class CoachingService {
             params[k] = k === 'category' ? this.i18n.t('categories.' + v) : v;
         }
         return this.i18n.t(r.detail_key, params);
-    }
-
-    private loadDismissed(): Set<string> {
-        try {
-            const raw = localStorage.getItem(DISMISSED_KEY);
-            return new Set(raw ? JSON.parse(raw) as string[] : []);
-        } catch { return new Set(); }
     }
 }

@@ -36,20 +36,14 @@ import { LoadErrorComponent } from '../../../core/components/load-error.componen
             <div class="space-y-3" role="list">
                 @for (r of coaching.recommendations(); track r.id) {
                     <app-ui-card role="listitem" [class]="'border-l-4 ' + borderClass(r.severity)">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="flex items-start gap-3 min-w-0">
-                                <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" [class]="iconBg(r.severity)">
-                                    <i class="pi text-sm" [class]="icon(r.severity) + ' ' + iconColor(r.severity)"></i>
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="font-semibold text-surface-900 dark:text-surface-0">{{ coaching.title(r) }}</div>
-                                    <p class="text-sm text-surface-600 dark:text-surface-300 mt-1">{{ coaching.detail(r) }}</p>
-                                </div>
+                        <div class="flex items-start gap-3 min-w-0">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" [class]="iconBg(r.severity)">
+                                <i class="pi text-sm" [class]="icon(r.severity) + ' ' + iconColor(r.severity)"></i>
                             </div>
-                            <button type="button" class="shrink-0 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 p-1 -m-1 cursor-pointer"
-                                    [attr.aria-label]="t('coaching.dismiss')" (click)="coaching.dismiss(r.id)">
-                                <i class="pi pi-times text-xs"></i>
-                            </button>
+                            <div class="min-w-0">
+                                <div class="font-semibold text-surface-900 dark:text-surface-0">{{ coaching.title(r) }}</div>
+                                <p class="text-sm text-surface-600 dark:text-surface-300 mt-1">{{ coaching.detail(r) }}</p>
+                            </div>
                         </div>
                         <div class="mt-3 pl-12">
                             <button type="button" (click)="act(r)"

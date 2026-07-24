@@ -1133,7 +1133,7 @@ export const FR = {
   home: {
     thisMonth: 'Ce mois-ci',
     allClear: 'Rien à surveiller ce mois-ci',
-    allClearDesc: 'Vos budgets sont sous contrôle, continuez comme ça.',
+    allClearDesc: 'Aucune action recommandée pour le moment, continuez comme ça.',
     sections: {
       situation: 'Votre situation',
       situationSub: 'Votre score de santé financière et la progression de votre épargne.',
