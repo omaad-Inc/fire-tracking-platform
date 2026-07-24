@@ -45,6 +45,17 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                     <div class="w-16 h-0.5 rounded-full bg-ochre-500"></div>
                 </div>
 
+                <!-- Guides CTA : le cadeau promis dans la vidéo, accessible
+                     immédiatement sans attendre le welcome email. -->
+                <div class="flex justify-center mb-8">
+                    <a [routerLink]="[currentLang, 'fire-africa', 'guides']" pButton pRipple
+                       class="!font-semibold !rounded-xl !px-8 !py-3.5 !text-base !border-0 !bg-ochre-500 hover:!bg-ochre-400 !text-warm-900
+                              inline-flex items-center justify-center gap-2">
+                        <i class="pi pi-download text-sm"></i>
+                        {{ isFr ? 'Télécharger mes 2 guides FIRE Africa' : 'Download my 2 FIRE Africa guides' }}
+                    </a>
+                </div>
+
                 <!-- Beta teaser -->
                 <div class="rounded-2xl px-8 py-6 mb-10 text-left bg-brand-800/60 border border-brand-700/40">
                     <p class="text-base leading-relaxed text-surface-300">
