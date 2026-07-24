@@ -961,7 +961,10 @@ export class ApiService {
         startDate?: string,
         endDate?: string,
     ): Promise<Transaction[]> {
-        const page = 200; // well under the server's 500 cap
+        // Max page size (server caps limit at 500): pages are fetched
+        // SEQUENTIALLY, so on a slow backend every extra page is a full extra
+        // round-trip serialized in front of the transactions screen.
+        const page = 500;
         const all: Transaction[] = [];
         for (let skip = 0; ; skip += page) {
             const batch = await firstValueFrom(this.getTransactions(skip, page, type, startDate, endDate));
