@@ -53,6 +53,8 @@
 /en/blog/gestion-mandat-vs-libre
 /fr/blog/special-dakar-immo
 /en/blog/special-dakar-immo
+/fr/fire-africa/guides
+/en/fire-africa/guides
 /outils/comparateur-sgi-brvm
 /outils/comparateur-sgi-brvm/sgi/bsic-capital-sa
 /outils/comparateur-sgi-brvm/sgi/societe-africaine-dingenierie-et-dintermediation-financiere-sa2if

@@ -96,6 +96,17 @@ export const SEO_PAGES = {
             description: 'Discover FIRE Africa by Omaad, financial independence adapted to the realities of West Africa and the diaspora.',
         },
     },
+    fireAfricaGuides: {
+        path: '/fire-africa/guides',
+        fr: {
+            title: 'Tes 2 guides FIRE Africa — Omaad',
+            description: 'Télécharge les 2 guides FIRE Africa : la méthode Core / Satellite et le mode d’emploi BRVM, étape par étape.',
+        },
+        en: {
+            title: 'Your 2 FIRE Africa guides — Omaad',
+            description: 'Download the 2 FIRE Africa guides: the Core / Satellite method and the step-by-step BRVM playbook.',
+        },
+    },
     legalMentions: {
         path: '/legal/mentions',
         fr: {
