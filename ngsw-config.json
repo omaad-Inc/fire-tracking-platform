@@ -47,19 +47,5 @@
     "!/**/*__*",
     "!/**/*__*/**"
   ],
-  "dataGroups": [
-    {
-      "name": "api-freshness",
-      "urls": [
-        "https://api.omaad.africa/api/**",
-        "!https://api.omaad.africa/api/v1/auth/**"
-      ],
-      "cacheConfig": {
-        "strategy": "freshness",
-        "maxSize": 200,
-        "maxAge": "1h",
-        "timeout": "5s"
-      }
-    }
-  ]
+  "dataGroups": []
 }
