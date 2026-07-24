@@ -1171,6 +1171,7 @@ export const EN: Dict = {
     savingsRate: {
       title: 'Increase your savings rate',
       detail: 'Your savings rate is {{savings_rate_pct}}%. Aim for at least {{target_pct}}% to reach your goals faster.',
+      detailWithFire: 'Your savings rate is {{savings_rate_pct}}%. Reaching {{target_pct}}% would move your FIRE date about {{fire_months_saved}} months earlier (estimate).',
       action: 'View my budgets',
     },
     debtPressure: {
@@ -1204,6 +1205,11 @@ export const EN: Dict = {
       title: "You're behind your FIRE target",
       detail: 'At your current pace you would reach your goal around {{projected_year}}, past your {{target_year}} target. Increase your savings to catch up.',
       action: 'Configure FIRE',
+    },
+    goalCatchup: {
+      title: 'A goal is falling behind',
+      detail: 'To keep "{{goal_name}}" on track, set aside about {{required_monthly}} each month.',
+      action: 'View the goal',
     },
     stale: {
       title: 'Update your accounts',

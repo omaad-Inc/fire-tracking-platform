@@ -1169,6 +1169,7 @@ export const FR = {
     savingsRate: {
       title: "Augmentez votre taux d'épargne",
       detail: "Votre taux d'épargne est de {{savings_rate_pct}} %. Visez au moins {{target_pct}} % pour atteindre vos objectifs plus vite.",
+      detailWithFire: "Votre taux d'épargne est de {{savings_rate_pct}} %. En visant {{target_pct}} %, vous avanceriez votre objectif FIRE d'environ {{fire_months_saved}} mois (estimation).",
       action: 'Voir mes budgets',
     },
     debtPressure: {
@@ -1202,6 +1203,11 @@ export const FR = {
       title: 'Vous êtes en retard sur votre objectif FIRE',
       detail: 'Au rythme actuel, vous atteindriez votre objectif vers {{projected_year}}, après votre cible de {{target_year}}. Augmentez votre épargne pour rattraper.',
       action: 'Configurer FIRE',
+    },
+    goalCatchup: {
+      title: 'Un objectif prend du retard',
+      detail: 'Pour tenir « {{goal_name}} » dans les délais, mettez environ {{required_monthly}} de côté chaque mois.',
+      action: "Voir l'objectif",
     },
     stale: {
       title: 'Mettez vos comptes à jour',
