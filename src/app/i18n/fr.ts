@@ -2275,6 +2275,26 @@ export const FR = {
       ctaTagline: 'Construis. Protège. Règne.',
     },
   },
+
+  fireGuides: {
+    titleLine1: 'Tes 2 guides',
+    titleLine2: 'FIRE Africa',
+    intro: 'Comme promis : la méthode que je suis vraiment, et le mode d\'emploi concret pour la BRVM.',
+    tome1Title: '📘 Tome 1 : La méthode Core / Satellite',
+    tome1Desc: 'Le POURQUOI : le cœur défensif, la poche satellite, et les règles écrites qui enlèvent l\'émotion.',
+    tome1Cta: 'Télécharger le Tome 1',
+    tome2Title: '📗 Tome 2 : Le mode d\'emploi BRVM',
+    tome2Desc: 'Le COMMENT : choisir sa SGI, ouvrir ton compte-titres, passer ton 1er ordre, étape par étape.',
+    tome2Cta: 'Télécharger le Tome 2',
+    startTip: 'Commence par le Tome 1 (le plan), garde le Tome 2 pour le jour où tu passes à l\'action.',
+    moreTitle: 'Pour aller plus loin',
+    sgiLink: 'Comparateur des SGI de la BRVM',
+    sgiDesc: ': trouve la SGI la moins chère pour ton profil.',
+    blogLink: 'Le blog Omaad',
+    blogDesc: ': FIRE, BRVM et patrimoine, chiffres à l\'appui.',
+    appLink: 'Créer mon compte Omaad',
+    appDesc: ': suis ton patrimoine et ton chemin vers FIRE.',
+  },
 } as const;
 
 /**

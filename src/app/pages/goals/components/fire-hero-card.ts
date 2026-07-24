@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -22,6 +22,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
  */
 @Component({
     selector: 'app-fire-hero-card',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     imports: [CommonModule, ButtonModule, AppAmountComponent],
     template: `

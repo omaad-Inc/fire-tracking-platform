@@ -103,6 +103,19 @@ export class SeoService {
         add('x-default', `${SITE_ORIGIN}/fr${path}`);
     }
 
+    /**
+     * Mark the current page noindex (lead magnets, thank-you pages…).
+     * Meta tags persist across SPA navigations, so the page that sets this
+     * MUST call removeRobots() in its ngOnDestroy.
+     */
+    setRobots(content: string): void {
+        this.meta.updateTag({ name: 'robots', content });
+    }
+
+    removeRobots(): void {
+        this.meta.removeTag('name="robots"');
+    }
+
     private setCanonical(url: string): void {
         let link = this.doc.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
         if (!link) {

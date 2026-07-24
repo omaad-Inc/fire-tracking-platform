@@ -45,7 +45,7 @@ export default {
                     300: '#DFB78A',
                     400: '#D8A369',
                     500: '#C77B3C',
-                    600: '#AB6630',
+                    600: '#A1602D', // AA-tuned: 4.5:1 on white + ochre-50 (was #AB6630, 4.11-4.49); brand hue preserved
                     700: '#95541F',
                     800: '#71421C',
                     900: '#523019',
@@ -69,11 +69,11 @@ export default {
                 },
                 // Semantic — used ONLY inside data (chart series, status badges, +/- amounts)
                 positive: {
-                    DEFAULT: '#2F8F6E',
+                    DEFAULT: '#2A8163', // AA-tuned: 4.5:1 on white/near-white for money-positive text (was #2F8F6E, 3.80)
                     50:  '#EAF4EF',
                     100: '#D0E8DC',
                     400: '#3FA886',
-                    500: '#2F8F6E',
+                    500: '#2A8163',
                     600: '#27795C',
                     700: '#1F6249',
                 },

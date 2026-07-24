@@ -64,6 +64,7 @@ interface YearProjection {
                         </button>
                         <!-- Dark / Light toggle -->
                         <button (click)="toggleDarkMode()"
+                                [attr.aria-label]="isFr ? 'Basculer le thème clair/sombre' : 'Toggle light/dark theme'"
                                 class="w-9 h-9 rounded-full flex items-center justify-center
                                        text-surface-600 dark:text-surface-300
                                        hover:bg-surface-100 dark:hover:bg-surface-800
@@ -120,6 +121,7 @@ interface YearProjection {
                                 <input type="range" [min]="0" [max]="currMax('wealth')" [step]="currStep('wealth')"
                                        [value]="currentWealth()"
                                        (input)="currentWealth.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Patrimoine actuel' : 'Current wealth'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -132,6 +134,7 @@ interface YearProjection {
                                 <input type="range" [min]="currStep('expenses')" [max]="currMax('expenses')" [step]="currStep('expenses')"
                                        [value]="monthlyExpenses()"
                                        (input)="monthlyExpenses.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Dépenses mensuelles' : 'Monthly expenses'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -144,6 +147,7 @@ interface YearProjection {
                                 <input type="range" [min]="0" [max]="currMax('savings')" [step]="currStep('savings')"
                                        [value]="monthlySavings()"
                                        (input)="monthlySavings.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Épargne mensuelle' : 'Monthly savings'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -156,6 +160,7 @@ interface YearProjection {
                                 <input type="range" [min]="1" [max]="20" [step]="0.5"
                                        [value]="expectedReturn()"
                                        (input)="expectedReturn.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Rendement annuel attendu' : 'Expected annual return'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -168,6 +173,7 @@ interface YearProjection {
                                 <input type="range" [min]="0" [max]="10" [step]="0.5"
                                        [value]="inflationRate()"
                                        (input)="inflationRate.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Taux d’inflation' : 'Inflation rate'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -180,6 +186,7 @@ interface YearProjection {
                                 <input type="range" [min]="2" [max]="6" [step]="0.5"
                                        [value]="withdrawalRate()"
                                        (input)="withdrawalRate.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Taux de retrait' : 'Withdrawal rate'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -192,6 +199,7 @@ interface YearProjection {
                                 <input type="range" [min]="5" [max]="40" [step]="1"
                                        [value]="horizon()"
                                        (input)="horizon.set(+$any($event.target).value)"
+                                       [attr.aria-label]="isFr ? 'Horizon (années)' : 'Time horizon (years)'"
                                        class="w-full accent-slider">
                             </div>
 
@@ -334,8 +342,15 @@ interface YearProjection {
                                 </div>
                             </div>
                             @if (chartData) {
-                                <p-chart type="bar" [data]="chartData" [options]="chartOptions"
-                                         class="w-full" [style]="{ height: '520px' }" />
+                                <!-- role=img + label on the wrapper is the chart's text alternative;
+                                     the canvas subtree is aria-hidden so it isn't announced unlabeled. -->
+                                <div role="img"
+                                     [attr.aria-label]="isFr
+                                        ? 'Projection de votre patrimoine dans le temps : contributions et intérêts cumulés jusqu’à l’objectif FIRE'
+                                        : 'Projection of your wealth over time: contributions and cumulative interest up to your FIRE target'">
+                                    <p-chart type="bar" [data]="chartData" [options]="chartOptions" aria-hidden="true"
+                                             class="w-full" [style]="{ height: '520px' }" />
+                                </div>
                             }
                         </div>
 

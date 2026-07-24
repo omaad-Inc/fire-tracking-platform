@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { I18nService } from '../../i18n/i18n.service';
 
 /**
@@ -10,6 +10,7 @@ import { I18nService } from '../../i18n/i18n.service';
  * implementation from the red-team review).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
     selector: 'app-load-error',
     template: `

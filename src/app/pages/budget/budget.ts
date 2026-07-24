@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
@@ -17,6 +16,7 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
+import { BudgetDataService } from '../service/budget-data.service';
 
 // Expense categories a user can budget (single source: the categories.* dict).
 const BUDGET_CATS: TransactionCategory[] = [
@@ -139,6 +139,7 @@ type Model = 'envelope' | 'flexible';
 })
 export class BudgetPage implements OnInit {
     private api = inject(ApiService);
+    private budgetData = inject(BudgetDataService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
     private toast = inject(MessageService);
@@ -158,19 +159,30 @@ export class BudgetPage implements OnInit {
         category: 'groceries', model: 'envelope', amount: 0, percent: 10,
     };
 
+    constructor() {
+        // Track the LIVE resource: on refresh the device snapshot paints the
+        // tab instantly and the background revalidation folds in when it lands.
+        effect(() => {
+            const d = this.budgetData.data();
+            if (!d) return;
+            this.budgets.set(d.budgets);
+            this.items.set(d.items);
+            this.loading.set(false);
+        });
+    }
+
     ngOnInit() { this.load(); }
 
-    load() {
-        this.loading.set(true);
+    async load() {
         this.error.set(false);
-        forkJoin({ budgets: this.api.listBudgets(), status: this.api.getBudgetStatus() }).subscribe({
-            next: ({ budgets, status }) => {
-                this.budgets.set(budgets);
-                this.items.set(status.items);
-                this.loading.set(false);
-            },
-            error: () => { this.error.set(true); this.loading.set(false); },
-        });
+        if (!this.budgetData.data()) this.loading.set(true);
+        try {
+            await this.budgetData.load();
+        } catch {
+            if (!this.budgetData.data()) this.error.set(true);
+        } finally {
+            this.loading.set(false);
+        }
     }
 
     /** Expense categories still available (exclude ones already budgeted, unless editing that one). */
@@ -224,6 +236,7 @@ export class BudgetPage implements OnInit {
                 this.saving.set(false);
                 this.dialog.set(false);
                 this.toast.add({ severity: 'success', summary: this.t(id !== null ? 'budgets.updated' : 'budgets.created') });
+                this.budgetData.invalidate();
                 this.load();
             },
             error: (e) => {
@@ -236,7 +249,7 @@ export class BudgetPage implements OnInit {
 
     remove(it: BudgetStatus) {
         this.api.deleteBudget(it.budget_id).subscribe({
-            next: () => { this.toast.add({ severity: 'success', summary: this.t('budgets.deleted') }); this.load(); },
+            next: () => { this.toast.add({ severity: 'success', summary: this.t('budgets.deleted') }); this.budgetData.invalidate(); this.load(); },
             error: () => this.toast.add({ severity: 'error', summary: this.t('common.error') }),
         });
     }

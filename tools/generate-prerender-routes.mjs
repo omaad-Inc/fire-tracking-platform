@@ -39,8 +39,14 @@ const LANG_PATHS = [
     ...blogSlugs.map((s) => `/blog/${s}`),
 ];
 
+// ── Pages bilingues prérendues mais noindex (lead magnets) : dans
+// prerender-routes.txt pour un chargement instantané, JAMAIS dans le sitemap.
+const NOINDEX_LANG_PATHS = [
+    '/fire-africa/guides',
+];
+
 const LANGS = ['fr', 'en'];
-const langRoutes = LANG_PATHS.flatMap((p) => LANGS.map((l) => `/${l}${p}`));
+const langRoutes = [...LANG_PATHS, ...NOINDEX_LANG_PATHS].flatMap((p) => LANGS.map((l) => `/${l}${p}`));
 
 // ── prerender-routes.txt ──
 // '/' (home) renders the landing too; keep it so the bare origin is prerendered.
