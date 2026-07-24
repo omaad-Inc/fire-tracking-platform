@@ -1189,7 +1189,14 @@ export const EN: Dict = {
     budget: {
       title: 'Over budget',
       detail: '{{category}}: {{spent}} spent of {{budgeted}} ({{percent_used}}%). {{over_count}} category(ies) over budget this month.',
+      nearTitle: 'Approaching budget limit',
+      nearDetail: '{{category}}: {{spent}} spent of {{budgeted}} ({{percent_used}}%). You are close to the limit.',
       action: 'View my budgets',
+    },
+    anomaly: {
+      title: 'Unusual spending',
+      detail: '{{category}}: {{amount}} this month, ×{{ratio}} your usual average.',
+      action: 'View insights',
     },
     fireUnset: {
       title: 'Set your FIRE target',

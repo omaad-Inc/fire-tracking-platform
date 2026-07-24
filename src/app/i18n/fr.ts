@@ -1187,7 +1187,14 @@ export const FR = {
     budget: {
       title: 'Budget dépassé',
       detail: '{{category}} : {{spent}} dépensés sur {{budgeted}} ({{percent_used}} %). {{over_count}} catégorie(s) au-dessus du budget ce mois-ci.',
+      nearTitle: 'Budget bientôt atteint',
+      nearDetail: '{{category}} : {{spent}} dépensés sur {{budgeted}} ({{percent_used}} %). Vous approchez de la limite.',
       action: 'Voir mes budgets',
+    },
+    anomaly: {
+      title: 'Dépense inhabituelle',
+      detail: '{{category}} : {{amount}} ce mois-ci, soit ×{{ratio}} votre moyenne habituelle.',
+      action: 'Voir les analyses',
     },
     fireUnset: {
       title: 'Définissez votre objectif FIRE',
