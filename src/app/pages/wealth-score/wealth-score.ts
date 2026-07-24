@@ -5,8 +5,10 @@ import { ChartModule } from 'primeng/chart';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { WealthScoreService } from '../service/wealth-score.service';
+import { CoachingService } from '../service/coaching.service';
 import { I18nService } from '../../i18n/i18n.service';
-import { AxisScore } from '../../core/services/api.service';
+import { AxisScore, CoachingRecommendation } from '../../core/services/api.service';
+import { NavService } from '../../core/services/nav.service';
 import { prefersReducedMotion } from '../../core/theme/chart-theme';
 
 @Component({
@@ -224,6 +226,14 @@ import { prefersReducedMotion } from '../../core/theme/chart-theme';
                                                 </div>
                                             }
                                         </div>
+
+                                        <!-- S6-2: the one top action that moves this axis, deep-linked. -->
+                                        @if (coaching.forAxis(axis.axis); as rec) {
+                                            <button type="button" (click)="actOnAxis(rec)"
+                                                    class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 dark:text-ochre-400 hover:underline cursor-pointer">
+                                                <i class="pi pi-arrow-right text-xs"></i> {{ coaching.action(rec) }}
+                                            </button>
+                                        }
                                     </div>
                                 }
                             </div>
@@ -239,8 +249,22 @@ export class WealthScorePage implements OnInit {
     @Input() embedded = false;
 
     scoreService = inject(WealthScoreService);
+    coaching = inject(CoachingService);
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private nav = inject(NavService);
+
+    /** Navigate a recommendation's deep-link ("/pages/x?y=z"), lang-prefixed (S6-2). */
+    actOnAxis(r: CoachingRecommendation) {
+        const [path, query] = r.action_route.replace(/^\//, '').split('?');
+        const segments = path.split('/').filter(Boolean);
+        const queryParams: Record<string, string> = {};
+        if (query) for (const pair of query.split('&')) {
+            const [k, v] = pair.split('=');
+            if (k) queryParams[k] = v ?? '';
+        }
+        this.router.navigate(this.nav.link(...segments), { queryParams });
+    }
 
     chartData: any = {};
     chartOptions: any = {};
@@ -287,6 +311,8 @@ export class WealthScorePage implements OnInit {
     async ngOnInit() {
         await this.scoreService.load();
         this.buildChart();
+        // Load coaching so each axis can surface its one top action (S6-2).
+        this.coaching.load().catch(() => { /* non-critical: axes still render */ });
     }
 
     totalScoreColor(): string {
