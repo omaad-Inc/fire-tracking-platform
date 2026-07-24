@@ -18,6 +18,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
+import { toLocalDateStr } from '../../../core/util/date';
 
 /**
  * Tappable currency chip rendered inside an amount input's suffix slot (S7b
@@ -285,7 +286,7 @@ interface CategoryCard {
                                     <!-- Label + descriptor -->
                                     <div class="flex-1 min-w-0">
                                         <h3 class="font-bold text-surface-900 dark:text-surface-0 text-[15px] mb-0.5 truncate">{{ cat.label }}</h3>
-                                        <p class="text-surface-400 dark:text-surface-500 text-[13px] leading-snug line-clamp-2 m-0">{{ cat.desc }}</p>
+                                        <p class="text-surface-500 dark:text-surface-400 text-[13px] leading-snug line-clamp-2 m-0">{{ cat.desc }}</p>
                                     </div>
                                     <!-- Chevron affordance -->
                                     <i class="pi pi-chevron-right text-xs text-surface-300 dark:text-surface-600
@@ -747,11 +748,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     // LOCAL date parts, not toISOString(): the picker hands us local midnight,
     // and UTC-converting it stores yesterday for any user east of Greenwich
     // (Paris diaspora picks the 15th, the API gets the 14th).
-    private toDateStr(d: Date | null): string {
-        if (!d) return '';
-        const p = (n: number) => String(n).padStart(2, '0');
-        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-    }
+    private toDateStr(d: Date | null): string { return d ? toLocalDateStr(d) : ''; }
     private dateObjCache = new Map<string, Date>();
     private toDateObj(s: string): Date | null {
         if (!s) return null;

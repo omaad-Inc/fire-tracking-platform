@@ -38,3 +38,61 @@ for (const [name, url] of PAGES) {
         if (GATE_SERIOUS) expect(serious.map(v => v.id)).toEqual([]);
     });
 }
+
+// ── Authed surface: the add-asset wizard (S7b PA-5) ─────────────────
+// Same ZERO critical + ZERO serious gate as the public pages. The wizard
+// was cleaned in PA-2.1 (label association, contrast, empty-heading) and
+// PA-3 (chooser badges); this pins it.
+
+const EMAIL = process.env.E2E_EMAIL || 'demo@omaad.dev';
+const PASSWORD = process.env.E2E_PASSWORD || 'OmaadDemo2026!';
+
+const WIZARD_SCREENS: Array<[string, string]> = [
+    ['wizard catalog', '/fr/pages/patrimoine/add-asset'],
+    ['wizard tontine form', '/fr/pages/patrimoine/add-asset?category=tontine'],
+    ['wizard cash form', '/fr/pages/patrimoine/add-asset?category=cash'],
+];
+
+for (const [name, url] of WIZARD_SCREENS) {
+    test(`a11y: ${name} has no critical violations`, async ({ page }) => {
+        await page.goto('/fr/auth/login');
+        await page.locator('#email').fill(EMAIL);
+        await page.locator('#password input').fill(PASSWORD);
+        await page.locator('button[type=submit]').first().click();
+        await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
+        await page.waitForFunction(() => !!localStorage.getItem('omaad_user'), null, { timeout: 15_000 });
+
+        await page.goto(url);
+        await page.waitForSelector('h1', { timeout: 15_000 });
+        await page.waitForTimeout(600);
+        const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+
+        const critical = results.violations.filter(v => v.impact === 'critical');
+        const serious = results.violations.filter(v => v.impact === 'serious');
+        if (serious.length) {
+            console.log(`  [${name}] serious: ${serious.map(v => `${v.id}×${v.nodes.length}`).join(', ')}`);
+        }
+        expect(critical.map(v => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+        if (GATE_SERIOUS) expect(serious.map(v => v.id)).toEqual([]);
+    });
+}
+
+test('a11y: wizard dual-path chooser has no critical violations', async ({ page }) => {
+    await page.goto('/fr/auth/login');
+    await page.locator('#email').fill(EMAIL);
+    await page.locator('#password input').fill(PASSWORD);
+    await page.locator('button[type=submit]').first().click();
+    await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
+    await page.waitForFunction(() => !!localStorage.getItem('omaad_user'), null, { timeout: 15_000 });
+
+    await page.goto('/fr/pages/patrimoine/add-asset');
+    await page.getByRole('button', { name: /Compte bancaire/ }).click();
+    await page.waitForSelector('text=Connecter ma banque', { timeout: 10_000 });
+    await page.waitForTimeout(400);
+    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+
+    const critical = results.violations.filter(v => v.impact === 'critical');
+    const serious = results.violations.filter(v => v.impact === 'serious');
+    expect(critical.map(v => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+    if (GATE_SERIOUS) expect(serious.map(v => v.id)).toEqual([]);
+});

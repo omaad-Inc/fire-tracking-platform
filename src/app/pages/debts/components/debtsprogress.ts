@@ -12,6 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { toLocalDateStr } from '../../../core/util/date';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
@@ -382,7 +383,7 @@ export class DebtsProgress implements OnInit {
     editDate: Date | null = null;
 
     private toDateStr(d: Date | null): string {
-        return d ? d.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        return toLocalDateStr(d ?? new Date());
     }
 
     search     = signal('');
@@ -432,7 +433,7 @@ export class DebtsProgress implements OnInit {
     }
 
     openNew() {
-        this.record = { date: new Date().toISOString().split('T')[0], type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
+        this.record = { date: toLocalDateStr(new Date()), type: 'Debt', category: 'other', total: 0, paid: 0, name: '', note: '', interestRate: 0, frequency: 'Mensuel' };
         this.editDate = new Date();
         this.submitted = false;
         this.isEdit = false;

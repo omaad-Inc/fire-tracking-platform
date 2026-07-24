@@ -18,6 +18,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 import { TontineCyclesComponent } from './tontine-cycles';
 import { AssetFormShape, getAssetFormShape, TontineStatus } from '../asset-form-shape';
 import { AssetEditDialogComponent, AssetEditForm } from './asset-edit-dialog';
+import { toLocalDateStr } from '../../../core/util/date';
 
 @Component({
     selector: 'app-asset-detail',
@@ -1012,10 +1013,10 @@ export class AssetDetailPage implements OnInit {
         this.editDialog = true;
     }
 
-    /** Convert a Date | string | null → ISO date string (YYYY-MM-DD) | null */
+    /** Convert a Date | string | null → 'YYYY-MM-DD' | null (LOCAL date parts). */
     private toIsoDate(d: Date | string | null | undefined): string | null {
         if (d == null) return null;
-        if (d instanceof Date) return d.toISOString().split('T')[0];
+        if (d instanceof Date) return toLocalDateStr(d);
         return d;
     }
 
