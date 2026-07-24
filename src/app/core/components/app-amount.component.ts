@@ -1,6 +1,7 @@
 import { Component, input, computed, inject, signal, effect, OnDestroy } from '@angular/core';
 import { CurrencyService } from '../services/currency.service';
 import { PrivacyService } from '../services/privacy.service';
+import { prefersReducedMotion } from '../theme/chart-theme';
 
 /**
  * Renders a EUR value as a formatted amount with the currency symbol.
@@ -51,6 +52,15 @@ export class AppAmountComponent implements OnDestroy {
     private animatedValue = signal(0);
     private animFrameId = 0;
     private hasAnimated = false;
+    /** Honor the OS reduced-motion setting: show the final value instantly, no count-up. */
+    private reducedMotion = prefersReducedMotion();
+    /**
+     * Session-scoped reveal: the count-up plays once per app session (the first
+     * screen's amounts), then every later amount, on tab-switches and revisits,
+     * appears instantly. Set when the first animation completes, so re-counting
+     * doesn't nag on every navigation. Reset only on a full reload.
+     */
+    private static sessionRevealed = false;
 
     // Formatted display string
     displayStr = computed(() => {
@@ -68,8 +78,9 @@ export class AppAmountComponent implements OnDestroy {
             const shouldAnimate = this.animate();
             const isHidden = this.privacy.hidden();
 
-            // Skip animation if privacy mode or already animated
-            if (isHidden || !shouldAnimate || this.hasAnimated || target === 0) {
+            // Skip the count-up under reduced motion, privacy mode, once the session
+            // has already had its reveal, or if this instance already animated.
+            if (isHidden || !shouldAnimate || this.reducedMotion || AppAmountComponent.sessionRevealed || this.hasAnimated || target === 0) {
                 this.animatedValue.set(target);
                 return;
             }
@@ -99,6 +110,8 @@ export class AppAmountComponent implements OnDestroy {
             } else {
                 this.animatedValue.set(to);
                 this.animFrameId = 0;
+                // First reveal done: every later amount this session is instant.
+                AppAmountComponent.sessionRevealed = true;
             }
         };
 

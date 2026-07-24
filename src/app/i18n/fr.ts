@@ -255,6 +255,7 @@ export const FR = {
     recurring: 'Récurrents',
     budgets: 'Budgets',
     insights: 'Analyses',
+    coaching: 'Conseils',
     finances: 'Finances',
     savings: 'Épargne',
     debts: 'Dettes',
@@ -1132,7 +1133,7 @@ export const FR = {
   home: {
     thisMonth: 'Ce mois-ci',
     allClear: 'Rien à surveiller ce mois-ci',
-    allClearDesc: 'Vos budgets sont sous contrôle, continuez comme ça.',
+    allClearDesc: 'Aucune action recommandée pour le moment, continuez comme ça.',
     sections: {
       situation: 'Votre situation',
       situationSub: 'Votre score de santé financière et la progression de votre épargne.',
@@ -1148,6 +1149,78 @@ export const FR = {
     overBudget: '{{cat}} : budget dépassé ({{pct}} %)',
     nearLimit: '{{cat}} : {{pct}} % du budget',
     anomaly: '{{cat}} : dépense inhabituelle (×{{ratio}})',
+  },
+  coaching: {
+    allClear: {
+      title: 'Tout est en ordre',
+      desc: 'Aucune action recommandée pour le moment. Continuez comme ça.',
+    },
+    dismiss: 'Ignorer',
+    emergencyFund: {
+      title: 'Renforcez votre épargne de précaution',
+      detail: 'Votre épargne de précaution couvre {{months_covered}} mois de dépenses. Visez {{target_months}} mois, soit environ {{suggested_monthly}} par mois pendant 6 mois.',
+      action: 'Créer un objectif',
+    },
+    overspending: {
+      title: 'Vos dépenses dépassent vos revenus',
+      detail: 'Vous dépensez plus que vous ne gagnez ({{monthly_expenses}} contre {{monthly_income}} par mois). Rééquilibrez pour dégager une épargne.',
+      action: 'Voir mes budgets',
+    },
+    savingsRate: {
+      title: "Augmentez votre taux d'épargne",
+      detail: "Votre taux d'épargne est de {{savings_rate_pct}} %. Visez au moins {{target_pct}} % pour atteindre vos objectifs plus vite.",
+      detailWithFire: "Votre taux d'épargne est de {{savings_rate_pct}} %. En visant {{target_pct}} %, vous avanceriez votre objectif FIRE d'environ {{fire_months_saved}} mois (estimation).",
+      action: 'Voir mes budgets',
+    },
+    debtPressure: {
+      title: 'Votre charge de dette est élevée',
+      detail: 'Vos remboursements ({{monthly_payments}} par mois) représentent {{dsr_pct}} % de vos revenus. Au-delà de {{threshold_pct}} %, la charge devient lourde.',
+      action: 'Voir mes dettes',
+    },
+    concentration: {
+      assetTitle: 'Un actif domine votre patrimoine',
+      assetDetail: '{{asset_name}} représente {{top_share_pct}} % de votre patrimoine ({{top_asset_value}}). Diversifier réduit votre risque.',
+      classTitle: "Diversifiez vos classes d'actifs",
+      classDetail: "Votre patrimoine est concentré sur peu de classes d'actifs. En ajouter réduit votre risque.",
+      action: 'Voir mon patrimoine',
+    },
+    budget: {
+      title: 'Budget dépassé',
+      detail: '{{category}} : {{spent}} dépensés sur {{budgeted}} ({{percent_used}} %). {{over_count}} catégorie(s) au-dessus du budget ce mois-ci.',
+      nearTitle: 'Budget bientôt atteint',
+      nearDetail: '{{category}} : {{spent}} dépensés sur {{budgeted}} ({{percent_used}} %). Vous approchez de la limite.',
+      action: 'Voir mes budgets',
+    },
+    anomaly: {
+      title: 'Dépense inhabituelle',
+      detail: '{{category}} : {{amount}} ce mois-ci, soit ×{{ratio}} votre moyenne habituelle.',
+      action: 'Voir les analyses',
+    },
+    fireUnset: {
+      title: 'Définissez votre objectif FIRE',
+      detail: "Vous n'avez pas encore défini d'objectif FIRE. Fixez-en un pour suivre votre progression vers l'indépendance financière.",
+      action: 'Configurer FIRE',
+    },
+    fireStalled: {
+      title: "Votre objectif FIRE n'avance pas",
+      detail: "Vous n'épargnez pas actuellement, votre objectif FIRE n'avance donc pas. Dégagez une capacité d'épargne mensuelle.",
+      action: 'Voir mes budgets',
+    },
+    fireOffPace: {
+      title: 'Vous êtes en retard sur votre objectif FIRE',
+      detail: 'Au rythme actuel, vous atteindriez votre objectif vers {{projected_year}}, après votre cible de {{target_year}}. Augmentez votre épargne pour rattraper.',
+      action: 'Configurer FIRE',
+    },
+    goalCatchup: {
+      title: 'Un objectif prend du retard',
+      detail: 'Pour tenir « {{goal_name}} » dans les délais, mettez environ {{required_monthly}} de côté chaque mois.',
+      action: "Voir l'objectif",
+    },
+    stale: {
+      title: 'Mettez vos comptes à jour',
+      detail: 'Aucune transaction depuis {{days_since}} jours. Mettez à jour vos comptes pour garder des chiffres justes.',
+      action: 'Ajouter une transaction',
+    },
   },
   insights: {
     title: 'Analyses',

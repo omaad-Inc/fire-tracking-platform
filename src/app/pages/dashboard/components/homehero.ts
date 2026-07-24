@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subscription, merge } from 'rxjs';
@@ -6,8 +6,8 @@ import { Subscription, merge } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { ApiService, FinancialAlert } from '../../../core/services/api.service';
 import { DashboardService, DashboardStats, FIREProgress, ChartDataPoint } from '../../service/dashboard.service';
+import { CoachingService } from '../../service/coaching.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
@@ -105,21 +105,21 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                     }
                 </div>
 
-                <!-- The one nudge: single top alert, or a calm all-clear state -->
+                <!-- The one nudge: the top coaching recommendation, or a calm all-clear -->
                 <div class="mt-4">
-                    @if (topAlert(); as a) {
-                        <a [routerLink]="link('pages','insights')"
+                    @if (coaching.top(); as rec) {
+                        <a [routerLink]="link('pages','insights')" [queryParams]="{ tab: 'conseils' }"
                            class="flex items-center gap-3 rounded-xl border p-3 no-underline transition-colors"
-                           [ngClass]="a.severity === 'high'
+                           [ngClass]="rec.severity === 'high'
                                ? 'border-negative/30 bg-negative/5 hover:bg-negative/10'
                                : 'border-ochre-200 dark:border-ochre-500/30 bg-ochre-50/60 dark:bg-ochre-500/10 hover:bg-ochre-50'">
                             <span class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-                                  [ngClass]="a.severity === 'high' ? 'bg-negative/15 text-negative' : 'bg-ochre-500/15 text-ochre-600 dark:text-ochre-400'">
-                                <i class="pi pi-exclamation-triangle"></i>
+                                  [ngClass]="rec.severity === 'high' ? 'bg-negative/15 text-negative' : 'bg-ochre-500/15 text-ochre-600 dark:text-ochre-400'">
+                                <i class="pi pi-lightbulb"></i>
                             </span>
                             <span class="min-w-0 flex-1">
-                                <span class="block text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">{{ t('alerts.title') }}</span>
-                                <span class="block text-sm text-surface-800 dark:text-surface-200 truncate">{{ message(a) }}</span>
+                                <span class="block text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">{{ t('menu.coaching') }}</span>
+                                <span class="block text-sm text-surface-800 dark:text-surface-200 truncate">{{ coaching.title(rec) }}</span>
                             </span>
                             <i class="pi pi-chevron-right text-xs text-surface-400 shrink-0"></i>
                         </a>
@@ -161,7 +161,7 @@ export class HomeHero implements OnInit, OnDestroy {
     private nav = inject(NavService);
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
-    private api = inject(ApiService);
+    coaching = inject(CoachingService);
     cs = inject(CurrencyService);
 
     private subscription?: Subscription;
@@ -171,7 +171,25 @@ export class HomeHero implements OnInit, OnDestroy {
     stats = signal<DashboardStats | null>(null);
     fireProgress = signal<FIREProgress | null>(null);
     series = signal<ChartDataPoint[]>([]);
-    alerts = signal<FinancialAlert[]>([]);
+
+    constructor() {
+        // Track the LIVE resource signals, not only loadAll()'s one-shot values:
+        // on a hard refresh the resources first serve the device snapshot (so
+        // the hero paints real numbers instantly) and revalidate in the
+        // background — these effects fold the fresh values in when they land.
+        effect(() => {
+            const summary = this.dashboardService.summaryData();
+            if (!summary) return;
+            this.stats.set(this.dashboardService.statsFromSummary(summary));
+            this.fireProgress.set(this.dashboardService.fireFromSummary(summary));
+            this.loading.set(false);
+            this.loadError.set(false);
+        });
+        effect(() => {
+            const series = this.dashboardService.worthProgressionData(12)();
+            if (series?.length) this.series.set(series);
+        });
+    }
 
     /** Respect the OS reduced-motion preference (disables the number count-up). */
     readonly reducedMotion =
@@ -201,18 +219,6 @@ export class HomeHero implements OnInit, OnDestroy {
     readonly fireConfigured = computed(() => (this.fireProgress()?.targetAmount ?? 0) > 0);
     readonly firePct = computed(() => this.fireProgress()?.progressPct ?? 0);
     readonly fireBarPct = computed(() => Math.min(100, Math.max(0, this.firePct())));
-
-    /** Single top alert: highest severity first, then over-budget > near-limit > anomaly. */
-    readonly topAlert = computed<FinancialAlert | null>(() => {
-        const list = this.alerts();
-        if (!list.length) return null;
-        const kindRank: Record<string, number> = { over_budget: 0, near_limit: 1, anomaly: 2 };
-        return [...list].sort((a, b) => {
-            const sev = (a.severity === 'high' ? 0 : 1) - (b.severity === 'high' ? 0 : 1);
-            if (sev !== 0) return sev;
-            return (kindRank[a.kind] ?? 9) - (kindRank[b.kind] ?? 9);
-        })[0];
-    });
 
     /** SVG sparkline geometry from the (FX-correct) net-worth progression series. */
     readonly spark = computed(() => {
@@ -263,23 +269,15 @@ export class HomeHero implements OnInit, OnDestroy {
         } finally {
             this.loading.set(false);
         }
-        // Alerts are non-critical: a failure here must not blank the whole hero.
-        this.api.getFinancialAlerts().subscribe({
-            next: (res) => this.alerts.set(res.alerts),
-            error: () => this.alerts.set([]),
-        });
+        // The nudge (top coaching recommendation) is non-critical: a failure
+        // here must not blank the hero. CoachingService owns caching/dedup, so
+        // the Conseils tab and the wealth score reuse this same fetch.
+        this.coaching.load().catch(() => { /* nudge just stays on all-clear */ });
     }
 
     retry() {
         this.loadError.set(false);
         this.loadAll();
-    }
-
-    message(a: FinancialAlert): string {
-        const cat = this.i18n.categoryLabel(a.category);
-        if (a.kind === 'over_budget') return this.t('alerts.overBudget', { cat, pct: Math.round(a.percent_used ?? 0) });
-        if (a.kind === 'near_limit') return this.t('alerts.nearLimit', { cat, pct: Math.round(a.percent_used ?? 0) });
-        return this.t('alerts.anomaly', { cat, ratio: (a.ratio ?? 0).toFixed(1) });
     }
 
     abs(n: number): number { return Math.abs(n); }

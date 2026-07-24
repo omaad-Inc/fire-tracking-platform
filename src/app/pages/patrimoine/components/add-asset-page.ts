@@ -16,6 +16,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { isTouchDevice } from '../../../core/util/touch';
 
 interface Owner {
     name: string;
@@ -214,13 +215,13 @@ interface CategoryCard {
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
-                                                <p-datepicker [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
-                                                <p-datepicker [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
@@ -352,7 +353,7 @@ interface CategoryCard {
                                         @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
                                             <div class="flex flex-col gap-2">
                                                 <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
-                                                <p-datepicker [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
@@ -469,6 +470,9 @@ interface CategoryCard {
     `
 })
 export class AddAssetPage implements OnInit, CanComponentDeactivate {
+    /** Mobile-safe datepickers: touchUI modal + readonly input (no keyboard). */
+    readonly isTouch = isTouchDevice();
+
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private location = inject(Location);
@@ -500,8 +504,20 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     // strings (that's what the API + the truthy checks expect). These accessors
     // bridge the two so the whole app can standardize on <p-datepicker> (P2-FE-9)
     // without changing the form's string source of truth.
+    //
+    // The getters MUST return a STABLE Date instance per string value.
+    // `return new Date(s)` on every read handed ngModel a "different" model on
+    // every change-detection pass the moment a date was picked, which spiraled
+    // into an infinite write→CD→write loop and froze the whole app (the
+    // "can't pick a date on mobile, app dies" bug). Memoized per string.
     private toDateStr(d: Date | null): string { return d ? d.toISOString().split('T')[0] : ''; }
-    private toDateObj(s: string): Date | null { return s ? new Date(s) : null; }
+    private dateObjCache = new Map<string, Date>();
+    private toDateObj(s: string): Date | null {
+        if (!s) return null;
+        let d = this.dateObjCache.get(s);
+        if (!d) { d = new Date(s); this.dateObjCache.set(s, d); }
+        return d;
+    }
     get purchaseDateObj(): Date | null { return this.toDateObj(this.assetForm.purchaseDate); }
     set purchaseDateObj(d: Date | null) { this.assetForm.purchaseDate = this.toDateStr(d); }
     get tontineStartDateObj(): Date | null { return this.toDateObj(this.assetForm.tontineStartDate); }
@@ -624,12 +640,17 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         }
     }
 
-    /** True once a name/category/amount has been entered but not yet saved. */
+    /**
+     * True once TYPED input (name or an amount) exists but is not yet saved.
+     * Deliberately does NOT count the category selection: tapping a card is a
+     * free one-tap action, and the BRVM/intl cards immediately navigate to the
+     * connect-broker flow, which false-triggered the "unsaved changes" confirm
+     * on every tap (the guard fired with only the category set).
+     */
     private hasUnsavedInput(): boolean {
         const f = this.assetForm;
         return !this.justSaved && (
-            !!f.name?.trim() || !!this.selectedCategory() ||
-            f.purchasePrice > 0 || f.currentPrice > 0
+            !!f.name?.trim() || f.purchasePrice > 0 || f.currentPrice > 0
         );
     }
 

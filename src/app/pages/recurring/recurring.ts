@@ -18,6 +18,7 @@ import {
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
+import { isTouchDevice } from '../../core/util/touch';
 
 const INCOME_CATS: TransactionCategory[] = ['salary', 'freelance', 'rental_income', 'other_income'];
 const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tontine', 'subscriptions', 'utilities', 'transport', 'groceries', 'other_expense'];
@@ -121,7 +122,7 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.startDate') }}</label>
-                        <p-datepicker [(ngModel)]="form.start" [showIcon]="true" dateFormat="dd/mm/yy" styleClass="w-full" appendTo="body" />
+                        <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="form.start" [showIcon]="true" dateFormat="dd/mm/yy" styleClass="w-full" appendTo="body" />
                     </div>
                 </div>
             </div>
@@ -134,6 +135,9 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
     `,
 })
 export class RecurringPage implements OnInit {
+    /** Mobile-safe datepickers: touchUI modal + readonly input (no keyboard). */
+    readonly isTouch = isTouchDevice();
+
     private api = inject(ApiService);
     private i18n = inject(I18nService);
     private toast = inject(MessageService);

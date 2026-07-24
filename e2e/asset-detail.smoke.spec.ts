@@ -14,7 +14,9 @@ import { expect, Page, test } from '@playwright/test';
 const LANG = 'fr';
 const EMAIL = process.env.E2E_EMAIL || 'demo@omaad.dev';
 const PASSWORD = process.env.E2E_PASSWORD || 'OmaadDemo2026!';
-const ASSET_ID = process.env.E2E_ASSET_ID || '25';
+// Defaults to the first seeded demo asset. The seed assigns ids 1..N, so '1'
+// is always present; override with E2E_ASSET_ID for a non-default dataset.
+const ASSET_ID = process.env.E2E_ASSET_ID || '1';
 
 async function login(page: Page) {
     await page.goto(`/${LANG}/auth/login`);

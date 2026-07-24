@@ -4,13 +4,15 @@ import { registerLocaleData } from '@angular/common';
 import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
 import Aura from '@primeng/themes/aura';
 import { definePreset } from '@primeng/themes';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+import { AuthService } from './app/core/services/auth.service';
+import { TokenService } from './app/core/services/token.service';
 
 /**
  * Custom Omaad preset built on top of Aura.
@@ -41,7 +43,16 @@ const OmaadPreset = definePreset(Aura, {
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        provideRouter(appRoutes, withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }), withEnabledBlockingInitialNavigation()),
+        provideRouter(
+            appRoutes,
+            withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
+            withEnabledBlockingInitialNavigation(),
+            // Preload every lazy chunk after the first navigation settles, so
+            // switching hubs never waits on a chunk download (perf S-boot). The
+            // chunks are small (~10-60 kB gz each) and the service worker then
+            // keeps them for repeat visits.
+            withPreloading(PreloadAllModules),
+        ),
         provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
         provideAnimationsAsync(),
         providePrimeNG({ theme: { preset: OmaadPreset, options: { darkModeSelector: '.app-dark' } } }),
@@ -52,6 +63,19 @@ export const appConfig: ApplicationConfig = {
         provideAppInitializer(() => {
             const i18n = inject(I18nService);
             return i18n.loadLang(i18n.lang());
+        }),
+        // Kick (do NOT await) the cookie session restore at bootstrap when the
+        // device has a session hint, so the /auth/refresh round-trip overlaps
+        // JS boot + route activation instead of serializing after them. The
+        // guard and the interceptor share this same single-flight.
+        provideAppInitializer(() => {
+            if (typeof window === 'undefined') return; // prerender: no session
+            const tokenService = inject(TokenService);
+            if (tokenService.getUser() && !tokenService.getToken()) {
+                // Transient failures are no verdict on the session (the guard
+                // owns the logout decision); swallow them here.
+                inject(AuthService).ensureSession().subscribe({ error: () => {} });
+            }
         }),
         provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),

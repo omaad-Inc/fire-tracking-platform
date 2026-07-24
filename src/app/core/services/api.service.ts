@@ -494,6 +494,29 @@ export interface AlertsResponse {
     alerts: FinancialAlert[];
 }
 
+/** Coaching (Sprint 6). A recommendation carries WHY (metrics/amounts/context
+ *  populate the i18n "because" clause) and WHAT NEXT (action label + deep-link).
+ *  `amounts` are EUR-base (format via CurrencyService, EUR→display); `metrics`
+ *  are already-final plain numbers, render as-is. */
+export interface CoachingRecommendation {
+    id: string;
+    rule: string;
+    severity: 'high' | 'medium' | 'low';
+    axis: string | null;
+    title_key: string;
+    detail_key: string;
+    action_key: string;
+    action_route: string;
+    metrics: Record<string, number>;
+    amounts: Record<string, number>;
+    context: Record<string, string>;
+}
+
+export interface CoachingResponse {
+    generated_at: string;
+    recommendations: CoachingRecommendation[];
+}
+
 // ── Import pipeline (Sprint 3: CSV -> transactions) ─────────────────────────
 /**
  * Column mapping sent (JSON-encoded) in the `mapping` form field of
@@ -1305,6 +1328,11 @@ export class ApiService {
         let params = new HttpParams();
         if (period) params = params.set('period', period);
         return this.http.get<AlertsResponse>(`${this.apiUrl}/insights/alerts`, { params });
+    }
+
+    // ── Coaching (Sprint 6) ─────────────────────────────────────────────────
+    getCoachingRecommendations(): Observable<CoachingResponse> {
+        return this.http.get<CoachingResponse>(`${this.apiUrl}/coaching/recommendations`);
     }
 }
 

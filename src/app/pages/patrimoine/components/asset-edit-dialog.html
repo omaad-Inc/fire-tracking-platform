@@ -52,14 +52,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="flex flex-col gap-1.5">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.startDate') }} <span class="text-negative">*</span></label>
-                            <p-datepicker [(ngModel)]="form.tontineStartDate"
+                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="form.tontineStartDate"
                                           [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy" styleClass="w-full"
                                           inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                         </div>
                         <div class="flex flex-col gap-1.5">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.payoutDate') }}</label>
-                            <p-datepicker [(ngModel)]="form.tontineCollectionDate"
+                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="form.tontineCollectionDate"
                                           [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy" styleClass="w-full"
                                           inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
@@ -177,7 +177,7 @@
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchaseDate') }}</label>
-                        <p-datepicker [(ngModel)]="form.purchaseDate"
+                        <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="form.purchaseDate"
                                       [showIcon]="true" [showButtonBar]="true"
                                       dateFormat="dd/mm/yy" styleClass="w-full"
                                       inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
@@ -217,7 +217,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="flex flex-col gap-1.5">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchaseDate') }}</label>
-                            <p-datepicker [(ngModel)]="form.purchaseDate"
+                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="form.purchaseDate"
                                           [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy" styleClass="w-full"
                                           inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
@@ -273,7 +273,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div class="flex flex-col gap-1.5">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.purchaseDate') }}</label>
-                            <p-datepicker [(ngModel)]="form.purchaseDate"
+                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="form.purchaseDate"
                                           [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy" styleClass="w-full"
                                           inputStyleClass="!py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />

@@ -17,6 +17,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { isTouchDevice } from '../../../core/util/touch';
 
 @Component({
     selector: 'app-fire-settings',
@@ -154,7 +155,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
                     {{ i18n.t('fireSettings.targetDateDesc') }}
                 </p>
-                <p-datepicker
+                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch"
                     [(ngModel)]="targetDate"
                     [showIcon]="true"
                     [showButtonBar]="true"
@@ -192,6 +193,9 @@ import { I18nService } from '../../../i18n/i18n.service';
     `
 })
 export class FireSettings implements OnInit {
+    /** Mobile-safe datepickers: touchUI modal + readonly input (no keyboard). */
+    readonly isTouch = isTouchDevice();
+
     private apiService       = inject(ApiService);
     private authService      = inject(AuthService);
     private tokenService     = inject(TokenService);

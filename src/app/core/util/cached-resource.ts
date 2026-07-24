@@ -1,5 +1,6 @@
 import { Signal, signal } from '@angular/core';
 import { Observable, firstValueFrom, isObservable } from 'rxjs';
+import { deviceCache } from './device-cache';
 
 /**
  * ONE cache layer for every feature service (P2-FE-1).
@@ -60,9 +61,10 @@ const DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
 
 export function cachedResource<T>(
     fetcher: () => Promise<T> | Observable<T>,
-    opts: { ttl?: number } = {},
+    opts: { ttl?: number; persistKey?: string } = {},
 ): CachedResource<T> {
     const ttl = opts.ttl ?? DEFAULT_TTL;
+    const persistKey = opts.persistKey;
 
     const _data = signal<T | null>(null);
     const _status = signal<ResourceStatus>('idle');
@@ -75,6 +77,17 @@ export function cachedResource<T>(
     const hasData = (): boolean => _data() !== null;
     const isFresh = (): boolean => hasData() && !dirty && (Date.now() - stamp) < ttl;
 
+    // Device snapshot (perf S-boot): with a persistKey, the last good value is
+    // persisted per-user on the device so a hard refresh serves it INSTANTLY
+    // (stamp stays 0 → always treated as stale → revalidates in background).
+    // load() awaits this hydration (an IndexedDB read, ~ms) before deciding,
+    // so a cold boot with a snapshot never blocks on the network round-trip.
+    const hydrated: Promise<void> = persistKey
+        ? deviceCache.get<T>(persistKey)
+            .then(v => { if (v != null && !hasData()) { _data.set(v); _status.set('success'); } })
+            .catch(() => { /* no snapshot: plain network behavior */ })
+        : Promise.resolve();
+
     function runFetch(): Promise<T> {
         if (inFlight) return inFlight;               // dedup: collapse a burst to one request
         if (!hasData()) _status.set('loading');      // don't flash a skeleton while revalidating existing data
@@ -86,6 +99,7 @@ export function cachedResource<T>(
                 dirty = false;
                 _status.set('success');
                 _error.set(null);
+                if (persistKey) void deviceCache.set(persistKey, value); // write-through, fire-and-forget
                 return value;
             })
             .catch(err => {
@@ -108,12 +122,13 @@ export function cachedResource<T>(
         data: _data.asReadonly(),
         status: _status.asReadonly(),
         error: _error.asReadonly(),
-        load(force = false): Promise<T> {
-            if (isFresh() && !force) return Promise.resolve(_data() as T);
+        async load(force = false): Promise<T> {
+            await hydrated; // ~ms IndexedDB read; no-op without persistKey
+            if (isFresh() && !force) return _data() as T;
             if (hasData() && !dirty && !force) {
                 // stale-while-revalidate: hand back the stale value now, refresh in bg
                 runFetch().catch(() => { /* status/stale already handled in runFetch */ });
-                return Promise.resolve(_data() as T);
+                return _data() as T;
             }
             // invalidated, forced, or cold → the caller waits for fresh data
             return runFetch();
@@ -129,6 +144,10 @@ export function cachedResource<T>(
             stamp = 0;
             dirty = false;
             inFlight = null;
+            // Logout / user switch: every device snapshot goes too (privacy).
+            // Whole-store: at this point the user hint may already be cleared,
+            // so per-user key resolution can't be trusted for a targeted delete.
+            if (persistKey) void deviceCache.clearAll();
         },
         set(value: T): void {
             _data.set(value);

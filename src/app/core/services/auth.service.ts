@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SKIP_AUTH } from '../interceptors/http-context.tokens';
-import { Observable, tap, catchError, throwError, of } from 'rxjs';
+import { Observable, tap, catchError, throwError, of, map, finalize, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { TokenService, User } from './token.service';
 import { CACHE_RESET } from './cache-reset.token';
@@ -235,8 +235,58 @@ export class AuthService {
     }
 
     /**
+     * Shared in-flight refresh. Concurrent callers (boot initializer, auth
+     * guard, interceptor pre-flight + refresh-on-401) all await ONE
+     * /auth/refresh round-trip instead of racing their own — this matters:
+     * each round-trip to the backend is expensive, and the refresh rotates
+     * the cookie, so parallel refreshes can invalidate each other.
+     */
+    private refreshInFlight$: Observable<string | null> | null = null;
+
+    /**
+     * Always hits /auth/refresh (single-flight). Use when the current access
+     * token is known-bad (a 401 on an authed request).
+     *
+     * Verdict semantics (premium rule: NEVER log a user out on a hiccup):
+     *   - emits the new token on success;
+     *   - emits null ONLY when the server DEFINITIVELY rejected the session
+     *     (401/403), the one case that justifies clearing it;
+     *   - ERRORS on anything transient (timeout, network, 5xx, a deploy blip,
+     *     a Render cold start): no verdict on the session, callers must keep
+     *     it and let the UI show retryable error states instead.
+     */
+    forceRefresh(): Observable<string | null> {
+        if (!this.refreshInFlight$) {
+            this.refreshInFlight$ = this.refreshToken().pipe(
+                // Fall back to any token a concurrent flow (login) set meanwhile.
+                map(res => res?.access_token ?? this.tokenService.getToken()),
+                catchError((err: unknown) => {
+                    const status = err instanceof HttpErrorResponse ? err.status : 0;
+                    if (status === 401 || status === 403) return of(null); // session is dead
+                    return throwError(() => err); // transient: not a verdict
+                }),
+                finalize(() => { this.refreshInFlight$ = null; }),
+                shareReplay(1),
+            );
+        }
+        return this.refreshInFlight$;
+    }
+
+    /**
+     * The current in-memory access token, or a shared cookie-based restore
+     * when there is none yet (cold load / hard refresh). Never throws —
+     * resolves to null when the device has no live session.
+     */
+    ensureSession(): Observable<string | null> {
+        const token = this.tokenService.getToken();
+        return token ? of(token) : this.forceRefresh();
+    }
+
+    /**
      * Refresh access token. Marked SKIP_AUTH so the interceptor doesn't try to
      * refresh-on-401 the refresh call itself (which would recurse forever).
+     * Errors propagate as the raw HttpErrorResponse: forceRefresh() needs the
+     * status code to tell "session dead" (401/403) from a transient failure.
      */
     refreshToken(): Observable<AuthResponse> {
         const context = new HttpContext().set(SKIP_AUTH, true);
@@ -244,7 +294,6 @@ export class AuthService {
             tap(response => {
                 if (response.access_token) this.tokenService.setToken(response.access_token);
             }),
-            catchError(this.handleError)
         );
     }
 
