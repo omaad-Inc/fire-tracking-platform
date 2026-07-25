@@ -6,6 +6,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
 import { AssetsStateService } from './assets-state.service';
 import { cachedResource } from '../../core/util/cached-resource';
+import { toLocalDateStr } from '../../core/util/date';
 
 export interface TransactionRecord {
     id?: string;
@@ -177,7 +178,7 @@ export class TransactionsService {
      * Create a new transaction
      */
     private toDateString(d: string | Date | unknown): string {
-        if (d instanceof Date) return d.toISOString().split('T')[0];
+        if (d instanceof Date) return toLocalDateStr(d);
         if (typeof d === 'string') return d.split('T')[0];
         return '';
     }

@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, DEFAULT_CURRENCY_CODE, LOCALE_ID, isDevMode, inject, provideAppInitializer } from '@angular/core';
+import { ApplicationConfig, DEFAULT_CURRENCY_CODE, ErrorHandler, LOCALE_ID, isDevMode, inject, provideAppInitializer } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
@@ -13,6 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { AuthService } from './app/core/services/auth.service';
 import { TokenService } from './app/core/services/token.service';
+import { ERROR_REPORTER, EventsErrorReporter, GlobalErrorHandler } from './app/core/services/error-reporter';
 
 /**
  * Custom Omaad preset built on top of Aura.
@@ -54,6 +55,10 @@ export const appConfig: ApplicationConfig = {
             withPreloading(PreloadAllModules),
         ),
         provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+        // S8 groundwork: uncaught errors flow to /events (bounded, throttled)
+        // until Sentry replaces the reporter. Swap ERROR_REPORTER only.
+        { provide: ERROR_REPORTER, useClass: EventsErrorReporter },
+        { provide: ErrorHandler, useClass: GlobalErrorHandler },
         provideAnimationsAsync(),
         providePrimeNG({ theme: { preset: OmaadPreset, options: { darkModeSelector: '.app-dark' } } }),
         { provide: LOCALE_ID, useValue: 'fr-FR' },

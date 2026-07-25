@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { DividerModule } from 'primeng/divider';
 import { ApiService, FIRESettings } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { toLocalDateStr } from '../../../core/util/date';
 import { TokenService } from '../../../core/services/token.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { DashboardService } from '../../service/dashboard.service';
@@ -278,7 +279,7 @@ export class FireSettings implements OnInit {
         if (this.fireTarget)  payload.fire_target_amount = toBase(this.fireTarget);
         if (annualExpenses)   payload.annual_expenses    = toBase(annualExpenses);
         if (this.targetDate) {
-            payload.fire_target_date = this.targetDate.toISOString().split('T')[0];
+            payload.fire_target_date = toLocalDateStr(this.targetDate);
         }
 
         this.apiService.updateFIRESettings(payload).subscribe({

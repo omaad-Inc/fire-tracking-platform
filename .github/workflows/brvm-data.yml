@@ -1,0 +1,51 @@
+# Pipeline données BRVM (voir PLAN_INTEGRATION_STRATEGIE_BRVM.md §V1 volet données).
+# Scrape le calendrier officiel des dividendes une fois par jour et ne committe
+# que si la donnée a changé ; le commit sur develop (la branche que Netlify
+# déploie en PROD) déclenche le rebuild, donc les pages prérendues de
+# /outils/strategie-brvm embarquent la donnée fraîche.
+# En cas de changement de format côté brvm.org, le scraper sort en erreur et le
+# workflow échoue bruyamment (notification GitHub).
+#
+# ATTENTION : GitHub ne déclenche les workflows `schedule` que depuis la
+# branche PAR DÉFAUT du repo (master aujourd'hui). Ce fichier doit donc aussi
+# exister sur master (ou la branche par défaut passer à develop) pour que le
+# cron tourne ; il checkout/push develop dans tous les cas.
+name: brvm-data
+
+on:
+  schedule:
+    - cron: "15 6 * * *" # tous les jours 06:15 UTC (BRVM publie la veille au soir)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install duckdb (historisation parquet)
+        run: pip install duckdb
+
+      - name: Scrape calendrier dividendes BRVM
+        run: python3 tools/brvm/scrape_detachements.py
+
+      - name: Commit si la donnée a changé
+        run: |
+          git add src/app/pages/tools/strategie-brvm/data/detachements.json data/brvm/
+          if git diff --cached --quiet; then
+            echo "Aucun changement de donnée."
+            exit 0
+          fi
+          git config user.name "omaad-data-bot"
+          git config user.email "data-bot@omaad.africa"
+          git commit -m "chore(brvm-data): calendrier dividendes du $(date -u +%F)"
+          git push origin develop

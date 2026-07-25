@@ -5,6 +5,7 @@ import { AssetsStateService } from './assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
 import { cachedResource } from '../../core/util/cached-resource';
+import { toLocalDateStr } from '../../core/util/date';
 
 export interface DebtRecord {
     id?: string;
@@ -218,7 +219,7 @@ export class DebtsService {
         const toEur = (v: number) => this.currencyService.toEurFromNative(v, debt.currency);
         return {
             id: debt.id.toString(),
-            date: debt.start_date || new Date().toISOString().split('T')[0],
+            date: debt.start_date || toLocalDateStr(new Date()),
             type: debt.type === 'i_owe' ? 'Debt' : 'Receivable',
             category: debt.category,
             name: debt.name,

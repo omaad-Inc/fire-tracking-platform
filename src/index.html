@@ -10,7 +10,9 @@
     <link rel="dns-prefetch" href="https://api.omaad.africa"/>
 
     <!-- Viewport & Mobile -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover"/>
+    <!-- Zoom verrouillé (feel d'app native, demande produit 2026-07-25) : bloque le
+         pinch/double-tap zoom ET l'auto-zoom iOS au focus des inputs < 16px. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     
     <!-- SEO & Description -->

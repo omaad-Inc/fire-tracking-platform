@@ -101,6 +101,17 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                             <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Compare les frais des 41 SGI de la BRVM', 'Compare fees of all 41 BRVM brokers') }}</div>
                         </div>
                     </a>
+                    <a routerLink="/outils/strategie-brvm" pRipple
+                       class="flex items-center gap-3 px-4 py-3 rounded-lg
+                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
+                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
+                            <span class="text-base">🧭</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</div>
+                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Construis ton plan Core / Satellite et suis les détachements', 'Build your Core / Satellite plan and track ex-dividend dates') }}</div>
+                        </div>
+                    </a>
                 </div>
             </div>
             <!-- About disclosure (click-toggle; hover for mouse) -->
@@ -311,6 +322,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                        class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
                         <span class="mr-2">🏦</span><span>{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/outils/strategie-brvm" (click)="mobileMenuOpen.set(false)" pRipple
+                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
+                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
+                        <span class="mr-2">🧭</span><span>{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</span>
                     </a>
                 </li>
             </ul>

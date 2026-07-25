@@ -97,3 +97,6 @@
 /outils/comparateur-sgi-brvm/sgi/images-finances-internationales
 /outils/comparateur-sgi-brvm/sgi/one-africa-markets
 /outils/comparateur-sgi-brvm/sgi/united-capital-for-africa
+/outils/strategie-brvm
+/outils/strategie-brvm/detachements
+/outils/strategie-brvm/simulateur

@@ -56,6 +56,18 @@ export const appRoutes: Routes = [
     // Outil public SEO (FR, sans préfixe :lang, prérendu au build) — comparateur des 41 SGI de la BRVM.
     { path: 'outils/comparateur-sgi-brvm', loadComponent: () => import('./app/pages/tools/comparateur-sgi-brvm/comparateur-sgi-brvm.page').then(m => m.ComparateurSgiBrvmPage) },
     { path: 'outils/comparateur-sgi-brvm/sgi/:id', loadComponent: () => import('./app/pages/tools/comparateur-sgi-brvm/sgi-detail.page').then(m => m.SgiDetailPage) },
+
+    // Outil public SEO — planificateur de stratégie BRVM (playbook Core/Satellite).
+    // UX en tabs, chaque tab est une route (prérendue, indexable, partageable).
+    {
+        path: 'outils/strategie-brvm',
+        loadComponent: () => import('./app/pages/tools/strategie-brvm/strategie-brvm.shell').then(m => m.StrategieBrvmShell),
+        children: [
+            { path: '', loadComponent: () => import('./app/pages/tools/strategie-brvm/plan.page').then(m => m.StrategiePlanPage) },
+            { path: 'detachements', loadComponent: () => import('./app/pages/tools/strategie-brvm/detachements.page').then(m => m.StrategieDetachementsPage) },
+            { path: 'simulateur', loadComponent: () => import('./app/pages/tools/strategie-brvm/simulateur.page').then(m => m.StrategieSimulateurPage) },
+        ],
+    },
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },
     { path: ':lang/faq', loadComponent: () => import('./app/pages/landing/components/faq').then(m => m.FaqPage) },

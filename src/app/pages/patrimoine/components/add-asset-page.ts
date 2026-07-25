@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, model, signal, computed } from '@angular/core';
 import { CommonModule, DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -13,10 +13,71 @@ import { AssetCreate, AssetCategory } from '../../../core/services/api.service';
 import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes.guard';
 import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
+import { toLocalDateStr } from '../../../core/util/date';
+
+/**
+ * Tappable currency chip rendered inside an amount input's suffix slot (S7b
+ * PA-2). Replaces the old full-width "Devise" select row: the currency lives
+ * where the money is typed, defaulting to the user's preference, one tap to
+ * change. Self-contained popover (closes on outside click / Escape).
+ */
+@Component({
+    selector: 'app-currency-suffix',
+    standalone: true,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule],
+    host: { '(document:click)': 'close()', '(document:keydown.escape)': 'close()' },
+    template: `
+        <div class="absolute right-0 top-1/2 -translate-y-1/2" (click)="$event.stopPropagation()">
+            <button type="button" (click)="open.set(!open())"
+                    class="inline-flex items-center gap-1 pl-2.5 pr-2 py-1 rounded-full text-xs font-semibold
+                           bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300
+                           hover:bg-ochre-50 hover:text-ochre-700 dark:hover:bg-ochre-500/10 dark:hover:text-ochre-400
+                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                           transition-colors cursor-pointer"
+                    [attr.aria-label]="ariaLabel()" [attr.aria-expanded]="open()" aria-haspopup="listbox">
+                {{ symbol() }} <i class="pi pi-chevron-down !text-[9px]" aria-hidden="true"></i>
+            </button>
+            @if (open()) {
+                <div class="absolute right-0 top-full mt-1.5 z-20 min-w-[9rem] rounded-xl border border-surface-200 dark:border-surface-700
+                            bg-surface-0 dark:bg-surface-900 shadow-lg py-1" role="listbox" [attr.aria-label]="ariaLabel()">
+                    @for (o of options; track o.value) {
+                        <button type="button" role="option" [attr.aria-selected]="currency() === o.value"
+                                (click)="pick(o.value)"
+                                class="w-full text-left px-3 py-2 text-sm text-surface-700 dark:text-surface-200
+                                       hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer
+                                       flex items-center justify-between gap-3"
+                                [class.font-semibold]="currency() === o.value">
+                            {{ o.label }}
+                            @if (currency() === o.value) { <i class="pi pi-check text-xs text-ochre-500" aria-hidden="true"></i> }
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    `,
+})
+export class CurrencySuffixComponent {
+    currency = model.required<string>();
+    ariaLabel = model('Devise');
+    open = signal(false);
+    readonly options = [
+        { label: 'FCFA (XOF)', value: 'XOF' },
+        { label: 'Euro (€)', value: 'EUR' },
+        { label: 'Dollar ($)', value: 'USD' },
+    ];
+    symbol = computed(() => {
+        const c = this.currency();
+        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+    });
+    pick(v: string) { this.currency.set(v); this.open.set(false); }
+    close() { this.open.set(false); }
+}
 
 interface Owner {
     name: string;
@@ -59,24 +120,36 @@ interface CategoryCard {
     standalone: true,
     imports: [
         CommonModule, FormsModule, ButtonModule, InputTextModule,
-        SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe
+        SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe,
+        CurrencySuffixComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [MessageService],
+    styles: [`
+        @keyframes omaad-pop {
+            0% { transform: scale(.6); opacity: 0; }
+            70% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `],
     template: `
         <p-toast position="top-center"></p-toast>
 
         <div class="flex flex-col min-h-[calc(100vh-8rem)]">
             <!-- Header -->
             <div class="flex items-center gap-4 mb-6">
-                <button (click)="goBack()"
+                <button (click)="goBack()" [attr.aria-label]="t('common.back')"
                         class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
+                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
                 </button>
                 <div class="flex-1 min-w-0">
+                    <!-- No h1 on the success step: its title lives in the body,
+                         and an empty heading is an axe violation. -->
+                    @if (currentStep() !== 3) {
                     <h1 class="font-bold text-surface-900 dark:text-surface-0 m-0"
                         [ngClass]="currentStep() === 0 ? 'text-2xl' : 'text-xl'">
-                        @if (currentStep() === 0) { {{ t('addAssets.wizard.headerComplete') }} }
-                        @if (currentStep() === 1) {
+                        @if (currentStep() === 0 && !pathChooser()) { {{ t('addAssets.wizard.headerComplete') }} }
+                        @if ((currentStep() === 0 && pathChooser()) || currentStep() === 1) {
                             <span class="flex items-center gap-2">
                                 @if (selectedCard()) {
                                     <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg {{ selectedCard()!.bgClass }}">
@@ -88,9 +161,10 @@ interface CategoryCard {
                         }
                         @if (currentStep() === 2) { {{ t('addAssets.wizard.ownership') }} }
                     </h1>
+                    }
                 </div>
                 <!-- Step dots (only on form steps) -->
-                @if (currentStep() >= 1) {
+                @if (currentStep() === 1 || currentStep() === 2) {
                     <div class="flex items-center gap-1.5 shrink-0">
                         @for (s of [1, 2]; track s) {
                             <div class="w-2 h-2 rounded-full transition-all"
@@ -103,48 +177,128 @@ interface CategoryCard {
             <!-- Content -->
             <div class="flex-1">
 
-                <!-- ===== STEP 0: Category Picker (Finary-style premium cards) ===== -->
-                @if (currentStep() === 0) {
+                <!-- ===== STEP 0b: Dual-path chooser (S7b PA-3). Bank + mobile
+                     money classes open here: an HONEST "coming soon" live-sync
+                     teaser (taps feed the sync_interest event, measuring S9
+                     demand) next to the manual path. Stocks never reach this
+                     block: connect-broker is their dual-path screen. ===== -->
+                @if (currentStep() === 0 && pathChooser()) {
+                    <div class="max-w-3xl mx-auto">
+                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-8">{{ t('addAssets.dualPath.title') }}</p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <!-- Sync teaser card (S9): honest, secure-framed, demand-measured -->
+                            <button type="button" (click)="registerSyncInterest()" [attr.aria-pressed]="syncInterestSent()"
+                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
+                                           hover:border-ochre-300 dark:hover:border-ochre-500/50
+                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                                           transition-all text-left group overflow-hidden min-h-64 sm:min-h-80 cursor-pointer">
+                                <div class="relative flex justify-between items-start p-5">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-ochre-50 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 text-xs font-semibold">
+                                        {{ t('addAssets.dualPath.soonChip') }}
+                                    </span>
+                                    <div class="w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shadow-sm">
+                                        <i class="pi {{ pathChooser() === 'mobile_money' ? 'pi-mobile' : 'pi-building-columns' }} text-2xl text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                                <div class="relative p-6 pt-0">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-medium mb-3">
+                                        <i class="pi pi-lock text-[10px]" aria-hidden="true"></i>
+                                        {{ t('addAssets.institutionList.secureConnection') }}
+                                    </span>
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">
+                                        {{ pathChooser() === 'mobile_money' ? t('addAssets.dualPath.syncMomoTitle') : t('addAssets.dualPath.syncBankTitle') }}
+                                    </div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                                        {{ pathChooser() === 'mobile_money' ? t('addAssets.dualPath.syncMomoDesc') : t('addAssets.dualPath.syncBankDesc') }}
+                                    </div>
+                                    @if (syncInterestSent()) {
+                                        <div class="flex items-center gap-2 mt-4 text-positive text-sm font-medium" role="status">
+                                            <i class="pi pi-check-circle" aria-hidden="true"></i>
+                                            {{ t('addAssets.dualPath.thanks') }}
+                                        </div>
+                                    } @else {
+                                        <div class="text-surface-500 dark:text-surface-400 text-xs mt-4">{{ t('addAssets.dualPath.notifyHint') }}</div>
+                                    }
+                                </div>
+                            </button>
+
+                            <!-- Manual card: the path that works today -->
+                            <button type="button" (click)="chooseManualPath()"
+                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800
+                                           hover:border-brand-300 dark:hover:border-brand-700
+                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                                           transition-all text-left group overflow-hidden min-h-64 sm:min-h-80 cursor-pointer">
+                                <div class="relative flex justify-end p-5">
+                                    <div class="w-14 h-14 rounded-2xl bg-surface-100 dark:bg-surface-700 flex items-center justify-center shadow-sm">
+                                        <i class="pi pi-pencil text-2xl text-surface-500 dark:text-surface-400" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                                <div class="relative p-6 pt-0">
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">{{ t('addAssets.dualPath.manualTitle') }}</div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">{{ t('addAssets.dualPath.manualDesc') }}</div>
+                                    <div class="flex justify-end mt-4">
+                                        <div class="w-10 h-10 rounded-full border border-surface-200 dark:border-surface-600 flex items-center justify-center
+                                                    group-hover:border-brand-300 group-hover:bg-brand-50 dark:group-hover:border-brand-700 dark:group-hover:bg-brand-900/40 transition-all">
+                                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                }
+
+                <!-- ===== STEP 0: Category Picker (S7b PA-1: store-like catalog) ===== -->
+                @if (currentStep() === 0 && !pathChooser()) {
                     <div class="max-w-4xl mx-auto">
+                        <!-- Aspirational, honest subheader -->
+                        <p class="text-surface-500 dark:text-surface-400 text-[15px] leading-relaxed -mt-3 mb-6">
+                            {{ t('addAssets.wizard.subtitle') }}
+                        </p>
+
                         <!-- Search -->
                         <div class="relative mb-8">
-                            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400"></i>
+                            <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-surface-400" aria-hidden="true"></i>
                             <input pInputText
                                    [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
                                    [placeholder]="t('addAssets.searchPlaceholder')"
+                                   [attr.aria-label]="t('addAssets.searchPlaceholder')"
                                    class="w-full !pl-11 !py-3.5 !bg-surface-50 dark:!bg-surface-800 !border-surface-200 dark:!border-surface-700 !rounded-xl text-sm" />
                         </div>
 
-                        <!-- 2-column Finary-style card grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Catalog grid: one strong duotone icon tile per class, chevron affordance -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             @for (cat of filteredCategories(); track cat.value) {
                                 <button type="button"
                                         (click)="selectCategory(cat.value)"
-                                        class="relative flex items-start gap-0 p-5 rounded-2xl border border-surface-200 dark:border-surface-700
-                                               hover:border-brand-300 dark:hover:border-brand-700 hover:shadow-md
-                                               transition-all text-left group overflow-hidden min-h-[7.5rem]">
-                                    <!-- Background decorative icon (large, faded, top-right) -->
-                                    <div class="absolute -top-2 -right-2 w-20 h-20 rounded-full opacity-[0.07] dark:opacity-[0.1]
-                                                flex items-center justify-center {{ cat.bgClass }}">
-                                        <i class="pi {{ cat.icon }} text-5xl {{ cat.textClass }}"></i>
+                                        class="flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-surface-200 dark:border-surface-700
+                                               bg-surface-0 dark:bg-surface-900
+                                               hover:border-ochre-300 dark:hover:border-ochre-500/50 hover:shadow-card hover:-translate-y-px
+                                               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
+                                               transition-all duration-200 text-left group cursor-pointer">
+                                    <!-- Duotone icon tile -->
+                                    <div class="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-2xl {{ cat.bgClass }}
+                                                flex items-center justify-center
+                                                group-hover:scale-105 transition-transform duration-200 motion-reduce:transform-none">
+                                        <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl sm:text-2xl" aria-hidden="true"></i>
                                     </div>
-                                    <!-- Content -->
-                                    <div class="relative flex-1 pr-10">
-                                        <h3 class="font-bold text-surface-900 dark:text-surface-0 text-[15px] mb-1.5">{{ cat.label }}</h3>
-                                        <p class="text-surface-400 dark:text-surface-500 text-sm leading-relaxed">{{ cat.desc }}</p>
+                                    <!-- Label + descriptor -->
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-bold text-surface-900 dark:text-surface-0 text-[15px] mb-0.5 truncate">{{ cat.label }}</h3>
+                                        <p class="text-surface-500 dark:text-surface-400 text-[13px] leading-snug line-clamp-2 m-0">{{ cat.desc }}</p>
                                     </div>
-                                    <!-- Decorative illustration area (right) -->
-                                    <div class="absolute top-1/2 -translate-y-1/2 right-4 w-14 h-14 rounded-xl {{ cat.bgClass }}
-                                                flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all">
-                                        <i class="pi {{ cat.icon }} {{ cat.textClass }} text-xl"></i>
-                                    </div>
+                                    <!-- Chevron affordance -->
+                                    <i class="pi pi-chevron-right text-xs text-surface-300 dark:text-surface-600
+                                              group-hover:text-ochre-500 group-hover:translate-x-0.5
+                                              transition-all duration-200 shrink-0 motion-reduce:transform-none" aria-hidden="true"></i>
                                 </button>
                             }
                         </div>
 
                         @if (filteredCategories().length === 0) {
                             <div class="text-center py-12 text-surface-400">
-                                <i class="pi pi-search text-2xl mb-3 block"></i>
+                                <i class="pi pi-search text-2xl mb-3 block" aria-hidden="true"></i>
                                 <p class="text-sm">{{ t('addAssets.wizard.noTypeFound') }}</p>
                             </div>
                         }
@@ -152,7 +306,7 @@ interface CategoryCard {
                 }
 
                 <!-- ===== STEPS 1 & 2: Form ===== -->
-                @if (currentStep() >= 1) {
+                @if (currentStep() === 1 || currentStep() === 2) {
                     <div class="max-w-2xl mx-auto">
                         <div class="flex flex-col lg:flex-row gap-6">
                             <!-- Step sidebar -->
@@ -178,71 +332,57 @@ interface CategoryCard {
                                 </div>
                             </div>
 
-                            <!-- Form content -->
-                            <div class="flex-1">
+                            <!-- Form content (omaad-quiet-form: hairline rows win
+                                 over the global input-radius skin, see _design-system.scss) -->
+                            <div class="flex-1 omaad-quiet-form">
                                 <!-- Step 1: Per-category form -->
                                 @if (currentStep() === 1) {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <!-- Name (always) -->
                                         <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
-                                            <input pInputText [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
+                                            <label for="aa-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
+                                            <input pInputText id="aa-name" [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
 
-                                        <!-- Currency (always), the native currency the amounts below are entered in -->
-                                        <div class="flex flex-col gap-2 md:col-span-2">
-                                            <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currency') }}</label>
-                                            <p-select [(ngModel)]="assetForm.currency" [options]="currencyOptions"
-                                                      optionLabel="label" optionValue="value" appendTo="body"
-                                                      styleClass="w-full" />
-                                        </div>
+                                        <!-- Currency now lives as a tappable chip inside each amount
+                                             field (PA-2): defaults to the user's preference, one tap
+                                             to change. The old full-width Devise row is gone. -->
 
                                         <!-- TONTINE -->
                                         @if (assetForm.category === 'tontine') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
+                                                <label for="aa-t-monthly" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber inputId="aa-t-monthly" styleClass="w-full" [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
-                                                <p-inputnumber [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
+                                                <label for="aa-t-participants" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
+                                                <p-inputnumber inputId="aa-t-participants" styleClass="w-full" [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
-                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                <label for="aa-t-start" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
+                                                <p-datepicker inputId="aa-t-start" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
-                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
-                                                       dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
-                                                <p-select [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
-                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
-                                                <p-select [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
-                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                <label for="aa-t-freq" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
+                                                <p-select inputId="aa-t-freq" [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
+                                                    styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
                                                 <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
                                                     <i class="pi pi-calculator text-brand-700 dark:text-brand-300"></i>
                                                     <div>
-                                                        <p class="text-xs text-surface-400 mb-0.5">{{ t('addAssets.wizard.estimatedAccumulated') }}</p>
+                                                        <p class="text-xs text-surface-600 dark:text-surface-400 mb-0.5">{{ t('addAssets.wizard.estimatedAccumulated') }}</p>
                                                         <p class="font-bold text-brand-700 dark:text-brand-300">
                                                             {{ tontineCurrentValue() | number:'1.0-0' }} {{ curSymbol() }}
-                                                            <span class="text-xs font-normal text-surface-400">({{ tontineMonthsElapsed() }} {{ t('addAssets.wizard.moShort') }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                                            <span class="text-xs font-normal text-surface-600 dark:text-surface-400">({{ tontineMonthsElapsed() }} {{ t('addAssets.wizard.moShort') }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -252,17 +392,17 @@ interface CategoryCard {
                                         <!-- MOBILE MONEY -->
                                         @if (assetForm.category === 'mobile_money') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.provider') }} <span class="text-negative">*</span></label>
-                                                <p-select [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
+                                                <label for="aa-mm-provider" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.provider') }} <span class="text-negative">*</span></label>
+                                                <p-select inputId="aa-mm-provider" [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
                                                     [placeholder]="t('addAssets.wizard.selectProvider')"
-                                                    styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                    styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
+                                                <label for="aa-mm-balance" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber inputId="aa-mm-balance" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-400">
@@ -274,25 +414,17 @@ interface CategoryCard {
                                         <!-- QUANTITY-BASED -->
                                         @if (isQuantityBased()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
-                                                <p-inputnumber [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
+                                                <label for="aa-qty" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
+                                                <p-inputnumber inputId="aa-qty" styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
+                                                <label for="aa-unit-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }} <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
-                                                <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber inputId="aa-unit-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                         }
@@ -300,40 +432,39 @@ interface CategoryCard {
                                         <!-- SIMPLE BALANCE (cash, savings_account) -->
                                         @if (assetForm.category === 'cash' || assetForm.category === 'savings_account') {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                                <label for="aa-balance" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ assetForm.category === 'cash' ? (t('addAssets.wizard.currentBalance')) : (t('addAssets.wizard.savingsAmount')) }} <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber inputId="aa-balance" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
-                                            </div>
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.bank') }}</label>
-                                                <input pInputText [(ngModel)]="assetForm.institution"
-                                                       [placeholder]="assetForm.category === 'cash' ? 'Ex: SGBS, Ecobank...' : 'Ex: CBAO, BHS...'"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                         }
+                                        <!-- PA-4: the bank name is optional and lives in the
+                                             details disclosure; balance essentials stay 2 fields. -->
 
-                                        <!-- TOTAL-VALUE-BASED -->
-                                        @if (!isQuantityBased() && !isSimpleBalanceCategory() && assetForm.category !== 'tontine' && assetForm.category !== 'mobile_money') {
+                                        <!-- TOTAL-VALUE-BASED (PA-4: purchase value is an essential
+                                             ONLY where owners actually anchor on it, immobilier and
+                                             vehicule; for the rest it is demoted to details per the
+                                             section-13 decision and current value leads alone). -->
+                                        @if (isTotalValueBased()) {
+                                            @if (purchaseLedClass()) {
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                                <label for="aa-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.wizard.purchaseInitialValue') }}
-                                                    @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
-                                                        <span class="text-negative">*</span>
-                                                    }
+                                                    <span class="text-negative">*</span>
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
+                                            }
                                             <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">
+                                                <label for="aa-current" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.fields.currentValue') }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
                                                         <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span>
@@ -342,54 +473,116 @@ interface CategoryCard {
                                                     }
                                                 </label>
                                                 <div class="relative">
-                                                    <p-inputnumber [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-16" />
-                                                    <span class="absolute right-0 top-1/2 -translate-y-1/2 text-surface-400 text-xs font-medium">{{ curSymbol() }}</span>
+                                                    <p-inputnumber inputId="aa-current" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                         }
 
-                                        <!-- Purchase date -->
-                                        @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
-                                                <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
-                                                       dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                        }
+                                    </div>
 
-                                        <!-- Institution -->
-                                        @if (isInstitutionBased() && !isSimpleBalanceCategory()) {
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
-                                                <input pInputText [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                        }
+                                    <!-- ===== Détails (optionnel): progressive disclosure (S7b PA-2). Purchase
+                                         date, institution, current unit value, RE specifics and tontine
+                                         secondary fields live here, collapsed by default (§13: never make
+                                         users feel homework is required). ===== -->
+                                    @if (detailsAvailable()) {
+                                        <div class="mt-6">
+                                            <button type="button" (click)="detailsOpen.set(!detailsOpen())"
+                                                    class="inline-flex items-center gap-2 text-sm font-semibold text-brand-700 dark:text-ochre-400
+                                                           hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60 rounded"
+                                                    [attr.aria-expanded]="detailsOpen()">
+                                                <i class="pi text-xs transition-transform duration-200 motion-reduce:transition-none"
+                                                   [ngClass]="detailsOpen() ? 'pi-chevron-down' : 'pi-chevron-right'" aria-hidden="true"></i>
+                                                {{ detailsOpen() ? t('addAssets.wizard.detailsHide') : t('addAssets.wizard.detailsOptional') }}
+                                            </button>
 
-                                        <!-- Real estate specific -->
-                                        @if (assetForm.category === 'real_estate') {
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
-                                                <p-inputnumber [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                            @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
-                                                <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
-                                                    <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.pricePerM2') }}</span>
-                                                    <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
-                                                        {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
-                                                    </span>
+                                            @if (detailsOpen()) {
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                                                    <!-- Current unit value (quantity-based) -->
+                                                    @if (isQuantityBased()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-unit-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
+                                                            <div class="relative">
+                                                                <p-inputnumber inputId="aa-unit-cur" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- Purchase date -->
+                                                    @if (assetForm.category !== 'mobile_money' && assetForm.category !== 'tontine' && !isSimpleBalanceCategory()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-buy-date" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
+                                                            <p-datepicker inputId="aa-buy-date" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                                   dateFormat="yy-mm-dd" styleClass="w-full"
+                                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                    }
+
+                                                    <!-- Purchase value, demoted for non-purchase-led
+                                                         total-value classes (PA-4, section-13) -->
+                                                    @if (isTotalValueBased() && !purchaseLedClass()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.purchaseInitialValue') }}</label>
+                                                            <div class="relative">
+                                                                <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- Institution -->
+                                                    @if (isInstitutionBased()) {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-institution" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
+                                                            <input pInputText id="aa-institution" [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
+                                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                    }
+
+                                                    <!-- Tontine secondary fields -->
+                                                    @if (assetForm.category === 'tontine') {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-t-payout" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
+                                                            <p-datepicker inputId="aa-t-payout" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                                   dateFormat="yy-mm-dd" styleClass="w-full"
+                                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-t-status" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
+                                                            <p-select inputId="aa-t-status" [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
+                                                                styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                        </div>
+                                                    }
+
+                                                    <!-- Real estate specifics -->
+                                                    @if (assetForm.category === 'real_estate') {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-surface" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
+                                                            <p-inputnumber inputId="aa-surface" styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
+                                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                        @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
+                                                            <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
+                                                                <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.pricePerM2') }}</span>
+                                                                <span class="text-brand-700 dark:text-brand-300 font-semibold text-sm">
+                                                                    {{ (assetForm.purchasePrice / assetForm.surfaceM2) | number:'1.0-0' }} {{ curSymbol() }}/m²
+                                                                </span>
+                                                            </div>
+                                                        }
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-region" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
+                                                            <input pInputText id="aa-region" [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
+                                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                        </div>
+                                                    }
                                                 </div>
                                             }
-                                            <div class="flex flex-col gap-2">
-                                                <label class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
-                                                <input pInputText [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
-                                            </div>
-                                        }
-                                    </div>
+                                        </div>
+                                    }
                                 }
 
                                 <!-- Step 2: Ownership -->
@@ -448,22 +641,51 @@ interface CategoryCard {
                         </div>
                     </div>
                 }
+
+                <!-- ===== STEP 3: Success (PA-2). A rewarding finish instead of a
+                     toast-and-vanish: what was added, and the two next moves. ===== -->
+                @if (currentStep() === 3) {
+                    <div class="max-w-md mx-auto text-center pt-10 sm:pt-16">
+                        <div class="w-20 h-20 mx-auto rounded-full bg-positive/10 flex items-center justify-center mb-6
+                                    animate-[omaad-pop_.35s_ease-out] motion-reduce:animate-none">
+                            <i class="pi pi-check text-3xl text-positive" aria-hidden="true"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('addAssets.wizard.successTitle') }}</h2>
+                        <p class="text-surface-500 dark:text-surface-400 mb-2">{{ assetForm.name }}</p>
+                        <p class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-8">
+                            <app-amount [value]="toEur(totalValue())" />
+                        </p>
+                        <div class="flex flex-col gap-3">
+                            <button pButton type="button" [label]="t('addAssets.wizard.viewPatrimoine')"
+                                    class="omaad-cta !rounded-full w-full" (click)="goToPatrimoine()"></button>
+                            <button pButton type="button" [label]="t('addAssets.wizard.addAnother')" [text]="true"
+                                    class="!rounded-full w-full !text-brand-700 dark:!text-ochre-400" (click)="addAnother()"></button>
+                        </div>
+                    </div>
+                }
             </div>
 
-            <!-- Footer buttons -->
-            @if (currentStep() >= 1) {
-                <div class="flex items-center justify-end gap-4 pt-6 mt-6 border-t border-surface-200 dark:border-surface-700">
-                    @if (currentStep() === 1) {
-                        <button pButton type="button" [label]="t('addAssets.wizard.next')" class="omaad-cta !rounded-full px-8"
-                                [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
-                    } @else {
-                        <button pButton type="button" [label]="t('common.back')" [outlined]="true"
-                                class="!rounded-full !border-surface-300 dark:!border-surface-600"
-                                (click)="previousStep()"></button>
-                        <button pButton type="button" [label]="t('common.save')"
-                                class="omaad-cta !rounded-full"
-                                [loading]="isSubmitting()" (click)="submitAsset()"></button>
-                    }
+            <!-- Sticky CTA bar (PA-2): one always-reachable primary action, full
+                 width on mobile, safe-area aware, quiet blur so content scrolls
+                 beneath it without visual clash. -->
+            @if (currentStep() === 1 || currentStep() === 2) {
+                <div class="sticky bottom-0 z-10 -mx-4 px-4 mt-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]
+                            bg-surface-50/90 dark:bg-surface-950/90 backdrop-blur
+                            border-t border-surface-200 dark:border-surface-800">
+                    <div class="max-w-2xl mx-auto flex items-center gap-3">
+                        @if (currentStep() === 1) {
+                            <button pButton type="button" [label]="t('addAssets.wizard.next')"
+                                    class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
+                                    [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
+                        } @else {
+                            <button pButton type="button" [label]="t('common.back')" [outlined]="true"
+                                    class="!rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
+                                    (click)="previousStep()"></button>
+                            <button pButton type="button" [label]="t('addAssets.wizard.submit')"
+                                    class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
+                                    [loading]="isSubmitting()" (click)="submitAsset()"></button>
+                        }
+                    </div>
                 </div>
             }
         </div>
@@ -480,6 +702,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private messageService = inject(MessageService);
     private tokenService = inject(TokenService);
     private i18n = inject(I18nService);
+    private analytics = inject(AnalyticsService);
     cs = inject(CurrencyService);
 
     t(key: string): string { return this.i18n.t(key); }
@@ -487,10 +710,22 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     lang = 'fr';
     currentStep = signal(0);
     isSubmitting = signal(false);
+    /** PA-2 progressive disclosure: optional detail fields, collapsed by default. */
+    detailsOpen = signal(false);
     /** Set true right before the post-save navigation so the guard stays silent. */
     private justSaved = false;
     selectedCategory = signal<AssetCategory | ''>('');
     searchQuery = signal('');
+    /**
+     * PA-3 dual-path entry: classes whose live sync is S9 open on a chooser
+     * (honest "coming soon" sync teaser + manual card) instead of the form.
+     * Stocks are NOT here: connect-broker IS their dual-path screen (S3-10,
+     * real PDF import). While set, step 0 renders the chooser, and backing
+     * out of the form returns to it.
+     */
+    pathChooser = signal<AssetCategory | ''>('');
+    /** One sync_interest event per chooser visit; flips the teaser to a thank-you state. */
+    syncInterestSent = signal(false);
 
     assetForm: AssetFormData = {
         name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
@@ -510,7 +745,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     // every change-detection pass the moment a date was picked, which spiraled
     // into an infinite write→CD→write loop and froze the whole app (the
     // "can't pick a date on mobile, app dies" bug). Memoized per string.
-    private toDateStr(d: Date | null): string { return d ? d.toISOString().split('T')[0] : ''; }
+    // LOCAL date parts, not toISOString(): the picker hands us local midnight,
+    // and UTC-converting it stores yesterday for any user east of Greenwich
+    // (Paris diaspora picks the 15th, the API gets the 14th).
+    private toDateStr(d: Date | null): string { return d ? toLocalDateStr(d) : ''; }
     private dateObjCache = new Map<string, Date>();
     private toDateObj(s: string): Date | null {
         if (!s) return null;
@@ -526,38 +764,39 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     set tontineCollectionDateObj(d: Date | null) { this.assetForm.tontineCollectionDate = this.toDateStr(d); }
 
     /** Currencies the user can hold an asset in. */
-    readonly currencyOptions = [
-        { label: 'FCFA (XOF)', value: 'XOF' },
-        { label: 'Euro (€)', value: 'EUR' },
-        { label: 'Dollar ($)', value: 'USD' },
-    ];
-
-    /** Symbol for the currently selected asset currency (drives input suffixes). */
+    /** Symbol for the currently selected asset currency (drives inline hints). */
     curSymbol(): string {
         const c = this.assetForm.currency;
         return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
     }
 
-    // Uniform chrome, icon glyph differentiates the asset type, not the color.
-    private static readonly CARD_BG = 'bg-warm-100 dark:bg-warm-800';
-    private static readonly CARD_FG = 'text-warm-700 dark:text-warm-300';
+    // Two-tier duotone chrome (S7b PA-1): the four West-Africa hero classes
+    // (our differentiators: immobilier, BRVM, tontine, mobile money) carry the
+    // ochre accent; every other class stays in the navy/neutral family. One
+    // accent, two families — hierarchy and brand story without rainbow soup.
+    private static readonly HERO_BG = 'bg-gradient-to-br from-ochre-50 to-ochre-100 dark:from-ochre-500/20 dark:to-ochre-500/5';
+    private static readonly HERO_FG = 'text-ochre-700 dark:text-ochre-400';
+    private static readonly CARD_BG = 'bg-gradient-to-br from-brand-50 to-surface-100 dark:from-brand-700/25 dark:to-surface-800';
+    private static readonly CARD_FG = 'text-brand-700 dark:text-brand-300';
 
     categoryCards = computed<CategoryCard[]>(() => {
         const t = (k: string) => this.i18n.t(k);
-        const bg = AddAssetPage.CARD_BG;
-        const fg = AddAssetPage.CARD_FG;
-        const values: { value: AssetCategory; icon: string }[] = [
-            { value: 'real_estate',     icon: 'pi-home' },
-            { value: 'stocks_brvm',     icon: 'pi-chart-line' },
+        // WA-first curated order: lead with what makes Omaad different, then
+        // everyday accounts, then the global classes.
+        // Owner decision 2026-07-25: crypto and life_insurance are hidden from
+        // the catalog (not West-Africa realities yet). HIDDEN, not removed:
+        // the backend enum, detail page and edit dialog still support existing
+        // assets in those classes; re-adding a tile here is the whole revert.
+        const values: { value: AssetCategory; icon: string; hero?: boolean }[] = [
+            { value: 'real_estate',     icon: 'pi-home',       hero: true },
+            { value: 'stocks_brvm',     icon: 'pi-chart-line', hero: true },
+            { value: 'tontine',         icon: 'pi-users',      hero: true },
+            { value: 'mobile_money',    icon: 'pi-mobile',     hero: true },
+            { value: 'cash',            icon: 'pi-wallet' },
+            { value: 'savings_account', icon: 'pi-book' },
             { value: 'stocks_intl',     icon: 'pi-globe' },
             { value: 'bonds',           icon: 'pi-percentage' },
-            { value: 'crypto',          icon: 'pi-bolt' },
-            { value: 'cash',            icon: 'pi-wallet' },
-            { value: 'life_insurance',  icon: 'pi-shield' },
-            { value: 'savings_account', icon: 'pi-book' },
             { value: 'vehicle',         icon: 'pi-car' },
-            { value: 'tontine',         icon: 'pi-users' },
-            { value: 'mobile_money',    icon: 'pi-mobile' },
             { value: 'collectibles',    icon: 'pi-star' },
             { value: 'commodities',     icon: 'pi-box' },
             { value: 'other',           icon: 'pi-ellipsis-h' },
@@ -566,7 +805,9 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             value: v.value,
             label: t(`addAssets.wizard.cards.${v.value}.label`),
             desc:  t(`addAssets.wizard.cards.${v.value}.desc`),
-            icon: v.icon, bgClass: bg, textClass: fg,
+            icon: v.icon,
+            bgClass: v.hero ? AddAssetPage.HERO_BG : AddAssetPage.CARD_BG,
+            textClass: v.hero ? AddAssetPage.HERO_FG : AddAssetPage.CARD_FG,
         }));
     });
 
@@ -633,11 +874,30 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     goBack(): void {
-        if (this.currentStep() > 0) {
+        if (this.currentStep() === 3) {
+            // Success screen: back means leave, never back INTO the saved form.
+            this.goToPatrimoine();
+        } else if (this.currentStep() > 0) {
             this.previousStep();
+        } else if (this.pathChooser()) {
+            // Dual-path chooser: back returns to the catalog.
+            this.pathChooser.set('');
+            this.selectedCategory.set('');
+            this.assetForm.category = '';
         } else {
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
         }
+    }
+
+    goToPatrimoine(): void {
+        this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
+    }
+
+    /** Success screen: start a fresh add without leaving the wizard. */
+    addAnother(): void {
+        this.justSaved = false;   // fresh form: unsaved-input tracking arms again
+        this.detailsOpen.set(false);
+        this.resetForm();
     }
 
     /**
@@ -670,21 +930,66 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             surfaceM2: 0, region: '', currency: this.cs.config().code
         };
         this.selectedCategory.set('');
+        this.pathChooser.set('');
+        this.syncInterestSent.set(false);
         this.currentStep.set(0);
     }
+
+    /** Classes whose live sync ships in S9: they get the teaser chooser. */
+    private static readonly SYNC_TEASER_CLASSES: AssetCategory[] = ['cash', 'savings_account', 'mobile_money'];
 
     selectCategory(value: AssetCategory): void {
         this.assetForm.category = value;
         this.selectedCategory.set(value);
+        this.detailsOpen.set(false); // details stay collapsed per fresh class pick
+        // ?category deep-links (connect-broker's "add manually" hand-off) go
+        // straight to the form: the user already chose a path.
+        const deepLink = this.route.snapshot.queryParamMap.has('category');
         const isStocks = value === 'stocks_brvm' || value === 'stocks_intl';
-        if (isStocks && !this.route.snapshot.queryParamMap.has('category')) {
+        if (isStocks && !deepLink) {
             const market = value === 'stocks_brvm' ? 'brvm' : 'intl';
             this.router.navigate(['/', this.lang, 'pages', 'patrimoine', 'connect-broker'], {
                 queryParams: { market }
             });
+        } else if (AddAssetPage.SYNC_TEASER_CLASSES.includes(value) && !deepLink) {
+            this.syncInterestSent.set(false);
+            this.pathChooser.set(value);
         } else {
             this.currentStep.set(1);
         }
+    }
+
+    /** Teaser card tap: log S9 sync demand once, thank the user in place. */
+    registerSyncInterest(): void {
+        if (this.syncInterestSent()) return;
+        this.analytics.track('sync_interest', { category: this.pathChooser() });
+        this.syncInterestSent.set(true);
+    }
+
+    /** Manual card: to the form. pathChooser stays set so back returns here. */
+    chooseManualPath(): void {
+        this.goToStepTop(1);
+    }
+
+    /** Whether the current class has optional detail fields (PA-2 disclosure). */
+    detailsAvailable(): boolean {
+        return this.assetForm.category !== 'mobile_money';
+    }
+
+    /** Valued as one total (not per-unit, not a plain balance, not tontine/momo). */
+    isTotalValueBased(): boolean {
+        return !!this.assetForm.category && !this.isQuantityBased() && !this.isSimpleBalanceCategory()
+            && this.assetForm.category !== 'tontine' && this.assetForm.category !== 'mobile_money';
+    }
+
+    /**
+     * PA-4: classes where the purchase price is the number owners actually
+     * anchor on (and current value is honestly unknowable day-to-day). Only
+     * these keep purchase value as a required essential; everywhere else it
+     * is an optional detail per the section-13 demotion.
+     */
+    purchaseLedClass(): boolean {
+        return this.assetForm.category === 'real_estate' || this.assetForm.category === 'vehicle';
     }
 
     isQuantityBased(): boolean {
@@ -749,18 +1054,24 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return displayValue / this.cs.rateOf(this.assetForm.currency);
     }
 
+    /** Step transitions land at the top of the new step, not mid-scroll. */
+    private goToStepTop(step: number): void {
+        this.currentStep.set(step);
+        if (typeof window !== 'undefined') window.scrollTo({ top: 0 });
+    }
+
     nextStep(): void {
-        if (this.currentStep() === 0 && this.assetForm.category) this.currentStep.set(1);
-        else if (this.currentStep() === 1 && this.isStep1Valid()) this.currentStep.set(2);
+        if (this.currentStep() === 0 && this.assetForm.category) this.goToStepTop(1);
+        else if (this.currentStep() === 1 && this.isStep1Valid()) this.goToStepTop(2);
     }
 
     previousStep(): void {
-        if (this.currentStep() > 0) this.currentStep.update(v => v - 1);
+        if (this.currentStep() > 0) this.goToStepTop(this.currentStep() - 1);
     }
 
     goToStep(step: number): void {
-        if (step === 1 && this.assetForm.category) this.currentStep.set(1);
-        else if (step === 2 && this.isStep1Valid()) this.currentStep.set(2);
+        if (step === 1 && this.assetForm.category) this.goToStepTop(1);
+        else if (step === 2 && this.isStep1Valid()) this.goToStepTop(2);
     }
 
     removeOwner(owner: Owner): void {
@@ -783,7 +1094,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
         try {
             const f = this.assetForm;
-            const purchaseDateValue = f.purchaseDate || new Date().toISOString().split('T')[0];
+            const purchaseDateValue = f.purchaseDate || this.toDateStr(new Date());
             let assetData: AssetCreate;
 
             // Amounts are stored in the asset's native currency; the backend
@@ -799,7 +1110,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                     tontine_monthly_contribution: f.tontineMonthlyContribution,
                     tontine_participants: f.tontineParticipants,
                     tontine_frequency: f.tontineFrequency,
-                    tontine_start_date: f.tontineStartDate || new Date().toISOString().split('T')[0],
+                    tontine_start_date: f.tontineStartDate || this.toDateStr(new Date()),
                     tontine_collection_date: f.tontineCollectionDate || null,
                     tontine_status: f.tontineStatus,
                 };
@@ -836,9 +1147,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             }
 
             await this.patrimoineService.createAsset(assetData);
-            this.justSaved = true; // don't prompt "unsaved changes" on the success navigation
-            this.messageService.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('addAssets.wizard.addSuccess'), life: 3000 });
-            this.router.navigate(['/', this.lang, 'pages', 'patrimoine']);
+            this.justSaved = true; // the guard stays silent from here on
+            // PA-2: a rewarding success screen (what was added + next moves)
+            // instead of toast-and-vanish.
+            this.goToStepTop(3);
         } catch (error: any) {
             console.error('Error creating asset:', error);
             const detail = error?.error?.detail
