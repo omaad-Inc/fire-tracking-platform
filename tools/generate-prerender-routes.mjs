@@ -18,6 +18,13 @@ const comparateurRoutes = [
     ...dataset.sgis.map((s) => `/outils/comparateur-sgi-brvm/sgi/${s.id}`)
 ];
 
+// ── Planificateur de stratégie BRVM (FR only, tabs routés) ──
+const strategieRoutes = [
+    '/outils/strategie-brvm',
+    '/outils/strategie-brvm/detachements',
+    '/outils/strategie-brvm/simulateur',
+];
+
 // ── Blog article slugs (parsed from the static posts metadata) ──
 const postsSrc = readFileSync(
     new URL('../src/app/pages/landing/blog/posts.ts', import.meta.url), 'utf8'
@@ -50,7 +57,7 @@ const langRoutes = [...LANG_PATHS, ...NOINDEX_LANG_PATHS].flatMap((p) => LANGS.m
 
 // ── prerender-routes.txt ──
 // '/' (home) renders the landing too; keep it so the bare origin is prerendered.
-const prerenderRoutes = ['/', ...langRoutes, ...comparateurRoutes];
+const prerenderRoutes = ['/', ...langRoutes, ...comparateurRoutes, ...strategieRoutes];
 writeFileSync(
     new URL('../prerender-routes.txt', import.meta.url),
     prerenderRoutes.join('\n') + '\n'
@@ -72,7 +79,7 @@ const xml = (path) => {
 };
 
 const langEntries = LANG_PATHS.map(xml).join('\n');
-const sgiEntries = comparateurRoutes
+const sgiEntries = [...comparateurRoutes, ...strategieRoutes]
     .map((r) => `    <url><loc>${ORIGIN}${r}</loc></url>`)
     .join('\n');
 
