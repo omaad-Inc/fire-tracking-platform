@@ -783,6 +783,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         const t = (k: string) => this.i18n.t(k);
         // WA-first curated order: lead with what makes Omaad different, then
         // everyday accounts, then the global classes.
+        // Owner decision 2026-07-25: crypto and life_insurance are hidden from
+        // the catalog (not West-Africa realities yet). HIDDEN, not removed:
+        // the backend enum, detail page and edit dialog still support existing
+        // assets in those classes; re-adding a tile here is the whole revert.
         const values: { value: AssetCategory; icon: string; hero?: boolean }[] = [
             { value: 'real_estate',     icon: 'pi-home',       hero: true },
             { value: 'stocks_brvm',     icon: 'pi-chart-line', hero: true },
@@ -791,9 +795,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             { value: 'cash',            icon: 'pi-wallet' },
             { value: 'savings_account', icon: 'pi-book' },
             { value: 'stocks_intl',     icon: 'pi-globe' },
-            { value: 'crypto',          icon: 'pi-bolt' },
             { value: 'bonds',           icon: 'pi-percentage' },
-            { value: 'life_insurance',  icon: 'pi-shield' },
             { value: 'vehicle',         icon: 'pi-car' },
             { value: 'collectibles',    icon: 'pi-star' },
             { value: 'commodities',     icon: 'pi-box' },
