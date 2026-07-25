@@ -942,9 +942,11 @@ interface CategoryCard {
                             border-t border-surface-200 dark:border-surface-800">
                     <div class="max-w-5xl mx-auto flex items-center gap-3">
                         @if (isRealEstate()) {
-                            <!-- Real-estate section wizard nav -->
+                            <!-- Real-estate section wizard nav. On mobile the bar is a
+                                 single full-width Submit/Suivant (native, per design);
+                                 the header arrow handles going back a section. -->
                             <button pButton type="button" [label]="t('common.back')" [outlined]="true"
-                                    class="!rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
+                                    class="!hidden sm:!inline-flex !rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
                                     (click)="rePrev()"></button>
                             @if (reSection() < RE_SECTION_COUNT) {
                                 <button pButton type="button" [label]="t('addAssets.wizard.next')"
@@ -961,7 +963,7 @@ interface CategoryCard {
                                     [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
                         } @else {
                             <button pButton type="button" [label]="t('common.back')" [outlined]="true"
-                                    class="!rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
+                                    class="!hidden sm:!inline-flex !rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
                                     (click)="previousStep()"></button>
                             <button pButton type="button" [label]="t('addAssets.wizard.submit')"
                                     class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
@@ -1274,6 +1276,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         if (this.currentStep() === 3) {
             // Success screen: back means leave, never back INTO the saved form.
             this.goToPatrimoine();
+        } else if (this.isRealEstate() && this.currentStep() === 1 && this.reSection() > 1) {
+            // Real estate: the header arrow steps back through the sections (the
+            // bottom bar is a single full-screen Submit, no secondary back button).
+            this.reSection.update(s => s - 1);
         } else if (this.currentStep() > 0) {
             this.previousStep();
         } else if (this.pathChooser()) {
