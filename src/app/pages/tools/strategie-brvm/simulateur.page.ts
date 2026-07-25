@@ -98,13 +98,13 @@ interface Param {
                         </div>
                     } @else {
                         <div class="mt-3 overflow-x-auto">
-                            <table class="w-full min-w-[520px] border-collapse text-[13px]">
+                            <table class="w-full border-collapse text-[13px]">
                                 <thead>
                                     <tr class="border-b border-surface-200 text-left text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:border-surface-600 dark:text-surface-400">
                                         <th class="py-2 pr-3 font-semibold">Année</th>
-                                        <th class="py-2 pr-3 text-right font-semibold">Investi</th>
+                                        <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Investi</th>
                                         <th class="py-2 pr-3 text-right font-semibold">Valeur</th>
-                                        <th class="py-2 pr-3 text-right font-semibold">Div. nets/an</th>
+                                        <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Div. nets/an</th>
                                         <th class="py-2 text-right font-semibold">Div. nets/mois</th>
                                     </tr>
                                 </thead>
@@ -112,9 +112,9 @@ interface Param {
                                     @for (row of series(); track row.year) {
                                         <tr class="border-b border-surface-200/60 tabular-nums dark:border-surface-700/60">
                                             <td class="py-2 pr-3">{{ row.year }}</td>
-                                            <td class="py-2 pr-3 text-right">{{ full(row.invested) }}</td>
+                                            <td class="hidden py-2 pr-3 text-right sm:table-cell">{{ full(row.invested) }}</td>
                                             <td class="py-2 pr-3 text-right font-semibold text-surface-900 dark:text-surface-0">{{ full(row.value) }}</td>
-                                            <td class="py-2 pr-3 text-right text-emerald-700 dark:text-emerald-400">{{ full(row.dividendsNet) }}</td>
+                                            <td class="hidden py-2 pr-3 text-right text-emerald-700 dark:text-emerald-400 sm:table-cell">{{ full(row.dividendsNet) }}</td>
                                             <td class="py-2 text-right text-emerald-700 dark:text-emerald-400">{{ full(row.dividendsMonthly) }}</td>
                                         </tr>
                                     }

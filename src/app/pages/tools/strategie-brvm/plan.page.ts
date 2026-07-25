@@ -265,15 +265,15 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                 </p>
                 @if (lines().length > 0) {
                     <div class="mt-4 overflow-x-auto">
-                        <table class="w-full min-w-[640px] border-collapse text-[13px]">
+                        <table class="w-full border-collapse text-[13px]">
                             <thead>
                                 <tr class="border-b border-surface-200 text-left text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:border-surface-600 dark:text-surface-400">
                                     <th class="py-2 pr-3 font-semibold">Titre</th>
                                     <th class="py-2 pr-3 text-right font-semibold">Nb d'actions</th>
-                                    <th class="py-2 pr-3 text-right font-semibold">Prix d'achat moyen</th>
-                                    <th class="py-2 pr-3 text-right font-semibold">Cours retenu</th>
+                                    <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Prix d'achat moyen</th>
+                                    <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Cours retenu</th>
                                     <th class="py-2 pr-3 text-right font-semibold">Valeur actuelle</th>
-                                    <th class="py-2 pr-3 text-right font-semibold">Rendement</th>
+                                    <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Rendement</th>
                                     <th class="py-2 font-semibold"><span class="sr-only">Actions</span></th>
                                 </tr>
                             </thead>
@@ -283,10 +283,10 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                                         <td class="py-2.5 pr-3"><span class="font-mono font-bold text-surface-900 dark:text-surface-0">{{ l.ticker }}</span>
                                             <span class="ml-2 hidden text-surface-500 dark:text-surface-400 sm:inline">{{ l.nom }}</span></td>
                                         <td class="py-2.5 pr-3 text-right tabular-nums">{{ l.qty }}</td>
-                                        <td class="py-2.5 pr-3 text-right tabular-nums">{{ full(l.pru) }} F</td>
-                                        <td class="py-2.5 pr-3 text-right tabular-nums">{{ full(l.prixEffectif) }} F</td>
+                                        <td class="hidden py-2.5 pr-3 text-right tabular-nums sm:table-cell">{{ full(l.pru) }} F</td>
+                                        <td class="hidden py-2.5 pr-3 text-right tabular-nums sm:table-cell">{{ full(l.prixEffectif) }} F</td>
                                         <td class="py-2.5 pr-3 text-right font-semibold tabular-nums text-surface-900 dark:text-surface-0">{{ full(l.valeur) }} F</td>
-                                        <td class="py-2.5 pr-3 text-right tabular-nums">{{ l.yieldEffectif }}%</td>
+                                        <td class="hidden py-2.5 pr-3 text-right tabular-nums sm:table-cell">{{ l.yieldEffectif }}%</td>
                                         <td class="py-2.5 text-right">
                                             <button type="button" (click)="svc.removeLine(l.ticker)" aria-label="Supprimer la ligne"
                                                     class="flex h-10 w-10 items-center justify-center rounded-lg text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">

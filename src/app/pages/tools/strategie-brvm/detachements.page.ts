@@ -125,14 +125,14 @@ const MAX_SECTOR_SERIES = 7;
 
         <!-- Table -->
         <div class="mt-4 overflow-x-auto rounded-2xl border border-surface-200 dark:border-surface-700">
-            <table class="w-full min-w-[760px] border-collapse text-[13.5px]">
+            <table class="w-full border-collapse text-[13.5px]">
                 <thead>
                     <tr class="bg-surface-50 text-left text-[11px] uppercase tracking-[0.07em] text-surface-500 dark:bg-surface-800 dark:text-surface-400">
                         <th class="px-4 py-3 font-semibold">Ex-dividende</th>
-                        <th class="px-4 py-3 font-semibold">Paiement</th>
+                        <th class="hidden px-4 py-3 font-semibold sm:table-cell">Paiement</th>
                         <th class="px-4 py-3 font-semibold">Société</th>
-                        <th class="px-4 py-3 font-semibold">Secteur</th>
-                        <th class="px-4 py-3 font-semibold">Exercice</th>
+                        <th class="hidden px-4 py-3 font-semibold md:table-cell">Secteur</th>
+                        <th class="hidden px-4 py-3 font-semibold md:table-cell">Exercice</th>
                         <th class="px-4 py-3 text-right font-semibold">Net / action</th>
                         <th class="px-4 py-3 text-right font-semibold">Avis</th>
                     </tr>
@@ -147,13 +147,13 @@ const MAX_SECTOR_SERIES = 7;
                                     <span class="ml-2 rounded-full bg-ochre-500/15 px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-ochre-700 dark:text-ochre-400">à venir</span>
                                 }
                             </td>
-                            <td class="px-4 py-3 tabular-nums text-surface-600 dark:text-surface-300">{{ dateLabel(d.date_paiement) }}</td>
+                            <td class="hidden px-4 py-3 tabular-nums text-surface-600 dark:text-surface-300 sm:table-cell">{{ dateLabel(d.date_paiement) }}</td>
                             <td class="px-4 py-3">
                                 <span class="font-semibold text-surface-900 dark:text-surface-0">{{ d.nom }}</span>
                                 @if (d.ticker) { <span class="ml-2 font-mono text-[11.5px] font-bold text-brand-700 dark:text-brand-300">{{ d.ticker }}</span> }
                             </td>
-                            <td class="px-4 py-3 text-surface-600 dark:text-surface-300">{{ d.secteur ?? '—' }}</td>
-                            <td class="px-4 py-3 tabular-nums text-surface-600 dark:text-surface-300">{{ d.exercice ?? '—' }}</td>
+                            <td class="hidden px-4 py-3 text-surface-600 dark:text-surface-300 md:table-cell">{{ d.secteur ?? '—' }}</td>
+                            <td class="hidden px-4 py-3 tabular-nums text-surface-600 dark:text-surface-300 md:table-cell">{{ d.exercice ?? '—' }}</td>
                             <td class="px-4 py-3 text-right font-semibold tabular-nums text-surface-900 dark:text-surface-0">
                                 {{ d.montant_net_fcfa != null ? montant(d.montant_net_fcfa) + ' F' : '—' }}</td>
                             <td class="px-4 py-3 text-right">
