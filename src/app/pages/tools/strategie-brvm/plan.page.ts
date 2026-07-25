@@ -276,10 +276,19 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                             Mois par mois : ce que tu prévois d'acheter, pourquoi, et coche quand c'est exécuté. C'est le plan qui enlève l'émotion au moment de passer l'ordre.
                         </p>
                     </div>
-                    <button type="button" (click)="onAddMonth()"
-                            class="rounded-lg bg-ochre-500 px-3 py-2 text-[13px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
-                        <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter un mois</button>
+                    <form class="flex items-center gap-2" (ngSubmit)="onAddMonth()">
+                        <input type="month" [(ngModel)]="newMonthId" name="newMonth" required aria-label="Mois à planifier"
+                               class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-1.5 text-[13px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                        <button type="submit" data-testid="add-month"
+                                class="rounded-lg bg-ochre-500 px-3 py-2 text-[13px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
+                            <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter le mois</button>
+                    </form>
                 </div>
+
+                <!-- Datalist partagée des tickers connus (référentiel + calendrier + lignes) -->
+                <datalist id="brvm-tickers">
+                    @for (t of knownTickers(); track t) { <option [value]="t"></option> }
+                </datalist>
 
                 @if (plan().months.length === 0) {
                     <p class="mt-4 rounded-xl border border-dashed border-surface-300 bg-surface-0 p-5 text-center text-[13px] text-surface-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-400">
@@ -300,9 +309,9 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                             </thead>
                             <tbody>
                                 @for (m of plan().months; track m.id) {
-                                    <tr class="border-b border-surface-200/60 align-top dark:border-surface-700/60">
+                                    <tr class="border-b border-surface-200/60 align-top dark:border-surface-700/60" data-testid="month-row">
                                         <td class="py-3 pr-2">
-                                            <input type="checkbox" [checked]="m.done" (change)="svc.patchMonth(m.id, { done: !m.done })"
+                                            <input type="checkbox" [checked]="m.done" (change)="svc.patchMonth(m.id, { done: !m.done })" data-testid="month-done"
                                                    [attr.aria-label]="'Mois ' + monthLabel(m.id) + ' exécuté'"
                                                    class="h-4 w-4 cursor-pointer accent-emerald-600">
                                         </td>
@@ -321,39 +330,75 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                                                                 class="text-surface-400 hover:text-red-600"><i class="pi pi-times text-[10px]" aria-hidden="true"></i></button>
                                                     </span>
                                                 }
-                                                @if (editingMonth() === m.id) {
-                                                    <form class="inline-flex items-center gap-1.5" (ngSubmit)="commitAchat(m.id)">
-                                                        <input [(ngModel)]="achatTicker" name="aTicker" placeholder="Ticker" maxlength="6" required aria-label="Ticker"
-                                                               class="w-20 rounded-md border border-surface-200 bg-surface-0 px-2 py-1 font-mono text-[12px] uppercase focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                                                        <input [(ngModel)]="achatQty" name="aQty" type="number" min="1" placeholder="Qté" required aria-label="Quantité"
-                                                               class="w-16 rounded-md border border-surface-200 bg-surface-0 px-2 py-1 text-[12px] tabular-nums focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                                                        <input [(ngModel)]="achatPrix" name="aPrix" type="number" min="1" placeholder="Prix" required aria-label="Prix unitaire"
-                                                               class="w-24 rounded-md border border-surface-200 bg-surface-0 px-2 py-1 text-[12px] tabular-nums focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                                                        <button type="submit" class="rounded-md bg-ochre-500 px-2 py-1 text-[12px] font-semibold text-warm-900 hover:bg-ochre-400" aria-label="Valider l'achat">
-                                                            <i class="pi pi-check text-[11px]" aria-hidden="true"></i></button>
-                                                        <button type="button" (click)="editingMonth.set(null)" class="px-1 text-surface-400 hover:text-surface-600" aria-label="Fermer">
-                                                            <i class="pi pi-times text-[11px]" aria-hidden="true"></i></button>
-                                                    </form>
-                                                } @else {
+                                                @if (editingMonth() !== m.id) {
                                                     <button type="button" (click)="openAchatForm(m.id)"
                                                             class="rounded-lg border border-dashed border-surface-300 px-2 py-1 text-[12px] text-surface-500 transition-colors hover:border-ochre-400 hover:text-ochre-600 dark:border-surface-600 dark:text-surface-400">
                                                         <i class="pi pi-plus mr-1 text-[10px]" aria-hidden="true"></i>Achat</button>
                                                 }
                                             </div>
+                                            @if (editingMonth() === m.id) {
+                                                <form (ngSubmit)="commitAchat(m.id)" data-testid="achat-form"
+                                                      class="mt-2.5 max-w-md rounded-xl border border-ochre-500/40 bg-ochre-500/[0.06] p-3.5">
+                                                    <div class="grid grid-cols-[1.1fr_0.8fr_1.2fr] gap-2.5">
+                                                        <label class="block">
+                                                            <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Titre</span>
+                                                            <input [(ngModel)]="achatTicker" name="aTicker" placeholder="SNTS" maxlength="6" required
+                                                                   list="brvm-tickers" data-testid="achat-ticker" aria-label="Ticker"
+                                                                   class="w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 font-mono text-[13px] font-semibold uppercase text-surface-900
+                                                                          placeholder:font-normal placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                                                        </label>
+                                                        <label class="block">
+                                                            <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Quantité</span>
+                                                            <input [(ngModel)]="achatQty" name="aQty" type="number" min="1" step="1" inputmode="numeric" placeholder="3" required
+                                                                   data-testid="achat-qty" aria-label="Quantité"
+                                                                   class="w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 text-[13px] tabular-nums text-surface-900
+                                                                          placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                                                        </label>
+                                                        <label class="block">
+                                                            <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Prix unitaire</span>
+                                                            <div class="relative">
+                                                                <input [(ngModel)]="achatPrix" name="aPrix" type="number" min="1" step="5" inputmode="numeric" placeholder="29 500" required
+                                                                       data-testid="achat-prix" aria-label="Prix unitaire en FCFA"
+                                                                       class="w-full rounded-lg border border-surface-200 bg-surface-0 py-2 pl-2.5 pr-7 text-[13px] tabular-nums text-surface-900
+                                                                              placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                                                                <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-surface-400">F</span>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                    <div class="mt-3 flex items-center justify-between gap-2">
+                                                        <span class="text-[12px] tabular-nums text-surface-500 dark:text-surface-400" data-testid="achat-subtotal">
+                                                            @if (draftTotal() > 0) {
+                                                                Sous-total : <strong class="text-surface-900 dark:text-surface-0">{{ full(draftTotal()) }} F</strong>
+                                                            } @else {
+                                                                Ticker, quantité et prix
+                                                            }
+                                                        </span>
+                                                        <div class="flex items-center gap-1.5">
+                                                            <button type="button" (click)="editingMonth.set(null)" aria-label="Fermer le formulaire"
+                                                                    class="rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-surface-500 transition-colors hover:bg-surface-100 hover:text-surface-700 dark:hover:bg-surface-700">
+                                                                Fermer</button>
+                                                            <button type="submit" [disabled]="draftTotal() <= 0"
+                                                                    class="rounded-lg bg-ochre-500 px-3 py-1.5 text-[12px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400 disabled:cursor-not-allowed disabled:opacity-40">
+                                                                <i class="pi pi-check mr-1 text-[10px]" aria-hidden="true"></i>Ajouter l'achat</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            }
                                         </td>
-                                        <td class="py-3 pr-3 text-right font-semibold tabular-nums"
+                                        <td class="py-3 pr-3 text-right font-semibold tabular-nums" data-testid="month-total"
                                             [class]="monthTotal(m) > plan().dcaMonthly && plan().dcaMonthly > 0
                                                 ? 'text-amber-600 dark:text-amber-400'
                                                 : 'text-surface-900 dark:text-surface-0'">
                                             {{ monthTotal(m) > 0 ? full(monthTotal(m)) + ' F' : '—' }}
                                         </td>
                                         <td class="py-2.5 pr-3">
-                                            <input [ngModel]="m.note" (ngModelChange)="svc.patchMonth(m.id, { note: $event })"
-                                                   placeholder="Pourquoi ces achats ce mois-ci ?" aria-label="Logique du mois"
+                                            <!-- Commit au blur/entrée (pas à chaque frappe : évite la réécriture du plan et les sauts de curseur) -->
+                                            <input [value]="m.note" (change)="svc.patchMonth(m.id, { note: $any($event.target).value })"
+                                                   placeholder="Pourquoi ces achats ce mois-ci ?" aria-label="Logique du mois" data-testid="month-note"
                                                    class="w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-[12.5px] italic text-surface-600 focus:border-ochre-500 focus:bg-surface-0 focus:outline-none dark:text-surface-300 dark:focus:bg-surface-900">
                                         </td>
                                         <td class="py-3 text-right">
-                                            <button type="button" (click)="svc.removeMonth(m.id)" aria-label="Supprimer ce mois"
+                                            <button type="button" (click)="svc.removeMonth(m.id)" aria-label="Supprimer ce mois" data-testid="month-delete"
                                                     class="rounded-md px-1.5 py-1 text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
                                                 <i class="pi pi-trash text-[13px]" aria-hidden="true"></i></button>
                                         </td>
@@ -620,8 +665,18 @@ export class StrategiePlanPage {
 
     // ── Calendrier d'exécution ──
 
+    newMonthId = this.svc.nextMonthSuggestion();
+
+    readonly knownTickers = computed(() => {
+        const fromLines = this.plan().lines.map((l) => l.ticker);
+        const fromMonths = this.plan().months.flatMap((m) => m.achats.map((a) => a.ticker));
+        return [...new Set([...TITRES.map((t) => t.ticker), ...fromLines, ...fromMonths])].sort();
+    });
+
     onAddMonth(): void {
-        const id = this.svc.addMonth();
+        if (!this.newMonthId) return;
+        const id = this.svc.addMonth(this.newMonthId);
+        this.newMonthId = this.svc.nextMonthSuggestion();
         this.openAchatForm(id);
     }
 
@@ -629,6 +684,12 @@ export class StrategiePlanPage {
         this.editingMonth.set(monthId);
         this.achatTicker = '';
         this.achatQty = this.achatPrix = null;
+    }
+
+    /** Sous-total en direct du formulaire d'achat (0 si saisie incomplète). */
+    draftTotal(): number {
+        if (!this.achatTicker.trim() || !this.achatQty || !this.achatPrix) return 0;
+        return Math.round(this.achatQty) * Math.round(this.achatPrix);
     }
 
     commitAchat(monthId: string): void {

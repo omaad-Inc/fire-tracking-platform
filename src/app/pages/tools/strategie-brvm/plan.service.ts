@@ -174,21 +174,29 @@ export class PlanService {
 
     // ── Calendrier d'exécution ──
 
-    /** Ajoute un mois (le suivant du dernier planifié, sinon le mois courant). */
-    addMonth(): string {
-        const months = [...this.plan().months];
-        const last = months.map((m) => m.id).sort().pop();
-        let id: string;
+    /** Prochain mois à proposer : le suivant du dernier planifié, sinon le mois courant. */
+    nextMonthSuggestion(): string {
+        const last = this.plan().months.map((m) => m.id).sort().pop();
         if (last) {
             const [y, m] = last.split('-').map(Number);
             const next = new Date(y, m, 1); // m est 1-based → déjà le mois suivant
-            id = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
-        } else {
-            const now = new Date();
-            id = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
         }
-        months.push({ id, achats: [], note: '', done: false });
-        this.update({ months: months.sort((a, b) => a.id.localeCompare(b.id)) });
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    /**
+     * Ajoute le mois `id` ('YYYY-MM') s'il n'existe pas déjà.
+     * Retourne l'id (existant ou créé) pour que l'UI puisse l'ouvrir.
+     */
+    addMonth(id: string): string {
+        if (!/^\d{4}-\d{2}$/.test(id)) return id;
+        const months = [...this.plan().months];
+        if (!months.some((m) => m.id === id)) {
+            months.push({ id, achats: [], note: '', done: false });
+            this.update({ months: months.sort((a, b) => a.id.localeCompare(b.id)) });
+        }
         return id;
     }
 
