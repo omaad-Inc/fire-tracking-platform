@@ -29,24 +29,33 @@ import { applyChartDefaults } from '../../core/theme/chart-theme';
                   focus:px-4 focus:py-2 focus:rounded-lg focus:bg-brand-700 focus:text-white focus:font-semibold">
             {{ i18n.t('common.skipToContent') }}
         </a>
-        <app-topbar role="banner"></app-topbar>
-        <app-sidebar role="navigation" [attr.aria-label]="i18n.t('menu.navigation')"></app-sidebar>
+        <!-- Immersive routes (add-asset / connect-broker) run full-screen like a
+             native app: the shell chrome (topbar, sidebar, mobile nav, FAB) is
+             hidden and the page owns the whole viewport. -->
+        @if (!immersive()) {
+            <app-topbar role="banner"></app-topbar>
+            <app-sidebar role="navigation" [attr.aria-label]="i18n.t('menu.navigation')"></app-sidebar>
+        }
         <div class="layout-main-container">
             <main id="main-content" tabindex="-1" class="layout-main outline-none">
                 <router-outlet></router-outlet>
             </main>
         </div>
         <div class="layout-mask animate-fadein"></div>
-        <app-mobile-nav></app-mobile-nav>
+        @if (!immersive()) {
+            <app-mobile-nav></app-mobile-nav>
+        }
 
         <!-- Write affordances + personal overlays are hidden on a public read-only share -->
         @if (!share.active()) {
-            <app-fab (action)="onFabAction()"></app-fab>
-            <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
-            <app-ai-assistant-panel></app-ai-assistant-panel>
-            <app-pwa-prompt></app-pwa-prompt>
+            @if (!immersive()) {
+                <app-fab (action)="onFabAction()"></app-fab>
+                <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
+                <app-ai-assistant-panel></app-ai-assistant-panel>
+                <app-pwa-prompt></app-pwa-prompt>
+            }
 
-            <!-- PIN Lock Screen, covers everything when locked -->
+            <!-- PIN Lock Screen, covers everything when locked (even immersive) -->
             @if (pinService.locked()) {
                 <app-pin-lock />
             }
@@ -65,6 +74,14 @@ export class AppLayout implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     share          = inject(ShareContextService);
     i18n           = inject(I18nService);
+
+    /** Immersive (full-screen, chrome-less) routes: the add-asset flow. Kept a
+     *  simple URL match so no route-data plumbing is needed. */
+    immersive = signal(false);
+    private static readonly IMMERSIVE_URLS = ['/patrimoine/add-asset', '/patrimoine/connect-broker'];
+    private computeImmersive(url: string): boolean {
+        return AppLayout.IMMERSIVE_URLS.some(u => url.includes(u));
+    }
 
     /** Skip-link handler: move focus into the main region (a bare #hash
      *  jump scrolls but doesn't move keyboard focus). */
@@ -106,10 +123,13 @@ export class AppLayout implements OnInit, OnDestroy {
             }
         });
 
+        // Seed immersive state from the entry URL, then keep it in sync.
+        this.immersive.set(this.computeImmersive(this.router.url));
         this.router.events.pipe(
             filter((event) => event instanceof NavigationEnd),
             takeUntilDestroyed(),
-        ).subscribe(() => {
+        ).subscribe((event) => {
+            this.immersive.set(this.computeImmersive((event as NavigationEnd).urlAfterRedirects));
             this.hideMenu();
         });
     }
@@ -153,7 +173,8 @@ export class AppLayout implements OnInit, OnDestroy {
             'layout-static': this.layoutService.layoutConfig().menuMode === 'static',
             'layout-static-inactive': this.layoutService.layoutState().staticMenuDesktopInactive && this.layoutService.layoutConfig().menuMode === 'static',
             'layout-overlay-active': this.layoutService.layoutState().overlayMenuActive,
-            'layout-mobile-active': this.layoutService.layoutState().staticMenuMobileActive
+            'layout-mobile-active': this.layoutService.layoutState().staticMenuMobileActive,
+            'layout-immersive': this.immersive(),
         };
     }
 
