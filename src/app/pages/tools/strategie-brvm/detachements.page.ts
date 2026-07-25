@@ -83,10 +83,10 @@ const MAX_SECTOR_SERIES = 7;
 
         <!-- Timeline -->
         <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
-            <h2 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Timeline des détachements</h2>
+            <h2 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Timeline des détachements à venir</h2>
             <p class="mt-1 text-[12px] text-surface-500 dark:text-surface-400">
-                Chaque point est un détachement : position = date ex-dividende, hauteur = montant net par action (échelle log), couleur = secteur. Survole pour le détail.
-                @if (undatedCount() > 0) { <span class="text-surface-400">{{ undatedCount() }} annonce(s) sans date ne figurent que dans le tableau.</span> }
+                Chaque point est un détachement à venir : position = date ex-dividende, hauteur = montant net par action (échelle log), couleur = secteur. Survole pour le détail.
+                L'historique complet reste dans le tableau ci-dessous.
             </p>
             <div class="mt-3">
                 <p-chart type="bubble" [data]="chartData" [options]="chartOptions" height="300px" />
@@ -226,8 +226,6 @@ export class StrategieDetachementsPage {
 
     readonly next = computed(() => this.upcoming()[0] ?? null);
 
-    readonly undatedCount = computed(() => this.filtered().filter((d) => !d.date_ex_dividende).length);
-
     constructor() {
         applyChartDefaults();
         this.seo.apply({ title: PAGE_TITLE, description: PAGE_DESC, canonical: CANONICAL });
@@ -256,7 +254,9 @@ export class StrategieDetachementsPage {
     private buildChart(): void {
         if (!isPlatformBrowser(this.platformId)) return;
         const t = chartTheme(isDarkMode());
-        const dated = this.filtered().filter((d) => d.date_ex_dividende && d.montant_net_fcfa != null);
+        // Uniquement les détachements À VENIR (l'historique surpeuplait le chart ;
+        // il reste dans le tableau). Les filtres recherche/secteur s'appliquent.
+        const dated = this.filtered().filter((d) => this.isUpcoming(d) && d.montant_net_fcfa != null);
         if (dated.length === 0) { this.chartData = { datasets: [] }; return; }
 
         // Axe X : mois fractionnaires depuis le 1er du premier mois de la fenêtre.
