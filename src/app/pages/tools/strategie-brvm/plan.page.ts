@@ -320,7 +320,7 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                 </div>
             </div>
 
-            <!-- Pont V2 -->
+            <!-- Pont V2 : réactiver au lancement officiel de la bêta Omaad.
             <div class="mt-6 flex flex-col items-start justify-between gap-4 rounded-2xl bg-brand-900 p-6 sm:flex-row sm:items-center sm:p-7">
                 <div>
                     <h3 class="text-[16px] font-bold text-white">Suivre ce plan avec ton portefeuille réel ?</h3>
@@ -333,6 +333,8 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                    class="shrink-0 rounded-xl bg-ochre-500 px-5 py-3 text-[14px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
                     Créer mon compte gratuit</a>
             </div>
+            -->
+
 
             <p class="mt-6 text-[12px] leading-relaxed text-surface-400 dark:text-surface-500">{{ disclaimer }}</p>
         </section>

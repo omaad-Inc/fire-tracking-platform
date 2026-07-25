@@ -53,6 +53,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                 <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>
                                 <li><a routerLink="/outils/comparateur-sgi-brvm" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</a></li>
+                                <li><a routerLink="/outils/strategie-brvm" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</a></li>
                             </ul>
                         </div>
 

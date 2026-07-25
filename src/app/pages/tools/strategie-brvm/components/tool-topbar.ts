@@ -24,9 +24,6 @@ import { LayoutService } from '../../../../layout/service/layout.service';
                                    transition-all duration-200 hover:bg-surface-100 dark:hover:bg-surface-800">
                         <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun text-base' : 'pi pi-moon text-base'"></i>
                     </button>
-                    <a routerLink="/" class="text-sm text-surface-500 transition-colors hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200">
-                        ← Retour
-                    </a>
                 </div>
             </div>
         </div>
