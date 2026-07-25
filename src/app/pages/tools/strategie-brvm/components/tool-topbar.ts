@@ -12,7 +12,7 @@ import { LayoutService } from '../../../../layout/service/layout.service';
     imports: [RouterModule],
     template: `
         <div class="relative z-10 border-b border-surface-200 dark:border-surface-700/50">
-            <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6">
+            <div class="flex w-full items-center justify-between px-4 py-4 sm:px-6">
                 <a routerLink="/" class="group flex cursor-pointer items-center gap-3">
                     <img [src]="isDark() ? 'assets/brand/omaad-icon-inverse.svg' : 'assets/brand/omaad-icon.svg'"
                          alt="Omaad" class="h-10 w-10 md:h-12 md:w-12" width="48" height="48">

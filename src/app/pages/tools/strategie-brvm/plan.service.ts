@@ -20,6 +20,22 @@ export interface PlanLine {
     yieldPct: number | null;
 }
 
+export interface PlanAchat {
+    ticker: string;
+    qty: number;
+    /** Prix unitaire prévu (FCFA). */
+    prix: number;
+}
+
+/** Un mois du calendrier d'exécution : ce que je prévois d'acheter, et si c'est fait. */
+export interface PlanMonth {
+    /** Identifiant ISO 'YYYY-MM'. */
+    id: string;
+    achats: PlanAchat[];
+    note: string;
+    done: boolean;
+}
+
 export interface PlanState {
     version: 1;
     updatedAt: string;
@@ -31,6 +47,8 @@ export interface PlanState {
     /** Objectif de revenu passif net (FCFA/mois). */
     targetMonthlyIncome: number;
     lines: PlanLine[];
+    /** Calendrier d'exécution mensuel (quoi acheter, mois par mois). */
+    months: PlanMonth[];
     /** Règles écrites personnelles (libres). */
     rules: string[];
 }
@@ -48,6 +66,7 @@ export function defaultPlan(): PlanState {
         taxRatePct: IRVM_DEFAUT_PCT,
         targetMonthlyIncome: 100_000,
         lines: [],
+        months: [],
         rules: [],
     };
 }
@@ -151,6 +170,48 @@ export class PlanService {
 
     removeLine(ticker: string): void {
         this.update({ lines: this.plan().lines.filter((l) => l.ticker !== ticker) });
+    }
+
+    // ── Calendrier d'exécution ──
+
+    /** Ajoute un mois (le suivant du dernier planifié, sinon le mois courant). */
+    addMonth(): string {
+        const months = [...this.plan().months];
+        const last = months.map((m) => m.id).sort().pop();
+        let id: string;
+        if (last) {
+            const [y, m] = last.split('-').map(Number);
+            const next = new Date(y, m, 1); // m est 1-based → déjà le mois suivant
+            id = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`;
+        } else {
+            const now = new Date();
+            id = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+        months.push({ id, achats: [], note: '', done: false });
+        this.update({ months: months.sort((a, b) => a.id.localeCompare(b.id)) });
+        return id;
+    }
+
+    removeMonth(id: string): void {
+        this.update({ months: this.plan().months.filter((m) => m.id !== id) });
+    }
+
+    patchMonth(id: string, patch: Partial<Omit<PlanMonth, 'id'>>): void {
+        this.update({
+            months: this.plan().months.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+        });
+    }
+
+    addAchat(monthId: string, achat: PlanAchat): void {
+        const month = this.plan().months.find((m) => m.id === monthId);
+        if (!month) return;
+        this.patchMonth(monthId, { achats: [...month.achats, achat] });
+    }
+
+    removeAchat(monthId: string, index: number): void {
+        const month = this.plan().months.find((m) => m.id === monthId);
+        if (!month) return;
+        this.patchMonth(monthId, { achats: month.achats.filter((_, i) => i !== index) });
     }
 
     addRule(text: string): void {

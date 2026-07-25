@@ -163,6 +163,9 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                                 <input type="number" min="0" max="100" [ngModel]="w.weight" (ngModelChange)="svc.setWeight(w.ticker, num($event))"
                                        aria-label="Poids cible" class="w-20 rounded-lg border border-surface-200 bg-surface-0 px-2 py-1.5 text-right text-[14px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
                                 <span class="w-4 text-[13px] text-surface-400">%</span>
+                                <button type="button" (click)="svc.setWeight(w.ticker, 0)" aria-label="Retirer ce titre de la grille"
+                                        class="rounded-md px-1.5 py-1 text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
+                                    <i class="pi pi-trash text-[12px]" aria-hidden="true"></i></button>
                             </div>
                         }
                     </div>
@@ -264,6 +267,116 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                 }
             </div>
 
+            <!-- Calendrier d'exécution -->
+            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                        <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Calendrier d'exécution</h3>
+                        <p class="mt-1 text-[12px] text-surface-500 dark:text-surface-400">
+                            Mois par mois : ce que tu prévois d'acheter, pourquoi, et coche quand c'est exécuté. C'est le plan qui enlève l'émotion au moment de passer l'ordre.
+                        </p>
+                    </div>
+                    <button type="button" (click)="onAddMonth()"
+                            class="rounded-lg bg-ochre-500 px-3 py-2 text-[13px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
+                        <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter un mois</button>
+                </div>
+
+                @if (plan().months.length === 0) {
+                    <p class="mt-4 rounded-xl border border-dashed border-surface-300 bg-surface-0 p-5 text-center text-[13px] text-surface-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-400">
+                        Aucun mois planifié. Ajoute ton premier mois et note tes achats prévus (ex. : SNTS 1 × 29 500).
+                    </p>
+                } @else {
+                    <div class="mt-4 overflow-x-auto">
+                        <table class="w-full min-w-[860px] border-collapse text-[13px]">
+                            <thead>
+                                <tr class="border-b border-surface-200 text-left text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:border-surface-600 dark:text-surface-400">
+                                    <th class="w-10 py-2 pr-2 font-semibold"><span class="sr-only">Fait</span>✓</th>
+                                    <th class="w-28 py-2 pr-3 font-semibold">Mois</th>
+                                    <th class="py-2 pr-3 font-semibold">Achats prévus</th>
+                                    <th class="w-28 py-2 pr-3 text-right font-semibold">Total</th>
+                                    <th class="w-[26%] py-2 pr-3 font-semibold">Logique</th>
+                                    <th class="w-10 py-2 font-semibold"><span class="sr-only">Actions</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (m of plan().months; track m.id) {
+                                    <tr class="border-b border-surface-200/60 align-top dark:border-surface-700/60">
+                                        <td class="py-3 pr-2">
+                                            <input type="checkbox" [checked]="m.done" (change)="svc.patchMonth(m.id, { done: !m.done })"
+                                                   [attr.aria-label]="'Mois ' + monthLabel(m.id) + ' exécuté'"
+                                                   class="h-4 w-4 cursor-pointer accent-emerald-600">
+                                        </td>
+                                        <td class="py-3 pr-3 font-semibold tabular-nums"
+                                            [class]="m.done ? 'text-surface-400 line-through' : 'text-surface-900 dark:text-surface-0'">
+                                            {{ monthLabel(m.id) }}
+                                        </td>
+                                        <td class="py-2.5 pr-3">
+                                            <div class="flex flex-wrap items-center gap-1.5">
+                                                @for (a of m.achats; track $index) {
+                                                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-brand-700/10 px-2 py-1 font-mono text-[12px] dark:bg-brand-300/10"
+                                                          [class]="m.done ? 'opacity-60' : ''">
+                                                        <strong class="text-brand-700 dark:text-brand-300">{{ a.ticker }}</strong>
+                                                        <span class="tabular-nums text-surface-600 dark:text-surface-300">{{ a.qty }} × {{ full(a.prix) }}</span>
+                                                        <button type="button" (click)="svc.removeAchat(m.id, $index)" aria-label="Retirer cet achat"
+                                                                class="text-surface-400 hover:text-red-600"><i class="pi pi-times text-[10px]" aria-hidden="true"></i></button>
+                                                    </span>
+                                                }
+                                                @if (editingMonth() === m.id) {
+                                                    <form class="inline-flex items-center gap-1.5" (ngSubmit)="commitAchat(m.id)">
+                                                        <input [(ngModel)]="achatTicker" name="aTicker" placeholder="Ticker" maxlength="6" required aria-label="Ticker"
+                                                               class="w-20 rounded-md border border-surface-200 bg-surface-0 px-2 py-1 font-mono text-[12px] uppercase focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                                                        <input [(ngModel)]="achatQty" name="aQty" type="number" min="1" placeholder="Qté" required aria-label="Quantité"
+                                                               class="w-16 rounded-md border border-surface-200 bg-surface-0 px-2 py-1 text-[12px] tabular-nums focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                                                        <input [(ngModel)]="achatPrix" name="aPrix" type="number" min="1" placeholder="Prix" required aria-label="Prix unitaire"
+                                                               class="w-24 rounded-md border border-surface-200 bg-surface-0 px-2 py-1 text-[12px] tabular-nums focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                                                        <button type="submit" class="rounded-md bg-ochre-500 px-2 py-1 text-[12px] font-semibold text-warm-900 hover:bg-ochre-400" aria-label="Valider l'achat">
+                                                            <i class="pi pi-check text-[11px]" aria-hidden="true"></i></button>
+                                                        <button type="button" (click)="editingMonth.set(null)" class="px-1 text-surface-400 hover:text-surface-600" aria-label="Fermer">
+                                                            <i class="pi pi-times text-[11px]" aria-hidden="true"></i></button>
+                                                    </form>
+                                                } @else {
+                                                    <button type="button" (click)="openAchatForm(m.id)"
+                                                            class="rounded-lg border border-dashed border-surface-300 px-2 py-1 text-[12px] text-surface-500 transition-colors hover:border-ochre-400 hover:text-ochre-600 dark:border-surface-600 dark:text-surface-400">
+                                                        <i class="pi pi-plus mr-1 text-[10px]" aria-hidden="true"></i>Achat</button>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td class="py-3 pr-3 text-right font-semibold tabular-nums"
+                                            [class]="monthTotal(m) > plan().dcaMonthly && plan().dcaMonthly > 0
+                                                ? 'text-amber-600 dark:text-amber-400'
+                                                : 'text-surface-900 dark:text-surface-0'">
+                                            {{ monthTotal(m) > 0 ? full(monthTotal(m)) + ' F' : '—' }}
+                                        </td>
+                                        <td class="py-2.5 pr-3">
+                                            <input [ngModel]="m.note" (ngModelChange)="svc.patchMonth(m.id, { note: $event })"
+                                                   placeholder="Pourquoi ces achats ce mois-ci ?" aria-label="Logique du mois"
+                                                   class="w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-[12.5px] italic text-surface-600 focus:border-ochre-500 focus:bg-surface-0 focus:outline-none dark:text-surface-300 dark:focus:bg-surface-900">
+                                        </td>
+                                        <td class="py-3 text-right">
+                                            <button type="button" (click)="svc.removeMonth(m.id)" aria-label="Supprimer ce mois"
+                                                    class="rounded-md px-1.5 py-1 text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
+                                                <i class="pi pi-trash text-[13px]" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="text-[12.5px] font-semibold tabular-nums text-surface-600 dark:text-surface-300">
+                                    <td colspan="3" class="py-2.5 pr-3 text-right">Total planifié</td>
+                                    <td class="py-2.5 pr-3 text-right text-surface-900 dark:text-surface-0">{{ full(calendarTotal()) }} F</td>
+                                    <td colspan="2" class="py-2.5 pr-3">
+                                        @if (plan().dcaMonthly > 0) {
+                                            <span class="font-normal text-surface-500 dark:text-surface-400">
+                                                Budget DCA : {{ full(plan().dcaMonthly) }} F/mois · un total ambre dépasse le budget du mois</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+            </div>
+
             <!-- Règles écrites -->
             <div class="mt-4 grid gap-4 lg:grid-cols-2">
                 <div class="rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
@@ -356,6 +469,11 @@ export class StrategiePlanPage {
     readonly plan = this.svc.plan;
     readonly lines = this.svc.lineViews;
     readonly totalValue = this.svc.totalValue;
+
+    readonly editingMonth = signal<string | null>(null);
+    achatTicker = '';
+    achatQty: number | null = null;
+    achatPrix: number | null = null;
 
     formTicker = '';
     formQty: number | null = null;
@@ -498,6 +616,44 @@ export class StrategiePlanPage {
             this.importError.set(this.svc.importJson(raw));
             input.value = '';
         });
+    }
+
+    // ── Calendrier d'exécution ──
+
+    onAddMonth(): void {
+        const id = this.svc.addMonth();
+        this.openAchatForm(id);
+    }
+
+    openAchatForm(monthId: string): void {
+        this.editingMonth.set(monthId);
+        this.achatTicker = '';
+        this.achatQty = this.achatPrix = null;
+    }
+
+    commitAchat(monthId: string): void {
+        const ticker = this.achatTicker.trim().toUpperCase();
+        if (!ticker || !this.achatQty || !this.achatPrix) return;
+        this.svc.addAchat(monthId, {
+            ticker,
+            qty: Math.max(1, Math.round(this.achatQty)),
+            prix: Math.max(1, Math.round(this.achatPrix)),
+        });
+        this.achatTicker = '';
+        this.achatQty = this.achatPrix = null;
+    }
+
+    monthLabel(id: string): string {
+        const [y, m] = id.split('-').map(Number);
+        return new Date(y, (m || 1) - 1, 1).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+    }
+
+    monthTotal(m: { achats: { qty: number; prix: number }[] }): number {
+        return m.achats.reduce((s, a) => s + a.qty * a.prix, 0);
+    }
+
+    calendarTotal(): number {
+        return this.plan().months.reduce((s, m) => s + this.monthTotal(m), 0);
     }
 
     num(v: unknown): number { return Math.max(0, Number(v) || 0); }

@@ -20,7 +20,7 @@ import { DISCLAIMER } from './data/referentiel';
             <!-- Tabs routés -->
             <nav class="sticky top-0 z-20 border-b border-surface-200 bg-surface-0/95 backdrop-blur dark:border-surface-700/50 dark:bg-surface-900/95"
                  aria-label="Sections de l'outil">
-                <div class="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-5 sm:px-6">
+                <div class="flex w-full gap-1 overflow-x-auto px-4 sm:px-6">
                     @for (tab of tabs; track tab.path) {
                         <a [routerLink]="tab.path" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="!border-ochre-500 !text-surface-900 dark:!text-surface-0"
                            class="whitespace-nowrap border-b-2 border-transparent px-4 py-3.5 text-[14px] font-medium text-surface-500
@@ -31,12 +31,12 @@ import { DISCLAIMER } from './data/referentiel';
                 </div>
             </nav>
 
-            <main class="mx-auto max-w-7xl px-5 pb-24 sm:px-6">
+            <main class="w-full px-4 pb-24 sm:px-6 lg:px-8">
                 <router-outlet />
             </main>
 
             <footer class="border-t border-surface-200 dark:border-surface-700/50">
-                <div class="mx-auto max-w-7xl space-y-3 px-5 py-8 sm:px-6">
+                <div class="w-full space-y-3 px-4 py-8 sm:px-6 lg:px-8">
                     <p class="text-[12px] leading-relaxed text-surface-500 dark:text-surface-400">{{ disclaimer }}</p>
                     <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px]">
                         <a routerLink="/outils/comparateur-sgi-brvm" class="font-medium text-ochre-600 hover:text-ochre-500 dark:text-ochre-400">
