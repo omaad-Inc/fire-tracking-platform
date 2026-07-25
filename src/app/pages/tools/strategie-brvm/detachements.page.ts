@@ -318,7 +318,7 @@ export class StrategieDetachementsPage {
                 x: {
                     min: -0.15,
                     max: monthCount + 0.15,
-                    grid: { color: t.grid },
+                    grid: { display: false },
                     ticks: {
                         stepSize: 1,
                         color: t.textMuted,
@@ -328,7 +328,8 @@ export class StrategieDetachementsPage {
                 },
                 y: {
                     type: 'logarithmic',
-                    grid: { color: t.grid },
+                    grid: { display: false },
+                    border: { display: false },
                     title: { display: true, text: 'Net / action (F, échelle log)', color: t.textMuted, font: { size: 11 } },
                     ticks: {
                         color: t.textMuted,
