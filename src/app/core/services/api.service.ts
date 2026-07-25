@@ -81,6 +81,14 @@ export interface AssetCreate {
     surface_m2?: number;
     price_per_m2_purchase?: number;
     quantity?: number;
+    // Real-estate fields (multi-section wizard)
+    description?: string | null;
+    rental_income?: number | null;
+    construction_date?: string | null;
+    agency_fees?: number | null;
+    notary_fees?: number | null;
+    renovation_fees?: number | null;
+    furnishing_costs?: number | null;
     // BRVM stock picker (S9-B1): brvm.org ticker when added from the catalog.
     ticker?: string | null;
     // Tontine specific

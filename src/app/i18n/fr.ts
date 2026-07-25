@@ -735,6 +735,37 @@ export const FR = {
       purchasePricePerShare: 'Prix d\'achat par action',
       autoValueHint: 'La valeur sera bientôt actualisée automatiquement au cours BRVM.',
     },
+    re: {
+      sections: {
+        description: 'Description',
+        features: 'Caractéristiques',
+        value: 'Valeur & achat',
+        fees: 'Frais',
+        financing: 'Financement',
+        income: 'Revenus',
+        ownership: 'Propriété',
+      },
+      types: {
+        appartement: 'Appartement', maison: 'Maison', villa: 'Villa', terrain: 'Terrain',
+        immeuble: 'Immeuble', commercial: 'Local commercial', bureau: 'Bureau', parking: 'Parking', autre: 'Autre',
+      },
+      usages: {
+        principale: 'Résidence principale', secondaire: 'Résidence secondaire',
+        locatif: 'Locatif', construction: 'En construction', autre: 'Autre',
+      },
+      fields: {
+        description: 'Description', descriptionPh: 'Ex : logement de 47 m², 3 pièces',
+        type: 'Type de bien', typePh: 'Choisir un type',
+        usage: 'Usage', usagePh: 'Choisir un usage',
+        surface: 'Superficie', rooms: 'Nombre de pièces', year: 'Année de construction',
+        purchaseValue: 'Valeur d\'achat', currentValue: 'Valeur actuelle',
+        agency: 'Frais d\'agence', notary: 'Frais de notaire', renovation: 'Rénovation', furnishing: 'Ameublement',
+        financingHint: 'Renseignez votre crédit si le bien est financé par un prêt.',
+        loanAmount: 'Capital restant dû', loanRate: 'Taux annuel', loanMonthly: 'Mensualité',
+        incomeHint: 'Pour un bien locatif, indiquez le loyer perçu.',
+        rent: 'Loyer mensuel', locality: 'Localité',
+      },
+    },
     wizard: {
       headerComplete: 'Compléter mon patrimoine',
       subtitle: 'Immobilier, BRVM, tontine, mobile money : tout votre patrimoine au même endroit.',

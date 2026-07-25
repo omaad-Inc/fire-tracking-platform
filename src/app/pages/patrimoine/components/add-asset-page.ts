@@ -88,6 +88,7 @@ interface Owner {
 
 interface AssetFormData {
     name: string;
+    description: string;
     category: AssetCategory | '';
     quantity: number;
     /** BRVM stock picker (S9-B1): chosen instrument ticker, '' when free-typed. */
@@ -107,6 +108,20 @@ interface AssetFormData {
     surfaceM2: number;
     region: string;
     currency: string;  // native currency the entered amounts are in
+    // Real-estate multi-section wizard (Finary-style, stored in notes JSON;
+    // frontend-only, no backend migration).
+    reType: string;        // Appartement / Maison / Villa / Terrain / ...
+    reUsage: string;       // residence_principale / locatif / ...
+    reRooms: number | null;
+    reMonthlyRent: number; // loyer mensuel (maps to rental_income)
+    reConstructionDate: string; // année / date de construction
+    reAgencyFees: number;
+    reNotaryFees: number;
+    reRenovationFees: number;
+    reFurnishingCosts: number;
+    loanAmount: number;    // capital restant / montant du prêt
+    loanRate: number;      // taux annuel %
+    loanMonthly: number;   // mensualité
 }
 
 interface CategoryCard {
@@ -167,7 +182,7 @@ interface CategoryCard {
                     }
                 </div>
                 <!-- Step dots (only on form steps) -->
-                @if (currentStep() === 1 || currentStep() === 2) {
+                @if ((currentStep() === 1 || currentStep() === 2) && !isRealEstate()) {
                     <div class="flex items-center gap-1.5 shrink-0">
                         @for (s of [1, 2]; track s) {
                             <div class="w-2 h-2 rounded-full transition-all"
@@ -299,7 +314,7 @@ interface CategoryCard {
                 }
 
                 <!-- ===== STEPS 1 & 2: Form ===== -->
-                @if (currentStep() === 1 || currentStep() === 2) {
+                @if ((currentStep() === 1 || currentStep() === 2) && !isRealEstate()) {
                     <div class="max-w-5xl mx-auto lg:pt-4">
                         <div class="flex flex-col lg:flex-row gap-6 lg:gap-16">
                             <!-- Step sidebar -->
@@ -493,7 +508,7 @@ interface CategoryCard {
                                                 <label for="aa-current" class="text-surface-500 dark:text-surface-400 text-sm font-medium">
                                                     {{ t('addAssets.fields.currentValue') }}
                                                     @if (assetForm.category === 'real_estate' || assetForm.category === 'vehicle') {
-                                                        <span class="text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span>
+                                                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span>
                                                     } @else {
                                                         <span class="text-negative">*</span>
                                                     }
@@ -682,6 +697,217 @@ interface CategoryCard {
                     </div>
                 }
 
+                <!-- ===== REAL ESTATE: multi-section wizard (Finary-style). Left-rail
+                     sections, spacious two-column fields; Type/Usage/rooms/loan are
+                     stored frontend-only in notes JSON. ===== -->
+                @if (isRealEstate() && currentStep() === 1) {
+                    <div class="max-w-5xl mx-auto lg:pt-4">
+                        <div class="flex flex-col lg:flex-row gap-6 lg:gap-16">
+                            <!-- Section rail -->
+                            <div class="w-full lg:w-60 shrink-0">
+                                <div class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
+                                    @for (sec of reSections; track sec.n) {
+                                        <button type="button" (click)="goReSection(sec.n)"
+                                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left shrink-0 lg:w-full"
+                                                [ngClass]="reSection() === sec.n ? 'bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'">
+                                            <span class="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                                                  [ngClass]="reSection() === sec.n ? 'bg-brand-700 text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">
+                                                <i class="pi {{ sec.icon }} !text-xs" aria-hidden="true"></i>
+                                            </span>
+                                            <span class="text-sm whitespace-nowrap">{{ t('addAssets.re.sections.' + sec.key) }}</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Section content -->
+                            <div class="flex-1 omaad-quiet-form">
+                                <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6">{{ t('addAssets.re.sections.' + reSections[reSection() - 1].key) }}</h2>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-7">
+                                    @switch (reSection()) {
+                                        @case (1) {
+                                            <div class="flex flex-col gap-2 md:col-span-2">
+                                                <label for="re-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
+                                                <input pInputText id="re-name" [(ngModel)]="assetForm.name" placeholder="Ex : Appartement Dakar Plateau"
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                            <div class="flex flex-col gap-2 md:col-span-2">
+                                                <label for="re-desc" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.description') }} <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
+                                                <input pInputText id="re-desc" [(ngModel)]="assetForm.description" [placeholder]="t('addAssets.re.fields.descriptionPh')"
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-type" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.type') }}</label>
+                                                <p-select inputId="re-type" [(ngModel)]="assetForm.reType" [options]="reTypeOptions" optionLabel="label" optionValue="value"
+                                                          [placeholder]="t('addAssets.re.fields.typePh')" appendTo="body"
+                                                          styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-usage" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.usage') }}</label>
+                                                <p-select inputId="re-usage" [(ngModel)]="assetForm.reUsage" [options]="reUsageOptions" optionLabel="label" optionValue="value"
+                                                          [placeholder]="t('addAssets.re.fields.usagePh')" appendTo="body"
+                                                          styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                            </div>
+                                        }
+                                        @case (2) {
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-surface" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.surface') }}</label>
+                                                <p-inputnumber inputId="re-surface" styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²"
+                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-rooms" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.rooms') }}</label>
+                                                <p-inputnumber inputId="re-rooms" styleClass="w-full" [(ngModel)]="assetForm.reRooms" [min]="0" [maxFractionDigits]="0" [useGrouping]="false"
+                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-year" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.year') }}</label>
+                                                <input pInputText id="re-year" [(ngModel)]="assetForm.reConstructionDate" inputmode="numeric" placeholder="Ex : 2015"
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                        }
+                                        @case (3) {
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.purchaseValue') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.currentValue') }} <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-cur" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-date" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
+                                                <p-datepicker inputId="re-date" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
+                                                       dateFormat="yy-mm-dd" styleClass="w-full" appendTo="body"
+                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                        }
+                                        @case (4) {
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-agency" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.agency') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-agency" styleClass="w-full" [(ngModel)]="assetForm.reAgencyFees" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-notary" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.notary') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-notary" styleClass="w-full" [(ngModel)]="assetForm.reNotaryFees" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-reno" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.renovation') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-reno" styleClass="w-full" [(ngModel)]="assetForm.reRenovationFees" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-furn" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.furnishing') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-furn" styleClass="w-full" [(ngModel)]="assetForm.reFurnishingCosts" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                        }
+                                        @case (5) {
+                                            <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-500 dark:text-surface-400 -mb-2">
+                                                <i class="pi pi-info-circle" aria-hidden="true"></i>{{ t('addAssets.re.fields.financingHint') }}
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-loan" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.loanAmount') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-loan" styleClass="w-full" [(ngModel)]="assetForm.loanAmount" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-rate" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.loanRate') }}</label>
+                                                <p-inputnumber inputId="re-rate" styleClass="w-full" [(ngModel)]="assetForm.loanRate" [min]="0" [max]="100" [minFractionDigits]="0" [maxFractionDigits]="2" suffix=" %"
+                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-month" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.loanMonthly') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-month" styleClass="w-full" [(ngModel)]="assetForm.loanMonthly" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                        }
+                                        @case (6) {
+                                            <div class="md:col-span-2 flex items-center gap-2 text-xs text-surface-500 dark:text-surface-400 -mb-2">
+                                                <i class="pi pi-info-circle" aria-hidden="true"></i>{{ t('addAssets.re.fields.incomeHint') }}
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <label for="re-rent" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.rent') }}</label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="re-rent" styleClass="w-full" [(ngModel)]="assetForm.reMonthlyRent" [min]="0" mode="decimal" [minFractionDigits]="0"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                            </div>
+                                        }
+                                        @case (7) {
+                                            <div class="flex flex-col gap-2 md:col-span-2">
+                                                <label for="re-locality" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.locality') }}</label>
+                                                <input pInputText id="re-locality" [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
+                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                            </div>
+                                            <div class="md:col-span-2 mt-2">
+                                                <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-3">{{ t('addAssets.wizard.owners') }}</h3>
+                                                <div class="space-y-3">
+                                                    @for (owner of assetForm.owners; track owner.name) {
+                                                        <div class="flex items-center justify-between p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+                                                            <div class="flex items-center gap-3">
+                                                                <div class="w-10 h-10 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center">
+                                                                    <span class="text-white dark:text-surface-900 font-semibold text-sm">{{ owner.initials }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="font-medium text-surface-900 dark:text-surface-0">{{ owner.name }}</span>
+                                                                    <span class="text-surface-500 dark:text-surface-400 text-sm block">{{ owner.percentage | number:'1.2-2' }} %</span>
+                                                                </div>
+                                                            </div>
+                                                            @if (assetForm.owners.length > 1) {
+                                                                <button type="button" class="w-8 h-8 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700 flex items-center justify-center transition-colors"
+                                                                        (click)="removeOwner(owner)" [attr.aria-label]="t('common.delete')">
+                                                                    <i class="pi pi-times text-surface-400" aria-hidden="true"></i>
+                                                                </button>
+                                                            }
+                                                        </div>
+                                                    }
+                                                    <button type="button" (click)="addMember()"
+                                                            class="flex items-center gap-3 p-4 rounded-xl border border-dashed border-surface-300 dark:border-surface-600 hover:border-brand-700 hover:bg-brand-700/5 transition-all w-full">
+                                                        <div class="w-10 h-10 rounded-full border-2 border-surface-300 dark:border-surface-600 flex items-center justify-center">
+                                                            <i class="pi pi-plus text-surface-400" aria-hidden="true"></i>
+                                                        </div>
+                                                        <span class="text-surface-600 dark:text-surface-300">{{ t('addAssets.wizard.addCoOwner') }}</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <!-- ===== STEP 3: Success (PA-2). A rewarding finish instead of a
                      toast-and-vanish: what was added, and the two next moves. ===== -->
                 @if (currentStep() === 3) {
@@ -713,7 +939,21 @@ interface CategoryCard {
                             bg-surface-50/90 dark:bg-surface-950/90 backdrop-blur
                             border-t border-surface-200 dark:border-surface-800">
                     <div class="max-w-5xl mx-auto flex items-center gap-3">
-                        @if (currentStep() === 1) {
+                        @if (isRealEstate()) {
+                            <!-- Real-estate section wizard nav -->
+                            <button pButton type="button" [label]="t('common.back')" [outlined]="true"
+                                    class="!rounded-full !border-surface-300 dark:!border-surface-600 shrink-0"
+                                    (click)="rePrev()"></button>
+                            @if (reSection() < RE_SECTION_COUNT) {
+                                <button pButton type="button" [label]="t('addAssets.wizard.next')"
+                                        class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
+                                        (click)="reNext()"></button>
+                            } @else {
+                                <button pButton type="button" [label]="t('addAssets.wizard.submit')"
+                                        class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
+                                        [disabled]="!isStep1Valid()" [loading]="isSubmitting()" (click)="submitAsset()"></button>
+                            }
+                        } @else if (currentStep() === 1) {
                             <button pButton type="button" [label]="t('addAssets.wizard.next')"
                                     class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
                                     [disabled]="!isStep1Valid()" (click)="nextStep()"></button>
@@ -876,11 +1116,12 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     brvmBadge(ticker: string): string { return (ticker || '?').slice(0, 2); }
 
     assetForm: AssetFormData = {
-        name: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
+        name: '', description: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
         purchaseDate: '', institution: '', owners: [],
         tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
         tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
-        surfaceM2: 0, region: '', currency: this.cs.config().code
+        surfaceM2: 0, region: '', currency: this.cs.config().code,
+        reType: '', reUsage: '', reRooms: null, reMonthlyRent: 0, reConstructionDate: '', reAgencyFees: 0, reNotaryFees: 0, reRenovationFees: 0, reFurnishingCosts: 0, loanAmount: 0, loanRate: 0, loanMonthly: 0
     };
 
     // p-datepicker binds a Date, but assetForm stores dates as 'YYYY-MM-DD'
@@ -1055,35 +1296,25 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     /**
-     * True once a MONETARY value has been entered but not yet saved. We keep
-     * the app native-feeling: neither the category selection nor a picked/typed
-     * identity (name/ticker) counts, so tapping a BRVM stock and backing out
-     * never triggers a confirm (a real app dismisses a half-picked form
-     * silently). Only actual amounts are worth guarding against accidental loss.
+     * Route guard hook: always allow leaving. A native app dismisses a
+     * half-filled add form silently, so we never interrupt with a browser
+     * "unsaved changes" confirm (owner directive, mimic the real app).
      */
-    private hasUnsavedInput(): boolean {
-        const f = this.assetForm;
-        return !this.justSaved && (
-            f.purchasePrice > 0 || f.currentPrice > 0 ||
-            f.tontineMonthlyContribution > 0
-        );
-    }
-
-    /** Route guard hook (P2-FE-9): confirm before abandoning a half-filled wizard. */
     canDeactivate(): boolean {
-        if (!this.hasUnsavedInput()) return true;
-        return confirm(this.i18n.t('addAssets.wizard.unsavedConfirm'));
+        return true;
     }
 
     resetForm(): void {
         this.assetForm = {
-            name: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
+            name: '', description: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
             purchaseDate: '', institution: '',
             owners: [{ name: this.userName, initials: this.userInitials, percentage: 100 }],
             tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
             tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
-            surfaceM2: 0, region: '', currency: this.cs.config().code
+            surfaceM2: 0, region: '', currency: this.cs.config().code,
+            reType: '', reUsage: '', reRooms: null, reMonthlyRent: 0, reConstructionDate: '', reAgencyFees: 0, reNotaryFees: 0, reRenovationFees: 0, reFurnishingCosts: 0, loanAmount: 0, loanRate: 0, loanMonthly: 0
         };
+        this.reSection.set(1);
         this.selectedCategory.set('');
         this.pathChooser.set('');
         this.syncInterestSent.set(false);
@@ -1145,6 +1376,59 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         this.assetForm.ticker = '';
         this.assetForm.name = name;
         this.brvmSheetOpen.set(false);
+    }
+
+    // ── Real-estate multi-section wizard (S9 UI, Finary-style) ───────────
+    /** Current section (1..RE_SECTION_COUNT) of the real-estate wizard. */
+    reSection = signal(1);
+    readonly RE_SECTION_COUNT = 7;
+    readonly reSections: { n: number; key: string; icon: string }[] = [
+        { n: 1, key: 'description', icon: 'pi-home' },
+        { n: 2, key: 'features', icon: 'pi-th-large' },
+        { n: 3, key: 'value', icon: 'pi-wallet' },
+        { n: 4, key: 'fees', icon: 'pi-receipt' },
+        { n: 5, key: 'financing', icon: 'pi-building-columns' },
+        { n: 6, key: 'income', icon: 'pi-chart-line' },
+        { n: 7, key: 'ownership', icon: 'pi-users' },
+    ];
+    isRealEstate(): boolean { return this.assetForm.category === 'real_estate'; }
+
+    get reTypeOptions() {
+        const t = (k: string) => this.i18n.t(k);
+        return ['appartement', 'maison', 'villa', 'terrain', 'immeuble', 'commercial', 'bureau', 'parking', 'autre']
+            .map(v => ({ label: t('addAssets.re.types.' + v), value: v }));
+    }
+    get reUsageOptions() {
+        const t = (k: string) => this.i18n.t(k);
+        return ['principale', 'secondaire', 'locatif', 'construction', 'autre']
+            .map(v => ({ label: t('addAssets.re.usages.' + v), value: v }));
+    }
+
+    goReSection(n: number): void { this.reSection.set(n); }
+    reNext(): void {
+        if (this.reSection() < this.RE_SECTION_COUNT) this.reSection.update(s => s + 1);
+        else this.submitAsset();
+    }
+    rePrev(): void {
+        if (this.reSection() > 1) this.reSection.update(s => s - 1);
+        else this.goBack();
+    }
+
+    /** Serialize the frontend-only real-estate metadata (Type/Usage/rooms/loan)
+     *  into a JSON notes blob. Returns null when nothing worth storing. */
+    private buildReNotes(f: AssetFormData): string | null {
+        const meta: Record<string, unknown> = {};
+        if (f.reType) meta['type'] = f.reType;
+        if (f.reUsage) meta['usage'] = f.reUsage;
+        if (f.reRooms && f.reRooms > 0) meta['rooms'] = f.reRooms;
+        if (f.loanAmount > 0 || f.loanRate > 0 || f.loanMonthly > 0) {
+            meta['loan'] = {
+                amount: f.loanAmount || undefined,
+                rate: f.loanRate || undefined,
+                monthly: f.loanMonthly || undefined,
+            };
+        }
+        return Object.keys(meta).length ? JSON.stringify(meta) : null;
     }
 
     /** Classes whose live sync ships in S9: they get the teaser chooser. */
@@ -1247,7 +1531,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         if (f.category === 'tontine') return f.tontineMonthlyContribution > 0 && f.tontineParticipants > 1 && !!f.tontineStartDate;
         if (f.category === 'mobile_money') return f.currentPrice > 0 && !!f.mobileMoneyProvider;
         if (this.isSimpleBalanceCategory()) return f.currentPrice > 0;
-        if (f.category === 'real_estate' || f.category === 'vehicle') return f.purchasePrice > 0;
+        // Real estate (multi-section wizard): a name plus at least one value
+        // (purchase or current) is enough to save; everything else is optional.
+        if (f.category === 'real_estate') return f.purchasePrice > 0 || f.currentPrice > 0;
+        if (f.category === 'vehicle') return f.purchasePrice > 0;
         // BRVM (S9-B1): essentials are the picked stock (name) + current value per
         // share; purchase price is demoted to the optional details disclosure.
         if (f.category === 'stocks_brvm') return !!f.name.trim() && f.currentPrice > 0;
@@ -1348,19 +1635,30 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                 const qty = this.isQuantityBased() ? Math.max(1, f.quantity ?? 1) : 1;
                 const purchaseNative = f.purchasePrice > 0 ? f.purchasePrice * qty : undefined;
                 const isQtyBased = this.isQuantityBased();
+                const isRE = f.category === 'real_estate';
+                // Real-estate multi-section wizard: Type/Usage/rooms/loan are
+                // frontend-only, stored as a JSON blob in notes (no migration).
+                const reNotes = isRE ? this.buildReNotes(f) : null;
                 assetData = {
                     name: f.name, category: f.category as AssetCategory, currency: cur,
+                    description: isRE && f.description.trim() ? f.description.trim() : undefined,
                     current_value: f.currentPrice * qty, purchase_value: purchaseNative,
                     purchase_date: purchaseDateValue, institution: f.institution || undefined,
                     location: f.region || undefined,
-                    notes: isQtyBased ? JSON.stringify({ quantity: qty }) : undefined,
+                    notes: isQtyBased ? JSON.stringify({ quantity: qty }) : (reNotes || undefined),
                     quantity: isQtyBased ? qty : undefined,
                     // BRVM (S9-B1): persist the catalog ticker so the S9-B2 engine
                     // can revalue this holding automatically. '' for free-typed.
                     ticker: f.category === 'stocks_brvm' && f.ticker ? f.ticker : undefined,
-                    surface_m2: f.category === 'real_estate' && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
-                    price_per_m2_purchase: f.category === 'real_estate' && f.surfaceM2 > 0 && f.purchasePrice > 0
-                        ? Math.round(f.purchasePrice / f.surfaceM2) : undefined
+                    surface_m2: isRE && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
+                    price_per_m2_purchase: isRE && f.surfaceM2 > 0 && f.purchasePrice > 0
+                        ? Math.round(f.purchasePrice / f.surfaceM2) : undefined,
+                    construction_date: isRE && f.reConstructionDate.trim() ? f.reConstructionDate.trim() : undefined,
+                    agency_fees: isRE && f.reAgencyFees > 0 ? f.reAgencyFees : undefined,
+                    notary_fees: isRE && f.reNotaryFees > 0 ? f.reNotaryFees : undefined,
+                    renovation_fees: isRE && f.reRenovationFees > 0 ? f.reRenovationFees : undefined,
+                    furnishing_costs: isRE && f.reFurnishingCosts > 0 ? f.reFurnishingCosts : undefined,
+                    rental_income: isRE && f.reMonthlyRent > 0 ? f.reMonthlyRent : undefined,
                 };
             }
 

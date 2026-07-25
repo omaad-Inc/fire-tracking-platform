@@ -737,6 +737,37 @@ export const EN: Dict = {
       purchasePricePerShare: 'Purchase price per share',
       autoValueHint: 'The value will soon update automatically from BRVM prices.',
     },
+    re: {
+      sections: {
+        description: 'Description',
+        features: 'Characteristics',
+        value: 'Value & purchase',
+        fees: 'Fees',
+        financing: 'Financing',
+        income: 'Income',
+        ownership: 'Ownership',
+      },
+      types: {
+        appartement: 'Apartment', maison: 'House', villa: 'Villa', terrain: 'Land',
+        immeuble: 'Building', commercial: 'Commercial', bureau: 'Office', parking: 'Parking', autre: 'Other',
+      },
+      usages: {
+        principale: 'Primary residence', secondaire: 'Second home',
+        locatif: 'Rental', construction: 'Under construction', autre: 'Other',
+      },
+      fields: {
+        description: 'Description', descriptionPh: 'e.g. 47 m2 flat, 3 rooms',
+        type: 'Property type', typePh: 'Choose a type',
+        usage: 'Usage', usagePh: 'Choose a usage',
+        surface: 'Surface area', rooms: 'Number of rooms', year: 'Year built',
+        purchaseValue: 'Purchase value', currentValue: 'Current value',
+        agency: 'Agency fees', notary: 'Notary fees', renovation: 'Renovation', furnishing: 'Furnishing',
+        financingHint: 'Add your mortgage if the property is financed by a loan.',
+        loanAmount: 'Outstanding balance', loanRate: 'Annual rate', loanMonthly: 'Monthly payment',
+        incomeHint: 'For a rental property, enter the rent received.',
+        rent: 'Monthly rent', locality: 'Locality',
+      },
+    },
     wizard: {
       headerComplete: 'Complete my portfolio',
       subtitle: 'Real estate, BRVM, tontine, mobile money: your whole wealth in one place.',

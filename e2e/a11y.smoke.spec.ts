@@ -52,6 +52,7 @@ const WIZARD_SCREENS: Array<[string, string]> = [
     ['wizard tontine form', '/fr/pages/patrimoine/add-asset?category=tontine'],
     ['wizard cash form', '/fr/pages/patrimoine/add-asset?category=cash'],
     ['wizard brvm form', '/fr/pages/patrimoine/add-asset?category=stocks_brvm'],
+    ['wizard real-estate multi-section', '/fr/pages/patrimoine/add-asset?category=real_estate'],
     ['stocks connect-broker chooser', '/fr/pages/patrimoine/connect-broker?market=brvm'],
 ];
 
