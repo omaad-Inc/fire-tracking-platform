@@ -1,9 +1,15 @@
 # Pipeline données BRVM (voir PLAN_INTEGRATION_STRATEGIE_BRVM.md §V1 volet données).
 # Scrape le calendrier officiel des dividendes une fois par jour et ne committe
-# que si la donnée a changé ; le commit sur master déclenche le rebuild Netlify,
-# donc les pages prérendues de /outils/strategie-brvm embarquent la donnée fraîche.
+# que si la donnée a changé ; le commit sur develop (la branche que Netlify
+# déploie en PROD) déclenche le rebuild, donc les pages prérendues de
+# /outils/strategie-brvm embarquent la donnée fraîche.
 # En cas de changement de format côté brvm.org, le scraper sort en erreur et le
 # workflow échoue bruyamment (notification GitHub).
+#
+# ATTENTION : GitHub ne déclenche les workflows `schedule` que depuis la
+# branche PAR DÉFAUT du repo (master aujourd'hui). Ce fichier doit donc aussi
+# exister sur master (ou la branche par défaut passer à develop) pour que le
+# cron tourne ; il checkout/push develop dans tous les cas.
 name: brvm-data
 
 on:
@@ -20,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: master
+          ref: develop
 
       - uses: actions/setup-python@v5
         with:
@@ -42,4 +48,4 @@ jobs:
           git config user.name "omaad-data-bot"
           git config user.email "data-bot@omaad.africa"
           git commit -m "chore(brvm-data): calendrier dividendes du $(date -u +%F)"
-          git push origin master
+          git push origin develop
