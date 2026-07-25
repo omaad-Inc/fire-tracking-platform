@@ -211,36 +211,69 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                 </div>
             </div>
 
-            <!-- Mes lignes (CRUD) -->
-            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
-                <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Mes lignes</h3>
-                <p class="mt-1 text-[12px] text-surface-500 dark:text-surface-400">Ticker, quantité et prix de revient unitaire ; cours/yield optionnels (sinon référence du {{ refDateLabel }}).</p>
-                <form class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-6" (ngSubmit)="addLine()">
-                    <input [(ngModel)]="formTicker" name="ticker" placeholder="Ticker" maxlength="6" required aria-label="Ticker"
-                           class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 font-mono text-[13px] uppercase text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                    <input [(ngModel)]="formQty" name="qty" type="number" min="1" placeholder="Quantité" required aria-label="Quantité"
-                           class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 text-[13px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                    <input [(ngModel)]="formPru" name="pru" type="number" min="1" placeholder="PRU (F)" required aria-label="Prix de revient unitaire"
-                           class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 text-[13px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                    <input [(ngModel)]="formPrix" name="prix" type="number" min="0" placeholder="Cours (opt.)" aria-label="Cours actuel (optionnel)"
-                           class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 text-[13px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                    <input [(ngModel)]="formYield" name="yield" type="number" min="0" max="20" step="0.01" placeholder="Yield % (opt.)" aria-label="Yield brut (optionnel)"
-                           class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 text-[13px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                    <button type="submit"
-                            class="rounded-lg bg-ochre-500 px-3 py-2 text-[13px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
-                        <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter</button>
+            <!-- Mes lignes (portefeuille actuel) -->
+            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800 sm:p-5">
+                <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Mes lignes, ce que je possède déjà</h3>
+                <p class="mt-1 max-w-[72ch] text-[12.5px] leading-relaxed text-surface-500 dark:text-surface-400">
+                    Recopie ici ton relevé SGI : pour chaque action que tu détiens, son code (ticker), le nombre
+                    d'actions et ton prix d'achat moyen. L'outil compare alors ton allocation réelle à ta grille
+                    cible et mesure ta progression vers ton objectif de dividendes. Si tu ne possèdes encore rien,
+                    passe directement au calendrier d'exécution ci-dessous.
+                </p>
+                <form class="mt-3 grid grid-cols-2 items-end gap-2.5 sm:grid-cols-6" (ngSubmit)="addLine()">
+                    <label class="block">
+                        <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Titre (code)</span>
+                        <input [(ngModel)]="formTicker" name="ticker" placeholder="SNTS" maxlength="6" required aria-label="Code du titre (ticker)"
+                               list="brvm-tickers" autocomplete="off" autocapitalize="characters"
+                               class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 font-mono text-base font-semibold uppercase text-surface-900 placeholder:font-normal placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                    </label>
+                    <label class="block">
+                        <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Nb d'actions</span>
+                        <input [(ngModel)]="formQty" name="qty" type="number" min="1" step="1" inputmode="numeric" placeholder="4" required aria-label="Nombre d'actions détenues"
+                               class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 text-base tabular-nums text-surface-900 placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                    </label>
+                    <label class="block">
+                        <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Prix d'achat moyen</span>
+                        <div class="relative">
+                            <input [(ngModel)]="formPru" name="pru" type="number" min="1" inputmode="numeric" placeholder="29 260" required aria-label="Prix d'achat moyen par action (PRU) en FCFA"
+                                   class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 py-0 pl-2.5 pr-7 text-base tabular-nums text-surface-900 placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                            <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-surface-400">F</span>
+                        </div>
+                    </label>
+                    <label class="block">
+                        <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Cours actuel <span class="normal-case">(opt.)</span></span>
+                        <div class="relative">
+                            <input [(ngModel)]="formPrix" name="prix" type="number" min="0" inputmode="numeric" placeholder="auto" aria-label="Cours actuel (optionnel, sinon référence datée)"
+                                   class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 py-0 pl-2.5 pr-7 text-base tabular-nums text-surface-900 placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                            <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-surface-400">F</span>
+                        </div>
+                    </label>
+                    <label class="block">
+                        <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Rendement <span class="normal-case">(opt.)</span></span>
+                        <div class="relative">
+                            <input [(ngModel)]="formYield" name="yield" type="number" min="0" max="20" step="0.01" inputmode="decimal" placeholder="auto" aria-label="Rendement dividende brut en % (optionnel, sinon référence datée)"
+                                   class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 py-0 pl-2.5 pr-7 text-base tabular-nums text-surface-900 placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                            <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-surface-400">%</span>
+                        </div>
+                    </label>
+                    <button type="submit" [disabled]="!formTicker.trim() || !formQty || !formPru"
+                            class="col-span-2 h-11 rounded-lg bg-ochre-500 text-[14px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400 disabled:cursor-not-allowed disabled:opacity-40 sm:col-span-1 sm:text-[13px]">
+                        <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter la ligne</button>
                 </form>
+                <p class="mt-2 text-[11.5px] text-surface-400 dark:text-surface-500">
+                    Cours actuel et rendement sont facultatifs : sans saisie, l'outil utilise les valeurs de référence du {{ refDateLabel }} pour les titres connus.
+                </p>
                 @if (lines().length > 0) {
                     <div class="mt-4 overflow-x-auto">
-                        <table class="w-full min-w-[560px] border-collapse text-[13px]">
+                        <table class="w-full min-w-[640px] border-collapse text-[13px]">
                             <thead>
                                 <tr class="border-b border-surface-200 text-left text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:border-surface-600 dark:text-surface-400">
-                                    <th class="py-2 pr-3 font-semibold">Ticker</th>
-                                    <th class="py-2 pr-3 font-semibold">Qté</th>
-                                    <th class="py-2 pr-3 text-right font-semibold">PRU</th>
+                                    <th class="py-2 pr-3 font-semibold">Titre</th>
+                                    <th class="py-2 pr-3 text-right font-semibold">Nb d'actions</th>
+                                    <th class="py-2 pr-3 text-right font-semibold">Prix d'achat moyen</th>
                                     <th class="py-2 pr-3 text-right font-semibold">Cours retenu</th>
-                                    <th class="py-2 pr-3 text-right font-semibold">Valeur</th>
-                                    <th class="py-2 pr-3 text-right font-semibold">Yield</th>
+                                    <th class="py-2 pr-3 text-right font-semibold">Valeur actuelle</th>
+                                    <th class="py-2 pr-3 text-right font-semibold">Rendement</th>
                                     <th class="py-2 font-semibold"><span class="sr-only">Actions</span></th>
                                 </tr>
                             </thead>
@@ -249,20 +282,23 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                                     <tr class="border-b border-surface-200/60 dark:border-surface-700/60">
                                         <td class="py-2.5 pr-3"><span class="font-mono font-bold text-surface-900 dark:text-surface-0">{{ l.ticker }}</span>
                                             <span class="ml-2 hidden text-surface-500 dark:text-surface-400 sm:inline">{{ l.nom }}</span></td>
-                                        <td class="py-2.5 pr-3 tabular-nums">{{ l.qty }}</td>
+                                        <td class="py-2.5 pr-3 text-right tabular-nums">{{ l.qty }}</td>
                                         <td class="py-2.5 pr-3 text-right tabular-nums">{{ full(l.pru) }} F</td>
                                         <td class="py-2.5 pr-3 text-right tabular-nums">{{ full(l.prixEffectif) }} F</td>
                                         <td class="py-2.5 pr-3 text-right font-semibold tabular-nums text-surface-900 dark:text-surface-0">{{ full(l.valeur) }} F</td>
                                         <td class="py-2.5 pr-3 text-right tabular-nums">{{ l.yieldEffectif }}%</td>
                                         <td class="py-2.5 text-right">
                                             <button type="button" (click)="svc.removeLine(l.ticker)" aria-label="Supprimer la ligne"
-                                                    class="rounded-md px-2 py-1 text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
+                                                    class="flex h-10 w-10 items-center justify-center rounded-lg text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
                                                 <i class="pi pi-trash text-[13px]" aria-hidden="true"></i></button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                        <p class="mt-2 text-[11.5px] text-surface-400 dark:text-surface-500">
+                            Cours retenu = ta saisie, sinon le cours de référence du {{ refDateLabel }}, sinon ton prix d'achat. Valeur actuelle = nb d'actions × cours retenu.
+                        </p>
                     </div>
                 }
             </div>
