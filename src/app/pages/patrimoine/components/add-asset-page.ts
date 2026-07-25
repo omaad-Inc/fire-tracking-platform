@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, model, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild, inject, model, signal, computed } from '@angular/core';
 import { CommonModule, DecimalPipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -6,10 +6,11 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { DialogModule } from 'primeng/dialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AssetCreate, AssetCategory } from '../../../core/services/api.service';
+import { ApiService, AssetCreate, AssetCategory, BrvmInstrument } from '../../../core/services/api.service';
 import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes.guard';
 import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
@@ -89,6 +90,8 @@ interface AssetFormData {
     name: string;
     category: AssetCategory | '';
     quantity: number;
+    /** BRVM stock picker (S9-B1): chosen instrument ticker, '' when free-typed. */
+    ticker: string;
     purchasePrice: number;
     currentPrice: number;
     purchaseDate: string;
@@ -120,7 +123,7 @@ interface CategoryCard {
     standalone: true,
     imports: [
         CommonModule, FormsModule, ButtonModule, InputTextModule,
-        SelectModule, InputNumberModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe,
+        SelectModule, InputNumberModule, DialogModule, DatePickerModule, ToastModule, AppAmountComponent, DecimalPipe,
         CurrencySuffixComponent,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -183,67 +186,57 @@ interface CategoryCard {
                      demand) next to the manual path. Stocks never reach this
                      block: connect-broker is their dual-path screen. ===== -->
                 @if (currentStep() === 0 && pathChooser()) {
-                    <div class="max-w-3xl mx-auto">
-                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-8">{{ t('addAssets.dualPath.title') }}</p>
+                    <div class="max-w-2xl mx-auto">
+                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-5">{{ t('addAssets.dualPath.title') }}</p>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <!-- Sync teaser card (S9): honest, secure-framed, demand-measured -->
+                        <div class="flex flex-col gap-3">
+                            <!-- Sync teaser (S9): compact, tinted, demand-measured -->
                             <button type="button" (click)="registerSyncInterest()" [attr.aria-pressed]="syncInterestSent()"
-                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
-                                           hover:border-ochre-300 dark:hover:border-ochre-500/50
-                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
-                                           transition-all text-left group overflow-hidden min-h-64 sm:min-h-80 cursor-pointer">
-                                <div class="relative flex justify-between items-start p-5">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-ochre-50 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 text-xs font-semibold">
-                                        {{ t('addAssets.dualPath.soonChip') }}
-                                    </span>
-                                    <div class="w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shadow-sm">
-                                        <i class="pi {{ pathChooser() === 'mobile_money' ? 'pi-mobile' : 'pi-building-columns' }} text-2xl text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
+                                    class="w-full flex items-center justify-between gap-4 p-5 rounded-2xl text-left group transition-all cursor-pointer
+                                           bg-brand-50/70 dark:bg-brand-700/15 border border-brand-100 dark:border-brand-800/50
+                                           hover:border-brand-300 dark:hover:border-brand-600
+                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2 mb-2">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-ochre-50 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 text-xs font-semibold">
+                                            {{ t('addAssets.dualPath.soonChip') }}
+                                        </span>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-semibold">
+                                            <i class="pi pi-lock text-[10px]" aria-hidden="true"></i>
+                                            {{ t('addAssets.institutionList.secureConnection') }}
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="relative p-6 pt-0">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-medium mb-3">
-                                        <i class="pi pi-lock text-[10px]" aria-hidden="true"></i>
-                                        {{ t('addAssets.institutionList.secureConnection') }}
-                                    </span>
-                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg">
                                         {{ pathChooser() === 'mobile_money' ? t('addAssets.dualPath.syncMomoTitle') : t('addAssets.dualPath.syncBankTitle') }}
                                     </div>
-                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                                    <div class="text-surface-600 dark:text-surface-300 text-sm mt-0.5">
                                         {{ pathChooser() === 'mobile_money' ? t('addAssets.dualPath.syncMomoDesc') : t('addAssets.dualPath.syncBankDesc') }}
                                     </div>
                                     @if (syncInterestSent()) {
-                                        <div class="flex items-center gap-2 mt-4 text-positive text-sm font-medium" role="status">
+                                        <div class="flex items-center gap-2 mt-2 text-positive text-sm font-medium" role="status">
                                             <i class="pi pi-check-circle" aria-hidden="true"></i>
                                             {{ t('addAssets.dualPath.thanks') }}
                                         </div>
                                     } @else {
-                                        <div class="text-surface-500 dark:text-surface-400 text-xs mt-4">{{ t('addAssets.dualPath.notifyHint') }}</div>
+                                        <div class="text-surface-600 dark:text-surface-300 text-xs mt-2">{{ t('addAssets.dualPath.notifyHint') }}</div>
                                     }
+                                </div>
+                                <div class="w-11 h-11 rounded-xl bg-brand-100 dark:bg-brand-700/25 flex items-center justify-center shrink-0">
+                                    <i class="pi {{ pathChooser() === 'mobile_money' ? 'pi-mobile' : 'pi-building-columns' }} text-lg text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
                                 </div>
                             </button>
 
                             <!-- Manual card: the path that works today -->
                             <button type="button" (click)="chooseManualPath()"
-                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800
+                                    class="w-full flex items-center justify-between gap-4 p-5 rounded-2xl text-left group transition-all cursor-pointer
+                                           bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
                                            hover:border-brand-300 dark:hover:border-brand-700
-                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
-                                           transition-all text-left group overflow-hidden min-h-64 sm:min-h-80 cursor-pointer">
-                                <div class="relative flex justify-end p-5">
-                                    <div class="w-14 h-14 rounded-2xl bg-surface-100 dark:bg-surface-700 flex items-center justify-center shadow-sm">
-                                        <i class="pi pi-pencil text-2xl text-surface-500 dark:text-surface-400" aria-hidden="true"></i>
-                                    </div>
+                                           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60">
+                                <div class="min-w-0">
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg">{{ t('addAssets.dualPath.manualTitle') }}</div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm mt-0.5">{{ t('addAssets.dualPath.manualDesc') }}</div>
                                 </div>
-                                <div class="relative p-6 pt-0">
-                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">{{ t('addAssets.dualPath.manualTitle') }}</div>
-                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">{{ t('addAssets.dualPath.manualDesc') }}</div>
-                                    <div class="flex justify-end mt-4">
-                                        <div class="w-10 h-10 rounded-full border border-surface-200 dark:border-surface-600 flex items-center justify-center
-                                                    group-hover:border-brand-300 group-hover:bg-brand-50 dark:group-hover:border-brand-700 dark:group-hover:bg-brand-900/40 transition-all">
-                                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors" aria-hidden="true"></i>
-                                        </div>
-                                    </div>
-                                </div>
+                                <i class="pi pi-chevron-right text-xl text-surface-400 group-hover:text-brand-600 dark:group-hover:text-ochre-400 transition-colors shrink-0" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
@@ -307,10 +300,10 @@ interface CategoryCard {
 
                 <!-- ===== STEPS 1 & 2: Form ===== -->
                 @if (currentStep() === 1 || currentStep() === 2) {
-                    <div class="max-w-2xl mx-auto">
-                        <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="max-w-5xl mx-auto lg:pt-4">
+                        <div class="flex flex-col lg:flex-row gap-6 lg:gap-16">
                             <!-- Step sidebar -->
-                            <div class="w-full lg:w-48 shrink-0">
+                            <div class="w-full lg:w-56 shrink-0">
                                 <div class="flex lg:flex-col gap-3">
                                     <button type="button"
                                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full"
@@ -337,13 +330,35 @@ interface CategoryCard {
                             <div class="flex-1 omaad-quiet-form">
                                 <!-- Step 1: Per-category form -->
                                 @if (currentStep() === 1) {
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <!-- Name (always) -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-7">
+                                        <!-- Name (always). BRVM (S9-B1): a static tappable row opens
+                                             a full-screen search sheet (Finary-style); the form never
+                                             expands or shifts. "Autre" is handled inside the sheet. -->
+                                        @if (assetForm.category === 'stocks_brvm') {
+                                        <div class="flex flex-col gap-2 md:col-span-2">
+                                            <span id="aa-brvm-label" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.pickLabel') }} <span class="text-negative">*</span></span>
+                                            <button type="button" (click)="openBrvmSheet()" aria-labelledby="aa-brvm-label" [attr.aria-haspopup]="'dialog'"
+                                                    class="w-full flex items-center justify-between gap-3 py-3 text-left cursor-pointer
+                                                           border-b border-surface-300 dark:border-surface-600
+                                                           focus-visible:outline-none focus-visible:border-brand-700 dark:focus-visible:border-ochre-400 transition-colors">
+                                                <span class="truncate" [class.text-surface-500]="!assetForm.name" [class.dark:text-surface-400]="!assetForm.name">
+                                                    {{ assetForm.name || t('addAssets.brvm.pickPlaceholder') }}
+                                                </span>
+                                                <span class="flex items-center gap-2 shrink-0">
+                                                    @if (assetForm.ticker) {
+                                                        <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-ochre-50 text-ochre-700 dark:bg-ochre-500/15 dark:text-ochre-300">{{ assetForm.ticker }}</span>
+                                                    }
+                                                    <i class="pi pi-chevron-right text-surface-400 !text-xs" aria-hidden="true"></i>
+                                                </span>
+                                            </button>
+                                        </div>
+                                        } @else {
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <label for="aa-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
                                             <input pInputText id="aa-name" [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                         </div>
+                                        }
 
                                         <!-- Currency now lives as a tappable chip inside each amount
                                              field (PA-2): defaults to the user's preference, one tap
@@ -420,12 +435,23 @@ interface CategoryCard {
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
+                                                @if (assetForm.category === 'stocks_brvm') {
+                                                <!-- BRVM (S9-B1): current value per share leads; purchase
+                                                     price is demoted to the optional details below. -->
+                                                <label for="aa-unit-cur-ess" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.currentPricePerShare') }} <span class="text-negative">*</span></label>
+                                                <div class="relative">
+                                                    <p-inputnumber inputId="aa-unit-cur-ess" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                    <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                </div>
+                                                } @else {
                                                 <label for="aa-unit-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-unit-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
+                                                }
                                             </div>
                                         }
 
@@ -499,12 +525,26 @@ interface CategoryCard {
 
                                             @if (detailsOpen()) {
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                                                    <!-- Current unit value (quantity-based) -->
-                                                    @if (isQuantityBased()) {
+                                                    <!-- Current unit value (quantity-based). For BRVM this
+                                                         leads as an essential above, so it is not repeated here. -->
+                                                    @if (isQuantityBased() && assetForm.category !== 'stocks_brvm') {
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-unit-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
                                                             <div class="relative">
                                                                 <p-inputnumber inputId="aa-unit-cur" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
+                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <!-- BRVM (S9-B1): purchase price per share, optional. Affects
+                                                         performance history only; current value is what leads. -->
+                                                    @if (assetForm.category === 'stocks_brvm') {
+                                                        <div class="flex flex-col gap-2">
+                                                            <label for="aa-brvm-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.purchasePricePerShare') }}</label>
+                                                            <div class="relative">
+                                                                <p-inputnumber inputId="aa-brvm-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
                                                                 <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                             </div>
@@ -672,7 +712,7 @@ interface CategoryCard {
                 <div class="sticky bottom-0 z-10 -mx-4 px-4 mt-6 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]
                             bg-surface-50/90 dark:bg-surface-950/90 backdrop-blur
                             border-t border-surface-200 dark:border-surface-800">
-                    <div class="max-w-2xl mx-auto flex items-center gap-3">
+                    <div class="max-w-5xl mx-auto flex items-center gap-3">
                         @if (currentStep() === 1) {
                             <button pButton type="button" [label]="t('addAssets.wizard.next')"
                                     class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
@@ -688,6 +728,85 @@ interface CategoryCard {
                     </div>
                 </div>
             }
+
+            <!-- BRVM stock picker sheet (S9-B1): full-screen Finary-style search,
+                 rendered at body (appendTo) so it escapes the layout's transformed
+                 ancestor and covers the whole app chrome on mobile AND desktop.
+                 The form underneath never moves. -->
+            <p-dialog [visible]="brvmSheetOpen()" (visibleChange)="brvmSheetOpen.set($event)" [modal]="true"
+                      [draggable]="false" [resizable]="false" [showHeader]="false" [dismissableMask]="false"
+                      [closeOnEscape]="true" appendTo="body" styleClass="brvm-sheet" [blockScroll]="true"
+                      ariaLabelledBy="brvm-sheet-title" (onShow)="focusBrvmSearch()">
+                <div class="flex flex-col h-full">
+                    <!-- Top bar: back-to-form (chevron) + close (X), Finary-style -->
+                    <div class="flex items-center justify-between gap-2 px-4 sm:px-6 pt-4 pb-1 shrink-0">
+                        <button type="button" (click)="brvmOtherMode() ? brvmOtherMode.set(false) : closeBrvmSheet()"
+                                [attr.aria-label]="t('common.back')"
+                                class="w-9 h-9 -ml-2 flex items-center justify-center rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer text-surface-600 dark:text-surface-300">
+                            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" (click)="closeBrvmSheet()" [attr.aria-label]="t('common.close')"
+                                class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 cursor-pointer text-surface-600 dark:text-surface-300">
+                            <i class="pi pi-times !text-sm" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <!-- Centered content column (Finary: big title + generous space) -->
+                    <div class="flex-1 min-h-0 overflow-y-auto">
+                        <div class="w-full max-w-3xl mx-auto px-5 sm:px-8 pb-10">
+                            <h2 id="brvm-sheet-title" class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 mt-1 mb-6 sm:mb-8">{{ t('addAssets.brvm.sheetTitle') }}</h2>
+
+                            @if (!brvmOtherMode()) {
+                                <!-- Search with ochre underline (brand accent) -->
+                                <div class="relative mb-6 sm:mb-8">
+                                    <i class="pi pi-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-400" aria-hidden="true"></i>
+                                    <input #brvmSearchInput pInputText type="text" [ngModel]="brvmSearch()" (ngModelChange)="brvmSearch.set($event)"
+                                           [attr.aria-label]="t('addAssets.brvm.searchPlaceholder')" [placeholder]="t('addAssets.brvm.searchPlaceholder')"
+                                           class="w-full !text-base !py-3 !pl-8 !bg-transparent !border-0 !border-b-2 !border-ochre-300 dark:!border-ochre-500/50 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400 !shadow-none" />
+                                </div>
+
+                                <p class="text-sm text-surface-500 dark:text-surface-400 mb-1">{{ t('addAssets.brvm.listLabel') }}</p>
+
+                                <!-- Results -->
+                                <div>
+                                    @for (inst of filteredBrvmInstruments(); track inst.ticker) {
+                                        <button type="button" (click)="pickBrvmInstrument(inst)"
+                                                class="w-full flex items-center gap-3 sm:gap-4 py-3 rounded-xl text-left cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors">
+                                            <span class="shrink-0 w-11 h-11 rounded-full bg-brand-50 dark:bg-brand-700/25 text-brand-700 dark:text-ochre-300 flex items-center justify-center text-xs font-bold" aria-hidden="true">{{ brvmBadge(inst.ticker) }}</span>
+                                            <span class="flex-1 min-w-0">
+                                                <span class="block truncate text-surface-900 dark:text-surface-0 font-medium">{{ inst.name }}</span>
+                                                <span class="block text-xs text-surface-500 dark:text-surface-400">{{ inst.ticker }}{{ inst.country ? ' · ' + inst.country : '' }}</span>
+                                            </span>
+                                            @if (assetForm.ticker === inst.ticker) { <i class="pi pi-check text-ochre-500 shrink-0" aria-hidden="true"></i> }
+                                        </button>
+                                    } @empty {
+                                        <p class="text-center text-sm text-surface-400 py-10">{{ t('addAssets.brvm.noMatch') }}</p>
+                                    }
+                                    <!-- Unlisted fallback (handled in-sheet, no form shift) -->
+                                    <button type="button" (click)="startBrvmOther()"
+                                            class="w-full flex items-center gap-3 sm:gap-4 py-3 mt-1 rounded-xl text-left cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors">
+                                        <span class="shrink-0 w-11 h-11 rounded-full border border-dashed border-surface-300 dark:border-surface-600 text-surface-400 flex items-center justify-center" aria-hidden="true"><i class="pi pi-pencil !text-sm"></i></span>
+                                        <span class="flex-1 text-surface-700 dark:text-surface-200">{{ t('addAssets.brvm.other') }}</span>
+                                        <i class="pi pi-chevron-right text-surface-400 !text-xs shrink-0" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            } @else {
+                                <!-- Free-text (unlisted) sub-screen -->
+                                <div class="flex flex-col gap-6 max-w-md">
+                                    <div class="flex flex-col gap-2">
+                                        <label for="brvm-other-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.otherLabel') }}</label>
+                                        <input id="brvm-other-name" pInputText type="text" [ngModel]="brvmOtherName()" (ngModelChange)="brvmOtherName.set($event)"
+                                               [placeholder]="t('addAssets.brvm.otherPlaceholder')"
+                                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400" />
+                                    </div>
+                                    <button pButton type="button" [label]="t('common.confirm')" [disabled]="!brvmOtherName().trim()"
+                                            class="omaad-cta !rounded-full self-start !px-8" (click)="confirmBrvmOther()"></button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </p-dialog>
         </div>
     `
 })
@@ -703,6 +822,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private tokenService = inject(TokenService);
     private i18n = inject(I18nService);
     private analytics = inject(AnalyticsService);
+    private api = inject(ApiService);
     cs = inject(CurrencyService);
 
     t(key: string): string { return this.i18n.t(key); }
@@ -727,8 +847,36 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     /** One sync_interest event per chooser visit; flips the teaser to a thank-you state. */
     syncInterestSent = signal(false);
 
+    /**
+     * BRVM stock picker (S9-B1). Finary-style: the Name field is a static
+     * tappable row that opens a full-screen search SHEET; the form never
+     * expands or shifts. Selection state lives on assetForm (name + ticker);
+     * a picked ticker means catalog identity, '' means a free-typed name.
+     */
+    brvmInstruments = signal<BrvmInstrument[]>([]);
+    /** Full-screen picker sheet open/closed. */
+    brvmSheetOpen = signal(false);
+    /** Live search text inside the sheet. */
+    brvmSearch = signal('');
+    /** Inside the sheet, the "Autre (non listée)" free-text sub-screen. */
+    brvmOtherMode = signal(false);
+    /** Draft name while typing a free-text (unlisted) stock in the sheet. */
+    brvmOtherName = signal('');
+
+    /** Catalog filtered by the sheet's search (name or ticker, accent/caseless). */
+    filteredBrvmInstruments = computed(() => {
+        const q = this.brvmSearch().trim().toLowerCase();
+        const rows = this.brvmInstruments();
+        if (!q) return rows;
+        return rows.filter(i =>
+            i.name.toLowerCase().includes(q) || i.ticker.toLowerCase().includes(q));
+    });
+
+    /** Short monogram for a result badge (first two letters of the ticker). */
+    brvmBadge(ticker: string): string { return (ticker || '?').slice(0, 2); }
+
     assetForm: AssetFormData = {
-        name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
+        name: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
         purchaseDate: '', institution: '', owners: [],
         tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
         tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
@@ -869,7 +1017,13 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
         const cat = this.route.snapshot.queryParamMap.get('category');
         if (cat && this.categoryCards().some(c => c.value === cat)) {
-            this.selectCategory(cat as AssetCategory);
+            // Deep-link hand-off (e.g. connect-broker "add manually"): open the
+            // form directly, passing deepLink explicitly (never re-read below).
+            this.selectCategory(cat as AssetCategory, true);
+            if (this.assetForm.category === 'stocks_brvm') this.loadBrvmInstruments();
+            // Strip ?category so the URL bar is clean and going back / re-picking
+            // a class behaves as a fresh choice (not a stale deep-link).
+            this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
         }
     }
 
@@ -901,16 +1055,17 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     /**
-     * True once TYPED input (name or an amount) exists but is not yet saved.
-     * Deliberately does NOT count the category selection: tapping a card is a
-     * free one-tap action, and the BRVM/intl cards immediately navigate to the
-     * connect-broker flow, which false-triggered the "unsaved changes" confirm
-     * on every tap (the guard fired with only the category set).
+     * True once a MONETARY value has been entered but not yet saved. We keep
+     * the app native-feeling: neither the category selection nor a picked/typed
+     * identity (name/ticker) counts, so tapping a BRVM stock and backing out
+     * never triggers a confirm (a real app dismisses a half-picked form
+     * silently). Only actual amounts are worth guarding against accidental loss.
      */
     private hasUnsavedInput(): boolean {
         const f = this.assetForm;
         return !this.justSaved && (
-            !!f.name?.trim() || f.purchasePrice > 0 || f.currentPrice > 0
+            f.purchasePrice > 0 || f.currentPrice > 0 ||
+            f.tontineMonthlyContribution > 0
         );
     }
 
@@ -922,7 +1077,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
     resetForm(): void {
         this.assetForm = {
-            name: '', category: '', quantity: 1, purchasePrice: 0, currentPrice: 0,
+            name: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
             purchaseDate: '', institution: '',
             owners: [{ name: this.userName, initials: this.userInitials, percentage: 100 }],
             tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
@@ -932,19 +1087,76 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         this.selectedCategory.set('');
         this.pathChooser.set('');
         this.syncInterestSent.set(false);
+        this.brvmSheetOpen.set(false);
+        this.brvmOtherMode.set(false);
+        this.brvmSearch.set('');
+        this.brvmOtherName.set('');
         this.currentStep.set(0);
+    }
+
+    /** Fetch the BRVM catalog once (idempotent), when the BRVM form is in play. */
+    private loadBrvmInstruments(): void {
+        if (this.brvmInstruments().length) return;
+        this.api.getBrvmInstruments().subscribe({
+            next: rows => this.brvmInstruments.set(rows),
+            error: () => { /* picker degrades to free-text via the "Autre" path */ },
+        });
+    }
+
+    @ViewChild('brvmSearchInput') private brvmSearchInput?: ElementRef<HTMLInputElement>;
+
+    /** Open the full-screen search sheet (loads the catalog on first open). */
+    openBrvmSheet(): void {
+        this.loadBrvmInstruments();
+        this.brvmSearch.set('');
+        this.brvmOtherMode.set(false);
+        this.brvmOtherName.set(this.assetForm.ticker ? '' : this.assetForm.name);
+        this.brvmSheetOpen.set(true);
+    }
+
+    /** Focus the search once the dialog has rendered (native-app feel). */
+    focusBrvmSearch(): void {
+        setTimeout(() => this.brvmSearchInput?.nativeElement.focus(), 50);
+    }
+
+    closeBrvmSheet(): void { this.brvmSheetOpen.set(false); }
+
+    /**
+     * Pick a catalog instrument from the sheet: fills name + ticker and defaults
+     * amounts to FCFA (BRVM trades in XOF), then closes the sheet.
+     */
+    pickBrvmInstrument(inst: BrvmInstrument): void {
+        this.assetForm.ticker = inst.ticker;
+        this.assetForm.name = inst.name;
+        this.assetForm.currency = 'XOF';
+        this.brvmSheetOpen.set(false);
+    }
+
+    /** Switch the sheet to the "Autre (non listée)" free-text sub-screen. */
+    startBrvmOther(): void {
+        this.brvmOtherMode.set(true);
+        this.brvmOtherName.set('');
+    }
+
+    /** Confirm a free-typed (unlisted) stock: name only, no ticker (no auto-revalue). */
+    confirmBrvmOther(): void {
+        const name = this.brvmOtherName().trim();
+        if (!name) return;
+        this.assetForm.ticker = '';
+        this.assetForm.name = name;
+        this.brvmSheetOpen.set(false);
     }
 
     /** Classes whose live sync ships in S9: they get the teaser chooser. */
     private static readonly SYNC_TEASER_CLASSES: AssetCategory[] = ['cash', 'savings_account', 'mobile_money'];
 
-    selectCategory(value: AssetCategory): void {
+    selectCategory(value: AssetCategory, deepLink = false): void {
         this.assetForm.category = value;
         this.selectedCategory.set(value);
         this.detailsOpen.set(false); // details stay collapsed per fresh class pick
-        // ?category deep-links (connect-broker's "add manually" hand-off) go
-        // straight to the form: the user already chose a path.
-        const deepLink = this.route.snapshot.queryParamMap.has('category');
+        // deepLink (connect-broker's "add manually" hand-off) goes straight to
+        // the form. A normal in-app tap (deepLink=false) routes stocks to the
+        // connect-broker chooser and sync classes to the teaser.
         const isStocks = value === 'stocks_brvm' || value === 'stocks_intl';
         if (isStocks && !deepLink) {
             const market = value === 'stocks_brvm' ? 'brvm' : 'intl';
@@ -1036,6 +1248,9 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         if (f.category === 'mobile_money') return f.currentPrice > 0 && !!f.mobileMoneyProvider;
         if (this.isSimpleBalanceCategory()) return f.currentPrice > 0;
         if (f.category === 'real_estate' || f.category === 'vehicle') return f.purchasePrice > 0;
+        // BRVM (S9-B1): essentials are the picked stock (name) + current value per
+        // share; purchase price is demoted to the optional details disclosure.
+        if (f.category === 'stocks_brvm') return !!f.name.trim() && f.currentPrice > 0;
         if (this.isQuantityBased()) return f.purchasePrice > 0;
         return f.currentPrice > 0;
     }
@@ -1140,6 +1355,9 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                     location: f.region || undefined,
                     notes: isQtyBased ? JSON.stringify({ quantity: qty }) : undefined,
                     quantity: isQtyBased ? qty : undefined,
+                    // BRVM (S9-B1): persist the catalog ticker so the S9-B2 engine
+                    // can revalue this holding automatically. '' for free-typed.
+                    ticker: f.category === 'stocks_brvm' && f.ticker ? f.ticker : undefined,
                     surface_m2: f.category === 'real_estate' && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
                     price_per_m2_purchase: f.category === 'real_estate' && f.surfaceM2 > 0 && f.purchasePrice > 0
                         ? Math.round(f.purchasePrice / f.surfaceM2) : undefined

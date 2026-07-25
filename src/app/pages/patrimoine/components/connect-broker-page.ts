@@ -36,9 +36,9 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
         <div class="flex flex-col min-h-[calc(100vh-8rem)]">
             <!-- Header -->
             <div class="flex items-center gap-4 mb-6">
-                <button (click)="goBack()"
+                <button type="button" (click)="goBack()" [attr.aria-label]="t('common.back')"
                         class="w-10 h-10 shrink-0 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
+                    <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
                 </button>
                 <div class="flex-1 min-w-0">
                     <h1 class="text-xl font-bold text-surface-900 dark:text-surface-0 m-0">
@@ -59,79 +59,55 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
             <!-- Content -->
             <div class="flex-1">
 
-                <!-- ===== Method Picker (Finary-style tall cards) ===== -->
+                <!-- ===== Method Picker (Finary-style: compact stacked cards) ===== -->
                 @if (step() === 'method') {
-                    <div class="max-w-3xl mx-auto">
-                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-8">{{ t('addAssets.methodPicker.title') }}</p>
+                    <div class="max-w-2xl mx-auto">
+                        <p class="text-surface-500 dark:text-surface-400 text-sm mb-5">{{ t('addAssets.methodPicker.title') }}</p>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <!-- Connect card (primary, left) -->
+                        <div class="flex flex-col gap-3">
+                            <!-- Connect (primary, tinted) -->
                             <button type="button" (click)="chooseConnect()"
-                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
-                                           hover:border-brand-300 dark:hover:border-brand-700
-                                           transition-all text-left group overflow-hidden h-72 sm:h-80">
-                                <!-- Icon top-right -->
-                                <div class="relative flex justify-end p-5">
-                                    <div class="w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shadow-sm">
-                                        <i class="pi pi-link text-2xl text-brand-700 dark:text-ochre-400"></i>
-                                    </div>
-                                </div>
-                                <!-- Content bottom -->
-                                <div class="relative p-6 pt-0">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-medium mb-3">
-                                        <i class="pi pi-lock text-[10px]"></i>
+                                    class="w-full flex items-center justify-between gap-4 p-5 rounded-2xl text-left group transition-all
+                                           bg-brand-50/70 dark:bg-brand-700/15 border border-brand-100 dark:border-brand-800/50
+                                           hover:border-brand-300 dark:hover:border-brand-600">
+                                <div class="min-w-0">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-semibold mb-2">
+                                        <i class="pi pi-lock text-[10px]" aria-hidden="true"></i>
                                         {{ t('addAssets.institutionList.secureConnection') }}
                                     </span>
-                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">{{ t('addAssets.methodPicker.connectTitle') }}</div>
-                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">{{ t('addAssets.methodPicker.connectDesc') }}</div>
-                                    <div class="flex justify-end mt-4">
-                                        <div class="w-10 h-10 rounded-full border border-surface-200 dark:border-surface-600 flex items-center justify-center
-                                                    group-hover:border-brand-300 group-hover:bg-brand-50 dark:group-hover:border-brand-700 dark:group-hover:bg-brand-900/40 transition-all">
-                                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
-                                        </div>
-                                    </div>
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg">{{ t('addAssets.methodPicker.connectTitle') }}</div>
+                                    <div class="text-surface-600 dark:text-surface-300 text-sm mt-0.5">{{ t('addAssets.methodPicker.connectDesc') }}</div>
                                 </div>
+                                <i class="pi pi-chevron-right text-xl text-surface-400 group-hover:text-brand-600 dark:group-hover:text-ochre-400 transition-colors shrink-0" aria-hidden="true"></i>
                             </button>
 
-                            <!-- Manual card (secondary, right) -->
+                            <!-- Manual (secondary, outlined) -->
                             <button type="button" (click)="chooseManual()"
-                                    class="relative flex flex-col justify-between rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-800
-                                           hover:border-brand-300 dark:hover:border-brand-700
-                                           transition-all text-left group overflow-hidden h-72 sm:h-80">
-                                <!-- Icon top-right -->
-                                <div class="relative flex justify-end p-5">
-                                    <div class="w-14 h-14 rounded-2xl bg-surface-100 dark:bg-surface-700 flex items-center justify-center shadow-sm">
-                                        <i class="pi pi-pencil text-2xl text-surface-500 dark:text-surface-400"></i>
-                                    </div>
+                                    class="w-full flex items-center justify-between gap-4 p-5 rounded-2xl text-left group transition-all
+                                           bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
+                                           hover:border-brand-300 dark:hover:border-brand-700">
+                                <div class="min-w-0">
+                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg">{{ t('addAssets.methodPicker.manualTitle') }}</div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm mt-0.5">{{ t('addAssets.methodPicker.manualDesc') }}</div>
                                 </div>
-                                <!-- Content bottom -->
-                                <div class="relative p-6 pt-0">
-                                    <div class="font-bold text-surface-900 dark:text-surface-0 text-lg mb-1.5">{{ t('addAssets.methodPicker.manualTitle') }}</div>
-                                    <div class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">{{ t('addAssets.methodPicker.manualDesc') }}</div>
-                                    <div class="flex justify-end mt-4">
-                                        <div class="w-10 h-10 rounded-full border border-surface-200 dark:border-surface-600 flex items-center justify-center
-                                                    group-hover:border-brand-300 group-hover:bg-brand-50 dark:group-hover:border-brand-700 dark:group-hover:bg-brand-900/40 transition-all">
-                                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors"></i>
-                                        </div>
-                                    </div>
+                                <i class="pi pi-chevron-right text-xl text-surface-400 group-hover:text-brand-600 dark:group-hover:text-ochre-400 transition-colors shrink-0" aria-hidden="true"></i>
+                            </button>
+
+                            <!-- Import a PDF statement (the working path today; live sync is S9) -->
+                            <button type="button" (click)="openHoldingsImport()" data-testid="holdings-import-open"
+                                    class="w-full flex items-center gap-4 p-5 rounded-2xl text-left group transition-all
+                                           bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800
+                                           hover:border-brand-300 dark:hover:border-brand-700">
+                                <div class="w-11 h-11 rounded-xl bg-ochre-100 dark:bg-ochre-500/15 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-file-pdf text-lg text-ochre-600 dark:text-ochre-400" aria-hidden="true"></i>
                                 </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-bold text-surface-900 dark:text-surface-0">{{ t('addAssets.methodPicker.importTitle') }}</div>
+                                    <div class="text-surface-500 dark:text-surface-400 text-sm">{{ t('addAssets.methodPicker.importDesc') }}</div>
+                                </div>
+                                <i class="pi pi-chevron-right text-xl text-surface-400 group-hover:text-brand-600 dark:group-hover:text-ochre-400 transition-colors shrink-0" aria-hidden="true"></i>
                             </button>
                         </div>
-
-                        <!-- Import from a PDF statement: the working path today
-                             (secure live sync is S9). Sits under the two cards. -->
-                        <button type="button" (click)="openHoldingsImport()" data-testid="holdings-import-open"
-                                class="mt-5 w-full flex items-center gap-4 p-5 rounded-2xl border border-surface-200 dark:border-surface-800
-                                       bg-surface-0 dark:bg-surface-900 hover:border-brand-300 dark:hover:border-brand-700 transition-all text-left group">
-                            <div class="w-12 h-12 rounded-2xl bg-ochre-100 dark:bg-ochre-500/15 flex items-center justify-center shrink-0">
-                                <i class="pi pi-file-pdf text-xl text-ochre-600 dark:text-ochre-400"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="font-bold text-surface-900 dark:text-surface-0">{{ t('addAssets.methodPicker.importTitle') }}</div>
-                                <div class="text-surface-500 dark:text-surface-400 text-sm">{{ t('addAssets.methodPicker.importDesc') }}</div>
-                            </div>
-                            <i class="pi pi-arrow-right text-surface-400 group-hover:text-brand-700 dark:group-hover:text-brand-300 transition-colors shrink-0"></i>
-                        </button>
                     </div>
                 }
 
