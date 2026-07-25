@@ -759,7 +759,7 @@ export const EN: Dict = {
         description: 'Description', descriptionPh: 'e.g. 47 m2 flat, 3 rooms',
         type: 'Property type', typePh: 'Choose a type',
         usage: 'Usage', usagePh: 'Choose a usage',
-        surface: 'Surface area', rooms: 'Number of rooms', year: 'Year built',
+        surface: 'Surface area', rooms: 'Number of rooms', year: 'Year', yearPh: 'Choose a year',
         purchaseValue: 'Purchase value', currentValue: 'Current value',
         agency: 'Agency fees', notary: 'Notary fees', renovation: 'Renovation', furnishing: 'Furnishing',
         financingHint: 'Add your mortgage if the property is financed by a loan.',
