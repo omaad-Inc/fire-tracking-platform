@@ -707,12 +707,13 @@ interface CategoryCard {
                             <div class="w-full lg:w-60 shrink-0">
                                 <div class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
                                     @for (sec of reSections; track sec.n) {
-                                        <button type="button" (click)="goReSection(sec.n)"
-                                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left shrink-0 lg:w-full"
-                                                [ngClass]="reSection() === sec.n ? 'bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 font-semibold' : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'">
+                                        <button type="button" (click)="goReSection(sec.n)" [disabled]="sec.n > reMaxSection()"
+                                                class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left shrink-0 lg:w-full disabled:opacity-40 disabled:cursor-not-allowed"
+                                                [ngClass]="reSection() === sec.n ? 'bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 font-semibold' : 'text-surface-500 dark:text-surface-400 hover:enabled:bg-surface-100 dark:hover:enabled:bg-surface-700'">
                                             <span class="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-                                                  [ngClass]="reSection() === sec.n ? 'bg-brand-700 text-white' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300'">
-                                                <i class="pi {{ sec.icon }} !text-xs" aria-hidden="true"></i>
+                                                  [ngClass]="reSection() === sec.n ? 'bg-brand-700 text-white' : (sec.n < reMaxSection() ? 'bg-positive/15 text-positive-700 dark:text-positive-400' : 'bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300')">
+                                                @if (sec.n < reMaxSection()) { <i class="pi pi-check !text-xs" aria-hidden="true"></i> }
+                                                @else { <i class="pi {{ sec.icon }} !text-xs" aria-hidden="true"></i> }
                                             </span>
                                             <span class="text-sm whitespace-nowrap">{{ t('addAssets.re.sections.' + sec.key) }}</span>
                                         </button>
@@ -762,8 +763,9 @@ interface CategoryCard {
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-year" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.year') }}</label>
-                                                <input pInputText id="re-year" [(ngModel)]="assetForm.reConstructionDate" inputmode="numeric" placeholder="Ex : 2015"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                <p-select inputId="re-year" [(ngModel)]="assetForm.reConstructionDate" [options]="reYearOptions" optionLabel="label" optionValue="value"
+                                                          [filter]="true" [resetFilterOnHide]="true" [placeholder]="t('addAssets.re.fields.yearPh')" appendTo="body"
+                                                          styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                                             </div>
                                         }
                                         @case (3) {
@@ -947,7 +949,7 @@ interface CategoryCard {
                             @if (reSection() < RE_SECTION_COUNT) {
                                 <button pButton type="button" [label]="t('addAssets.wizard.next')"
                                         class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
-                                        (click)="reNext()"></button>
+                                        [disabled]="!reSectionValid(reSection())" (click)="reNext()"></button>
                             } @else {
                                 <button pButton type="button" [label]="t('addAssets.wizard.submit')"
                                         class="omaad-cta !rounded-full flex-1 sm:flex-none sm:ml-auto sm:px-10"
@@ -1315,6 +1317,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             reType: '', reUsage: '', reRooms: null, reMonthlyRent: 0, reConstructionDate: '', reAgencyFees: 0, reNotaryFees: 0, reRenovationFees: 0, reFurnishingCosts: 0, loanAmount: 0, loanRate: 0, loanMonthly: 0
         };
         this.reSection.set(1);
+        this.reMaxSection.set(1);
         this.selectedCategory.set('');
         this.pathChooser.set('');
         this.syncInterestSent.set(false);
@@ -1381,6 +1384,9 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     // ── Real-estate multi-section wizard (S9 UI, Finary-style) ───────────
     /** Current section (1..RE_SECTION_COUNT) of the real-estate wizard. */
     reSection = signal(1);
+    /** Furthest section the user has reached (via Suivant). The rail cannot jump
+     *  PAST this, so real estate is filled in order (owner directive). */
+    reMaxSection = signal(1);
     readonly RE_SECTION_COUNT = 7;
     readonly reSections: { n: number; key: string; icon: string }[] = [
         { n: 1, key: 'description', icon: 'pi-home' },
@@ -1403,11 +1409,36 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return ['principale', 'secondaire', 'locatif', 'construction', 'autre']
             .map(v => ({ label: t('addAssets.re.usages.' + v), value: v }));
     }
+    /** Year picker options: current year back to 1900 (newest first). */
+    get reYearOptions() {
+        const current = new Date().getFullYear();
+        const years: { label: string; value: string }[] = [];
+        for (let y = current; y >= 1900; y--) years.push({ label: String(y), value: String(y) });
+        return years;
+    }
 
-    goReSection(n: number): void { this.reSection.set(n); }
+    /** Per-section gate for advancing: only sections with hard requirements
+     *  block (identity in Description, a value in "Valeur & achat"). */
+    reSectionValid(n: number): boolean {
+        const f = this.assetForm;
+        if (n === 1) return !!f.name.trim();
+        if (n === 3) return f.purchasePrice > 0 || f.currentPrice > 0;
+        return true;
+    }
+
+    /** Rail jump: allowed to any already-reached section, never past the front. */
+    goReSection(n: number): void {
+        if (n <= this.reMaxSection()) this.reSection.set(n);
+    }
     reNext(): void {
-        if (this.reSection() < this.RE_SECTION_COUNT) this.reSection.update(s => s + 1);
-        else this.submitAsset();
+        if (!this.reSectionValid(this.reSection())) return;
+        if (this.reSection() < this.RE_SECTION_COUNT) {
+            const next = this.reSection() + 1;
+            this.reSection.set(next);
+            this.reMaxSection.update(m => Math.max(m, next));
+        } else {
+            this.submitAsset();
+        }
     }
     rePrev(): void {
         if (this.reSection() > 1) this.reSection.update(s => s - 1);

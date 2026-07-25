@@ -757,7 +757,7 @@ export const FR = {
         description: 'Description', descriptionPh: 'Ex : logement de 47 m², 3 pièces',
         type: 'Type de bien', typePh: 'Choisir un type',
         usage: 'Usage', usagePh: 'Choisir un usage',
-        surface: 'Superficie', rooms: 'Nombre de pièces', year: 'Année de construction',
+        surface: 'Superficie', rooms: 'Nombre de pièces', year: 'Année', yearPh: 'Choisir une année',
         purchaseValue: 'Valeur d\'achat', currentValue: 'Valeur actuelle',
         agency: 'Frais d\'agence', notary: 'Frais de notaire', renovation: 'Rénovation', furnishing: 'Ameublement',
         financingHint: 'Renseignez votre crédit si le bien est financé par un prêt.',
