@@ -35,6 +35,7 @@ export interface Asset {
     purchase_value: number | null;
     purchase_date: string | null;
     quantity: number | null;
+    ticker: string | null;
     currency: string;
     notes: string | null;
     is_liquid: boolean;
@@ -80,6 +81,16 @@ export interface AssetCreate {
     surface_m2?: number;
     price_per_m2_purchase?: number;
     quantity?: number;
+    // Real-estate fields (multi-section wizard)
+    description?: string | null;
+    rental_income?: number | null;
+    construction_date?: string | null;
+    agency_fees?: number | null;
+    notary_fees?: number | null;
+    renovation_fees?: number | null;
+    furnishing_costs?: number | null;
+    // BRVM stock picker (S9-B1): brvm.org ticker when added from the catalog.
+    ticker?: string | null;
     // Tontine specific
     tontine_monthly_contribution?: number | null;
     tontine_participants?: number | null;
@@ -89,6 +100,15 @@ export interface AssetCreate {
     tontine_frequency?: string | null;
     // Mobile Money specific
     mobile_money_operator?: string | null;
+}
+
+/** A pickable BRVM equity (S9-B1 catalog). Powers "pick SONATEL, enter quantity". */
+export interface BrvmInstrument {
+    ticker: string;
+    name: string;
+    sector: string | null;
+    country: string | null;
+    currency: string;
 }
 
 export interface TontineCycleView {
@@ -888,6 +908,11 @@ export class ApiService {
     deleteAsset(id: number): Observable<void> {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.delete<void>(`${this.apiUrl}/assets/${id}`);
+    }
+
+    /** The pickable BRVM equity universe (S9-B1): reference data for the picker. */
+    getBrvmInstruments(): Observable<BrvmInstrument[]> {
+        return this.http.get<BrvmInstrument[]>(`${this.apiUrl}/market/brvm/instruments`);
     }
 
     // ========== TONTINE CYCLES ==========

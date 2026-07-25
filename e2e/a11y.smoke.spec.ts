@@ -51,6 +51,9 @@ const WIZARD_SCREENS: Array<[string, string]> = [
     ['wizard catalog', '/fr/pages/patrimoine/add-asset'],
     ['wizard tontine form', '/fr/pages/patrimoine/add-asset?category=tontine'],
     ['wizard cash form', '/fr/pages/patrimoine/add-asset?category=cash'],
+    ['wizard brvm form', '/fr/pages/patrimoine/add-asset?category=stocks_brvm'],
+    ['wizard real-estate multi-section', '/fr/pages/patrimoine/add-asset?category=real_estate'],
+    ['stocks connect-broker chooser', '/fr/pages/patrimoine/connect-broker?market=brvm'],
 ];
 
 for (const [name, url] of WIZARD_SCREENS) {
@@ -88,6 +91,27 @@ test('a11y: wizard dual-path chooser has no critical violations', async ({ page 
     await page.goto('/fr/pages/patrimoine/add-asset');
     await page.getByRole('button', { name: /Compte bancaire/ }).click();
     await page.waitForSelector('text=Connecter ma banque', { timeout: 10_000 });
+    await page.waitForTimeout(400);
+    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+
+    const critical = results.violations.filter(v => v.impact === 'critical');
+    const serious = results.violations.filter(v => v.impact === 'serious');
+    expect(critical.map(v => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+    if (GATE_SERIOUS) expect(serious.map(v => v.id)).toEqual([]);
+});
+
+// S9-B1: the BRVM stock picker full-screen search sheet (opened dialog).
+test('a11y: BRVM picker sheet has no critical violations', async ({ page }) => {
+    await page.goto('/fr/auth/login');
+    await page.locator('#email').fill(EMAIL);
+    await page.locator('#password input').fill(PASSWORD);
+    await page.locator('button[type=submit]').first().click();
+    await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
+    await page.waitForFunction(() => !!localStorage.getItem('omaad_user'), null, { timeout: 15_000 });
+
+    await page.goto('/fr/pages/patrimoine/add-asset?category=stocks_brvm');
+    await page.locator('button[aria-labelledby="aa-brvm-label"]').click();
+    await expect(page.locator('.brvm-sheet')).toBeVisible({ timeout: 10_000 });
     await page.waitForTimeout(400);
     const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
 

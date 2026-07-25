@@ -185,6 +185,35 @@
     border-radius: var(--omaad-radius-input) !important;
 }
 
+// ── BRVM stock picker sheet (S9-B1): full-screen Finary-style overlay ──
+// Rendered via p-dialog appendTo=body so it escapes the transformed layout
+// ancestor that traps position:fixed, and covers the whole app chrome on
+// both mobile and desktop. We drive the look from the template; here we
+// only strip the dialog to a full-bleed, edge-to-edge surface.
+.brvm-sheet.p-dialog {
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: var(--p-surface-0);
+}
+.app-dark .brvm-sheet.p-dialog {
+    background: var(--p-surface-950);
+}
+.brvm-sheet .p-dialog-content {
+    padding: 0 !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 0 !important;
+}
+
 // ── Quiet form fields (S7b PA-2) ────────────────────────────────────
 // Opt-in wrapper for hairline-row forms (add-asset wizard; asset-edit /
 // goal dialogs can adopt later): transparent fields, no radius or

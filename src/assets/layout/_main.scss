@@ -11,3 +11,17 @@
     flex: 1 1 auto;
     padding-bottom: 2rem;
 }
+
+// Immersive full-screen routes (add-asset flow): no shell chrome, so drop the
+// topbar top-offset and the desktop sidebar left-margin and let the page own the
+// whole viewport (native-app feel, Finary-style).
+.layout-wrapper.layout-immersive {
+    .layout-main-container {
+        margin-left: 0 !important;
+        padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+        min-height: 100dvh;
+    }
+    .layout-main {
+        padding-bottom: 0;
+    }
+}
