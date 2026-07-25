@@ -26,3 +26,14 @@
         scroll-behavior: auto !important;
     }
 }
+
+/* iOS Safari zoome au focus de tout champ dont la police est < 16px, même avec
+   maximum-scale=1 sur certains appareils. Sur mobile, tous les champs des
+   outils publics passent donc à 16px (le viewport verrouillé gère le reste). */
+@media (max-width: 767px) {
+    .tool-no-focus-zoom input,
+    .tool-no-focus-zoom select,
+    .tool-no-focus-zoom textarea {
+        font-size: 16px !important;
+    }
+}

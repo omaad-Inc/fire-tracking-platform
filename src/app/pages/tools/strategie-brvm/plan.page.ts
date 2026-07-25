@@ -267,21 +267,21 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                 }
             </div>
 
-            <!-- Calendrier d'exécution -->
-            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
-                <div class="flex flex-wrap items-end justify-between gap-3">
+            <!-- Calendrier d'exécution (mobile-first : cartes par mois, cibles tactiles 44px) -->
+            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800 sm:p-5">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Calendrier d'exécution</h3>
                         <p class="mt-1 text-[12px] text-surface-500 dark:text-surface-400">
                             Mois par mois : ce que tu prévois d'acheter, pourquoi, et coche quand c'est exécuté. C'est le plan qui enlève l'émotion au moment de passer l'ordre.
                         </p>
                     </div>
-                    <form class="flex items-center gap-2" (ngSubmit)="onAddMonth()">
+                    <form class="flex items-stretch gap-2" (ngSubmit)="onAddMonth()">
                         <input type="month" [(ngModel)]="newMonthId" name="newMonth" required aria-label="Mois à planifier"
-                               class="rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-1.5 text-[13px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                               class="h-11 min-w-0 flex-1 rounded-xl border border-surface-200 bg-surface-0 px-3 text-base tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:flex-none sm:text-[13px]">
                         <button type="submit" data-testid="add-month"
-                                class="rounded-lg bg-ochre-500 px-3 py-2 text-[13px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
-                            <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter le mois</button>
+                                class="h-11 shrink-0 rounded-xl bg-ochre-500 px-4 text-[14px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400 sm:text-[13px]">
+                            <i class="pi pi-plus mr-1 text-[11px]" aria-hidden="true"></i>Ajouter</button>
                     </form>
                 </div>
 
@@ -295,129 +295,124 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                         Aucun mois planifié. Ajoute ton premier mois et note tes achats prévus (ex. : SNTS 1 × 29 500).
                     </p>
                 } @else {
-                    <div class="mt-4 overflow-x-auto">
-                        <table class="w-full min-w-[860px] border-collapse text-[13px]">
-                            <thead>
-                                <tr class="border-b border-surface-200 text-left text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:border-surface-600 dark:text-surface-400">
-                                    <th class="w-10 py-2 pr-2 font-semibold"><span class="sr-only">Fait</span>✓</th>
-                                    <th class="w-28 py-2 pr-3 font-semibold">Mois</th>
-                                    <th class="py-2 pr-3 font-semibold">Achats prévus</th>
-                                    <th class="w-28 py-2 pr-3 text-right font-semibold">Total</th>
-                                    <th class="w-[26%] py-2 pr-3 font-semibold">Logique</th>
-                                    <th class="w-10 py-2 font-semibold"><span class="sr-only">Actions</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (m of plan().months; track m.id) {
-                                    <tr class="border-b border-surface-200/60 align-top dark:border-surface-700/60" data-testid="month-row">
-                                        <td class="py-3 pr-2">
-                                            <input type="checkbox" [checked]="m.done" (change)="svc.patchMonth(m.id, { done: !m.done })" data-testid="month-done"
-                                                   [attr.aria-label]="'Mois ' + monthLabel(m.id) + ' exécuté'"
-                                                   class="h-4 w-4 cursor-pointer accent-emerald-600">
-                                        </td>
-                                        <td class="py-3 pr-3 font-semibold tabular-nums"
-                                            [class]="m.done ? 'text-surface-400 line-through' : 'text-surface-900 dark:text-surface-0'">
-                                            {{ monthLabel(m.id) }}
-                                        </td>
-                                        <td class="py-2.5 pr-3">
-                                            <div class="flex flex-wrap items-center gap-1.5">
-                                                @for (a of m.achats; track $index) {
-                                                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-brand-700/10 px-2 py-1 font-mono text-[12px] dark:bg-brand-300/10"
-                                                          [class]="m.done ? 'opacity-60' : ''">
-                                                        <strong class="text-brand-700 dark:text-brand-300">{{ a.ticker }}</strong>
-                                                        <span class="tabular-nums text-surface-600 dark:text-surface-300">{{ a.qty }} × {{ full(a.prix) }}</span>
-                                                        <button type="button" (click)="svc.removeAchat(m.id, $index)" aria-label="Retirer cet achat"
-                                                                class="text-surface-400 hover:text-red-600"><i class="pi pi-times text-[10px]" aria-hidden="true"></i></button>
-                                                    </span>
-                                                }
-                                                @if (editingMonth() !== m.id) {
-                                                    <button type="button" (click)="openAchatForm(m.id)"
-                                                            class="rounded-lg border border-dashed border-surface-300 px-2 py-1 text-[12px] text-surface-500 transition-colors hover:border-ochre-400 hover:text-ochre-600 dark:border-surface-600 dark:text-surface-400">
-                                                        <i class="pi pi-plus mr-1 text-[10px]" aria-hidden="true"></i>Achat</button>
-                                                }
-                                            </div>
-                                            @if (editingMonth() === m.id) {
-                                                <form (ngSubmit)="commitAchat(m.id)" data-testid="achat-form"
-                                                      class="mt-2.5 max-w-md rounded-xl border border-ochre-500/40 bg-ochre-500/[0.06] p-3.5">
-                                                    <div class="grid grid-cols-[1.1fr_0.8fr_1.2fr] gap-2.5">
-                                                        <label class="block">
-                                                            <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Titre</span>
-                                                            <input [(ngModel)]="achatTicker" name="aTicker" placeholder="SNTS" maxlength="6" required
-                                                                   list="brvm-tickers" data-testid="achat-ticker" aria-label="Ticker"
-                                                                   class="w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 font-mono text-[13px] font-semibold uppercase text-surface-900
-                                                                          placeholder:font-normal placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                                                        </label>
-                                                        <label class="block">
-                                                            <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Quantité</span>
-                                                            <input [(ngModel)]="achatQty" name="aQty" type="number" min="1" step="1" inputmode="numeric" placeholder="3" required
-                                                                   data-testid="achat-qty" aria-label="Quantité"
-                                                                   class="w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 py-2 text-[13px] tabular-nums text-surface-900
-                                                                          placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                                                        </label>
-                                                        <label class="block">
-                                                            <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Prix unitaire</span>
-                                                            <div class="relative">
-                                                                <input [(ngModel)]="achatPrix" name="aPrix" type="number" min="1" step="5" inputmode="numeric" placeholder="29 500" required
-                                                                       data-testid="achat-prix" aria-label="Prix unitaire en FCFA"
-                                                                       class="w-full rounded-lg border border-surface-200 bg-surface-0 py-2 pl-2.5 pr-7 text-[13px] tabular-nums text-surface-900
-                                                                              placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                                                                <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-surface-400">F</span>
-                                                            </div>
-                                                        </label>
-                                                    </div>
-                                                    <div class="mt-3 flex items-center justify-between gap-2">
-                                                        <span class="text-[12px] tabular-nums text-surface-500 dark:text-surface-400" data-testid="achat-subtotal">
-                                                            @if (draftTotal() > 0) {
-                                                                Sous-total : <strong class="text-surface-900 dark:text-surface-0">{{ full(draftTotal()) }} F</strong>
-                                                            } @else {
-                                                                Ticker, quantité et prix
-                                                            }
-                                                        </span>
-                                                        <div class="flex items-center gap-1.5">
-                                                            <button type="button" (click)="editingMonth.set(null)" aria-label="Fermer le formulaire"
-                                                                    class="rounded-lg px-2.5 py-1.5 text-[12px] font-medium text-surface-500 transition-colors hover:bg-surface-100 hover:text-surface-700 dark:hover:bg-surface-700">
-                                                                Fermer</button>
-                                                            <button type="submit" [disabled]="draftTotal() <= 0"
-                                                                    class="rounded-lg bg-ochre-500 px-3 py-1.5 text-[12px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400 disabled:cursor-not-allowed disabled:opacity-40">
-                                                                <i class="pi pi-check mr-1 text-[10px]" aria-hidden="true"></i>Ajouter l'achat</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            }
-                                        </td>
-                                        <td class="py-3 pr-3 text-right font-semibold tabular-nums" data-testid="month-total"
-                                            [class]="monthTotal(m) > plan().dcaMonthly && plan().dcaMonthly > 0
-                                                ? 'text-amber-600 dark:text-amber-400'
-                                                : 'text-surface-900 dark:text-surface-0'">
-                                            {{ monthTotal(m) > 0 ? full(monthTotal(m)) + ' F' : '—' }}
-                                        </td>
-                                        <td class="py-2.5 pr-3">
-                                            <!-- Commit au blur/entrée (pas à chaque frappe : évite la réécriture du plan et les sauts de curseur) -->
-                                            <input [value]="m.note" (change)="svc.patchMonth(m.id, { note: $any($event.target).value })"
-                                                   placeholder="Pourquoi ces achats ce mois-ci ?" aria-label="Logique du mois" data-testid="month-note"
-                                                   class="w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-[12.5px] italic text-surface-600 focus:border-ochre-500 focus:bg-surface-0 focus:outline-none dark:text-surface-300 dark:focus:bg-surface-900">
-                                        </td>
-                                        <td class="py-3 text-right">
-                                            <button type="button" (click)="svc.removeMonth(m.id)" aria-label="Supprimer ce mois" data-testid="month-delete"
-                                                    class="rounded-md px-1.5 py-1 text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
-                                                <i class="pi pi-trash text-[13px]" aria-hidden="true"></i></button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr class="text-[12.5px] font-semibold tabular-nums text-surface-600 dark:text-surface-300">
-                                    <td colspan="3" class="py-2.5 pr-3 text-right">Total planifié</td>
-                                    <td class="py-2.5 pr-3 text-right text-surface-900 dark:text-surface-0">{{ full(calendarTotal()) }} F</td>
-                                    <td colspan="2" class="py-2.5 pr-3">
-                                        @if (plan().dcaMonthly > 0) {
-                                            <span class="font-normal text-surface-500 dark:text-surface-400">
-                                                Budget DCA : {{ full(plan().dcaMonthly) }} F/mois · un total ambre dépasse le budget du mois</span>
+                    <div class="mt-4 space-y-3">
+                        @for (m of plan().months; track m.id) {
+                            <div data-testid="month-row"
+                                 class="rounded-xl border bg-surface-0 p-3.5 dark:bg-surface-900 sm:p-4"
+                                 [class]="m.done ? 'border-emerald-500/30' : 'border-surface-200 dark:border-surface-600'">
+                                <!-- En-tête du mois : coche · mois · total · suppression -->
+                                <div class="flex items-center gap-3">
+                                    <label class="flex h-11 w-11 shrink-0 -my-1.5 -ml-1.5 cursor-pointer items-center justify-center">
+                                        <input type="checkbox" [checked]="m.done" (change)="svc.patchMonth(m.id, { done: !m.done })"
+                                               [attr.aria-label]="'Mois ' + monthLabel(m.id) + ' exécuté'" data-testid="month-done"
+                                               class="h-5 w-5 cursor-pointer accent-emerald-600">
+                                    </label>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="text-[15px] font-bold capitalize tabular-nums"
+                                             [class]="m.done ? 'text-surface-400 line-through' : 'text-surface-900 dark:text-surface-0'">
+                                            {{ monthLabel(m.id) }}</div>
+                                        @if (m.done) { <div class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Exécuté</div> }
+                                    </div>
+                                    <div class="text-right">
+                                        <div data-testid="month-total" class="text-[15px] font-bold tabular-nums"
+                                             [class]="monthTotal(m) > plan().dcaMonthly && plan().dcaMonthly > 0
+                                                 ? 'text-amber-600 dark:text-amber-400'
+                                                 : 'text-surface-900 dark:text-surface-0'">
+                                            {{ monthTotal(m) > 0 ? full(monthTotal(m)) + ' F' : '—' }}</div>
+                                        @if (monthTotal(m) > plan().dcaMonthly && plan().dcaMonthly > 0) {
+                                            <div class="text-[10.5px] font-medium text-amber-600 dark:text-amber-400">dépasse le DCA</div>
                                         }
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                    </div>
+                                    <button type="button" (click)="svc.removeMonth(m.id)" aria-label="Supprimer ce mois" data-testid="month-delete"
+                                            class="flex h-11 w-11 shrink-0 -my-1.5 -mr-1.5 items-center justify-center rounded-lg text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
+                                        <i class="pi pi-trash text-[14px]" aria-hidden="true"></i></button>
+                                </div>
+
+                                <!-- Achats du mois -->
+                                @if (m.achats.length > 0) {
+                                    <ul class="mt-3 space-y-1.5">
+                                        @for (a of m.achats; track $index) {
+                                            <li class="flex items-center gap-2.5 rounded-lg bg-surface-50 py-1.5 pl-3 pr-1 dark:bg-surface-800"
+                                                [class]="m.done ? 'opacity-60' : ''">
+                                                <span class="w-14 shrink-0 font-mono text-[13px] font-bold text-brand-700 dark:text-brand-300">{{ a.ticker }}</span>
+                                                <span class="min-w-0 flex-1 text-[13px] tabular-nums text-surface-600 dark:text-surface-300">{{ a.qty }} × {{ full(a.prix) }} F</span>
+                                                <span class="text-[13px] font-semibold tabular-nums text-surface-900 dark:text-surface-0">{{ full(a.qty * a.prix) }} F</span>
+                                                <button type="button" (click)="svc.removeAchat(m.id, $index)" aria-label="Retirer cet achat"
+                                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-surface-400 transition-colors hover:bg-red-500/10 hover:text-red-600">
+                                                    <i class="pi pi-times text-[12px]" aria-hidden="true"></i></button>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+
+                                <!-- Ajout d'un achat -->
+                                @if (editingMonth() === m.id) {
+                                    <form (ngSubmit)="commitAchat(m.id)" data-testid="achat-form"
+                                          class="mt-3 rounded-xl border border-ochre-500/40 bg-ochre-500/[0.06] p-3">
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <label class="block">
+                                                <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Titre</span>
+                                                <input [(ngModel)]="achatTicker" name="aTicker" placeholder="SNTS" maxlength="6" required
+                                                       list="brvm-tickers" data-testid="achat-ticker" aria-label="Ticker" autocomplete="off" autocapitalize="characters"
+                                                       class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 font-mono text-base font-semibold uppercase text-surface-900
+                                                              placeholder:font-normal placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                                            </label>
+                                            <label class="block">
+                                                <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Quantité</span>
+                                                <input [(ngModel)]="achatQty" name="aQty" type="number" min="1" step="1" inputmode="numeric" placeholder="3" required
+                                                       data-testid="achat-qty" aria-label="Quantité"
+                                                       class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 px-2.5 text-base tabular-nums text-surface-900
+                                                              placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                                            </label>
+                                            <label class="block">
+                                                <span class="mb-1 block text-[10.5px] font-semibold uppercase tracking-[0.07em] text-surface-500 dark:text-surface-400">Prix unit.</span>
+                                                <div class="relative">
+                                                    <input [(ngModel)]="achatPrix" name="aPrix" type="number" min="1" step="5" inputmode="numeric" placeholder="29500" required
+                                                           data-testid="achat-prix" aria-label="Prix unitaire en FCFA"
+                                                           class="h-11 w-full rounded-lg border border-surface-200 bg-surface-0 py-0 pl-2.5 pr-7 text-base tabular-nums text-surface-900
+                                                                  placeholder:text-surface-300 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0 sm:text-[13px]">
+                                                    <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[12px] text-surface-400">F</span>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="mt-2.5 text-[13px] tabular-nums text-surface-500 dark:text-surface-400" data-testid="achat-subtotal">
+                                            @if (draftTotal() > 0) {
+                                                Sous-total : <strong class="text-surface-900 dark:text-surface-0">{{ full(draftTotal()) }} F</strong>
+                                            } @else {
+                                                Ticker, quantité et prix
+                                            }
+                                        </div>
+                                        <!-- Actions en bas de carte, pleine largeur : accessibles au pouce -->
+                                        <div class="mt-2.5 flex items-stretch gap-2">
+                                            <button type="button" (click)="editingMonth.set(null)" aria-label="Fermer le formulaire"
+                                                    class="h-11 shrink-0 rounded-lg px-3.5 text-[13px] font-medium text-surface-500 transition-colors hover:bg-surface-100 hover:text-surface-700 dark:hover:bg-surface-700">
+                                                Fermer</button>
+                                            <button type="submit" [disabled]="draftTotal() <= 0"
+                                                    class="h-11 flex-1 rounded-lg bg-ochre-500 text-[14px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400 disabled:cursor-not-allowed disabled:opacity-40">
+                                                <i class="pi pi-check mr-1 text-[11px]" aria-hidden="true"></i>Ajouter l'achat</button>
+                                        </div>
+                                    </form>
+                                } @else {
+                                    <button type="button" (click)="openAchatForm(m.id)"
+                                            class="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-surface-300 text-[13px] font-medium text-surface-500 transition-colors hover:border-ochre-400 hover:text-ochre-600 dark:border-surface-600 dark:text-surface-400">
+                                        <i class="pi pi-plus text-[11px]" aria-hidden="true"></i>Ajouter un achat</button>
+                                }
+
+                                <!-- Logique du mois (commit au blur : évite la réécriture à chaque frappe) -->
+                                <input [value]="m.note" (change)="svc.patchMonth(m.id, { note: $any($event.target).value })"
+                                       placeholder="Pourquoi ces achats ce mois-ci ?" aria-label="Logique du mois" data-testid="month-note"
+                                       class="mt-3 h-11 w-full rounded-lg border border-transparent bg-surface-50 px-3 text-base italic text-surface-600
+                                              placeholder:not-italic placeholder:text-surface-400 focus:border-ochre-500 focus:bg-surface-0 focus:outline-none dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-900 sm:text-[12.5px]">
+                            </div>
+                        }
+                    </div>
+                    <div class="mt-4 flex flex-col gap-1 border-t border-surface-200 pt-3 text-[13px] dark:border-surface-600 sm:flex-row sm:items-baseline sm:justify-between">
+                        <div class="font-semibold tabular-nums text-surface-900 dark:text-surface-0">
+                            Total planifié : {{ full(calendarTotal()) }} F</div>
+                        @if (plan().dcaMonthly > 0) {
+                            <div class="text-[12px] text-surface-500 dark:text-surface-400">
+                                Budget DCA : {{ full(plan().dcaMonthly) }} F/mois · un total ambre dépasse le budget du mois</div>
+                        }
                     </div>
                 }
             </div>
