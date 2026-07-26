@@ -69,74 +69,69 @@ interface PlanFeature {
             </div>
 
             <!-- Plan cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto w-full">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-4 max-w-5xl mx-auto w-full">
 
                 <!-- Gratuit -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                    <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mb-3">
-                            <i class="pi pi-chart-line text-surface-500 text-lg"></i>
-                        </div>
-                        <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">
+                <div class="relative rounded-2xl px-6 pt-9 pb-7 flex flex-col bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                    <div class="text-center">
+                        <div class="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] uppercase text-surface-500 dark:text-surface-400">
+                            <i class="pi pi-chart-line !text-[11px]" aria-hidden="true"></i>
                             {{ t('plans.free') }}
-                        </h3>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                            {{ t('plans.freeTagline') }}
-                        </p>
+                        </div>
+                        <div class="mt-6 flex items-baseline justify-center gap-1.5">
+                            <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().free.amount }}</span>
+                            <span class="text-surface-500 text-sm">FCFA{{ pricing().free.period }}</span>
+                        </div>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5">{{ pricing().free.sub }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.freeTagline') }}</p>
                     </div>
-                    <div class="relative flex items-baseline gap-1.5 mb-2">
-                        <span class="text-3xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().free.amount }}</span>
-                        <span class="text-surface-500 text-sm">FCFA{{ pricing().free.period }}</span>
-                    </div>
-                    <p class="relative text-surface-400 text-xs mb-5">{{ pricing().free.sub }}</p>
                     <button pButton
                             [label]="t('plans.currentPlan')"
                             [outlined]="true" [disabled]="true"
-                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold"></button>
-                    <ul class="relative space-y-3 flex-1">
+                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold"></button>
+                    <ul class="relative space-y-3.5 flex-1">
                         @for (f of freeFeatures(); track f) {
-                            <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300">
-                                <i class="pi pi-check text-xs text-positive shrink-0"></i>
+                            <li class="flex items-start gap-2.5 text-sm text-surface-700 dark:text-surface-300">
+                                <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
                                 {{ f }}
                             </li>
                         }
                     </ul>
                 </div>
 
-                <!-- Pro -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border-2 border-ochre-500">
-                    <div class="absolute top-3 right-3">
-                        <span class="px-2.5 py-1 rounded-full bg-ochre-500 text-warm-900 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
-                            <i class="pi pi-star-fill text-[8px]"></i>
-                            {{ t('plans.popular') }}
-                        </span>
-                    </div>
-                    <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center mb-3">
-                            <i class="pi pi-crown text-warm-900 text-lg"></i>
+                <!-- Pro: the highlighted plan, floating badge on the border -->
+                <div class="relative rounded-2xl px-6 pt-9 pb-7 flex flex-col bg-surface-0 dark:bg-surface-900 border-2 border-ochre-500">
+                    <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1.5 rounded-full
+                                 bg-surface-0 dark:bg-surface-900 border-2 border-ochre-500
+                                 text-ochre-600 dark:text-ochre-400 text-[10px] font-bold tracking-[0.15em] uppercase whitespace-nowrap
+                                 inline-flex items-center gap-1.5">
+                        <i class="pi pi-star-fill !text-[8px]" aria-hidden="true"></i>
+                        {{ t('plans.popular') }}
+                    </span>
+                    <div class="text-center">
+                        <div class="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] uppercase text-ochre-600 dark:text-ochre-400">
+                            <i class="pi pi-crown !text-[11px]" aria-hidden="true"></i>
+                            Pro
                         </div>
-                        <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">Pro</h3>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                            {{ t('plans.proTagline') }}
-                        </p>
+                        <div class="mt-6 flex items-baseline justify-center gap-1.5">
+                            <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().pro.amount }}</span>
+                            <span class="text-surface-500 text-sm">FCFA{{ pricing().pro.period }}</span>
+                        </div>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5">{{ pricing().pro.sub }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.proTagline') }}</p>
                     </div>
-                    <div class="relative flex items-baseline gap-1.5 mb-2">
-                        <span class="text-3xl font-bold text-ochre-500 dark:text-ochre-400">{{ pricing().pro.amount }}</span>
-                        <span class="text-surface-500 text-sm">FCFA{{ pricing().pro.period }}</span>
-                    </div>
-                    <p class="relative text-surface-400 text-xs mb-5">{{ pricing().pro.sub }}</p>
                     <button pButton
                             [label]="t('plans.comingSoon')"
                             [disabled]="true" icon="pi pi-clock"
-                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-ochre-500 hover:!bg-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
-                    <ul class="relative space-y-3 flex-1">
-                        <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
-                            <i class="pi pi-check text-xs text-ochre-500 shrink-0"></i>
+                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 opacity-70"></button>
+                    <ul class="relative space-y-3.5 flex-1">
+                        <li class="flex items-start gap-2.5 text-sm text-surface-900 dark:text-surface-0 font-semibold">
+                            <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
                             {{ t('plans.everythingFree') }}
                         </li>
                         @for (f of proFeatures(); track f) {
-                            <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300">
-                                <i class="pi pi-check text-xs text-ochre-500 shrink-0"></i>
+                            <li class="flex items-start gap-2.5 text-sm text-surface-700 dark:text-surface-300">
+                                <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
                                 {{ f }}
                             </li>
                         }
@@ -144,39 +139,31 @@ interface PlanFeature {
                 </div>
 
                 <!-- Premium -->
-                <div class="relative overflow-hidden rounded-2xl p-6 flex flex-col bg-surface-0 dark:bg-surface-900 border border-brand-300 dark:border-brand-500/40">
-                    <div class="absolute top-3 right-3">
-                        <span class="px-2.5 py-1 rounded-full bg-brand-700 text-white text-[10px] font-bold tracking-wider uppercase whitespace-nowrap inline-flex items-center gap-1">
-                            <i class="pi pi-bolt text-[8px]"></i>
-                            {{ t('plans.bestValue') }}
-                        </span>
-                    </div>
-                    <div class="relative mb-5">
-                        <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center mb-3">
-                            <i class="pi pi-bolt text-white dark:text-warm-900 text-lg"></i>
+                <div class="relative rounded-2xl px-6 pt-9 pb-7 flex flex-col bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                    <div class="text-center">
+                        <div class="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] uppercase text-brand-700 dark:text-brand-300">
+                            <i class="pi pi-bolt !text-[11px]" aria-hidden="true"></i>
+                            Premium
                         </div>
-                        <h3 class="font-bold text-lg text-surface-900 dark:text-surface-0">Premium</h3>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">
-                            {{ t('plans.premiumTagline') }}
-                        </p>
+                        <div class="mt-6 flex items-baseline justify-center gap-1.5">
+                            <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().premium.amount }}</span>
+                            <span class="text-surface-500 text-sm">FCFA{{ pricing().premium.period }}</span>
+                        </div>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5">{{ pricing().premium.sub }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.premiumTagline') }}</p>
                     </div>
-                    <div class="relative flex items-baseline gap-1.5 mb-2">
-                        <span class="text-3xl font-bold text-brand-700 dark:text-brand-300">{{ pricing().premium.amount }}</span>
-                        <span class="text-surface-500 text-sm">FCFA{{ pricing().premium.period }}</span>
-                    </div>
-                    <p class="relative text-surface-400 text-xs mb-5">{{ pricing().premium.sub }}</p>
                     <button pButton
                             [label]="t('plans.comingSoon')"
                             [disabled]="true" icon="pi pi-clock"
-                            class="relative w-full mb-6 !rounded-xl !py-2.5 !font-semibold !bg-ochre-500 hover:!bg-ochre-400 !border-0 !text-warm-900 opacity-60"></button>
-                    <ul class="relative space-y-3 flex-1">
-                        <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300 font-medium">
-                            <i class="pi pi-check text-xs text-brand-700 dark:text-brand-300 shrink-0"></i>
+                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold !bg-brand-700 !border-0 !text-white dark:!bg-brand-300 dark:!text-warm-900 opacity-70"></button>
+                    <ul class="relative space-y-3.5 flex-1">
+                        <li class="flex items-start gap-2.5 text-sm text-surface-900 dark:text-surface-0 font-semibold">
+                            <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
                             {{ t('plans.everythingPro') }}
                         </li>
                         @for (f of premiumFeatures(); track f) {
-                            <li class="flex items-center gap-2.5 text-sm text-surface-700 dark:text-surface-300">
-                                <i class="pi pi-check text-xs text-brand-700 dark:text-brand-300 shrink-0"></i>
+                            <li class="flex items-start gap-2.5 text-sm text-surface-700 dark:text-surface-300">
+                                <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
                                 {{ f }}
                             </li>
                         }
