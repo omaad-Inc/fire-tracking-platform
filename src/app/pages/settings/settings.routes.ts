@@ -2,30 +2,26 @@ import { Routes } from '@angular/router';
 import { Settings } from './settings';
 import { AccountSettings } from './components/account';
 import { SecuritySettings } from './components/security';
+import { ConnectionsSettings } from './components/connections';
 import { PreferencesSettings } from './components/preferences';
 import { NotificationsSettings } from './components/notifications';
 import { HelpSettings } from './components/help';
-import { PlansSettings } from './components/plans';
-import { ConnectionsSettings } from './components/connections';
 
-// FireSettings is still imported by /pages/fire (the deep-dive page); we just
-// no longer expose it as a /settings/fire route, FIRE configuration happens
-// inline on /pages/fire to avoid two surfaces for the same thing.
-
+// Settings shell (S9 redesign, Finary-benchmarked): immersive page with a
+// section rail; ONE section component per route. /settings lands on account.
+// Plans remains a standalone page at /pages/plans (linked from the rail).
 export default [
     {
         path: '',
         component: Settings,
         children: [
-            // No default redirect, mobile shows the nav list, desktop shows a placeholder
-            { path: 'account',     component: AccountSettings     },
-            { path: 'security',    component: SecuritySettings    },
-            { path: 'preferences', component: PreferencesSettings },
+            { path: '', redirectTo: 'account', pathMatch: 'full' },
+            { path: 'account',       component: AccountSettings       },
+            { path: 'security',      component: SecuritySettings      },
+            { path: 'connections',   component: ConnectionsSettings   },
+            { path: 'preferences',   component: PreferencesSettings   },
             { path: 'notifications', component: NotificationsSettings },
-            { path: 'connections', component: ConnectionsSettings },
-            { path: 'help',        component: HelpSettings        },
-            { path: 'plans',       component: PlansSettings       },
+            { path: 'help',          component: HelpSettings          },
         ]
     }
 ] as Routes;
-

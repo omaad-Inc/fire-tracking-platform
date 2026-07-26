@@ -78,7 +78,7 @@ export class AppLayout implements OnInit, OnDestroy {
     /** Immersive (full-screen, chrome-less) routes: the add-asset flow. Kept a
      *  simple URL match so no route-data plumbing is needed. */
     immersive = signal(false);
-    private static readonly IMMERSIVE_URLS = ['/patrimoine/add-asset', '/patrimoine/connect-broker'];
+    private static readonly IMMERSIVE_URLS = ['/patrimoine/add-asset', '/patrimoine/connect-broker', '/pages/settings', '/pages/plans'];
     private computeImmersive(url: string): boolean {
         return AppLayout.IMMERSIVE_URLS.some(u => url.includes(u));
     }

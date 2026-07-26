@@ -17,7 +17,17 @@ interface PlanFeature {
     standalone: true,
     imports: [CommonModule, ButtonModule, DividerModule],
     template: `
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-6 max-w-6xl mx-auto min-h-screen pt-2 sm:pt-6">
+
+            <!-- Immersive close (the page holds the whole app, Finary-style) -->
+            <div class="flex justify-end">
+                <button (click)="closePage()" [attr.aria-label]="t('common.close')"
+                        class="w-10 h-10 flex items-center justify-center rounded-full
+                               bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700
+                               transition-all shrink-0">
+                    <i class="pi pi-times text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
+                </button>
+            </div>
 
             <!-- Header -->
             <div class="text-center mb-2">
@@ -244,6 +254,17 @@ export class PlansSettings {
     private router = inject(Router);
 
     t(key: string): string { return this.i18n.t(key); }
+
+    /** The page holds the whole app (immersive): X returns to where the user
+     *  came from, falling back to the app home on a direct load. */
+    closePage(): void {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            const lang = this.router.url.match(/^\/(fr|en)(\/|$)/)?.[1] ?? 'fr';
+            this.router.navigate(['/', lang]);
+        }
+    }
 
     billing = signal<'monthly' | 'annual'>('annual');
 

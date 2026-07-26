@@ -1,150 +1,106 @@
-import { Component, OnInit, signal, inject, computed, DestroyRef } from '@angular/core';
+import { Component, OnInit, DestroyRef, signal, inject, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { filter } from 'rxjs/operators';
 import { I18nService } from '../../i18n/i18n.service';
 import { TokenService } from '../../core/services/token.service';
 import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 
+/**
+ * Settings shell (S9, Finary-benchmarked, same immersive treatment as
+ * add-asset): full-screen page with a close X, a left rail on desktop that
+ * collapses to horizontal chips on mobile, and ONE section per route in the
+ * content outlet (account, security, connections, preferences,
+ * notifications, help). /settings redirects to /settings/account.
+ */
 @Component({
     selector: 'app-settings',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule],
+    imports: [CommonModule, RouterModule],
     template: `
-        <div class="min-h-screen max-w-3xl mx-auto">
+        <div class="min-h-screen max-w-6xl mx-auto px-1 sm:px-4">
 
-            <!-- ═══════════════════════════════════════════
-                 MASTER VIEW, settings menu list
-                 Visible when NO sub-route is active
-            ═══════════════════════════════════════════ -->
-            @if (!hasActiveChild()) {
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-6">
-                    <button (click)="goBack()" [attr.aria-label]="t('common.back')"
-                            class="w-10 h-10 flex items-center justify-center rounded-full
-                                   bg-surface-100 dark:bg-surface-800 transition-all shrink-0">
-                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
-                    </button>
-                    <a routerLink="help"
-                       class="flex items-center gap-1.5 px-4 py-2 rounded-full border border-surface-300 dark:border-surface-600
-                              text-surface-700 dark:text-surface-200 text-sm font-medium
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all">
-                        {{ t('settings.getHelp') }}
-                        <i class="pi pi-question-circle text-xs"></i>
-                    </a>
-                </div>
-
-                <!-- Profile section -->
-                <div class="flex items-center gap-4 mb-6 px-1">
-                    <div class="w-16 h-16 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0">
+            <!-- Header: profile + title + close -->
+            <div class="flex items-start justify-between gap-4 pt-2 sm:pt-6 mb-6 sm:mb-10">
+                <div class="flex items-center gap-4 min-w-0">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0">
                         @if (avatarUrl()) {
-                            <img [src]="avatarUrl()" alt="Profile" class="w-full h-full object-cover">
+                            <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover">
                         } @else {
-                            <span class="text-2xl font-bold text-surface-500">{{ userInitials() }}</span>
+                            <span class="text-xl font-bold text-surface-500">{{ userInitials() }}</span>
                         }
                     </div>
                     <div class="min-w-0">
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0 truncate">{{ userName() }}</h2>
-                        <p class="text-sm text-surface-500 dark:text-surface-400">
-                            {{ t('settings.memberSince', { date: memberSince() }) }}
+                        <h1 class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 truncate">{{ t('settings.title') }}</h1>
+                        <p class="text-sm text-surface-500 dark:text-surface-400 truncate">
+                            {{ userName() }} · {{ t('settings.memberSince', { date: memberSince() }) }}
                         </p>
                     </div>
                 </div>
+                <button (click)="close()" [attr.aria-label]="t('common.close')"
+                        class="w-10 h-10 flex items-center justify-center rounded-full
+                               bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700
+                               transition-all shrink-0">
+                    <i class="pi pi-times text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
+                </button>
+            </div>
 
-                <!-- PRO upgrade banner -->
-                <a [routerLink]="['/', lang, 'pages', 'plans']"
-                   class="block mb-8 p-4 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
-                          border border-ochre-200 dark:border-ochre-700/40
-                          hover:shadow-sm transition-all">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
-                            <i class="pi pi-crown text-warm-900"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">{{ t('settings.upgradeProTitle') }}</p>
-                            <p class="text-xs text-surface-600 dark:text-ochre-400/70">{{ t('settings.upgradeProDesc') }}</p>
-                        </div>
-                        <i class="pi pi-chevron-right text-ochre-500 dark:text-ochre-400 text-xs shrink-0"></i>
-                    </div>
-                </a>
+            <div class="flex flex-col lg:flex-row gap-4 lg:gap-16">
 
-                <!-- Section: Mon Omaad -->
-                <h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wide mb-3 px-1">{{ t('settings.myOmaad') }}</h3>
-                <div class="mb-8 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 overflow-hidden divide-y divide-surface-100 dark:divide-surface-800">
-                    @for (item of mainMenuItems; track item.route) {
-                        <a [routerLink]="item.route"
-                           class="flex items-center gap-4 py-4 px-4 cursor-pointer
-                                  hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all">
-                            <div class="w-9 h-9 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                                <i class="pi {{ item.icon }} text-brand-700 dark:text-ochre-400 text-sm"></i>
-                            </div>
-                            <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ item.label }}</span>
-                            <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
+                <!-- Section rail: horizontal chips on mobile, sticky column on desktop -->
+                <nav class="w-full lg:w-60 shrink-0 lg:sticky lg:top-8 lg:self-start
+                            sticky top-0 z-10 -mx-1 px-1 py-2 lg:py-0 lg:m-0
+                            bg-surface-50/95 dark:bg-surface-950/95 backdrop-blur lg:bg-transparent lg:backdrop-blur-none"
+                     [attr.aria-label]="t('settings.title')">
+                    <div class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
+                        @for (sec of sections; track sec.key) {
+                            <a [routerLink]="['/', lang, 'pages', 'settings', sec.key]"
+                               [attr.aria-current]="activeSection() === sec.key ? 'page' : null"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left shrink-0 lg:w-full"
+                               [ngClass]="activeSection() === sec.key
+                                   ? 'bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-ochre-400 font-semibold'
+                                   : 'text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700'">
+                                <i class="pi {{ sec.icon }} !text-sm shrink-0" aria-hidden="true"></i>
+                                <span class="text-sm whitespace-nowrap">{{ sec.label() }}</span>
+                            </a>
+                        }
+                        <!-- Pro plans: separate page, Finary "Premium" group -->
+                        <a [routerLink]="['/', lang, 'pages', 'plans']"
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left shrink-0 lg:w-full
+                                  text-ochre-700 dark:text-ochre-400 hover:bg-ochre-100 dark:hover:bg-ochre-900/20">
+                            <i class="pi pi-crown !text-sm shrink-0" aria-hidden="true"></i>
+                            <span class="text-sm whitespace-nowrap font-medium">{{ t('settings.upgradeProTitle') }}</span>
                         </a>
-                    }
-                </div>
+                    </div>
 
-                <!-- Section: Aide -->
-                <h3 class="text-xs font-semibold text-surface-500 uppercase tracking-wide mb-3 px-1">{{ t('settings.help') }}</h3>
-                <div class="mb-8 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 overflow-hidden">
-                    <a routerLink="help"
-                       class="flex items-center gap-4 py-4 px-4 cursor-pointer
-                              hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-all">
-                        <div class="w-9 h-9 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-question-circle text-brand-700 dark:text-ochre-400 text-sm"></i>
-                        </div>
-                        <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ t('settings.getHelp') }}</span>
-                        <i class="pi pi-chevron-right text-surface-400 text-xs"></i>
-                    </a>
-                </div>
+                    <!-- Desktop rail footer: logout + version -->
+                    <div class="hidden lg:block mt-8 px-3">
+                        <button (click)="logout()"
+                                class="text-sm font-medium text-surface-600 dark:text-surface-300 hover:text-negative transition-colors">
+                            {{ t('settings.account.logoutButton') }}
+                        </button>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-3">Omaad · v{{ appVersion }}</p>
+                    </div>
+                </nav>
 
-                <!-- Logout -->
-                <div class="mb-6">
-                    <button (click)="logout()"
-                            class="px-5 py-2.5 rounded-xl bg-surface-200 dark:bg-surface-800
-                                   text-surface-700 dark:text-surface-300 text-sm font-medium
-                                   hover:bg-surface-300 dark:hover:bg-surface-700 transition-colors">
-                        {{ t('settings.account.logoutButton') }}
-                    </button>
-                </div>
+                <!-- Active section -->
+                <div class="flex-1 min-w-0 pb-10">
+                    <router-outlet />
 
-                <!-- Version -->
-                <div class="text-center pb-8">
-                    <p class="text-xs text-surface-400 dark:text-surface-500">
-                        Omaad · v{{ appVersion }}
-                    </p>
+                    <!-- Mobile footer: logout + version -->
+                    <div class="lg:hidden text-center pt-8 pb-6">
+                        <button (click)="logout()"
+                                class="px-5 py-2.5 rounded-xl bg-surface-200 dark:bg-surface-800
+                                       text-surface-700 dark:text-surface-300 text-sm font-medium
+                                       hover:bg-surface-300 dark:hover:bg-surface-700 transition-colors">
+                            {{ t('settings.account.logoutButton') }}
+                        </button>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-4">Omaad · v{{ appVersion }}</p>
+                    </div>
                 </div>
-            }
-
-            <!-- ═══════════════════════════════════════════
-                 DETAIL VIEW, sub-page content
-                 Visible when a sub-route IS active
-            ═══════════════════════════════════════════ -->
-            @if (hasActiveChild()) {
-                <!-- Sub-page header with back arrow -->
-                <div class="flex items-center gap-3 mb-5">
-                    <button (click)="goToSettingsNav()" [attr.aria-label]="t('common.back')"
-                            class="w-10 h-10 flex items-center justify-center rounded-full
-                                   bg-surface-100 dark:bg-surface-800 transition-all shrink-0">
-                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
-                    </button>
-                    <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 flex-1 truncate">
-                        {{ activePageLabel() }}
-                    </h1>
-                    <button (click)="goBack()" [attr.aria-label]="t('common.close')"
-                            class="w-10 h-10 flex items-center justify-center rounded-full
-                                   bg-surface-100 dark:bg-surface-800
-                                   hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-all shrink-0"
-                            [title]="t('common.close')">
-                        <i class="pi pi-times text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
-                    </button>
-                </div>
-
-                <router-outlet />
-            }
+            </div>
         </div>
     `
 })
@@ -157,7 +113,16 @@ export class Settings implements OnInit {
     private authService  = inject(AuthService);
 
     lang = 'fr';
-    hasActiveChild = signal(false);
+    activeSection = signal('account');
+
+    readonly sections = [
+        { key: 'account',       icon: 'pi-user',   label: () => this.t('menu.myAccount') },
+        { key: 'security',      icon: 'pi-shield', label: () => this.t('menu.security') },
+        { key: 'connections',   icon: 'pi-link',   label: () => this.t('settings.myConnections') },
+        { key: 'preferences',   icon: 'pi-cog',    label: () => this.t('menu.preferences') },
+        { key: 'notifications', icon: 'pi-bell',   label: () => this.t('menu.notifications') },
+        { key: 'help',          icon: 'pi-question-circle', label: () => this.t('settings.getHelp') },
+    ];
 
     private user = this.tokenService.user;
 
@@ -196,48 +161,22 @@ export class Settings implements OnInit {
         return d.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
     });
 
-    get mainMenuItems() {
-        return [
-            { route: 'account',     icon: 'pi-user',      label: this.t('menu.myAccount') },
-            { route: 'security',    icon: 'pi-shield',    label: this.t('menu.security') },
-            { route: 'connections', icon: 'pi-link',      label: this.t('settings.myConnections') },
-            { route: 'preferences', icon: 'pi-cog',       label: this.t('menu.preferences') },
-            { route: 'notifications', icon: 'pi-bell',    label: this.t('menu.notifications') },
-        ];
-    }
-
     ngOnInit() {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.i18n.setLang(this.lang as 'fr' | 'en');
-        this.updateActiveChild(this.router.url);
+        this.syncActiveSection(this.router.url);
         this.router.events
             .pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
-            .subscribe((e: NavigationEnd) => this.updateActiveChild(e.urlAfterRedirects));
+            .subscribe((e: NavigationEnd) => this.syncActiveSection(e.urlAfterRedirects));
     }
 
-    private updateActiveChild(url: string) {
-        this.hasActiveChild.set(/\/settings\/.+/.test(url));
+    private syncActiveSection(url: string) {
+        const match = url.match(/\/settings\/([a-z-]+)/);
+        this.activeSection.set(match ? match[1] : 'account');
     }
 
-    activePageLabel(): string {
-        const url = this.router.url;
-        if (url.includes('/security'))    return this.t('menu.security');
-        if (url.includes('/account'))     return this.t('menu.myAccount');
-        if (url.includes('/connections')) return 'Mes connexions';
-        if (url.includes('/preferences')) return this.t('menu.preferences');
-        if (url.includes('/fire'))        return 'Objectif Financier';
-        if (url.includes('/plans'))       return 'Omaad Pro';
-        if (url.includes('/help'))        return this.t('settings.getHelp');
-        return this.t('settings.title');
-    }
-
-    goToSettingsNav() {
-        this.router.navigate(['/', this.lang, 'pages', 'settings']);
-        this.hasActiveChild.set(false);
-    }
-
-    goBack() {
+    close() {
         this.router.navigate(['/', this.lang]);
     }
 

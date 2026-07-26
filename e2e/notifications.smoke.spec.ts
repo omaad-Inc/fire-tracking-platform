@@ -57,9 +57,12 @@ test('notifications: email opt-in persists through the API and reverts', async (
     await expect(emailToggle).not.toBeChecked({ timeout: 20_000 });
 });
 
-test('notifications: settings menu links to the page', async ({ page }) => {
+test('notifications: settings rail navigates to the section page', async ({ page }) => {
     await login(page);
     await page.goto('/fr/pages/settings');
+    // /settings redirects to the account section; the rail links to notifications.
+    await expect(page).toHaveURL(/settings\/account/);
     await page.getByRole('link', { name: 'Notifications' }).click();
     await expect(page).toHaveURL(/settings\/notifications/);
+    await expect(page.locator('#notif-email-label')).toBeVisible();
 });
