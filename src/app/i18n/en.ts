@@ -83,6 +83,7 @@ export const EN: Dict = {
     notFound: 'Asset not found',
     backToPortfolio: 'Back to portfolio',
     sincePurchase: 'since purchase',
+    brvmClose: 'BRVM price, close of {{date}}',
     monthlyContribution: 'Monthly contribution',
     perCycle: 'per cycle',
     participants: 'Participants',

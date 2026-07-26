@@ -46,6 +46,8 @@ export interface Asset {
     rental_income: number | null;
     gain_loss: number | null;
     gain_loss_percent: number | null;
+    // Date of the BRVM close behind current_value (tickered BRVM stocks only)
+    quote_as_of: string | null;
     // Real estate specific
     surface_m2: number | null;
     price_per_m2_purchase: number | null;

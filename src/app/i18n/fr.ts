@@ -81,6 +81,7 @@ export const FR = {
     notFound: 'Actif introuvable',
     backToPortfolio: 'Retour au patrimoine',
     sincePurchase: 'depuis l\'achat',
+    brvmClose: 'Cours BRVM, clôture du {{date}}',
     monthlyContribution: 'Mise mensuelle',
     perCycle: 'par cycle',
     participants: 'Participants',
