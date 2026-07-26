@@ -152,36 +152,8 @@ import { ApiService } from '../../../core/services/api.service';
 
             <p-divider />
 
-            <!-- Notifications -->
-            <div class="relative mb-8">
-                <div class="flex items-center gap-3 mb-6">
-                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.notifications') }}</h2>
-                    <span class="px-2.5 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wide">{{ t('settings.preferences.comingSoonBadge') }}</span>
-                </div>
-
-                <div class="space-y-3 opacity-50 pointer-events-none select-none" [title]="t('settings.preferences.comingSoonTitle')">
-                    @for (notif of notificationItems; track notif.key) {
-                        <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                                    <i [class]="'pi ' + notif.icon + ' text-brand-700 dark:text-ochre-400'"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium text-surface-900 dark:text-surface-0">{{ t(notif.label) }}</p>
-                                    <p class="text-sm text-surface-500 dark:text-surface-400">{{ t(notif.desc) }}</p>
-                                </div>
-                            </div>
-                            <p-toggleswitch [ngModel]="false" [disabled]="true" />
-                        </div>
-                    }
-                </div>
-                <p class="text-xs text-surface-400 dark:text-surface-500 mt-3 flex items-center gap-1.5">
-                    <i class="pi pi-info-circle"></i>
-                    {{ t('settings.preferences.notificationsHint') }}
-                </p>
-            </div>
-
-            <p-divider />
+            <!-- Notifications moved to their own Settings page (S9-B3):
+                 /settings/notifications, one surface per concern. -->
 
             <!-- Data Export -->
             <div class="relative">
@@ -261,14 +233,6 @@ export class PreferencesSettings implements OnInit {
 
     selectedLanguage = 'fr';
     selectedCurrency = 'XOF';
-
-    // Notification items, disabled/coming soon (no backend support yet)
-    readonly notificationItems = [
-        { key: 'email',   label: 'settings.preferences.emailNotifications',  desc: 'settings.preferences.emailNotificationsDesc',  icon: 'pi-envelope',              bg: 'bg-brand-700 dark:bg-brand-300'   },
-        { key: 'push',    label: 'settings.preferences.pushNotifications',   desc: 'settings.preferences.pushNotificationsDesc',   icon: 'pi-bell',                  bg: 'bg-positive'  },
-        { key: 'monthly', label: 'settings.preferences.monthlyReports',      desc: 'settings.preferences.monthlyReportsDesc',      icon: 'pi-chart-line',            bg: 'bg-ochre-500'  },
-        { key: 'alert',   label: 'settings.preferences.expenseAlerts',       desc: 'settings.preferences.expenseAlertsDesc',       icon: 'pi-exclamation-triangle',  bg: 'bg-negative'     },
-    ];
 
     ngOnInit() {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);

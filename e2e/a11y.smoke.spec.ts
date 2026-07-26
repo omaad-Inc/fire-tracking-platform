@@ -39,6 +39,32 @@ for (const [name, url] of PAGES) {
     });
 }
 
+// ── Authed surface: Settings → Notifications (S9-B3) ────────────────
+// Same ZERO critical + ZERO serious gate: toggles are labelled via
+// ariaLabelledBy, quiet-hours inputs have real <label for>.
+
+test('a11y: notifications settings has no critical violations', async ({ page }) => {
+    await page.goto('/fr/auth/login');
+    await page.locator('#email').fill(EMAIL);
+    await page.locator('#password input').fill(PASSWORD);
+    await page.locator('button[type=submit]').first().click();
+    await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
+    await page.waitForFunction(() => !!localStorage.getItem('omaad_user'), null, { timeout: 15_000 });
+
+    await page.goto('/fr/pages/settings/notifications');
+    await page.waitForSelector('#notif-email-label', { timeout: 15_000 });
+    await page.waitForTimeout(600);
+    const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+
+    const critical = results.violations.filter(v => v.impact === 'critical');
+    const serious = results.violations.filter(v => v.impact === 'serious');
+    if (serious.length) {
+        console.log(`  [notifications] serious: ${serious.map(v => `${v.id}×${v.nodes.length}`).join(', ')}`);
+    }
+    expect(critical.map(v => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+    if (GATE_SERIOUS) expect(serious.map(v => v.id)).toEqual([]);
+});
+
 // ── Authed surface: the add-asset wizard (S7b PA-5) ─────────────────
 // Same ZERO critical + ZERO serious gate as the public pages. The wizard
 // was cleaned in PA-2.1 (label association, contrast, empty-heading) and

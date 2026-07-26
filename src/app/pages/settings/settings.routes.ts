@@ -3,6 +3,7 @@ import { Settings } from './settings';
 import { AccountSettings } from './components/account';
 import { SecuritySettings } from './components/security';
 import { PreferencesSettings } from './components/preferences';
+import { NotificationsSettings } from './components/notifications';
 import { HelpSettings } from './components/help';
 import { PlansSettings } from './components/plans';
 import { ConnectionsSettings } from './components/connections';
@@ -20,6 +21,7 @@ export default [
             { path: 'account',     component: AccountSettings     },
             { path: 'security',    component: SecuritySettings    },
             { path: 'preferences', component: PreferencesSettings },
+            { path: 'notifications', component: NotificationsSettings },
             { path: 'connections', component: ConnectionsSettings },
             { path: 'help',        component: HelpSettings        },
             { path: 'plans',       component: PlansSettings       },

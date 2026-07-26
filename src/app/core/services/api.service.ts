@@ -822,6 +822,25 @@ export interface BrokerConnection {
 }
 
 // ============================================
+// NOTIFICATIONS (S9-B3)
+// ============================================
+export interface NotificationPreferences {
+    email_enabled: boolean;
+    push_enabled: boolean;
+    signal_budget: boolean;
+    signal_tontine: boolean;
+    quiet_hours_start: string;   // "HH:MM" local time
+    quiet_hours_end: string;
+    timezone: string;            // IANA name
+}
+
+export interface PushDevice {
+    id: number;
+    endpoint: string;
+    user_agent: string | null;
+}
+
+// ============================================
 // API SERVICE
 // ============================================
 @Injectable({
@@ -1361,6 +1380,33 @@ export class ApiService {
     // ── Coaching (Sprint 6) ─────────────────────────────────────────────────
     getCoachingRecommendations(): Observable<CoachingResponse> {
         return this.http.get<CoachingResponse>(`${this.apiUrl}/coaching/recommendations`);
+    }
+
+    // ===== Notifications (S9-B3) =====
+
+    getNotificationPreferences(): Observable<NotificationPreferences> {
+        return this.http.get<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`);
+    }
+
+    updateNotificationPreferences(changes: Partial<NotificationPreferences>): Observable<NotificationPreferences> {
+        return this.http.put<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`, changes);
+    }
+
+    getVapidPublicKey(): Observable<{ public_key: string }> {
+        return this.http.get<{ public_key: string }>(`${this.apiUrl}/notifications/vapid-public-key`);
+    }
+
+    registerPushSubscription(subscription: object, userAgent: string): Observable<PushDevice> {
+        return this.http.post<PushDevice>(`${this.apiUrl}/notifications/push-subscription`,
+            { ...subscription, user_agent: userAgent });
+    }
+
+    listPushDevices(): Observable<PushDevice[]> {
+        return this.http.get<PushDevice[]>(`${this.apiUrl}/notifications/push-subscriptions`);
+    }
+
+    removePushSubscription(endpoint: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/notifications/push-subscription/delete`, { endpoint });
     }
 }
 
