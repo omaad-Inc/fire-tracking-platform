@@ -43,9 +43,39 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
             </div>
         </header>
 
+        <!-- ═══ COMMENT UTILISER CET OUTIL ═══ -->
+        <section aria-label="Comment utiliser cet outil" class="mt-2 rounded-2xl border border-ochre-500/30 bg-ochre-500/[0.05] p-5 sm:p-6">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h2 class="text-[16px] font-bold text-surface-900 dark:text-surface-0">Comment utiliser cet outil</h2>
+                <span class="text-[12px] text-surface-500 dark:text-surface-400">4 étapes · 2 minutes pour démarrer</span>
+            </div>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                @for (s of guideSteps; track s.n) {
+                    <button type="button" (click)="scrollToSection(s.anchor)"
+                            class="group flex flex-col rounded-xl border border-surface-200 bg-surface-0 p-4 text-left transition-colors hover:border-ochre-400 dark:border-surface-600 dark:bg-surface-900">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-ochre-500 font-mono text-[13px] font-bold text-warm-900">{{ s.n }}</span>
+                        <span class="mt-2.5 text-[14px] font-semibold text-surface-900 dark:text-surface-0">{{ s.title }}</span>
+                        <span class="mt-1 flex-1 text-[12.5px] leading-relaxed text-surface-500 dark:text-surface-400">{{ s.desc }}</span>
+                        <span class="mt-2.5 inline-flex items-center gap-1 text-[12px] font-medium text-ochre-600 group-hover:underline dark:text-ochre-400">
+                            {{ s.cta }} <i class="pi pi-arrow-down text-[10px]" aria-hidden="true"></i></span>
+                    </button>
+                }
+            </div>
+            <p class="mt-4 text-[12.5px] leading-relaxed text-surface-500 dark:text-surface-400">
+                Ensuite, deux compagnons de route : l'onglet
+                <a routerLink="/outils/strategie-brvm/detachements" class="font-semibold text-ochre-600 hover:underline dark:text-ochre-400">Détachements</a>
+                te dit quelle société verse un dividende et à quelle date, et le
+                <a routerLink="/outils/strategie-brvm/simulateur" class="font-semibold text-ochre-600 hover:underline dark:text-ochre-400">Simulateur</a>
+                projette où ton plan te mène dans 10, 15 ou 20 ans.
+            </p>
+        </section>
+
         <!-- ═══ LA MÉTHODE (template) ═══ -->
-        <section class="mt-6 rounded-2xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800 sm:p-8">
-            <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0">La méthode Core / Satellite, en 4 phases</h2>
+        <section id="methode" class="mt-6 scroll-mt-20 rounded-2xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800 sm:p-8">
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                <span class="rounded-full bg-ochre-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ochre-700 dark:text-ochre-400">Étape 1</span>
+                <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0">La méthode Core / Satellite, en 4 phases</h2>
+            </div>
             <p class="mt-2 max-w-[70ch] text-[14px] leading-relaxed text-surface-600 dark:text-surface-300">
                 Le cœur défensif porte le rendement et n'est jamais vendu (rééquilibrage par dilution) ; la poche
                 satellite, plafonnée, saisit les fenêtres. Les phases ne font que doser le ratio entre les deux à
@@ -102,22 +132,31 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
             }
 
             <!-- Paramètres -->
-            <div class="mt-4 grid gap-4 rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800 sm:grid-cols-3">
-                <label class="block">
-                    <span class="text-[12px] font-medium uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">DCA mensuel (FCFA)</span>
-                    <input type="number" min="0" step="5000" [ngModel]="plan().dcaMonthly" (ngModelChange)="svc.update({ dcaMonthly: num($event) })"
-                           class="mt-1.5 w-full rounded-xl border border-surface-200 bg-surface-0 px-3 py-2.5 text-[15px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                </label>
-                <label class="block">
-                    <span class="text-[12px] font-medium uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">Objectif net (FCFA/mois)</span>
-                    <input type="number" min="0" step="25000" [ngModel]="plan().targetMonthlyIncome" (ngModelChange)="svc.update({ targetMonthlyIncome: num($event) })"
-                           class="mt-1.5 w-full rounded-xl border border-surface-200 bg-surface-0 px-3 py-2.5 text-[15px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                </label>
-                <label class="block">
-                    <span class="text-[12px] font-medium uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">IRVM (%)</span>
-                    <input type="number" min="0" max="30" [ngModel]="plan().taxRatePct" (ngModelChange)="svc.update({ taxRatePct: num($event) })"
-                           class="mt-1.5 w-full rounded-xl border border-surface-200 bg-surface-0 px-3 py-2.5 text-[15px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
-                </label>
+            <div id="parametres" class="mt-4 scroll-mt-20 rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
+                <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                    <span class="rounded-full bg-ochre-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ochre-700 dark:text-ochre-400">Étape 2</span>
+                    <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Mes paramètres</h3>
+                </div>
+                <div class="mt-4 grid gap-4 sm:grid-cols-3">
+                    <label class="block">
+                        <span class="text-[12px] font-medium uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">DCA mensuel (FCFA)</span>
+                        <input type="number" min="0" step="5000" [ngModel]="plan().dcaMonthly" (ngModelChange)="svc.update({ dcaMonthly: num($event) })"
+                               class="mt-1.5 w-full rounded-xl border border-surface-200 bg-surface-0 px-3 py-2.5 text-[15px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                        <span class="mt-1.5 block text-[11.5px] leading-relaxed text-surface-400 dark:text-surface-500">Le montant que tu investis chaque mois, quel que soit le marché.</span>
+                    </label>
+                    <label class="block">
+                        <span class="text-[12px] font-medium uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">Objectif net (FCFA/mois)</span>
+                        <input type="number" min="0" step="25000" [ngModel]="plan().targetMonthlyIncome" (ngModelChange)="svc.update({ targetMonthlyIncome: num($event) })"
+                               class="mt-1.5 w-full rounded-xl border border-surface-200 bg-surface-0 px-3 py-2.5 text-[15px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                        <span class="mt-1.5 block text-[11.5px] leading-relaxed text-surface-400 dark:text-surface-500">Le revenu de dividendes mensuel que tu vises, après impôt.</span>
+                    </label>
+                    <label class="block">
+                        <span class="text-[12px] font-medium uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">IRVM (%)</span>
+                        <input type="number" min="0" max="30" [ngModel]="plan().taxRatePct" (ngModelChange)="svc.update({ taxRatePct: num($event) })"
+                               class="mt-1.5 w-full rounded-xl border border-surface-200 bg-surface-0 px-3 py-2.5 text-[15px] tabular-nums text-surface-900 focus:border-ochre-500 focus:outline-none dark:border-surface-600 dark:bg-surface-900 dark:text-surface-0">
+                        <span class="mt-1.5 block text-[11.5px] leading-relaxed text-surface-400 dark:text-surface-500">L'impôt retenu à la source sur les dividendes (15% par défaut en zone UEMOA).</span>
+                    </label>
+                </div>
             </div>
 
             <!-- Jalon en cours -->
@@ -212,8 +251,11 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
             </div>
 
             <!-- Mes lignes (portefeuille actuel) -->
-            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800 sm:p-5">
-                <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Mes lignes, ce que je possède déjà</h3>
+            <div id="lignes" class="mt-4 scroll-mt-20 rounded-2xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800 sm:p-5">
+                <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                    <span class="rounded-full bg-ochre-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ochre-700 dark:text-ochre-400">Étape 3 · optionnelle</span>
+                    <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Mes lignes, ce que je possède déjà</h3>
+                </div>
                 <p class="mt-1 max-w-[72ch] text-[12.5px] leading-relaxed text-surface-500 dark:text-surface-400">
                     Recopie ici ton relevé SGI : pour chaque action que tu détiens, son code (ticker), le nombre
                     d'actions et ton prix d'achat moyen. L'outil compare alors ton allocation réelle à ta grille
@@ -304,10 +346,13 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
             </div>
 
             <!-- Calendrier d'exécution (mobile-first : cartes par mois, cibles tactiles 44px) -->
-            <div class="mt-4 rounded-2xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800 sm:p-5">
+            <div id="calendrier" class="mt-4 scroll-mt-20 rounded-2xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800 sm:p-5">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Calendrier d'exécution</h3>
+                        <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                            <span class="rounded-full bg-ochre-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ochre-700 dark:text-ochre-400">Étape 4</span>
+                            <h3 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Calendrier d'exécution</h3>
+                        </div>
                         <p class="mt-1 text-[12px] text-surface-500 dark:text-surface-400">
                             Mois par mois : ce que tu prévois d'acheter, pourquoi, et coche quand c'est exécuté. C'est le plan qui enlève l'émotion au moment de passer l'ordre.
                         </p>
@@ -541,6 +586,20 @@ export class StrategiePlanPage {
     readonly exclusions = EXCLUSIONS_ETHIQUES;
     readonly disclaimer = DISCLAIMER;
     readonly refDateLabel = new Date(MARCHE_REF_DATE + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    /** Parcours guidé sous le hero : répond à « comment on utilise cet outil ? »
+     *  au premier regard ; chaque étape scrolle vers sa section (badge assorti). */
+    readonly guideSteps = [
+        { n: 1, title: 'Choisis ta phase', desc: 'Selon ton capital actuel. La grille de poids cibles se pré-remplit avec le template de la méthode.', cta: 'Voir les phases', anchor: 'methode' },
+        { n: 2, title: 'Règle tes chiffres', desc: "Ton investissement mensuel (DCA) et ton objectif de dividendes : l'outil calcule le capital requis.", cta: 'Mes paramètres', anchor: 'parametres' },
+        { n: 3, title: 'Recopie ton relevé SGI', desc: 'Optionnel : tes actions déjà détenues, pour comparer ton allocation réelle à la grille cible.', cta: 'Mes lignes', anchor: 'lignes' },
+        { n: 4, title: 'Planifie tes achats', desc: "Mois par mois : note ce que tu comptes acheter, puis coche quand c'est exécuté.", cta: 'Le calendrier', anchor: 'calendrier' },
+    ] as const;
+
+    scrollToSection(anchor: string): void {
+        if (!isPlatformBrowser(this.platformId)) return;
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 
     readonly plan = this.svc.plan;
     readonly lines = this.svc.lineViews;
