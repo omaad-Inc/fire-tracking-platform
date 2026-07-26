@@ -7,6 +7,7 @@ import { chartTheme, isDarkMode, applyChartDefaults } from '../../../core/theme/
 import { LayoutService } from '../../../layout/service/layout.service';
 import { PlanService } from './plan.service';
 import { fmtFCFAfull } from './data/referentiel';
+import { nbspSafe } from '../../../core/util/nbsp';
 import calendrier from './data/detachements.json';
 
 const PAGE_TITLE = 'Calendrier des dividendes BRVM : dates de détachement et de paiement | Omaad';
@@ -246,7 +247,7 @@ export class StrategieDetachementsPage {
     }
 
     montant(v: number): string {
-        return Number.isInteger(v) ? fmtFCFAfull(v) : v.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+        return Number.isInteger(v) ? fmtFCFAfull(v) : nbspSafe(v.toLocaleString('fr-FR', { maximumFractionDigits: 2 }));
     }
 
     // ── Timeline (bubble chart) ──

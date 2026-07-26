@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, TontineSchedule } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { nbspSafe } from '../../../core/util/nbsp';
 
 /**
  * Tontine cycle tracking: renders the derived turn/payout schedule for a
@@ -179,7 +180,7 @@ export class TontineCyclesComponent implements OnInit {
     /** Native-currency amount: the backend returns values in the asset's own currency. */
     money(v: number): string {
         const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
-        return `${v.toLocaleString(locale, { maximumFractionDigits: 0 })} ${this.currency}`;
+        return `${nbspSafe(v.toLocaleString(locale, { maximumFractionDigits: 0 }))} ${this.currency}`;
     }
 
     fmtDate(iso: string): string {

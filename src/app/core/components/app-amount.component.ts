@@ -2,6 +2,7 @@ import { Component, input, computed, inject, signal, effect, OnDestroy } from '@
 import { CurrencyService } from '../services/currency.service';
 import { PrivacyService } from '../services/privacy.service';
 import { prefersReducedMotion } from '../theme/chart-theme';
+import { nbspSafe } from '../util/nbsp';
 
 /**
  * Renders a EUR value as a formatted amount with the currency symbol.
@@ -66,10 +67,10 @@ export class AppAmountComponent implements OnDestroy {
     displayStr = computed(() => {
         const val = this.animatedValue();
         const { locale } = this.cs.config();
-        return new Intl.NumberFormat(locale, {
+        return nbspSafe(new Intl.NumberFormat(locale, {
             maximumFractionDigits: 0,
             minimumFractionDigits: 0,
-        }).format(Math.round(val));
+        }).format(Math.round(val)));
     });
 
     constructor() {

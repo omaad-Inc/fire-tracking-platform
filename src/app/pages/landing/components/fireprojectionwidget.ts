@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { I18nService } from '../../../i18n/i18n.service';
+import { nbspSafe } from '../../../core/util/nbsp';
 
 interface ScenarioPoint {
     pessimistic: number;
@@ -207,14 +208,14 @@ export class FireProjectionWidget {
     }
 
     formatNumber(n: number): string {
-        return new Intl.NumberFormat(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US').format(Math.round(n));
+        return nbspSafe(new Intl.NumberFormat(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US').format(Math.round(n)));
     }
 
     formatCompact(n: number): string {
         const lang = this.i18n.lang();
         const locale = lang === 'fr' ? 'fr-FR' : 'en-US';
         if (n >= 1_000_000) {
-            const v = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n / 1_000_000);
+            const v = nbspSafe(new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(n / 1_000_000));
             return v.replace(/[,.]0$/, '') + (lang === 'fr' ? ' M' : 'M');
         }
         if (n >= 1_000) return Math.round(n / 1_000) + (lang === 'fr' ? ' k' : 'k');

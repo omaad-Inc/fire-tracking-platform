@@ -19,6 +19,7 @@ import { TontineCyclesComponent } from './tontine-cycles';
 import { AssetFormShape, getAssetFormShape, TontineStatus } from '../asset-form-shape';
 import { AssetEditDialogComponent, AssetEditForm } from './asset-edit-dialog';
 import { toLocalDateStr } from '../../../core/util/date';
+import { nbspSafe } from '../../../core/util/nbsp';
 
 @Component({
     selector: 'app-asset-detail',
@@ -123,7 +124,7 @@ import { toLocalDateStr } from '../../../core/util/date';
                             <p class="kpi-label">{{ t('assetDetail.monthlyContribution') }}</p>
                             <div class="kpi-value">
                                 @if (asset()!.tontine_monthly_contribution != null) {
-                                    <app-amount [value]="asset()!.tontine_monthly_contribution!" />
+                                    <app-amount [value]="toEur(asset()!.tontine_monthly_contribution!)" />
                                 } @else {
                                     <span class="text-surface-400">, </span>
                                 }
@@ -247,7 +248,7 @@ import { toLocalDateStr } from '../../../core/util/date';
                             <p class="kpi-label">{{ t('assetDetail.rentalIncome') }}</p>
                             <div class="kpi-value">
                                 @if (asset()!.rental_income) {
-                                    <app-amount [value]="asset()!.rental_income!" />
+                                    <app-amount [value]="toEur(asset()!.rental_income!)" />
                                 } @else {
                                     <span class="text-surface-400">, </span>
                                 }
@@ -273,7 +274,7 @@ import { toLocalDateStr } from '../../../core/util/date';
                             <p class="kpi-label">{{ t('assetDetail.purchasePrice') }}</p>
                             <div class="kpi-value">
                                 @if (asset()!.purchase_value) {
-                                    <app-amount [value]="asset()!.purchase_value!" />
+                                    <app-amount [value]="toEur(asset()!.purchase_value!)" />
                                 } @else {
                                     <span class="text-surface-400">, </span>
                                 }
@@ -351,25 +352,25 @@ import { toLocalDateStr } from '../../../core/util/date';
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ t('assetDetail.agency') }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.agency_fees) { <app-amount [value]="asset()!.agency_fees!" /> } @else { <span class="text-surface-400">, </span> }
+                                                @if (asset()!.agency_fees) { <app-amount [value]="toEur(asset()!.agency_fees!)" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ t('assetDetail.notary') }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.notary_fees) { <app-amount [value]="asset()!.notary_fees!" /> } @else { <span class="text-surface-400">, </span> }
+                                                @if (asset()!.notary_fees) { <app-amount [value]="toEur(asset()!.notary_fees!)" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ t('assetDetail.renovation') }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.renovation_fees) { <app-amount [value]="asset()!.renovation_fees!" /> } @else { <span class="text-surface-400">, </span> }
+                                                @if (asset()!.renovation_fees) { <app-amount [value]="toEur(asset()!.renovation_fees!)" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                         <div class="p-3 rounded-xl bg-surface-50 dark:bg-surface-800">
                                             <p class="text-[11px] text-surface-500 mb-1">{{ t('assetDetail.furnishing') }}</p>
                                             <p class="font-bold text-surface-900 dark:text-surface-0 text-sm">
-                                                @if (asset()!.furnishing_costs) { <app-amount [value]="asset()!.furnishing_costs!" /> } @else { <span class="text-surface-400">, </span> }
+                                                @if (asset()!.furnishing_costs) { <app-amount [value]="toEur(asset()!.furnishing_costs!)" /> } @else { <span class="text-surface-400">, </span> }
                                             </p>
                                         </div>
                                     </div>
@@ -702,11 +703,17 @@ export class AssetDetailPage implements OnInit {
         return a ? this.readQuantity(a) : null;
     });
 
+    /** Gain/loss in EUR base (assets store native currency; <app-amount> expects EUR). */
     gainLoss = computed(() => {
         const a = this.asset();
         if (!a || a.purchase_value === null) return null;
-        return a.current_value - a.purchase_value;
+        return this.cs.toEurFromNative(a.current_value - a.purchase_value, a.currency);
     });
+
+    /** Convert one of the asset's native-currency fields to EUR base for <app-amount>. */
+    toEur(nativeValue: number): number {
+        return this.cs.toEurFromNative(nativeValue, this.asset()?.currency);
+    }
 
     gainLossPct = computed(() => {
         const a = this.asset();
@@ -825,11 +832,11 @@ export class AssetDetailPage implements OnInit {
             rows.push({ label: t('assetDetail.area'), value: `${a.surface_m2} m²`, icon: 'pi-arrows-alt' });
         }
         if (a.price_per_m2_purchase) {
-            rows.push({ label: t('assetDetail.pricePerM2Purchase'), value: `${a.price_per_m2_purchase.toLocaleString(loc)} ${a.currency}/m²`, icon: 'pi-shopping-cart' });
+            rows.push({ label: t('assetDetail.pricePerM2Purchase'), value: `${nbspSafe(a.price_per_m2_purchase.toLocaleString(loc))} ${a.currency}/m²`, icon: 'pi-shopping-cart' });
         }
         if (a.surface_m2 && a.surface_m2 > 0) {
             const current = Math.round(a.current_value / a.surface_m2);
-            rows.push({ label: t('assetDetail.currentPricePerM2'), value: `${current.toLocaleString(loc)} ${a.currency}/m²`, icon: 'pi-chart-line', valueClass: 'text-brand-700 dark:text-brand-300' });
+            rows.push({ label: t('assetDetail.currentPricePerM2'), value: `${nbspSafe(current.toLocaleString(loc))} ${a.currency}/m²`, icon: 'pi-chart-line', valueClass: 'text-brand-700 dark:text-brand-300' });
         }
         if (a.purchase_date) {
             rows.push({ label: t('assetDetail.purchaseDate'), value: this.formatShortDate(a.purchase_date), icon: 'pi-calendar' });
@@ -841,7 +848,7 @@ export class AssetDetailPage implements OnInit {
             rows.push({ label: t('assetDetail.location'), value: a.location, icon: 'pi-map-marker' });
         }
         if (a.rental_income) {
-            rows.push({ label: t('assetDetail.rentalIncome'), value: `${a.rental_income.toLocaleString(loc)} ${a.currency}${perMonth}`, icon: 'pi-home', valueClass: 'text-positive' });
+            rows.push({ label: t('assetDetail.rentalIncome'), value: `${nbspSafe(a.rental_income.toLocaleString(loc))} ${a.currency}${perMonth}`, icon: 'pi-home', valueClass: 'text-positive' });
         }
         // Always have at least one row
         if (!rows.length) {
@@ -864,7 +871,7 @@ export class AssetDetailPage implements OnInit {
             const sign = gain >= 0 ? '+' : '−';
             rows.push({
                 label: t('assetDetail.totalGainLoss'),
-                value: `${sign} ${Math.abs(gain).toLocaleString(loc, { maximumFractionDigits: 2 })} ${a.currency}`,
+                value: `${sign} ${nbspSafe(Math.abs(gain).toLocaleString(loc, { maximumFractionDigits: 2 }))} ${a.currency}`,
                 icon: gain >= 0 ? 'pi-arrow-up' : 'pi-arrow-down',
                 valueClass: gain >= 0 ? 'text-positive' : 'text-negative',
             });
@@ -900,7 +907,7 @@ export class AssetDetailPage implements OnInit {
         if (a.tontine_monthly_contribution != null) {
             rows.push({
                 label: t('assetDetail.monthlyContribution'),
-                value: `${a.tontine_monthly_contribution.toLocaleString(loc)} ${a.currency}`,
+                value: `${nbspSafe(a.tontine_monthly_contribution.toLocaleString(loc))} ${a.currency}`,
                 icon: 'pi-wallet',
             });
         }

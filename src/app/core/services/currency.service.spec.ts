@@ -54,4 +54,17 @@ describe('CurrencyService (rate math)', () => {
         expect(svc.toBaseAmountWithRate(2000, 2)).toBe(1000);
         expect(svc.toBaseAmountWithRate(2000, 0)).toBe(2000); // guards /0
     });
+
+    // The fr-FR group separator is U+202F (narrow no-break space), which has no
+    // glyph in our Inter subset nor in many Android system fonts: it rendered as
+    // a tofu box inside FCFA amounts (user report 2026-07-26). Formatters must
+    // emit U+00A0 instead.
+    it('formatters never emit U+202F and group with a regular NBSP', () => {
+        for (const s of [svc.format(1000), svc.formatNumber(1000), svc.formatDisplayNumber(655957)]) {
+            expect(s).not.toContain('\u202f');
+        }
+        expect(svc.format(1000)).toBe('655\u00a0957 FCFA');
+        expect(svc.formatNumber(1000)).toBe('655\u00a0957');
+        expect(svc.formatDisplayNumber(655957)).toBe('655\u00a0957');
+    });
 });

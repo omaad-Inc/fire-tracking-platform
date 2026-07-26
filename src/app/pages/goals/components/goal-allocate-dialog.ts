@@ -10,6 +10,7 @@ import { SelectModule } from 'primeng/select';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { GoalContributionCreate, LiquidAsset, SavingGoal } from '../../../core/services/api.service';
+import { nbspSafe } from '../../../core/util/nbsp';
 
 export type AllocationMode = 'contribute' | 'deallocate';
 
@@ -284,6 +285,6 @@ export class GoalAllocateDialogComponent {
 
     formatCurrency(v: number): string {
         const sym = this.cs.config().symbol;
-        return `${sym}${v.toLocaleString(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US', { maximumFractionDigits: 0 })}`;
+        return `${sym}${nbspSafe(v.toLocaleString(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US', { maximumFractionDigits: 0 }))}`;
     }
 }

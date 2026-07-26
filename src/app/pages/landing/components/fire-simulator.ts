@@ -12,6 +12,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { WaitlistWidget } from './waitlistwidget';
+import { nbspSafe } from '../../../core/util/nbsp';
 
 interface YearProjection {
     year: number;
@@ -644,9 +645,9 @@ export class FireSimulator {
         if (curr === 'FCFA') {
             if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace('.0', '') + ' Mds FCFA';
             if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + ' M FCFA';
-            return new Intl.NumberFormat('fr-FR').format(value) + ' FCFA';
+            return nbspSafe(new Intl.NumberFormat('fr-FR').format(value)) + ' FCFA';
         }
-        return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+        return nbspSafe(new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value));
     }
 
     formatCompact(value: number): string {
@@ -654,11 +655,11 @@ export class FireSimulator {
         if (curr === 'FCFA') {
             if (value >= 1_000_000_000) return (value / 1_000_000_000).toFixed(1).replace('.0', '') + ' Mds';
             if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + ' M';
-            return new Intl.NumberFormat('fr-FR').format(value);
+            return nbspSafe(new Intl.NumberFormat('fr-FR').format(value));
         }
         if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace('.0', '') + ' M€';
         if (value >= 1_000) return (value / 1_000).toFixed(0) + ' k€';
-        return new Intl.NumberFormat('fr-FR').format(value) + ' €';
+        return nbspSafe(new Intl.NumberFormat('fr-FR').format(value)) + ' €';
     }
 
     private buildChart() {
