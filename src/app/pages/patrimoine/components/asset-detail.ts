@@ -81,6 +81,11 @@ import { nbspSafe } from '../../../core/util/nbsp';
                         <div class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0">
                             <app-amount [value]="valueEur()" />
                         </div>
+                        @if (asset()!.quote_as_of) {
+                            <p class="text-surface-400 dark:text-surface-500 text-xs mt-1.5">
+                                <i class="pi pi-sync text-[10px] mr-1" aria-hidden="true"></i>{{ t('assetDetail.brvmClose', { date: formatShortDate(asset()!.quote_as_of!) }) }}
+                            </p>
+                        }
                         @if (gainLoss() !== null) {
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"

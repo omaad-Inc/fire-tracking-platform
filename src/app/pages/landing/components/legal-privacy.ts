@@ -56,7 +56,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                     </section>
 
                     <div class="mt-10 p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
-                        {{ isFr() ? 'Dernière mise à jour : 19 juillet 2026.' : 'Last updated: 19 July 2026.' }}
+                        {{ isFr() ? 'Dernière mise à jour : 26 juillet 2026.' : 'Last updated: 26 July 2026.' }}
                     </div>
                 </article>
             </main>
@@ -71,7 +71,7 @@ export class LegalPrivacyPage {
     private seo = inject(SeoService);
 
     readonly isFr = computed(() => this.i18n.lang() === 'fr');
-    readonly updated = '14/05/2026';
+    readonly updated = '26/07/2026';
 
     readonly sections = computed(() => {
         const fr = this.isFr();
@@ -87,8 +87,8 @@ export class LegalPrivacyPage {
                 id: 'collected',
                 title: fr ? 'Données collectées' : 'Data collected',
                 body: fr
-                    ? 'Nous collectons uniquement les données nécessaires au service :\n• Compte : email, prénom, nom, mot de passe (haché bcrypt), photo de profil optionnelle.\n• Patrimoine : actifs, transactions, dettes, objectifs d\'épargne, saisis manuellement.\n• Préférences : devise, langue, fuseau horaire, choix de thème.\n• Techniques : adresse IP, type de navigateur, journaux applicatifs (anonymisés).'
-                    : 'We collect only what the service needs:\n• Account: email, first name, last name, password (bcrypt-hashed), optional profile picture.\n• Wealth: assets, transactions, debts, savings goals, entered manually.\n• Preferences: currency, language, timezone, theme.\n• Technical: IP address, browser type, application logs (anonymized).',
+                    ? 'Nous collectons uniquement les données nécessaires au service :\n• Compte : email, numéro de téléphone (optionnel, connexion par SMS), prénom, nom, mot de passe (haché bcrypt), photo de profil optionnelle.\n• Patrimoine : actifs, transactions, dettes, objectifs d\'épargne, saisis manuellement.\n• Préférences : devise, langue, fuseau horaire, choix de thème, préférences de notification (heures calmes incluses).\n• Notifications push (uniquement si tu les actives) : l\'identifiant technique de chaque appareil abonné, supprimable à tout moment dans les réglages.\n• Techniques : adresse IP, type de navigateur, journaux applicatifs.'
+                    : 'We collect only what the service needs:\n• Account: email, phone number (optional, SMS sign-in), first name, last name, password (bcrypt-hashed), optional profile picture.\n• Wealth: assets, transactions, debts, savings goals, entered manually.\n• Preferences: currency, language, timezone, theme, notification preferences (including quiet hours).\n• Push notifications (only if you enable them): the technical identifier of each subscribed device, removable any time in settings.\n• Technical: IP address, browser type, application logs.',
             },
             {
                 id: 'purposes',
@@ -115,8 +115,8 @@ export class LegalPrivacyPage {
                 id: 'cookies',
                 title: fr ? 'Cookies & mesure d\'audience' : 'Cookies & analytics',
                 body: fr
-                    ? 'Omaad utilise uniquement des cookies fonctionnels (session, préférences). Aucun cookie publicitaire ni de tracking tiers.\nNotre mesure d\'audience est first-party et sans cookie : nous comptons de façon anonyme les pages vues du site public (accueil, blog, outils) via nos propres serveurs, sans identifiant persistant, sans profilage et sans partage avec des tiers.\nSi tu laisses ton email sur la liste d\'attente, il est utilisé uniquement pour te prévenir du lancement (désinscription en un clic).'
-                    : 'Omaad only uses functional cookies (session, preferences). No advertising or third-party tracking cookies.\nOur analytics are first-party and cookieless: we count public-site page views (home, blog, tools) anonymously through our own servers, with no persistent identifier, no profiling and no third-party sharing.\nIf you leave your email on the waitlist, it is used only to notify you at launch (unsubscribe in one click).',
+                    ? 'Omaad utilise uniquement des cookies fonctionnels (session, préférences). Aucun cookie publicitaire ni de tracking tiers.\nNotre mesure d\'audience est first-party et sans cookie : nous comptons de façon anonyme les pages vues du site public (accueil, blog, outils) via nos propres serveurs, sans identifiant persistant, sans profilage et sans partage avec des tiers.\nDans l\'application, nous enregistrons également en first-party quelques événements d\'usage (par exemple « premier actif ajouté ») et les rapports d\'erreur techniques, stockés dans notre propre base, jamais transmis à des outils tiers, et supprimés avec ton compte.\nSi tu laisses ton email sur la liste d\'attente, il est utilisé uniquement pour te prévenir du lancement (désinscription en un clic).'
+                    : 'Omaad only uses functional cookies (session, preferences). No advertising or third-party tracking cookies.\nOur analytics are first-party and cookieless: we count public-site page views (home, blog, tools) anonymously through our own servers, with no persistent identifier, no profiling and no third-party sharing.\nInside the app, we also record a few first-party usage events (for example "first asset added") and technical error reports, stored in our own database, never sent to third-party tools, and deleted with your account.\nIf you leave your email on the waitlist, it is used only to notify you at launch (unsubscribe in one click).',
             },
         ];
     });
