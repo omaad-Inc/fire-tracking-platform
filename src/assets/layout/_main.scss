@@ -19,6 +19,10 @@
     .layout-main-container {
         margin-left: 0 !important;
         padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)) !important;
+        // The 150px clearance exists for the fixed mobile nav bar, which is
+        // hidden in immersive mode — dead space that forces a scroll on
+        // one-screen pages (settings home).
+        padding-bottom: env(safe-area-inset-bottom, 0px) !important;
         min-height: 100dvh;
     }
     .layout-main {

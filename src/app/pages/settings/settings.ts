@@ -1,4 +1,4 @@
-import { Component, OnInit, DestroyRef, signal, inject, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, DestroyRef, signal, inject, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -23,7 +23,10 @@ import { environment } from '../../../environments/environment';
     standalone: true,
     imports: [CommonModule, RouterModule],
     template: `
-        <div class="min-h-screen max-w-6xl mx-auto px-1 sm:px-4">
+        <!-- No min-h-screen here: the immersive layout container already owns
+             100dvh, and a viewport-height floor + its top padding forces a
+             needless scroll on one-screen pages (mobile home menu). -->
+        <div class="max-w-6xl mx-auto px-1 sm:px-4">
 
             <!-- ═══════ DESKTOP header: profile + title + close ═══════ -->
             <div class="hidden lg:flex items-start justify-between gap-4 pt-6 mb-10">
@@ -97,13 +100,13 @@ import { environment } from '../../../environments/environment';
                     </div>
                 </nav>
 
-                <div class="flex-1 min-w-0 pb-10">
+                <div class="flex-1 min-w-0 pb-2 lg:pb-10">
 
                     <!-- ═══════ MOBILE home menu (Finary settings home) ═══════ -->
                     @if (!activeSection()) {
                         <div class="lg:hidden">
                             <!-- Top bar: back to app + help pill -->
-                            <div class="flex items-center justify-between pt-2 mb-6">
+                            <div class="flex items-center justify-between pt-1 mb-4">
                                 <button (click)="close()" [attr.aria-label]="t('common.back')"
                                         class="w-10 h-10 flex items-center justify-center rounded-full shrink-0
                                                hover:bg-surface-100 dark:hover:bg-surface-800 transition-all">
@@ -119,8 +122,8 @@ import { environment } from '../../../environments/environment';
                             </div>
 
                             <!-- Profile block -->
-                            <div class="flex items-center gap-4 mb-6 px-1">
-                                <div class="w-16 h-16 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0">
+                            <div class="flex items-center gap-4 mb-4 px-1">
+                                <div class="w-14 h-14 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0">
                                     @if (avatarUrl()) {
                                         <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover">
                                     } @else {
@@ -137,7 +140,7 @@ import { environment } from '../../../environments/environment';
 
                             <!-- Omaad Pro banner -->
                             <a [routerLink]="['/', lang, 'pages', 'plans']"
-                               class="block mb-8 p-4 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
+                               class="block mb-4 p-3 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
                                       border border-ochre-200 dark:border-ochre-700/40 hover:shadow-sm transition-all">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
@@ -152,13 +155,13 @@ import { environment } from '../../../environments/environment';
                             </a>
 
                             <!-- Group: Mon Omaad — flat hairline rows, Finary-style -->
-                            <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2 px-1">{{ t('settings.myOmaad') }}</h2>
-                            <div class="mb-8 divide-y divide-surface-200 dark:divide-surface-800">
+                            <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1 px-1">{{ t('settings.myOmaad') }}</h2>
+                            <div class="mb-5 divide-y divide-surface-200 dark:divide-surface-800">
                                 @for (sec of mainSections; track sec.key) {
                                     <a [routerLink]="['/', lang, 'pages', 'settings', sec.key]"
-                                       class="flex items-center gap-4 py-4 px-1 cursor-pointer
+                                       class="flex items-center gap-4 py-3 px-1 cursor-pointer
                                               hover:bg-surface-50 dark:hover:bg-surface-900/60 transition-all">
-                                        <i class="pi {{ sec.icon }} text-ochre-600 dark:text-ochre-400 text-lg w-6 text-center shrink-0" aria-hidden="true"></i>
+                                        <i class="pi {{ sec.icon }} text-ochre-600 dark:text-ochre-400 text-base w-6 text-center shrink-0" aria-hidden="true"></i>
                                         <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ sec.label() }}</span>
                                         <i class="pi pi-chevron-right text-surface-400 text-xs shrink-0" aria-hidden="true"></i>
                                     </a>
@@ -166,12 +169,12 @@ import { environment } from '../../../environments/environment';
                             </div>
 
                             <!-- Group: Aide -->
-                            <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-2 px-1">{{ t('settings.help') }}</h2>
-                            <div class="mb-10 divide-y divide-surface-200 dark:divide-surface-800">
+                            <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1 px-1">{{ t('settings.help') }}</h2>
+                            <div class="mb-4 divide-y divide-surface-200 dark:divide-surface-800">
                                 <a [routerLink]="['/', lang, 'pages', 'settings', 'help']"
-                                   class="flex items-center gap-4 py-4 px-1 cursor-pointer
+                                   class="flex items-center gap-4 py-3 px-1 cursor-pointer
                                           hover:bg-surface-50 dark:hover:bg-surface-900/60 transition-all">
-                                    <i class="pi pi-question-circle text-ochre-600 dark:text-ochre-400 text-lg w-6 text-center shrink-0" aria-hidden="true"></i>
+                                    <i class="pi pi-question-circle text-ochre-600 dark:text-ochre-400 text-base w-6 text-center shrink-0" aria-hidden="true"></i>
                                     <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ t('settings.getHelp') }}</span>
                                     <i class="pi pi-chevron-right text-surface-400 text-xs shrink-0" aria-hidden="true"></i>
                                 </a>
@@ -179,12 +182,12 @@ import { environment } from '../../../environments/environment';
 
                             <!-- Logout pill + version -->
                             <button (click)="logout()"
-                                    class="px-6 py-2.5 rounded-full bg-surface-200 dark:bg-surface-800
+                                    class="px-6 py-2 rounded-full bg-surface-200 dark:bg-surface-800
                                            text-surface-700 dark:text-surface-200 text-sm font-semibold
                                            hover:bg-surface-300 dark:hover:bg-surface-700 transition-colors">
                                 {{ t('settings.account.logoutButton') }}
                             </button>
-                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-6 pb-8 px-1">Omaad · v{{ appVersion }}</p>
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-3 pb-1 px-1">Omaad · v{{ appVersion }}</p>
                         </div>
                     }
 
@@ -194,7 +197,7 @@ import { environment } from '../../../environments/environment';
         </div>
     `
 })
-export class Settings implements OnInit {
+export class Settings implements OnInit, OnDestroy {
     private router       = inject(Router);
     private destroyRef   = inject(DestroyRef);
     private i18n         = inject(I18nService);
@@ -260,6 +263,8 @@ export class Settings implements OnInit {
     });
 
     ngOnInit() {
+        // Settings pages scroll without showing a scrollbar (Finary feel).
+        document.documentElement.classList.add('settings-no-scrollbar');
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.i18n.setLang(this.lang as 'fr' | 'en');
@@ -278,6 +283,10 @@ export class Settings implements OnInit {
     private syncActiveSection(url: string) {
         const match = url.match(/\/settings\/([a-z-]+)/);
         this.activeSection.set(match ? match[1] : null);
+    }
+
+    ngOnDestroy() {
+        document.documentElement.classList.remove('settings-no-scrollbar');
     }
 
     goHome() {
