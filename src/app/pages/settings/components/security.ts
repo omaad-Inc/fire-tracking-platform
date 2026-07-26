@@ -58,7 +58,7 @@ import { firstValueFrom } from 'rxjs';
                                 <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('security.connectedGoogle') }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-semibold shrink-0">
                                 <i class="pi pi-check text-[10px]"></i> {{ t('security.active') }}
                             </span>
                         </div>
@@ -323,7 +323,7 @@ import { firstValueFrom } from 'rxjs';
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ currentSession().device }}</p>
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-[10px] font-semibold">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-[10px] font-semibold">
                                     <span class="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
                                     {{ t('security.activeNow') }}
                                 </span>
@@ -331,7 +331,7 @@ import { firstValueFrom } from 'rxjs';
                             <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                                 {{ currentSession().browser }} · {{ user()?.email }}
                             </p>
-                            <p class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                                 {{ t('security.connectedPrefix') }} {{ currentSession().loginTime }}
                             </p>
                         </div>
@@ -384,7 +384,7 @@ import { firstValueFrom } from 'rxjs';
                                         <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ methodLabel(ev.method) }}</p>
                                         <p class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ uaLabel(ev.user_agent) }}@if (ev.ip) { · {{ ev.ip }}}</p>
                                     </div>
-                                    <span class="text-xs text-surface-400 shrink-0">{{ formatDate(ev.created_at) }}</span>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400 shrink-0">{{ formatDate(ev.created_at) }}</span>
                                 </div>
                             }
 
@@ -398,7 +398,7 @@ import { firstValueFrom } from 'rxjs';
                                         <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ t('security.accountCreated') }}</p>
                                         <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.signupOmaad') }}</p>
                                     </div>
-                                    <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
                                 </div>
                             }
 

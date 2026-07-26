@@ -80,7 +80,7 @@ import { ApiService } from '../../../core/services/api.service';
                                 </div>
                             </ng-template>
                         </p-select>
-                        <p class="text-xs text-surface-400 mt-1">{{ t('settings.preferences.fxReference') }}</p>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">{{ t('settings.preferences.fxReference') }}</p>
                     </div>
                 </div>
             </div>

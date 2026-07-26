@@ -115,7 +115,7 @@ interface FaqItem {
                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"></textarea>
                         </div>
                         <div class="flex items-center justify-between gap-4 flex-wrap">
-                            <p class="text-xs text-surface-400 flex items-center gap-1.5">
+                            <p class="text-xs text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
                                 <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
                                 {{ i18n.t('help.dataConfidential') }}
                             </p>
@@ -156,7 +156,7 @@ interface FaqItem {
 
             <!-- ── Version info ─────────────────────────────────── -->
             <div class="text-center py-2">
-                <p class="text-xs text-surface-400 dark:text-surface-500">
+                <p class="text-xs text-surface-500 dark:text-surface-400">
                     Omaad · v{{ appVersion }}
                 </p>
             </div>

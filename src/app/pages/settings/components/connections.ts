@@ -41,7 +41,7 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
                 </button>
             </div>
 
-            <p class="text-surface-400 text-sm mb-6">{{ t('broker.refreshNote') }}</p>
+            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('broker.refreshNote') }}</p>
 
             @if (loading()) {
                 <div class="flex items-center justify-center py-16">
@@ -56,7 +56,7 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
                         <i class="pi pi-link text-2xl text-surface-400"></i>
                     </div>
                     <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ t('broker.emptyTitle') }}</h3>
-                    <p class="text-surface-400 text-sm mb-6 max-w-sm mx-auto">{{ t('broker.emptyDesc') }}</p>
+                    <p class="text-surface-500 dark:text-surface-400 text-sm mb-6 max-w-sm mx-auto">{{ t('broker.emptyDesc') }}</p>
                     <button pButton type="button"
                             [label]="t('broker.emptyAction')"
                             icon="pi pi-plus"
