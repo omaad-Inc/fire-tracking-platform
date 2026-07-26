@@ -32,6 +32,32 @@ import { I18nService } from '../../i18n/i18n.service';
                     </a>
                 </div>
 
+                @if (pendingEmail(); as pending) {
+                <!-- Check-your-inbox state (S10-SEC-1): no session until the link is clicked -->
+                <div class="max-w-md" data-testid="verify-pending">
+                    <div class="w-14 h-14 rounded-2xl bg-ochre-500/15 flex items-center justify-center mb-6">
+                        <i class="pi pi-envelope text-2xl text-ochre-500" aria-hidden="true"></i>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3">
+                        {{ t('auth.verifyPending.title') }}
+                    </h1>
+                    <p class="text-surface-600 dark:text-surface-400 mb-2">
+                        {{ t('auth.verifyPending.sentTo') }}
+                        <strong class="text-surface-900 dark:text-surface-0">{{ pending }}</strong>
+                    </p>
+                    <p class="text-surface-600 dark:text-surface-400 mb-8">{{ t('auth.verifyPending.clickToEnter') }}</p>
+                    <button pButton pRipple type="button"
+                            [label]="resendCooldown() > 0
+                                ? t('auth.verifyPending.resendIn') + ' (' + resendCooldown() + 's)'
+                                : t('auth.verifyPending.resend')"
+                            [disabled]="resendCooldown() > 0 || isLoading()"
+                            (click)="resendPending()"
+                            class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"></button>
+                    <p class="text-surface-400 dark:text-surface-500 text-sm mt-6">{{ t('auth.verifyPending.spamHint') }}</p>
+                    <a class="inline-block mt-3 text-sm text-brand-700 dark:text-ochre-400 hover:underline cursor-pointer"
+                       (click)="pendingEmail.set(null)">{{ t('auth.verifyPending.wrongEmail') }}</a>
+                </div>
+                } @else {
                 <!-- Register Form -->
                 <div class="max-w-md">
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-2">
@@ -213,6 +239,7 @@ import { I18nService } from '../../i18n/i18n.service';
                     </div>
                     }
                 </div>
+                }
             </div>
 
             <!-- Right Side - Showcase Image -->
@@ -335,9 +362,46 @@ export class Register {
 
     isLoading = signal(false);
 
+    /** Set after a successful register: shows the "check your inbox" state
+     *  (S10-SEC-1). The emailed link performs the first login. */
+    pendingEmail = signal<string | null>(null);
+    resendCooldown = signal(0);
+    private cooldownInterval: ReturnType<typeof setInterval> | null = null;
+
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+    }
+
+    private startResendCooldown(seconds = 60): void {
+        if (this.cooldownInterval) clearInterval(this.cooldownInterval);
+        this.resendCooldown.set(seconds);
+        this.cooldownInterval = setInterval(() => {
+            const next = this.resendCooldown() - 1;
+            this.resendCooldown.set(Math.max(0, next));
+            if (next <= 0 && this.cooldownInterval) {
+                clearInterval(this.cooldownInterval);
+                this.cooldownInterval = null;
+            }
+        }, 1000);
+    }
+
+    resendPending(): void {
+        const email = this.pendingEmail();
+        if (!email || this.resendCooldown() > 0) return;
+        this.isLoading.set(true);
+        this.authService.resendVerificationByEmail(email).subscribe({
+            next: () => {
+                this.isLoading.set(false);
+                this.startResendCooldown();
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('auth.verifyPending.resent'), life: 3000 });
+            },
+            error: () => {
+                this.isLoading.set(false);
+                // Still start the cooldown: the endpoint is deliberately opaque.
+                this.startResendCooldown();
+            }
+        });
     }
 
     setMode(mode: 'email' | 'phone') {
@@ -404,22 +468,19 @@ export class Register {
             last_name: this.lastName || undefined,
             preferred_language: this.currentLang.replace('/', '') || 'fr'
         }).subscribe({
-            next: () => {
+            next: (res) => {
                 this.isLoading.set(false);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: this.t('common.success'),
-                    detail: this.t('auth.register.createdDetail'),
-                    life: 4000
-                });
-                // Keep the token the server just minted and go straight into
-                // the app (mirrors the OTP flow), the old code called
-                // logout(), discarding the token and forcing a second manual
-                // login. If email verification (P2) later lands, route to a
-                // "verify your email" state here instead.
-                const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                this.router.navigate([returnUrl], { replaceUrl: true });
-                this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
+                // Legacy backend (pre S10-SEC-1): a session is minted at
+                // register, go straight into the app.
+                if (res?.access_token) {
+                    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                    this.router.navigate([returnUrl], { replaceUrl: true });
+                    this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
+                    return;
+                }
+                // New contract: no session until the emailed link is clicked.
+                this.pendingEmail.set(res?.email || this.email);
+                this.startResendCooldown();
             },
             error: (error) => {
                 this.isLoading.set(false);

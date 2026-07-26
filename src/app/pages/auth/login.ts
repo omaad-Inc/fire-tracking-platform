@@ -81,6 +81,27 @@ import { I18nService } from '../../i18n/i18n.service';
                     </div>
 
                     @if (authMode() === 'email') {
+                    <!-- Unverified account notice (S10-SEC-1): correct password but
+                         the email was never confirmed — offer a fresh link. -->
+                    @if (needsVerification()) {
+                        <div role="alert" data-testid="login-needs-verification"
+                             class="mb-6 rounded-xl border border-ochre-500/40 bg-ochre-500/10 p-4">
+                            <div class="flex items-start gap-3">
+                                <i class="pi pi-envelope mt-0.5 text-ochre-600 dark:text-ochre-400" aria-hidden="true"></i>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ t('auth.verifyPending.loginBlockedTitle') }}</p>
+                                    <p class="mt-1 text-sm text-surface-600 dark:text-surface-300">{{ t('auth.verifyPending.loginBlockedDesc') }}</p>
+                                    <button type="button" (click)="resendVerification()"
+                                            [disabled]="resendCooldown() > 0 || isLoading()"
+                                            class="mt-2.5 text-sm font-semibold text-ochre-700 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-ochre-400">
+                                        {{ resendCooldown() > 0
+                                            ? t('auth.verifyPending.resendIn') + ' (' + resendCooldown() + 's)'
+                                            : t('auth.verifyPending.resend') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
                     <!-- Email & Password Form -->
                     <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div>
@@ -424,6 +445,41 @@ export class Login {
         this.password = '';
     }
 
+    // Unverified-account notice (S10-SEC-1) + resend cooldown.
+    needsVerification = signal(false);
+    resendCooldown = signal(0);
+    private cooldownInterval: ReturnType<typeof setInterval> | null = null;
+
+    private startResendCooldown(seconds = 60): void {
+        if (this.cooldownInterval) clearInterval(this.cooldownInterval);
+        this.resendCooldown.set(seconds);
+        this.cooldownInterval = setInterval(() => {
+            const next = this.resendCooldown() - 1;
+            this.resendCooldown.set(Math.max(0, next));
+            if (next <= 0 && this.cooldownInterval) {
+                clearInterval(this.cooldownInterval);
+                this.cooldownInterval = null;
+            }
+        }, 1000);
+    }
+
+    resendVerification(): void {
+        const email = this.email().trim();
+        if (!email || this.resendCooldown() > 0) return;
+        this.isLoading.set(true);
+        this.authService.resendVerificationByEmail(email).subscribe({
+            next: () => {
+                this.isLoading.set(false);
+                this.startResendCooldown();
+                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('auth.verifyPending.resent'), life: 3000 });
+            },
+            error: () => {
+                this.isLoading.set(false);
+                this.startResendCooldown();
+            }
+        });
+    }
+
     /** Shared post-login navigation (used by both email and OTP flows). */
     private finishLogin(): void {
         this.isLoading.set(false);
@@ -500,6 +556,12 @@ export class Login {
             },
             error: (error) => {
                 this.isLoading.set(false);
+                // Correct password but unconfirmed email: show the resend
+                // notice instead of a generic failure toast (S10-SEC-1).
+                if (error?.message === 'EMAIL_NOT_VERIFIED') {
+                    this.needsVerification.set(true);
+                    return;
+                }
                 this.messageService.add({
                     severity: 'error',
                     summary: this.t('common.error'),

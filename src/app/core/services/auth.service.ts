@@ -28,6 +28,14 @@ export interface AuthResponse {
     mfa_token?: string;
 }
 
+/** Register outcome (S10-SEC-1). Dual-shape on purpose: the new backend
+ *  returns verification_required with NO token (the emailed link is the
+ *  first login); an older backend still returns a token. */
+export interface RegisterResponse extends AuthResponse {
+    verification_required?: boolean;
+    email?: string;
+}
+
 export interface TwoFactorSetup {
     secret: string;
     otpauth_uri: string;
@@ -73,8 +81,8 @@ export class AuthService {
     /**
      * Register a new user with email/password
      */
-    register(data: RegisterRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, data).pipe(
+    register(data: RegisterRequest): Observable<RegisterResponse> {
+        return this.http.post<RegisterResponse>(`${this.apiUrl}/auth/register`, data).pipe(
             tap(response => {
                 this.clearAllCaches();
                 if (response.access_token) this.tokenService.setToken(response.access_token);
@@ -136,14 +144,32 @@ export class AuthService {
         return this.http.post<void>(`${this.apiUrl}/auth/2fa/disable`, { code, password }).pipe(catchError(this.handleError));
     }
 
-    /** Confirm email ownership via the token from the verification email (P2-BE-9). */
-    verifyEmail(token: string): Observable<void> {
-        return this.http.post<void>(`${this.apiUrl}/auth/verify-email`, { token }).pipe(catchError(this.handleError));
+    /** Confirm email ownership via the token from the verification email.
+     *  The link doubles as the first login (S10-SEC-1): the response carries a
+     *  session, which we store so the user lands in the app signed in. */
+    verifyEmail(token: string): Observable<AuthResponse | null> {
+        return this.http.post<AuthResponse | null>(`${this.apiUrl}/auth/verify-email`, { token }).pipe(
+            tap(response => {
+                if (response?.access_token) {
+                    this.clearAllCaches();
+                    this.tokenService.setToken(response.access_token);
+                }
+            }),
+            catchError(this.handleError)
+        );
     }
 
     /** Re-send the verification email to the signed-in user (P2-BE-9). */
     resendVerification(): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/auth/resend-verification`, {}).pipe(catchError(this.handleError));
+    }
+
+    /** Pre-login resend (S10-SEC-1): by email, no session needed. Always 204
+     *  whether the address exists or not — no enumeration signal to show. */
+    resendVerificationByEmail(email: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/auth/verification/resend`, { email }).pipe(
+            catchError(this.handleError)
+        );
     }
 
     // ── Login history & session revocation ──────────────────────────────────
