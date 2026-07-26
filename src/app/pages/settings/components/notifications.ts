@@ -24,38 +24,28 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
     providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+        <div class="px-1">
 
-            <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.title') }}</h2>
+            <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.notifs.subtitle') }}</p>
 
-            <!-- Channels -->
-            <div class="space-y-3">
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                    <div class="flex items-center gap-4 min-w-0">
-                        <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-envelope text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-email-label">{{ t('settings.notifs.email') }}</p>
-                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.emailDesc') }}</p>
-                        </div>
+            <!-- Channels: flat rows, hairline separators (Finary) -->
+            <div class="divide-y divide-surface-200 dark:divide-surface-800">
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-email-label">{{ t('settings.notifs.email') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.emailDesc') }}</p>
                     </div>
                     <p-toggleswitch [ngModel]="prefs().email_enabled" [disabled]="loading()"
                                     (onChange)="save({ email_enabled: $event.checked })"
                                     ariaLabelledBy="notif-email-label" />
                 </div>
 
-                <div class="p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4 min-w-0">
-                            <div class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                                <i class="pi pi-bell text-brand-700 dark:text-ochre-400" aria-hidden="true"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-push-label">{{ t('settings.notifs.push') }}</p>
-                                <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.pushDesc') }}</p>
-                            </div>
+                <div class="py-4">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="min-w-0">
+                            <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-push-label">{{ t('settings.notifs.push') }}</p>
+                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.pushDesc') }}</p>
                         </div>
                         <p-toggleswitch [ngModel]="prefs().push_enabled" [disabled]="loading() || pushBusy()"
                                         (onChange)="onPushToggle($event.checked)"
@@ -68,14 +58,15 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                         </p>
                     }
                     @if (prefs().push_enabled && devices().length > 0) {
-                        <ul class="mt-3 space-y-2" [attr.aria-label]="t('settings.notifs.devices')">
+                        <ul class="mt-4 divide-y divide-surface-200 dark:divide-surface-800 border-t border-surface-200 dark:border-surface-800"
+                            [attr.aria-label]="t('settings.notifs.devices')">
                             @for (device of devices(); track device.id) {
-                                <li class="flex items-center justify-between text-sm px-3 py-2 rounded-lg bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700">
+                                <li class="flex items-center justify-between text-sm py-3">
                                     <span class="truncate text-surface-600 dark:text-surface-300">
                                         <i class="pi pi-mobile mr-2" aria-hidden="true"></i>{{ device.user_agent || t('settings.notifs.unknownDevice') }}
                                     </span>
                                     <button type="button" (click)="removeDevice(device)"
-                                            class="text-negative hover:underline text-xs shrink-0 ml-3"
+                                            class="text-negative-700 dark:text-negative-400 hover:underline text-xs font-medium shrink-0 ml-3"
                                             [attr.aria-label]="t('settings.notifs.removeDevice')">
                                         {{ t('settings.notifs.removeDevice') }}
                                     </button>
@@ -86,54 +77,54 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                 </div>
             </div>
 
-            <p-divider />
-
-            <!-- Signals -->
-            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.notifs.signals') }}</h3>
-            <div class="space-y-3">
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                    <div class="min-w-0">
-                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-budget-label">{{ t('settings.notifs.budget') }}</p>
-                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.budgetDesc') }}</p>
+            <!-- Group: signals (Finary group = big heading + one-line description) -->
+            <div class="mt-8 pt-8 border-t border-surface-200 dark:border-surface-800">
+                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.signals') }}</h3>
+                <div class="divide-y divide-surface-200 dark:divide-surface-800">
+                    <div class="flex items-center justify-between gap-4 py-4">
+                        <div class="min-w-0">
+                            <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-budget-label">{{ t('settings.notifs.budget') }}</p>
+                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.budgetDesc') }}</p>
+                        </div>
+                        <p-toggleswitch [ngModel]="prefs().signal_budget" [disabled]="loading()"
+                                        (onChange)="save({ signal_budget: $event.checked })"
+                                        ariaLabelledBy="notif-budget-label" />
                     </div>
-                    <p-toggleswitch [ngModel]="prefs().signal_budget" [disabled]="loading()"
-                                    (onChange)="save({ signal_budget: $event.checked })"
-                                    ariaLabelledBy="notif-budget-label" />
-                </div>
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                    <div class="min-w-0">
-                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-tontine-label">{{ t('settings.notifs.tontine') }}</p>
-                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.tontineDesc') }}</p>
+                    <div class="flex items-center justify-between gap-4 py-4">
+                        <div class="min-w-0">
+                            <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-tontine-label">{{ t('settings.notifs.tontine') }}</p>
+                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.tontineDesc') }}</p>
+                        </div>
+                        <p-toggleswitch [ngModel]="prefs().signal_tontine" [disabled]="loading()"
+                                        (onChange)="save({ signal_tontine: $event.checked })"
+                                        ariaLabelledBy="notif-tontine-label" />
                     </div>
-                    <p-toggleswitch [ngModel]="prefs().signal_tontine" [disabled]="loading()"
-                                    (onChange)="save({ signal_tontine: $event.checked })"
-                                    ariaLabelledBy="notif-tontine-label" />
                 </div>
             </div>
 
-            <p-divider />
-
-            <!-- Quiet hours -->
-            <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.quietHours') }}</h3>
-            <p class="text-sm text-surface-500 dark:text-surface-400 mb-4">{{ t('settings.notifs.quietHoursDesc') }}</p>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="flex flex-col gap-1">
-                    <label for="quiet-start" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietFrom') }}</label>
-                    <input id="quiet-start" type="time" [ngModel]="prefs().quiet_hours_start" [disabled]="loading()"
-                           (ngModelChange)="save({ quiet_hours_start: $event })"
-                           class="px-3 py-2 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-0" />
-                </div>
-                <div class="flex flex-col gap-1">
-                    <label for="quiet-end" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietTo') }}</label>
-                    <input id="quiet-end" type="time" [ngModel]="prefs().quiet_hours_end" [disabled]="loading()"
-                           (ngModelChange)="save({ quiet_hours_end: $event })"
-                           class="px-3 py-2 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-900 dark:text-surface-0" />
-                </div>
-                <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
-                    <label for="quiet-tz" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.timezone') }}</label>
-                    <p-select inputId="quiet-tz" [ngModel]="prefs().timezone" [options]="timezones" [disabled]="loading()"
-                              (onChange)="save({ timezone: $event.value })"
-                              class="w-full" styleClass="w-full" />
+            <!-- Group: quiet hours -->
+            <div class="mt-4 pt-8 border-t border-surface-200 dark:border-surface-800">
+                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.quietHours') }}</h3>
+                <p class="text-sm text-surface-500 dark:text-surface-400 mb-5">{{ t('settings.notifs.quietHoursDesc') }}</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 omaad-quiet-form">
+                    <div class="flex flex-col gap-1">
+                        <label for="quiet-start" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietFrom') }}</label>
+                        <input id="quiet-start" type="time" [ngModel]="prefs().quiet_hours_start" [disabled]="loading()"
+                               (ngModelChange)="save({ quiet_hours_start: $event })"
+                               class="py-2.5 bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 text-surface-900 dark:text-surface-0 focus:border-brand-700 dark:focus:border-ochre-400 focus:outline-none" />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label for="quiet-end" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietTo') }}</label>
+                        <input id="quiet-end" type="time" [ngModel]="prefs().quiet_hours_end" [disabled]="loading()"
+                               (ngModelChange)="save({ quiet_hours_end: $event })"
+                               class="py-2.5 bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 text-surface-900 dark:text-surface-0 focus:border-brand-700 dark:focus:border-ochre-400 focus:outline-none" />
+                    </div>
+                    <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
+                        <label for="quiet-tz" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.timezone') }}</label>
+                        <p-select inputId="quiet-tz" [ngModel]="prefs().timezone" [options]="timezones" [disabled]="loading()"
+                                  (onChange)="save({ timezone: $event.value })"
+                                  class="w-full" styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                    </div>
                 </div>
             </div>
         </div>

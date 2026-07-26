@@ -91,7 +91,7 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </ng-template>
         </p-dialog>
-        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+        <div class="px-1">
             <!-- Mon Profil Section -->
             <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>

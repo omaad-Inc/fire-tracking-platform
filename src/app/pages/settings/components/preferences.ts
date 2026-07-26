@@ -22,10 +22,10 @@ import { ApiService } from '../../../core/services/api.service';
     providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+        <div class="px-1">
             <!-- Language & Region -->
             <div class="relative mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.title') }}</h2>
+                <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.title') }}</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Language -->

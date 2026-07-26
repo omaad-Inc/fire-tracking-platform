@@ -28,7 +28,7 @@ interface FaqItem {
         <div class="flex flex-col gap-5">
 
             <!-- ── Search bar ────────────────────────────────────── -->
-            <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
+            <div class="px-1">
                 <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('help.title') }}</h2>
                 <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">{{ i18n.t('help.subtitle') }}</p>
                 <div class="relative">
@@ -54,17 +54,17 @@ interface FaqItem {
             </div>
 
             <!-- ── FAQ ──────────────────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 border-t border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-question-circle text-brand-700 dark:text-brand-300"></i>
                     </div>
-                    <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.faqTitle') }}</h2>
+                    <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.faqTitle') }}</h2>
                 </div>
 
                 <div class="divide-y divide-surface-100 dark:divide-surface-700/50">
                     @for (item of filteredFaq(); track item.questionKey) {
-                        <div class="px-5">
+                        <div>
                             <button (click)="item.open = !item.open"
                                     class="w-full flex items-center justify-between py-4 text-left group">
                                 <span class="font-medium text-surface-900 dark:text-surface-0 text-sm pr-4 group-hover:text-ochre-600 dark:group-hover:text-ochre-400 transition-colors">
@@ -81,7 +81,7 @@ interface FaqItem {
                         </div>
                     }
                     @if (filteredFaq().length === 0) {
-                        <div class="px-5 py-8 text-center text-surface-500 dark:text-surface-400 text-sm">
+                        <div class="py-8 text-center text-surface-500 dark:text-surface-400 text-sm">
                             {{ i18n.t('help.noResults', { query: searchQuery }) }}
                         </div>
                     }
@@ -89,18 +89,18 @@ interface FaqItem {
             </section>
 
             <!-- ── Contact ──────────────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 border-t border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-envelope text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.contactTitle') }}</h2>
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.contactTitle') }}</h2>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ i18n.t('help.responseTime') }}</p>
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="pb-2">
                     <div class="flex flex-col gap-6">
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('help.subject') }}</label>
@@ -130,12 +130,12 @@ interface FaqItem {
             </section>
 
             <!-- ── Other resources ──────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 border-t border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
                         <i class="pi pi-link text-positive"></i>
                     </div>
-                    <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.resourcesTitle') }}</h2>
+                    <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('help.resourcesTitle') }}</h2>
                 </div>
                 <div class="divide-y divide-surface-100 dark:divide-surface-700/50">
                     @for (res of resources; track res.label) {

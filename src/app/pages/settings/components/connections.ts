@@ -29,10 +29,11 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
         <p-toast position="top-center"></p-toast>
         <p-confirmDialog></p-confirmDialog>
 
-        <div class="max-w-2xl mx-auto">
-            <!-- Header -->
+        <div class="max-w-2xl mx-auto lg:mx-0 px-1">
+            <!-- Header (title hidden on mobile: the shell's slim header shows it) -->
             <div class="flex items-center justify-between mb-2">
-                <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0">{{ t('broker.connections') }}</h2>
+                <h2 class="hidden lg:block text-lg font-bold text-surface-900 dark:text-surface-0">{{ t('broker.connections') }}</h2>
+                <span class="lg:hidden"></span>
                 <button pButton type="button"
                         [label]="t('broker.addAccount')"
                         icon="pi pi-plus"
