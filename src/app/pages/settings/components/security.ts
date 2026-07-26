@@ -29,19 +29,19 @@ import { firstValueFrom } from 'rxjs';
         <div class="flex flex-col gap-4 md:gap-6">
 
             <!-- ── 1. Méthode de connexion ──────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
+            <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
                 <!-- Section header -->
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-lock text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.methodTitle') }}</h2>
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.methodTitle') }}</h2>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.methodSub') }}</p>
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="pb-2">
                     @if (isGoogleUser()) {
                         <!-- Google OAuth user -->
                         <div class="flex items-center gap-4 p-4 rounded-2xl bg-brand-50 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
@@ -58,7 +58,7 @@ import { firstValueFrom } from 'rxjs';
                                 <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('security.connectedGoogle') }}</p>
                                 <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{{ user()?.email }}</p>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold shrink-0">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-semibold shrink-0">
                                 <i class="pi pi-check text-[10px]"></i> {{ t('security.active') }}
                             </span>
                         </div>
@@ -98,18 +98,18 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 2. Sécurité avancée (2FA) ────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
                         <i class="pi pi-shield text-positive"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.advancedSecurity') }}</h2>
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.advancedSecurity') }}</h2>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.twoFAFull') }}</p>
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="pb-2">
                     @if (isGoogleUser()) {
                         <!-- Google handles 2FA -->
                         <div class="flex items-start gap-4 p-4 rounded-2xl bg-positive-50 dark:bg-positive-700/15 border border-positive-100 dark:border-positive-700/40">
@@ -198,18 +198,18 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 3. Code PIN ────────────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
                         <i class="pi pi-lock text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.pinTitle') }}</h2>
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.pinTitle') }}</h2>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.pinLockAccess') }}</p>
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="pb-2">
                     @if (!pinService.isPinSet()) {
                         <!-- PIN not set, setup flow -->
                         @if (!pinSetupActive) {
@@ -303,18 +303,18 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 4. Session actuelle ──────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
                         <i class="pi pi-desktop text-brand-700 dark:text-brand-300"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.currentSession') }}</h2>
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.currentSession') }}</h2>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.currentDevice') }}</p>
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="pb-2">
                     <!-- Current real session -->
                     <div class="flex items-center gap-3 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
                         <div class="w-10 h-10 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
@@ -323,7 +323,7 @@ import { firstValueFrom } from 'rxjs';
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ currentSession().device }}</p>
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-[10px] font-semibold">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-[10px] font-semibold">
                                     <span class="w-1.5 h-1.5 rounded-full bg-positive-500"></span>
                                     {{ t('security.activeNow') }}
                                 </span>
@@ -331,7 +331,7 @@ import { firstValueFrom } from 'rxjs';
                             <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                                 {{ currentSession().browser }} · {{ user()?.email }}
                             </p>
-                            <p class="text-xs text-surface-400 dark:text-surface-500 mt-0.5">
+                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                                 {{ t('security.connectedPrefix') }} {{ currentSession().loginTime }}
                             </p>
                         </div>
@@ -358,18 +358,18 @@ import { firstValueFrom } from 'rxjs';
             </section>
 
             <!-- ── 4. Activité récente ──────────────────────────────── -->
-            <section class="relative overflow-hidden rounded-2xl border border-surface-200 dark:border-surface-700">
-                <div class="flex items-center gap-3 px-5 py-4 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50">
+            <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
                         <i class="pi pi-history text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-base font-semibold text-surface-900 dark:text-surface-0 m-0">{{ t('security.recentActivity') }}</h2>
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.recentActivity') }}</h2>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.recentActivitySub') }}</p>
                     </div>
                 </div>
 
-                <div class="p-5">
+                <div class="pb-2">
                     @if (historyLoading()) {
                         <div class="flex justify-center py-6"><i class="pi pi-spin pi-spinner text-surface-400"></i></div>
                     } @else {
@@ -384,7 +384,7 @@ import { firstValueFrom } from 'rxjs';
                                         <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ methodLabel(ev.method) }}</p>
                                         <p class="text-xs text-surface-500 dark:text-surface-400 truncate">{{ uaLabel(ev.user_agent) }}@if (ev.ip) { · {{ ev.ip }}}</p>
                                     </div>
-                                    <span class="text-xs text-surface-400 shrink-0">{{ formatDate(ev.created_at) }}</span>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400 shrink-0">{{ formatDate(ev.created_at) }}</span>
                                 </div>
                             }
 
@@ -398,7 +398,7 @@ import { firstValueFrom } from 'rxjs';
                                         <p class="text-sm text-surface-900 dark:text-surface-0 font-medium">{{ t('security.accountCreated') }}</p>
                                         <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.signupOmaad') }}</p>
                                     </div>
-                                    <span class="text-xs text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
+                                    <span class="text-xs text-surface-500 dark:text-surface-400 shrink-0">{{ formatDate(user()?.created_at) }}</span>
                                 </div>
                             }
 

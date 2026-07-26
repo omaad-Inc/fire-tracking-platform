@@ -37,3 +37,15 @@
         font-size: 16px !important;
     }
 }
+
+/* Réglages (S9, Finary) : les pages défilent sans afficher de barre de
+   défilement. La classe est posée sur <html> par le shell Settings. */
+html.settings-no-scrollbar,
+html.settings-no-scrollbar body {
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* legacy Edge */
+}
+html.settings-no-scrollbar::-webkit-scrollbar,
+html.settings-no-scrollbar body::-webkit-scrollbar {
+    display: none;              /* WebKit */
+}

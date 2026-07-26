@@ -2,28 +2,26 @@ import { Routes } from '@angular/router';
 import { Settings } from './settings';
 import { AccountSettings } from './components/account';
 import { SecuritySettings } from './components/security';
-import { PreferencesSettings } from './components/preferences';
-import { HelpSettings } from './components/help';
-import { PlansSettings } from './components/plans';
 import { ConnectionsSettings } from './components/connections';
+import { PreferencesSettings } from './components/preferences';
+import { NotificationsSettings } from './components/notifications';
+import { HelpSettings } from './components/help';
 
-// FireSettings is still imported by /pages/fire (the deep-dive page); we just
-// no longer expose it as a /settings/fire route, FIRE configuration happens
-// inline on /pages/fire to avoid two surfaces for the same thing.
-
+// Settings shell (S9 redesign, Finary-benchmarked): immersive page; ONE
+// section component per route. Bare /settings is the mobile HOME MENU (the
+// shell auto-forwards to account on desktop so the rail has an active entry).
+// Plans remains a standalone page at /pages/plans (linked from the rail).
 export default [
     {
         path: '',
         component: Settings,
         children: [
-            // No default redirect, mobile shows the nav list, desktop shows a placeholder
-            { path: 'account',     component: AccountSettings     },
-            { path: 'security',    component: SecuritySettings    },
-            { path: 'preferences', component: PreferencesSettings },
-            { path: 'connections', component: ConnectionsSettings },
-            { path: 'help',        component: HelpSettings        },
-            { path: 'plans',       component: PlansSettings       },
+            { path: 'account',       component: AccountSettings       },
+            { path: 'security',      component: SecuritySettings      },
+            { path: 'connections',   component: ConnectionsSettings   },
+            { path: 'preferences',   component: PreferencesSettings   },
+            { path: 'notifications', component: NotificationsSettings },
+            { path: 'help',          component: HelpSettings          },
         ]
     }
 ] as Routes;
-

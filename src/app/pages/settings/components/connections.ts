@@ -29,10 +29,11 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
         <p-toast position="top-center"></p-toast>
         <p-confirmDialog></p-confirmDialog>
 
-        <div class="max-w-2xl mx-auto">
-            <!-- Header -->
+        <div class="max-w-2xl mx-auto lg:mx-0 px-1">
+            <!-- Header (title hidden on mobile: the shell's slim header shows it) -->
             <div class="flex items-center justify-between mb-2">
-                <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0">{{ t('broker.connections') }}</h2>
+                <h2 class="hidden lg:block text-lg font-bold text-surface-900 dark:text-surface-0">{{ t('broker.connections') }}</h2>
+                <span class="lg:hidden"></span>
                 <button pButton type="button"
                         [label]="t('broker.addAccount')"
                         icon="pi pi-plus"
@@ -41,7 +42,7 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
                 </button>
             </div>
 
-            <p class="text-surface-400 text-sm mb-6">{{ t('broker.refreshNote') }}</p>
+            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('broker.refreshNote') }}</p>
 
             @if (loading()) {
                 <div class="flex items-center justify-center py-16">
@@ -56,7 +57,7 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
                         <i class="pi pi-link text-2xl text-surface-400"></i>
                     </div>
                     <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-2">{{ t('broker.emptyTitle') }}</h3>
-                    <p class="text-surface-400 text-sm mb-6 max-w-sm mx-auto">{{ t('broker.emptyDesc') }}</p>
+                    <p class="text-surface-500 dark:text-surface-400 text-sm mb-6 max-w-sm mx-auto">{{ t('broker.emptyDesc') }}</p>
                     <button pButton type="button"
                             [label]="t('broker.emptyAction')"
                             icon="pi pi-plus"

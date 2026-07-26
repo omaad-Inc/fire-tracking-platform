@@ -91,7 +91,7 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </ng-template>
         </p-dialog>
-        <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+        <div class="px-1">
             <!-- Mon Profil Section -->
             <div class="relative mb-8">
                 <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
@@ -108,11 +108,12 @@ import { environment } from '../../../../environments/environment';
                                 {{ userInitials }}
                             </div>
                         }
-                        <button 
+                        <button
                             class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                             (click)="fileInput.click()"
+                            [attr.aria-label]="t('settings.account.changePhoto')"
                         >
-                            <i class="pi pi-camera text-white text-xl"></i>
+                            <i class="pi pi-camera text-white text-xl" aria-hidden="true"></i>
                         </button>
                         <input 
                             type="file" 
@@ -149,18 +150,20 @@ import { environment } from '../../../../environments/environment';
                 <!-- Name Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.firstName') }}</label>
-                        <input 
-                            pInputText 
-                            [(ngModel)]="firstName" 
+                        <label for="acc-first-name" class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.firstName') }}</label>
+                        <input
+                            pInputText
+                            id="acc-first-name"
+                            [(ngModel)]="firstName"
                             class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
                     <div>
-                        <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.lastName') }}</label>
-                        <input 
-                            pInputText 
-                            [(ngModel)]="lastName" 
+                        <label for="acc-last-name" class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.lastName') }}</label>
+                        <input
+                            pInputText
+                            id="acc-last-name"
+                            [(ngModel)]="lastName"
                             class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                         />
                     </div>
@@ -186,7 +189,7 @@ import { environment } from '../../../../environments/environment';
                     </div>
                     <div class="mt-3 flex items-center gap-2">
                         @if (user()?.is_verified) {
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive dark:text-positive-400 text-xs font-semibold">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-semibold">
                                 <i class="pi pi-check text-[10px]"></i>{{ t('settings.account.verified') }}
                             </span>
                         }
@@ -215,8 +218,8 @@ import { environment } from '../../../../environments/environment';
                         </div>
                     </div>
                     <p-button 
-                        [label]="t('settings.account.logoutButton')" 
-                        severity="warn"
+                        [label]="t('settings.account.logoutButton')"
+                        severity="secondary"
                         [outlined]="true"
                         icon="pi pi-sign-out"
                         (click)="logout()"
@@ -232,10 +235,11 @@ import { environment } from '../../../../environments/environment';
                 <p class="text-surface-500 dark:text-surface-400 mb-4">
                     {{ t('settings.account.deleteAccountDesc') }}
                 </p>
-                <p-button 
-                    [label]="t('settings.account.deleteMyAccount')" 
-                    severity="danger" 
+                <p-button
+                    [label]="t('settings.account.deleteMyAccount')"
+                    severity="danger"
                     [outlined]="true"
+                    styleClass="!text-negative-700 dark:!text-negative-400 !border-negative-700/60 dark:!border-negative-400/60"
                     icon="pi pi-trash"
                     (click)="confirmDeleteAccount()"
                 />
