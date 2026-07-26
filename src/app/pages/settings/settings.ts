@@ -23,10 +23,10 @@ import { environment } from '../../../environments/environment';
             @if (!hasActiveChild()) {
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-6">
-                    <button (click)="goBack()"
+                    <button (click)="goBack()" [attr.aria-label]="t('common.back')"
                             class="w-10 h-10 flex items-center justify-center rounded-full
                                    bg-surface-100 dark:bg-surface-800 transition-all shrink-0">
-                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
+                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
                     </button>
                     <a routerLink="help"
                        class="flex items-center gap-1.5 px-4 py-2 rounded-full border border-surface-300 dark:border-surface-600
@@ -126,20 +126,20 @@ import { environment } from '../../../environments/environment';
             @if (hasActiveChild()) {
                 <!-- Sub-page header with back arrow -->
                 <div class="flex items-center gap-3 mb-5">
-                    <button (click)="goToSettingsNav()"
+                    <button (click)="goToSettingsNav()" [attr.aria-label]="t('common.back')"
                             class="w-10 h-10 flex items-center justify-center rounded-full
                                    bg-surface-100 dark:bg-surface-800 transition-all shrink-0">
-                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300"></i>
+                        <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
                     </button>
                     <h1 class="text-xl sm:text-2xl font-bold text-surface-900 dark:text-surface-0 flex-1 truncate">
                         {{ activePageLabel() }}
                     </h1>
-                    <button (click)="goBack()"
+                    <button (click)="goBack()" [attr.aria-label]="t('common.close')"
                             class="w-10 h-10 flex items-center justify-center rounded-full
                                    bg-surface-100 dark:bg-surface-800
                                    hover:bg-negative-50 dark:hover:bg-negative-700/30 transition-all shrink-0"
-                            title="Fermer">
-                        <i class="pi pi-times text-surface-600 dark:text-surface-300"></i>
+                            [title]="t('common.close')">
+                        <i class="pi pi-times text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
                     </button>
                 </div>
 
@@ -202,6 +202,7 @@ export class Settings implements OnInit {
             { route: 'security',    icon: 'pi-shield',    label: this.t('menu.security') },
             { route: 'connections', icon: 'pi-link',      label: this.t('settings.myConnections') },
             { route: 'preferences', icon: 'pi-cog',       label: this.t('menu.preferences') },
+            { route: 'notifications', icon: 'pi-bell',    label: this.t('menu.notifications') },
         ];
     }
 
