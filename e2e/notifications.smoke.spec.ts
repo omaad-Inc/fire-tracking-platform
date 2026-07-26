@@ -57,12 +57,29 @@ test('notifications: email opt-in persists through the API and reverts', async (
     await expect(emailToggle).not.toBeChecked({ timeout: 20_000 });
 });
 
-test('notifications: settings rail navigates to the section page', async ({ page }) => {
+test('notifications: desktop rail navigates to the section page', async ({ page }) => {
     await login(page);
     await page.goto('/fr/pages/settings');
-    // /settings redirects to the account section; the rail links to notifications.
+    // On desktop /settings auto-forwards to account; the rail links onward.
     await expect(page).toHaveURL(/settings\/account/);
     await page.getByRole('link', { name: 'Notifications' }).click();
     await expect(page).toHaveURL(/settings\/notifications/);
     await expect(page.locator('#notif-email-label')).toBeVisible();
+});
+
+test('notifications: mobile settings opens the home menu first', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await login(page);
+    await page.goto('/fr/pages/settings');
+    // Mobile: NO auto-forward — the Finary-style home menu shows.
+    await expect(page).toHaveURL(/settings$/);
+    await expect(page.getByRole('link', { name: 'Notifications' })).toBeVisible();
+
+    await page.getByRole('link', { name: 'Notifications' }).click();
+    await expect(page).toHaveURL(/settings\/notifications/);
+    await expect(page.locator('#notif-email-label')).toBeVisible();
+
+    // Back arrow returns to the home menu, not the app.
+    await page.getByRole('button', { name: 'Retour' }).click();
+    await expect(page).toHaveURL(/settings$/);
 });
