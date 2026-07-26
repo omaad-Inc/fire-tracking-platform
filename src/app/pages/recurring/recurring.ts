@@ -10,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 import { I18nService } from '../../i18n/i18n.service';
+import { CurrencyService } from '../../core/services/currency.service';
 import {
     ApiService, LiquidAsset, RecurringRule, RecurringRuleCreate, RecurringFrequency,
     TransactionType, TransactionCategory,
@@ -18,6 +19,7 @@ import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
 import { isTouchDevice } from '../../core/util/touch';
+import { toLocalDateStr } from '../../core/util/date';
 
 const INCOME_CATS: TransactionCategory[] = ['salary', 'freelance', 'rental_income', 'other_income'];
 const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tontine', 'subscriptions', 'utilities', 'transport', 'groceries', 'other_expense'];
@@ -79,7 +81,7 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
                             </div>
                             <div class="flex items-center gap-3 shrink-0">
                                 <span class="font-bold" [class]="r.type === 'income' ? 'text-positive' : 'text-surface-900 dark:text-surface-0'">
-                                    <app-amount [value]="r.amount" />
+                                    <app-amount [value]="cs.toEurFromNative(r.amount, r.currency)" />
                                 </span>
                                 <button pButton icon="pi pi-trash" severity="danger" [text]="true" size="small"
                                         (click)="remove(r)"></button>
@@ -138,6 +140,7 @@ export class RecurringPage implements OnInit {
     readonly isTouch = isTouchDevice();
 
     private api = inject(ApiService);
+    readonly cs = inject(CurrencyService);
     private i18n = inject(I18nService);
     private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
@@ -216,14 +219,16 @@ export class RecurringPage implements OnInit {
     save() {
         if (!this.form.amount || !this.form.account_id) return;
         this.saving.set(true);
+        // The amount is typed in the user's display currency; store it as-is with
+        // its currency code (rules materialize into native-currency transactions).
         const payload: RecurringRuleCreate = {
             type: this.form.type,
             category: this.form.category,
             amount: this.form.amount,
-            currency: 'XOF',
+            currency: this.cs.config().code,
             account_id: this.form.account_id,
             frequency: this.form.frequency,
-            start_date: this.form.start.toISOString().slice(0, 10),
+            start_date: toLocalDateStr(this.form.start),
         };
         this.api.createRecurringRule(payload).subscribe({
             next: () => {

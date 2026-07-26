@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService, PublicGoal } from '../../core/services/api.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { templateOf } from '../goals/goal-templates';
+import { nbspSafe } from '../../core/util/nbsp';
 
 /** EUR-base → display, matching CurrencyService/app-amount rates. */
 const RATES: Record<string, { rate: number; locale: string }> = {
@@ -121,7 +122,7 @@ export class PublicGoalPage implements OnInit {
         const g = this.goal();
         const cfg = RATES[g?.currency ?? 'EUR'] ?? RATES['EUR'];
         const val = Math.round((eur ?? 0) * cfg.rate);
-        return `${new Intl.NumberFormat(cfg.locale, { maximumFractionDigits: 0 }).format(val)} ${g?.currency_symbol ?? ''}`.trim();
+        return `${nbspSafe(new Intl.NumberFormat(cfg.locale, { maximumFractionDigits: 0 }).format(val))} ${g?.currency_symbol ?? ''}`.trim();
     }
 
     prettyDate(iso: string): string {

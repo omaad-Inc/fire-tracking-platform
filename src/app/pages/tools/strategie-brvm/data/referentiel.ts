@@ -13,6 +13,8 @@
  * "pas de conseil" du plan d'intégration (§4).
  */
 
+import { nbspSafe } from '../../../../core/util/nbsp';
+
 export const DISCLAIMER =
     'Contenu éducatif uniquement. Pas un conseil en investissement personnalisé. ' +
     'Les projections sont des hypothèses, pas des promesses ; investir comporte un risque de perte en capital.';
@@ -122,12 +124,13 @@ export const JALONS: { cible: number; note: string }[] = [
 
 // ── Formatage (parité avec l'app d'origine) ──
 export const fmtFCFA = (n: number): string => {
-    if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + ' Md';
-    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + ' M';
+    if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2).replace('.', ',') + ' Md';
+    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2).replace('.', ',') + ' M';
     if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(0) + ' k';
     return Math.round(n).toString();
 };
 
-export const fmtFCFAfull = (n: number): string => new Intl.NumberFormat('fr-FR').format(Math.round(n));
+export const fmtFCFAfull = (n: number): string =>
+    nbspSafe(new Intl.NumberFormat('fr-FR').format(Math.round(n)));
 
 export const fmtEUR = (n: number): string => (n / FCFA_PER_EUR).toFixed(0);

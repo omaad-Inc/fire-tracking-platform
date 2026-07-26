@@ -3,6 +3,7 @@ import { TokenService } from './token.service';
 import { ApiService } from './api.service';
 import { AnalyticsService } from './analytics.service';
 import { ShareContextService } from './share-context.service';
+import { nbspSafe } from '../util/nbsp';
 import { firstValueFrom } from 'rxjs';
 
 export interface CurrencyConfig {
@@ -126,10 +127,10 @@ export class CurrencyService {
     format(eurValue: number, fractionDigits = 0): string {
         const { symbol, locale } = this.config();
         const displayValue = this.convert(eurValue);
-        const n = new Intl.NumberFormat(locale, {
+        const n = nbspSafe(new Intl.NumberFormat(locale, {
             maximumFractionDigits: fractionDigits,
             minimumFractionDigits: fractionDigits,
-        }).format(displayValue);
+        }).format(displayValue));
         return `${n} ${symbol}`;
     }
 
@@ -137,10 +138,10 @@ export class CurrencyService {
     formatNumber(eurValue: number, fractionDigits = 0): string {
         const displayValue = this.convert(eurValue);
         const { locale } = this.config();
-        return new Intl.NumberFormat(locale, {
+        return nbspSafe(new Intl.NumberFormat(locale, {
             maximumFractionDigits: fractionDigits,
             minimumFractionDigits: fractionDigits,
-        }).format(displayValue);
+        }).format(displayValue));
     }
 
     /** Format a value ALREADY in the display currency, WITHOUT converting it again.
@@ -149,10 +150,10 @@ export class CurrencyService {
      *  value to formatNumber() would multiply it by the FX rate a second time. */
     formatDisplayNumber(displayValue: number | null | undefined, fractionDigits = 0): string {
         const { locale } = this.config();
-        return new Intl.NumberFormat(locale, {
+        return nbspSafe(new Intl.NumberFormat(locale, {
             maximumFractionDigits: fractionDigits,
             minimumFractionDigits: fractionDigits,
-        }).format(displayValue ?? 0);
+        }).format(displayValue ?? 0));
     }
 
     /** Y-axis tick formatter for Chart.js (passed as a plain function ref). */
