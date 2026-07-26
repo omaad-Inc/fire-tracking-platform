@@ -73,7 +73,15 @@ export class VerifyEmail {
             return;
         }
         this.authService.verifyEmail(token).subscribe({
-            next: () => this.state.set('success'),
+            next: (res) => {
+                this.state.set('success');
+                // S10-SEC-1: the link doubles as the first login — the service
+                // stored the returned session; warm the user profile so the
+                // dashboard opens instantly.
+                if (res?.access_token) {
+                    this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
+                }
+            },
             error: () => this.state.set('error'),
         });
     }
