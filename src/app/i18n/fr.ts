@@ -198,9 +198,10 @@ export const FR = {
     perYear: '/an',
     perMonth: '/mois',
     freeForever: 'Gratuit pour toujours',
-    proAnnualSub: 'soit 4 000 FCFA/mois',
-    proMonthlySub: '72 000 FCFA/an au total',
-    premiumAnnualSub: 'soit 6 667 FCFA/mois',
+    annualSave: 'jusqu\'à −20%',
+    proAnnualSub: 'soit 3 333 FCFA/mois',
+    proMonthlySub: '48 000 FCFA/an au total',
+    premiumAnnualSub: 'soit 8 000 FCFA/mois',
     premiumMonthlySub: '120 000 FCFA/an au total',
     unlimited: 'Illimité',
     freeFeatures: {

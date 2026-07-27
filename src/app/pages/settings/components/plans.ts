@@ -64,7 +64,7 @@ interface PlanFeature {
                     </button>
                 </div>
                 <span class="px-2 py-1 rounded-md bg-positive/15 text-positive text-xs font-bold">
-                    −33%
+                    {{ t('plans.annualSave') }}
                 </span>
             </div>
 
@@ -266,12 +266,12 @@ export class PlansSettings {
                 sub: t('plans.freeForever'),
             },
             pro: {
-                amount: annual ? '48 000' : '6 000',
+                amount: annual ? '40 000' : '4 000',
                 period,
                 sub: annual ? t('plans.proAnnualSub') : t('plans.proMonthlySub'),
             },
             premium: {
-                amount: annual ? '80 000' : '10 000',
+                amount: annual ? '96 000' : '10 000',
                 period,
                 sub: annual ? t('plans.premiumAnnualSub') : t('plans.premiumMonthlySub'),
             },

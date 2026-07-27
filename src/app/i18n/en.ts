@@ -200,9 +200,10 @@ export const EN: Dict = {
     perYear: '/year',
     perMonth: '/month',
     freeForever: 'Free forever',
-    proAnnualSub: '= 4,000 FCFA/month',
-    proMonthlySub: '72,000 FCFA/year total',
-    premiumAnnualSub: '= 6,667 FCFA/month',
+    annualSave: 'up to −20%',
+    proAnnualSub: '= 3,333 FCFA/month',
+    proMonthlySub: '48,000 FCFA/year total',
+    premiumAnnualSub: '= 8,000 FCFA/month',
     premiumMonthlySub: '120,000 FCFA/year total',
     unlimited: 'Unlimited',
     freeFeatures: {
