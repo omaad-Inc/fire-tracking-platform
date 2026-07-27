@@ -76,9 +76,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <span class="text-surface-500 dark:text-surface-400 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
                                 </div>
                                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.proSubprice') }}</p>
-                                <button pButton pRipple [rounded]="true" [disabled]="true"
-                                    class="w-full !py-3 !font-semibold !bg-ochre-500/40 !border-0 !text-warm-900 !cursor-not-allowed mb-8">
-                                    {{ t('landing.pricing.comingSoonCta') }}
+                                <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
+                                    class="w-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all mb-8">
+                                    {{ t('plans.choose') }}
                                 </button>
                                 <p-divider />
                                 <ul class="space-y-3 mt-6">
@@ -101,39 +101,40 @@ import { I18nService } from '../../../i18n/i18n.service';
                         </div>
                     </div>
 
-                    <!-- Premium Plan -->
+                    <!-- Premium Plan (dark, flagship) -->
                     <div class="col-span-12 md:col-span-4">
-                        <div class="h-full bg-surface-50 dark:bg-surface-800 rounded-2xl p-8 border border-surface-200 dark:border-surface-700">
+                        <div class="relative h-full bg-brand-800 dark:bg-brand-950 rounded-2xl p-8 border border-brand-700 shadow-lifted overflow-hidden">
+                            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ochre-400 via-ochre-500 to-ochre-400"></div>
                             <div class="mb-6">
-                                <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
-                                    <i class="pi pi-bolt text-brand-700 dark:text-ochre-400 text-xl"></i>
+                                <div class="w-12 h-12 rounded-xl bg-ochre-500/20 flex items-center justify-center mb-4">
+                                    <i class="pi pi-bolt text-ochre-400 text-xl"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('landing.pricing.premiumName') }}</h3>
-                                <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.premiumTagline') }}</p>
+                                <h3 class="text-xl font-bold text-white mb-1">{{ t('landing.pricing.premiumName') }}</h3>
+                                <p class="text-white/60 text-sm">{{ t('landing.pricing.premiumTagline') }}</p>
                             </div>
                             <div class="flex items-baseline gap-1 mb-2">
-                                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">10 000</span>
-                                <span class="text-surface-500 dark:text-surface-400 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
+                                <span class="text-4xl font-bold text-white">10 000</span>
+                                <span class="text-white/50 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
                             </div>
-                            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.premiumSubprice') }}</p>
-                            <button pButton pRipple [rounded]="true" [outlined]="true" [disabled]="true"
-                                class="w-full !py-3 !font-semibold !border-surface-300 dark:!border-surface-500 !text-surface-500 dark:!text-surface-400 !cursor-not-allowed mb-8">
-                                {{ t('landing.pricing.comingSoonCta') }}
+                            <p class="text-white/50 text-sm mb-6">{{ t('landing.pricing.premiumSubprice') }}</p>
+                            <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
+                                class="w-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all mb-8">
+                                {{ t('plans.choose') }}
                             </button>
-                            <p-divider />
+                            <div class="h-px bg-white/10 my-2"></div>
                             <ul class="space-y-3 mt-6">
                                 <li class="flex items-center gap-3">
-                                    <div class="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-700/30 flex items-center justify-center flex-shrink-0">
-                                        <i class="pi pi-check text-brand-700 dark:text-brand-300 text-xs"></i>
+                                    <div class="w-5 h-5 rounded-full bg-ochre-500/20 flex items-center justify-center flex-shrink-0">
+                                        <i class="pi pi-check text-ochre-400 text-xs"></i>
                                     </div>
-                                    <span class="text-surface-700 dark:text-surface-300 text-sm font-medium">{{ t('landing.pricing.premiumIncludes') }}</span>
+                                    <span class="text-white text-sm font-medium">{{ t('landing.pricing.premiumIncludes') }}</span>
                                 </li>
                                 @for (f of premiumFeatures(); track f) {
                                     <li class="flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-brand-100 dark:bg-brand-700/30 flex items-center justify-center flex-shrink-0">
-                                            <i class="pi pi-check text-brand-700 dark:text-brand-300 text-xs"></i>
+                                        <div class="w-5 h-5 rounded-full bg-ochre-500/20 flex items-center justify-center flex-shrink-0">
+                                            <i class="pi pi-check text-ochre-400 text-xs"></i>
                                         </div>
-                                        <span class="text-surface-700 dark:text-surface-300 text-sm">{{ f }}</span>
+                                        <span class="text-white/80 text-sm">{{ f }}</span>
                                     </li>
                                 }
                             </ul>

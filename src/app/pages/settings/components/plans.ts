@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { I18nService } from '../../../i18n/i18n.service';
+import { PlanCheckoutSheet } from './plan-checkout-sheet';
 
 interface PlanFeature {
     label: string;
@@ -15,7 +16,7 @@ interface PlanFeature {
 @Component({
     selector: 'app-settings-plans',
     standalone: true,
-    imports: [CommonModule, ButtonModule, DividerModule],
+    imports: [CommonModule, ButtonModule, DividerModule, PlanCheckoutSheet],
     template: `
         <div class="flex flex-col gap-6 max-w-6xl mx-auto min-h-screen pt-2 sm:pt-6">
 
@@ -41,31 +42,6 @@ interface PlanFeature {
                 <p class="text-surface-500 dark:text-surface-400 text-sm max-w-lg mx-auto">
                     {{ t('plans.subtitle') }}
                 </p>
-            </div>
-
-            <!-- Billing cadence toggle -->
-            <div class="flex items-center justify-center gap-3">
-                <div class="inline-flex items-center gap-1 p-1 rounded-xl bg-surface-100 dark:bg-surface-800">
-                    <button type="button"
-                            (click)="billing.set('monthly')"
-                            class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
-                            [ngClass]="billing() === 'monthly'
-                                ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
-                                : 'text-surface-500 dark:text-surface-400'">
-                        {{ t('plans.monthly') }}
-                    </button>
-                    <button type="button"
-                            (click)="billing.set('annual')"
-                            class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
-                            [ngClass]="billing() === 'annual'
-                                ? 'bg-white dark:bg-surface-700 text-surface-900 dark:text-surface-0 shadow-sm'
-                                : 'text-surface-500 dark:text-surface-400'">
-                        {{ t('plans.annual') }}
-                    </button>
-                </div>
-                <span class="px-2 py-1 rounded-md bg-positive/15 text-positive text-xs font-bold">
-                    {{ t('plans.annualSave') }}
-                </span>
             </div>
 
             <!-- Plan cards -->
@@ -121,9 +97,9 @@ interface PlanFeature {
                         <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.proTagline') }}</p>
                     </div>
                     <button pButton
-                            [label]="t('plans.comingSoon')"
-                            [disabled]="true" icon="pi pi-clock"
-                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 opacity-70"></button>
+                            (click)="openCheckout('pro')"
+                            [label]="t('plans.choose')" icon="pi pi-arrow-right" iconPos="right"
+                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900"></button>
                     <ul class="relative space-y-3.5 flex-1">
                         <li class="flex items-start gap-2.5 text-sm text-surface-900 dark:text-surface-0 font-semibold">
                             <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
@@ -138,32 +114,33 @@ interface PlanFeature {
                     </ul>
                 </div>
 
-                <!-- Premium -->
-                <div class="relative rounded-2xl px-6 pt-9 pb-7 flex flex-col bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                <!-- Premium (dark, flagship — the premium signal) -->
+                <div class="relative rounded-2xl px-6 pt-9 pb-7 flex flex-col bg-brand-800 dark:bg-brand-950 border border-brand-700 shadow-lifted overflow-hidden">
+                    <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ochre-400 via-ochre-500 to-ochre-400"></div>
                     <div class="text-center">
-                        <div class="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] uppercase text-brand-700 dark:text-brand-300">
+                        <div class="inline-flex items-center gap-1.5 text-[11px] font-bold tracking-[0.18em] uppercase text-ochre-400">
                             <i class="pi pi-bolt !text-[11px]" aria-hidden="true"></i>
                             Premium
                         </div>
                         <div class="mt-6 flex items-baseline justify-center gap-1.5">
-                            <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().premium.amount }}</span>
-                            <span class="text-surface-500 text-sm">FCFA{{ pricing().premium.period }}</span>
+                            <span class="text-4xl font-bold text-white">{{ pricing().premium.amount }}</span>
+                            <span class="text-white/50 text-sm">FCFA{{ pricing().premium.period }}</span>
                         </div>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5">{{ pricing().premium.sub }}</p>
-                        <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.premiumTagline') }}</p>
+                        <p class="text-xs text-white/50 mt-1.5">{{ pricing().premium.sub }}</p>
+                        <p class="text-sm text-white/70 mt-5 mb-6 min-h-10">{{ t('plans.premiumTagline') }}</p>
                     </div>
                     <button pButton
-                            [label]="t('plans.comingSoon')"
-                            [disabled]="true" icon="pi pi-clock"
-                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold !bg-brand-700 !border-0 !text-white dark:!bg-brand-300 dark:!text-warm-900 opacity-70"></button>
+                            (click)="openCheckout('premium')"
+                            [label]="t('plans.choose')" icon="pi pi-arrow-right" iconPos="right"
+                            class="relative w-full mb-7 !rounded-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all"></button>
                     <ul class="relative space-y-3.5 flex-1">
-                        <li class="flex items-start gap-2.5 text-sm text-surface-900 dark:text-surface-0 font-semibold">
-                            <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
+                        <li class="flex items-start gap-2.5 text-sm text-white font-semibold">
+                            <i class="pi pi-check !text-xs text-ochre-400 shrink-0 mt-1" aria-hidden="true"></i>
                             {{ t('plans.everythingPro') }}
                         </li>
                         @for (f of premiumFeatures(); track f) {
-                            <li class="flex items-start gap-2.5 text-sm text-surface-700 dark:text-surface-300">
-                                <i class="pi pi-check !text-xs text-positive-700 dark:text-positive-400 shrink-0 mt-1" aria-hidden="true"></i>
+                            <li class="flex items-start gap-2.5 text-sm text-white/80">
+                                <i class="pi pi-check !text-xs text-ochre-400 shrink-0 mt-1" aria-hidden="true"></i>
                                 {{ f }}
                             </li>
                         }
@@ -196,7 +173,7 @@ interface PlanFeature {
                                         @if (row.free === true) {
                                             <i class="pi pi-check text-positive text-xs"></i>
                                         } @else if (row.free === false) {
-                                            <span class="text-surface-400">, </span>
+                                            <span class="text-surface-300 dark:text-surface-600">–</span>
                                         } @else {
                                             <span class="text-surface-600 dark:text-surface-400 text-xs">{{ row.free }}</span>
                                         }
@@ -205,7 +182,7 @@ interface PlanFeature {
                                         @if (row.pro === true) {
                                             <i class="pi pi-check text-ochre-500 text-xs"></i>
                                         } @else if (row.pro === false) {
-                                            <span class="text-surface-400">, </span>
+                                            <span class="text-surface-300 dark:text-surface-600">–</span>
                                         } @else {
                                             <span class="text-ochre-500 text-xs font-medium">{{ row.pro }}</span>
                                         }
@@ -214,7 +191,7 @@ interface PlanFeature {
                                         @if (row.premium === true) {
                                             <i class="pi pi-check text-brand-700 dark:text-brand-300 text-xs"></i>
                                         } @else if (row.premium === false) {
-                                            <span class="text-surface-400">, </span>
+                                            <span class="text-surface-300 dark:text-surface-600">–</span>
                                         } @else {
                                             <span class="text-brand-700 dark:text-brand-300 text-xs font-medium">{{ row.premium }}</span>
                                         }
@@ -233,6 +210,9 @@ interface PlanFeature {
                     {{ t('plans.trustNote') }}
                 </p>
             </div>
+
+            <!-- Duration + payment checkout sheet (farata-style) -->
+            <app-plan-checkout-sheet [(open)]="sheetVisible" [tier]="sheetTier()" />
         </div>
     `
 })
@@ -253,28 +233,22 @@ export class PlansSettings {
         }
     }
 
-    billing = signal<'monthly' | 'annual'>('annual');
+    // Checkout sheet state: duration + payment method are chosen there.
+    sheetVisible = signal(false);
+    sheetTier = signal<'pro' | 'premium'>('premium');
+    openCheckout(tier: 'pro' | 'premium'): void {
+        this.sheetTier.set(tier);
+        this.sheetVisible.set(true);
+    }
 
+    // Tier cards show the 1-month anchor price; the sheet reveals cheaper longer passes.
     pricing = computed(() => {
-        const annual = this.billing() === 'annual';
         const t = (k: string) => this.i18n.t(k);
-        const period = annual ? t('plans.perYear') : t('plans.perMonth');
+        const period = t('plans.perMonth');
         return {
-            free: {
-                amount: '0',
-                period,
-                sub: t('plans.freeForever'),
-            },
-            pro: {
-                amount: annual ? '40 000' : '4 000',
-                period,
-                sub: annual ? t('plans.proAnnualSub') : t('plans.proMonthlySub'),
-            },
-            premium: {
-                amount: annual ? '96 000' : '10 000',
-                period,
-                sub: annual ? t('plans.premiumAnnualSub') : t('plans.premiumMonthlySub'),
-            },
+            free:    { amount: '0',      period, sub: t('plans.freeForever') },
+            pro:     { amount: '4 000',  period, sub: t('plans.orLongerPass') },
+            premium: { amount: '10 000', period, sub: t('plans.orLongerPass') },
         };
     });
 
