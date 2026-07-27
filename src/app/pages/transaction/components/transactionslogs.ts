@@ -662,7 +662,9 @@ export class TransactionLogs implements OnInit, OnDestroy {
             this.accountOptions.set(
                 assets
                     .filter(a => TransactionLogs.MONETARY_CATEGORIES.includes(a.category))
-                    .map(a => ({ label: a.name, value: a.id }))
+                    // Balance in the label: the account moves with each
+                    // transaction now (S11-TX-1), show the effect at entry time.
+                    .map(a => ({ label: `${a.name} · ${this.cs.format(a.value)}`, value: a.id }))
             );
         } catch {
             this.accountOptions.set([]);

@@ -37,6 +37,10 @@ export class PatrimoineService {
     constructor() {
         // Invalidate whenever assets change externally (e.g. via the topbar quick-add).
         this.stateService.assetsUpdated$.subscribe(() => this.assetsResource.invalidate());
+        // Transactions now move account balances server-side (S11-TX-1), so any
+        // transaction write also stales the asset list: manual entries, CSV
+        // imports and recurring materialization all funnel through this event.
+        this.stateService.transactionsUpdated$.subscribe(() => this.assetsResource.invalidate());
         // Clear cached user data on logout/login (see CACHE_RESET).
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }
