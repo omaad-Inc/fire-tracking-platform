@@ -64,7 +64,7 @@ interface PlanFeature {
                     </button>
                 </div>
                 <span class="px-2 py-1 rounded-md bg-positive/15 text-positive text-xs font-bold">
-                    −33%
+                    {{ t('plans.annualSave') }}
                 </span>
             </div>
 
@@ -266,12 +266,12 @@ export class PlansSettings {
                 sub: t('plans.freeForever'),
             },
             pro: {
-                amount: annual ? '48 000' : '6 000',
+                amount: annual ? '40 000' : '4 000',
                 period,
                 sub: annual ? t('plans.proAnnualSub') : t('plans.proMonthlySub'),
             },
             premium: {
-                amount: annual ? '80 000' : '10 000',
+                amount: annual ? '96 000' : '10 000',
                 period,
                 sub: annual ? t('plans.premiumAnnualSub') : t('plans.premiumMonthlySub'),
             },
@@ -290,21 +290,33 @@ export class PlansSettings {
         const t = (k: string) => this.i18n.t(k);
         const unlimited = t('plans.unlimited');
         return [
+            // The free tier is the complete manual tracker; data rights
+            // (export) and security are NEVER paywalled (S11 plan matrix,
+            // ratified 2026-07-27).
             { label: t('plans.compare.assets'),             free: unlimited, pro: unlimited, premium: unlimited },
             { label: 'Transactions',                        free: unlimited, pro: unlimited, premium: unlimited },
+            { label: t('plans.compare.brvmQuotes'),         free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.savingsGoals'),       free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.debts'),              free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.charts'),             free: true,  pro: true,  premium: true  },
+            { label: t('plans.compare.coaching'),           free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.fireGoal'),           free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.multiCurrency'),      free: true,  pro: true,  premium: true  },
-            { label: 'Export CSV / PDF',                    free: false, pro: true,  premium: true  },
+            { label: t('plans.compare.notifications'),      free: true,  pro: true,  premium: true  },
+            { label: t('plans.compare.dataExport'),         free: true,  pro: true,  premium: true  },
+            { label: t('plans.compare.shareLinks'),         free: '1',   pro: unlimited, premium: unlimited },
+            { label: t('plans.compare.aiAssistant'),        free: false, pro: true,  premium: true  },
+            { label: t('plans.compare.momoSync'),           free: false, pro: '2',   premium: unlimited },
+            { label: t('plans.compare.smsAlerts'),          free: false, pro: true,  premium: true  },
             { label: t('plans.compare.automatedReports'),   free: false, pro: true,  premium: true  },
             { label: t('plans.compare.customAlerts'),       free: false, pro: true,  premium: true  },
-            { label: t('plans.compare.predictiveAnalysis'), free: false, pro: true,  premium: true  },
+            { label: t('plans.compare.brvmHistory'),        free: false, pro: true,  premium: true  },
+            { label: t('plans.compare.advancedReports'),    free: false, pro: true,  premium: true  },
+            { label: t('plans.compare.customCategories'),   free: false, pro: true,  premium: true  },
             { label: t('plans.compare.prioritySupport'),    free: false, pro: true,  premium: true  },
-            { label: t('plans.compare.bankSync'),           free: false, pro: false, premium: true  },
-            { label: t('plans.compare.dedicatedAdvisor'),   free: false, pro: false, premium: true  },
-            { label: t('plans.compare.taxAnalysis'),        free: false, pro: false, premium: true  },
+            { label: t('plans.compare.aiAdvisor'),          free: false, pro: false, premium: true  },
+            { label: t('plans.compare.multiPortfolios'),    free: false, pro: false, premium: true  },
+            { label: t('plans.compare.groupTontine'),       free: false, pro: false, premium: true  },
             { label: t('plans.compare.apiIntegrations'),    free: false, pro: false, premium: true  },
         ];
     });

@@ -72,7 +72,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.proTagline') }}</p>
                                 </div>
                                 <div class="flex items-baseline gap-1 mb-2">
-                                    <span class="text-4xl font-bold text-ochre-500 dark:text-ochre-400">6 000</span>
+                                    <span class="text-4xl font-bold text-ochre-500 dark:text-ochre-400">4 000</span>
                                     <span class="text-surface-500 dark:text-surface-400 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
                                 </div>
                                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.proSubprice') }}</p>
