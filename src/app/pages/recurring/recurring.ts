@@ -20,6 +20,7 @@ import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
 import { isTouchDevice } from '../../core/util/touch';
 import { toLocalDateStr } from '../../core/util/date';
+import { AssetsStateService } from '../service/assets-state.service';
 
 const INCOME_CATS: TransactionCategory[] = ['salary', 'freelance', 'rental_income', 'other_income'];
 const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tontine', 'subscriptions', 'utilities', 'transport', 'groceries', 'other_expense'];
@@ -141,6 +142,7 @@ export class RecurringPage implements OnInit {
 
     private api = inject(ApiService);
     readonly cs = inject(CurrencyService);
+    private state = inject(AssetsStateService);
     private i18n = inject(I18nService);
     private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
@@ -174,7 +176,7 @@ export class RecurringPage implements OnInit {
         // (DB writes on a slow backend) in front of the whole page render.
         this.load();
         this.api.runRecurring().subscribe({
-            next: (res) => { if ((res?.created ?? 0) > 0) this.load(); },
+            next: (res) => { if ((res?.created ?? 0) > 0) { this.load(); this.notifyMaterialized(); } },
             error: () => { /* backend may lack the route yet */ },
         });
     }
@@ -184,9 +186,16 @@ export class RecurringPage implements OnInit {
             next: (res) => {
                 this.toast.add({ severity: 'success', summary: this.t('recurring.runDone', { count: res.created }) });
                 this.load();
+                if ((res?.created ?? 0) > 0) this.notifyMaterialized();
             },
             error: () => this.toast.add({ severity: 'error', summary: this.t('common.error') }),
         });
+    }
+
+    /** Materialized rows also moved account balances (S11-TX-1): tell the
+     *  dashboard and patrimoine caches so they refetch fresh values. */
+    private notifyMaterialized(): void {
+        this.state.notifyTransactionsUpdated();
     }
 
     load() {
