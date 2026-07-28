@@ -71,30 +71,50 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                  BLOC 2, Notre histoire (texte + portrait + signature)
             ════════════════════════════════ -->
             <section class="bg-surface-50 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
-                <div class="max-w-3xl mx-auto">
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white mb-8 leading-tight">
-                        {{ t('landing.about.historyTitle') }}
-                    </h2>
-                    <div class="space-y-6 text-lg text-surface-700 dark:text-surface-300 leading-relaxed">
-                        <p>{{ t('landing.about.historyP1') }}</p>
-                        <p>
-                            <strong class="text-surface-900 dark:text-white">{{ t('landing.about.historyP2Lead') }}</strong>{{ t('landing.about.historyP2') }}
-                        </p>
-                    </div>
-                    <div class="mt-10 p-6 md:p-8 rounded-2xl border-l-4 border-ochre-500 bg-ochre-50 dark:bg-ochre-900/10">
-                        <p class="text-base md:text-lg text-surface-700 dark:text-surface-200 leading-relaxed">
-                            {{ t('landing.about.historyAmbitionPre') }}
-                            <strong class="text-surface-900 dark:text-white">
-                                {{ t('landing.about.historyAmbition') }}
-                            </strong>
-                        </p>
-                    </div>
-                    <!-- Signature (no photo, founders already shown in hero & team) -->
-                    <div class="mt-10">
-                        <div class="text-xl font-bold italic text-surface-900 dark:text-white tracking-tight">
-                            {{ t('landing.about.historySignature') }}
+                <div class="max-w-6xl mx-auto grid lg:grid-cols-12 gap-10 lg:gap-16">
+                    <!-- Left: sticky section heading + signature -->
+                    <div class="lg:col-span-4">
+                        <div class="lg:sticky lg:top-28">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-ochre-200 dark:border-ochre-500/40 bg-ochre-50 dark:bg-ochre-500/10 text-ochre-700 dark:text-ochre-300 text-[11px] font-semibold uppercase tracking-[0.2em] mb-5">
+                                <i class="pi pi-book text-[10px]"></i>{{ _('Notre parcours', 'Our journey') }}
+                            </div>
+                            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white leading-[1.1]">
+                                {{ t('landing.about.historyTitle') }}
+                            </h2>
+                            <div class="mt-8 hidden lg:block">
+                                <div class="text-lg font-bold italic text-surface-900 dark:text-white tracking-tight">
+                                    {{ t('landing.about.historySignature') }}
+                                </div>
+                                <div class="mt-2 h-0.5 w-16 bg-ochre-500 rounded-full"></div>
+                            </div>
                         </div>
-                        <div class="mt-2 h-0.5 w-16 bg-ochre-500 rounded-full"></div>
+                    </div>
+
+                    <!-- Right: the story, editorial measure with a drop-cap + pull-quote -->
+                    <div class="lg:col-span-8 max-w-2xl">
+                        <div class="space-y-6 text-lg text-surface-700 dark:text-surface-300 leading-relaxed">
+                            <p class="first-letter:float-left first-letter:mr-3 first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.75] first-letter:text-brand-700 dark:first-letter:text-ochre-400">
+                                {{ t('landing.about.historyP1') }}
+                            </p>
+                            <p>
+                                <strong class="text-surface-900 dark:text-white">{{ t('landing.about.historyP2Lead') }}</strong>{{ t('landing.about.historyP2') }}
+                            </p>
+                        </div>
+
+                        <!-- Ambition, as a pull-quote -->
+                        <figure class="mt-10 pl-6 border-l-4 border-ochre-500">
+                            <blockquote class="text-xl md:text-2xl font-semibold leading-snug text-surface-900 dark:text-white">
+                                <span class="font-normal text-surface-500 dark:text-surface-400">{{ t('landing.about.historyAmbitionPre') }} </span>{{ t('landing.about.historyAmbition') }}
+                            </blockquote>
+                        </figure>
+
+                        <!-- Signature on mobile (left column is hidden there) -->
+                        <div class="mt-10 lg:hidden">
+                            <div class="text-lg font-bold italic text-surface-900 dark:text-white tracking-tight">
+                                {{ t('landing.about.historySignature') }}
+                            </div>
+                            <div class="mt-2 h-0.5 w-16 bg-ochre-500 rounded-full"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -102,25 +122,32 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 3, Omaad en chiffres (cards premium, canvas sombre)
             ════════════════════════════════ -->
-            <section class="bg-brand-950 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
-                <div class="max-w-6xl mx-auto">
-                    <div class="text-center max-w-2xl mx-auto mb-14">
+            <section class="relative overflow-hidden bg-brand-950 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
+                <!-- Faint brand wash so the dark band doesn't read as flat -->
+                <div class="absolute -top-24 right-0 w-[28rem] h-[28rem] rounded-full bg-ochre-500/10 blur-3xl pointer-events-none"></div>
+                <div class="relative max-w-6xl mx-auto">
+                    <div class="max-w-2xl mb-14 md:mb-16">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/15 text-ochre-300 text-[11px] font-semibold uppercase tracking-[0.22em] mb-5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-ochre-400"></span>{{ _('En toute transparence', 'Full transparency') }}
+                        </div>
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3">{{ t('landing.about.numbersTitle') }}</h2>
                         <p class="text-base md:text-lg text-brand-200">{{ t('landing.about.numbersSubtitle') }}</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+
+                    <!-- Editorial stat strip: thin dividers instead of heavy cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 border-t border-white/10">
                         @for (n of numbers; track n.value) {
-                            <div class="relative overflow-hidden rounded-3xl bg-white/[0.04] border border-white/10 p-8 min-h-[300px] flex flex-col">
-                                <div class="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-ochre-500/20 blur-3xl"></div>
-                                <div class="relative w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center">
-                                    <i class="pi {{ n.icon }} text-3xl text-ochre-300"></i>
+                            <div class="group py-9 md:py-11 md:px-9 first:md:pl-0
+                                        border-b border-white/10 md:border-b-0 md:border-r md:last:border-r-0">
+                                <div class="flex items-center gap-2 mb-5 text-ochre-300">
+                                    <i class="pi {{ n.icon }} text-sm"></i>
+                                    <span class="h-px flex-1 bg-gradient-to-r from-ochre-500/40 to-transparent"></span>
                                 </div>
-                                <div class="relative mt-auto pt-10">
-                                    <div class="text-5xl md:text-6xl font-bold text-white mb-3 tracking-tight">{{ t(n.value) }}</div>
-                                    <p class="text-base text-surface-300 leading-relaxed">
-                                        <span class="font-semibold text-white">{{ t(n.lead) }}</span>{{ t(n.rest) }}
-                                    </p>
-                                </div>
+                                <div class="text-6xl md:text-7xl font-bold tracking-tight text-white mb-4 tnum
+                                            transition-colors duration-300 group-hover:text-ochre-300">{{ t(n.value) }}</div>
+                                <p class="text-[15px] text-brand-200 leading-relaxed max-w-[30ch]">
+                                    <span class="font-semibold text-white">{{ t(n.lead) }}</span>{{ t(n.rest) }}
+                                </p>
                             </div>
                         }
                     </div>
@@ -291,18 +318,147 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                         {{ t('landing.about.ctaTagline') }}
                     </p>
 
-                    <!-- Product showcase (browser frame) -->
-                    <div class="relative max-w-4xl mx-auto">
-                        <div class="absolute -inset-6 bg-ochre-500/10 blur-3xl rounded-full"></div>
-                        <div class="absolute -inset-6 bg-brand-500/10 blur-3xl rounded-full"></div>
-                        <div class="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-surface-900">
-                            <div class="flex items-center gap-1.5 px-4 py-3 bg-white/5 border-b border-white/10">
-                                <span class="w-3 h-3 rounded-full bg-negative/70"></span>
-                                <span class="w-3 h-3 rounded-full bg-ochre-400/70"></span>
-                                <span class="w-3 h-3 rounded-full bg-positive-500/70"></span>
+                    <!-- Product showcase: large 16:9 dashboard (rendered, not a screenshot) -->
+                    <div class="relative max-w-5xl mx-auto text-left">
+                        <!-- Soft brand glow behind the window -->
+                        <div class="absolute -inset-8 bg-gradient-to-tr from-ochre-500/20 via-transparent to-brand-500/20 rounded-[2.5rem] blur-3xl pointer-events-none"></div>
+
+                        <!-- App window -->
+                        <div class="relative rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-white/10 shadow-2xl ring-1 ring-surface-900/5 dark:ring-white/10">
+                            <!-- Browser chrome -->
+                            <div class="flex items-center gap-2 px-4 py-3 border-b border-surface-200 dark:border-white/10 bg-surface-50 dark:bg-surface-800/50">
+                                <div class="flex gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-negative/60"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-ochre-500/70"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-positive-500/70"></span>
+                                </div>
+                                <span class="mx-auto inline-flex items-center gap-1.5 text-surface-400 dark:text-surface-500 text-xs tracking-wide">
+                                    <i class="pi pi-lock text-[9px]"></i>omaad.africa
+                                </span>
+                                <span class="w-6 shrink-0"></span>
                             </div>
-                            <img src="assets/product/home_product.webp" alt="Omaad, dashboard"
-                                 class="w-full block" loading="lazy" />
+
+                            <!-- Dashboard body: sidebar + main, locked to ~16:9 on desktop -->
+                            <div class="flex md:aspect-[16/9]">
+                                <!-- Sidebar -->
+                                <aside class="hidden md:flex md:flex-col w-52 shrink-0 border-r border-surface-200 dark:border-white/10 bg-surface-50/70 dark:bg-surface-800/40 p-4">
+                                    <div class="flex items-center gap-2 mb-6 px-1">
+                                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-brand-700 text-white text-xs font-bold">O</span>
+                                        <span class="font-bold text-surface-900 dark:text-white text-sm tracking-tight">Omaad</span>
+                                    </div>
+                                    <nav class="space-y-1">
+                                        @for (item of dashNav; track item.fr; let first = $first) {
+                                            <div class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px]"
+                                                 [class]="first ? 'bg-brand-700/10 dark:bg-ochre-500/15 text-brand-700 dark:text-ochre-300 font-semibold' : 'text-surface-500 dark:text-surface-400'">
+                                                <i class="pi {{ item.icon }} text-xs"></i>{{ _(item.fr, item.en) }}
+                                            </div>
+                                        }
+                                    </nav>
+                                    <div class="mt-auto rounded-xl p-3 bg-gradient-to-br from-brand-700 to-brand-900 text-white">
+                                        <div class="text-[11px] font-semibold">{{ t('landing.hero.mockupFire') }}</div>
+                                        <div class="text-[10px] text-brand-100/80 mt-0.5">43% · 12 {{ t('landing.hero.mockupFireYears') }}</div>
+                                    </div>
+                                </aside>
+
+                                <!-- Main -->
+                                <div class="flex-1 min-w-0 p-5 sm:p-6 flex flex-col gap-4 md:gap-5 overflow-hidden">
+                                    <!-- Header: Patrimoine Net -->
+                                    <div class="flex items-start justify-between gap-4">
+                                        <div class="min-w-0">
+                                            <div class="text-surface-500 dark:text-surface-400 text-[11px] uppercase tracking-wider mb-1">{{ _('Patrimoine Net', 'Net Worth') }}</div>
+                                            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                                <span class="text-surface-900 dark:text-white font-bold text-4xl sm:text-5xl tracking-tight">85,6M</span>
+                                                <span class="text-surface-400 dark:text-surface-500 text-base">FCFA</span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-positive-500/10 text-positive-600 dark:text-positive-400 text-xs font-semibold">
+                                                    <i class="pi pi-arrow-up text-[8px]"></i>+12,5%
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="hidden sm:flex items-center gap-2 shrink-0">
+                                            <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300">FCFA</span>
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-700 text-white text-[10px] font-bold">MS</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- KPI tiles -->
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                        <div class="rounded-xl px-3.5 py-3 bg-surface-50 dark:bg-surface-800/60 border border-surface-100 dark:border-surface-800">
+                                            <div class="text-[10px] text-surface-500 dark:text-surface-400 mb-1">{{ t('landing.hero.mockupSavings') }}</div>
+                                            <div class="text-brand-700 dark:text-brand-300 font-bold text-lg">38%</div>
+                                        </div>
+                                        <div class="rounded-xl px-3.5 py-3 bg-surface-50 dark:bg-surface-800/60 border border-surface-100 dark:border-surface-800">
+                                            <div class="text-[10px] text-surface-500 dark:text-surface-400 mb-1">{{ t('landing.hero.mockupFire') }}</div>
+                                            <div class="text-ochre-600 dark:text-ochre-400 font-bold text-lg">43%</div>
+                                        </div>
+                                        <div class="rounded-xl px-3.5 py-3 bg-surface-50 dark:bg-surface-800/60 border border-surface-100 dark:border-surface-800">
+                                            <div class="text-[10px] text-surface-500 dark:text-surface-400 mb-1">{{ _('Revenu passif', 'Passive income') }}</div>
+                                            <div class="text-positive-600 dark:text-positive-400 font-bold text-lg">312k <span class="text-[10px] font-normal text-surface-400">/mois</span></div>
+                                        </div>
+                                        <div class="rounded-xl px-3.5 py-3 bg-surface-50 dark:bg-surface-800/60 border border-surface-100 dark:border-surface-800">
+                                            <div class="text-[10px] text-surface-500 dark:text-surface-400 mb-1">{{ _('Dettes', 'Debts') }}</div>
+                                            <div class="text-negative font-bold text-lg">−4,2M</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chart + breakdown fill the remaining height -->
+                                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:flex-1 lg:min-h-0">
+                                        <!-- Net-worth area chart -->
+                                        <div class="lg:col-span-3 rounded-xl border border-surface-100 dark:border-surface-800 bg-surface-50/60 dark:bg-surface-800/40 p-4 flex flex-col">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-surface-500 dark:text-surface-400 text-[11px] font-medium uppercase tracking-wider">{{ _('Évolution du patrimoine', 'Net worth trend') }}</span>
+                                                <span class="text-positive-600 dark:text-positive-400 text-[11px] font-bold">+12,5%</span>
+                                            </div>
+                                            <svg viewBox="0 0 320 130" class="w-full h-36 lg:h-full lg:min-h-0" preserveAspectRatio="none" aria-hidden="true">
+                                                <defs>
+                                                    <linearGradient id="aboutArea" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stop-color="#C77B3C" stop-opacity="0.30" />
+                                                        <stop offset="100%" stop-color="#C77B3C" stop-opacity="0" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <path d="M0,104 C34,98 54,96 84,84 C114,72 134,78 164,60 C194,42 214,48 244,32 C274,16 296,18 320,10 L320,130 L0,130 Z" fill="url(#aboutArea)" />
+                                                <path d="M0,104 C34,98 54,96 84,84 C114,72 134,78 164,60 C194,42 214,48 244,32 C274,16 296,18 320,10"
+                                                      fill="none" stroke="#C77B3C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+                                            </svg>
+                                        </div>
+                                        <!-- Répartition + FIRE -->
+                                        <div class="lg:col-span-2 rounded-xl border border-surface-100 dark:border-surface-800 bg-surface-50/60 dark:bg-surface-800/40 p-4 flex flex-col">
+                                            <span class="text-surface-500 dark:text-surface-400 text-[11px] font-medium uppercase tracking-wider mb-3">{{ _('Répartition', 'Breakdown') }}</span>
+                                            <div class="space-y-2.5">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-6 h-6 rounded-md bg-brand-100 dark:bg-brand-700/25 flex items-center justify-center shrink-0"><i class="pi pi-home text-brand-700 dark:text-brand-300" style="font-size:10px"></i></div>
+                                                    <span class="text-surface-600 dark:text-surface-400 text-xs flex-1 truncate">{{ _('Immobilier', 'Real estate') }}</span>
+                                                    <span class="text-surface-900 dark:text-surface-0 text-xs font-semibold tnum">52,4M</span>
+                                                </div>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-6 h-6 rounded-md bg-ochre-100 dark:bg-ochre-800/30 flex items-center justify-center shrink-0"><i class="pi pi-chart-line text-ochre-600 dark:text-ochre-400" style="font-size:10px"></i></div>
+                                                    <span class="text-surface-600 dark:text-surface-400 text-xs flex-1 truncate">BRVM / SONATEL</span>
+                                                    <span class="text-surface-900 dark:text-surface-0 text-xs font-semibold tnum">18,2M</span>
+                                                </div>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-6 h-6 rounded-md bg-brand-100 dark:bg-brand-700/25 flex items-center justify-center shrink-0"><i class="pi pi-users text-brand-700 dark:text-brand-300" style="font-size:10px"></i></div>
+                                                    <span class="text-surface-600 dark:text-surface-400 text-xs flex-1 truncate">{{ _('Tontine Famille', 'Family tontine') }}</span>
+                                                    <span class="text-surface-900 dark:text-surface-0 text-xs font-semibold tnum">8,5M</span>
+                                                </div>
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="w-6 h-6 rounded-md bg-brand-100 dark:bg-brand-700/25 flex items-center justify-center shrink-0"><i class="pi pi-mobile text-brand-700 dark:text-brand-300" style="font-size:10px"></i></div>
+                                                    <span class="text-surface-600 dark:text-surface-400 text-xs flex-1 truncate">Wave</span>
+                                                    <span class="text-surface-900 dark:text-surface-0 text-xs font-semibold tnum">6,5M</span>
+                                                </div>
+                                            </div>
+                                            <!-- FIRE progress -->
+                                            <div class="mt-auto pt-4">
+                                                <div class="flex items-center justify-between mb-1.5">
+                                                    <span class="text-surface-500 dark:text-surface-400 text-[10px] font-medium uppercase tracking-wider">{{ t('landing.hero.mockupFire') }}</span>
+                                                    <span class="text-positive-600 dark:text-positive-400 text-xs font-bold">43% · 12 {{ t('landing.hero.mockupFireYears') }}</span>
+                                                </div>
+                                                <div class="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                                                    <div class="h-full rounded-full bg-gradient-to-r from-brand-700 via-ochre-500 to-positive-500" style="width: 43%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -323,6 +479,15 @@ export class QuiSommesNousPage {
         { value: 'landing.about.kpi1Value', lead: 'landing.about.kpi1Lead', rest: 'landing.about.kpi1Rest', icon: 'pi-book' },
         { value: 'landing.about.kpi2Value', lead: 'landing.about.kpi2Lead', rest: 'landing.about.kpi2Rest', icon: 'pi-globe' },
         { value: 'landing.about.kpi3Value', lead: 'landing.about.kpi3Lead', rest: 'landing.about.kpi3Rest', icon: 'pi-money-bill' },
+    ];
+
+    /** Sidebar nav for the CTA dashboard mock (first item renders active). */
+    readonly dashNav = [
+        { fr: 'Tableau de bord', en: 'Dashboard',    icon: 'pi-th-large' },
+        { fr: 'Patrimoine',      en: 'Portfolio',     icon: 'pi-wallet' },
+        { fr: 'Transactions',    en: 'Transactions',  icon: 'pi-sync' },
+        { fr: 'Objectifs',       en: 'Goals',         icon: 'pi-flag' },
+        { fr: 'Conseils',        en: 'Insights',      icon: 'pi-lightbulb' },
     ];
 
     readonly values = [

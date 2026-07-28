@@ -1,0 +1,122 @@
+{
+  "edition": "005",
+  "slug": "comparer-sgi-brvm",
+  "title": "Quelle SGI choisir pour investir à la BRVM ? Le guide comparatif",
+  "subtitle": "Édition #005 · FIRE Africa par Omaad",
+  "tags": [
+    "SGI",
+    "BRVM",
+    "courtier",
+    "frais",
+    "comparaison",
+    "compte-titres",
+    "UEMOA"
+  ],
+  "readingMinutes": 5,
+  "blocks": [
+    {
+      "kind": "section",
+      "text": "L'INSIGHT DE LA QUINZAINE"
+    },
+    {
+      "kind": "h2",
+      "text": "Pour investir à la BRVM, il te faut une SGI. Et toutes ne se valent pas."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Pour acheter une seule action à la BRVM, tu dois obligatoirement passer par une SGI (Société de Gestion et d'Intermédiation). C'est ton courtier, ton intermédiaire, ton point d'accès au marché. Pas de SGI, pas d'investissement. Et le choix de ta SGI a un impact direct sur la rentabilité de ton portefeuille à long terme."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Aujourd'hui, il existe 41 SGI agréées par l'AMF-UMOA, réparties dans les 8 pays de l'UEMOA (source : AMF-UMOA, liste officielle des agréments, recoupée dans le Comparateur FIRE Africa). Le problème : leurs tarifs, leurs services et leur accessibilité varient énormément. Et personne ne te fait le comparatif."
+    },
+    {
+      "kind": "subheading",
+      "text": "Voici les 5 critères à regarder avant de choisir :"
+    },
+    {
+      "kind": "paragraph",
+      "text": "**1. Le ticket d'entrée.** Combien faut-il pour ouvrir et démarrer ? Ça varie énormément : certaines SGI n'imposent aucun plancher (ouverture possible à 0 FCFA, sans dépôt minimum), d'autres facturent l'ouverture ou exigent un dépôt de départ. Ne suppose rien : demande le montant minimum d'emblée."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**2. Les frais de courtage (commission sur chaque transaction).** À chaque ordre d'achat ou de vente, ta SGI prend une commission. En général, elle va de 0,2 % à 1 % du montant selon la SGI (tarifs homologués par l'AMF-UMOA), plus la commission de bourse fixe de 0,3 %, avec parfois un minimum forfaitaire (par exemple 5 000 FCFA par ordre). Sur un achat de 100 000 FCFA, une commission de 1 % te coûte 1 000 FCFA. Ça paraît peu, mais sur 20 ans d'investissement régulier, ça s'accumule."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**3. Les frais de tenue de compte.** Certaines SGI facturent des frais annuels pour la simple tenue de ton compte-titres, même sans aucune transaction. Ça va de 0 FCFA (gratuité) à 25 000 FCFA ou plus par an. Si tu es un investisseur buy-and-hold qui achète et garde, ces frais fixes pèsent lourd."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**4. Les droits de garde.** Ce sont les frais de conservation de tes titres, souvent exprimés en pourcentage de la valeur de ton portefeuille (de 0,05 % à 0,5 % par an selon la SGI). Plus ton portefeuille grossit, plus tu paies. C'est le critère le plus sous-estimé par les débutants."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**5. L'accessibilité et le service client.** Peux-tu passer tes ordres en ligne, ou seulement par téléphone/email ? La SGI a-t-elle une plateforme web ou mobile ? Le service client répond-il vite ? Pour un investisseur de la diaspora, l'accessibilité numérique est cruciale : tu ne peux pas te déplacer en agence à Abidjan ou Dakar à chaque achat."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Où sont-elles ?** La majorité des SGI sont basées en Côte d'Ivoire (le siège de la BRVM est à Abidjan) et au Sénégal ; les autres se répartissent entre les six autres pays de l'UEMOA. La liste nominative, officielle et à jour, est celle de l'AMF-UMOA, reprise avec les grilles tarifaires dans le Comparateur. Bonne nouvelle : tu n'es pas obligé de choisir une SGI de ton pays de résidence. Un Sénégalais peut ouvrir un compte chez une SGI ivoirienne, et inversement : la BRVM est une bourse régionale."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Plutôt que des notes d'internautes, compare les grilles tarifaires officielles : le Comparateur FIRE Africa des 41 SGI les met côte à côte (courtage, garde, tenue de compte, ouverture)."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Le conseil FIRE Africa :** avant d'ouvrir, contacte 2 à 3 SGI et demande explicitement leur grille tarifaire complète : ticket d'entrée, commission par ordre, frais de tenue de compte, droits de garde, et frais de transfert/clôture. Compare ligne par ligne. Les écarts peuvent représenter des dizaines de milliers de FCFA par an, de quoi rester dans ton portefeuille plutôt que dans les poches de ton courtier."
+    },
+    {
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "paragraph",
+      "text": "▶ Comment choisir son courtier à la BRVM (les 41 SGI comparées) https://youtu.be/bf3g-dXMOys La démo du comparateur en action : comment lire une grille tarifaire et repérer les frais qui comptent vraiment."
+    },
+    {
+      "kind": "section",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "kind": "paragraph",
+      "text": "On l'a construit, et il est en ligne, gratuit, sans inscription : le Comparateur des 41 SGI (omaad.africa/outils/comparateur-sgi-brvm). Tu compares les grilles tarifaires officielles ligne par ligne : ouverture, courtage par ordre, droits de garde, tenue de compte. Parce qu'obtenir une grille complète d'une SGI relève parfois du parcours du combattant, on l'a fait une fois pour toutes."
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
+    },
+    {
+      "kind": "paragraph",
+      "text": "41 · SGI agréées dans la zone UEMOA pour investir à la BRVM Source : AMF-UMOA, liste officielle des agréments · Comparateur FIRE Africa, 2026"
+    },
+    {
+      "kind": "section",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "kind": "paragraph",
+      "text": "🔗 Le Comparateur FIRE Africa des 41 SGI · les 41 SGI agréées par l'AMF-UMOA, avec leurs grilles tarifaires officielles mises côte à côte : ouverture, courtage, droits de garde, tenue de compte. Gratuit, sans inscription. Le point de départ indispensable avant d'ouvrir un compte-titres. omaad.africa/outils/comparateur-sgi-brvm →"
+    },
+    {
+      "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Ouvre le comparateur et regarde d'abord une seule ligne : les droits de garde. C'est le frais que les débutants oublient, et celui qui grossit avec ton portefeuille. Compare-le sur 2 ou 3 SGI, tu verras déjà l'écart."
+    },
+    {
+      "kind": "section",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "kind": "summary",
+      "items": [
+        "To invest on the BRVM, you must open an account with an SGI (Société de Gestion et d'Intermédiation), a licensed brokerage firm. There are 41 licensed SGI across the 8 UEMOA countries, most of them in Côte d'Ivoire (where the BRVM is based, in Abidjan) and Senegal. You can open an account at any SGI regardless of your country of residence.",
+        "Five criteria matter when comparing SGI: entry ticket (some require no minimum at all, others charge an opening fee or a minimum deposit), brokerage fees per trade (0.2-1% under regulator-approved schedules, plus the fixed 0.3% market fee), annual account maintenance fees (0 to 25,000+ FCFA), custody fees (0.05-0.5% of portfolio value per year), and digital accessibility (online platform, mobile app, responsiveness for diaspora investors).",
+        "Before opening an account, contact 2-3 SGI and request their full official fee schedule. Compare line by line: entry ticket, commission per trade, account fees, custody fees, and transfer/closing fees. The differences can amount to tens of thousands of FCFA per year, money that should be growing in your portfolio, not paying your broker."
+      ]
+    }
+  ]
+}

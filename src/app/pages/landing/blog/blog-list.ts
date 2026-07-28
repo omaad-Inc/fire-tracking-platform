@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
-import { TopbarWidget } from '../components/topbarwidget.component';
+import { BlogTopbar } from './blog-topbar';
 import { FooterWidget } from '../components/footerwidget';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -13,17 +13,14 @@ import { BLOG_POSTS, BlogPost } from './posts';
 @Component({
     selector: 'app-blog-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, RippleModule, TopbarWidget, FooterWidget],
+    imports: [CommonModule, RouterModule, RippleModule, BlogTopbar, FooterWidget],
     template: `
         <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
-            <!-- Topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-800/50"
-                 style="padding-top: env(safe-area-inset-top, 0px)">
-                <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
-            </div>
+            <!-- Resource topbar (same pattern as the BRVM tools) -->
+            <app-blog-topbar />
 
             <!-- Content -->
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
+            <main class="pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
 
                 <!-- Hero -->
                 <header class="mb-12 max-w-3xl">
@@ -41,22 +38,22 @@ import { BLOG_POSTS, BlogPost } from './posts';
                     </p>
                 </header>
 
-                <!-- Tag filter -->
-                <div class="flex flex-wrap gap-2 mb-10">
+                <!-- Topic filter: most-used topics only, one scrollable strip (no wall). -->
+                <div class="blog-filter flex gap-2 mb-10 overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 pb-1">
                     <button (click)="selectedTag.set(null)" pRipple
-                            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
+                            class="shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all"
                             [ngClass]="selectedTag() === null
                                 ? 'bg-brand-700 text-white'
-                                : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200'">
+                                : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                         {{ isFr() ? 'Tous' : 'All' }}
                         <span class="ml-1.5 opacity-70">{{ posts.length }}</span>
                     </button>
-                    @for (tag of allTags(); track tag) {
+                    @for (tag of topTags(); track tag) {
                         <button (click)="selectedTag.set(tag)" pRipple
-                                class="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
+                                class="shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all"
                                 [ngClass]="selectedTag() === tag
                                     ? 'bg-brand-700 text-white'
-                                    : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200'">
+                                    : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                             {{ tag }}
                         </button>
                     }
@@ -122,7 +119,12 @@ import { BLOG_POSTS, BlogPost } from './posts';
 
             <footer-widget />
         </div>
-    `
+    `,
+    styles: [`
+        /* Topic strip scrolls horizontally without a visible scrollbar. */
+        .blog-filter { scrollbar-width: none; -ms-overflow-style: none; }
+        .blog-filter::-webkit-scrollbar { display: none; }
+    `]
 })
 export class BlogList {
     private router = inject(Router);
@@ -130,17 +132,26 @@ export class BlogList {
     private seo    = inject(SeoService);
     private analytics = inject(AnalyticsService);
 
-    posts: BlogPost[] = [...BLOG_POSTS].sort((a, b) => b.date.localeCompare(a.date));
+    // Ascending by edition number (#000 first, then #001, …): the editions read
+    // as a series, so the newsletter is meant to be followed from the start.
+    posts: BlogPost[] = [...BLOG_POSTS].sort((a, b) => a.edition.localeCompare(b.edition));
     selectedTag = signal<string | null>(null);
 
     lang = '/fr';
 
     readonly isFr = computed(() => this.i18n.lang() === 'fr');
 
-    readonly allTags = computed(() => {
-        const tags = new Set<string>();
-        this.posts.forEach(p => p.tags.forEach(t => tags.add(t)));
-        return [...tags].sort();
+    /** The editions carry very granular tags (~68 total); showing them all is a
+     *  wall. Surface only the most-used topics as filters, ranked by how many
+     *  editions use them (ties alphabetical), capped so the strip stays tidy. */
+    readonly topTags = computed(() => {
+        const count = new Map<string, number>();
+        this.posts.forEach(p => p.tags.forEach(t => count.set(t, (count.get(t) ?? 0) + 1)));
+        return [...count.entries()]
+            .filter(([, n]) => n >= 2)
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .slice(0, 10)
+            .map(([t]) => t);
     });
 
     readonly filteredPosts = computed(() => {
