@@ -1,0 +1,86 @@
+{
+  "edition": "007",
+  "slug": "special-dakar-immo",
+  "title": "Spécial Dakar : investir dans l'immobilier depuis l'Europe",
+  "subtitle": "Édition #007, FIRE Africa par Omaad",
+  "tags": [
+    "immobilier",
+    "Dakar",
+    "diaspora",
+    "foncier",
+    "Sénégal"
+  ],
+  "readingMinutes": 3,
+  "blocks": [
+    {
+      "kind": "section",
+      "text": "L'INSIGHT DE LA QUINZAINE"
+    },
+    {
+      "kind": "h2",
+      "text": "L'immobilier au Sénégal, c'est le pilier FIRE que la diaspora connaît le mieux, et maîtrise le moins."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Acheter un terrain au pays. C'est le rêve numéro un de la diaspora sénégalaise. Avant le PEA, avant la crypto, avant tout, il y a le terrain. À Mboro, Diamniadio, Thiès, Saly. Le foncier est culturellement sacré : c'est la preuve tangible que tu as réussi."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Mais entre le rêve et l'investissement rationnel, il y a un gouffre. La plupart des achats de la diaspora se font sur la confiance : un cousin qui connaît un terrain, un démarcheur sur WhatsApp, des papiers qu'on ne vérifie pas assez. Le résultat ? Des litiges fonciers qui traînent des années, des terrains « vendus » à trois personnes différentes, des titres de propriété fantômes."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Investir dans l'immobilier sénégalais depuis l'Europe, c'est possible, et potentiellement très rentable. Les prix à Dakar ont augmenté de 15-20% par an dans certains quartiers sur la dernière décennie. Un terrain à Diamniadio acheté 5 millions FCFA en 2018 vaut 12-15 millions aujourd'hui. Mais il faut traiter ça comme un investissement, pas comme un acte de foi."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Les règles d'or :, Ne jamais acheter sans titre foncier (TF) ou bail emphytéotique vérifié auprès de la Conservation Foncière., Toujours passer par un notaire sénégalais pour l'acte de vente., Calculer le rendement réel : prix d'achat + frais de notaire (8-10%) + clôture + viabilisation. Le terrain nu n'est que le début., Penser rendement locatif si tu construis : un studio meublé à Dakar peut rapporter 150 000-250 000 FCFA/mois, soit 6-8% de rendement brut annuel."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Dans la stratégie FIRE, l'immobilier sénégalais est ton actif « revenu passif en FCFA », celui qui couvre tes dépenses locales quand tu atteins l'indépendance financière. Le PEA couvre la partie européenne. L'immobilier au pays couvre la partie africaine. Les deux ensemble, c'est la souveraineté financière bi-continentale."
+    },
+    {
+      "kind": "section",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "kind": "paragraph",
+      "text": "En septembre, on sera à Dakar pour un voyage terrain. On va documenter le processus d'achat immobilier étape par étape, de la visite du terrain jusqu'à la signature chez le notaire. L'objectif : créer un guide pratique « Acheter au Sénégal depuis l'Europe » basé sur une expérience réelle, pas sur de la théorie."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Dans Omaad Wealth, le module immobilier permet déjà de suivre la valeur de tes biens au Sénégal en FCFA avec estimation de plus-value. On travaille sur l'ajout du suivi locatif, loyers perçus, charges, rendement net automatique."
+    },
+    {
+      "kind": "stat",
+      "value": "+18%",
+      "label": "Hausse moyenne des prix du foncier à Diamniadio sur 12 mois",
+      "source": "Observatoire du foncier sénégalais, T1 2026"
+    },
+    {
+      "kind": "section",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "kind": "resource",
+      "emoji": "📖",
+      "title": "L'investissement immobilier locatif intelligent",
+      "meta": "Julien Delagrandanne",
+      "text": "Écrit pour le marché français, mais les principes de calcul de rendement locatif sont universels. Applique ses grilles d'analyse à un bien à Dakar et tu verras ton projet immobilier sous un angle complètement différent.",
+      "url": null
+    },
+    {
+      "kind": "section",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "kind": "summary",
+      "items": [
+        "Senegalese real estate is the diaspora's most popular asset class, but most purchases lack proper due diligence. Always verify the titre foncier, use a notary, and calculate true costs (land + 8-10% fees + fencing + utilities). A furnished studio in Dakar can yield 6-8% gross annually.",
+        "This September, the Omaad team heads to Dakar to document a real estate purchase step by step, from land visit to notary signing. A practical guide for diaspora investors is coming.",
+        "Land prices in Diamniadio rose 18% in the past 12 months. The new city is becoming Senegal's most dynamic real estate market."
+      ]
+    }
+  ]
+}

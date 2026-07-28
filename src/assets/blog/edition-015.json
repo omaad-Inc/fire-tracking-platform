@@ -1,0 +1,91 @@
+{
+  "edition": "015",
+  "slug": "brvm-vs-cac-stoxx",
+  "title": "BRVM vs CAC 40 / Stoxx 600 : le match européen",
+  "subtitle": "Édition #015, FIRE Africa par Omaad",
+  "tags": [
+    "BRVM",
+    "CAC 40",
+    "Stoxx 600",
+    "Europe",
+    "comparaison",
+    "FCFA"
+  ],
+  "readingMinutes": 3,
+  "blocks": [
+    {
+      "kind": "section",
+      "text": "L'INSIGHT DE LA QUINZAINE"
+    },
+    {
+      "kind": "h2",
+      "text": "Le FCFA est arrimé à l'euro. Alors pourquoi ne pas comparer la BRVM aux marchés européens ?"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Tout le monde compare la BRVM au S&P 500. Mais c'est le mauvais benchmark. Le FCFA est arrimé à l'euro à un taux fixe (655,957 FCFA = 1 EUR) depuis 1999. Ton pouvoir d'achat, ton inflation, ta réalité monétaire, tout est lié à la zone euro, pas au dollar. Le vrai match, c'est BRVM vs CAC 40 et Stoxx 600."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Le CAC 40 d'abord. Sur 10 ans (2015-2025), le CAC 40 a affiché un rendement annualisé d'environ 8-9% dividendes réinvestis (indice GR, Gross Return). C'est nettement supérieur à la BRVM Composite sur la même période. Mais le CAC 40 est concentré : LVMH, TotalEnergies et Sanofi représentent à eux seuls plus de 25% de l'indice. Ta diversification est en réalité limitée."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Le Stoxx 600, c'est l'Europe élargie : 600 entreprises de 17 pays. Rendement annualisé autour de 7-8% sur 10 ans, avec une bien meilleure diversification sectorielle et géographique. C'est le benchmark le plus pertinent pour un investisseur PEA."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Maintenant, la BRVM. Rendement total (cours + dividendes) autour de 10-13% sur les bonnes années, mais avec une volatilité annuelle de 15-20% et des épisodes de correction sévères (2016-2018). La moyenne long terme tourne autour de 6 à 8 % en incluant les dividendes (2015-2025), un cran sous le CAC 40 GR, mais avec un profil décorrélé qui change tout dans un portefeuille."
+    },
+    {
+      "kind": "paragraph",
+      "text": "L'avantage caché de la BRVM pour un investisseur de la diaspora : zéro risque de change. Ton investissement BRVM et ton loyer à Dakar sont dans la même devise. Quand tu investis sur le CAC 40 via un PEA en France, tu gagnes en euros, parfait pour tes dépenses européennes. Les deux marchés couvrent chacun un pan de ta vie bi-continentale."
+    },
+    {
+      "kind": "paragraph",
+      "text": "La corrélation entre BRVM et marchés européens est historiquement faible (environ 0,15-0,20). C'est un atout majeur en termes de diversification : quand le CAC 40 corrige, la BRVM ne suit pas nécessairement, et inversement. Un portefeuille 50% Stoxx 600 / 50% BRVM offre un meilleur ratio rendement/risque que chacun pris isolément."
+    },
+    {
+      "kind": "paragraph",
+      "text": "La conclusion est claire : pour un investisseur FIRE entre Dakar et Paris, le combo PEA (Stoxx 600 ou ETF MSCI Europe) + BRVM est la stratégie optimale. L'Europe pour la croissance stable, la BRVM pour les dividendes et la couverture FCFA."
+    },
+    {
+      "kind": "section",
+      "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
+    },
+    {
+      "kind": "paragraph",
+      "text": "On intègre les indices européens (CAC 40, Stoxx 600) comme benchmarks dans le tableau de bord Omaad Wealth. Tu pourras comparer la performance de ton portefeuille BRVM directement avec ces indices, et visualiser l'impact de la corrélation faible sur la volatilité globale de ton patrimoine. L'objectif : te donner les outils pour construire un portefeuille bi-continental optimisé, pas juste empiler des actifs au hasard."
+    },
+    {
+      "kind": "stat",
+      "value": "0,18",
+      "label": "Corrélation historique BRVM Composite / Stoxx 600 sur 10 ans",
+      "source": "Calculs Omaad sur données BRVM et Euronext, 2015-2025"
+    },
+    {
+      "kind": "section",
+      "text": "LA RESSOURCE"
+    },
+    {
+      "kind": "resource",
+      "emoji": "📖",
+      "title": "L'investisseur intelligent",
+      "meta": "Benjamin Graham",
+      "text": "Le père de l'investissement value. Son concept de « marge de sécurité » est particulièrement pertinent pour la BRVM, où certaines actions se traitent à des P/E de 5-8x, des niveaux impensables sur les marchés européens. Un classique intemporel, disponible en français.",
+      "url": null
+    },
+    {
+      "kind": "section",
+      "text": "🇬🇧 ENGLISH SUMMARY"
+    },
+    {
+      "kind": "summary",
+      "items": [
+        "Comparing the BRVM to the CAC 40 or Stoxx 600 is more relevant than comparing it to the S&P 500, because the FCFA is pegged to the euro. The BRVM's total return (including its 5-7% dividend yield) sits slightly below the CAC 40 GR over the long term, with near-zero correlation.",
+        "The BRVM's correlation with European markets is historically low (~0.18), making a combined BRVM + European ETF portfolio superior in risk-adjusted terms to either market alone.",
+        "For diaspora investors living between Africa and Europe, the optimal FIRE strategy is PEA (Stoxx 600 / MSCI Europe ETF) for stable euro-denominated growth, plus BRVM stocks for FCFA dividend income and true geographic diversification."
+      ]
+    }
+  ]
+}
