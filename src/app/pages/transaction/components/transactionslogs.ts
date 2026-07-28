@@ -314,7 +314,7 @@ interface DayGroup {
                         </div>
                         <div class="flex flex-col gap-1">
                             <label for="tx-date" class="text-sm text-surface-500 dark:text-surface-400">{{ t('transactions.form.date') }}</label>
-                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true" inputId="tx-date"
+                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [maxDate]="maxDate" [showIcon]="true" [showButtonBar]="true" inputId="tx-date"
                                           dateFormat="yy-mm-dd" styleClass="w-full"
                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                             @if (submitted && !editDate) {
@@ -497,6 +497,10 @@ export class TransactionLogs implements OnInit, OnDestroy {
     dialogVisible  = false;
     editingRecord: TransactionRecord | null = null;
     editDate: Date | null = null;
+    // Cap the picker at today: a transaction records money that already moved,
+    // and saving it updates the account balance immediately, so a future date
+    // makes no sense. Refreshed each time the dialog opens (session midnight).
+    maxDate = new Date();
     // formType is a Signal so computed() can track changes reactively
     formType = signal<'Income' | 'Expense' | 'Transfer'>('Expense');
     form: { amount: number; currency: string; remarks: string; category: string; accountId?: number; fromAccountId?: number; toAccountId?: number } = {
@@ -698,6 +702,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     // ── Dialog ────────────────────────────────────────────────────
     openNew() {
         this.editingRecord = null;
+        this.maxDate = new Date();
         this.editDate = new Date();
         this.formType.set('Expense');
         this.form = { amount: 0, currency: this.cs.config().code, remarks: '', category: EXPENSE_CATEGORIES[0], accountId: undefined, fromAccountId: undefined, toAccountId: undefined };
@@ -707,6 +712,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
 
     editRecord(rec: TransactionRecord) {
         this.editingRecord = rec;
+        this.maxDate = new Date();
         this.editDate = rec.date ? new Date(rec.date) : new Date();
         this.formType.set(rec.type);
         this.form = {
