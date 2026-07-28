@@ -1860,6 +1860,8 @@ export const FR = {
       invalidCredentials: 'Identifiants invalides',
       tabEmail: 'Email',
       tabPhone: 'Téléphone',
+      phoneSoonBadge: 'Bientôt',
+      phoneSoonBanner: 'La connexion par téléphone arrive bientôt. Utilise ton email pour le moment.',
       phoneLabel: 'Numéro de téléphone',
       phonePlaceholder: '+221 77 123 45 67',
       phoneHint: 'Nous vous enverrons un code par SMS.',

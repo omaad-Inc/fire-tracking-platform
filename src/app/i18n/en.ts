@@ -1862,6 +1862,8 @@ export const EN: Dict = {
       invalidCredentials: 'Invalid credentials',
       tabEmail: 'Email',
       tabPhone: 'Phone',
+      phoneSoonBadge: 'Soon',
+      phoneSoonBanner: 'Phone sign-in is coming soon. Use your email for now.',
       phoneLabel: 'Phone number',
       phonePlaceholder: '+221 77 123 45 67',
       phoneHint: 'We\'ll text you a code.',

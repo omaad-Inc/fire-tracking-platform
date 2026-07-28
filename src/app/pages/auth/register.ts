@@ -99,11 +99,18 @@ import { I18nService } from '../../i18n/i18n.service';
                                 [ngClass]="authMode() === 'email' ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm' : 'text-surface-500 dark:text-surface-400'">
                             <i class="pi pi-envelope text-xs mr-1"></i>{{ t('auth.login.tabEmail') }}
                         </button>
-                        <button type="button" (click)="setMode('phone')"
-                                class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
-                                [ngClass]="authMode() === 'phone' ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm' : 'text-surface-500 dark:text-surface-400'">
-                            <i class="pi pi-mobile text-xs mr-1"></i>{{ t('auth.login.tabPhone') }}
+                        <!-- Phone sign-up is not live yet: disabled + "coming soon" flag so nobody registers by phone. -->
+                        <button type="button" [disabled]="true" aria-disabled="true"
+                                class="flex-1 py-2 rounded-lg text-sm font-semibold text-surface-400 dark:text-surface-500 cursor-not-allowed flex items-center justify-center gap-1.5">
+                            <i class="pi pi-mobile text-xs"></i>{{ t('auth.login.tabPhone') }}
+                            <span class="px-1.5 py-0.5 rounded-full bg-ochre-500/15 text-ochre-600 dark:text-ochre-400 text-[10px] font-bold uppercase tracking-wide">{{ t('auth.login.phoneSoonBadge') }}</span>
                         </button>
+                    </div>
+
+                    <!-- Coming-soon banner (phone auth disabled until it works) -->
+                    <div class="flex items-start gap-2 mb-6 rounded-xl border border-ochre-500/30 bg-ochre-500/[0.06] px-3.5 py-2.5 text-[13px] text-surface-600 dark:text-surface-300">
+                        <i class="pi pi-clock mt-0.5 text-ochre-500 text-xs"></i>
+                        <span>{{ t('auth.login.phoneSoonBanner') }}</span>
                     </div>
 
                     @if (authMode() === 'email') {
@@ -405,6 +412,9 @@ export class Register {
     }
 
     setMode(mode: 'email' | 'phone') {
+        // Phone sign-up is not live yet (flagged "coming soon"): force email so
+        // no one can create an account by phone until the OTP flow works.
+        if (mode === 'phone') return;
         this.authMode.set(mode);
         this.otpSent.set(false);
         this.otpCode = '';
