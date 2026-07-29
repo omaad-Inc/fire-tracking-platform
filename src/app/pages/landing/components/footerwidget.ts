@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NewsletterSignup } from './newsletter-signup';
 
 @Component({
     selector: 'footer-widget',
     standalone: true,
-    imports: [RouterModule, CommonModule],
+    imports: [RouterModule, CommonModule, NewsletterSignup],
     template: `
         <footer class="relative bg-warm-900 text-white overflow-hidden">
             <div class="relative py-16 px-6 lg:px-20">
@@ -30,6 +31,13 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <i class="pi pi-youtube text-lg"></i>
                                 </a>
                             </div>
+
+                            <!-- Newsletter capture (first-party -> Beehiiv) -->
+                            <div class="mt-8">
+                                <h4 class="font-semibold text-sm mb-3 text-white">{{ _('Newsletter FIRE Africa', 'FIRE Africa newsletter') }}</h4>
+                                <p class="text-warm-400 text-sm mb-3 max-w-xs">{{ _('La méthode + le guide pour investir à la BRVM. Gratuit.', 'The method + the guide to invest on the BRVM. Free.') }}</p>
+                                <app-newsletter-signup source="site-footer" [compact]="true" />
+                            </div>
                         </div>
 
                         <!-- Product -->
@@ -48,7 +56,6 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.resourcesTitle') }}</h4>
                             <ul class="space-y-3">
                                 <li><a [routerLink]="[currentLang, 'blog']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
-                                <li><a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" class="text-warm-400 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">{{ _('Newsletter FIRE Africa', 'FIRE Africa newsletter') }}<i class="pi pi-external-link text-[9px]"></i></a></li>
                                 <li><a [routerLink]="[currentLang, 'faq']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-warm-400 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>

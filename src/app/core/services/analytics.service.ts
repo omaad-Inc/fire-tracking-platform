@@ -21,7 +21,8 @@ export type PublicAnalyticsEventName =
     | 'blog_view'
     | 'cta_click'
     | 'simulator_run'
-    | 'waitlist_signup';
+    | 'waitlist_signup'
+    | 'newsletter_signup';
 
 interface EventPayload {
     event_name: string;
