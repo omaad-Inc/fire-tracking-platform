@@ -26,10 +26,21 @@ const strategieRoutes = [
 ];
 
 // ── Blog article slugs (parsed from the static posts metadata) ──
+// Only editions whose newsletter has already been SENT (send `date` today or
+// earlier) are prerendered/sitemapped; unsent future editions must not leak to
+// crawlers even though the runtime component also hides them. This mirrors the
+// `isPostPublished` gate in posts.ts. NOTE: this list is frozen at build time,
+// so a new edition enters the sitemap/prerender only on the next deploy on or
+// after its send date (the SPA still shows it to live visitors immediately).
 const postsSrc = readFileSync(
     new URL('../src/app/pages/landing/blog/posts.ts', import.meta.url), 'utf8'
 );
-const blogSlugs = [...postsSrc.matchAll(/slug:\s*'([^']+)'/g)].map((m) => m[1]);
+const now = new Date();
+const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+// Each post object lists `slug` then `date`; pair them and keep only sent ones.
+const blogSlugs = [...postsSrc.matchAll(/slug:\s*'([^']+)'[\s\S]*?date:\s*'(\d{4}-\d{2}-\d{2})'/g)]
+    .filter((m) => m[2] <= todayIso)
+    .map((m) => m[1]);
 
 // ── Bilingual (FR/EN) public marketing pages. Path is the lang-less suffix. ──
 const LANG_PATHS = [

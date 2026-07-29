@@ -883,6 +883,25 @@ export class ApiService {
         return this.http.post<{ ok: boolean }>(`${this.apiUrl}/leads`, { email, source, locale });
     }
 
+    // ========== NEWSLETTER (FIRE Africa, public, no auth) ==========
+    /**
+     * Subscribe an email to the FIRE Africa newsletter. Stored first-party, then
+     * best-effort forwarded to Beehiiv. Idempotent server-side. `forwarded` says
+     * whether Beehiiv accepted it (false when Beehiiv is not configured yet).
+     */
+    subscribeNewsletter(payload: {
+        email: string;
+        source?: string;
+        locale?: string;
+        utm_source?: string;
+        utm_medium?: string;
+        utm_campaign?: string;
+    }): Observable<{ ok: boolean; forwarded: boolean }> {
+        return this.http.post<{ ok: boolean; forwarded: boolean }>(
+            `${this.apiUrl}/newsletter/subscribe`, payload,
+        );
+    }
+
     // ========== FX RATES ==========
     /** Public conversion rates relative to EUR base (see backend /fx/rates). */
     getFxRates(): Observable<FxRatesResponse> {

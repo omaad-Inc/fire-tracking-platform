@@ -247,6 +247,35 @@ export const BLOG_POSTS: BlogPost[] = [
     },
 ];
 
+/**
+ * Today as a local `yyyy-mm-dd` string. Built from local Y/M/D parts (not
+ * toISOString, which is UTC and would drift a day for diaspora viewers just
+ * after midnight) so it compares lexicographically with `post.date`.
+ */
+function localTodayIso(): string {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+
+/**
+ * An edition is public only once its newsletter has actually been sent, i.e.
+ * its send `date` is today or earlier. Future editions (e.g. #004 on 2026-08-01)
+ * stay hidden until their date arrives, so the blog never leaks unsent content.
+ */
+export function isPostPublished(post: BlogPost): boolean {
+    return post.date <= localTodayIso();
+}
+
+/** All editions already sent, in the file's natural order. */
+export function publishedPosts(): BlogPost[] {
+    return BLOG_POSTS.filter(isPostPublished);
+}
+
+/** Finds a post by slug ONLY if it is already published (unsent → undefined). */
 export function findPostBySlug(slug: string): BlogPost | undefined {
-    return BLOG_POSTS.find(p => p.slug === slug);
+    const post = BLOG_POSTS.find(p => p.slug === slug);
+    return post && isPostPublished(post) ? post : undefined;
 }

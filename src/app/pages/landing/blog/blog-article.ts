@@ -7,10 +7,11 @@ import { RippleModule } from 'primeng/ripple';
 import { firstValueFrom } from 'rxjs';
 import { BlogTopbar } from './blog-topbar';
 import { FooterWidget } from '../components/footerwidget';
+import { NewsletterSignup } from '../components/newsletter-signup';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
-import { BLOG_POSTS, BlogPost, findPostBySlug } from './posts';
+import { BlogPost, findPostBySlug, publishedPosts } from './posts';
 
 /** Normalized web-native blocks (assets/blog/edition-NNN.json, built by
  *  resources/build_blog.py). No em dashes, no email HTML. */
@@ -43,7 +44,7 @@ interface RBlock {
 @Component({
     selector: 'app-blog-article',
     standalone: true,
-    imports: [CommonModule, RouterModule, RippleModule, BlogTopbar, FooterWidget],
+    imports: [CommonModule, RouterModule, RippleModule, BlogTopbar, FooterWidget, NewsletterSignup],
     template: `
         <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
             <!-- Reading progress -->
@@ -207,16 +208,9 @@ interface RBlock {
                                 : 'Educational and informational content only. Not investment advice. Past performance does not guarantee future results.' }}
                         </div>
 
-                        <!-- Newsletter CTA -->
-                        <div class="mt-10 rounded-2xl bg-brand-950 dark:bg-surface-900 border border-transparent dark:border-surface-800 p-7 text-center">
-                            <div class="text-lg font-bold text-white mb-1.5">{{ isFr() ? 'Reçois chaque édition de FIRE Africa' : 'Get every FIRE Africa edition' }}</div>
-                            <p class="text-sm text-brand-200 dark:text-surface-400 mb-5 max-w-[40ch] mx-auto">
-                                {{ isFr() ? 'Deux fois par mois, une analyse claire pour investir entre deux continents.' : 'Twice a month, clear analysis to invest across two continents.' }}
-                            </p>
-                            <a href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener" pRipple
-                               class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ochre-500 hover:bg-ochre-400 text-warm-900 font-semibold text-sm transition-colors no-underline">
-                                {{ isFr() ? 'S\\'abonner gratuitement' : 'Subscribe free' }} <i class="pi pi-arrow-up-right text-xs"></i>
-                            </a>
+                        <!-- Newsletter CTA (first-party capture -> Beehiiv) -->
+                        <div class="mt-10">
+                            <app-newsletter-signup source="blog-article" [campaign]="p.slug" />
                         </div>
 
                         <!-- Topics -->
@@ -330,7 +324,8 @@ export class BlogArticle implements OnInit, OnDestroy {
 
     readonly isFr = computed(() => this.i18n.lang() === 'fr');
 
-    private readonly ordered = [...BLOG_POSTS].sort((a, b) => a.edition.localeCompare(b.edition));
+    // Only sent editions: prev/next never points at an unpublished future one.
+    private readonly ordered = publishedPosts().sort((a, b) => a.edition.localeCompare(b.edition));
 
     readonly prevPost = computed(() => {
         const p = this.post(); if (!p) return undefined;
@@ -346,9 +341,10 @@ export class BlogArticle implements OnInit, OnDestroy {
     readonly related = computed(() => {
         const p = this.post();
         if (!p) return [];
-        const byTag = BLOG_POSTS.filter(o => o.slug !== p.slug && o.tags.some(t => p.tags.includes(t)));
+        const published = publishedPosts();
+        const byTag = published.filter(o => o.slug !== p.slug && o.tags.some(t => p.tags.includes(t)));
         const pool = byTag.length >= 3 ? byTag
-            : [...byTag, ...BLOG_POSTS.filter(o => o.slug !== p.slug && !byTag.includes(o))];
+            : [...byTag, ...published.filter(o => o.slug !== p.slug && !byTag.includes(o))];
         return pool.slice(0, 3);
     });
 

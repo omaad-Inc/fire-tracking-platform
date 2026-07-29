@@ -8,7 +8,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
 import { AnalyticsService } from '../../../core/services/analytics.service';
-import { BLOG_POSTS, BlogPost } from './posts';
+import { BlogPost, publishedPosts } from './posts';
 
 @Component({
     selector: 'app-blog-list',
@@ -134,7 +134,9 @@ export class BlogList {
 
     // Ascending by edition number (#000 first, then #001, …): the editions read
     // as a series, so the newsletter is meant to be followed from the start.
-    posts: BlogPost[] = [...BLOG_POSTS].sort((a, b) => a.edition.localeCompare(b.edition));
+    // Only editions whose newsletter has been sent (date <= today) are listed;
+    // a future edition surfaces itself automatically on its send date.
+    posts: BlogPost[] = publishedPosts().sort((a, b) => a.edition.localeCompare(b.edition));
     selectedTag = signal<string | null>(null);
 
     lang = '/fr';
