@@ -50,7 +50,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                             </div>
                             <figcaption class="mt-3 text-center">
                                 <div class="text-sm font-bold text-surface-900 dark:text-white">{{ t('landing.about.founderName') }}</div>
-                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Co-fondateur', 'Co-founder') }}</div>
+                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Fondateur', 'Founder') }}</div>
                             </figcaption>
                         </figure>
                         <figure class="group sm:mt-10">
@@ -60,7 +60,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                             </div>
                             <figcaption class="mt-3 text-center">
                                 <div class="text-sm font-bold text-surface-900 dark:text-white">{{ t('landing.about.bambaName') }}</div>
-                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Co-fondateur', 'Co-founder') }}</div>
+                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Premier partenaire', 'First partner') }}</div>
                             </figcaption>
                         </figure>
                     </div>
