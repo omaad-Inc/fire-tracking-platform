@@ -63,7 +63,7 @@ const CRITERIA: { t: string; d: string }[] = [
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [FormsModule, RouterModule, InputTextModule, SgiCard, SgiComparePanel, SgiToolTopbar, LiteYoutube],
     template: `
-        <div class="min-h-screen bg-surface-0 dark:bg-surface-900">
+        <div class="min-h-screen bg-surface-0 dark:bg-surface-950">
             <app-sgi-tool-topbar />
 
             <main class="mx-auto max-w-7xl px-5 pb-32 sm:px-6">

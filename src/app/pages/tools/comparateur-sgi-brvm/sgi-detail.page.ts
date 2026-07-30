@@ -15,7 +15,7 @@ import { PDF_BASE, SGIS, Sgi, fmtPct, getById, isFree } from './sgi-data';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RouterModule, SgiStars, SgiComparePanel, SgiToolTopbar],
     template: `
-        <div class="min-h-screen bg-surface-0 dark:bg-surface-900">
+        <div class="min-h-screen bg-surface-0 dark:bg-surface-950">
             <app-sgi-tool-topbar />
 
             <main class="mx-auto max-w-[900px] px-5 py-8 sm:px-6 sm:py-12">
