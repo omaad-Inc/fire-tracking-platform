@@ -27,6 +27,9 @@ import { AssetsStateService } from '../../service/assets-state.service';
     imports: [CommonModule, ButtonModule, AppAmountComponent],
     template: `
         <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+            <!-- Dark-only hero sheen, matches the dashboard hero (B8) -->
+            <div class="absolute inset-0 pointer-events-none hidden dark:block" aria-hidden="true"
+                 style="background: radial-gradient(90% 120% at 85% -20%, rgba(216,163,105,0.07) 0%, transparent 60%)"></div>
 
             <!-- Header / badge, ochre = "premium accent", reserved for FIRE -->
             <div class="relative flex items-center justify-between gap-3 mb-4">

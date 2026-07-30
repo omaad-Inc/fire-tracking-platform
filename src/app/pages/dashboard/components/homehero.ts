@@ -40,6 +40,12 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
             <section class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 md:p-6 mb-4"
                      [attr.aria-label]="t('dashboard.pageTitle')">
 
+                <!-- Dark-only hero sheen: one restrained radial glow, hero surfaces only (B8) -->
+                <div class="absolute inset-0 pointer-events-none hidden dark:block" aria-hidden="true"
+                     style="background:
+                        radial-gradient(90% 120% at 85% -20%, rgba(216,163,105,0.07) 0%, transparent 60%),
+                        radial-gradient(70% 100% at 0% 100%, rgba(91,132,196,0.05) 0%, transparent 55%)"></div>
+
                 <!-- Hero: net worth as the one dominant number + trend + sparkline -->
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div class="min-w-0">
