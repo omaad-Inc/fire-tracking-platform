@@ -167,7 +167,7 @@ interface PlanFeature {
                         </thead>
                         <tbody>
                             @for (row of comparisonTable(); track row.label) {
-                                <tr class="border-b border-surface-100 dark:border-surface-700/50">
+                                <tr class="border-b border-surface-100 dark:border-surface-700 dark:hover:bg-surface-800/60 transition-colors">
                                     <td class="px-5 py-3 text-surface-700 dark:text-surface-300">{{ row.label }}</td>
                                     <td class="text-center px-4 py-3">
                                         @if (row.free === true) {
@@ -189,11 +189,11 @@ interface PlanFeature {
                                     </td>
                                     <td class="text-center px-4 py-3">
                                         @if (row.premium === true) {
-                                            <i class="pi pi-check text-brand-700 dark:text-brand-300 text-xs"></i>
+                                            <i class="pi pi-check text-brand-700 dark:text-surface-0 text-xs"></i>
                                         } @else if (row.premium === false) {
                                             <span class="text-surface-300 dark:text-surface-600">–</span>
                                         } @else {
-                                            <span class="text-brand-700 dark:text-brand-300 text-xs font-medium">{{ row.premium }}</span>
+                                            <span class="text-brand-700 dark:text-surface-0 text-xs font-medium">{{ row.premium }}</span>
                                         }
                                     </td>
                                 </tr>

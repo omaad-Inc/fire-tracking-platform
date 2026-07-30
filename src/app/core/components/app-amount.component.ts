@@ -18,12 +18,12 @@ import { nbspSafe } from '../util/nbsp';
     standalone: true,
     template: `
         @if (privacy.hidden()) {
-            <span class="tracking-wide">•••••</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 align-baseline">{{ symbol() }}</span>
+            <span class="tracking-wide">•••••</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 dark:opacity-90 align-baseline">{{ symbol() }}</span>
         } @else {
             @if (prefix()) {
                 <span>{{ prefix() }}</span>
             }
-            <span>{{ displayStr() }}</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 align-baseline">{{ symbol() }}</span>
+            <span>{{ displayStr() }}</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 dark:opacity-90 align-baseline">{{ symbol() }}</span>
         }
     `,
     host: { class: 'inline-flex items-baseline gap-0' },

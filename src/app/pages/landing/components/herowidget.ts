@@ -9,7 +9,10 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [ButtonModule, RippleModule, RouterModule],
     template: `
-        <div id="hero" class="relative min-h-[88vh] flex items-center overflow-hidden bg-surface-0 dark:bg-surface-950">
+        <!-- 72vh (was 88vh): with ~500px of centered content, 88vh left a ~350px
+             dead band under the nav at 1440x900 and hid the next section below
+             the fold. 72vh keeps the hero dominant AND shows a scroll cue. -->
+        <div id="hero" class="relative min-h-[72vh] py-14 flex items-center overflow-hidden bg-surface-0 dark:bg-surface-950">
             <!-- Airy background: one soft static glow, no grid, no pulse -->
             <div class="absolute inset-0 pointer-events-none">
                 <div class="absolute -top-32 right-[-10%] w-[42rem] h-[42rem] bg-ochre-500/10 rounded-full blur-3xl"></div>

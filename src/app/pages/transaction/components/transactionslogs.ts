@@ -832,14 +832,16 @@ export class TransactionLogs implements OnInit, OnDestroy {
     categoryFg(rec: TransactionRecord): string {
         const c = this.getCategoryConfig(rec).color;
         return this.layoutService.isDarkTheme()
-            ? `color-mix(in srgb, ${c} 30%, white)`
+            ? `color-mix(in srgb, ${c} 25%, #F5F7FB)`
             : c;
     }
 
     categoryBg(rec: TransactionRecord): string {
         const c = this.getCategoryConfig(rec).color;
+        // Dark: premix against the card color (surface-900). Alpha over the row
+        // hover state produced muddy grey-brown chips (dark-mode program B7).
         return this.layoutService.isDarkTheme()
-            ? `color-mix(in srgb, ${c} 35%, transparent)`
+            ? `color-mix(in srgb, ${c} 28%, #111B2E)`
             : `${c}1a`;
     }
 
