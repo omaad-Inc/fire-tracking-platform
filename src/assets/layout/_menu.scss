@@ -312,16 +312,37 @@
                 }
             }
 
+            // Light active hover: keep the active tint (the generic :hover
+            // rule below outranks .active-route in the cascade and washed it
+            // to --surface-hover).
+            &.active-route:hover {
+                background: var(--omaad-brand-50);
+                color: var(--omaad-brand-700);
+            }
+
+            // Dark active: the STRONGEST item in the nav, never the dimmest
+            // (white label + ochre icon on an elevated pill, matching the
+            // mobile bottom nav's active treatment). The old brand-300 grey
+            // label read weaker than the inactive white items, and hovering
+            // made it look like the text vanished.
             :host-context(.app-dark) &.active-route,
             .app-dark &.active-route {
-                color: var(--omaad-brand-300);
-                background: rgba(138, 152, 174, 0.10);
+                color: var(--p-surface-0);
+                background: var(--p-surface-800);
 
                 .layout-menuitem-icon {
-                    background: var(--omaad-brand-300);
-                    color: var(--omaad-brand-900);
+                    background: rgba(199, 123, 60, 0.22);
+                    color: var(--omaad-ochre-400);
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
                 }
+            }
+
+            // Hover on the active item must never dim it: pin the colors,
+            // lighten the pill one step.
+            :host-context(.app-dark) &.active-route:hover,
+            .app-dark &.active-route:hover {
+                color: var(--p-surface-0);
+                background: var(--p-surface-700);
             }
 
             &:hover {
