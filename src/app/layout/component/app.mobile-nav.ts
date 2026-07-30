@@ -260,7 +260,8 @@ import { filter } from 'rxjs/operators';
         }
 
         :host-context(.app-dark) .mobile-bottom-nav {
-            background: rgba(15, 26, 46, 0.95);
+            /* Glass chrome over the 950 canvas (dark-mode program B9) */
+            background: rgba(11, 19, 34, 0.85);
             border-top-color: rgba(255, 255, 255, 0.08);
         }
 

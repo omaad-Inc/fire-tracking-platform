@@ -12,6 +12,15 @@
     border-bottom: 1px solid var(--surface-border);
     background: linear-gradient(to bottom right, var(--surface-ground), var(--surface-card));
     transition: left var(--layout-section-transition-duration);
+
+    // Dark: glass chrome over the 950 canvas (dark-mode program B9).
+    // Fixed element, so the blur samples the content scrolling beneath.
+    .app-dark & {
+        background: rgba(11, 19, 34, 0.82);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
     display: flex;
     align-items: center;
 
