@@ -179,7 +179,7 @@ export class HelpSettings {
             { label: this.i18n.t('help.quickLinks.account'),  tag: this.i18n.t('help.quickTags.account'),  icon: 'pi-user',   color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15' },
             { label: this.i18n.t('help.quickLinks.currency'), tag: this.i18n.t('help.quickTags.currency'), icon: 'pi-wallet', color: 'text-brand-700 dark:text-brand-300', bg: 'bg-brand-700/10 dark:bg-brand-300/15' },
             { label: this.i18n.t('help.quickLinks.fire'),     tag: this.i18n.t('help.quickTags.fire'),     icon: 'pi-flag',   color: 'text-positive', bg: 'bg-positive/10' },
-            { label: this.i18n.t('help.quickLinks.security'), tag: this.i18n.t('help.quickTags.security'), icon: 'pi-shield', color: 'text-ochre-500', bg: 'bg-ochre-100' },
+            { label: this.i18n.t('help.quickLinks.security'), tag: this.i18n.t('help.quickTags.security'), icon: 'pi-shield', color: 'text-ochre-500', bg: 'bg-ochre-100 dark:bg-ochre-900/30' },
         ];
     }
 

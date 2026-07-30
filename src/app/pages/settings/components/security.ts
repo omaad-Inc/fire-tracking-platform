@@ -71,7 +71,7 @@ import { firstValueFrom } from 'rxjs';
                     } @else {
                         <!-- Email / password user -->
                         <div class="flex items-center gap-4 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
-                            <div class="w-12 h-12 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center shrink-0">
+                            <div class="w-12 h-12 rounded-full bg-brand-700 dark:bg-brand-600 flex items-center justify-center shrink-0">
                                 <i class="pi pi-envelope text-white text-lg"></i>
                             </div>
                             <div class="flex-1 min-w-0">
@@ -200,7 +200,7 @@ import { firstValueFrom } from 'rxjs';
             <!-- ── 3. Code PIN ────────────────────────────────────── -->
             <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 pb-4">
-                    <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
+                    <div class="w-9 h-9 rounded-xl bg-ochre-100 dark:bg-ochre-900/30 flex items-center justify-center shrink-0">
                         <i class="pi pi-lock text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -360,7 +360,7 @@ import { firstValueFrom } from 'rxjs';
             <!-- ── 4. Activité récente ──────────────────────────────── -->
             <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 pb-4">
-                    <div class="w-9 h-9 rounded-xl bg-ochre-100 flex items-center justify-center shrink-0">
+                    <div class="w-9 h-9 rounded-xl bg-ochre-100 dark:bg-ochre-900/30 flex items-center justify-center shrink-0">
                         <i class="pi pi-history text-ochre-500"></i>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -419,7 +419,7 @@ import { firstValueFrom } from 'rxjs';
                   styleClass="!rounded-2xl overflow-hidden">
             <ng-template #header>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-300 flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-brand-700 dark:bg-brand-600 flex items-center justify-center">
                         <i class="pi pi-key text-white"></i>
                     </div>
                     <div>

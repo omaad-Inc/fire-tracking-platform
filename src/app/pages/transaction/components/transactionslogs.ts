@@ -143,7 +143,7 @@ interface DayGroup {
                              [ngClass]="monthSummary().savingsRate < 0 ? 'text-negative' : 'text-brand-700 dark:text-brand-300'">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-500"
-                                 [ngClass]="monthSummary().savingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-brand-300'"
+                                 [ngClass]="monthSummary().savingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-ochre-400'"
                                  [style.width]="monthSummary().barWidth + '%'"></div>
                         </div>
                     </div>

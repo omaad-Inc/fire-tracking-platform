@@ -131,7 +131,7 @@ export class OnboardingComponent {
         return [
             {
                 icon: 'pi-plus',
-                iconBg: 'bg-brand-700 dark:bg-brand-300',
+                iconBg: 'bg-brand-700 dark:bg-brand-600',
                 title: t('onboarding.step1Title'),
                 desc:  t('onboarding.step1Desc'),
                 cta:   t('onboarding.step1Cta'),
@@ -139,7 +139,7 @@ export class OnboardingComponent {
             },
             {
                 icon: 'pi-arrow-right-arrow-left',
-                iconBg: 'bg-brand-700 dark:bg-brand-300',
+                iconBg: 'bg-brand-700 dark:bg-brand-600',
                 title: t('onboarding.step2Title'),
                 desc:  t('onboarding.step2Desc'),
                 cta:   t('onboarding.step2Cta'),

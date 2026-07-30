@@ -133,8 +133,8 @@ export class SavingsProgress implements OnInit, OnDestroy {
             const sharedChrome = {
                 bgClass: 'bg-brand-100 dark:bg-brand-700/20',
                 iconClass: 'text-brand-700 dark:text-ochre-400',
-                progressClass: 'bg-brand-700 dark:bg-brand-300',
-                textColorClass: 'text-brand-700 dark:text-brand-300',
+                progressClass: 'bg-brand-700 dark:bg-ochre-400',
+                textColorClass: 'text-brand-700 dark:text-ochre-400',
             };
             const colorConfigs = [
                 { ...sharedChrome, icon: 'pi pi-shield' },

@@ -24,7 +24,7 @@ import { ApiService } from '../../../core/services/api.service';
                             <button (click)="setRange(r.months)"
                                 class="px-3 py-1 text-xs rounded-lg transition-colors"
                                 [ngClass]="selectedMonths() === r.months
-                                    ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
+                                    ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                 {{ r.label }}
                             </button>

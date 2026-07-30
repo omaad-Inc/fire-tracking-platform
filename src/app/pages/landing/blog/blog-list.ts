@@ -43,7 +43,7 @@ import { BlogPost, publishedPosts } from './posts';
                     <button (click)="selectedTag.set(null)" pRipple
                             class="shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all"
                             [ngClass]="selectedTag() === null
-                                ? 'bg-brand-700 text-white'
+                                ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                 : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                         {{ isFr() ? 'Tous' : 'All' }}
                         <span class="ml-1.5 opacity-70">{{ posts.length }}</span>
@@ -52,7 +52,7 @@ import { BlogPost, publishedPosts } from './posts';
                         <button (click)="selectedTag.set(tag)" pRipple
                                 class="shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all"
                                 [ngClass]="selectedTag() === tag
-                                    ? 'bg-brand-700 text-white'
+                                    ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700'">
                             {{ tag }}
                         </button>
@@ -80,7 +80,7 @@ import { BlogPost, publishedPosts } from './posts';
                                 <!-- Tags -->
                                 <div class="flex flex-wrap gap-1.5 mb-3">
                                     @for (tag of post.tags.slice(0, 2); track tag) {
-                                        <span class="px-2 py-0.5 rounded-md bg-ochre-50 text-ochre-700 dark:text-ochre-400 text-[11px] font-medium">
+                                        <span class="px-2 py-0.5 rounded-md bg-ochre-50 dark:bg-ochre-900/20 text-ochre-700 dark:text-ochre-400 text-[11px] font-medium">
                                             {{ tag }}
                                         </span>
                                     }
