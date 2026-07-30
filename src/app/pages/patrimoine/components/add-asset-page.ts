@@ -1167,10 +1167,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     // (our differentiators: immobilier, BRVM, tontine, mobile money) carry the
     // ochre accent; every other class stays in the navy/neutral family. One
     // accent, two families — hierarchy and brand story without rainbow soup.
-    private static readonly HERO_BG = 'bg-gradient-to-br from-ochre-50 to-ochre-100 dark:from-ochre-500/20 dark:to-ochre-500/5';
+    private static readonly HERO_BG = 'bg-gradient-to-br from-ochre-50 to-ochre-100 dark:from-ochre-900/50 dark:to-surface-800';
     private static readonly HERO_FG = 'text-ochre-700 dark:text-ochre-400';
-    private static readonly CARD_BG = 'bg-gradient-to-br from-brand-50 to-surface-100 dark:from-brand-700/25 dark:to-surface-800';
-    private static readonly CARD_FG = 'text-brand-700 dark:text-brand-300';
+    private static readonly CARD_BG = 'bg-gradient-to-br from-brand-50 to-surface-100 dark:from-brand-600/40 dark:to-surface-800';
+    private static readonly CARD_FG = 'text-brand-700 dark:text-surface-200';
 
     categoryCards = computed<CategoryCard[]>(() => {
         const t = (k: string) => this.i18n.t(k);

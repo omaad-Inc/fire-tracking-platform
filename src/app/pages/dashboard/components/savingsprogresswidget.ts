@@ -76,7 +76,7 @@ interface GoalDisplay {
                                             class="text-surface-200 dark:text-surface-700" />
                                     <circle cx="18" cy="18" r="15.5" fill="none"
                                             stroke-width="3" stroke-linecap="round"
-                                            class="text-brand-700 dark:text-brand-300"
+                                            class="text-brand-700 dark:text-ochre-400"
                                             [attr.stroke-dasharray]="ringDash(g.percent)"
                                             stroke="currentColor" />
                                 </svg>

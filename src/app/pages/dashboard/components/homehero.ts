@@ -111,14 +111,14 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                         <a [routerLink]="link('pages','insights')" [queryParams]="{ tab: 'conseils' }"
                            class="flex items-center gap-3 rounded-xl border p-3 no-underline transition-colors"
                            [ngClass]="rec.severity === 'high'
-                               ? 'border-negative/30 bg-negative/5 hover:bg-negative/10'
-                               : 'border-ochre-200 dark:border-ochre-500/30 bg-ochre-50/60 dark:bg-ochre-500/10 hover:bg-ochre-50'">
+                               ? 'border-negative/30 bg-negative/5 hover:bg-negative/10 dark:bg-negative-900/20 dark:hover:bg-negative-900/30'
+                               : 'border-ochre-200 bg-ochre-50/60 hover:bg-ochre-50 dark:border-white/10 dark:bg-surface-800 dark:hover:bg-surface-700'">
                             <span class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-                                  [ngClass]="rec.severity === 'high' ? 'bg-negative/15 text-negative' : 'bg-ochre-500/15 text-ochre-600 dark:text-ochre-400'">
+                                  [ngClass]="rec.severity === 'high' ? 'bg-negative/15 text-negative dark:text-negative-400' : 'bg-ochre-500/15 dark:bg-ochre-900/30 text-ochre-600 dark:text-ochre-400'">
                                 <i class="pi pi-lightbulb"></i>
                             </span>
                             <span class="min-w-0 flex-1">
-                                <span class="block text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500">{{ t('menu.coaching') }}</span>
+                                <span class="block text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-ochre-400">{{ t('menu.coaching') }}</span>
                                 <span class="block text-sm text-surface-800 dark:text-surface-200 truncate">{{ coaching.title(rec) }}</span>
                             </span>
                             <i class="pi pi-chevron-right text-xs text-surface-400 shrink-0"></i>

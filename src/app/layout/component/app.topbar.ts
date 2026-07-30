@@ -78,7 +78,7 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                 <!-- Add Assets Button - Desktop Only -->
                 <button
                     type="button"
-                    class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700 hover:bg-brand-800 text-white font-medium transition-all hover:shadow-lg"
+                    class="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700 hover:bg-brand-800 dark:bg-surface-700 dark:hover:bg-surface-600 text-white font-medium transition-all hover:shadow-lg"
                     (click)="navigateToAddAsset()"
                 >
                     <i class="pi pi-plus"></i>
@@ -87,7 +87,7 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
             } @else {
                 <!-- Public share view: invite the visitor to join Omaad -->
                 <a [routerLink]="['/']"
-                   class="flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700 hover:bg-brand-800 text-white text-xs lg:text-sm font-semibold transition-all hover:shadow-lg">
+                   class="flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700 hover:bg-brand-800 dark:bg-surface-700 dark:hover:bg-surface-600 text-white text-xs lg:text-sm font-semibold transition-all hover:shadow-lg">
                     <i class="pi pi-bolt"></i>
                     <span>{{ t('shareView.joinCtaButton') }}</span>
                 </a>
