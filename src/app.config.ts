@@ -39,6 +39,67 @@ const OmaadPreset = definePreset(Aura, {
             900: '#08111E',
             950: '#08111E',
         },
+        // Single source of truth for the `surface-*` scale (dark-mode audit
+        // Batch 1). The runtime updateSurfacePalette('slate') injection is
+        // gone; both Tailwind utilities (via tailwindcss-primeui) and PrimeNG
+        // component tokens resolve from here.
+        colorScheme: {
+            light: {
+                // Identical to the palette the app shipped with (slate,
+                // 500 AA-tuned): light mode is intentionally unchanged.
+                surface: {
+                    0: '#ffffff',
+                    50: '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#617187',
+                    600: '#475569',
+                    700: '#334155',
+                    800: '#1e293b',
+                    900: '#0f172a',
+                    950: '#020617',
+                },
+            },
+            dark: {
+                // Dedicated Omaad dark ramp: Midnight-Navy-tinted, not slate.
+                // Same direction as light (0 lightest → 950 darkest) so the
+                // ~2900 existing `dark:*-surface-*` usages keep their meaning.
+                // Anchors: 950 canvas, 900 cards, 800 nested, 700 highest.
+                surface: {
+                    0: '#F5F7FB',
+                    50: '#EBEFF5',
+                    100: '#DEE4EE',
+                    200: '#CBD3E1',
+                    300: '#AEB9CC',
+                    400: '#8593AB',
+                    500: '#5C6B89',
+                    600: '#3D4C68',
+                    700: '#1F2D47',
+                    800: '#18243A',
+                    900: '#111B2E',
+                    950: '#0B1322',
+                },
+                // In dark mode the interactive accent is Savanna Ochre, so
+                // toggles ON, radios, checkboxes, selected states and focus
+                // read as brand instead of a grey-blue that looks disabled.
+                // Ochre backgrounds take dark text (WCAG note in tailwind
+                // config: never white on ochre-400/500/600).
+                primary: {
+                    color: '#D8A369',         // ochre-400
+                    contrastColor: '#14130F', // warm-900
+                    hoverColor: '#DFB78A',    // ochre-300
+                    activeColor: '#EBD0B0',   // ochre-200
+                },
+                highlight: {
+                    background: 'rgba(216, 163, 105, 0.16)',
+                    focusBackground: 'rgba(216, 163, 105, 0.24)',
+                    color: 'rgba(255, 255, 255, 0.87)',
+                    focusColor: 'rgba(255, 255, 255, 0.87)',
+                },
+            },
+        },
     },
 });
 

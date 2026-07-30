@@ -92,64 +92,67 @@
     --p-primary-hover-color: var(--omaad-brand-800);
     --p-primary-active-color: var(--omaad-brand-900);
 
-    // ── PrimeNG surface override → adopts the WARM-neutral scale ──
-    // This is the big lever: every Tailwind/PrimeUI utility like
-    // `text-surface-500`, `bg-surface-100`, `border-surface-200` (scattered
-    // across hundreds of components) automatically becomes warm-tinted
-    // without touching a single template.
-    --p-surface-0:   var(--omaad-warm-0);
-    --p-surface-50:  var(--omaad-warm-50);
-    --p-surface-100: var(--omaad-warm-100);
-    --p-surface-200: var(--omaad-warm-200);
-    --p-surface-300: var(--omaad-warm-300);
-    --p-surface-400: var(--omaad-warm-400);
-    --p-surface-500: var(--omaad-warm-500);
-    --p-surface-600: var(--omaad-warm-600);
-    --p-surface-700: var(--omaad-warm-700);
-    --p-surface-800: var(--omaad-warm-800);
-    --p-surface-900: var(--omaad-warm-900);
-    --p-surface-950: #0A0907;
+    // NOTE (dark-mode audit Batch 1): the --p-primary-* / --p-surface-*
+    // variable overrides that used to live here (and a flipped dark scale)
+    // are gone. They silently lost the cascade to PrimeNG's runtime-injected
+    // theme CSS, so they never actually applied. Both scales are now defined
+    // once in the OmaadPreset colorScheme (app.config.ts).
+
+    // ── Elevation tiers (Batch 1) ──
+    // Semantic layers consumed by cards/sheets/menus. In dark mode an
+    // elevation step = slightly lighter fill + visible border + shadow;
+    // shadow alone does not separate surfaces on a dark canvas.
+    --omaad-surface-canvas: var(--p-surface-50);
+    --omaad-surface-1: var(--p-surface-0);
+    --omaad-surface-2: var(--p-surface-100);
+    --omaad-surface-3: var(--p-surface-200);
+    --omaad-border-subtle: rgba(15, 26, 46, 0.06);
+    --omaad-border: rgba(15, 26, 46, 0.12);
+    --omaad-scrim: rgba(15, 23, 42, 0.50);
 }
 
 // ─────────────────────────────────────────────────────────────────────
 // Dark theme
 // ─────────────────────────────────────────────────────────────────────
 .app-dark {
-    // In dark mode the brand is *lighter* (more contrast on dark bg)
-    --p-primary-50:  var(--omaad-brand-950);
-    --p-primary-100: var(--omaad-brand-900);
-    --p-primary-200: var(--omaad-brand-800);
-    --p-primary-300: var(--omaad-brand-700);
-    --p-primary-400: var(--omaad-brand-500);
-    --p-primary-500: var(--omaad-brand-300);
-    --p-primary-600: var(--omaad-brand-200);
-    --p-primary-700: var(--omaad-brand-100);
-    --p-primary-800: var(--omaad-brand-50);
-    --p-primary-900: #FFFFFF;
-    --p-primary-color: var(--omaad-brand-300);
-    --p-primary-contrast-color: var(--omaad-brand-900);
-    --p-primary-hover-color: var(--omaad-brand-200);
-    --p-primary-active-color: var(--omaad-brand-100);
-
-    // Surface scale flipped for dark mode (so 0=darkest bg, 950=lightest).
-    // Every `text-surface-*` / `bg-surface-*` utility re-tints automatically.
-    --p-surface-0:   var(--omaad-warm-900);
-    --p-surface-50:  var(--omaad-warm-800);
-    --p-surface-100: var(--omaad-warm-700);
-    --p-surface-200: var(--omaad-warm-600);
-    --p-surface-300: var(--omaad-warm-500);
-    --p-surface-400: var(--omaad-warm-400);
-    --p-surface-500: var(--omaad-warm-300);
-    --p-surface-600: var(--omaad-warm-200);
-    --p-surface-700: var(--omaad-warm-100);
-    --p-surface-800: var(--omaad-warm-50);
-    --p-surface-900: var(--omaad-warm-0);
-    --p-surface-950: #FFFFFF;
-
-    // Dark shadows — denser, no warm tint (looks better on warm-dark bg)
+    // Dark shadows — denser (they sit on a dark canvas)
     --omaad-shadow-rest:     0 1px 3px rgba(0, 0, 0, 0.30);
     --omaad-shadow-hover:    0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.20);
     --omaad-shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.40), 0 4px 12px rgba(0, 0, 0, 0.25);
+
+    // Elevation tiers on the navy ramp (surface scale from the preset:
+    // 950 canvas → 900 cards → 800 nested → 700 highest rest state).
+    --omaad-surface-canvas: var(--p-surface-950);
+    --omaad-surface-1: var(--p-surface-900);
+    --omaad-surface-2: var(--p-surface-800);
+    --omaad-surface-3: var(--p-surface-700);
+    --omaad-border-subtle: rgba(255, 255, 255, 0.06);
+    --omaad-border: rgba(255, 255, 255, 0.10);
+    --omaad-scrim: rgba(3, 8, 18, 0.65);
+}
+
+// Elevation utilities — one class per tier, works in both schemes.
+.omaad-elev-1 {
+    background: var(--omaad-surface-1);
+    border: 1px solid var(--omaad-border-subtle);
+    box-shadow: var(--omaad-shadow-rest);
+}
+.omaad-elev-2 {
+    background: var(--omaad-surface-2);
+    border: 1px solid var(--omaad-border-subtle);
+    box-shadow: var(--omaad-shadow-hover);
+}
+.omaad-elev-3 {
+    background: var(--omaad-surface-3);
+    border: 1px solid var(--omaad-border);
+    box-shadow: var(--omaad-shadow-elevated);
+}
+
+// Overlay scrim: dialogs/sheets must visually dominate the page behind.
+// PrimeNG's default dark mask is too weak on a dark canvas.
+.p-overlay-mask {
+    background: var(--omaad-scrim) !important;
+    backdrop-filter: blur(2px);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -272,15 +275,18 @@ app-amount,
     }
 }
 
+// Dark primary CTA is Savanna Ochre with dark text (accent discipline,
+// dark-mode audit 4.2). The old brand-300 fill read as a washed-out
+// near-white pill and competed with genuine ochre CTAs.
 .app-dark .omaad-cta {
-    background: var(--omaad-brand-300) !important;
-    color: var(--omaad-brand-900) !important;
+    background: var(--omaad-ochre-400) !important;
+    color: var(--omaad-warm-900) !important;
 
     &:hover {
-        background: var(--omaad-brand-200) !important;
+        background: var(--omaad-ochre-300) !important;
     }
     &:active {
-        background: var(--omaad-brand-100) !important;
+        background: var(--omaad-ochre-200) !important;
     }
 }
 
@@ -418,7 +424,8 @@ app-amount,
 }
 
 .app-dark .p-button:focus-visible {
-    box-shadow: 0 0 0 3px rgba(138, 152, 174, 0.20) !important;
+    outline-color: var(--omaad-ochre-400) !important;
+    box-shadow: 0 0 0 3px rgba(216, 163, 105, 0.25) !important;
 }
 
 // — Consistent, accessible focus ring for all other interactive elements —
