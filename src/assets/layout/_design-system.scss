@@ -74,6 +74,18 @@
     // Backwards-compat aliases (referenced by older inline styles)
     --omaad-shadow-rest-legacy: var(--omaad-shadow-rest);
 
+    // ── Motion tokens (motion-polish program) ──
+    // One shared scale; animate ONLY transform + opacity. The spring curve is
+    // reserved for "physical" surfaces (sheets, FAB, press-release); standard
+    // and decelerate cover everything else. Reduced-motion collapses all of it.
+    --motion-fast:    120ms;   // press feedback, hovers
+    --motion-base:    180ms;   // most transitions
+    --motion-slow:    240ms;   // entrances, crossfades
+    --motion-overlay: 320ms;   // sheets, dialogs
+    --ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    --ease-spring:     cubic-bezier(0.34, 1.30, 0.64, 1); // restrained overshoot
+
     // ── PrimeNG primary override → adopts the navy scale ──
     // PrimeNG's Aura preset reads --p-primary-* for buttons, focus rings, sliders.
     --p-primary-50:  var(--omaad-brand-50);
@@ -542,4 +554,69 @@ select:focus-visible {
 
 .flex-1 > *:not(router-outlet) {
     animation: page-enter 0.2s ease-out;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MOTION SYSTEM (motion-polish program)
+// Utilities consume the tokens above. Transform + opacity only; no
+// width/height/margin animation (native-app no-layout-shift rule).
+// ═══════════════════════════════════════════════════════════════════
+
+// Tactile press: any interactive surface. Pointer-down scales down a hair,
+// release springs back. Desktop + touch.
+.omaad-press {
+    transition: transform var(--motion-fast) var(--ease-spring);
+    &:active { transform: scale(0.97); }
+}
+
+// Desktop hover-lift for INTERACTIVE cards/rows only (never static content).
+.omaad-lift {
+    transition: transform var(--motion-base) var(--ease-standard),
+                box-shadow var(--motion-base) var(--ease-standard);
+    @media (hover: hover) {
+        &:hover { transform: translateY(-2px); box-shadow: var(--omaad-shadow-hover); }
+    }
+}
+
+// Entrance: content rises 8px + fades, decelerating. Stagger via .omaad-d1..4.
+@keyframes omaad-enter-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+.omaad-enter {
+    animation: omaad-enter-rise var(--motion-slow) var(--ease-decelerate) both;
+}
+.omaad-d1 { animation-delay: 40ms; }
+.omaad-d2 { animation-delay: 80ms; }
+.omaad-d3 { animation-delay: 120ms; }
+.omaad-d4 { animation-delay: 160ms; }
+
+// Skeleton -> content crossfade companion (apply to the loaded content block).
+@keyframes omaad-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.omaad-fade-in {
+    animation: omaad-fade-in var(--motion-slow) var(--ease-standard) both;
+}
+
+// PrimeNG overlay mask: fade in sync with the dialog spring.
+.p-overlay-mask {
+    animation: omaad-fade-in var(--motion-overlay) var(--ease-standard) both;
+}
+
+// ── Reduced motion: collapse everything (WCAG 2.3.3 / Revolut parity) ──
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --motion-fast: 1ms;
+        --motion-base: 1ms;
+        --motion-slow: 1ms;
+        --motion-overlay: 1ms;
+    }
+    *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+    }
 }

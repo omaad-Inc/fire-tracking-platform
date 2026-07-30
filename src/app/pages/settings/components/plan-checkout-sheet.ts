@@ -46,6 +46,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
     template: `
         <p-dialog [(visible)]="open" [modal]="true" [draggable]="false" [resizable]="false"
                   [dismissableMask]="true" [style]="{ width: '95vw', maxWidth: '520px' }"
+                  [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'"
                   styleClass="!rounded-2xl overflow-hidden" [showHeader]="false">
 
             <div class="flex flex-col">
@@ -71,7 +72,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
                     <div class="flex flex-col gap-2.5">
                         @for (opt of options(); track opt.key) {
                             <button type="button" (click)="selected.set(opt)"
-                                    class="relative w-full text-left rounded-xl border px-4 py-3.5 flex items-center justify-between transition-all"
+                                    class="omaad-press relative w-full text-left rounded-xl border px-4 py-3.5 flex items-center justify-between transition-all"
                                     [ngClass]="selected()?.key === opt.key
                                         ? 'border-ochre-500 border-2 bg-ochre-50 dark:bg-ochre-900/20'
                                         : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'">
@@ -107,7 +108,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
                         <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-0 mb-2.5 text-center">{{ t('plans.checkout.howToPay') }}</h3>
                         <div class="grid grid-cols-2 gap-3">
                             <button type="button" (click)="method.set('momo')"
-                                    class="rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
+                                    class="omaad-press rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
                                     [ngClass]="method() === 'momo'
                                         ? 'border-brand-700 border-2 bg-brand-50 dark:bg-brand-900/20'
                                         : 'border-surface-200 dark:border-surface-700'">
@@ -119,7 +120,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
                                 </div>
                             </button>
                             <button type="button" (click)="method.set('card')"
-                                    class="rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
+                                    class="omaad-press rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
                                     [ngClass]="method() === 'card'
                                         ? 'border-brand-700 border-2 bg-brand-50 dark:bg-brand-900/20'
                                         : 'border-surface-200 dark:border-surface-700'">
@@ -154,7 +155,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
                     <button pButton (click)="pay()"
                             [label]="t('plans.checkout.cta', { plan: planName() })"
                             icon="pi pi-crown"
-                            class="w-full !rounded-full !py-3.5 !font-bold !bg-ochre-500 !bg-gradient-to-r !from-ochre-400 !to-ochre-500 !border-0 !text-warm-900 hover:!from-ochre-500 hover:!to-ochre-600 shadow-lifted transition-all"></button>
+                            class="omaad-press w-full !rounded-full !py-3.5 !font-bold !bg-ochre-500 !bg-gradient-to-r !from-ochre-400 !to-ochre-500 !border-0 !text-warm-900 hover:!from-ochre-500 hover:!to-ochre-600 shadow-lifted transition-all"></button>
                     @if (paymentPending()) {
                         <p class="text-[11px] text-ochre-600 dark:text-ochre-400 mt-3 text-center">
                             {{ t('plans.checkout.comingSoon') }}

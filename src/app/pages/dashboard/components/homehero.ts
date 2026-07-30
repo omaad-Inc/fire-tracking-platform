@@ -115,7 +115,7 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                 <div class="mt-4">
                     @if (coaching.top(); as rec) {
                         <a [routerLink]="link('pages','insights')" [queryParams]="{ tab: 'conseils' }"
-                           class="flex items-center gap-3 rounded-xl border p-3 no-underline transition-colors"
+                           class="omaad-press flex items-center gap-3 rounded-xl border p-3 no-underline transition-colors"
                            [ngClass]="rec.severity === 'high'
                                ? 'border-negative/30 bg-negative/5 hover:bg-negative/10 dark:bg-negative-900/20 dark:hover:bg-negative-900/30'
                                : 'border-ochre-200 bg-ochre-50/60 hover:bg-ochre-50 dark:border-white/10 dark:bg-surface-800 dark:hover:bg-surface-700'">
