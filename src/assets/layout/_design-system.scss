@@ -657,3 +657,12 @@ select:focus-visible {
     ::view-transition-old(root),
     ::view-transition-new(root) { animation: none !important; }
 }
+
+// ── Branded text selection (premium micro-detail) ──
+// Chrome's default bluish ::selection looks broken on the navy canvas.
+::selection {
+    background: rgba(199, 123, 60, 0.30); // ochre-500
+}
+.app-dark ::selection {
+    background: rgba(216, 163, 105, 0.35); // ochre-400
+}
