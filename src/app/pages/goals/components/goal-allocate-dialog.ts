@@ -42,10 +42,9 @@ export interface AllocatePayload {
                     <!-- Header tile: navy for "into the goal", ochre for "out of the goal", semantic and minimal -->
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center"
                          [ngClass]="mode() === 'contribute'
-                            ? 'bg-brand-700 dark:bg-brand-300'
+                            ? 'bg-brand-700 dark:bg-brand-600'
                             : 'bg-ochre-500'">
                         <i class="pi text-white text-lg"
-                           [class.dark:text-brand-900]="mode() === 'contribute'"
                            [ngClass]="mode() === 'contribute' ? 'pi-arrow-down' : 'pi-arrow-up'"></i>
                     </div>
                     <div>

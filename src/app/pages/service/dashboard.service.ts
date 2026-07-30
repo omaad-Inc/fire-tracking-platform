@@ -64,23 +64,28 @@ const CATEGORY_COLORS_LIGHT: Record<string, string> = {
     'other':          '#B6BFCD'  // brand-200
 };
 
+// Dark slices: the validated dark-categorical hues (dark-mode audit Batch 3,
+// dataviz six-checks vs #111B2E). Color follows the ENTITY, never its rank.
+// The 8 validated hues go to the categories that actually co-occur in a
+// Senegal-market portfolio (the WA-first catalog); rare tails take steel
+// neutrals and are relieved by the legend + slice gaps.
 const CATEGORY_COLORS_DARK: Record<string, string> = {
-    'real_estate':    '#8A98AE', // brand-300
-    'stocks_brvm':    '#D8A369', // ochre-400, BRVM identity
-    'stocks_intl':    '#B98856', // mid-ochre, international stocks
-    'bonds':          '#B6BFCD', // brand-200
-    'crypto':         '#EBD0B0', // ochre-200
-    'cash':           '#9C988C', // warm-400
-    'retirement':     '#C2BDB1', // warm-300
-    'life_insurance': '#DEDAD0', // warm-200
-    'savings_account':'#F1EDE5', // warm-100
-    'business':       '#4D5F80', // brand-400
-    'vehicle':        '#D8A369', // ochre-400
-    'tontine':        '#B6BFCD', // brand-200
-    'mobile_money':   '#F4E5D2', // ochre-100
-    'collectibles':   '#C2BDB1', // warm-300
-    'commodities':    '#EBD0B0', // ochre-200
-    'other':          '#DEDAD0'  // warm-200
+    'real_estate':    '#5B84C4', // steel blue (anchor)
+    'stocks_brvm':    '#C77B3C', // ochre, BRVM identity
+    'stocks_intl':    '#B0574A', // terracotta, sibling of BRVM
+    'savings_account':'#A98F2C', // gold (épargne)
+    'cash':           '#2FA3B5', // teal (liquid)
+    'tontine':        '#B6699F', // mauve
+    'mobile_money':   '#86A04B', // olive
+    'crypto':         '#9678D6', // violet
+    'bonds':          '#8593AB', // neutral steel (tail)
+    'retirement':     '#4D5F80', // deep steel (tail)
+    'life_insurance': '#93A7C4', // pale steel (tail)
+    'business':       '#B98856', // tan (tail)
+    'vehicle':        '#71829F', // slate (tail)
+    'collectibles':   '#6E6A60', // warm grey (tail)
+    'commodities':    '#A88A63', // sand (tail)
+    'other':          '#5C6B89'  // muted steel (tail)
 };
 
 function getCategoryColors(): Record<string, string> {
@@ -100,17 +105,18 @@ const EXPENSE_COLORS_LIGHT: string[] = [
     '#08111E'  // brand-950
 ];
 
+// Validated dark categorical (dark-mode audit Batch 3) + 2 steel tails.
 const EXPENSE_COLORS_DARK: string[] = [
-    '#8A98AE', // brand-300
-    '#D8A369', // ochre-400
-    '#B6BFCD', // brand-200
-    '#EBD0B0', // ochre-200
-    '#9C988C', // warm-400
-    '#C2BDB1', // warm-300
-    '#DEDAD0', // warm-200
-    '#F1EDE5', // warm-100
-    '#F4E5D2', // ochre-100
-    '#4D5F80'  // brand-400
+    '#C77B3C', // ochre (anchor)
+    '#5B84C4', // steel blue
+    '#A98F2C', // gold
+    '#B0574A', // terracotta
+    '#2FA3B5', // teal
+    '#9678D6', // violet
+    '#86A04B', // olive
+    '#B6699F', // mauve
+    '#8593AB', // neutral steel (tail)
+    '#5C6B89'  // muted steel (tail)
 ];
 
 function getExpenseColors(): string[] {

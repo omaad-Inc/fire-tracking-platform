@@ -17,7 +17,9 @@
 }
 
 .app-dark .card {
-    background: var(--p-surface-800);
+    /* Same tier as the Tailwind dark:bg-surface-900 cards (B6 hierarchy). */
+    background: var(--p-surface-900);
+    border: 1px solid var(--omaad-border-subtle);
 }
 
 .p-toast {

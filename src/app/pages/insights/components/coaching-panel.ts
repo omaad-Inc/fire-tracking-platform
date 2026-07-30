@@ -6,7 +6,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 import { CoachingService } from '../../service/coaching.service';
 import { CoachingRecommendation } from '../../../core/services/api.service';
-import { UiCardComponent, EmptyStateComponent } from '../../../core/ui';
+import { EmptyStateComponent } from '../../../core/ui';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
 
 /**
@@ -19,7 +19,7 @@ import { LoadErrorComponent } from '../../../core/components/load-error.componen
     selector: 'app-coaching-panel',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, UiCardComponent, EmptyStateComponent, LoadErrorComponent],
+    imports: [CommonModule, EmptyStateComponent, LoadErrorComponent],
     template: `
         @if (error()) {
             <app-load-error (retry)="load()" />
@@ -35,7 +35,11 @@ import { LoadErrorComponent } from '../../../core/components/load-error.componen
         } @else {
             <div class="space-y-3" role="list">
                 @for (r of coaching.recommendations(); track r.id) {
-                    <app-ui-card role="listitem" [class]="'border-l-4 ' + borderClass(r.severity)">
+                    <!-- Plain card div (not app-ui-card): the severity border must sit ON the
+                         rounded element; on the component host it rendered as a detached tick. -->
+                    <div role="listitem"
+                         class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card p-5 border-l-4"
+                         [ngClass]="borderClass(r.severity)">
                         <div class="flex items-start gap-3 min-w-0">
                             <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" [class]="iconBg(r.severity)">
                                 <i class="pi text-sm" [class]="icon(r.severity) + ' ' + iconColor(r.severity)"></i>
@@ -51,7 +55,7 @@ import { LoadErrorComponent } from '../../../core/components/load-error.componen
                                 {{ coaching.action(r) }} <i class="pi pi-arrow-right text-xs"></i>
                             </button>
                         </div>
-                    </app-ui-card>
+                    </div>
                 }
             </div>
         }

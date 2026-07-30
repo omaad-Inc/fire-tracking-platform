@@ -143,7 +143,7 @@ interface DayGroup {
                              [ngClass]="monthSummary().savingsRate < 0 ? 'text-negative' : 'text-brand-700 dark:text-brand-300'">{{ monthSummary().savingsRate }}%</div>
                         <div class="h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-500"
-                                 [ngClass]="monthSummary().savingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-brand-300'"
+                                 [ngClass]="monthSummary().savingsRate < 0 ? 'bg-negative' : 'bg-brand-700 dark:bg-ochre-400'"
                                  [style.width]="monthSummary().barWidth + '%'"></div>
                         </div>
                     </div>
@@ -832,14 +832,16 @@ export class TransactionLogs implements OnInit, OnDestroy {
     categoryFg(rec: TransactionRecord): string {
         const c = this.getCategoryConfig(rec).color;
         return this.layoutService.isDarkTheme()
-            ? `color-mix(in srgb, ${c} 30%, white)`
+            ? `color-mix(in srgb, ${c} 25%, #F5F7FB)`
             : c;
     }
 
     categoryBg(rec: TransactionRecord): string {
         const c = this.getCategoryConfig(rec).color;
+        // Dark: premix against the card color (surface-900). Alpha over the row
+        // hover state produced muddy grey-brown chips (dark-mode program B7).
         return this.layoutService.isDarkTheme()
-            ? `color-mix(in srgb, ${c} 35%, transparent)`
+            ? `color-mix(in srgb, ${c} 28%, #111B2E)`
             : `${c}1a`;
     }
 

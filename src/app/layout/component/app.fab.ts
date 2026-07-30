@@ -21,7 +21,7 @@ const HIDE_FAB_PATTERNS = [
     template: `
         @if (showFab) {
             <button
-                class="fab-button lg:hidden fixed right-5 z-50 w-14 h-14 rounded-full bg-brand-700 hover:bg-brand-800 text-white shadow-xl hover:shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95"
+                class="fab-button lg:hidden fixed right-5 z-50 w-14 h-14 rounded-full bg-brand-700 hover:bg-brand-800 dark:bg-ochre-400 dark:hover:bg-ochre-300 text-white dark:text-warm-900 shadow-xl hover:shadow-lg flex items-center justify-center transition-all duration-300 active:scale-95"
                 (click)="action.emit()"
                 [attr.aria-label]="i18n.t('quickAdd.fabLabel')"
             >

@@ -376,8 +376,8 @@ export class WealthScorePage implements OnInit {
         // Brand-tokenized radar palette. Ochre = the single accent (data-viz);
         // grid / labels use warm neutrals so it reads on both themes.
         const isDark = document.documentElement.classList.contains('app-dark');
-        const gridColor = isDark ? 'rgba(138,152,174,0.20)' : 'rgba(26,39,64,0.12)';
-        const labelColor = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
+        const gridColor = isDark ? 'rgba(245,247,251,0.10)' : 'rgba(26,39,64,0.12)';
+        const labelColor = isDark ? '#8593AB' : '#6E6A60'; // muted steel / warm-500
 
         this.chartData = {
             labels: axes.map(a => this.axisLabel(a.axis)),

@@ -98,7 +98,7 @@ import { ApiService } from '../../../core/services/api.service';
                         class="p-4 rounded-xl border-2 cursor-pointer transition-all"
                         [ngClass]="isLightMode ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
-                        <div class="w-full h-20 bg-white border border-surface-200 rounded-lg mb-3 flex items-center justify-center">
+                        <div class="w-full h-20 bg-white border border-surface-200 rounded-lg mb-3 flex items-center justify-center"><!-- dark-ok: light-theme preview tile -->
                             <i class="pi pi-sun text-2xl text-ochre-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
@@ -133,7 +133,7 @@ import { ApiService } from '../../../core/services/api.service';
                         [ngClass]="isSystemMode ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
                         <div class="w-full h-20 rounded-lg mb-3 overflow-hidden flex border border-surface-200 dark:border-surface-700">
-                            <div class="w-1/2 bg-white flex items-center justify-center">
+                            <div class="w-1/2 bg-white flex items-center justify-center"><!-- dark-ok: system-theme preview tile -->
                                 <i class="pi pi-sun text-xl text-ochre-500"></i>
                             </div>
                             <div class="w-1/2 bg-warm-900 flex items-center justify-center">

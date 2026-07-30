@@ -1,5 +1,9 @@
 :root[class*='app-dark'] {
-    --surface-ground: var(--p-surface-900);
+    /* Depth hierarchy (dark-mode program B6): the canvas sits one step BELOW
+       the cards. Canvas 950 (#0B1322) < cards/content 900 < nested 800 <
+       overlays 800+shadow. Cards keep their dark:bg-surface-900 untouched and
+       now float visibly above the page. */
+    --surface-ground: var(--p-surface-950);
     --code-background: var(--p-surface-800);
     --code-color: var(--p-surface-100);
 }

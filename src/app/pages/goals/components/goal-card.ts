@@ -138,7 +138,7 @@ export class GoalCardComponent {
             // "On track" = still navigating → brand navy (active progress, not yet a win).
             // Reserves green for the rare "you made it" moment, keeping the page calmer.
             case 'completed': return 'bg-positive text-white';
-            case 'on_track': return 'bg-brand-700 dark:bg-brand-300 text-white dark:text-brand-900';
+            case 'on_track': return 'bg-brand-700 dark:bg-brand-600 text-white dark:text-surface-0';
             case 'at_risk': return 'bg-warning text-white';
             case 'no_deadline': return 'bg-warm-700 text-white';
             case 'no_target': return 'bg-warm-700 text-white';

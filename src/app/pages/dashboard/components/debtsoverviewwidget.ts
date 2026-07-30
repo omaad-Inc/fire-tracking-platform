@@ -79,7 +79,7 @@ interface DebtDisplay {
                                             class="text-surface-200 dark:text-surface-700" />
                                     <circle cx="18" cy="18" r="15.5" fill="none"
                                             stroke-width="3" stroke-linecap="round"
-                                            class="text-brand-700 dark:text-brand-300"
+                                            class="text-brand-700 dark:text-ochre-400"
                                             [attr.stroke-dasharray]="ringDash(debt.percent)"
                                             stroke="currentColor" />
                                 </svg>
@@ -140,8 +140,8 @@ export class DebtsOverview implements OnInit, OnDestroy {
                 const sharedChrome = {
                     bgClass: 'bg-brand-100 dark:bg-brand-700/20',
                     iconClass: 'text-brand-700 dark:text-ochre-400',
-                    progressClass: 'bg-brand-700 dark:bg-brand-300',
-                    textClass: 'text-brand-700 dark:text-brand-300',
+                    progressClass: 'bg-brand-700 dark:bg-ochre-400',
+                    textClass: 'text-brand-700 dark:text-ochre-400',
                 };
                 const colorConfigs = [
                     { icon: 'pi pi-home',        ...sharedChrome },

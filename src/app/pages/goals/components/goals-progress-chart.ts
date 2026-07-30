@@ -20,7 +20,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
                             <button (click)="setRange(r.months)"
                                 class="px-3 py-1 text-xs rounded-lg transition-colors"
                                 [ngClass]="selectedMonths() === r.months
-                                    ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
+                                    ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                 {{ r.label }}
                             </button>
@@ -149,13 +149,13 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
         const cs = this.cs;
 
-        // Brand-700 (light) / brand-300 (dark), matches the chart-theme primary series.
+        // Brand-700 (light) / ochre-400 (dark), matches the chart-theme primary series.
         const isDark = document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark');
-        const borderColor = isDark ? '#8A98AE' : '#1A2740';
+        const borderColor = isDark ? '#D8A369' : '#1A2740';
 
         // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
-        const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
-        const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+        const fillTop = isDark ? 'rgba(216,163,105,0.20)' : 'rgba(26,39,64,0.15)';
+        const fillBottom = isDark ? 'rgba(216,163,105,0)' : 'rgba(26,39,64,0)';
 
         const points = this.getVisiblePoints();
 

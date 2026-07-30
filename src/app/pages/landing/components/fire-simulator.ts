@@ -333,11 +333,11 @@ interface YearProjection {
                                 </h3>
                                 <div class="flex items-center gap-4 text-xs text-surface-500 dark:text-surface-400">
                                     <span class="flex items-center gap-1.5">
-                                        <span class="w-3 h-0.5 rounded bg-ochre-500"></span>
+                                        <span class="w-3 h-0.5 rounded bg-ochre-500 dark:bg-ochre-400"></span>
                                         {{ isFr ? 'Intérêts' : 'Interests' }}
                                     </span>
                                     <span class="flex items-center gap-1.5">
-                                        <span class="w-3 h-0.5 rounded bg-brand-700 dark:bg-brand-300"></span>
+                                        <span class="w-3 h-0.5 rounded bg-brand-700 dark:bg-[#5B84C4]"></span>
                                         {{ isFr ? 'Contributions' : 'Contributions' }}
                                     </span>
                                 </div>
@@ -667,11 +667,11 @@ export class FireSimulator {
         const fireTarget = this.fireNumber();
         const dark = this.isDark();
 
-        const contribColor = dark ? 'rgba(138, 152, 174, 0.35)' : 'rgba(26, 39, 64, 0.2)';
-        const interestColor = dark ? 'rgba(199, 123, 60, 0.5)' : 'rgba(199, 123, 60, 0.45)';
+        const contribColor = dark ? 'rgba(91, 132, 196, 0.45)' : 'rgba(26, 39, 64, 0.2)';
+        const interestColor = dark ? 'rgba(216, 163, 105, 0.75)' : 'rgba(199, 123, 60, 0.45)';
         const fireLineColor = dark ? '#3FA886' : '#2F8F6E';
-        const tickColor = dark ? 'rgba(138, 152, 174, 0.5)' : 'rgba(26, 39, 64, 0.35)';
-        const gridColor = dark ? 'rgba(138, 152, 174, 0.06)' : 'rgba(26, 39, 64, 0.06)';
+        const tickColor = dark ? '#8593AB' : 'rgba(26, 39, 64, 0.35)';
+        const gridColor = dark ? 'rgba(245, 247, 251, 0.07)' : 'rgba(26, 39, 64, 0.06)';
         const tooltipBg = dark ? 'rgba(15, 26, 46, 0.95)' : 'rgba(255, 255, 255, 0.95)';
         const tooltipTitle = dark ? '#FAF8F4' : '#1A2740';
         const tooltipBody = dark ? '#C2BDB1' : '#6E6A60';

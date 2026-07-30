@@ -1,44 +1,14 @@
 import { Injectable, effect, signal, computed, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
-import { updateSurfacePalette } from '@primeng/themes';
 
 // Storage key for preferences
 const STORAGE_KEY = 'omaad-layout-config';
 
-// Surface palettes
-const SURFACE_PALETTES: Record<string, Record<string, string>> = {
-    slate: {
-        0: '#ffffff',
-        50: '#f8fafc',
-        100: '#f1f5f9',
-        200: '#e2e8f0',
-        300: '#cbd5e1',
-        400: '#94a3b8',
-        500: '#617187', // AA-tuned: 4.5:1 for muted text on light surfaces (was slate-500 #64748b, 4.36)
-        600: '#475569',
-        700: '#334155',
-        800: '#1e293b',
-        900: '#0f172a',
-        950: '#020617'
-    },
-    gray: {
-        0: '#ffffff',
-        50: '#f9fafb',
-        100: '#f3f4f6',
-        200: '#e5e7eb',
-        300: '#d1d5db',
-        400: '#9ca3af',
-        500: '#6b7280',
-        600: '#4b5563',
-        700: '#374151',
-        800: '#1f2937',
-        900: '#111827',
-        950: '#030712'
-    }
-};
-
 export interface layoutConfig {
+    // preset/primary/surface are legacy fields still present in persisted
+    // configs; they are ignored since the OmaadPreset (app.config.ts) became
+    // the single source of truth for palettes (dark-mode audit Batch 1).
     preset?: string;
     primary?: string;
     surface?: string | undefined | null;
@@ -68,9 +38,6 @@ export class LayoutService {
     
     // Default configuration
     private readonly defaultConfig: layoutConfig = {
-        preset: 'Aura',
-        primary: 'emerald',
-        surface: 'slate',
         darkTheme: false,
         themeMode: 'light',
         menuMode: 'static'
@@ -118,8 +85,6 @@ export class LayoutService {
     theme = computed(() => (this.layoutConfig()?.darkTheme ? 'light' : 'dark'));
     isSidebarActive = computed(() => this.layoutState().overlayMenuActive || this.layoutState().staticMenuMobileActive);
     isDarkTheme = computed(() => this.layoutConfig()?.darkTheme ?? true);
-    getPrimary = computed(() => this.layoutConfig()?.primary);
-    getSurface = computed(() => this.layoutConfig()?.surface);
     isOverlay = computed(() => this.layoutConfig()?.menuMode === 'overlay');
 
     constructor() {
@@ -142,12 +107,6 @@ export class LayoutService {
             
             // Setup system preference listener if in system mode
             this.setupSystemPreferenceListener();
-            
-            // Apply surface palette after a brief delay to ensure PrimeNG is initialized
-            // This is necessary because updateSurfacePalette needs the theme system to be ready
-            setTimeout(() => {
-                this.applySurfacePalette(this._config?.surface || 'slate');
-            }, 0);
         }
 
         // Effect for saving config changes to localStorage
@@ -203,15 +162,9 @@ export class LayoutService {
     }
 
     private applyTheme(config: layoutConfig): void {
-        // Apply dark mode
+        // Apply dark mode. Surfaces/primary come from the OmaadPreset
+        // colorScheme (app.config.ts); nothing to inject at runtime.
         this.toggleDarkMode(config);
-        // Apply surface palette
-        this.applySurfacePalette(config?.surface || 'slate');
-    }
-
-    private applySurfacePalette(surface: string): void {
-        const palette = SURFACE_PALETTES[surface] || SURFACE_PALETTES['slate'];
-        updateSurfacePalette(palette);
     }
 
     private handleDarkModeTransition(config: layoutConfig): void {

@@ -152,7 +152,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                     </div>
 
                     <!-- Save -->
-                    <button class="w-full mt-3 py-3.5 rounded-xl bg-brand-700 text-white font-semibold text-sm disabled:opacity-40 active:scale-[0.99] transition-all"
+                    <button class="w-full mt-3 py-3.5 rounded-xl bg-brand-700 text-white dark:bg-ochre-400 dark:text-warm-900 font-semibold text-sm disabled:opacity-40 active:scale-[0.99] transition-all"
                             [disabled]="!canSave() || saving()"
                             (click)="save()">
                         @if (saving()) { <i class="pi pi-spin pi-spinner mr-2"></i> }

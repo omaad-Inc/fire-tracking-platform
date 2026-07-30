@@ -207,10 +207,12 @@ export class InsightsPage implements OnInit {
         if (!d) return;
         const cs = this.cs;
         const isDark = document.documentElement.classList.contains('app-dark');
-        const grid = isDark ? 'rgba(156,152,140,0.15)' : 'rgba(110,106,96,0.12)';
-        const axis = isDark ? '#9C988C' : '#6E6A60';
-        // Semantic colors: income = positive, expenses = negative, net = brand.
-        const positive = '#2F8F6E', negative = '#B0463E', brand = isDark ? '#8A98AE' : '#1A2740';
+        const grid = isDark ? 'rgba(245,247,251,0.08)' : 'rgba(110,106,96,0.12)';
+        const axis = isDark ? '#8593AB' : '#6E6A60';
+        // Semantic colors: income = positive, expenses = negative, net = the ochre hero.
+        const positive = isDark ? '#3FA886' : '#2F8F6E';
+        const negative = isDark ? '#C2554D' : '#B0463E';
+        const brand = isDark ? '#D8A369' : '#1A2740';
 
         const mk = (label: string, key: 'income' | 'expenses' | 'net', color: string) => ({
             label, data: d.trend.map(p => p[key]), borderColor: color, backgroundColor: color,

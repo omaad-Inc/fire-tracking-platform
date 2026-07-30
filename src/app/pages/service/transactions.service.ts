@@ -93,7 +93,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     tontine:       { label: 'Tontine',        icon: 'pi pi-sync',                   color: '#6E6A60', bg: 'bg-warm-100 dark:bg-warm-800' },
     taxes:         { label: 'Impôts',         icon: 'pi pi-file',                   color: '#26241F', bg: 'bg-warm-100 dark:bg-warm-800' },
     savings:       { label: 'Épargne',        icon: 'pi pi-dollar',                 color: '#2F8F6E', bg: 'bg-warm-100 dark:bg-warm-800' },
-    investment:    { label: 'Investissement', icon: 'pi pi-chart-line',             color: '#C77B3C', bg: 'bg-ochre-100' },
+    investment:    { label: 'Investissement', icon: 'pi pi-chart-line',             color: '#C77B3C', bg: 'bg-ochre-100 dark:bg-ochre-900/30' },
     debt_payment:  { label: 'Remboursement',  icon: 'pi pi-credit-card',            color: '#933832', bg: 'bg-warm-100 dark:bg-warm-800' },
     other_expense: { label: 'Autres',         icon: 'pi pi-circle',                 color: '#C2BDB1', bg: 'bg-warm-100 dark:bg-warm-800' },
     transfer:      { label: 'Transfert',      icon: 'pi pi-arrow-right-arrow-left', color: '#8A98AE', bg: 'bg-warm-100 dark:bg-warm-800' },

@@ -61,7 +61,8 @@ const CATEGORY_BGS: Record<string, string> = {
 
 
 const DONUT_COLORS_LIGHT = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1', '#08111E', '#71421C'];
-const DONUT_COLORS_DARK  = ['#8A98AE', '#D8A369', '#B6BFCD', '#EBD0B0', '#9C988C', '#C2BDB1', '#DEDAD0', '#F1EDE5', '#4D5F80', '#F4E5D2'];
+// Validated dark categorical (dark-mode audit Batch 3) + 2 steel tails.
+const DONUT_COLORS_DARK  = ['#C77B3C', '#5B84C4', '#A98F2C', '#B0574A', '#2FA3B5', '#9678D6', '#86A04B', '#B6699F', '#8593AB', '#5C6B89'];
 
 function getDonutColors(): string[] {
     const isDark = typeof document !== 'undefined' &&
@@ -142,7 +143,7 @@ function getDonutColors(): string[] {
                                 <button (click)="changeRange(r.months)"
                                         class="px-2.5 py-1 text-xs rounded-lg transition-colors"
                                         [ngClass]="selectedMonths === r.months
-                                            ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
+                                            ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                             : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                     {{ r.label }}
                                 </button>
@@ -374,13 +375,13 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     private buildLineChart(points: ChartDataPoint[]) {
         // Brand-tokenized chart line, same in light + dark, switching shade.
         const isDark = document.documentElement.classList.contains('app-dark');
-        const color = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
-        const textMuted = isDark ? '#9C988C' : '#6E6A60';   // warm-400 / warm-500
+        const color = isDark ? '#D8A369' : '#1A2740';        // ochre-400 hero / brand-700
+        const textMuted = isDark ? '#8593AB' : '#6E6A60';   // muted steel / warm-500
         const cs = this.cs;
 
         // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
-        const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
-        const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+        const fillTop = isDark ? 'rgba(216,163,105,0.20)' : 'rgba(26,39,64,0.15)';
+        const fillBottom = isDark ? 'rgba(216,163,105,0)' : 'rgba(26,39,64,0)';
 
         this.lineData = {
             labels: points.map(p => p.label),

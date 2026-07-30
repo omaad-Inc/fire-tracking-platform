@@ -24,7 +24,7 @@ import { ApiService } from '../../../core/services/api.service';
                             <button (click)="setRange(r.months)"
                                 class="px-3 py-1 text-xs rounded-lg transition-colors"
                                 [ngClass]="selectedMonths() === r.months
-                                    ? 'bg-brand-700 text-white dark:bg-brand-300 dark:text-brand-900'
+                                    ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                 {{ r.label }}
                             </button>
@@ -156,12 +156,12 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
             // Brand-tokenized chart palette, single source of truth in
             // core/theme/chart-theme.ts. Inlined here to avoid breaking the
             // build dependency graph.
-            const borderColor = isDark ? '#8A98AE' : '#1A2740';        // brand-300 / brand-700
-            const textColorSecondary = isDark ? '#9C988C' : '#6E6A60'; // warm-400 / warm-500
+            const borderColor = isDark ? '#D8A369' : '#1A2740';        // ochre-400 hero line / brand-700
+            const textColorSecondary = isDark ? '#8593AB' : '#6E6A60'; // muted steel / warm-500
 
             // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
-            const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
-            const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+            const fillTop = isDark ? 'rgba(216,163,105,0.20)' : 'rgba(26,39,64,0.15)';
+            const fillBottom = isDark ? 'rgba(216,163,105,0)' : 'rgba(26,39,64,0)';
 
             const points = this.dataPoints();
 

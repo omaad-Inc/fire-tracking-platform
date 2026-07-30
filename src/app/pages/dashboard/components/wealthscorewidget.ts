@@ -118,7 +118,7 @@ export class WealthScoreDashboardWidget implements OnInit {
         if (!axes.length) return;
 
         const isDark = document.documentElement.classList.contains('app-dark');
-        const gridColor = isDark ? 'rgba(138, 152, 174, 0.18)' : 'rgba(26, 39, 64, 0.12)';
+        const gridColor = isDark ? 'rgba(245, 247, 251, 0.10)' : 'rgba(26, 39, 64, 0.12)';
 
         this.chartData = {
             labels: axes.map(a => this.axisLabel(a.axis)),

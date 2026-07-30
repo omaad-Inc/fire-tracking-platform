@@ -2,7 +2,10 @@
 import PrimeUI from 'tailwindcss-primeui';
 
 export default {
-    darkMode: ['selector', '[class="app-dark"]'],
+    // Class selector, NOT an exact [class="app-dark"] attribute match: <html>
+    // can carry extra classes (settings adds settings-no-scrollbar, browser
+    // extensions inject their own) and dark: variants must keep applying.
+    darkMode: ['selector', '.app-dark'],
     content: ['./src/**/*.{html,ts,scss,css}', './index.html'],
     plugins: [PrimeUI],
     theme: {
@@ -72,28 +75,40 @@ export default {
                     DEFAULT: '#2A8163', // AA-tuned: 4.5:1 on white/near-white for money-positive text (was #2F8F6E, 3.80)
                     50:  '#EAF4EF',
                     100: '#D0E8DC',
+                    200: '#A8D5C1',
+                    300: '#74BFA3',
                     400: '#3FA886',
                     500: '#2A8163',
                     600: '#27795C',
                     700: '#1F6249',
+                    800: '#17493A',
+                    900: '#10332A',
                 },
                 warning: {
                     DEFAULT: '#C68A2E',
                     50:  '#FAF1DE',
                     100: '#F4E1B7',
+                    200: '#EDD094',
+                    300: '#E0B76A',
                     400: '#D49E45',
                     500: '#C68A2E',
                     600: '#A47220',
                     700: '#7E5818',
+                    800: '#5E4112',
+                    900: '#402C0D',
                 },
                 negative: {
                     DEFAULT: '#B0463E',
                     50:  '#F8E6E4',
                     100: '#EFC9C5',
+                    200: '#E3A49E',
+                    300: '#D37A72',
                     400: '#C2554D',
                     500: '#B0463E',
                     600: '#933832',
                     700: '#742B26',
+                    800: '#571F1B',
+                    900: '#3B1512',
                 },
             },
             fontFamily: {
