@@ -98,6 +98,13 @@ const OmaadPreset = definePreset(Aura, {
                     color: 'rgba(255, 255, 255, 0.87)',
                     focusColor: 'rgba(255, 255, 255, 0.87)',
                 },
+                // Overlay tier sits one step ABOVE the cards (B6 depth
+                // hierarchy): canvas 950 < cards 900 < overlays 800.
+                overlay: {
+                    select: { background: '{surface.800}', borderColor: '{surface.700}' },
+                    popover: { background: '{surface.800}', borderColor: '{surface.700}' },
+                    modal: { background: '{surface.800}', borderColor: '{surface.700}' },
+                },
             },
         },
     },
