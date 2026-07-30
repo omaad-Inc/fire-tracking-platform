@@ -149,13 +149,13 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary') || '#94a3b8';
         const cs = this.cs;
 
-        // Brand-700 (light) / brand-300 (dark), matches the chart-theme primary series.
+        // Brand-700 (light) / ochre-400 (dark), matches the chart-theme primary series.
         const isDark = document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark');
-        const borderColor = isDark ? '#8A98AE' : '#1A2740';
+        const borderColor = isDark ? '#D8A369' : '#1A2740';
 
         // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
-        const fillTop = isDark ? 'rgba(138,152,174,0.22)' : 'rgba(26,39,64,0.15)';
-        const fillBottom = isDark ? 'rgba(138,152,174,0)' : 'rgba(26,39,64,0)';
+        const fillTop = isDark ? 'rgba(216,163,105,0.20)' : 'rgba(26,39,64,0.15)';
+        const fillBottom = isDark ? 'rgba(216,163,105,0)' : 'rgba(26,39,64,0)';
 
         const points = this.getVisiblePoints();
 

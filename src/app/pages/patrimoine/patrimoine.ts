@@ -29,8 +29,11 @@ interface CategoryGroupCard {
 // differentiates the category, not the color. (Phase 2 identity rule.)
 const GROUP_BG = '#1A2740';
 
-// Allocation donut palette (navy / ochre / warm-grey spread).
-const DONUT_COLORS = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#2C3E5E', '#9C988C', '#71421C', '#8A98AE'];
+// Allocation donut palette. Light: navy/ochre/warm spread (unchanged).
+// Dark: the validated dark categorical (dark-mode audit Batch 3) — the old
+// single shared array put #1A2740 navy slices on a navy card.
+const DONUT_COLORS_LIGHT = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#2C3E5E', '#9C988C', '#71421C', '#8A98AE'];
+const DONUT_COLORS_DARK  = ['#C77B3C', '#5B84C4', '#A98F2C', '#B0574A', '#2FA3B5', '#9678D6', '#86A04B', '#B6699F'];
 
 // Group labels are resolved via i18n at render time (patrimoine.groups.<id>).
 const GROUPS = [
@@ -335,12 +338,13 @@ export class Patrimoine implements OnInit, OnDestroy {
         const groups = this.categoryGroups();
         if (!groups.length) return null;
         const isDark = document.documentElement.classList.contains('app-dark');
-        const sliceBorder = isDark ? '#0F1A2E' : '#ffffff';
+        const sliceBorder = isDark ? '#111B2E' : '#ffffff';
+        const donutColors = isDark ? DONUT_COLORS_DARK : DONUT_COLORS_LIGHT;
         return {
             labels: groups.map(g => g.label),
             datasets: [{
                 data: groups.map(g => g.totalValue),
-                backgroundColor: groups.map((_, i) => DONUT_COLORS[i % DONUT_COLORS.length]),
+                backgroundColor: groups.map((_, i) => donutColors[i % donutColors.length]),
                 borderColor: sliceBorder,
                 borderWidth: 2,
                 hoverOffset: 10,

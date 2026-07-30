@@ -92,38 +92,44 @@ const LIGHT: ChartThemeTokens = {
     },
 };
 
+// Dark tokens sit on the navy ramp (surface-900 #111B2E cards). The hero
+// money series is OCHRE, not grey: in a wealth app the net-worth line is
+// the brand. Categorical palette validated (dark-mode audit Batch 3) with
+// the dataviz six-checks script against #111B2E: all 8 slots in the OKLCH
+// L 0.48-0.67 band, chroma >= 0.10, adjacent-pair CVD >= 6.9 with donut
+// slice gaps + legends as the required secondary encoding.
 const DARK: ChartThemeTokens = {
-    text: '#FAF8F4',
-    textMuted: '#9C988C',
-    grid: 'rgba(250, 248, 244, 0.07)',
-    surface: '#14130F',
+    text: '#F5F7FB',
+    textMuted: '#8593AB',
+    grid: 'rgba(245, 247, 251, 0.08)',
+    surface: '#111B2E',
 
     series: {
-        primary: '#8A98AE',         // brand-300, high contrast on dark bg
-        primarySoft: 'rgba(138, 152, 174, 0.18)',
-        accent: '#D8A369',           // ochre-400 (slightly desaturated for dark)
-        accentSoft: 'rgba(216, 163, 105, 0.18)',
+        primary: '#D8A369',          // ochre-400: the money line
+        primarySoft: 'rgba(216, 163, 105, 0.16)',
+        accent: '#5B84C4',           // steel blue: comparison series vs the ochre hero
+        accentSoft: 'rgba(91, 132, 196, 0.16)',
         positive: '#3FA886',
         negative: '#C2554D',
         warning: '#D49E45',
-        muted: '#52504A',
+        muted: '#5C6B89',
     },
 
     categorical: [
-        '#8A98AE', // brand-300 (primary on dark)
-        '#D8A369', // ochre-400 (accent)
-        '#B6BFCD', // brand-200
-        '#EBD0B0', // ochre-200
-        '#C2BDB1', // warm-300
-        '#9C988C', // warm-400
-        '#6E6A60', // warm-500
-        '#52504A', // warm-600
+        '#C77B3C', // ochre (brand anchor)
+        '#5B84C4', // steel blue
+        '#A98F2C', // gold
+        '#B0574A', // terracotta
+        '#2FA3B5', // teal
+        '#9678D6', // violet
+        '#86A04B', // olive
+        '#B6699F', // mauve
     ],
 
     tooltip: {
-        background: 'rgba(20, 19, 15, 0.95)',
-        titleColor: '#FAF8F4',
-        bodyColor: '#DEDAD0',
+        background: '#1F2D47',
+        titleColor: '#F5F7FB',
+        bodyColor: '#CBD3E1',
         borderColor: 'rgba(216, 163, 105, 0.30)',
     },
 };
