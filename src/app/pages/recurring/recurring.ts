@@ -93,7 +93,7 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
             </div>
         }
 
-        <p-dialog [(visible)]="dialog" [modal]="true" [draggable]="false" [style]="{ width: '95vw', maxWidth: '520px' }"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [(visible)]="dialog" [modal]="true" [draggable]="false" [style]="{ width: '95vw', maxWidth: '520px' }"
                   [header]="t('recurring.add')" styleClass="!rounded-2xl">
             <div class="flex flex-col gap-4 pt-2">
                 <div class="flex gap-2">

@@ -1,4 +1,5 @@
 import { isPlatformBrowser, NgClass } from '@angular/common';
+import { prefersReducedMotion } from '../../../core/theme/chart-theme';
 import { Component, OnInit, OnDestroy, PLATFORM_ID, ChangeDetectorRef, inject, effect, signal } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
 import { Subscription, firstValueFrom } from 'rxjs';
@@ -196,6 +197,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
             };
 
             this.options = {
+            animation: prefersReducedMotion() ? false : { duration: 600, easing: 'easeOutQuart' },
                 maintainAspectRatio: false,
                 aspectRatio: 0.8,
                 plugins: {

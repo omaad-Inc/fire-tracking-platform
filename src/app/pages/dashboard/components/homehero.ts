@@ -37,7 +37,7 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                 <app-load-error [title]="t('dashboard.stats.errorTitle')" [body]="t('dashboard.stats.errorBody')" (retry)="retry()" />
             </div>
         } @else {
-            <section class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 md:p-6 mb-4"
+            <section class="omaad-fade-in relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 md:p-6 mb-4"
                      [attr.aria-label]="t('dashboard.pageTitle')">
 
                 <!-- Dark-only hero sheen: one restrained radial glow, hero surfaces only (B8) -->

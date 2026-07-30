@@ -620,3 +620,40 @@ select:focus-visible {
         scroll-behavior: auto !important;
     }
 }
+
+// ── Tactile press, product-wide (motion-polish M2) ──
+// Every real button presses down 2-3% on pointer-down and springs back.
+// Transform-only; disabled buttons stay inert.
+.p-button:not(:disabled),
+.omaad-cta,
+.omaad-secondary,
+.omaad-accent {
+    transition-property: transform, background-color, border-color, color, box-shadow;
+    transition-duration: var(--motion-fast);
+    transition-timing-function: var(--ease-spring);
+    &:active { transform: scale(0.98); }
+}
+
+// ── Route-enter fade (motion-polish M3) ──
+// Routed components mount as siblings AFTER the outlet; fade each page in.
+// Opacity ONLY: a transform here would become a containing block for
+// position:fixed descendants (sheets, FABs) and break them.
+.layout-main > router-outlet + * {
+    display: block;
+    animation: omaad-fade-in var(--motion-slow) var(--ease-standard) both;
+}
+
+// ── Theme-toggle crossfade (motion-polish M5) ──
+// LayoutService wraps the .app-dark toggle in document.startViewTransition;
+// tune the browser's default crossfade to the system timing. The global
+// reduced-motion kill switch does not reach these pseudo-elements, so they
+// get their own guard.
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: var(--motion-overlay);
+    animation-timing-function: var(--ease-standard);
+}
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) { animation: none !important; }
+}

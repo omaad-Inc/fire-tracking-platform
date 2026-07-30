@@ -340,7 +340,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
         />
 
         <!-- Share progress dialog -->
-        <p-dialog [(visible)]="shareDialog" [modal]="true" [dismissableMask]="true" [draggable]="false"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [(visible)]="shareDialog" [modal]="true" [dismissableMask]="true" [draggable]="false"
                   [style]="{ width: '95vw', maxWidth: '440px' }" [header]="i18n.t('goals.share.title')">
             <div class="flex flex-col gap-4 pt-1">
                 <p class="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">{{ i18n.t('goals.share.desc') }}</p>

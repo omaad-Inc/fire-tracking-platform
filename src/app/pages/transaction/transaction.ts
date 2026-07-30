@@ -77,7 +77,7 @@ export class Transaction {
     }
 
     tabClass(tab: TxTab): string {
-        const base = 'px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ease-standard cursor-pointer';
+        const base = 'omaad-press px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 ease-standard cursor-pointer';
         return this.tab() === tab
             ? `${base} bg-surface-0 dark:bg-surface-950 text-brand-700 dark:text-ochre-400 shadow-card`
             : `${base} text-surface-500 dark:text-surface-400`;

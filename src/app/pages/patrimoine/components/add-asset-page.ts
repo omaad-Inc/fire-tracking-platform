@@ -280,7 +280,7 @@ interface CategoryCard {
                             @for (cat of filteredCategories(); track cat.value) {
                                 <button type="button"
                                         (click)="selectCategory(cat.value)"
-                                        class="flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-surface-200 dark:border-surface-700
+                                        class="omaad-press flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-surface-200 dark:border-surface-700
                                                bg-surface-0 dark:bg-surface-900
                                                hover:border-ochre-300 dark:hover:border-ochre-500/50 hover:shadow-card hover:-translate-y-px
                                                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ochre-500/60
@@ -977,7 +977,7 @@ interface CategoryCard {
                  rendered at body (appendTo) so it escapes the layout's transformed
                  ancestor and covers the whole app chrome on mobile AND desktop.
                  The form underneath never moves. -->
-            <p-dialog [visible]="brvmSheetOpen()" (visibleChange)="brvmSheetOpen.set($event)" [modal]="true"
+            <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="brvmSheetOpen()" (visibleChange)="brvmSheetOpen.set($event)" [modal]="true"
                       [draggable]="false" [resizable]="false" [showHeader]="false" [dismissableMask]="false"
                       [closeOnEscape]="true" appendTo="body" styleClass="brvm-sheet" [blockScroll]="true"
                       ariaLabelledBy="brvm-sheet-title" (onShow)="focusBrvmSearch()">

@@ -40,7 +40,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
 
             <!-- Sheet -->
             <div class="absolute left-0 right-0 bottom-0 bg-surface-0 dark:bg-surface-900 rounded-t-3xl shadow-2xl
-                        max-w-md mx-auto transition-transform duration-300 ease-out
+                        max-w-md mx-auto transition-transform duration-[var(--motion-overlay)] ease-[var(--ease-spring)]
                         flex flex-col max-h-[92dvh]
                         px-5 pt-3 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]"
                  [class.translate-y-0]="open()"
@@ -115,7 +115,7 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
                     @if (showAll()) {
                         <div class="grid grid-cols-4 gap-2 my-3 max-h-40 overflow-y-auto">
                             @for (c of allCats(); track c) {
-                                <button class="flex flex-col items-center gap-1 p-2 rounded-xl text-[10px] font-medium transition-colors"
+                                <button class="flex flex-col items-center gap-1 p-2 rounded-xl text-[11px] font-medium transition-colors"
                                         [ngClass]="category() === c ? 'bg-brand-100 dark:bg-brand-700/25 text-brand-700 dark:text-brand-200' : 'text-surface-600 dark:text-surface-400'"
                                         (click)="category.set(c); showAll.set(false)">
                                     <i [class]="icon(c)" class="text-sm"></i>
