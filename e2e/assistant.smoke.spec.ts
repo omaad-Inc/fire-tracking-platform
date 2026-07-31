@@ -100,6 +100,19 @@ test('assistant: with the flag OFF the route redirects and the teaser panel stil
     await page.evaluate(() => localStorage.removeItem('omaad_ff_aiChat'));
 });
 
+test('assistant: ?ff_aiChat=1 persists the device override (the phone path on prod builds)', async ({ page }) => {
+    await login(page);
+    // Start from the prod state (off), then flip via URL: the override must
+    // persist so plain navigation works afterwards.
+    await page.evaluate(() => localStorage.setItem('omaad_ff_aiChat', '0'));
+    await page.goto('/fr/pages/assistant?ff_aiChat=1');
+    await expect(page.locator('app-assistant-page')).toBeVisible({ timeout: 20_000 });
+    await page.goto('/fr/pages/assistant');
+    await expect(page.locator('app-assistant-page')).toBeVisible({ timeout: 20_000 });
+    const stored = await page.evaluate(() => localStorage.getItem('omaad_ff_aiChat'));
+    expect(stored).toBe('1');
+});
+
 test.describe('mobile viewport', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
