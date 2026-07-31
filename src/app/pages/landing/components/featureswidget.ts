@@ -101,8 +101,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             <div class="col-span-12 md:col-span-8 text-center md:text-left">
                                 <blockquote class="text-2xl md:text-3xl text-surface-700 dark:text-surface-200 font-light leading-relaxed mb-4">
                                     {{ t('landing.features.quoteText') }}
-                                    <span class="text-brand-700 dark:text-ochre-400 font-medium">{{ t('landing.features.quotePlan') }}</span>
-                                    {{ t('landing.features.quoteText2') }}
+                                    <span class="text-brand-700 dark:text-ochre-400 font-medium">{{ t('landing.features.quotePlan') }}</span>{{ t('landing.features.quoteText2') }}
                                     <span class="text-brand-700 dark:text-ochre-400 font-medium">{{ t('landing.features.quoteReality') }}</span>{{ t('landing.features.quoteText3') }}
                                 </blockquote>
                                 <div class="font-semibold text-surface-900 dark:text-surface-0">{{ t('landing.features.quoteAuthor') }}</div>
