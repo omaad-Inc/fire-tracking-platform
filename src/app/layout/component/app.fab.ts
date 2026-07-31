@@ -12,6 +12,8 @@ const HIDE_FAB_PATTERNS = [
     '/patrimoine/add-asset',
     '/settings/',
     '/pages/plans',
+    // S12: the chat surface has its own composer; a FAB would sit on it.
+    '/pages/assistant',
 ];
 
 @Component({

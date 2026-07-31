@@ -15,6 +15,7 @@ import { PinLockComponent } from '../../core/components/pin-lock.component';
 import { PinService } from '../../core/services/pin.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ShareContextService } from '../../core/services/share-context.service';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { applyChartDefaults } from '../../core/theme/chart-theme';
 
@@ -51,7 +52,11 @@ import { applyChartDefaults } from '../../core/theme/chart-theme';
             @if (!immersive()) {
                 <app-fab (action)="onFabAction()"></app-fab>
                 <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
-                <app-ai-assistant-panel></app-ai-assistant-panel>
+                <!-- S12: the teaser panel never renders once the real chat
+                     surface (aiChat flag) is on; /assistant replaces it. -->
+                @if (!flags.aiChat()) {
+                    <app-ai-assistant-panel></app-ai-assistant-panel>
+                }
                 <app-pwa-prompt></app-pwa-prompt>
             }
 
@@ -73,6 +78,7 @@ export class AppLayout implements OnInit, OnDestroy {
     pinService     = inject(PinService);
     private authService = inject(AuthService);
     share          = inject(ShareContextService);
+    flags          = inject(FeatureFlagsService);
     i18n           = inject(I18nService);
 
     /** Immersive (full-screen, chrome-less) routes: the add-asset flow. Kept a

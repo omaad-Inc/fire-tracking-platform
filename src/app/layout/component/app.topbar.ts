@@ -10,6 +10,8 @@ import { environment } from '../../../environments/environment';
 import { PrivacyService } from '../../core/services/privacy.service';
 import { AiAssistantService } from '../../core/services/ai-assistant.service';
 import { ShareContextService } from '../../core/services/share-context.service';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
+import { NavService } from '../../core/services/nav.service';
 import { SharePortfolioDialog } from './share-portfolio-dialog';
 
 @Component({
@@ -57,10 +59,11 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                     <i class="pi pi-share-alt"></i>
                 </button>
 
-                <!-- AI Assistant -->
+                <!-- AI Assistant: routes to /assistant when the S12 flag is on,
+                     otherwise opens the coming-soon panel (prod unchanged) -->
                 <button type="button"
                         class="layout-topbar-action ai-topbar-btn"
-                        (click)="aiAssistant.show()"
+                        (click)="openAssistant()"
                         [attr.aria-label]="t('aiAssistant.title')"
                         [title]="t('aiAssistant.title')">
                     <i class="pi pi-sparkles"></i>
@@ -106,8 +109,16 @@ export class AppTopbar implements OnInit {
     privacyService  = inject(PrivacyService);
     aiAssistant     = inject(AiAssistantService);
     share           = inject(ShareContextService);
+    private flags   = inject(FeatureFlagsService);
+    private nav     = inject(NavService);
 
     layoutService = inject(LayoutService);
+
+    /** S12: flag on -> the real chat surface; flag off -> the teaser panel. */
+    openAssistant(): void {
+        if (this.flags.aiChat()) this.nav.go('pages', 'assistant');
+        else this.aiAssistant.show();
+    }
 
     lang = 'fr';
     shareOpen = signal(false);
