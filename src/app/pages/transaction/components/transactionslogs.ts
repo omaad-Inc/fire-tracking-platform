@@ -279,21 +279,21 @@ interface DayGroup {
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Expense'
                                     ? 'bg-white dark:bg-surface-700 text-negative shadow-sm'
-                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
                             <i class="pi pi-arrow-up-right text-xs"></i> {{ t('transactions.form.expense') }}
                         </button>
                         <button (click)="setType('Income')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Income'
                                     ? 'bg-white dark:bg-surface-700 text-positive shadow-sm'
-                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
                             <i class="pi pi-arrow-down-left text-xs"></i> {{ t('transactions.form.income') }}
                         </button>
                         <button (click)="setType('Transfer')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Transfer'
                                     ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm'
-                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
                             <i class="pi pi-arrow-right-arrow-left text-xs"></i> {{ t('transactions.form.transfer') }}
                         </button>
                     </div>

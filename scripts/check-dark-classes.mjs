@@ -58,7 +58,21 @@ for (const file of files) {
                 findings.push(`${rel}:${i + 1}  phantom token dark:*-${pal}-${step} (step not in tailwind.config.js)`);
             }
         }
-        // 2. light solid without a dark companion on the same line
+        // 2. dark-unsafe hover text: hover flips text to a near-black shade
+        //    with no dark-scoped hover counterpart nearby. This class of bug
+        //    shipped four times (login, sidebar, blog, transactions) as
+        //    "the text disappears on hover" in dark mode.
+        if (!line.includes('dark-ok')) {
+            const hoverDark = /(?:group-)?hover:!?text-(?:brand-(?:600|700|800|900)|surface-(?:700|800|900)|warm-(?:700|800|900))\b/;
+            if (hoverDark.test(line)) {
+                const ctx = (lines[i - 1] || '') + line + (lines[i + 1] || '');
+                if (!/dark:(?:group-)?hover:!?text-/.test(ctx)) {
+                    findings.push(`${rel}:${i + 1}  hover flips text to a dark shade with no dark:hover companion -> ${line.trim().slice(0, 100)}`);
+                }
+            }
+        }
+
+        // 3. light solid without a dark companion on the same line
         if (line.includes('dark-ok')) return;
         if (lightSolidRe.test(line) && !/dark:(?:bg|from|to)-/.test(line)) {
             // Multi-line class bindings: tolerate when an adjacent line carries the dark: variant.
