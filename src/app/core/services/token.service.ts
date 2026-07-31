@@ -2,6 +2,14 @@ import { Injectable, signal } from '@angular/core';
 
 const TOKEN_KEY = 'omaad_token';
 const USER_KEY = 'omaad_user';
+/**
+ * Non-secret notification preferences, cached for a flash-free paint of the
+ * Settings → Notifications page (same rationale as USER_KEY above). Cleared on
+ * logout here so one user's toggles never seed another user's screen.
+ * ApiService owns the read/write; the key lives here to keep logout the single
+ * storage choke point.
+ */
+export const NOTIF_PREFS_CACHE_KEY = 'omaad_notif_prefs';
 
 export interface User {
     id: number;
@@ -117,6 +125,7 @@ export class TokenService {
         if (typeof window !== 'undefined' && window.localStorage) {
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(USER_KEY);
+            localStorage.removeItem(NOTIF_PREFS_CACHE_KEY);
         }
     }
 

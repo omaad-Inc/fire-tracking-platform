@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError, from, firstValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ShareContextService, PublicPortfolioBundle } from './share-context.service';
-import { User } from './token.service';
+import { User, NOTIF_PREFS_CACHE_KEY } from './token.service';
 
 // ============================================
 // ASSET INTERFACES
@@ -1405,12 +1405,46 @@ export class ApiService {
 
     // ===== Notifications (S9-B3) =====
 
+    /**
+     * Last-known notification preferences, read synchronously from localStorage
+     * so the Settings → Notifications page can paint the real toggle states on
+     * first frame (flash-free) instead of showing placeholder defaults while a
+     * network round trip completes. Returns null on a cold start (no cache yet)
+     * or if the stored blob is unparseable/malformed. Cleared on logout via
+     * TokenService.clear(). Non-secret data only — no auth material here.
+     */
+    getCachedNotificationPreferences(): NotificationPreferences | null {
+        if (typeof window === 'undefined' || !window.localStorage) return null;
+        try {
+            const raw = localStorage.getItem(NOTIF_PREFS_CACHE_KEY);
+            if (!raw) return null;
+            const p = JSON.parse(raw) as NotificationPreferences;
+            // Minimal shape guard: reject stale/garbage blobs from older builds.
+            if (typeof p?.email_enabled !== 'boolean' || typeof p?.timezone !== 'string') return null;
+            return p;
+        } catch {
+            return null;
+        }
+    }
+
+    private cacheNotificationPreferences(prefs: NotificationPreferences): void {
+        if (typeof window === 'undefined' || !window.localStorage) return;
+        try {
+            localStorage.setItem(NOTIF_PREFS_CACHE_KEY, JSON.stringify(prefs));
+        } catch {
+            // Quota / private-mode failures are non-fatal: the page still works
+            // from the network, it just won't get the flash-free warm paint.
+        }
+    }
+
     getNotificationPreferences(): Observable<NotificationPreferences> {
-        return this.http.get<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`);
+        return this.http.get<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`)
+            .pipe(tap(prefs => this.cacheNotificationPreferences(prefs)));
     }
 
     updateNotificationPreferences(changes: Partial<NotificationPreferences>): Observable<NotificationPreferences> {
-        return this.http.put<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`, changes);
+        return this.http.put<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`, changes)
+            .pipe(tap(prefs => this.cacheNotificationPreferences(prefs)));
     }
 
     getVapidPublicKey(): Observable<{ public_key: string }> {

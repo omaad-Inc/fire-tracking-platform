@@ -29,6 +29,46 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.notifs.subtitle') }}</p>
 
+            <!-- Cold start only (empty cache): show a shaped skeleton so we never
+                 paint a toggle in the wrong position while the first fetch lands.
+                 A warm start / refresh skips this entirely and paints cached values. -->
+            @if (loading()) {
+                <div class="animate-pulse" aria-hidden="true" [attr.aria-busy]="true">
+                    <div class="divide-y divide-surface-200 dark:divide-surface-800">
+                        @for (row of [1, 2]; track row) {
+                            <div class="flex items-center justify-between gap-4 py-4">
+                                <div class="min-w-0 flex-1 space-y-2">
+                                    <div class="h-4 w-32 rounded bg-surface-200 dark:bg-surface-700"></div>
+                                    <div class="h-3 w-48 max-w-full rounded bg-surface-100 dark:bg-surface-800"></div>
+                                </div>
+                                <div class="h-6 w-11 rounded-full bg-surface-200 dark:bg-surface-700 shrink-0"></div>
+                            </div>
+                        }
+                    </div>
+                    <div class="mt-8 pt-8 border-t border-surface-200 dark:border-surface-800">
+                        <div class="h-6 w-40 rounded bg-surface-200 dark:bg-surface-700 mb-4"></div>
+                        <div class="divide-y divide-surface-200 dark:divide-surface-800">
+                            @for (row of [1, 2]; track row) {
+                                <div class="flex items-center justify-between gap-4 py-4">
+                                    <div class="min-w-0 flex-1 space-y-2">
+                                        <div class="h-4 w-32 rounded bg-surface-200 dark:bg-surface-700"></div>
+                                        <div class="h-3 w-48 max-w-full rounded bg-surface-100 dark:bg-surface-800"></div>
+                                    </div>
+                                    <div class="h-6 w-11 rounded-full bg-surface-200 dark:bg-surface-700 shrink-0"></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-8 border-t border-surface-200 dark:border-surface-800">
+                        <div class="h-6 w-40 rounded bg-surface-200 dark:bg-surface-700 mb-5"></div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            @for (col of [1, 2, 3]; track col) {
+                                <div class="h-10 rounded bg-surface-200 dark:bg-surface-700"></div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            } @else {
             <!-- Channels: flat rows, hairline separators (Finary) -->
             <div class="divide-y divide-surface-200 dark:divide-surface-800">
                 <div class="flex items-center justify-between gap-4 py-4">
@@ -36,7 +76,7 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                         <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-email-label">{{ t('settings.notifs.email') }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.emailDesc') }}</p>
                     </div>
-                    <p-toggleswitch [ngModel]="prefs().email_enabled" [disabled]="loading()"
+                    <p-toggleswitch [ngModel]="prefs().email_enabled"
                                     (onChange)="save({ email_enabled: $event.checked })"
                                     ariaLabelledBy="notif-email-label" />
                 </div>
@@ -47,7 +87,7 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                             <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-push-label">{{ t('settings.notifs.push') }}</p>
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.pushDesc') }}</p>
                         </div>
-                        <p-toggleswitch [ngModel]="prefs().push_enabled" [disabled]="loading() || pushBusy()"
+                        <p-toggleswitch [ngModel]="prefs().push_enabled" [disabled]="pushBusy()"
                                         (onChange)="onPushToggle($event.checked)"
                                         ariaLabelledBy="notif-push-label" />
                     </div>
@@ -86,7 +126,7 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                             <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-budget-label">{{ t('settings.notifs.budget') }}</p>
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.budgetDesc') }}</p>
                         </div>
-                        <p-toggleswitch [ngModel]="prefs().signal_budget" [disabled]="loading()"
+                        <p-toggleswitch [ngModel]="prefs().signal_budget"
                                         (onChange)="save({ signal_budget: $event.checked })"
                                         ariaLabelledBy="notif-budget-label" />
                     </div>
@@ -95,7 +135,7 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                             <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-tontine-label">{{ t('settings.notifs.tontine') }}</p>
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.tontineDesc') }}</p>
                         </div>
-                        <p-toggleswitch [ngModel]="prefs().signal_tontine" [disabled]="loading()"
+                        <p-toggleswitch [ngModel]="prefs().signal_tontine"
                                         (onChange)="save({ signal_tontine: $event.checked })"
                                         ariaLabelledBy="notif-tontine-label" />
                     </div>
@@ -109,24 +149,25 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 omaad-quiet-form">
                     <div class="flex flex-col gap-1">
                         <label for="quiet-start" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietFrom') }}</label>
-                        <input id="quiet-start" type="time" [ngModel]="prefs().quiet_hours_start" [disabled]="loading()"
+                        <input id="quiet-start" type="time" [ngModel]="prefs().quiet_hours_start"
                                (ngModelChange)="save({ quiet_hours_start: $event })"
                                class="py-2.5 bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 text-surface-900 dark:text-surface-0 focus:border-brand-700 dark:focus:border-ochre-400 focus:outline-none" />
                     </div>
                     <div class="flex flex-col gap-1">
                         <label for="quiet-end" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietTo') }}</label>
-                        <input id="quiet-end" type="time" [ngModel]="prefs().quiet_hours_end" [disabled]="loading()"
+                        <input id="quiet-end" type="time" [ngModel]="prefs().quiet_hours_end"
                                (ngModelChange)="save({ quiet_hours_end: $event })"
                                class="py-2.5 bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 text-surface-900 dark:text-surface-0 focus:border-brand-700 dark:focus:border-ochre-400 focus:outline-none" />
                     </div>
                     <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
                         <label for="quiet-tz" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.timezone') }}</label>
-                        <p-select inputId="quiet-tz" [ngModel]="prefs().timezone" [options]="timezones" [disabled]="loading()"
+                        <p-select inputId="quiet-tz" [ngModel]="prefs().timezone" [options]="timezones"
                                   (onChange)="save({ timezone: $event.value })"
                                   class="w-full" styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
                     </div>
                 </div>
             </div>
+            }
         </div>
     `
 })
@@ -136,14 +177,25 @@ export class NotificationsSettings implements OnInit {
     private swPush = inject(SwPush);
     private messageService = inject(MessageService);
 
-    loading = signal(true);
+    // Seed synchronously from the last-known cache so the real toggle states
+    // paint on the first frame (flash-free). `loading` is the skeleton gate and
+    // is true ONLY on a true cold start (empty cache); a warm start / refresh
+    // shows the cached values instantly and revalidates silently in ngOnInit.
+    private cachedPrefs = this.api.getCachedNotificationPreferences();
+    loading = signal(this.cachedPrefs === null);
     pushBusy = signal(false);
-    prefs = signal<NotificationPreferences>({
+    // Neutral defaults match the backend's "no saved prefs = fully opted out"
+    // rule, so even the cold-start fallback never shows a toggle in the wrong
+    // position. These are only ever visible if the network fails on a cold start.
+    prefs = signal<NotificationPreferences>(this.cachedPrefs ?? {
         email_enabled: false, push_enabled: false,
-        signal_budget: true, signal_tontine: true,
+        signal_budget: false, signal_tontine: false,
         quiet_hours_start: '21:00', quiet_hours_end: '08:00',
         timezone: 'Africa/Dakar',
     });
+    // Once the user changes anything, a late-returning background revalidate
+    // must not clobber their edit.
+    private userTouched = false;
     devices = signal<PushDevice[]>([]);
 
     // Detected zone first so most users can pick their own with one tap.
@@ -165,14 +217,18 @@ export class NotificationsSettings implements OnInit {
     });
 
     ngOnInit() {
+        // Revalidate in the background. Warm start: cached values are already on
+        // screen, so this silently reconciles. Cold start: this fills the
+        // skeleton. Either way, don't overwrite an edit the user just made.
         this.api.getNotificationPreferences().subscribe({
-            next: prefs => { this.prefs.set(prefs); this.loading.set(false); },
+            next: prefs => { if (!this.userTouched) this.prefs.set(prefs); this.loading.set(false); },
             error: () => this.loading.set(false),
         });
         this.refreshDevices();
     }
 
     save(changes: Partial<NotificationPreferences>) {
+        this.userTouched = true;
         this.api.updateNotificationPreferences(changes).subscribe({
             next: prefs => this.prefs.set(prefs),
             error: () => this.toastError(this.t('settings.notifs.saveError')),
@@ -180,6 +236,7 @@ export class NotificationsSettings implements OnInit {
     }
 
     async onPushToggle(enabled: boolean) {
+        this.userTouched = true;
         if (!enabled) {
             this.save({ push_enabled: false });
             return;
