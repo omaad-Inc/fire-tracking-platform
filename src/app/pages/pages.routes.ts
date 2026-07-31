@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Routes, Router } from '@angular/router';
 import { unsavedChangesGuard } from '../core/guards/unsaved-changes.guard';
+import { aiChatGuard } from '../core/guards/feature-flag.guard';
 
 // S5-3e: FIRE and Wealth-Score are no longer standalone destinations; they are
 // tabs of the Objectifs / Analyses hubs. Keep the old paths working (bookmarks,
@@ -27,6 +28,8 @@ export default [
     { path: 'patrimoine/assets/:id', loadComponent: () => import('./patrimoine/components/asset-detail').then(m => m.AssetDetailPage) },
     { path: 'debts', loadComponent: () => import('./debts/debtsdashboard').then(m => m.DebtsDashboard) },
     { path: 'insights', loadComponent: () => import('./insights/insights').then(m => m.InsightsPage) },
+    // S12: the ONE chat surface, dark-shipped behind featureFlags.aiChat.
+    { path: 'assistant', canMatch: [aiChatGuard], loadComponent: () => import('./assistant/assistant-page').then(m => m.AssistantPage) },
     { path: 'settings', loadChildren: () => import('./settings/settings.routes') },
     // Unknown child path: send the user to the not-found page in their CURRENT language
     // (functional redirect so we don't hardcode /fr and don't break relative resolution).

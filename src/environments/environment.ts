@@ -6,5 +6,11 @@ export const environment = {
     production: false,
     version: '0.3.0',
     apiUrl: 'http://localhost:8000/api/v1',
-    googleClientId: '338569032785-oosvdq7uk3jfhqtmqap4565dncceahud.apps.googleusercontent.com'
+    googleClientId: '338569032785-oosvdq7uk3jfhqtmqap4565dncceahud.apps.googleusercontent.com',
+    // Build-time defaults for feature flags (S12). Runtime overrides live in
+    // FeatureFlagsService (localStorage), so a flag can be flipped on a device
+    // against a deployed preview without rebuilding.
+    featureFlags: {
+        aiChat: true
+    }
 };

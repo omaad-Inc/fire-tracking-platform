@@ -4,6 +4,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { NavService } from './nav.service';
 import { ShareContextService } from './share-context.service';
 import { AiAssistantService } from './ai-assistant.service';
+import { FeatureFlagsService } from './feature-flags.service';
 
 /**
  * Single source of truth for the app's primary navigation (S5-3).
@@ -90,6 +91,7 @@ export class NavModelService {
     private nav = inject(NavService);
     private share = inject(ShareContextService);
     private ai = inject(AiAssistantService);
+    private flags = inject(FeatureFlagsService);
 
     private entry(key: string): NavEntry | undefined {
         for (const s of SECTIONS) {
@@ -116,6 +118,16 @@ export class NavModelService {
     }
 
     private toMenuItem(e: NavEntry): MenuItem {
+        // S12: with the aiChat flag on, the assistant entry routes to the real
+        // chat surface; with it off, it keeps opening the coming-soon panel.
+        if (e.command === 'aiAssistant' && this.flags.aiChat()) {
+            return {
+                label: this.i18n.t(e.labelKey),
+                icon: `pi pi-fw ${e.glyph}`,
+                routerLink: this.nav.link('pages', 'assistant'),
+                ...(e.styleClass ? { styleClass: e.styleClass } : {}),
+            };
+        }
         return {
             label: this.i18n.t(e.labelKey),
             icon: `pi pi-fw ${e.glyph}`,
