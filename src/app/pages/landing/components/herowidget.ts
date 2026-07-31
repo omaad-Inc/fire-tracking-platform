@@ -15,8 +15,10 @@ import { I18nService } from '../../../i18n/i18n.service';
         <div id="hero" class="relative min-h-[72vh] py-14 flex items-center overflow-hidden bg-surface-0 dark:bg-surface-950">
             <!-- Airy background: one soft static glow, no grid, no pulse -->
             <div class="absolute inset-0 pointer-events-none">
-                <div class="absolute -top-32 right-[-10%] w-[42rem] h-[42rem] bg-ochre-500/10 rounded-full blur-3xl"></div>
+                <div class="absolute -top-32 right-[-10%] w-[42rem] h-[42rem] bg-ochre-500/10 dark:bg-ochre-500/[0.06] rounded-full blur-3xl"></div>
                 <div class="absolute bottom-[-20%] left-[-10%] w-[38rem] h-[38rem] bg-brand-500/5 dark:bg-brand-500/10 rounded-full blur-3xl"></div>
+                <!-- Fade the ambient light into the canvas before the section edge -->
+                <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-surface-0 dark:to-surface-950"></div>
             </div>
 
             <div class="relative z-10 max-w-[1600px] mx-auto w-full px-6 lg:px-10 py-12">
@@ -73,7 +75,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div class="col-span-12 lg:col-span-6 min-w-0 mt-6 lg:mt-0">
                         <div class="relative mx-auto w-full max-w-[30rem] lg:max-w-none">
                             <!-- Soft brand glow behind the window -->
-                            <div class="absolute -inset-6 bg-gradient-to-tr from-ochre-500/15 via-transparent to-brand-500/10 dark:from-ochre-500/20 dark:to-brand-500/20 rounded-[2rem] blur-2xl pointer-events-none"></div>
+                            <div class="absolute -inset-6 bg-gradient-to-tr from-ochre-500/15 via-transparent to-brand-500/10 dark:from-ochre-500/10 dark:to-brand-500/10 rounded-[2rem] blur-2xl pointer-events-none"></div>
 
                             <!-- App window -->
                             <div class="relative rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-2xl ring-1 ring-surface-900/5 dark:ring-white/10">
@@ -130,14 +132,14 @@ import { I18nService } from '../../../i18n/i18n.service';
                                         </div>
                                     </div>
 
-                                    <!-- FIRE progress (brand → ochre → positive gradient) -->
+                                    <!-- FIRE progress: single ochre accent -->
                                     <div class="rounded-xl p-3 bg-surface-50 dark:bg-surface-800/40 border border-surface-100 dark:border-surface-800">
                                         <div class="flex items-center justify-between mb-1.5">
                                             <span class="text-surface-500 dark:text-surface-400 text-[10px] font-medium uppercase tracking-wider">{{ t('landing.hero.mockupFire') }}</span>
                                             <span class="text-positive-600 dark:text-positive-400 text-xs font-bold">43% · 12 {{ t('landing.hero.mockupFireYears') }}</span>
                                         </div>
                                         <div class="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-                                            <div class="h-full rounded-full bg-gradient-to-r from-brand-700 via-ochre-500 to-positive-500" style="width: 43%"></div>
+                                            <div class="h-full rounded-full bg-ochre-500" style="width: 43%"></div>
                                         </div>
                                     </div>
 

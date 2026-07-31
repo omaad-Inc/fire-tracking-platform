@@ -1,4 +1,5 @@
 import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { prefersReducedMotion } from '../../core/theme/chart-theme';
 import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -160,7 +161,7 @@ export class InsightsPage implements OnInit {
     }
 
     tabClass(t: HubTab): string {
-        const base = 'px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer';
+        const base = 'omaad-press px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 cursor-pointer';
         return this.tab() === t
             ? `${base} bg-surface-0 dark:bg-surface-950 text-brand-700 dark:text-ochre-400 shadow-card`
             : `${base} text-surface-500 dark:text-surface-400`;
@@ -229,6 +230,7 @@ export class InsightsPage implements OnInit {
         };
 
         this.chartOptions = {
+            animation: prefersReducedMotion() ? false : { duration: 600, easing: 'easeOutQuart' },
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: true, position: 'bottom', labels: { color: axis, boxWidth: 12, usePointStyle: true, font: { size: 11 } } },

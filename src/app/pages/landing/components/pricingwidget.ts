@@ -11,7 +11,7 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [DividerModule, ButtonModule, RippleModule, CommonModule, RouterModule],
     template: `
-        <div id="pricing" class="py-20 px-6 lg:px-20 bg-surface-0 dark:bg-surface-900">
+        <div id="pricing" class="py-20 px-6 lg:px-20 bg-surface-0 dark:bg-surface-950">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-ochre-400/15 border border-brand-200 dark:border-ochre-700/40 mb-6">

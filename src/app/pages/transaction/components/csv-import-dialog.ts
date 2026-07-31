@@ -56,7 +56,7 @@ interface ReviewRow extends TxnPreviewItem {
     providers: [MessageService],
     template: `
         <p-toast />
-        <p-dialog [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [draggable]="false" [dismissableMask]="true"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [draggable]="false" [dismissableMask]="true"
                   [style]="{ width: '95vw', maxWidth: '860px' }" [header]="t('transactions.import.title')"
                   styleClass="!rounded-2xl" (onHide)="reset()" data-testid="csv-import-dialog">
 

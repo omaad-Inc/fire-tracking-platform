@@ -29,7 +29,7 @@ import { COMPARE_ROWS, Sgi, findFee, isFree } from '../sgi-data';
             </div>
         }
 
-        <p-dialog [visible]="compare.dialogOpen()" (visibleChange)="compare.dialogOpen.set($event)"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="compare.dialogOpen()" (visibleChange)="compare.dialogOpen.set($event)"
                   [modal]="true" [dismissableMask]="true" [draggable]="false" [resizable]="false"
                   [breakpoints]="{ '640px': '96vw' }" [style]="{ width: '1000px', maxWidth: '96vw' }"
                   [header]="'Comparer ' + compare.list().length + ' SGI'">

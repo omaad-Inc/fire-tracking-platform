@@ -15,7 +15,7 @@ import { BlogPost, publishedPosts } from './posts';
     standalone: true,
     imports: [CommonModule, RouterModule, RippleModule, BlogTopbar, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
+        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
             <!-- Resource topbar (same pattern as the BRVM tools) -->
             <app-blog-topbar />
 
@@ -63,7 +63,7 @@ import { BlogPost, publishedPosts } from './posts';
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     @for (post of filteredPosts(); track post.slug) {
                         <a [routerLink]="['/', lang, 'blog', post.slug]"
-                           class="group flex flex-col rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-100/40 transition-all cursor-pointer">
+                           class="group flex flex-col rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-ochre-500/50 hover:shadow-lg hover:shadow-brand-100/40 dark:hover:shadow-black/40 transition-all cursor-pointer">
 
                             <!-- Cover -->
                             <div class="relative aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800">
@@ -87,7 +87,7 @@ import { BlogPost, publishedPosts } from './posts';
                                 </div>
 
                                 <!-- Title -->
-                                <h2 class="text-lg font-bold text-surface-900 dark:text-white mb-2 leading-snug group-hover:text-brand-700 transition-colors">
+                                <h2 class="text-lg font-bold text-surface-900 dark:text-white mb-2 leading-snug group-hover:text-brand-700 dark:group-hover:text-ochre-400 transition-colors">
                                     {{ post.title }}
                                 </h2>
 
@@ -97,9 +97,9 @@ import { BlogPost, publishedPosts } from './posts';
                                 </p>
 
                                 <!-- Footer: date + read more -->
-                                <div class="mt-auto flex items-center justify-between pt-3 border-t border-surface-100">
+                                <div class="mt-auto flex items-center justify-between pt-3 border-t border-surface-100 dark:border-surface-800">
                                     <time class="text-xs text-surface-400 dark:text-surface-500">{{ formatDate(post.date) }}</time>
-                                    <span class="text-xs font-semibold text-brand-700 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                                    <span class="text-xs font-semibold text-brand-700 dark:text-ochre-400 group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
                                         {{ isFr() ? 'Lire' : 'Read' }}
                                         <i class="pi pi-arrow-right text-[10px]"></i>
                                     </span>

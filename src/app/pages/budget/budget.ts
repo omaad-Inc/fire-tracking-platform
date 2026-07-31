@@ -100,7 +100,7 @@ type Model = 'envelope' | 'flexible';
             </div>
         }
 
-        <p-dialog [visible]="dialog()" (visibleChange)="dialog.set($event)" [modal]="true" [draggable]="false"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="dialog()" (visibleChange)="dialog.set($event)" [modal]="true" [draggable]="false"
                   [dismissableMask]="true" [style]="{ width: '95vw', maxWidth: '480px' }"
                   [header]="editingId() ? t('budgets.editTitle') : t('budgets.add')" styleClass="!rounded-2xl">
             <div class="flex flex-col gap-4 pt-2">

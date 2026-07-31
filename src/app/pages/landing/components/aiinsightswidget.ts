@@ -19,7 +19,7 @@ interface InsightCard {
     standalone: true,
     imports: [CommonModule, RouterModule, ButtonModule, RippleModule],
     template: `
-        <section id="ai-insights" class="py-20 md:py-28 px-6 lg:px-20 bg-surface-0 dark:bg-surface-900 overflow-hidden">
+        <section id="ai-insights" class="py-20 md:py-28 px-6 lg:px-20 bg-surface-0 dark:bg-surface-950 overflow-hidden">
             <div class="max-w-6xl mx-auto">
                 <!-- Header -->
                 <div class="text-center max-w-3xl mx-auto mb-14">

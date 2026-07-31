@@ -30,7 +30,7 @@ import { OnDestroy } from '@angular/core';
         <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
             <div id="home" class="landing-wrapper overflow-hidden">
                 <!-- Topbar with glass effect -->
-                <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
+                <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
                      style="padding-top: env(safe-area-inset-top, 0px)">
                     <topbar-widget class="py-4 px-6 lg:px-10 max-w-[1600px] mx-auto flex items-center justify-between gap-x-4 lg:gap-x-10 relative lg:static" />
                 </div>

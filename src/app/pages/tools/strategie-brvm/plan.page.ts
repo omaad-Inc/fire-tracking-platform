@@ -466,7 +466,7 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
                                         <!-- Actions en bas de carte, pleine largeur : accessibles au pouce -->
                                         <div class="mt-2.5 flex items-stretch gap-2">
                                             <button type="button" (click)="editingMonth.set(null)" aria-label="Fermer le formulaire"
-                                                    class="h-11 shrink-0 rounded-lg px-3.5 text-[13px] font-medium text-surface-500 transition-colors hover:bg-surface-100 hover:text-surface-700 dark:hover:bg-surface-700">
+                                                    class="h-11 shrink-0 rounded-lg px-3.5 text-[13px] font-medium text-surface-500 transition-colors hover:bg-surface-100 hover:text-surface-700 dark:hover:bg-surface-700 dark:hover:text-surface-0">
                                                 Fermer</button>
                                             <button type="submit" [disabled]="draftTotal() <= 0"
                                                     class="h-11 flex-1 rounded-lg bg-ochre-500 text-[14px] font-semibold text-warm-900 transition-colors hover:bg-ochre-400 disabled:cursor-not-allowed disabled:opacity-40">

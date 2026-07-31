@@ -14,7 +14,7 @@ import { DISCLAIMER } from './data/referentiel';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [RouterModule, StrategieToolTopbar],
     template: `
-        <div class="tool-no-focus-zoom min-h-screen overflow-x-hidden bg-surface-0 dark:bg-surface-900">
+        <div class="tool-no-focus-zoom min-h-screen overflow-x-hidden bg-surface-0 dark:bg-surface-950">
             <app-strategie-tool-topbar />
 
             <!-- Tabs routés -->

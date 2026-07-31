@@ -212,7 +212,7 @@ interface DayGroup {
                                         <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate leading-tight">
                                             {{ rec.remarks || categoryLabel(rec.category) }}
                                         </div>
-                                        <span class="inline-flex items-center text-[10px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
+                                        <span class="inline-flex items-center text-[11px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
                                               [style.color]="categoryFg(rec)"
                                               [style.background]="categoryBg(rec)">
                                             {{ categoryLabel(rec.category) }}
@@ -248,7 +248,7 @@ interface DayGroup {
         }
 
         <!-- ── Add / Edit dialog ──────────────────────────────────── -->
-        <p-dialog [(visible)]="dialogVisible"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [(visible)]="dialogVisible"
                   [style]="{ width: '95vw', maxWidth: '680px' }"
                   [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">
@@ -279,21 +279,21 @@ interface DayGroup {
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Expense'
                                     ? 'bg-white dark:bg-surface-700 text-negative shadow-sm'
-                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
                             <i class="pi pi-arrow-up-right text-xs"></i> {{ t('transactions.form.expense') }}
                         </button>
                         <button (click)="setType('Income')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Income'
                                     ? 'bg-white dark:bg-surface-700 text-positive shadow-sm'
-                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
                             <i class="pi pi-arrow-down-left text-xs"></i> {{ t('transactions.form.income') }}
                         </button>
                         <button (click)="setType('Transfer')"
                                 class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all"
                                 [ngClass]="formType() === 'Transfer'
                                     ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm'
-                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700'">
+                                    : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
                             <i class="pi pi-arrow-right-arrow-left text-xs"></i> {{ t('transactions.form.transfer') }}
                         </button>
                     </div>

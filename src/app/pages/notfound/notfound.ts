@@ -49,19 +49,19 @@ import { I18nService } from '../../i18n/i18n.service';
                 <div class="flex flex-wrap justify-center gap-3 text-sm">
                     <a [routerLink]="[currentLang, 'pages', 'patrimoine']"
                        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-100 dark:bg-surface-800
-                              text-surface-600 dark:text-surface-300 hover:text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-700/20
+                              text-surface-600 dark:text-surface-300 hover:text-brand-700 dark:hover:text-surface-0 hover:bg-brand-50 dark:hover:bg-brand-700/20
                               transition-all cursor-pointer">
                         <i class="pi pi-wallet text-xs"></i> {{ i18n.t('menu.patrimony') }}
                     </a>
                     <a [routerLink]="[currentLang, 'pages', 'transaction']"
                        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-100 dark:bg-surface-800
-                              text-surface-600 dark:text-surface-300 hover:text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-700/20
+                              text-surface-600 dark:text-surface-300 hover:text-brand-700 dark:hover:text-surface-0 hover:bg-brand-50 dark:hover:bg-brand-700/20
                               transition-all cursor-pointer">
                         <i class="pi pi-arrow-right-arrow-left text-xs"></i> {{ i18n.t('menu.transactions') }}
                     </a>
                     <a [routerLink]="[currentLang, 'pages', 'settings']"
                        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-100 dark:bg-surface-800
-                              text-surface-600 dark:text-surface-300 hover:text-brand-700 dark:text-brand-300 hover:bg-brand-50 dark:hover:bg-brand-700/20
+                              text-surface-600 dark:text-surface-300 hover:text-brand-700 dark:hover:text-surface-0 hover:bg-brand-50 dark:hover:bg-brand-700/20
                               transition-all cursor-pointer">
                         <i class="pi pi-cog text-xs"></i> {{ i18n.t('menu.settings') }}
                     </a>

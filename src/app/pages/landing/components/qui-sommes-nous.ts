@@ -14,9 +14,9 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
     standalone: true,
     imports: [CommonModule, RouterModule, ButtonModule, RippleModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
+        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
             <!-- Fixed topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
                  style="padding-top: env(safe-area-inset-top, 0px)">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>
@@ -25,7 +25,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 1, Hero (text + founder photos)
             ════════════════════════════════ -->
-            <section class="bg-surface-0 dark:bg-surface-900 py-20 md:py-28 px-6 lg:px-20">
+            <section class="bg-surface-0 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     <!-- Left: thesis -->
                     <div>
@@ -50,7 +50,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                             </div>
                             <figcaption class="mt-3 text-center">
                                 <div class="text-sm font-bold text-surface-900 dark:text-white">{{ t('landing.about.founderName') }}</div>
-                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Co-fondateur', 'Co-founder') }}</div>
+                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Fondateur', 'Founder') }}</div>
                             </figcaption>
                         </figure>
                         <figure class="group sm:mt-10">
@@ -60,7 +60,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                             </div>
                             <figcaption class="mt-3 text-center">
                                 <div class="text-sm font-bold text-surface-900 dark:text-white">{{ t('landing.about.bambaName') }}</div>
-                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Co-fondateur', 'Co-founder') }}</div>
+                                <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Premier partenaire', 'First partner') }}</div>
                             </figcaption>
                         </figure>
                     </div>
@@ -70,7 +70,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 2, Notre histoire (texte + portrait + signature)
             ════════════════════════════════ -->
-            <section class="bg-surface-50 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
+            <section class="bg-surface-0 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-6xl mx-auto grid lg:grid-cols-12 gap-10 lg:gap-16">
                     <!-- Left: sticky section heading + signature -->
                     <div class="lg:col-span-4">
@@ -157,7 +157,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 4, Nos principes (6 cards)
             ════════════════════════════════ -->
-            <section id="principes" class="bg-surface-0 dark:bg-surface-900 py-20 md:py-28 px-6 lg:px-20 scroll-mt-24">
+            <section id="principes" class="bg-surface-0 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20 scroll-mt-24">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center max-w-2xl mx-auto mb-14">
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white mb-4">
@@ -169,7 +169,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @for (v of values; track v.titleKey) {
-                            <div class="p-6 md:p-7 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-500/50 dark:hover:border-ochre-500/50 hover:shadow-sm transition-all duration-300">
+                            <div class="p-6 md:p-7 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-500/50 dark:hover:border-ochre-500/50 hover:shadow-sm transition-all duration-300">
                                 <div class="w-11 h-11 rounded-xl bg-brand-100 dark:bg-ochre-500/15 flex items-center justify-center mb-4">
                                     <i class="pi {{ v.icon }} text-brand-700 dark:text-ochre-400 text-lg"></i>
                                 </div>
@@ -184,7 +184,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 5, Confiance & sécurité
             ════════════════════════════════ -->
-            <section id="securite" class="bg-surface-50 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20 scroll-mt-24">
+            <section id="securite" class="bg-surface-0 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20 scroll-mt-24">
                 <div class="max-w-6xl mx-auto">
                     <div class="text-center max-w-2xl mx-auto mb-14">
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white mb-4">
@@ -196,7 +196,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         @for (item of trust; track item.titleKey) {
-                            <div class="p-6 md:p-7 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                            <div class="p-6 md:p-7 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                                 <div class="w-12 h-12 rounded-xl bg-positive-50 dark:bg-positive-500/15 flex items-center justify-center mb-4">
                                     <i class="pi {{ item.icon }} text-positive-600 dark:text-positive-400 text-xl"></i>
                                 </div>
@@ -211,7 +211,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 6, L'équipe (founders + ghost)
             ════════════════════════════════ -->
-            <section class="bg-surface-0 dark:bg-surface-900 py-20 md:py-28 px-6 lg:px-20">
+            <section class="bg-surface-0 dark:bg-surface-950 py-20 md:py-28 px-6 lg:px-20">
                 <div class="max-w-5xl mx-auto">
                     <div class="text-center max-w-2xl mx-auto mb-14">
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white mb-4">
@@ -223,7 +223,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
                         <!-- Founder card -->
-                        <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 text-center">
+                        <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-center">
                             <img src="assets/team/mbaye-omaad.webp" [alt]="t('landing.about.founderName')"
                                  class="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-brand-100 dark:ring-ochre-500/20"
                                  loading="lazy" />
@@ -239,7 +239,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                             </a>
                         </div>
                         <!-- Bamba card -->
-                        <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-800/50 border border-surface-200 dark:border-surface-700 text-center">
+                        <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-center">
                             <img src="assets/team/bamba.jpeg" [alt]="t('landing.about.bambaName')"
                                  class="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-brand-100 dark:ring-ochre-500/20"
                                  loading="lazy" />
@@ -277,7 +277,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <!-- ════════════════════════════════
                  BLOC 7, Contact
             ════════════════════════════════ -->
-            <section id="contact" class="bg-surface-50 dark:bg-surface-950 py-16 md:py-20 px-6 lg:px-20 border-y border-surface-200 dark:border-surface-800 scroll-mt-24">
+            <section id="contact" class="bg-surface-0 dark:bg-surface-950 py-16 md:py-20 px-6 lg:px-20 scroll-mt-24">
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-2xl md:text-3xl font-bold text-surface-900 dark:text-white mb-4">
                         {{ t('landing.about.contactTitle') }}

@@ -7,7 +7,7 @@ import { I18nService } from '../../../i18n/i18n.service';
     standalone: true,
     imports: [CommonModule],
     template: `
-        <section id="how-it-works" class="py-20 md:py-28 px-6 lg:px-20 bg-surface-0 dark:bg-surface-900">
+        <section id="how-it-works" class="py-20 md:py-28 px-6 lg:px-20 bg-surface-0 dark:bg-surface-950">
             <div class="max-w-6xl mx-auto">
                 <!-- Header -->
                 <div class="text-center max-w-3xl mx-auto mb-16">
@@ -35,9 +35,9 @@ import { I18nService } from '../../../i18n/i18n.service';
                         <div class="relative flex flex-col items-center text-center px-6">
                             <!-- Number circle -->
                             <div class="relative z-10 w-[104px] h-[104px] rounded-full flex items-center justify-center mb-6
-                                        bg-surface-0 dark:bg-surface-900 border-2 border-surface-200 dark:border-surface-800
-                                        shadow-lg shadow-surface-200/50 dark:shadow-surface-950/50">
-                                <div class="w-20 h-20 rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
+                                        bg-surface-0 dark:bg-surface-900 border-2 border-surface-200 dark:border-surface-700
+                                        shadow-lg shadow-surface-200/50 dark:shadow-black/40">
+                                <div class="w-20 h-20 rounded-full bg-brand-100 dark:bg-surface-800 flex items-center justify-center">
                                     <i class="pi {{ step.icon }} text-2xl text-brand-700 dark:text-ochre-400"></i>
                                 </div>
                             </div>

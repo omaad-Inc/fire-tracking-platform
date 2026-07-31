@@ -413,7 +413,7 @@ import { firstValueFrom } from 'rxjs';
         </div>
 
         <!-- ── Password change dialog ─────────────────────────────────── -->
-        <p-dialog [(visible)]="showPasswordDialog"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [(visible)]="showPasswordDialog"
                   [style]="{ width: '95vw', maxWidth: '460px' }"
                   [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">

@@ -25,9 +25,9 @@ interface FaqCategory {
     standalone: true,
     imports: [CommonModule, RouterModule, RippleModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
+        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
             <!-- Topbar -->
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-900/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-800/50"
+            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-800/50"
                  style="padding-top: env(safe-area-inset-top, 0px)">
                 <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
             </div>

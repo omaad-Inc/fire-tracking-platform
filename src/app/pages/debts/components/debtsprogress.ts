@@ -171,7 +171,7 @@ import { isTouchDevice } from '../../../core/util/touch';
         }
 
         <!-- ── Add / Edit dialog ── -->
-        <p-dialog [(visible)]="productDialog"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [(visible)]="productDialog"
                   [style]="{ width: '95vw', maxWidth: '650px' }"
                   [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">
@@ -287,7 +287,7 @@ import { isTouchDevice } from '../../../core/util/touch';
         </p-dialog>
 
         <!-- ── Add Payment dialog ── -->
-        <p-dialog [(visible)]="addPaymentDialog"
+        <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [(visible)]="addPaymentDialog"
                   [style]="{ width: '95vw', maxWidth: '420px' }"
                   [modal]="true" [draggable]="false" [resizable]="false"
                   styleClass="!rounded-2xl overflow-hidden">

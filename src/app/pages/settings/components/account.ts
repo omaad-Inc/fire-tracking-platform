@@ -29,6 +29,7 @@ import { environment } from '../../../../environments/environment';
 
         <!-- Delete Account Confirmation Dialog -->
         <p-dialog
+            [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'"
             [(visible)]="showDeleteDialog"
             [modal]="true"
             [closable]="!isDeleting()"

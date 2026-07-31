@@ -30,7 +30,7 @@ import { I18nService } from '../../i18n/i18n.service';
         <!-- S5-1 "Am I okay?" hero: net worth + trend, this-month cash-flow, the one
              nudge, and FIRE as a secondary indicator. Subsumes the old flat KPI row
              and the top alerts banner. -->
-        <app-home-hero />
+        <div class="omaad-enter"><app-home-hero /></div>
 
         <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {
@@ -56,7 +56,7 @@ import { I18nService } from '../../i18n/i18n.service';
         @if (!showOnboarding()) {
         <div class="space-y-8 md:space-y-10">
             <!-- Band 1: where you stand (health score + savings momentum) -->
-            <section>
+            <section class="omaad-enter omaad-d1">
                 <app-section-header [title]="t('home.sections.situation')" [subtitle]="t('home.sections.situationSub')" />
                 <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
                     <div class="col-span-12 md:col-span-6">
@@ -69,13 +69,13 @@ import { I18nService } from '../../i18n/i18n.service';
             </section>
 
             <!-- Band 2: this month (activity) -->
-            <section>
+            <section class="omaad-enter omaad-d2">
                 <app-section-header [title]="t('home.sections.month')" [subtitle]="t('home.sections.monthSub')" />
                 <app-recent-transactions-widget />
             </section>
 
             <!-- Band 3: debts (what you owe), full-width list like recent transactions -->
-            <section>
+            <section class="omaad-enter omaad-d3">
                 <app-section-header [title]="t('home.sections.debts')" [subtitle]="t('home.sections.debtsSub')" />
                 <app-debts-overview />
             </section>

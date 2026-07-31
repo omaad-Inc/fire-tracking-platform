@@ -29,6 +29,7 @@ export interface AllocatePayload {
     ],
     template: `
         <p-dialog
+            [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'"
             [(visible)]="visible"
             (visibleChange)="onVisibleChange($event)"
             [style]="{ width: '95vw', maxWidth: '520px' }"

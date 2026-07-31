@@ -210,7 +210,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             <button pButton pRipple [label]="t('landing.nav.login')"
                     [routerLink]="[currentLang, 'auth', 'login']"
                     [rounded]="true" [text]="true"
-                    class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:text-brand-300 dark:hover:!text-brand-700 dark:text-brand-300">
+                    class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:hover:!text-surface-0">
             </button>
             <button pButton pRipple [label]="t('landing.nav.register')"
                     [routerLink]="[currentLang, 'auth', 'register']"
@@ -351,7 +351,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 <button pButton pRipple [label]="t('landing.nav.login')"
                         [routerLink]="[currentLang, 'auth', 'login']"
                         [rounded]="true" [text]="true"
-                        class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:text-brand-300 w-full justify-center">
+                        class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:hover:!text-surface-0 w-full justify-center">
                 </button>
                 <button pButton pRipple [label]="t('landing.nav.register')"
                         [routerLink]="[currentLang, 'auth', 'register']"

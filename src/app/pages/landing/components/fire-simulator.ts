@@ -29,7 +29,7 @@ interface YearProjection {
         ButtonModule, RippleModule, WaitlistWidget
     ],
     template: `
-        <div class="min-h-screen bg-surface-0 dark:bg-surface-900 relative overflow-hidden">
+        <div class="min-h-screen bg-surface-0 dark:bg-surface-950 relative overflow-hidden">
 
             <!-- Background glow (dark) -->
             <div class="absolute inset-0 pointer-events-none hidden dark:block">
