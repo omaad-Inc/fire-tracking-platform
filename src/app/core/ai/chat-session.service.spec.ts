@@ -3,6 +3,17 @@ import { ChatSessionService } from './chat-session.service';
 import { CHAT_STREAM_DRIVER, ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
 import { ChatStreamEvent, ToolCardVM } from './chat-events';
 import { AssetsStateService } from '../../pages/service/assets-state.service';
+import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service';
+
+/** Remove every chat-thread key so a persisted thread never leaks between tests. */
+function clearThreads(): void {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k === CHAT_THREAD_KEY_PREFIX || k.startsWith(CHAT_THREAD_KEY_PREFIX + ':'))) {
+            localStorage.removeItem(k);
+        }
+    }
+}
 
 /**
  * Reducer/state-machine tests for the S12 chat store (Phase 1, plan step 11):
@@ -55,7 +66,7 @@ describe('ChatSessionService (event reducer)', () => {
     };
 
     beforeEach(() => {
-        localStorage.removeItem('omaad_chat_thread_v1');
+        clearThreads();
         driver = new FakeDriver();
         TestBed.configureTestingModule({
             providers: [
@@ -231,5 +242,68 @@ describe('ChatSessionService (event reducer)', () => {
         driver.emit({ type: 'notice', kind: 'disclaimer_cima' });
         const blocks = lastAssistant().blocks!;
         expect(blocks[1]).toEqual({ kind: 'notice', notice: { kind: 'disclaimer_cima', message: undefined } });
+    });
+});
+
+
+/**
+ * Privacy: the thread is persisted per user, and opening the chat on a reused
+ * browser must never render (or retain) another user's conversation. Regression
+ * guard for the un-scoped global key that leaked one user's thread to the next.
+ */
+describe('ChatSessionService (per-user thread isolation)', () => {
+    const P = CHAT_THREAD_KEY_PREFIX;
+
+    function makeFor(userId: number | null): ChatSessionService {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                ChatSessionService,
+                { provide: CHAT_STREAM_DRIVER, useValue: new FakeDriver() },
+                { provide: AssetsStateService, useValue: {} },
+                { provide: TokenService, useValue: { user: () => (userId != null ? { id: userId } : null) } },
+            ],
+        });
+        return TestBed.inject(ChatSessionService);
+    }
+
+    afterEach(() => clearThreads());
+
+    it('does not restore another user\'s thread and purges it (incl. the legacy key) on open', () => {
+        localStorage.setItem(`${P}:2`, JSON.stringify([{ id: 'x', role: 'user', ts: 1, text: 'salaire secret' }]));
+        localStorage.setItem(P, JSON.stringify([{ id: 'y', role: 'user', ts: 1, text: 'legacy' }]));
+
+        const svc = makeFor(1); // user 1 has no thread of their own
+
+        expect(svc.messages()).toEqual([]);
+        expect(localStorage.getItem(`${P}:2`)).toBeNull(); // foreign thread purged
+        expect(localStorage.getItem(P)).toBeNull();         // legacy un-scoped key purged
+    });
+
+    it('restores the current user\'s own thread and leaves it intact while dropping others', () => {
+        localStorage.setItem(`${P}:1`, JSON.stringify([{ id: 'a', role: 'user', ts: 1, text: 'a moi' }]));
+        localStorage.setItem(`${P}:2`, JSON.stringify([{ id: 'b', role: 'user', ts: 1, text: 'a eux' }]));
+
+        const svc = makeFor(1);
+
+        expect(svc.messages().length).toBe(1);
+        expect(svc.messages()[0].text).toBe('a moi');
+        expect(localStorage.getItem(`${P}:1`)).not.toBeNull(); // own thread kept
+        expect(localStorage.getItem(`${P}:2`)).toBeNull();      // foreign purged
+    });
+
+    it('persists under the per-user key, never the shared/legacy key', () => {
+        const svc = makeFor(7);
+        svc.seedHistory('fr'); // any write path persists
+
+        expect(localStorage.getItem(`${P}:7`)).not.toBeNull();
+        expect(localStorage.getItem(P)).toBeNull();
+    });
+
+    it('stays memory-only when no user is identified (never writes a shared key)', () => {
+        const svc = makeFor(null);
+        svc.seedHistory('fr');
+        expect(svc.messages().length).toBeGreaterThan(0); // in memory
+        expect(localStorage.getItem(P)).toBeNull();        // but nothing persisted globally
     });
 });

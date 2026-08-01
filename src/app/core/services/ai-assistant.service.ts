@@ -1,5 +1,6 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { I18nService } from '../../i18n/i18n.service';
+import { AI_ASSISTANT_CACHE_KEY } from './token.service';
 
 export interface AiChat {
     id: string;
@@ -15,7 +16,7 @@ interface PersistedState {
     currentChatId: string | null;
 }
 
-const STORAGE_KEY = 'omaad_ai_assistant';
+const STORAGE_KEY = AI_ASSISTANT_CACHE_KEY;
 
 @Injectable({ providedIn: 'root' })
 export class AiAssistantService {
