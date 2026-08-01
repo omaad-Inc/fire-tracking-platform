@@ -180,7 +180,20 @@ export class ChatSessionService {
                 if (e.status === 'ok' && e.undo_token) this.notifyDataChanged(e.undo_token);
                 break;
             case 'confirm_required':
-                this.updateCard(e.card_id, (c) => ({ ...c, state: 'confirm', diff: e.diff }));
+                // The bulk confirm gate parks with a FRESH card_id and NO preceding
+                // tool_use (the batched creates never streamed), so there is no card
+                // to update. Create one from the event itself; only fall back to
+                // updating when a card already exists (e.g. a single-tool preview).
+                // Without this the diff never rendered, the empty turn was dropped,
+                // and pendingConfirm silently locked the composer -> "nothing answered".
+                if (this.findCard(e.card_id)) {
+                    this.updateCard(e.card_id, (c) => ({ ...c, state: 'confirm', diff: e.diff }));
+                } else {
+                    this.pushBlock({
+                        kind: 'card',
+                        card: { cardId: e.card_id, tool: 'preview', argsPreview: '', state: 'confirm', diff: e.diff },
+                    });
+                }
                 this.pendingConfirm.set(e.card_id);
                 break;
             case 'notice':

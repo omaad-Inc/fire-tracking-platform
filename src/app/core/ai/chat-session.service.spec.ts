@@ -143,6 +143,33 @@ describe('ChatSessionService (event reducer)', () => {
         expect(card('c2').state).toBe('done');
     });
 
+    it('confirm_required with NO preceding tool_use still renders (real bulk-park path)', () => {
+        // The backend bulk gate parks with a fresh card_id and no tool_use card.
+        // Before the fix this silently rendered nothing and locked the composer.
+        svc.send('ajoute une maison à Thiès 30M et une voiture 8M');
+        driver.emit({ type: 'routed', agent: 'config' });
+        driver.emit({
+            type: 'confirm_required', card_id: 'park-1',
+            diff: [
+                { op: 'create', label: 'Maison Thiès · 30 000 000 FCFA' },
+                { op: 'create', label: 'Toyota · 8 000 000 FCFA' },
+            ],
+        });
+        // a confirm card now exists and carries the 2-line diff
+        expect(card('park-1').state).toBe('confirm');
+        expect(card('park-1').diff!.length).toBe(2);
+        expect(svc.pendingConfirm()).toBe('park-1');
+
+        // the turn ending must NOT drop the bubble (it has the confirm card)
+        driver.close();
+        expect(card('park-1').state).toBe('confirm');
+
+        // approving resumes and executes
+        svc.confirm('park-1', true);
+        expect(svc.pendingConfirm()).toBeNull();
+        expect(driver.confirmCalls).toEqual([{ cardId: 'park-1', approved: true }]);
+    });
+
     it('a declined confirm leads to a cancelled card', () => {
         svc.send('importe mon relevé');
         driver.emit({ type: 'tool_use', tool: 'bulk_import', args_preview: '3 transactions', card_id: 'c3' });

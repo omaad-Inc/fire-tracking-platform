@@ -371,6 +371,7 @@ export const FR = {
       create_debt: 'Création d\'une dette',
       bulk_import: 'Import de transactions',
       search_existing: 'Recherche de doublons',
+      preview: 'Enregistrements à confirmer',
     },
     notice: {
       disclaimerCima: 'Information à but éducatif : ceci n\'est pas un conseil financier personnalisé.',

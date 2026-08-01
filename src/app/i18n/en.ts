@@ -373,6 +373,7 @@ export const EN: Dict = {
       create_debt: 'Creating a debt',
       bulk_import: 'Importing transactions',
       search_existing: 'Checking for duplicates',
+      preview: 'Records to confirm',
     },
     notice: {
       disclaimerCima: 'Educational information: this is not personalized financial advice.',
