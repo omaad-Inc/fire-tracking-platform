@@ -78,6 +78,11 @@ export const EN: Dict = {
     step3Title: 'Set your goal',
     step3Desc: 'Configure your FIRE goal so you know where you\'re heading.',
     step3Cta: 'Configure',
+    assistantTitle: 'Set up in 2 minutes by chatting',
+    assistantBadge: 'Fastest',
+    assistantDesc: 'Tell me what you own in plain words (a house, an account, your salary) and I record it for you.',
+    assistantCta: 'Chat with the assistant',
+    orManual: 'or set up manually',
   },
   assetDetail: {
     notFound: 'Asset not found',

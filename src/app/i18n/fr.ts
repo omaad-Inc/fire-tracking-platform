@@ -76,6 +76,11 @@ export const FR = {
     step3Title: 'Définissez votre objectif',
     step3Desc: 'Configurez votre objectif FIRE pour savoir où vous allez.',
     step3Cta: 'Configurer',
+    assistantTitle: 'Configure en 2 minutes en discutant',
+    assistantBadge: 'Le plus rapide',
+    assistantDesc: 'Dis-moi ce que tu possèdes en langage courant (une maison, un compte, ton salaire) et je l\'enregistre pour toi.',
+    assistantCta: 'Discuter avec l\'assistant',
+    orManual: 'ou configure manuellement',
   },
   assetDetail: {
     notFound: 'Actif introuvable',
