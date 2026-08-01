@@ -392,11 +392,12 @@ export const FR = {
       generic: 'Une erreur est survenue pendant la réponse.',
     },
     empty: {
-      title: 'Ton copilote patrimoine',
-      subtitle: 'Pose une question ou dis-moi quoi ajouter, je m\'occupe du reste.',
-      starter1: 'Ajoute mon salaire de 850 000 FCFA',
-      starter2: 'Est-ce que je suis bien diversifié ?',
-      starter3: 'Explique-moi mon score patrimoine',
+      title: 'Dis-moi ce que tu possèdes',
+      subtitle: 'Une maison, un compte, un salaire... écris-le simplement et je l\'enregistre. Tu peux aussi me poser une question.',
+      starter1: 'J\'ai acheté une maison de 150 m2 à Thiès à 50 millions',
+      starter2: 'Ajoute mon salaire de 850 000 FCFA',
+      starter3: 'Je veux atteindre 30 millions d\'épargne',
+      starter4: 'Est-ce que je suis bien diversifié ?',
     },
   },
   goals: {

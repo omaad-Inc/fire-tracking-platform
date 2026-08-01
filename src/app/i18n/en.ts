@@ -394,11 +394,12 @@ export const EN: Dict = {
       generic: 'Something went wrong while answering.',
     },
     empty: {
-      title: 'Your wealth copilot',
-      subtitle: 'Ask a question or tell me what to add, I handle the rest.',
-      starter1: 'Add my salary of 850,000 FCFA',
-      starter2: 'Am I well diversified?',
-      starter3: 'Explain my wealth score',
+      title: 'Tell me what you own',
+      subtitle: 'A house, an account, a salary... just write it and I record it. You can also ask me a question.',
+      starter1: 'I bought a 150 m2 house in Thiès for 50 million',
+      starter2: 'Add my salary of 850,000 FCFA',
+      starter3: 'I want to reach 30 million in savings',
+      starter4: 'Am I well diversified?',
     },
   },
   goals: {
