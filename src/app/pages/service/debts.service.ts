@@ -51,6 +51,10 @@ export class DebtsService {
     );
 
     constructor() {
+        // Invalidate when debts change through the state bus rather than this
+        // service's own writes, e.g. an AI Config create (S12 P4). Without this
+        // the list reloads on the event but reads the stale cachedResource.
+        this.stateService.debtsUpdated$.subscribe(() => this.recordsResource.invalidate());
         // Clear cached user data on logout/login (see CACHE_RESET).
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }

@@ -4,6 +4,7 @@ import { ApiService, SavingGoal, SavingGoalCreate, SavingGoalUpdate, Transaction
 import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
 import { cachedResource } from '../../core/util/cached-resource';
+import { AssetsStateService } from './assets-state.service';
 
 export interface SavingRecord {
     id?: string;
@@ -48,6 +49,7 @@ const GOAL_COLORS = [
 export class SavingsService {
     private api             = inject(ApiService);
     private currencyService = inject(CurrencyService);
+    private state           = inject(AssetsStateService);
 
     // Shared cachedResource per entity (P2-FE-1). Stats are a pure derivation of
     // goals + savings transactions, so there is no separate stats cache.
@@ -68,6 +70,11 @@ export class SavingsService {
     );
 
     constructor() {
+        // Invalidate goal-derived caches when savings change through the state
+        // bus rather than this service's own writes, e.g. an AI Config create
+        // (S12 P4). Without this the goals page reloads on the event but reads the
+        // stale cachedResource.
+        this.state.savingsUpdated$.subscribe(() => this.invalidateGoalDerived());
         // Clear cached user data on logout/login (see CACHE_RESET).
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }

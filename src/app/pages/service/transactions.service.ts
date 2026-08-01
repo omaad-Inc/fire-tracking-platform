@@ -126,6 +126,13 @@ export class TransactionsService {
     );
 
     constructor() {
+        // Invalidate whenever transactions change externally, i.e. through the
+        // state bus rather than this service's own write methods, e.g. an AI
+        // Config create (S12 P4) or the topbar quick-add. Without this the list
+        // component reloads on the event but reads the stale cachedResource, so
+        // an AI-recorded transaction only appeared after a manual refresh. Mirrors
+        // PatrimoineService, which already invalidates its asset list this way.
+        this.state.transactionsUpdated$.subscribe(() => this.recordsResource.invalidate());
         // Clear cached user data on logout/login (see CACHE_RESET).
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }
