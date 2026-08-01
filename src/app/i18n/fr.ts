@@ -770,6 +770,7 @@ export const FR = {
     toggleTheme: 'Basculer le mode sombre',
     showAmounts: 'Afficher les montants',
     hideAmounts: 'Masquer les montants',
+    assistantHint: 'Configure ton patrimoine en discutant avec l\'assistant',
   },
   addAssets: {
     title: 'Ajouter un actif',

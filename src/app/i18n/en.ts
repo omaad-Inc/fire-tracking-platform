@@ -772,6 +772,7 @@ export const EN: Dict = {
     toggleTheme: 'Toggle dark mode',
     showAmounts: 'Show amounts',
     hideAmounts: 'Hide amounts',
+    assistantHint: 'Set up your wealth by chatting with the assistant',
   },
   addAssets: {
     title: 'Add an asset',
