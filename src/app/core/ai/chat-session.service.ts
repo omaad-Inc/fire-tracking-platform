@@ -3,6 +3,7 @@ import { CHAT_STREAM_DRIVER, ChatTurnHandle } from './chat-stream-driver';
 import {
     AssistantBlock, ChatMessageVM, ChatStreamEvent, ToolCardVM,
 } from './chat-events';
+import { AssetsStateService } from '../../pages/service/assets-state.service';
 
 /**
  * Thread state for the S12 chat surface (Phase 1).
@@ -26,6 +27,7 @@ const nextId = () => `m${Date.now().toString(36)}-${++uid}`;
 @Injectable()
 export class ChatSessionService {
     private driver = inject(CHAT_STREAM_DRIVER);
+    private assetsState = inject(AssetsStateService);
 
     readonly messages = signal<ChatMessageVM[]>(this.restore());
     /** True while a turn is streaming (input disabled, Stop visible). */
@@ -81,9 +83,15 @@ export class ChatSessionService {
     undo(cardId: string): void {
         const card = this.findCard(cardId);
         if (!card?.undoToken || card.state !== 'done') return;
+        const undoToken = card.undoToken;
         this.updateCard(cardId, (c) => ({ ...c, state: 'undoing' }));
-        this.driver.undo(card.undoToken).then(
-            () => { this.updateCard(cardId, (c) => ({ ...c, state: 'undone' })); this.persist(); },
+        this.driver.undo(undoToken).then(
+            () => {
+                this.updateCard(cardId, (c) => ({ ...c, state: 'undone' }));
+                this.persist();
+                // The row was removed; refresh the same data views the create touched.
+                this.notifyDataChanged(undoToken);
+            },
             () => this.updateCard(cardId, (c) => ({ ...c, state: 'done' })),
         );
     }
@@ -165,6 +173,11 @@ export class ChatSessionService {
                     summary: e.summary,
                     undoToken: e.undo_token,
                 }));
+                // A successful write must refresh the app's data views (patrimoine,
+                // dashboard/net worth, …); otherwise the created row only appears
+                // after a hard reload. Covers both the streamed create and the
+                // confirm-executed creates (same onEvent path).
+                if (e.status === 'ok' && e.undo_token) this.notifyDataChanged(e.undo_token);
                 break;
             case 'confirm_required':
                 this.updateCard(e.card_id, (c) => ({ ...c, state: 'confirm', diff: e.diff }));
@@ -193,6 +206,34 @@ export class ChatSessionService {
             this.messages.set(msgs.slice(0, -1));
         }
         this.persist();
+    }
+
+    /**
+     * A Config write succeeded (or was undone): invalidate the affected data
+     * views via AssetsStateService so the patrimoine list, dashboard KPIs and
+     * net worth reflect it without a reload. The undo_token segment names what
+     * changed ("assets/12", "transactions/7", "savings/3", "debts/1"; the goal
+     * route lives under /savings). A transaction also moves its linked account
+     * balance (S11-TX-1), so it refreshes assets too. Unknown segments are a
+     * no-op — better a missed refresh than a wrong one.
+     */
+    private notifyDataChanged(undoToken: string): void {
+        const segment = undoToken.split('/')[0];
+        switch (segment) {
+            case 'assets':
+                this.assetsState.notifyAssetsUpdated();
+                break;
+            case 'transactions':
+                this.assetsState.notifyTransactionsUpdated();
+                this.assetsState.notifyAssetsUpdated(); // the account balance moved
+                break;
+            case 'savings':
+                this.assetsState.notifySavingsUpdated();
+                break;
+            case 'debts':
+                this.assetsState.notifyDebtsUpdated();
+                break;
+        }
     }
 
     // ─── State helpers (immutable updates for OnPush) ────────────────────────

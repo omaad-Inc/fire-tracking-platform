@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ChatSessionService } from './chat-session.service';
 import { CHAT_STREAM_DRIVER, ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
 import { ChatStreamEvent, ToolCardVM } from './chat-events';
+import { AssetsStateService } from '../../pages/service/assets-state.service';
 
 /**
  * Reducer/state-machine tests for the S12 chat store (Phase 1, plan step 11):
@@ -96,6 +97,32 @@ describe('ChatSessionService (event reducer)', () => {
         driver.emit({ type: 'message_stop' });
         driver.close();
         expect(svc.streaming()).toBeFalse();
+    });
+
+    it('a successful write notifies the data views so patrimoine refreshes without a reload', () => {
+        const state = TestBed.inject(AssetsStateService);
+        const assets = spyOn(state, 'notifyAssetsUpdated');
+        const txns = spyOn(state, 'notifyTransactionsUpdated');
+
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'ok', summary: 'Maison', undo_token: 'assets/12' });
+        expect(assets).toHaveBeenCalledTimes(1);
+
+        // a transaction moves its linked account balance -> refresh BOTH
+        driver.emit({ type: 'tool_use', tool: 'create_transaction', args_preview: 'Salaire', card_id: 'c2' });
+        driver.emit({ type: 'tool_result', card_id: 'c2', status: 'ok', summary: 'Salaire', undo_token: 'transactions/7' });
+        expect(txns).toHaveBeenCalledTimes(1);
+        expect(assets).toHaveBeenCalledTimes(2);
+    });
+
+    it('a failed write does NOT notify the data views', () => {
+        const state = TestBed.inject(AssetsStateService);
+        const assets = spyOn(state, 'notifyAssetsUpdated');
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'error', summary: 'Détails invalides.' });
+        expect(assets).not.toHaveBeenCalled();
     });
 
     it('confirm_required parks the turn and blocks the composer until a decision', () => {
