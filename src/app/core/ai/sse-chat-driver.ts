@@ -81,15 +81,19 @@ export class SseChatDriver implements ChatStreamDriver {
     }
 
     undo(undoToken: string): Promise<void> {
-        // Undo is a plain REST restore (ARCH §4.1: "undo is a REST call, not a
-        // chat message"); it must work even if Anthropic is down. Phase 4 emits
-        // undoToken as "<resource>/<id>" (e.g. "assets/42"), matching the
-        // Phase 2 restore route POST /api/v1/<resource>/<id>/restore.
-        return fetch(`${this.base}/${undoToken}/restore`, {
-            method: 'POST',
+        // Undo is a plain REST call (ARCH §4.1: "undo is a REST call, not a chat
+        // message"); it must work even if Anthropic is down. Undoing an AI CREATE
+        // means removing the just-created row, so it is a soft DELETE, not a
+        // restore: DELETE /api/v1/<resource>/<id> soft-deletes and, for a
+        // transaction, reverses the account-balance ledger (S11-TX-1). Phase 4
+        // emits undoToken as "<resource>/<id>" (e.g. "assets/42"), which is
+        // exactly the DELETE route. (The /restore route un-deletes and is the
+        // opposite direction; it 409s on a live row — see S12 P4 4.6.)
+        return fetch(`${this.base}/${undoToken}`, {
+            method: 'DELETE',
             headers: this.authHeaders(),
         }).then((res) => {
-            if (!res.ok) throw new Error(`restore failed: ${res.status}`);
+            if (!res.ok) throw new Error(`undo (delete) failed: ${res.status}`);
         });
     }
 

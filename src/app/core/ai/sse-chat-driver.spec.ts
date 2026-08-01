@@ -163,12 +163,13 @@ describe('SseChatDriver', () => {
         });
     });
 
-    it('undo POSTs to the restore route (no LLM)', async () => {
-        fetchSpy.and.resolveTo(new Response(null, { status: 200 }));
+    it('undo DELETEs the created row (no LLM); undoing a create is a soft delete', async () => {
+        fetchSpy.and.resolveTo(new Response(null, { status: 204 }));
         await driver.undo('assets/42');
         const [url, init] = fetchSpy.calls.mostRecent().args as [string, RequestInit];
-        expect(url).toContain('/assets/42/restore');
-        expect(init.method).toBe('POST');
+        expect(url).toContain('/assets/42');
+        expect(url).not.toContain('/restore');
+        expect(init.method).toBe('DELETE');
     });
 });
 
