@@ -10,6 +10,17 @@ const USER_KEY = 'omaad_user';
  * storage choke point.
  */
 export const NOTIF_PREFS_CACHE_KEY = 'omaad_notif_prefs';
+/**
+ * Chat surface storage. The thread is persisted per user under
+ * `omaad_chat_thread_v1:<userId>` (ChatSessionService owns read/write); the
+ * legacy un-scoped `omaad_chat_thread_v1` from before this fix is treated as a
+ * purgeable member of the same family. The panel cache is the old assistant
+ * teaser state. Both hold conversational/financial detail, so logout wipes every
+ * user's copy here at the single storage choke point, and the chat service
+ * additionally drops any other user's thread when a device is reused.
+ */
+export const CHAT_THREAD_KEY_PREFIX = 'omaad_chat_thread_v1';
+export const AI_ASSISTANT_CACHE_KEY = 'omaad_ai_assistant';
 
 export interface User {
     id: number;
@@ -126,6 +137,16 @@ export class TokenService {
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(USER_KEY);
             localStorage.removeItem(NOTIF_PREFS_CACHE_KEY);
+            localStorage.removeItem(AI_ASSISTANT_CACHE_KEY);
+            // Wipe every persisted chat thread (all users, incl. the legacy
+            // un-scoped key) on logout: the conversation carries financial detail
+            // and must not survive the session on a shared device.
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const k = localStorage.key(i);
+                if (k && (k === CHAT_THREAD_KEY_PREFIX || k.startsWith(CHAT_THREAD_KEY_PREFIX + ':'))) {
+                    localStorage.removeItem(k);
+                }
+            }
         }
     }
 

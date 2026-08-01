@@ -9,6 +9,8 @@ import { I18nService } from '../../i18n/i18n.service';
 import { ChatSessionService } from '../../core/ai/chat-session.service';
 import { CHAT_STREAM_DRIVER } from '../../core/ai/chat-stream-driver';
 import { MockChatDriver } from '../../core/ai/mock-chat-driver';
+import { SseChatDriver } from '../../core/ai/sse-chat-driver';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { MOCK_SCENARIO_IDS, MockScenarioId } from '../../core/ai/mock-scenarios';
 import { ChatThreadComponent } from './components/chat-thread';
 import { ChatInputBarComponent } from './components/chat-input-bar';
@@ -31,7 +33,17 @@ import { ChatEmptyStateComponent } from './components/chat-empty-state';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         ChatSessionService,
-        { provide: CHAT_STREAM_DRIVER, useExisting: MockChatDriver },
+        // S12 Phase 3 swap (the Phase 1 contract bet cashed in HERE, and only
+        // here): the real SSE transport when aiChat is on, the mock otherwise
+        // (dev-switch scenario demos). ChatSessionService and every component
+        // stay byte-identical.
+        {
+            provide: CHAT_STREAM_DRIVER,
+            useFactory: () => {
+                const flags = inject(FeatureFlagsService);
+                return flags.aiChat() ? inject(SseChatDriver) : inject(MockChatDriver);
+            },
+        },
     ],
     template: `
         <div class="chat-shell" [style.height.px]="kbShellHeight() || null">

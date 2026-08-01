@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { TokenService } from '../../../core/services/token.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 import { I18nService } from '../../../i18n/i18n.service';
 
 interface OnboardingStep {
@@ -42,6 +43,33 @@ interface OnboardingStep {
 
             <!-- Steps -->
             <div class="p-5 sm:p-8">
+                <!-- Primary path: configure by talking to the assistant (flag-gated) -->
+                @if (aiChat()) {
+                    <button (click)="openAssistant()"
+                            class="w-full flex items-center gap-4 p-4 sm:p-5 mb-5 rounded-2xl border-2 border-brand-200 dark:border-brand-700 bg-brand-50/60 dark:bg-brand-900/20 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all duration-200 text-left cursor-pointer group">
+                        <div class="shrink-0 w-12 h-12 rounded-xl bg-brand-700 dark:bg-brand-600 flex items-center justify-center">
+                            <i class="pi pi-sparkles text-xl text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+                                <h3 class="font-semibold text-surface-900 dark:text-surface-0 text-sm sm:text-base">{{ t('onboarding.assistantTitle') }}</h3>
+                                <span class="px-1.5 py-0.5 rounded-full bg-ochre-500 text-white text-[10px] font-bold uppercase tracking-wide">{{ t('onboarding.assistantBadge') }}</span>
+                            </div>
+                            <p class="text-surface-500 dark:text-surface-400 text-xs sm:text-sm leading-relaxed">{{ t('onboarding.assistantDesc') }}</p>
+                        </div>
+                        <span class="hidden sm:inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-brand-700 dark:text-brand-300 group-hover:text-brand-500 dark:group-hover:text-brand-200 transition-colors">
+                            {{ t('onboarding.assistantCta') }} <i class="pi pi-arrow-right text-[10px]"></i>
+                        </span>
+                    </button>
+
+                    <!-- Fallback separator: the 3 manual steps remain below -->
+                    <div class="flex items-center gap-3 mb-5">
+                        <span class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></span>
+                        <span class="text-surface-400 dark:text-surface-500 text-xs">{{ t('onboarding.orManual') }}</span>
+                        <span class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></span>
+                    </div>
+                }
+
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     @for (step of steps(); track step.title; let i = $index) {
                         <div class="relative flex flex-col items-center text-center p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer group"
@@ -98,6 +126,11 @@ export class OnboardingComponent {
     private router       = inject(Router);
     private tokenService = inject(TokenService);
     private i18n         = inject(I18nService);
+    private flags        = inject(FeatureFlagsService);
+
+    /** The assistant-first path is only offered when the chat flag is on;
+     * otherwise the card falls back to the 3 manual steps (prod default). */
+    aiChat = () => this.flags.aiChat();
 
     hasAssets       = input<boolean>(false);
     hasTransactions = input<boolean>(false);
@@ -155,6 +188,10 @@ export class OnboardingComponent {
             },
         ];
     });
+
+    openAssistant() {
+        this.router.navigate(['/', this.lang, 'pages', 'assistant']);
+    }
 
     dismiss() {
         localStorage.setItem('omaad_onboarding_dismissed', 'true');

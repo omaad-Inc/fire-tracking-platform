@@ -78,6 +78,11 @@ export const EN: Dict = {
     step3Title: 'Set your goal',
     step3Desc: 'Configure your FIRE goal so you know where you\'re heading.',
     step3Cta: 'Configure',
+    assistantTitle: 'Set up in 2 minutes by chatting',
+    assistantBadge: 'Fastest',
+    assistantDesc: 'Tell me what you own in plain words (a house, an account, your salary) and I record it for you.',
+    assistantCta: 'Chat with the assistant',
+    orManual: 'or set up manually',
   },
   assetDetail: {
     notFound: 'Asset not found',
@@ -373,6 +378,7 @@ export const EN: Dict = {
       create_debt: 'Creating a debt',
       bulk_import: 'Importing transactions',
       search_existing: 'Checking for duplicates',
+      preview: 'Records to confirm',
     },
     notice: {
       disclaimerCima: 'Educational information: this is not personalized financial advice.',
@@ -388,11 +394,12 @@ export const EN: Dict = {
       generic: 'Something went wrong while answering.',
     },
     empty: {
-      title: 'Your wealth copilot',
-      subtitle: 'Ask a question or tell me what to add, I handle the rest.',
-      starter1: 'Add my salary of 850,000 FCFA',
-      starter2: 'Am I well diversified?',
-      starter3: 'Explain my wealth score',
+      title: 'Tell me what you own',
+      subtitle: 'A house, an account, a salary... just write it and I record it. You can also ask me a question.',
+      starter1: 'I bought a 150 m2 house in Thiès for 50 million',
+      starter2: 'Add my salary of 850,000 FCFA',
+      starter3: 'I want to reach 30 million in savings',
+      starter4: 'Am I well diversified?',
     },
   },
   goals: {
@@ -765,6 +772,7 @@ export const EN: Dict = {
     toggleTheme: 'Toggle dark mode',
     showAmounts: 'Show amounts',
     hideAmounts: 'Hide amounts',
+    assistantHint: 'Set up your wealth by chatting with the assistant',
   },
   addAssets: {
     title: 'Add an asset',

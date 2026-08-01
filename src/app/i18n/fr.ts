@@ -76,6 +76,11 @@ export const FR = {
     step3Title: 'Définissez votre objectif',
     step3Desc: 'Configurez votre objectif FIRE pour savoir où vous allez.',
     step3Cta: 'Configurer',
+    assistantTitle: 'Configure en 2 minutes en discutant',
+    assistantBadge: 'Le plus rapide',
+    assistantDesc: 'Dis-moi ce que tu possèdes en langage courant (une maison, un compte, ton salaire) et je l\'enregistre pour toi.',
+    assistantCta: 'Discuter avec l\'assistant',
+    orManual: 'ou configure manuellement',
   },
   assetDetail: {
     notFound: 'Actif introuvable',
@@ -371,6 +376,7 @@ export const FR = {
       create_debt: 'Création d\'une dette',
       bulk_import: 'Import de transactions',
       search_existing: 'Recherche de doublons',
+      preview: 'Enregistrements à confirmer',
     },
     notice: {
       disclaimerCima: 'Information à but éducatif : ceci n\'est pas un conseil financier personnalisé.',
@@ -386,11 +392,12 @@ export const FR = {
       generic: 'Une erreur est survenue pendant la réponse.',
     },
     empty: {
-      title: 'Ton copilote patrimoine',
-      subtitle: 'Pose une question ou dis-moi quoi ajouter, je m\'occupe du reste.',
-      starter1: 'Ajoute mon salaire de 850 000 FCFA',
-      starter2: 'Est-ce que je suis bien diversifié ?',
-      starter3: 'Explique-moi mon score patrimoine',
+      title: 'Dis-moi ce que tu possèdes',
+      subtitle: 'Une maison, un compte, un salaire... écris-le simplement et je l\'enregistre. Tu peux aussi me poser une question.',
+      starter1: 'J\'ai acheté une maison de 150 m2 à Thiès à 50 millions',
+      starter2: 'Ajoute mon salaire de 850 000 FCFA',
+      starter3: 'Je veux atteindre 30 millions d\'épargne',
+      starter4: 'Est-ce que je suis bien diversifié ?',
     },
   },
   goals: {
@@ -763,6 +770,7 @@ export const FR = {
     toggleTheme: 'Basculer le mode sombre',
     showAmounts: 'Afficher les montants',
     hideAmounts: 'Masquer les montants',
+    assistantHint: 'Configure ton patrimoine en discutant avec l\'assistant',
   },
   addAssets: {
     title: 'Ajouter un actif',

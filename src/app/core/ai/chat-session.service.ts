@@ -3,17 +3,21 @@ import { CHAT_STREAM_DRIVER, ChatTurnHandle } from './chat-stream-driver';
 import {
     AssistantBlock, ChatMessageVM, ChatStreamEvent, ToolCardVM,
 } from './chat-events';
+import { AssetsStateService } from '../../pages/service/assets-state.service';
+import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service';
 
 /**
  * Thread state for the S12 chat surface (Phase 1).
  *
  * Builds view models from ChatStreamEvents, whoever emits them (mock now, SSE
  * in Phase 3). One continuous thread per user (ARCH §9: no multi-conversation
- * UI in v1). Finished turns persist to localStorage so the thread survives
- * navigation while the backend conversation store does not exist yet.
+ * UI in v1). Finished turns persist to localStorage, keyed by user id, so the
+ * thread survives navigation while the backend conversation store is not the
+ * source of truth for the UI. The per-user key plus a purge of foreign threads
+ * on open means a shared browser never shows one user's conversation to the
+ * next (logout wipes them all; see TokenService.clear).
  */
 
-const STORAGE_KEY = 'omaad_chat_thread_v1';
 const MAX_PERSISTED = 200;
 
 let uid = 0;
@@ -26,6 +30,8 @@ const nextId = () => `m${Date.now().toString(36)}-${++uid}`;
 @Injectable()
 export class ChatSessionService {
     private driver = inject(CHAT_STREAM_DRIVER);
+    private assetsState = inject(AssetsStateService);
+    private tokens = inject(TokenService);
 
     readonly messages = signal<ChatMessageVM[]>(this.restore());
     /** True while a turn is streaming (input disabled, Stop visible). */
@@ -81,9 +87,15 @@ export class ChatSessionService {
     undo(cardId: string): void {
         const card = this.findCard(cardId);
         if (!card?.undoToken || card.state !== 'done') return;
+        const undoToken = card.undoToken;
         this.updateCard(cardId, (c) => ({ ...c, state: 'undoing' }));
-        this.driver.undo(card.undoToken).then(
-            () => { this.updateCard(cardId, (c) => ({ ...c, state: 'undone' })); this.persist(); },
+        this.driver.undo(undoToken).then(
+            () => {
+                this.updateCard(cardId, (c) => ({ ...c, state: 'undone' }));
+                this.persist();
+                // The row was removed; refresh the same data views the create touched.
+                this.notifyDataChanged(undoToken);
+            },
             () => this.updateCard(cardId, (c) => ({ ...c, state: 'done' })),
         );
     }
@@ -165,9 +177,27 @@ export class ChatSessionService {
                     summary: e.summary,
                     undoToken: e.undo_token,
                 }));
+                // A successful write must refresh the app's data views (patrimoine,
+                // dashboard/net worth, …); otherwise the created row only appears
+                // after a hard reload. Covers both the streamed create and the
+                // confirm-executed creates (same onEvent path).
+                if (e.status === 'ok' && e.undo_token) this.notifyDataChanged(e.undo_token);
                 break;
             case 'confirm_required':
-                this.updateCard(e.card_id, (c) => ({ ...c, state: 'confirm', diff: e.diff }));
+                // The bulk confirm gate parks with a FRESH card_id and NO preceding
+                // tool_use (the batched creates never streamed), so there is no card
+                // to update. Create one from the event itself; only fall back to
+                // updating when a card already exists (e.g. a single-tool preview).
+                // Without this the diff never rendered, the empty turn was dropped,
+                // and pendingConfirm silently locked the composer -> "nothing answered".
+                if (this.findCard(e.card_id)) {
+                    this.updateCard(e.card_id, (c) => ({ ...c, state: 'confirm', diff: e.diff }));
+                } else {
+                    this.pushBlock({
+                        kind: 'card',
+                        card: { cardId: e.card_id, tool: 'preview', argsPreview: '', state: 'confirm', diff: e.diff },
+                    });
+                }
                 this.pendingConfirm.set(e.card_id);
                 break;
             case 'notice':
@@ -193,6 +223,34 @@ export class ChatSessionService {
             this.messages.set(msgs.slice(0, -1));
         }
         this.persist();
+    }
+
+    /**
+     * A Config write succeeded (or was undone): invalidate the affected data
+     * views via AssetsStateService so the patrimoine list, dashboard KPIs and
+     * net worth reflect it without a reload. The undo_token segment names what
+     * changed ("assets/12", "transactions/7", "savings/3", "debts/1"; the goal
+     * route lives under /savings). A transaction also moves its linked account
+     * balance (S11-TX-1), so it refreshes assets too. Unknown segments are a
+     * no-op — better a missed refresh than a wrong one.
+     */
+    private notifyDataChanged(undoToken: string): void {
+        const segment = undoToken.split('/')[0];
+        switch (segment) {
+            case 'assets':
+                this.assetsState.notifyAssetsUpdated();
+                break;
+            case 'transactions':
+                this.assetsState.notifyTransactionsUpdated();
+                this.assetsState.notifyAssetsUpdated(); // the account balance moved
+                break;
+            case 'savings':
+                this.assetsState.notifySavingsUpdated();
+                break;
+            case 'debts':
+                this.assetsState.notifyDebtsUpdated();
+                break;
+        }
     }
 
     // ─── State helpers (immutable updates for OnPush) ────────────────────────
@@ -240,16 +298,48 @@ export class ChatSessionService {
 
     // ─── Persistence ─────────────────────────────────────────────────────────
 
+    /** localStorage key for the CURRENT user's thread, or null when no user is
+     *  identified (then the thread is memory-only and never touches a shared key). */
+    private storageKey(): string | null {
+        const id = this.tokens.user()?.id;
+        return id != null ? `${CHAT_THREAD_KEY_PREFIX}:${id}` : null;
+    }
+
     private persist(): void {
+        const key = this.storageKey();
+        if (!key) return; // unidentified: keep in memory only, never write a shared key
         try {
             const slim = this.messages().slice(-MAX_PERSISTED);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(slim));
+            localStorage.setItem(key, JSON.stringify(slim));
         } catch { /* quota/SSR: thread stays in memory */ }
     }
 
-    private restore(): ChatMessageVM[] {
+    /**
+     * Drop every persisted thread that is NOT the current user's, including the
+     * legacy un-scoped key from before per-user scoping. Runs on chat open so a
+     * reused browser purges (and never renders) another user's conversation even
+     * if they closed the tab without logging out.
+     */
+    private purgeForeignThreads(): void {
+        if (typeof localStorage === 'undefined') return;
         try {
-            const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+            const keep = this.storageKey();
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const k = localStorage.key(i);
+                if (!k) continue;
+                if ((k === CHAT_THREAD_KEY_PREFIX || k.startsWith(CHAT_THREAD_KEY_PREFIX + ':')) && k !== keep) {
+                    localStorage.removeItem(k);
+                }
+            }
+        } catch { /* storage unavailable */ }
+    }
+
+    private restore(): ChatMessageVM[] {
+        this.purgeForeignThreads();
+        const key = this.storageKey();
+        if (!key) return [];
+        try {
+            const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null;
             if (!raw) return [];
             const parsed = JSON.parse(raw) as ChatMessageVM[];
             if (!Array.isArray(parsed)) return [];

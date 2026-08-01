@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -60,14 +60,28 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                 </button>
 
                 <!-- AI Assistant: routes to /assistant when the S12 flag is on,
-                     otherwise opens the coming-soon panel (prod unchanged) -->
-                <button type="button"
-                        class="layout-topbar-action ai-topbar-btn"
-                        (click)="openAssistant()"
-                        [attr.aria-label]="t('aiAssistant.title')"
-                        [title]="t('aiAssistant.title')">
-                    <i class="pi pi-sparkles"></i>
-                </button>
+                     otherwise opens the coming-soon panel (prod unchanged).
+                     First-login discovery hint (pulse + coach-mark) draws a new
+                     user to the icon, especially on mobile. -->
+                <div class="relative flex">
+                    <button type="button"
+                            class="layout-topbar-action ai-topbar-btn"
+                            [class.ai-hint-active]="assistantHint()"
+                            (click)="openAssistant()"
+                            [attr.aria-label]="t('aiAssistant.title')"
+                            [title]="t('aiAssistant.title')">
+                        <i class="pi pi-sparkles"></i>
+                    </button>
+                    @if (assistantHint()) {
+                        <div class="absolute top-full right-0 mt-2 z-[60] w-max max-w-[15rem] cursor-pointer ai-hint-tip"
+                             role="status" (click)="dismissAssistantHint()">
+                            <span class="absolute -top-1 right-3 w-2.5 h-2.5 rotate-45 bg-ochre-500"></span>
+                            <div class="relative rounded-xl bg-ochre-500 text-warm-900 text-[11px] font-semibold leading-snug px-3 py-2 shadow-lg">
+                                {{ t('topbar.assistantHint') }}
+                            </div>
+                        </div>
+                    }
+                </div>
 
                 <!-- UPGRADE PRO pill -->
                 <a [routerLink]="['/'+lang, 'pages', 'plans']"
@@ -100,9 +114,32 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
     @if (!share.active()) {
         <app-share-portfolio-dialog [open]="shareOpen()" (close)="shareOpen.set(false)" />
     }
-    `
+    `,
+    styles: [`
+        /* First-login discovery pulse on the assistant sparkle (ochre #C77B3C). */
+        .ai-hint-active {
+            border-radius: 9999px;
+            animation: aiHintPulse 1.8s ease-out infinite;
+        }
+        @keyframes aiHintPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(199, 123, 60, 0.55); }
+            70%  { box-shadow: 0 0 0 10px rgba(199, 123, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(199, 123, 60, 0); }
+        }
+        .ai-hint-tip { animation: aiHintTipIn 220ms ease-out both; }
+        @keyframes aiHintTipIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        /* Respect reduced motion: no pulsing/sliding, keep a static ochre ring
+           so the icon is still highlighted for discovery. */
+        @media (prefers-reduced-motion: reduce) {
+            .ai-hint-active { animation: none; box-shadow: 0 0 0 2px rgba(199, 123, 60, 0.6); }
+            .ai-hint-tip { animation: none; }
+        }
+    `]
 })
-export class AppTopbar implements OnInit {
+export class AppTopbar implements OnInit, OnDestroy {
     private router = inject(Router);
     private i18n = inject(I18nService);
     private tokenService = inject(TokenService);
@@ -116,6 +153,7 @@ export class AppTopbar implements OnInit {
 
     /** S12: flag on -> the real chat surface; flag off -> the teaser panel. */
     openAssistant(): void {
+        this.markAssistantSeen(); // opening it is discovery: the hint has done its job
         if (this.flags.aiChat()) this.nav.go('pages', 'assistant');
         else this.aiAssistant.show();
     }
@@ -124,6 +162,13 @@ export class AppTopbar implements OnInit {
     shareOpen = signal(false);
     user = this.tokenService.user;
 
+    /** One-shot discovery hint on the assistant sparkle (pulse + coach-mark),
+     *  shown once on first login until the user opens the assistant. Mobile users
+     *  in particular can miss the icon; this points them at it. */
+    assistantHint = signal(false);
+    private hintTimer: ReturnType<typeof setTimeout> | null = null;
+    private hintDecided = false;
+
     constructor() {
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd),
@@ -131,10 +176,52 @@ export class AppTopbar implements OnInit {
         ).subscribe(() => {
             this.lang = this.getCurrentLang();
         });
+        // On a fresh login the user id lands after /auth/me, i.e. AFTER ngOnInit;
+        // react when it first appears so the hint fires on first login too, not
+        // only on a reload (where the cached profile makes it available at init).
+        effect(() => {
+            if (this.user()?.id != null) this.maybeShowAssistantHint();
+        });
     }
 
     ngOnInit() {
         this.lang = this.getCurrentLang();
+        this.maybeShowAssistantHint();
+    }
+
+    ngOnDestroy() {
+        if (this.hintTimer) clearTimeout(this.hintTimer);
+    }
+
+    private seenKey(): string | null {
+        const id = this.user()?.id;
+        return id != null ? `omaad_assistant_seen:${id}` : null;
+    }
+
+    /** Show the hint only when the real chat is live and this user hasn't met it
+     *  yet. Auto-retires after a few seconds so it never becomes a nag. */
+    private maybeShowAssistantHint(): void {
+        if (this.hintDecided) return;
+        const key = this.seenKey();
+        if (!key) return; // user id not ready yet: retry when it lands (see effect)
+        this.hintDecided = true; // decide once now that we can
+        if (!this.flags.aiChat()) return;
+        try { if (localStorage.getItem(key) === '1') return; } catch { return; }
+        this.assistantHint.set(true);
+        this.hintTimer = setTimeout(() => this.markAssistantSeen(), 8000);
+    }
+
+    /** Tap on the coach-mark dismisses it (and marks it seen). */
+    dismissAssistantHint(): void {
+        this.markAssistantSeen();
+    }
+
+    private markAssistantSeen(): void {
+        if (!this.assistantHint()) return;
+        this.assistantHint.set(false);
+        if (this.hintTimer) { clearTimeout(this.hintTimer); this.hintTimer = null; }
+        const key = this.seenKey();
+        if (key) { try { localStorage.setItem(key, '1'); } catch { /* storage off: shown once this session */ } }
     }
 
     get avatarUrl(): string | null {

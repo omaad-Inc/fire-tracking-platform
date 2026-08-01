@@ -4,7 +4,9 @@ import { I18nService } from '../../../i18n/i18n.service';
 
 /**
  * Zero-message state that teaches by example (plan step 7, first-glance
- * directive): three tappable starter prompts seed the conversation.
+ * directive): the assistant greets first, then four tappable starter prompts
+ * cover the four things it can do (record an asset, a transaction, a goal, or
+ * answer a question) so a brand-new user sees the full surface in one screen.
  */
 @Component({
     selector: 'app-chat-empty-state',
@@ -35,6 +37,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             [class.omaad-d1]="$index === 0"
                             [class.omaad-d2]="$index === 1"
                             [class.omaad-d3]="$index === 2"
+                            [class.omaad-d4]="$index === 3"
                             (click)="pick.emit(prompt)">
                         <i class="pi pi-arrow-up-right text-xs mr-2 text-ochre-600 dark:text-ochre-300" aria-hidden="true"></i>
                         {{ prompt }}
@@ -56,6 +59,7 @@ export class ChatEmptyStateComponent {
             this.i18n.t('assistant.empty.starter1'),
             this.i18n.t('assistant.empty.starter2'),
             this.i18n.t('assistant.empty.starter3'),
+            this.i18n.t('assistant.empty.starter4'),
         ];
     });
 }

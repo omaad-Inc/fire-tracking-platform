@@ -2,6 +2,18 @@ import { TestBed } from '@angular/core/testing';
 import { ChatSessionService } from './chat-session.service';
 import { CHAT_STREAM_DRIVER, ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
 import { ChatStreamEvent, ToolCardVM } from './chat-events';
+import { AssetsStateService } from '../../pages/service/assets-state.service';
+import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service';
+
+/** Remove every chat-thread key so a persisted thread never leaks between tests. */
+function clearThreads(): void {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k === CHAT_THREAD_KEY_PREFIX || k.startsWith(CHAT_THREAD_KEY_PREFIX + ':'))) {
+            localStorage.removeItem(k);
+        }
+    }
+}
 
 /**
  * Reducer/state-machine tests for the S12 chat store (Phase 1, plan step 11):
@@ -54,7 +66,7 @@ describe('ChatSessionService (event reducer)', () => {
     };
 
     beforeEach(() => {
-        localStorage.removeItem('omaad_chat_thread_v1');
+        clearThreads();
         driver = new FakeDriver();
         TestBed.configureTestingModule({
             providers: [
@@ -98,6 +110,32 @@ describe('ChatSessionService (event reducer)', () => {
         expect(svc.streaming()).toBeFalse();
     });
 
+    it('a successful write notifies the data views so patrimoine refreshes without a reload', () => {
+        const state = TestBed.inject(AssetsStateService);
+        const assets = spyOn(state, 'notifyAssetsUpdated');
+        const txns = spyOn(state, 'notifyTransactionsUpdated');
+
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'ok', summary: 'Maison', undo_token: 'assets/12' });
+        expect(assets).toHaveBeenCalledTimes(1);
+
+        // a transaction moves its linked account balance -> refresh BOTH
+        driver.emit({ type: 'tool_use', tool: 'create_transaction', args_preview: 'Salaire', card_id: 'c2' });
+        driver.emit({ type: 'tool_result', card_id: 'c2', status: 'ok', summary: 'Salaire', undo_token: 'transactions/7' });
+        expect(txns).toHaveBeenCalledTimes(1);
+        expect(assets).toHaveBeenCalledTimes(2);
+    });
+
+    it('a failed write does NOT notify the data views', () => {
+        const state = TestBed.inject(AssetsStateService);
+        const assets = spyOn(state, 'notifyAssetsUpdated');
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'error', summary: 'Détails invalides.' });
+        expect(assets).not.toHaveBeenCalled();
+    });
+
     it('confirm_required parks the turn and blocks the composer until a decision', () => {
         svc.send('importe mon relevé');
         driver.emit({ type: 'tool_use', tool: 'bulk_import', args_preview: '3 transactions', card_id: 'c2' });
@@ -114,6 +152,33 @@ describe('ChatSessionService (event reducer)', () => {
 
         driver.emit({ type: 'tool_result', card_id: 'c2', status: 'ok', summary: '3 transactions créées' });
         expect(card('c2').state).toBe('done');
+    });
+
+    it('confirm_required with NO preceding tool_use still renders (real bulk-park path)', () => {
+        // The backend bulk gate parks with a fresh card_id and no tool_use card.
+        // Before the fix this silently rendered nothing and locked the composer.
+        svc.send('ajoute une maison à Thiès 30M et une voiture 8M');
+        driver.emit({ type: 'routed', agent: 'config' });
+        driver.emit({
+            type: 'confirm_required', card_id: 'park-1',
+            diff: [
+                { op: 'create', label: 'Maison Thiès · 30 000 000 FCFA' },
+                { op: 'create', label: 'Toyota · 8 000 000 FCFA' },
+            ],
+        });
+        // a confirm card now exists and carries the 2-line diff
+        expect(card('park-1').state).toBe('confirm');
+        expect(card('park-1').diff!.length).toBe(2);
+        expect(svc.pendingConfirm()).toBe('park-1');
+
+        // the turn ending must NOT drop the bubble (it has the confirm card)
+        driver.close();
+        expect(card('park-1').state).toBe('confirm');
+
+        // approving resumes and executes
+        svc.confirm('park-1', true);
+        expect(svc.pendingConfirm()).toBeNull();
+        expect(driver.confirmCalls).toEqual([{ cardId: 'park-1', approved: true }]);
     });
 
     it('a declined confirm leads to a cancelled card', () => {
@@ -177,5 +242,68 @@ describe('ChatSessionService (event reducer)', () => {
         driver.emit({ type: 'notice', kind: 'disclaimer_cima' });
         const blocks = lastAssistant().blocks!;
         expect(blocks[1]).toEqual({ kind: 'notice', notice: { kind: 'disclaimer_cima', message: undefined } });
+    });
+});
+
+
+/**
+ * Privacy: the thread is persisted per user, and opening the chat on a reused
+ * browser must never render (or retain) another user's conversation. Regression
+ * guard for the un-scoped global key that leaked one user's thread to the next.
+ */
+describe('ChatSessionService (per-user thread isolation)', () => {
+    const P = CHAT_THREAD_KEY_PREFIX;
+
+    function makeFor(userId: number | null): ChatSessionService {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                ChatSessionService,
+                { provide: CHAT_STREAM_DRIVER, useValue: new FakeDriver() },
+                { provide: AssetsStateService, useValue: {} },
+                { provide: TokenService, useValue: { user: () => (userId != null ? { id: userId } : null) } },
+            ],
+        });
+        return TestBed.inject(ChatSessionService);
+    }
+
+    afterEach(() => clearThreads());
+
+    it('does not restore another user\'s thread and purges it (incl. the legacy key) on open', () => {
+        localStorage.setItem(`${P}:2`, JSON.stringify([{ id: 'x', role: 'user', ts: 1, text: 'salaire secret' }]));
+        localStorage.setItem(P, JSON.stringify([{ id: 'y', role: 'user', ts: 1, text: 'legacy' }]));
+
+        const svc = makeFor(1); // user 1 has no thread of their own
+
+        expect(svc.messages()).toEqual([]);
+        expect(localStorage.getItem(`${P}:2`)).toBeNull(); // foreign thread purged
+        expect(localStorage.getItem(P)).toBeNull();         // legacy un-scoped key purged
+    });
+
+    it('restores the current user\'s own thread and leaves it intact while dropping others', () => {
+        localStorage.setItem(`${P}:1`, JSON.stringify([{ id: 'a', role: 'user', ts: 1, text: 'a moi' }]));
+        localStorage.setItem(`${P}:2`, JSON.stringify([{ id: 'b', role: 'user', ts: 1, text: 'a eux' }]));
+
+        const svc = makeFor(1);
+
+        expect(svc.messages().length).toBe(1);
+        expect(svc.messages()[0].text).toBe('a moi');
+        expect(localStorage.getItem(`${P}:1`)).not.toBeNull(); // own thread kept
+        expect(localStorage.getItem(`${P}:2`)).toBeNull();      // foreign purged
+    });
+
+    it('persists under the per-user key, never the shared/legacy key', () => {
+        const svc = makeFor(7);
+        svc.seedHistory('fr'); // any write path persists
+
+        expect(localStorage.getItem(`${P}:7`)).not.toBeNull();
+        expect(localStorage.getItem(P)).toBeNull();
+    });
+
+    it('stays memory-only when no user is identified (never writes a shared key)', () => {
+        const svc = makeFor(null);
+        svc.seedHistory('fr');
+        expect(svc.messages().length).toBeGreaterThan(0); // in memory
+        expect(localStorage.getItem(P)).toBeNull();        // but nothing persisted globally
     });
 });
