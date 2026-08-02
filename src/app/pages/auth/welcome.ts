@@ -36,7 +36,8 @@ type Step = 'created' | 'name' | 'notifications';
                 }
 
                 @case ('name') {
-                <!-- Capture the first name so the app can address the user (trust) -->
+                <!-- Capture first + last name (both mandatory) so the app can
+                     address the user and the account page is complete. -->
                 <div class="min-h-screen flex flex-col justify-center px-8 md:px-16 max-w-md w-full mx-auto step-in">
                     <div class="mb-10">
                         <div class="w-14 h-14 rounded-2xl bg-ochre-500/15 flex items-center justify-center mb-6">
@@ -45,20 +46,26 @@ type Step = 'created' | 'name' | 'notifications';
                         <h1 class="text-3xl md:text-4xl font-bold mb-3">{{ t('welcome.name.title') }}</h1>
                         <p class="text-surface-600 dark:text-surface-400">{{ t('welcome.name.subtitle') }}</p>
                     </div>
-                    <label for="wname" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('welcome.name.label') }}</label>
-                    <input pInputText id="wname" type="text" autocomplete="given-name" autofocus
+                    <label for="wfirst" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('welcome.name.label') }}</label>
+                    <input pInputText id="wfirst" type="text" autocomplete="given-name" autofocus
                            [placeholder]="t('welcome.name.placeholder')"
                            class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 text-xl focus:!border-brand-700 focus:!shadow-none"
-                           [ngModel]="firstName()" (ngModelChange)="firstName.set($event)" name="wname"
+                           [ngModel]="firstName()" (ngModelChange)="firstName.set($event)" name="wfirst"
+                           [disabled]="isLoading()" />
+                    <label for="wlast" class="block text-surface-600 dark:text-surface-400 text-sm mb-2 mt-6">{{ t('welcome.name.lastLabel') }}</label>
+                    <input pInputText id="wlast" type="text" autocomplete="family-name"
+                           [placeholder]="t('welcome.name.lastPlaceholder')"
+                           class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 text-xl focus:!border-brand-700 focus:!shadow-none"
+                           [ngModel]="lastName()" (ngModelChange)="lastName.set($event)" name="wlast"
                            [disabled]="isLoading()" (keyup.enter)="saveName()" />
                     <button pButton pRipple type="button" [label]="t('welcome.name.continue')"
                             [loading]="isLoading()"
                             class="w-full !rounded-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300 mt-8"
                             [ngClass]="{
-                                'omaad-cta': !!firstName().trim() && !isLoading(),
-                                '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !firstName().trim() || isLoading()
+                                'omaad-cta': nameComplete() && !isLoading(),
+                                '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': !nameComplete() || isLoading()
                             }"
-                            [disabled]="!firstName().trim() || isLoading()"
+                            [disabled]="!nameComplete() || isLoading()"
                             (click)="saveName()"></button>
                 </div>
                 }
@@ -127,11 +134,20 @@ export class Welcome implements OnInit {
 
     step = signal<Step>('created');
     firstName = signal('');
+    lastName = signal('');
     isLoading = signal(false);
     pushBusy = signal(false);
 
+    // Both names are required so the account page is complete and the app can
+    // address the user fully.
+    nameComplete = computed(() => !!this.firstName().trim() && !!this.lastName().trim());
+
     private currentLang = '/fr';
     private returnUrl = '/fr';
+    // Prefetched on entering the notifications step so the enable click can call
+    // requestSubscription synchronously (a network await first would drop the
+    // user-activation and Android/Chrome would silently suppress the prompt).
+    private vapidKey: string | null = null;
 
     // Sample notifications shown in the mockup (i18n keys, Omaad-relevant).
     readonly mockNotifs = [
@@ -153,17 +169,19 @@ export class Welcome implements OnInit {
         this.currentLang = '/' + (match ? match[1] : 'fr');
         this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
 
-        const existing = this.tokenService.user()?.first_name;
-        if (existing) this.firstName.set(existing);
+        const u = this.tokenService.user();
+        if (u?.first_name) this.firstName.set(u.first_name);
+        if (u?.last_name) this.lastName.set(u.last_name);
 
         // Hold the "Account created" beat briefly, then move on.
         setTimeout(() => this.afterCreated(), 1600);
     }
 
-    /** From the success beat: ask for a name only if we don't have one (email
-     *  signups); Google users already have theirs, so go straight to push. */
+    /** From the success beat: collect the name unless BOTH first and last are
+     *  already known (a Google user with a full name skips it; one with only a
+     *  first name still gets asked for the last). */
     private afterCreated(): void {
-        if (this.firstName().trim()) {
+        if (this.firstName().trim() && this.lastName().trim()) {
             this.goToNotifications();
         } else {
             this.step.set('name');
@@ -171,10 +189,11 @@ export class Welcome implements OnInit {
     }
 
     saveName(): void {
-        const name = this.firstName().trim();
-        if (!name || this.isLoading()) return;
+        const first = this.firstName().trim();
+        const last = this.lastName().trim();
+        if (!first || !last || this.isLoading()) return;
         this.isLoading.set(true);
-        this.api.updateProfile({ first_name: name }).subscribe({
+        this.api.updateProfile({ first_name: first, last_name: last }).subscribe({
             next: (user) => {
                 this.isLoading.set(false);
                 this.tokenService.setUser(user); // so the sidebar greets by name immediately
@@ -190,6 +209,10 @@ export class Welcome implements OnInit {
     /** Show the notifications step, or skip it when push can't work on this device. */
     private goToNotifications(): void {
         if (this.pushUnavailable()) { this.finish(); return; }
+        // Warm the VAPID key NOW so the enable click stays inside the user gesture.
+        firstValueFrom(this.api.getVapidPublicKey())
+            .then(k => { this.vapidKey = k.public_key; })
+            .catch(() => {});
         this.step.set('notifications');
     }
 
@@ -197,8 +220,13 @@ export class Welcome implements OnInit {
         if (this.pushBusy()) return;
         this.pushBusy.set(true);
         try {
-            const { public_key } = await firstValueFrom(this.api.getVapidPublicKey());
-            const subscription = await this.swPush.requestSubscription({ serverPublicKey: public_key });
+            // Use the prefetched key so requestSubscription() is the FIRST async
+            // op in this click handler — otherwise the awaited network call drops
+            // the user-activation and the OS permission prompt never appears
+            // (the "slow, no permission card on Android" bug). Fall back to a
+            // fetch only if the prefetch hasn't landed yet.
+            const key = this.vapidKey ?? (await firstValueFrom(this.api.getVapidPublicKey())).public_key;
+            const subscription = await this.swPush.requestSubscription({ serverPublicKey: key });
             await firstValueFrom(this.api.registerPushSubscription(subscription.toJSON() as object, this.deviceLabel()));
             await firstValueFrom(this.api.updateNotificationPreferences({ push_enabled: true }));
             this.finish();

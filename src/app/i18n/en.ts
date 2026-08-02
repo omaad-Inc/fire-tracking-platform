@@ -2073,6 +2073,8 @@ export const EN: Dict = {
       subtitle: 'So we can address you properly.',
       label: 'First name',
       placeholder: 'Your first name',
+      lastLabel: 'Last name',
+      lastPlaceholder: 'Your last name',
       continue: 'Continue',
       saveError: 'Couldn\'t save your name. Please try again.',
     },
