@@ -2071,8 +2071,10 @@ export const FR = {
       subtitle: 'Pour qu\'on s\'adresse à toi comme il faut.',
       label: 'Prénom',
       placeholder: 'Ton prénom',
+      lastLabel: 'Nom',
+      lastPlaceholder: 'Ton nom de famille',
       continue: 'Continuer',
-      saveError: 'Impossible d\'enregistrer ton prénom. Réessaie.',
+      saveError: 'Impossible d\'enregistrer ton nom. Réessaie.',
     },
     notifications: {
       title: 'Active les notifications pour savoir quand tu gagnes de l\'argent',
