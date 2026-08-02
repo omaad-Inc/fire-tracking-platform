@@ -34,6 +34,9 @@ export interface AuthResponse {
 export interface RegisterResponse extends AuthResponse {
     verification_required?: boolean;
     email?: string;
+    /** Echoed ONLY when the backend runs with VERIFY_DEV_ECHO (local/e2e) —
+     *  null in production. Lets a dev auto-fill the code screen. */
+    dev_verification_code?: string | null;
 }
 
 export interface TwoFactorSetup {
@@ -149,6 +152,22 @@ export class AuthService {
      *  session, which we store so the user lands in the app signed in. */
     verifyEmail(token: string): Observable<AuthResponse | null> {
         return this.http.post<AuthResponse | null>(`${this.apiUrl}/auth/verify-email`, { token }).pipe(
+            tap(response => {
+                if (response?.access_token) {
+                    this.clearAllCaches();
+                    this.tokenService.setToken(response.access_token);
+                }
+            }),
+            catchError(this.handleError)
+        );
+    }
+
+    /** Confirm email ownership via the in-app 6-digit code (primary UX; the
+     *  emailed link is the fallback, handled by verifyEmail). Scoped to the
+     *  account by email. On success the response carries a session, which we
+     *  store so the user lands in the app signed in. */
+    verifyEmailCode(email: string, code: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/verify-code`, { email, code }).pipe(
             tap(response => {
                 if (response?.access_token) {
                     this.clearAllCaches();

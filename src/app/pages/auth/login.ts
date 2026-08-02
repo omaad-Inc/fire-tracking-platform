@@ -44,11 +44,11 @@ import { I18nService } from '../../i18n/i18n.service';
                     </p>
 
                     @if (!mfaChallenge()) {
-                    <!-- Social Login Buttons -->
-                    <div class="space-y-3 mb-6">
+                    <!-- Google = primary CTA -->
+                    <div class="mb-6">
                         <a [href]="authService.googleAuthUrl"
                            rel="noopener"
-                           class="w-full rounded-full bg-brand-700 hover:bg-brand-800 py-3 text-base font-medium text-white flex items-center justify-center gap-3 cursor-pointer transition-colors no-underline">
+                           class="w-full rounded-full bg-brand-700 hover:bg-brand-800 py-3.5 text-base font-semibold text-white flex items-center justify-center gap-3 cursor-pointer transition-colors no-underline shadow-sm">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#fff"/>
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#fff"/>
@@ -66,49 +66,6 @@ import { I18nService } from '../../i18n/i18n.service';
                         <div class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></div>
                     </div>
 
-                    <!-- Email / Phone mode switch -->
-                    <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl mb-6">
-                        <button type="button" (click)="setMode('email')"
-                                class="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
-                                [ngClass]="authMode() === 'email' ? 'bg-white dark:bg-surface-700 text-brand-700 dark:text-ochre-400 shadow-sm' : 'text-surface-500 dark:text-surface-400'">
-                            <i class="pi pi-envelope text-xs mr-1"></i>{{ t('auth.login.tabEmail') }}
-                        </button>
-                        <!-- Phone sign-in is not live yet: disabled + "coming soon" flag so nobody registers by phone. -->
-                        <button type="button" [disabled]="true" aria-disabled="true"
-                                class="flex-1 py-2 rounded-lg text-sm font-semibold text-surface-400 dark:text-surface-500 cursor-not-allowed flex items-center justify-center gap-1.5">
-                            <i class="pi pi-mobile text-xs"></i>{{ t('auth.login.tabPhone') }}
-                            <span class="px-1.5 py-0.5 rounded-full bg-ochre-500/15 text-ochre-600 dark:text-ochre-400 text-[10px] font-bold uppercase tracking-wide">{{ t('auth.login.phoneSoonBadge') }}</span>
-                        </button>
-                    </div>
-
-                    <!-- Coming-soon banner (phone auth disabled until it works) -->
-                    <div class="flex items-start gap-2 mb-6 rounded-xl border border-ochre-500/30 bg-ochre-500/[0.06] px-3.5 py-2.5 text-[13px] text-surface-600 dark:text-surface-300">
-                        <i class="pi pi-clock mt-0.5 text-ochre-500 text-xs"></i>
-                        <span>{{ t('auth.login.phoneSoonBanner') }}</span>
-                    </div>
-
-                    @if (authMode() === 'email') {
-                    <!-- Unverified account notice (S10-SEC-1): correct password but
-                         the email was never confirmed — offer a fresh link. -->
-                    @if (needsVerification()) {
-                        <div role="alert" data-testid="login-needs-verification"
-                             class="mb-6 rounded-xl border border-ochre-500/40 bg-ochre-500/10 p-4">
-                            <div class="flex items-start gap-3">
-                                <i class="pi pi-envelope mt-0.5 text-ochre-600 dark:text-ochre-400" aria-hidden="true"></i>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ t('auth.verifyPending.loginBlockedTitle') }}</p>
-                                    <p class="mt-1 text-sm text-surface-600 dark:text-surface-300">{{ t('auth.verifyPending.loginBlockedDesc') }}</p>
-                                    <button type="button" (click)="resendVerification()"
-                                            [disabled]="resendCooldown() > 0 || isLoading()"
-                                            class="mt-2.5 text-sm font-semibold text-ochre-700 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-ochre-400">
-                                        {{ resendCooldown() > 0
-                                            ? t('auth.verifyPending.resendIn') + ' (' + resendCooldown() + 's)'
-                                            : t('auth.verifyPending.resend') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    }
                     <!-- Email & Password Form -->
                     <form (ngSubmit)="onSubmit()" class="space-y-6">
                         <div>
@@ -162,43 +119,6 @@ import { I18nService } from '../../i18n/i18n.service';
                             </a>
                         </div>
                     </form>
-                    } @else {
-                    <!-- Phone / OTP Form -->
-                    <div class="space-y-6">
-                        @if (!otpSent()) {
-                            <div>
-                                <label for="phone" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.phoneLabel') }}</label>
-                                <input pInputText id="phone" type="tel"
-                                       [placeholder]="t('auth.login.phonePlaceholder')"
-                                       class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none"
-                                       [(ngModel)]="phone" name="phone" [disabled]="isLoading()" />
-                                <p class="text-surface-500 dark:text-surface-400 text-xs mt-2">{{ t('auth.login.phoneHint') }}</p>
-                            </div>
-                            <button pButton pRipple [label]="t('auth.login.sendCode')" type="button"
-                                    [loading]="isLoading()"
-                                    class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
-                                    [disabled]="phone.trim().length < 6 || isLoading()"
-                                    (click)="sendOtp()"></button>
-                        } @else {
-                            <div>
-                                <label for="otp" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.login.codeLabel') }}</label>
-                                <input pInputText id="otp" type="text" inputmode="numeric" autocomplete="one-time-code"
-                                       [placeholder]="t('auth.login.codePlaceholder')"
-                                       class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 focus:!border-brand-700 focus:!shadow-none tracking-widest"
-                                       [(ngModel)]="otpCode" name="otp" [disabled]="isLoading()" />
-                            </div>
-                            <button pButton pRipple [label]="t('auth.login.submit')" type="button"
-                                    [loading]="isLoading()"
-                                    class="w-full !rounded-full !py-3 !text-base !font-semibold omaad-cta disabled:opacity-50"
-                                    [disabled]="!otpCode.trim() || isLoading()"
-                                    (click)="submitOtp()"></button>
-                            <div class="flex items-center justify-between text-sm">
-                                <a class="text-surface-500 dark:text-surface-400 hover:underline cursor-pointer" (click)="setMode('phone')">{{ t('auth.login.changeNumber') }}</a>
-                                <a class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer" (click)="sendOtp()">{{ t('auth.login.resend') }}</a>
-                            </div>
-                        }
-                    </div>
-                    }
                     } @else {
                     <!-- TOTP two-factor challenge -->
                     <div class="space-y-6">
@@ -566,10 +486,15 @@ export class Login {
             },
             error: (error) => {
                 this.isLoading.set(false);
-                // Correct password but unconfirmed email: show the resend
-                // notice instead of a generic failure toast (S10-SEC-1).
+                // Correct password but unconfirmed email (S10-SEC-1): route into
+                // the in-app 6-digit code screen (register issues a fresh code
+                // from the passed email). Preserve returnUrl so post-verify lands
+                // the user where they were headed.
                 if (error?.message === 'EMAIL_NOT_VERIFIED') {
-                    this.needsVerification.set(true);
+                    this.router.navigate([this.currentLang, 'auth', 'register'], {
+                        state: { verifyEmail: this.email().trim() },
+                        queryParamsHandling: 'preserve',
+                    });
                     return;
                 }
                 this.messageService.add({
