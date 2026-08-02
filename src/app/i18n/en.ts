@@ -728,6 +728,7 @@ export const EN: Dict = {
     },
     preferences: {
       title: 'Preferences',
+      regionTitle: 'Language & region',
       language: 'Language',
       currency: 'Currency',
       theme: 'Theme',
