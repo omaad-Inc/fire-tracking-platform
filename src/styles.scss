@@ -49,3 +49,21 @@ html.settings-no-scrollbar::-webkit-scrollbar,
 html.settings-no-scrollbar body::-webkit-scrollbar {
     display: none;              /* WebKit */
 }
+
+/* Mobile (Finary-native feel): no visible scrollbars anywhere. A phone never
+   shows a chrome scrollbar, so the page-level and inner scrollbars read as
+   "not mobile". Scrolling stays fully functional — only the bar is hidden.
+   Scoped to the mobile layout breakpoint (< lg) so desktop keeps its bars. */
+@media (max-width: 1024px) {
+    html,
+    body,
+    * {
+        scrollbar-width: none;      /* Firefox */
+        -ms-overflow-style: none;   /* legacy Edge */
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+        display: none;              /* WebKit / Blink */
+    }
+}

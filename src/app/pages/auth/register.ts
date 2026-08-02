@@ -388,8 +388,9 @@ export class Register {
             next: () => {
                 this.isLoading.set(false);
                 const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                this.router.navigate([returnUrl], { replaceUrl: true });
                 this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
+                // Into the onboarding sequence (account-created -> name -> push).
+                this.router.navigate([this.currentLang, 'welcome'], { queryParams: { returnUrl }, replaceUrl: true });
             },
             error: () => {
                 this.isLoading.set(false);

@@ -52,7 +52,7 @@ export class OAuthCallback implements OnInit {
         } else if (params['token'] || params['access_token']) {
             // Legacy path: a not-yet-redeployed backend may still send the
             // token directly. Remove once the code-exchange backend is live.
-            this.handleTokenResponse(params['token'] || params['access_token']);
+            this.handleTokenResponse(params['token'] || params['access_token'], params['new_user'] === 'true');
         } else if (params['error']) {
             // OAuth error
             this.error = params['error_description'] || params['error'] || 'Authentication failed';
@@ -70,7 +70,7 @@ export class OAuthCallback implements OnInit {
                     this.error = 'Authentication failed. Please try logging in again.';
                     return;
                 }
-                this.handleTokenResponse(res.access_token);
+                this.handleTokenResponse(res.access_token, res.new_user === true);
             },
             error: (err) => {
                 this.error = err.message || 'Authentication failed. Please try logging in again.';
@@ -78,7 +78,7 @@ export class OAuthCallback implements OnInit {
         });
     }
 
-    private handleTokenResponse(token: string): void {
+    private handleTokenResponse(token: string, isNewUser = false): void {
         this.message = 'Setting up your account...';
         this.tokenService.setToken(token);
 
@@ -87,8 +87,12 @@ export class OAuthCallback implements OnInit {
             next: () => {
                 this.message = 'Success! Redirecting...';
                 const lang = this.getLang();
+                // First-time Google users go through the onboarding sequence
+                // (account-created -> push); their name comes from Google, so the
+                // name step is auto-skipped. Returning users go straight in.
+                const target = isNewUser ? [`/${lang}/welcome`] : [`/${lang}`];
                 setTimeout(() => {
-                    this.router.navigate([`/${lang}`], { replaceUrl: true });
+                    this.router.navigate(target, { replaceUrl: true });
                 }, 500);
             },
             error: (err) => {
