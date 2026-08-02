@@ -92,159 +92,113 @@ import { environment } from '../../../../environments/environment';
                 </div>
             </ng-template>
         </p-dialog>
-        <div class="px-1">
-            <!-- Mon Profil Section -->
-            <div class="relative mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
-                
-                <!-- Avatar Section -->
-                <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 mb-8 text-center sm:text-left">
-                    <div class="relative group">
+        <div class="max-w-2xl mx-auto pb-10">
+            <!-- Profile card -->
+            <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
+                <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.account.myProfile') }}</h2>
+
+                <!-- Avatar + actions -->
+                <div class="flex items-center gap-5 mb-8">
+                    <div class="relative group shrink-0">
                         @if (user()?.avatar_url) {
-                            <img [src]="getAvatarUrl()"
-                                 alt="Profile"
-                                 class="w-20 h-20 rounded-full object-cover border-2 border-surface-200 dark:border-surface-700">
+                            <img [src]="getAvatarUrl()" alt="Profile"
+                                 class="w-20 h-20 rounded-full object-cover ring-2 ring-surface-200 dark:ring-surface-700">
                         } @else {
-                            <div class="w-20 h-20 rounded-full bg-brand-700 flex items-center justify-center text-white font-semibold text-2xl">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-brand-700 to-brand-800 ring-2 ring-surface-200 dark:ring-surface-700 flex items-center justify-center text-white font-semibold text-2xl">
                                 {{ userInitials }}
                             </div>
                         }
-                        <button
-                            class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                            (click)="fileInput.click()"
-                            [attr.aria-label]="t('settings.account.changePhoto')"
-                        >
+                        <button type="button"
+                                class="absolute inset-0 flex items-center justify-center bg-black/45 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                (click)="fileInput.click()" [attr.aria-label]="t('settings.account.changePhoto')">
                             <i class="pi pi-camera text-white text-xl" aria-hidden="true"></i>
                         </button>
-                        <input 
-                            type="file" 
-                            #fileInput 
-                            hidden 
-                            accept="image/jpeg,image/png,image/gif,image/webp"
-                            (change)="onFileSelected($event)"
-                        />
+                        <input type="file" #fileInput hidden accept="image/jpeg,image/png,image/gif,image/webp" (change)="onFileSelected($event)" />
                     </div>
-                    <div>
-                        <p class="text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.profilePicture') }}</p>
-                        <div class="flex gap-2">
-                            <p-button 
-                                [label]="t('settings.account.changePhoto')" 
-                                icon="pi pi-upload" 
-                                [outlined]="true" 
-                                size="small"
-                                [loading]="isUploadingAvatar()"
-                                (click)="fileInput.click()"
-                            />
+                    <div class="min-w-0">
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2.5">{{ t('settings.account.profilePicture') }}</p>
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <button type="button" (click)="fileInput.click()" [disabled]="isUploadingAvatar()"
+                                    class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-brand-700 dark:text-ochre-400 bg-brand-700/[0.06] dark:bg-ochre-400/10 hover:bg-brand-700/10 dark:hover:bg-ochre-400/[0.18] transition-colors disabled:opacity-50 cursor-pointer">
+                                <i class="pi text-xs" [ngClass]="isUploadingAvatar() ? 'pi-spin pi-spinner' : 'pi-upload'"></i>{{ t('settings.account.changePhoto') }}
+                            </button>
                             @if (user()?.avatar_url) {
-                                <p-button 
-                                    icon="pi pi-trash" 
-                                    [outlined]="true" 
-                                    size="small"
-                                    severity="danger"
-                                    (click)="deleteAvatar()"
-                                />
+                                <button type="button" (click)="deleteAvatar()" aria-label="Supprimer la photo"
+                                        class="inline-flex items-center justify-center w-9 h-9 rounded-full text-negative border border-negative/25 hover:bg-negative/10 transition-colors cursor-pointer">
+                                    <i class="pi pi-trash text-sm"></i>
+                                </button>
                             }
                         </div>
                     </div>
                 </div>
 
-                <!-- Name Fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Name fields -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
                     <div>
-                        <label for="acc-first-name" class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.firstName') }}</label>
-                        <input
-                            pInputText
-                            id="acc-first-name"
-                            [(ngModel)]="firstName"
-                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
-                        />
+                        <label for="acc-first-name" class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">{{ t('settings.account.firstName') }}</label>
+                        <input pInputText id="acc-first-name" [(ngModel)]="firstName" class="w-full" />
                     </div>
                     <div>
-                        <label for="acc-last-name" class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.lastName') }}</label>
-                        <input
-                            pInputText
-                            id="acc-last-name"
-                            [(ngModel)]="lastName"
-                            class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
-                        />
+                        <label for="acc-last-name" class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">{{ t('settings.account.lastName') }}</label>
+                        <input pInputText id="acc-last-name" [(ngModel)]="lastName" class="w-full" />
                     </div>
                 </div>
 
-                <!-- Save Profile Button -->
                 @if (hasProfileChanges) {
-                    <div class="mb-6">
-                        <p-button
-                            [label]="t('common.save')"
-                            icon="pi pi-check"
-                            [loading]="isSaving()"
-                            (click)="saveProfile()"
-                        />
-                    </div>
+                    <button type="button" (click)="saveProfile()" [disabled]="isSaving()"
+                            class="omaad-cta inline-flex items-center gap-2 rounded-full px-6 py-2.5 text-sm disabled:opacity-60 cursor-pointer mb-6">
+                        <i class="pi text-xs" [ngClass]="isSaving() ? 'pi-spin pi-spinner' : 'pi-check'"></i>{{ t('common.save') }}
+                    </button>
                 }
 
-                <!-- Email Section -->
-                <div class="mb-6">
-                    <label class="block text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.account.myEmail') }}</label>
-                    <div class="flex items-center gap-4">
-                        <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ user()?.email }}</span>
-                    </div>
-                    <div class="mt-3 flex items-center gap-2">
+                <!-- Email -->
+                <div class="pt-5 border-t border-surface-100 dark:border-surface-800">
+                    <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">{{ t('settings.account.myEmail') }}</p>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <span class="text-base font-semibold text-surface-900 dark:text-surface-0 break-all">{{ user()?.email }}</span>
                         @if (user()?.is_verified) {
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-positive/10 text-positive-700 dark:text-positive-400 text-xs font-semibold">
-                                <i class="pi pi-check text-[10px]"></i>{{ t('settings.account.verified') }}
+                                <i class="pi pi-check-circle text-[11px]"></i>{{ t('settings.account.verified') }}
                             </span>
                         }
                         @if (user()?.auth_provider && user()?.auth_provider !== 'email') {
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-brand-300 text-xs font-semibold">
-                                <i class="pi pi-google text-[10px]"></i>via {{ user()?.auth_provider }}
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-brand-300 text-xs font-semibold capitalize">
+                                <i class="pi pi-google text-[11px]"></i>{{ user()?.auth_provider }}
                             </span>
                         }
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <p-divider />
-
-            <!-- Logout Section -->
-            <div class="relative my-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
-                <div class="flex items-center justify-between p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-sign-out text-brand-700 dark:text-ochre-400 text-xl"></i>
+            <!-- Session card -->
+            <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
+                <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.account.session') }}</h2>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-brand-700/10 dark:bg-ochre-400/10 flex items-center justify-center shrink-0">
+                            <i class="pi pi-sign-out text-brand-700 dark:text-ochre-400"></i>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.account.logout') }}</p>
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.account.logoutDesc') }}</p>
                         </div>
                     </div>
-                    <p-button 
-                        [label]="t('settings.account.logoutButton')"
-                        severity="secondary"
-                        [outlined]="true"
-                        icon="pi pi-sign-out"
-                        (click)="logout()"
-                    />
+                    <button type="button" (click)="logout()"
+                            class="omaad-secondary w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm cursor-pointer">
+                        <i class="pi pi-sign-out text-xs"></i>{{ t('settings.account.logoutButton') }}
+                    </button>
                 </div>
-            </div>
+            </section>
 
-            <p-divider />
-
-            <!-- Danger Zone -->
-            <div class="relative mt-8">
-                <h2 class="text-2xl font-semibold text-negative mb-4">{{ t('settings.account.deleteAccount') }}</h2>
-                <p class="text-surface-500 dark:text-surface-400 mb-4">
-                    {{ t('settings.account.deleteAccountDesc') }}
-                </p>
-                <p-button
-                    [label]="t('settings.account.deleteMyAccount')"
-                    severity="danger"
-                    [outlined]="true"
-                    styleClass="!text-negative-700 dark:!text-negative-400 !border-negative-700/60 dark:!border-negative-400/60"
-                    icon="pi pi-trash"
-                    (click)="confirmDeleteAccount()"
-                />
-            </div>
+            <!-- Danger zone card -->
+            <section class="rounded-2xl border border-negative/20 bg-negative/[0.03] dark:bg-negative/[0.06] p-6 md:p-7">
+                <h2 class="text-lg font-semibold text-negative mb-2">{{ t('settings.account.deleteAccount') }}</h2>
+                <p class="text-sm text-surface-500 dark:text-surface-400 mb-5 max-w-md">{{ t('settings.account.deleteAccountDesc') }}</p>
+                <button type="button" (click)="confirmDeleteAccount()"
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-negative border border-negative/40 hover:bg-negative/10 transition-colors cursor-pointer">
+                    <i class="pi pi-trash text-xs"></i>{{ t('settings.account.deleteMyAccount') }}
+                </button>
+            </section>
         </div>
     `
 })

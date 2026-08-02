@@ -726,6 +726,7 @@ export const FR = {
     },
     preferences: {
       title: 'Préférences',
+      regionTitle: 'Langue et région',
       language: 'Langue',
       currency: 'Devise',
       theme: 'Thème',

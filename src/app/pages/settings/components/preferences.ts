@@ -22,22 +22,22 @@ import { ApiService } from '../../../core/services/api.service';
     providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <div class="px-1">
-            <!-- Language & Region -->
-            <div class="relative mb-8">
-                <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.title') }}</h2>
+        <div class="max-w-2xl mx-auto pb-10">
+            <!-- Language & region card -->
+            <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
+                <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.regionTitle') }}</h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <!-- Language -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.language') }}</label>
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">{{ t('settings.preferences.language') }}</label>
                         <p-select
                             [(ngModel)]="selectedLanguage"
                             [options]="languages"
                             optionLabel="name"
                             optionValue="code"
                             class="w-full"
-                            styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
+                            styleClass="w-full"
                             (onChange)="onLanguageChange($event.value)"
                         >
                             <ng-template #selectedItem let-selected>
@@ -56,83 +56,81 @@ import { ApiService } from '../../../core/services/api.service';
                     </div>
 
                     <!-- Currency -->
-                    <div class="flex flex-col gap-1">
-                        <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.currency') }}</label>
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">{{ t('settings.preferences.currency') }}</label>
                         <p-select
                             [(ngModel)]="selectedCurrency"
                             [options]="currencies"
                             optionLabel="name"
                             optionValue="code"
                             class="w-full"
-                            styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none"
+                            styleClass="w-full"
                             (onChange)="onCurrencyChange($event.value)"
                         >
                             <ng-template #selectedItem let-selected>
                                 <div class="flex items-center gap-2" *ngIf="selected">
-                                    <span class="font-mono font-bold text-brand-700 dark:text-brand-300">{{ selected.symbol }}</span>
+                                    <span class="font-mono font-bold text-brand-700 dark:text-ochre-400">{{ selected.symbol }}</span>
                                     <span>{{ selected.name }}</span>
                                 </div>
                             </ng-template>
                             <ng-template #item let-currency>
                                 <div class="flex items-center gap-2">
-                                    <span class="font-mono font-bold text-brand-700 dark:text-brand-300">{{ currency.symbol }}</span>
+                                    <span class="font-mono font-bold text-brand-700 dark:text-ochre-400">{{ currency.symbol }}</span>
                                     <span>{{ currency.name }}</span>
                                 </div>
                             </ng-template>
                         </p-select>
-                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-1">{{ t('settings.preferences.fxReference') }}</p>
                     </div>
                 </div>
-            </div>
+                <p class="text-xs text-surface-400 dark:text-surface-500 mt-3">{{ t('settings.preferences.fxReference') }}</p>
+            </section>
 
-            <p-divider />
+            <!-- Theme card -->
+            <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
+                <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.theme') }}</h2>
 
-            <!-- Theme -->
-            <div class="relative mb-8">
-                <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-6">{{ t('settings.preferences.theme') }}</h2>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <!-- Light Theme -->
-                    <div
+                    <button type="button"
                         (click)="setTheme('light')"
-                        class="p-4 rounded-xl border-2 cursor-pointer transition-all"
-                        [ngClass]="isLightMode ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
+                        class="text-left p-3 rounded-2xl border cursor-pointer transition-all"
+                        [ngClass]="isLightMode ? 'border-ochre-500 ring-2 ring-ochre-500/20 bg-ochre-500/[0.04]' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
-                        <div class="w-full h-20 bg-white border border-surface-200 rounded-lg mb-3 flex items-center justify-center"><!-- dark-ok: light-theme preview tile -->
+                        <div class="w-full h-20 bg-white border border-surface-200 rounded-xl mb-3 flex items-center justify-center"><!-- dark-ok: light-theme preview tile -->
                             <i class="pi pi-sun text-2xl text-ochre-500"></i>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.lightMode') }}</span>
-                            <div *ngIf="isLightMode" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center">
+                            <span class="font-medium text-surface-900 dark:text-surface-0 text-sm">{{ t('settings.preferences.lightMode') }}</span>
+                            <div *ngIf="isLightMode" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center shrink-0">
                                 <i class="pi pi-check text-warm-900 text-xs"></i>
                             </div>
                         </div>
-                    </div>
+                    </button>
 
                     <!-- Dark Theme -->
-                    <div
+                    <button type="button"
                         (click)="setTheme('dark')"
-                        class="p-4 rounded-xl border-2 cursor-pointer transition-all"
-                        [ngClass]="isDarkModeSelected ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
+                        class="text-left p-3 rounded-2xl border cursor-pointer transition-all"
+                        [ngClass]="isDarkModeSelected ? 'border-ochre-500 ring-2 ring-ochre-500/20 bg-ochre-500/[0.04]' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
-                        <div class="w-full h-20 bg-warm-900 border border-warm-700 rounded-lg mb-3 flex items-center justify-center">
+                        <div class="w-full h-20 bg-warm-900 border border-warm-700 rounded-xl mb-3 flex items-center justify-center">
                             <i class="pi pi-moon text-2xl text-brand-300"></i>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.darkMode') }}</span>
-                            <div *ngIf="isDarkModeSelected" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center">
+                            <span class="font-medium text-surface-900 dark:text-surface-0 text-sm">{{ t('settings.preferences.darkMode') }}</span>
+                            <div *ngIf="isDarkModeSelected" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center shrink-0">
                                 <i class="pi pi-check text-warm-900 text-xs"></i>
                             </div>
                         </div>
-                    </div>
+                    </button>
 
                     <!-- System Theme -->
-                    <div
+                    <button type="button"
                         (click)="setTheme('system')"
-                        class="p-4 rounded-xl border-2 cursor-pointer transition-all"
-                        [ngClass]="isSystemMode ? 'border-ochre-500 bg-ochre-500/5' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
+                        class="text-left p-3 rounded-2xl border cursor-pointer transition-all"
+                        [ngClass]="isSystemMode ? 'border-ochre-500 ring-2 ring-ochre-500/20 bg-ochre-500/[0.04]' : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'"
                     >
-                        <div class="w-full h-20 rounded-lg mb-3 overflow-hidden flex border border-surface-200 dark:border-surface-700">
+                        <div class="w-full h-20 rounded-xl mb-3 overflow-hidden flex border border-surface-200 dark:border-surface-700">
                             <div class="w-1/2 bg-white flex items-center justify-center"><!-- dark-ok: system-theme preview tile -->
                                 <i class="pi pi-sun text-xl text-ochre-500"></i>
                             </div>
@@ -141,42 +139,44 @@ import { ApiService } from '../../../core/services/api.service';
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.systemMode') }}</span>
-                            <div *ngIf="isSystemMode" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center">
+                            <span class="font-medium text-surface-900 dark:text-surface-0 text-sm">{{ t('settings.preferences.systemMode') }}</span>
+                            <div *ngIf="isSystemMode" class="w-5 h-5 rounded-full bg-ochre-500 flex items-center justify-center shrink-0">
                                 <i class="pi pi-check text-warm-900 text-xs"></i>
                             </div>
                         </div>
-                    </div>
+                    </button>
                 </div>
-            </div>
-
-            <p-divider />
+            </section>
 
             <!-- Notifications moved to their own Settings page (S9-B3):
                  /settings/notifications, one surface per concern. -->
 
-            <!-- Data Export -->
-            <div class="relative">
-                <div class="flex items-center gap-3 mb-6">
-                    <h2 class="text-2xl font-semibold text-surface-900 dark:text-surface-0">{{ t('settings.preferences.data') }}</h2>
-                </div>
+            <!-- Data card -->
+            <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7">
+                <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-4">{{ t('settings.preferences.data') }}</h2>
 
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-download text-brand-700 dark:text-ochre-400 text-xl"></i>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-brand-700/10 dark:bg-ochre-400/10 flex items-center justify-center shrink-0">
+                            <i class="pi pi-download text-brand-700 dark:text-ochre-400"></i>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.preferences.exportData') }}</p>
                             <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.exportDataDesc') }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-2 shrink-0">
-                        <p-button [label]="'CSV'" icon="pi pi-file" [outlined]="true" [loading]="exporting()" (click)="downloadCsv()" />
-                        <p-button [label]="'JSON'" icon="pi pi-download" [outlined]="true" [loading]="exporting()" (click)="downloadJson()" />
+                    <div class="flex gap-2.5 shrink-0">
+                        <button type="button" (click)="downloadCsv()" [disabled]="exporting()"
+                                class="omaad-secondary flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm cursor-pointer disabled:opacity-50">
+                            <i class="pi text-xs" [ngClass]="exporting() ? 'pi-spin pi-spinner' : 'pi-file'"></i>CSV
+                        </button>
+                        <button type="button" (click)="downloadJson()" [disabled]="exporting()"
+                                class="omaad-secondary flex-1 sm:flex-none inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm cursor-pointer disabled:opacity-50">
+                            <i class="pi text-xs" [ngClass]="exporting() ? 'pi-spin pi-spinner' : 'pi-download'"></i>JSON
+                        </button>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     `
 })
