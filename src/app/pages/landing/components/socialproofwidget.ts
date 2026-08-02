@@ -23,8 +23,8 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </h2>
                 </div>
 
-                <!-- 4 counters -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                <!-- 3 counters -->
+                <div class="grid grid-cols-3 gap-4 md:gap-8">
                     @for (stat of stats; track stat.valueKey) {
                         <div class="text-center group">
                             <div class="text-4xl md:text-5xl font-bold mb-2 tabular-nums"
@@ -55,7 +55,6 @@ export class SocialProofWidget implements AfterViewInit, OnDestroy {
     readonly stats = [
         { valueKey: 'landing.socialProof.stat1Value', labelKey: 'landing.socialProof.stat1Label', highlight: false },
         { valueKey: 'landing.socialProof.stat2Value', labelKey: 'landing.socialProof.stat2Label', highlight: false },
-        { valueKey: 'landing.socialProof.stat3Value', labelKey: 'landing.socialProof.stat3Label', highlight: false },
         { valueKey: 'landing.socialProof.stat4Value', labelKey: 'landing.socialProof.stat4Label', highlight: true },
     ];
 

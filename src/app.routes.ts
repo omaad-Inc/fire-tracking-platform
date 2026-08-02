@@ -98,6 +98,11 @@ export const appRoutes: Routes = [
         ],
     },
 
+    // Post-registration onboarding (full-screen, no app shell). Behind authGuard
+    // because the user is already signed in (token minted at verify-code / OAuth).
+    // Reached only at account creation; returning users never land here.
+    { path: ':lang/welcome', loadComponent: () => import('./app/pages/auth/welcome').then(m => m.Welcome), canActivate: [authGuard] },
+
     // Main app with layout (protected routes)
     {
         path: ':lang',
