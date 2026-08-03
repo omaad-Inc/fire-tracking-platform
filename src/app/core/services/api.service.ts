@@ -5,6 +5,7 @@ import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ShareContextService, PublicPortfolioBundle } from './share-context.service';
 import { User, NOTIF_PREFS_CACHE_KEY } from './token.service';
+import { FeedbackRating, FeedbackReason } from '../ai/chat-events';
 
 // ============================================
 // ASSET INTERFACES
@@ -881,6 +882,22 @@ export class ApiService {
     /** Capture a pre-launch waitlist email (public funnel). Idempotent server-side. */
     submitLead(email: string, source: string, locale: string): Observable<{ ok: boolean }> {
         return this.http.post<{ ok: boolean }>(`${this.apiUrl}/leads`, { email, source, locale });
+    }
+
+    // ========== AI ASSISTANT FEEDBACK (S12 task 2.9) ==========
+    /**
+     * Record a 👍/👎 on one assistant message. Owner-scoped server-side (JWT);
+     * upserts by (user, message id) so toggling overwrites. `reason` is only
+     * meaningful on a 👎. No message text is sent.
+     */
+    postAssistantFeedback(
+        clientMessageId: string, rating: FeedbackRating, reason?: FeedbackReason,
+    ): Observable<{ ok: boolean; rating: FeedbackRating; reason: FeedbackReason | null }> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<{ ok: boolean; rating: FeedbackRating; reason: FeedbackReason | null }>(
+            `${this.apiUrl}/agents/feedback`,
+            { client_message_id: clientMessageId, rating, reason: reason ?? null },
+        );
     }
 
     // ========== NEWSLETTER (FIRE Africa, public, no auth) ==========

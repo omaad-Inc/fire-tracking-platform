@@ -5,7 +5,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { I18nService } from '../../../i18n/i18n.service';
 import { ChatSessionService } from '../../../core/ai/chat-session.service';
-import { ChatMessageVM } from '../../../core/ai/chat-events';
+import { ChatMessageVM, FeedbackReason } from '../../../core/ai/chat-events';
 import { MarkdownLitePipe } from './markdown-lite.pipe';
 import { ToolCallCardComponent } from './tool-call-card';
 import { NoticeStripComponent } from './notice-strip';
@@ -80,6 +80,53 @@ interface ThreadItem {
                                     <span class="text-xs text-surface-400 dark:text-surface-500">{{ thinkingLabel(item.msg!) }}</span>
                                 </div>
                             }
+
+                            <!-- 👍/👎 feedback (task 2.9): discreet, on completed advisor answers -->
+                            @if (showFeedback(item.msg!)) {
+                                <div class="flex flex-col gap-1 mt-0.5 pl-0.5">
+                                    <div class="flex items-center gap-0.5">
+                                        <button type="button"
+                                                class="p-1 rounded-md text-surface-400 hover:text-surface-600 hover:bg-surface-100
+                                                       dark:text-surface-500 dark:hover:text-surface-300 dark:hover:bg-surface-800 transition-colors"
+                                                [class.!text-brand-600]="item.msg!.feedback === 'up'"
+                                                [class.dark:!text-brand-400]="item.msg!.feedback === 'up'"
+                                                [attr.aria-label]="t('assistant.feedback.helpful')"
+                                                [attr.aria-pressed]="item.msg!.feedback === 'up'"
+                                                (click)="rateUp(item.msg!)">
+                                            <i class="pi pi-thumbs-up" style="font-size: 13px" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button"
+                                                class="p-1 rounded-md text-surface-400 hover:text-surface-600 hover:bg-surface-100
+                                                       dark:text-surface-500 dark:hover:text-surface-300 dark:hover:bg-surface-800 transition-colors"
+                                                [class.!text-ochre-600]="item.msg!.feedback === 'down'"
+                                                [class.dark:!text-ochre-500]="item.msg!.feedback === 'down'"
+                                                [attr.aria-label]="t('assistant.feedback.notHelpful')"
+                                                [attr.aria-pressed]="item.msg!.feedback === 'down'"
+                                                (click)="rateDown(item.msg!)">
+                                            <i class="pi pi-thumbs-down" style="font-size: 13px" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                    <!-- 👎 mini-form: reason chips -->
+                                    @if (openReasonFor() === item.msg!.id) {
+                                        <div class="flex flex-wrap items-center gap-1.5 pt-0.5" role="group"
+                                             [attr.aria-label]="t('assistant.feedback.reasonPrompt')">
+                                            <span class="text-[11px] text-surface-400 dark:text-surface-500">{{ t('assistant.feedback.reasonPrompt') }}</span>
+                                            @for (r of reasons; track r) {
+                                                <button type="button"
+                                                        class="text-[11px] px-2 py-0.5 rounded-full border transition-colors
+                                                               border-surface-200 text-surface-500 hover:bg-surface-100
+                                                               dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-800"
+                                                        [class.!border-ochre-400]="item.msg!.feedbackReason === r"
+                                                        [class.!text-ochre-600]="item.msg!.feedbackReason === r"
+                                                        [class.dark:!text-ochre-400]="item.msg!.feedbackReason === r"
+                                                        (click)="pickReason(item.msg!, r)">
+                                                    {{ t('assistant.feedback.reason.' + r) }}
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
                         </div>
                     }
                 }
@@ -129,6 +176,10 @@ export class ChatThreadComponent {
     private atBottom = signal(true);
     readonly showPill = signal(false);
 
+    /** id of the message whose 👎 reason mini-form is open (one at a time). */
+    readonly openReasonFor = signal<string | null>(null);
+    readonly reasons: FeedbackReason[] = ['wrong_number', 'wrong_tone', 'off_topic', 'other'];
+
     readonly items = computed<ThreadItem[]>(() => {
         const lang = this.i18n.lang();
         const out: ThreadItem[] = [];
@@ -170,6 +221,33 @@ export class ChatThreadComponent {
         const key = `assistant.agentThinking.${msg.agent}`;
         const label = this.t(key);
         return label === key ? this.t('assistant.thinking') : label;
+    }
+
+    // ─── Feedback (task 2.9) ────────────────────────────────────────────────
+
+    /** Show 👍/👎 only on a finished advisor answer that actually has text. */
+    showFeedback(msg: ChatMessageVM): boolean {
+        if (msg.role !== 'assistant' || msg.agent !== 'assistant') return false;
+        const msgs = this.svc.messages();
+        const isTail = msgs[msgs.length - 1] === msg;
+        if (isTail && this.svc.streaming()) return false; // wait until the turn closes
+        return msg.blocks?.some((b) => b.kind === 'text') ?? false;
+    }
+
+    rateUp(msg: ChatMessageVM): void {
+        this.svc.sendFeedback(msg.id, 'up');
+        this.openReasonFor.set(null);
+    }
+
+    /** A 👎 records immediately AND opens the reason mini-form to refine it. */
+    rateDown(msg: ChatMessageVM): void {
+        this.svc.sendFeedback(msg.id, 'down', msg.feedbackReason);
+        this.openReasonFor.set(msg.id);
+    }
+
+    pickReason(msg: ChatMessageVM, reason: FeedbackReason): void {
+        this.svc.sendFeedback(msg.id, 'down', reason);
+        this.openReasonFor.set(null);
     }
 
     onScroll(): void {

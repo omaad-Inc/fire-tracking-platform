@@ -1,9 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { CHAT_STREAM_DRIVER, ChatTurnHandle } from './chat-stream-driver';
 import {
-    AssistantBlock, ChatMessageVM, ChatStreamEvent, ToolCardVM,
+    AssistantBlock, ChatMessageVM, ChatStreamEvent, FeedbackRating, FeedbackReason, ToolCardVM,
 } from './chat-events';
 import { AssetsStateService } from '../../pages/service/assets-state.service';
+import { ApiService } from '../services/api.service';
 import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service';
 
 /**
@@ -32,6 +33,7 @@ export class ChatSessionService {
     private driver = inject(CHAT_STREAM_DRIVER);
     private assetsState = inject(AssetsStateService);
     private tokens = inject(TokenService);
+    private api = inject(ApiService);
 
     readonly messages = signal<ChatMessageVM[]>(this.restore());
     /** True while a turn is streaming (input disabled, Stop visible). */
@@ -98,6 +100,30 @@ export class ChatSessionService {
             },
             () => this.updateCard(cardId, (c) => ({ ...c, state: 'done' })),
         );
+    }
+
+    /**
+     * Record a 👍/👎 on one assistant message (task 2.9). Optimistic and
+     * best-effort: the UI reflects the choice immediately and the POST is
+     * fire-and-forget (reverting only on failure). `reason` refines a 👎.
+     */
+    sendFeedback(messageId: string, rating: FeedbackRating, reason?: FeedbackReason): void {
+        const prev = this.messages().find((m) => m.id === messageId);
+        if (!prev || prev.role !== 'assistant') return;
+        // Toggling the same 👍 off is not a thing here: a rating is sticky, and a
+        // re-tap of the same thumb just re-affirms it (idempotent server-side).
+        const nextReason = rating === 'down' ? reason : undefined;
+        this.patchMessage(messageId, (m) => ({ ...m, feedback: rating, feedbackReason: nextReason }));
+        this.persist();
+        this.api.postAssistantFeedback(messageId, rating, nextReason).subscribe({
+            error: () => {
+                // Feedback is non-critical: on failure, roll back to the prior state.
+                this.patchMessage(messageId, (m) => ({
+                    ...m, feedback: prev.feedback, feedbackReason: prev.feedbackReason,
+                }));
+                this.persist();
+            },
+        });
     }
 
     /** Retry after an error bubble: resend the last user message. */
@@ -264,6 +290,16 @@ export class ChatSessionService {
         const last = msgs[msgs.length - 1];
         if (!last || last.role !== 'assistant') return;
         this.messages.set([...msgs.slice(0, -1), fn(last)]);
+    }
+
+    /** Immutable update of a specific message by id (used by feedback). */
+    private patchMessage(id: string, fn: (m: ChatMessageVM) => ChatMessageVM): void {
+        const msgs = this.messages();
+        const idx = msgs.findIndex((m) => m.id === id);
+        if (idx === -1) return;
+        const next = [...msgs];
+        next[idx] = fn(msgs[idx]);
+        this.messages.set(next);
     }
 
     private pushBlock(block: AssistantBlock): void {

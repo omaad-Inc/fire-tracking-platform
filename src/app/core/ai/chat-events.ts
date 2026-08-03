@@ -62,6 +62,10 @@ export type AssistantBlock =
     | { kind: 'notice'; notice: NoticeVM }
     | { kind: 'error'; code: string; message: string };
 
+/** 👍/👎 on an assistant message (task 2.9). Matches the backend enums. */
+export type FeedbackRating = 'up' | 'down';
+export type FeedbackReason = 'wrong_number' | 'wrong_tone' | 'off_topic' | 'other';
+
 export interface ChatMessageVM {
     id: string;
     role: 'user' | 'assistant';
@@ -71,4 +75,8 @@ export interface ChatMessageVM {
     text?: string;
     blocks?: AssistantBlock[];
     agent?: ChatAgent;
+    /** 👍/👎 the user gave this message; persisted with the thread (task 2.9). */
+    feedback?: FeedbackRating;
+    /** Reason picked on a 👎 (optional refinement). */
+    feedbackReason?: FeedbackReason;
 }
