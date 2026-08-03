@@ -360,6 +360,19 @@ export const EN: Dict = {
       assistant: 'The assistant is thinking…',
       onboarding: 'Getting to know you…',
     },
+    feedback: {
+      helpful: 'Helpful answer',
+      notHelpful: 'Unhelpful answer',
+      reasonPrompt: 'What went wrong?',
+      dismiss: 'Dismiss',
+      thanks: 'Thanks for the feedback',
+      reason: {
+        wrong_number: 'Wrong number',
+        wrong_tone: 'Wrong tone',
+        off_topic: 'Off-topic',
+        other: 'Other',
+      },
+    },
     card: {
       running: 'In progress…',
       undoing: 'Undoing…',
@@ -400,6 +413,17 @@ export const EN: Dict = {
       starter2: 'Add my salary of 850,000 FCFA',
       starter3: 'I want to reach 30 million in savings',
       starter4: 'Am I well diversified?',
+    },
+    // Advice-led variant, shown once the user already has a portfolio: the
+    // advisor is the valuable action for them, but a recording example stays
+    // the top suggestion (both agents share this panel).
+    emptyReturning: {
+      title: 'Record something, or ask for advice',
+      subtitle: 'Add an entry in plain language, or ask me about your wealth: I answer with your numbers.',
+      starter1: 'Add a 25,000 FCFA groceries expense',
+      starter2: 'Am I well diversified?',
+      starter3: 'Where is my money going this month?',
+      starter4: 'What should I do to reach my goal?',
     },
   },
   goals: {

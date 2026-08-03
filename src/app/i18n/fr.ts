@@ -358,6 +358,19 @@ export const FR = {
       assistant: 'L\'assistant réfléchit…',
       onboarding: 'On fait connaissance…',
     },
+    feedback: {
+      helpful: 'Réponse utile',
+      notHelpful: 'Réponse peu utile',
+      reasonPrompt: 'Qu\'est-ce qui n\'allait pas ?',
+      dismiss: 'Fermer',
+      thanks: 'Merci pour ton retour',
+      reason: {
+        wrong_number: 'Chiffre erroné',
+        wrong_tone: 'Ton inadapté',
+        off_topic: 'Hors-sujet',
+        other: 'Autre',
+      },
+    },
     card: {
       running: 'En cours…',
       undoing: 'Annulation en cours…',
@@ -398,6 +411,17 @@ export const FR = {
       starter2: 'Ajoute mon salaire de 850 000 FCFA',
       starter3: 'Je veux atteindre 30 millions d\'épargne',
       starter4: 'Est-ce que je suis bien diversifié ?',
+    },
+    // Advice-led variant, shown once the user already has a portfolio: the
+    // advisor is the valuable action for them, but a recording example stays
+    // the top suggestion (both agents share this panel).
+    emptyReturning: {
+      title: 'Enregistre, ou demande-moi un conseil',
+      subtitle: 'Ajoute une opération en langage courant, ou pose-moi une question sur ton patrimoine : je réponds avec tes chiffres.',
+      starter1: 'Ajoute une dépense de 25 000 FCFA en courses',
+      starter2: 'Est-ce que je suis bien diversifié ?',
+      starter3: 'Où part mon argent ce mois-ci ?',
+      starter4: 'Que faire pour avancer vers mon objectif ?',
     },
   },
   goals: {
