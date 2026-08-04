@@ -6,43 +6,43 @@ import { TokenService } from '../../core/services/token.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { DashboardService } from '../service/dashboard.service';
 import { AssetsStateService } from '../service/assets-state.service';
-import { SseChatDriver } from '../../core/ai/sse-chat-driver';
 import { ApiService } from '../../core/services/api.service';
-import { ChatStreamEvent } from '../../core/ai/chat-events';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 /**
- * The first-run concierge (S12 Phase 6): renders the tap-first beats and drives
- * the SSE transport with context={onboarding:true,...}, advancing a beat only
- * when its expected tool_result(ok) lands (so turns stay serialized).
+ * The first-run concierge (S12 Phase 6): tap-first with DETERMINISTIC writes.
+ * Each beat calls POST /agents/onboarding/action (ApiService.onboardingAction) —
+ * no LLM in the write path — so a tap always produces the intended write. These
+ * tests assert the beat machine advances on ok and never dead-ends on failure.
  */
 describe('OnboardingPage (concierge)', () => {
     let navigate: jasmine.Spy;
-    let lastStart: { message: string; onEvent: (e: ChatStreamEvent) => void; onClose: () => void; context?: any };
+    let action: jasmine.Spy;
+    // Per-test override: return an error result (or throw) for a given tool.
+    let failTool: string | null;
+    let throwTool: string | null;
 
-    const fakeDriver = {
-        startTurn: (message: string, onEvent: any, onClose: any, context?: any) => {
-            lastStart = { message, onEvent, onClose, context };
-            return { cancel: () => {} };
-        },
-    };
+    const tick = async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); };
 
     async function setup() {
         navigate = jasmine.createSpy('navigate');
+        failTool = null;
+        throwTool = null;
+        action = jasmine.createSpy('onboardingAction').and.callFake((tool: string) => {
+            if (throwTool === tool) return throwError(() => new Error('net'));
+            if (failTool === tool) return of({ status: 'error', summary: 'x' });
+            return of({ status: 'ok', summary: 'ok', undo_token: tool === 'create_asset' ? 'assets/1' : null });
+        });
         TestBed.configureTestingModule({
             imports: [OnboardingPage],
             providers: [
-                { provide: TokenService, useValue: { user: () => ({ first_name: 'Awa' }) } },
+                { provide: TokenService, useValue: { user: () => ({ first_name: 'Luffy' }) } },
                 { provide: Router, useValue: { url: '/fr/onboarding', navigate } },
                 { provide: CurrencyService, useValue: { convert: (e: number) => e, formatDisplayNumber: (v: number) => `${Math.round(v)} FCFA` } },
                 { provide: DashboardService, useValue: { loadDashboard: () => Promise.resolve(), summaryData: () => ({ total_assets: 500000, total_debts: 0 }) } },
                 { provide: AssetsStateService, useValue: { notifyAssetsUpdated: () => {} } },
-                { provide: ApiService, useValue: { warmOnboarding: () => of({ warmed: true }) } },
+                { provide: ApiService, useValue: { warmOnboarding: () => of({ warmed: true }), onboardingAction: action } },
             ],
-        });
-        // The component provides its OWN SseChatDriver; override it with the fake.
-        TestBed.overrideComponent(OnboardingPage, {
-            set: { providers: [{ provide: SseChatDriver, useValue: fakeDriver }] },
         });
         await TestBed.inject(I18nService).loadLang('fr');
         const fixture = TestBed.createComponent(OnboardingPage);
@@ -55,77 +55,78 @@ describe('OnboardingPage (concierge)', () => {
     it('renders the currency beat with both chips and greets by first name', async () => {
         const fixture = await setup();
         const text = (fixture.nativeElement as HTMLElement).textContent || '';
-        expect(text).toContain('Awa');
+        expect(text).toContain('Luffy');
         expect(text).toContain('FCFA (XOF)');
         expect(text).toContain('Euro (EUR)');
     });
 
-    it('sends the onboarding-surface context and advances to the asset beat on the currency write', async () => {
+    it('currency tap advances to the asset beat instantly and writes the currency', async () => {
         const fixture = await setup();
         const cmp = fixture.componentInstance;
 
         cmp.pickCurrency('XOF');
-        expect(lastStart.context?.onboarding).toBe(true);
-        expect(lastStart.context?.first_name).toBe('Awa');
-        expect(lastStart.message).toContain('XOF');
-        expect(cmp.streaming()).toBe(true);
-
-        // The agent calls update_user_ai_profile and it succeeds.
-        lastStart.onEvent({ type: 'tool_use', tool: 'update_user_ai_profile', args_preview: '', card_id: 'c1' });
-        lastStart.onEvent({ type: 'tool_result', card_id: 'c1', status: 'ok', summary: 'ok' });
+        // Optimistic + instant: no waiting on the (fire-and-forget) write.
         expect(cmp.beat()).toBe('asset');
-
-        lastStart.onClose();
-        expect(cmp.streaming()).toBe(false);
+        expect(action).toHaveBeenCalledWith('update_user_ai_profile', { preferred_currency: 'XOF' });
     });
 
-    it('reveals net worth after the first asset, then reaches done + navigates on handoff', async () => {
+    it('adds one asset, reveals net worth, then reaches done and navigates on handoff', async () => {
         const fixture = await setup();
         const cmp = fixture.componentInstance;
 
-        // Jump to the asset beat and add one via a tile.
         cmp.beat.set('asset');
         cmp.selectTile({ key: 'wave', label: 'Wave', category: 'mobile_money', icon: 'pi-wallet' } as any);
         cmp.assetName.set('Wave');
         cmp.assetAmount.set(500000);
         cmp.submitAsset();
-        expect(lastStart.message).toContain('mobile_money');
-
-        const assetTurn = lastStart;
-        assetTurn.onEvent({ type: 'tool_use', tool: 'create_asset', args_preview: '', card_id: 'a1' });
-        assetTurn.onEvent({ type: 'tool_result', card_id: 'a1', status: 'ok', summary: 'Wave', undo_token: 'assets/1' });
-        await Promise.resolve(); await Promise.resolve(); // let reveal()'s awaited loadDashboard settle
+        await tick(); // let the awaited onboardingAction + reveal settle
+        expect(action).toHaveBeenCalledWith('create_asset', {
+            name: 'Wave', category: 'mobile_money', current_value: 500000, currency: 'XOF',
+        });
         expect(cmp.addedCount()).toBe(1);
         expect(cmp.beat()).toBe('reveal');
-        assetTurn.onClose(); // the asset turn ends -> streaming resets so the next tap works
 
-        // Continue -> objective -> pick -> handoff.
         cmp.goObjective();
         expect(cmp.beat()).toBe('objective');
         cmp.pickObjective({ key: 'financial_freedom', label: 'Liberté financière' } as any);
-        const objTurn = lastStart;
-        objTurn.onEvent({ type: 'tool_use', tool: 'update_user_ai_profile', args_preview: '', card_id: 'o1' });
-        objTurn.onEvent({ type: 'tool_result', card_id: 'o1', status: 'ok', summary: 'ok' });
-        // The objective write triggers the handoff: beat -> done and a new turn starts.
-        expect(cmp.beat()).toBe('done');
-
-        // Handoff turn completes -> navigate to the dashboard.
-        const handoffTurn = lastStart;
-        handoffTurn.onEvent({ type: 'tool_use', tool: 'mark_onboarding_complete', args_preview: '', card_id: 'h1' });
-        handoffTurn.onEvent({ type: 'tool_result', card_id: 'h1', status: 'ok', summary: 'done' });
+        expect(cmp.beat()).toBe('done'); // optimistic
+        await tick(); // objective write + handoff (mark_complete) + navigate
+        expect(action).toHaveBeenCalledWith('update_user_ai_profile', { objective: 'financial_freedom' });
+        expect(action).toHaveBeenCalledWith('mark_onboarding_complete', {});
         expect(navigate).toHaveBeenCalledWith(['/', 'fr'], { replaceUrl: true });
     });
 
-    it('surfaces a gentle error when a turn fails, without dead-ending', async () => {
+    it('surfaces a gentle error (with retry) when the asset write fails, without dead-ending', async () => {
         const fixture = await setup();
         const cmp = fixture.componentInstance;
-        cmp.pickCurrency('EUR');
-        // Optimistic: the screen advances to the asset beat immediately; the write
-        // runs in the background.
-        expect(cmp.beat()).toBe('asset');
-        lastStart.onEvent({ type: 'error', code: 'ai_unavailable', message: 'x' });
-        // A gentle error is surfaced with a retry (not a dead-end); currency is
-        // stored locally, so the user can still proceed.
+        failTool = 'create_asset';
+
+        cmp.beat.set('asset');
+        cmp.selectTile({ key: 'wave', label: 'Wave', category: 'mobile_money', icon: 'pi-wallet' } as any);
+        cmp.assetName.set('Wave');
+        cmp.assetAmount.set(500000);
+        cmp.submitAsset();
+        await tick();
+        // Stays on the asset beat with an inline error + retry, not a dead-end.
         expect(cmp.error()).toBeTruthy();
+        expect(cmp.beat()).toBe('asset');
+
+        // Retry now succeeds -> reveal.
+        failTool = null;
+        cmp.retry();
+        await tick();
+        expect(cmp.beat()).toBe('reveal');
+        expect(cmp.error()).toBeNull();
+    });
+
+    it('handoff still navigates even if mark_onboarding_complete fails (never strands)', async () => {
+        const fixture = await setup();
+        const cmp = fixture.componentInstance;
+        throwTool = 'mark_onboarding_complete';
+
+        cmp.beat.set('objective');
+        cmp.finishNoObjective();
+        await tick();
+        expect(navigate).toHaveBeenCalledWith(['/', 'fr'], { replaceUrl: true });
     });
 });
