@@ -51,7 +51,23 @@ export class ChatSessionService {
     send(text: string): void {
         const trimmed = text.trim();
         if (!trimmed || this.inputLocked()) return;
+        // Sending during the undo window commits the fresh thread: reset the
+        // server side and start the turn ONLY once it lands, so there is no race
+        // between the DB reset and this turn reading the (old) window.
+        if (this.resetTimer !== null) {
+            clearTimeout(this.resetTimer);
+            this.resetTimer = null;
+            this.stashed = null;
+            this.api.resetConversation().subscribe({
+                next: () => this.doSend(trimmed),
+                error: () => this.doSend(trimmed), // fail-open: still send
+            });
+            return;
+        }
+        this.doSend(trimmed);
+    }
 
+    private doSend(trimmed: string): void {
         // Offline short-circuit: degraded bubble, no turn started.
         if (typeof navigator !== 'undefined' && navigator.onLine === false) {
             this.append({ id: nextId(), role: 'user', ts: Date.now(), text: trimmed });
@@ -148,6 +164,56 @@ export class ChatSessionService {
         this.messages.set([]);
         this.pendingConfirm.set(null);
         this.persist();
+    }
+
+    // ─── New conversation (start fresh) ──────────────────────────────────────
+    /** Delayed backend reset + stashed messages, so "New conversation" is
+     *  instant yet undoable: the server-side reset only fires once the undo
+     *  window closes (or the next send), and undo restores the local thread
+     *  because the backend was never touched. */
+    private resetTimer: ReturnType<typeof setTimeout> | null = null;
+    private stashed: ChatMessageVM[] | null = null;
+    private static readonly UNDO_MS = 6000;
+
+    /**
+     * "New conversation": clear the visible thread instantly and schedule a
+     * true server-side reset (DB window + rolling summary + Config gather). The
+     * agent keeps no stale memory once it commits. Returns nothing; the caller
+     * shows an undo affordance and calls undoNewConversation() to revert.
+     */
+    newConversation(): void {
+        this.flushPendingReset();   // commit any earlier pending reset first
+        this.stashed = this.messages();
+        this.clear();
+        this.streaming.set(false);
+        this.resetTimer = setTimeout(() => this.commitReset(), ChatSessionService.UNDO_MS);
+    }
+
+    /** Undo a just-started new conversation (within the window): restore the
+     *  local thread; the backend was never reset, so context is intact. */
+    undoNewConversation(): boolean {
+        if (this.resetTimer === null) return false;
+        clearTimeout(this.resetTimer);
+        this.resetTimer = null;
+        if (this.stashed) { this.messages.set(this.stashed); this.persist(); }
+        this.stashed = null;
+        return true;
+    }
+
+    /** Fire the server-side reset now and drop the undo window. */
+    private commitReset(): void {
+        this.resetTimer = null;
+        this.stashed = null;
+        this.api.resetConversation().subscribe({ error: () => { /* local clear stands */ } });
+    }
+
+    /** If a reset is pending, commit it immediately (e.g. the user sends before
+     *  the undo window closes, so the new turn must start from a fresh thread). */
+    private flushPendingReset(): void {
+        if (this.resetTimer !== null) {
+            clearTimeout(this.resetTimer);
+            this.commitReset();
+        }
     }
 
     /** Dev switch: seed a two-day-old exchange so day separators are demoable. */

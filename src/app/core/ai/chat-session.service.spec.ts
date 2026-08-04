@@ -5,6 +5,8 @@ import { CHAT_STREAM_DRIVER, ChatStreamDriver, ChatTurnHandle } from './chat-str
 import { ChatStreamEvent, ToolCardVM } from './chat-events';
 import { AssetsStateService } from '../../pages/service/assets-state.service';
 import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service';
+import { ApiService } from '../services/api.service';
+import { of } from 'rxjs';
 
 /** Remove every chat-thread key so a persisted thread never leaks between tests. */
 function clearThreads(): void {
@@ -308,5 +310,53 @@ describe('ChatSessionService (per-user thread isolation)', () => {
         svc.seedHistory('fr');
         expect(svc.messages().length).toBeGreaterThan(0); // in memory
         expect(localStorage.getItem(P)).toBeNull();        // but nothing persisted globally
+    });
+});
+
+describe('ChatSessionService (new conversation)', () => {
+    let svc: ChatSessionService;
+    let driver: FakeDriver;
+    let api: { resetConversation: jasmine.Spy };
+
+    beforeEach(() => {
+        clearThreads();
+        driver = new FakeDriver();
+        api = { resetConversation: jasmine.createSpy('resetConversation').and.returnValue(of({ ok: true })) };
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                ChatSessionService,
+                { provide: CHAT_STREAM_DRIVER, useValue: driver },
+                { provide: ApiService, useValue: api },
+            ],
+        });
+        svc = TestBed.inject(ChatSessionService);
+    });
+
+    afterEach(() => clearThreads());
+
+    it('clears the visible thread instantly but DELAYS the server reset (undo window)', () => {
+        svc.send('bonjour');
+        expect(svc.messages().length).toBeGreaterThan(0);
+        svc.newConversation();
+        expect(svc.messages()).toEqual([]);
+        expect(api.resetConversation).not.toHaveBeenCalled(); // delayed, not fired yet
+    });
+
+    it('undo restores the thread and never resets the server', () => {
+        svc.send('bonjour');
+        const before = svc.messages().length;
+        svc.newConversation();
+        expect(svc.undoNewConversation()).toBeTrue();
+        expect(svc.messages().length).toBe(before);
+        expect(api.resetConversation).not.toHaveBeenCalled();
+    });
+
+    it('committing (sending in the window) resets the server exactly once, first', () => {
+        svc.send('bonjour');
+        svc.newConversation();
+        expect(api.resetConversation).not.toHaveBeenCalled();
+        svc.send('nouvelle question'); // send flushes the pending reset before the turn
+        expect(api.resetConversation).toHaveBeenCalledTimes(1);
     });
 });
