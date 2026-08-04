@@ -215,6 +215,7 @@ export class Settings implements OnInit, OnDestroy {
         { key: 'connections',   icon: 'pi-link',   label: () => this.t('settings.myConnections') },
         { key: 'preferences',   icon: 'pi-cog',    label: () => this.t('menu.preferences') },
         { key: 'notifications', icon: 'pi-bell',   label: () => this.t('menu.notifications') },
+        { key: 'subscription',  icon: 'pi-credit-card', label: () => this.t('menu.subscription') },
         { key: 'help',          icon: 'pi-question-circle', label: () => this.t('settings.getHelp') },
     ];
     /** Home-menu rows ("Mon Omaad" group): everything except help, which has its own group. */

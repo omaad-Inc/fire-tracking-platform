@@ -5,6 +5,7 @@ import { SecuritySettings } from './components/security';
 import { ConnectionsSettings } from './components/connections';
 import { PreferencesSettings } from './components/preferences';
 import { NotificationsSettings } from './components/notifications';
+import { SubscriptionSettings } from './components/subscription';
 import { HelpSettings } from './components/help';
 
 // Settings shell (S9 redesign, Finary-benchmarked): immersive page; ONE
@@ -21,6 +22,7 @@ export default [
             { path: 'connections',   component: ConnectionsSettings   },
             { path: 'preferences',   component: PreferencesSettings   },
             { path: 'notifications', component: NotificationsSettings },
+            { path: 'subscription',  component: SubscriptionSettings  },
             { path: 'help',          component: HelpSettings          },
         ]
     }

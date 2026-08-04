@@ -4,6 +4,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { ApiService } from '../../../core/services/api.service';
 
 type Tier = 'pro' | 'premium';
 type Method = 'momo' | 'card';
@@ -152,10 +153,10 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('plans.checkout.total') }}</span>
                         <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ price(total()) }}</span>
                     </div>
-                    <button pButton (click)="pay()"
-                            [label]="t('plans.checkout.cta', { plan: planName() })"
-                            icon="pi pi-crown"
-                            class="omaad-press w-full !rounded-full !py-3.5 !font-bold !bg-ochre-500 !bg-gradient-to-r !from-ochre-400 !to-ochre-500 !border-0 !text-warm-900 hover:!from-ochre-500 hover:!to-ochre-600 shadow-lifted transition-all"></button>
+                    <button pButton (click)="pay()" [disabled]="paying()"
+                            [label]="paying() ? t('plans.checkout.redirecting') : t('plans.checkout.cta', { plan: planName() })"
+                            [icon]="paying() ? 'pi pi-spin pi-spinner' : 'pi pi-crown'"
+                            class="omaad-press w-full !rounded-full !py-3.5 !font-bold !bg-ochre-500 !bg-gradient-to-r !from-ochre-400 !to-ochre-500 !border-0 !text-warm-900 hover:!from-ochre-500 hover:!to-ochre-600 shadow-lifted transition-all disabled:!opacity-70"></button>
                     @if (paymentPending()) {
                         <p class="text-[11px] text-ochre-600 dark:text-ochre-400 mt-3 text-center">
                             {{ t('plans.checkout.comingSoon') }}
@@ -169,6 +170,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
 export class PlanCheckoutSheet {
     private i18n = inject(I18nService);
     protected cs = inject(CurrencyService);
+    private api = inject(ApiService);
 
     /** Two-way visibility, and which tier is being purchased. */
     open = model<boolean>(false);
@@ -177,6 +179,7 @@ export class PlanCheckoutSheet {
     selected = signal<DurationOption | null>(null);
     method = signal<Method>('momo');
     paymentPending = signal(false);
+    paying = signal(false);
 
     private isEur = computed(() => this.cs.currencyCode() === 'EUR');
 
@@ -230,13 +233,21 @@ export class PlanCheckoutSheet {
     });
 
     /**
-     * Placeholder. The real flow (S11) will POST to the PSP checkout endpoint
-     * (PayTech for mobile money, Bictorys for card), then grant access ONLY on
-     * a signed server webhook — never on this client action. See
-     * S11_PAYMENT_DESIGN.md / S11_PSP_MEMO.md. For now, surface an honest note.
+     * Start the hosted checkout (S11). We POST (plan, duration, method); the
+     * server mints the reference + returns the PSP checkout URL, and access is
+     * granted ONLY on the signed server webhook, never on this client action
+     * (S11_PSP_MEMO.md). When no PSP is wired yet the server answers 503 and we
+     * fall back to the honest "coming soon" note instead of a raw error.
      */
     pay(): void {
-        this.paymentPending.set(true);
-        // TODO(S11): this.api.createCheckout({ tier, durationKey, method }) → redirect to hosted checkout.
+        const opt = this.selected();
+        if (!opt || this.paying()) return;
+        this.paying.set(true);
+        this.paymentPending.set(false);
+        this.api.createCheckout({ plan: this.tier(), duration_key: opt.key, method: this.method() })
+            .subscribe({
+                next: (res) => { window.location.href = res.checkout_url; },
+                error: () => { this.paying.set(false); this.paymentPending.set(true); },
+            });
     }
 }

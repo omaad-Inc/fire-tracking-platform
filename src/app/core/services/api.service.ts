@@ -844,6 +844,87 @@ export interface PushDevice {
 }
 
 // ============================================
+// BILLING / SUBSCRIPTION (S11)
+// ============================================
+export type PlanTierName = 'free' | 'pro' | 'premium';
+export type SubscriptionStatusName = 'active' | 'past_due' | 'expired' | 'cancelled';
+export type RenewalTypeName = 'prepaid' | 'auto';
+export type PaymentMethod = 'momo' | 'card';
+export type DurationKey = 'd15' | 'm1' | 'm3' | 'm6';
+
+/** One rung of the server-authoritative pricing ladder (GET /billing/plans).
+ *  XOF and EUR are set independently — never an FX conversion; the FE picks by
+ *  the user's display currency and formats with `formatDisplayNumber`. */
+export interface PlanDurationPrice {
+    duration_key: DurationKey;
+    label: string;
+    days: number;
+    xof: number;
+    eur: number;
+}
+export interface PlanPricing {
+    plan: 'pro' | 'premium';
+    durations: PlanDurationPrice[];
+}
+export interface PlansResponse {
+    plans: PlanPricing[];
+}
+
+/** Current entitlement + the paid-subscription row when one exists.
+ *  `effective_plan` is FREE until a paid pass is active (it does NOT fold in the
+ *  beta courtesy); read `beta_courtesy` for the "Pro offert (beta)" state. */
+export interface SubscriptionStatus {
+    effective_plan: PlanTierName;
+    beta_courtesy: boolean;
+    plan: PlanTierName | null;
+    status: SubscriptionStatusName | null;
+    renewal_type: RenewalTypeName | null;
+    current_period_end: string | null;
+    cancel_at: string | null;
+}
+
+/** AI message quota for the usage meter. `period_end` is the reset date for a
+ *  Pro window; null for the lifetime free trial (no reset). */
+export interface UsageStatus {
+    used: number;
+    limit: number;
+    remaining: number;
+    kind: 'pro' | 'free_trial';
+    period_start: string | null;
+    period_end: string | null;
+    exceeded: boolean;
+    warning: boolean;
+}
+
+export interface CheckoutRequest {
+    plan: 'pro' | 'premium';
+    duration_key: DurationKey;
+    method: PaymentMethod;
+}
+export interface CheckoutResponse {
+    reference: string;
+    checkout_url: string;
+    amount: number;
+    currency: string;
+    method: string;
+}
+
+/** One row of the subscription payment ledger (Abonnement → Historique).
+ *  `amount` is what was charged, in `currency` (XOF or EUR) — display it with
+ *  that currency's own symbol, never converted to the user's display currency. */
+export interface PaymentHistoryItem {
+    reference: string;
+    plan: 'pro' | 'premium';
+    duration_key: DurationKey;
+    duration_label: string;
+    amount: number;
+    currency: string;
+    status: 'pending' | 'succeeded' | 'failed';
+    created_at: string;
+    confirmed_at: string | null;
+}
+
+// ============================================
 // API SERVICE
 // ============================================
 @Injectable({
@@ -1491,6 +1572,42 @@ export class ApiService {
 
     removePushSubscription(endpoint: string): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/notifications/push-subscription/delete`, { endpoint });
+    }
+
+    // ========== BILLING / SUBSCRIPTION (S11) ==========
+    /** Public pricing ladder (server-authoritative; the FE no longer keeps its
+     *  own copy of the grid, the two must never drift). */
+    getPlans(): Observable<PlansResponse> {
+        return this.http.get<PlansResponse>(`${this.apiUrl}/billing/plans`);
+    }
+
+    /** Current entitlement + paid-subscription row for the Abonnement page. */
+    getSubscription(): Observable<SubscriptionStatus> {
+        return this.http.get<SubscriptionStatus>(`${this.apiUrl}/billing/subscription`);
+    }
+
+    /** AI message quota for the usage meter. */
+    getUsage(): Observable<UsageStatus> {
+        return this.http.get<UsageStatus>(`${this.apiUrl}/billing/usage`);
+    }
+
+    /** The owner's payment history (newest first). Empty until a payment exists. */
+    getPayments(): Observable<PaymentHistoryItem[]> {
+        return this.http.get<PaymentHistoryItem[]>(`${this.apiUrl}/billing/payments`);
+    }
+
+    /** Start a hosted checkout for a duration Pass. Access is granted ONLY by the
+     *  signed server webhook, never by this call — it just returns the hosted URL
+     *  to redirect to. 503 when no PSP is configured yet (beta). */
+    createCheckout(req: CheckoutRequest): Observable<CheckoutResponse> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<CheckoutResponse>(`${this.apiUrl}/billing/checkout`, req);
+    }
+
+    /** Cancel = keep access until period end, stop renewing (never deletes data). */
+    cancelSubscription(): Observable<SubscriptionStatus> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<SubscriptionStatus>(`${this.apiUrl}/billing/cancel`, {});
     }
 }
 
