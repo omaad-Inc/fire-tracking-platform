@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
 import { ChartModule } from 'primeng/chart';
 import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
 import { AssetsStateService } from '../service/assets-state.service';
-import { ApiService, Debt } from '../../core/services/api.service';
+import { Debt } from '../../core/services/api.service';
 import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
@@ -272,7 +272,6 @@ export class Patrimoine implements OnInit, OnDestroy {
     private nav = inject(NavService);
     i18n = inject(I18nService);
     private patrimoineService = inject(PatrimoineService);
-    private apiService = inject(ApiService);
     private currencyService = inject(CurrencyService);
     private stateService = inject(AssetsStateService);
     private subscription?: Subscription;
@@ -385,7 +384,12 @@ export class Patrimoine implements OnInit, OnDestroy {
     }
 
     private async loadAssets() {
-        this.loadingGroups.set(true);
+        // No-flash revisit: render the cached list synchronously and only show
+        // the skeleton on a cold first load (nothing cached yet). The awaited
+        // getAssets() still refreshes in the background (stale-while-revalidate).
+        const cached = this.patrimoineService.getCachedAssets();
+        if (cached.length) this.allAssets.set(cached);
+        this.loadingGroups.set(!this.patrimoineService.hasCachedAssets());
         try {
             const items = await this.patrimoineService.getAssets();
             this.allAssets.set(items);
@@ -400,9 +404,12 @@ export class Patrimoine implements OnInit, OnDestroy {
     }
 
     private async loadDebts() {
-        this.loadingDebts.set(true);
+        // No-flash revisit: hydrate from the cached debt list synchronously and
+        // only skeleton on a cold first load; getDebts() refreshes in the bg.
+        if (this.patrimoineService.hasCachedDebts()) this.debts.set(this.patrimoineService.getCachedDebts());
+        this.loadingDebts.set(!this.patrimoineService.hasCachedDebts());
         try {
-            const debts = await firstValueFrom(this.apiService.getDebts());
+            const debts = await this.patrimoineService.getDebts();
             this.debts.set(debts);
             this.debtsLoadError.set(false);
         } catch (error) {

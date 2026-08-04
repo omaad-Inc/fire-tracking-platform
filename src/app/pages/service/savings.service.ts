@@ -58,6 +58,12 @@ export class SavingsService {
             map(goals => goals.map((g, i) => this.mapGoalToDisplay(g, i))),
         )),
     );
+    // Raw goal list (unmapped) for the Goals dashboard, which renders the API
+    // shape directly. Its own cachedResource so revisiting the tab is instant
+    // instead of reflashing the skeleton (P2-FE-1).
+    private rawGoalsResource = cachedResource<SavingGoal[]>(
+        () => firstValueFrom(this.api.getSavingGoals(0, 200)),
+    );
     private transactionsResource = cachedResource<SavingRecord[]>(
         () => firstValueFrom(this.api.getAllTransactions().pipe(
             map(txs => txs
@@ -84,6 +90,22 @@ export class SavingsService {
     /** Get all saving goals (cached). */
     getGoals(): Promise<SavingsGoalDisplay[]> {
         return this.goalsResource.load();
+    }
+
+    /** Raw saving goals for the Goals dashboard (cached: TTL + SWR + dedup). */
+    getGoalsRaw(): Promise<SavingGoal[]> {
+        return this.rawGoalsResource.load();
+    }
+
+    /** Whether the raw goal list has loaded at least once (empty counts, so a
+     *  goal-free user doesn't reflash a skeleton on revisit). */
+    hasCachedGoalsRaw(): boolean {
+        return this.rawGoalsResource.peek() !== null;
+    }
+
+    /** Cached raw goals synchronously (empty array if none), for no-flash re-entry. */
+    getCachedGoalsRaw(): SavingGoal[] {
+        return this.rawGoalsResource.peek() ?? [];
     }
 
     /** Create a new saving goal. */
@@ -318,6 +340,7 @@ export class SavingsService {
     /** A goal write invalidates the goal list AND the progression chart (which reads current_amount). */
     private invalidateGoalDerived(): void {
         this.goalsResource.invalidate();
+        this.rawGoalsResource.invalidate();
         this.progressResource.invalidate();
     }
 
@@ -353,6 +376,7 @@ export class SavingsService {
     /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
         this.goalsResource.reset();
+        this.rawGoalsResource.reset();
         this.transactionsResource.reset();
         this.progressResource.reset();
     }

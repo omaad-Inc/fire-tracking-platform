@@ -2,13 +2,13 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Subscription, firstValueFrom, map } from 'rxjs';
+import { Subscription, map } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { I18nService } from '../../i18n/i18n.service';
 import { ShareContextService } from '../../core/services/share-context.service';
-import { ApiService, SavingGoal } from '../../core/services/api.service';
+import { SavingGoal } from '../../core/services/api.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { SavingsService } from '../service/savings.service';
@@ -174,7 +174,6 @@ import { FireDashboardPage } from '../fire/fire-dashboard';
     `,
 })
 export class GoalsDashboardPage implements OnInit, OnDestroy {
-    private api = inject(ApiService);
     private savings = inject(SavingsService);
     private state = inject(AssetsStateService);
     private message = inject(MessageService);
@@ -231,9 +230,12 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
     }
 
     private async loadGoals() {
-        this.loading.set(true);
+        // No-flash revisit: render cached goals synchronously and only skeleton on
+        // a cold first load; getGoalsRaw() refreshes in the bg (stale-while-revalidate).
+        if (this.savings.hasCachedGoalsRaw()) this.goals.set(this.savings.getCachedGoalsRaw());
+        this.loading.set(!this.savings.hasCachedGoalsRaw());
         try {
-            const goals = await firstValueFrom(this.api.getSavingGoals(0, 200));
+            const goals = await this.savings.getGoalsRaw();
             this.goals.set(goals);
         } catch (err) {
             console.error('Error loading goals:', err);
