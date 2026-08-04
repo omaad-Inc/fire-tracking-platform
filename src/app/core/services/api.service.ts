@@ -1045,6 +1045,18 @@ export class ApiService {
         return this.http.post<{ warmed: boolean }>(`${this.apiUrl}/agents/onboarding/warm`, {});
     }
 
+    /** Deterministic first-run write (S12 Phase 6): runs one tool through the
+     *  audited pipeline with NO model call, so the tap-first concierge never
+     *  depends on an LLM correctly translating a tap into a tool call. */
+    onboardingAction(
+        tool: 'update_user_ai_profile' | 'create_asset' | 'mark_onboarding_complete',
+        args: Record<string, unknown>,
+    ): Observable<{ status: string; summary?: string; undo_token?: string | null }> {
+        return this.http.post<{ status: string; summary?: string; undo_token?: string | null }>(
+            `${this.apiUrl}/agents/onboarding/action`, { tool, args },
+        );
+    }
+
     createAsset(data: AssetCreate): Observable<Asset> {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.post<Asset>(`${this.apiUrl}/assets`, data);

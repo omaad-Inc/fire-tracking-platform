@@ -51,13 +51,18 @@ export class FeatureFlagsService {
         if (typeof window === 'undefined') return;
         let params: URLSearchParams;
         try { params = new URLSearchParams(window.location.search); } catch { return; }
+        // Case-INSENSITIVE lookup: the flags are camelCase (ff_aiChat) but users
+        // routinely type ?ff_aichat=1, which used to silently no-op. Fold every
+        // param key to lower-case and match on that.
+        const lower = new Map<string, string>();
+        params.forEach((val, key) => lower.set(key.toLowerCase(), val));
         (Object.keys(environment.featureFlags) as FeatureFlag[]).forEach((flag) => {
-            const v = params.get('ff_' + flag);
+            const v = lower.get(('ff_' + flag).toLowerCase());
             if (v === '1' || v === '0') this.setOverride(flag, v === '1');
         });
         // Dev chrome (mock scenario chip) rides the same URL mechanism but is
         // not an environment flag: it only unhides debug UI on prod builds.
-        const dev = params.get('ff_devtools');
+        const dev = lower.get('ff_devtools');
         if (dev === '1' || dev === '0') {
             try { localStorage.setItem(STORAGE_PREFIX + 'devtools', dev); } catch { /* in-memory only */ }
         }

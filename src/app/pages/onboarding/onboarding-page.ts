@@ -1,5 +1,5 @@
 import {
-    ChangeDetectionStrategy, Component, OnDestroy, OnInit, computed, inject, signal,
+    ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { RippleModule } from 'primeng/ripple';
+import { firstValueFrom } from 'rxjs';
 
 import { I18nService } from '../../i18n/i18n.service';
 import { TokenService } from '../../core/services/token.service';
@@ -14,28 +15,28 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { DashboardService } from '../service/dashboard.service';
 import { AssetsStateService } from '../service/assets-state.service';
 import { ApiService } from '../../core/services/api.service';
-import { SseChatDriver } from '../../core/ai/sse-chat-driver';
-import { ChatStreamEvent } from '../../core/ai/chat-events';
-import { ChatTurnHandle } from '../../core/ai/chat-stream-driver';
 
 /**
  * The first-run concierge (S12 Phase 6, tasks 2.7/2.8). Auto-launched full-screen
  * on first login (Welcome.finish -> /:lang/onboarding), behind ff_aiChat.
  *
- * Tap-first hybrid (ratified): the user mostly taps chips + fills tiny forms; the
- * onboarding AGENT does EVERY write via its tools through the Config pipeline. We
- * drive the SSE transport DIRECTLY (not the bubble thread) and pass
- * context={onboarding:true, first_name} so the backend keeps every turn on the
- * onboarding agent even after the first asset exists (the completion FLAG ends it).
+ * Tap-first, DETERMINISTIC writes: the user taps chips + fills tiny forms, and each
+ * write goes straight to POST /agents/onboarding/action, which runs the exact tool
+ * through the audited Config pipeline (guards 8/9/10 + audit) with NO model call.
+ * The concierge already knows what to write, so it never asks an LLM to translate a
+ * tap into a tool call, removing every model-flakiness failure (no tool call,
+ * duplicate calls, confirm parks) from the first agent a new user meets.
  *
- * Three beats + reveal + handoff. Each beat sends ONE turn and advances when its
- * tool_result(ok) lands, so turns stay serialized (one write at a time). The agent
- * speaks (streamed conciergeLine); the FE renders the tap affordances and the
- * net-worth reveal (0 -> X count-up). Skippable at every step, no dead-ends.
+ * Three beats + reveal + handoff. Currency/objective writes are fire-and-forget
+ * (non-critical, optimistic advance); the asset write is gated with an inline retry;
+ * completion always navigates so a rare failure never strands the user. The FE
+ * renders the tap affordances and the net-worth reveal (0 -> X count-up). Skippable
+ * at every step, no dead-ends.
  */
 
 type Beat = 'currency' | 'asset' | 'reveal' | 'objective' | 'done';
 type Ccy = 'XOF' | 'EUR';
+type OnbTool = 'update_user_ai_profile' | 'create_asset' | 'mark_onboarding_complete';
 
 interface Tile { key: string; label: string; category: string; icon: string; }
 interface Objective { key: string; label: string; }
@@ -45,8 +46,6 @@ interface Objective { key: string; label: string; }
     standalone: true,
     imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, RippleModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    // Isolated SSE driver instance for this page's turn state.
-    providers: [SseChatDriver],
     template: `
     <div class="onb-shell">
       <!-- Skip: never a dead-end (ratified). Lands on the dashboard; the nudge reopens. -->
@@ -101,28 +100,21 @@ interface Objective { key: string; label: string; }
 
           @case ('asset') {
             @if (!selectedTile()) {
-              @if (streaming()) {
-                <!-- The currency write is in flight (it gates the tiles). Show a
-                     calm spinner instead of greyed, non-tappable tiles. -->
-                <div class="onb-loading">
-                  <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-                  <span>{{ t('concierge.loading') }}</span>
-                </div>
-              } @else {
-                <div class="onb-tiles">
-                  @for (tile of tiles(); track tile.key) {
-                    <button type="button" pRipple class="onb-tile"
-                            (click)="selectTile(tile)">
-                      <i class="pi {{ tile.icon }}" aria-hidden="true"></i>
-                      <span>{{ tile.label }}</span>
-                    </button>
-                  }
-                </div>
-                @if (addedCount() > 0) {
-                  <button type="button" class="onb-secondary" (click)="goObjective()">
-                    {{ t('concierge.asset.enough') }}
+              <!-- Tiles show instantly: the currency write is fire-and-forget and
+                   never gates this step. -->
+              <div class="onb-tiles">
+                @for (tile of tiles(); track tile.key) {
+                  <button type="button" pRipple class="onb-tile"
+                          (click)="selectTile(tile)">
+                    <i class="pi {{ tile.icon }}" aria-hidden="true"></i>
+                    <span>{{ tile.label }}</span>
                   </button>
                 }
+              </div>
+              @if (addedCount() > 0) {
+                <button type="button" class="onb-secondary" (click)="goObjective()">
+                  {{ t('concierge.asset.enough') }}
+                </button>
               }
             } @else {
               <!-- Tiny inline form: name (prefilled, editable) + amount, currency prefilled -->
@@ -283,7 +275,7 @@ interface Objective { key: string; label: string; }
     }
   `],
 })
-export class OnboardingPage implements OnInit, OnDestroy {
+export class OnboardingPage implements OnDestroy {
     private i18n = inject(I18nService);
     private router = inject(Router);
     private tokens = inject(TokenService);
@@ -291,7 +283,6 @@ export class OnboardingPage implements OnInit, OnDestroy {
     private dashboard = inject(DashboardService);
     private assetsState = inject(AssetsStateService);
     private api = inject(ApiService);
-    private driver = inject(SseChatDriver);
 
     t = (k: string) => this.i18n.t(k);
 
@@ -313,9 +304,8 @@ export class OnboardingPage implements OnInit, OnDestroy {
     readonly assetAmount = signal<number | null>(null);
     readonly revealDisplay = signal('');
 
-    private handle: ChatTurnHandle | null = null;
-    private toolByCard: Record<string, string> = {};
-    private lastMessage = '';
+    /** The last gated write (the asset), replayed by retry() after a failure. */
+    private lastWrite: { tool: OnbTool; args: Record<string, unknown>; onOk: () => void } | null = null;
     private raf: number | null = null;
 
     readonly currencies = [
@@ -373,15 +363,7 @@ export class OnboardingPage implements OnInit, OnDestroy {
         return !!this.assetName().trim() && a != null && a > 0;
     });
 
-    ngOnInit(): void {
-        // Pre-warm the onboarding prompt cache so the FIRST tap (currency) hits a
-        // warm cache (~2-3s) instead of the cold start (~10-20s) that otherwise
-        // gates the asset tiles. Fire-and-forget: warming is best-effort server-side.
-        this.api.warmOnboarding().subscribe({ error: () => { /* non-fatal */ } });
-    }
-
     ngOnDestroy(): void {
-        this.handle?.cancel();
         if (this.raf != null && typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.raf);
     }
 
@@ -389,14 +371,12 @@ export class OnboardingPage implements OnInit, OnDestroy {
     pickCurrency(code: Ccy): void {
         if (this.streaming()) return;
         this.currency.set(code);
-        const label = this.currencies.find(c => c.code === code)?.label ?? code;
-        // Optimistic: show the asset beat instantly. The write runs in the
-        // background; the tiles are disabled while it streams (so no concurrent
-        // turn can abort it), then enable on completion. Currency is also stored
-        // locally, so a failed write is non-blocking (the asset form still uses it).
-        this.conciergeLine.set('');
+        // Advance to the asset beat INSTANTLY (tiles show immediately, no wait).
+        // Currency is non-critical (new users default to XOF) and stored locally,
+        // so its write is fire-and-forget: a failure never blocks the flow.
+        this.error.set(null);
         this.beat.set('asset');
-        this.sendTurn(this.msg('currency', label), 'update_user_ai_profile', () => {}, true);
+        this.write('update_user_ai_profile', { preferred_currency: code });
     }
 
     // ── Beat (b): first asset via a tile ───────────────────────────────────
@@ -414,9 +394,9 @@ export class OnboardingPage implements OnInit, OnDestroy {
         const tile = this.selectedTile()!;
         const name = this.assetName().trim();
         const amount = this.assetAmount()!;
-        this.sendTurn(
-            this.msg('asset', name, amount, tile.category),
+        this.gatedWrite(
             'create_asset',
+            { name, category: tile.category, current_value: amount, currency: this.currency() },
             () => {
                 this.addedCount.update(n => n + 1);
                 this.enteredTotal.update(t => t + amount);
@@ -467,11 +447,12 @@ export class OnboardingPage implements OnInit, OnDestroy {
 
     pickObjective(o: Objective): void {
         if (this.streaming()) return;
-        // Optimistic: show the celebratory "done" screen instantly, then run the
-        // objective write and the handoff in the background (silent, the done beat
-        // shows its own copy). The objective is optional, so it never blocks.
+        // Optimistic: show the celebratory "done" screen instantly. The objective
+        // is optional, so its write is fire-and-forget (never blocks), then we hand
+        // off. The done beat shows its own copy.
         this.beat.set('done');
-        this.sendTurn(this.msg('objective', o.label), 'update_user_ai_profile', () => this.handoff(), true);
+        this.write('update_user_ai_profile', { objective: o.key });
+        this.handoff();
     }
     finishNoObjective(): void {
         if (this.streaming()) return;
@@ -479,10 +460,13 @@ export class OnboardingPage implements OnInit, OnDestroy {
     }
 
     // ── Handoff ────────────────────────────────────────────────────────────
-    private handoff(): void {
+    private async handoff(): Promise<void> {
         this.beat.set('done');
-        // Silent: the done beat hides the concierge line; we only need the write.
-        this.sendTurn(this.msg('handoff'), 'mark_onboarding_complete', () => this.goDashboard(), true);
+        // Mark complete, then ALWAYS navigate: the asset is already saved, so a
+        // rare completion failure must never strand the user on the done screen
+        // (a missed flag only re-prompts onboarding on the next login).
+        try { await this.write('mark_onboarding_complete', {}); } catch { /* proceed */ }
+        this.goDashboard();
     }
 
     private goDashboard(): void {
@@ -496,7 +480,6 @@ export class OnboardingPage implements OnInit, OnDestroy {
 
     skip(): void {
         if (this.streaming()) return;
-        this.handle?.cancel();
         // A skip does NOT set the backend flag, so without a per-session marker the
         // guard would bounce the user straight back here. Suppress it for this
         // session only; next login re-prompts (resume, ratified decision 9).
@@ -504,87 +487,45 @@ export class OnboardingPage implements OnInit, OnDestroy {
         this.router.navigate(['/', this.lang()], { replaceUrl: true });
     }
 
+    /** Replay the last gated write (the asset) after an inline error. */
     retry(): void {
         this.error.set(null);
-        if (this.lastMessage) this.rawSend(this.lastMessage, this.lastExpect, this.lastOnOk, this.lastSilent);
+        const w = this.lastWrite;
+        if (w) this.gatedWrite(w.tool, w.args, w.onOk);
     }
 
-    // ── Turn plumbing ──────────────────────────────────────────────────────
-    private lastExpect = '';
-    private lastOnOk: () => void = () => {};
-    private lastSilent = false;
-
-    private sendTurn(message: string, expect: string, onOk: () => void, silent = false): void {
-        this.lastMessage = message;
-        this.rawSend(message, expect, onOk, silent);
-    }
-
-    private rawSend(message: string, expect: string, onOk: () => void, silent = false): void {
-        this.lastExpect = expect;
-        this.lastOnOk = onOk;
-        this.lastSilent = silent;
-        this.error.set(null);
-        // A silent (optimistic background) write must not overwrite the beat we
-        // already advanced to, so keep the concierge line as-is for it.
-        if (!silent) this.conciergeLine.set('');
-        this.toolByCard = {};
-        this.streaming.set(true);
-        let done = false;
-        const context: Record<string, unknown> = { onboarding: true };
-        const fn = this.firstName();
-        if (fn) context['first_name'] = fn;
-
-        this.handle = this.driver.startTurn(
-            message,
-            (e: ChatStreamEvent) => {
-                switch (e.type) {
-                    case 'text_delta':
-                        if (!silent) this.conciergeLine.update(v => v + e.text);
-                        break;
-                    case 'tool_use':
-                        this.toolByCard[e.card_id] = e.tool;
-                        break;
-                    case 'tool_result':
-                        if (e.status === 'ok' && this.toolByCard[e.card_id] === expect && !done) {
-                            done = true;
-                            onOk();
-                        } else if (e.status === 'error') {
-                            this.error.set(this.t('concierge.error'));
-                        }
-                        break;
-                    case 'error':
-                        this.error.set(this.t('concierge.error'));
-                        break;
-                }
-            },
-            () => {
-                this.streaming.set(false);
-                // The turn ended without the expected write: let the user retry.
-                if (!done && !this.error()) this.error.set(this.t('concierge.error'));
-            },
-            context,
-        );
-    }
-
-    // ── Messages the agent maps to tool calls (prompt-driven) ──────────────
+    // ── Deterministic write plumbing (no LLM) ──────────────────────────────
     private lang(): string {
         const m = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         return m ? m[1] : (this.i18n.lang?.() ?? 'fr');
     }
 
-    private msg(kind: 'currency' | 'asset' | 'objective' | 'handoff', a?: string, amount?: number, category?: string): string {
-        const fr = this.lang() === 'fr';
-        switch (kind) {
-            case 'currency':
-                return fr ? `Je choisis la devise: ${a}.` : `I choose the currency: ${a}.`;
-            case 'asset':
-                return fr
-                    ? `Ajoute cet actif: ${a}, montant ${amount} ${this.currency()} (categorie ${category}).`
-                    : `Add this asset: ${a}, amount ${amount} ${this.currency()} (category ${category}).`;
-            case 'objective':
-                return fr ? `Mon objectif principal: ${a}.` : `My main goal: ${a}.`;
-            case 'handoff':
-                return fr ? `J'ai terminé, tu peux finaliser la configuration.` : `I'm done, you can finalize the setup.`;
+    /**
+     * Fire-and-forget write: run the tool, ignore the outcome. Used for the
+     * non-critical currency/objective steps where the beat already advanced and a
+     * failure must NEVER surface (currency defaults to XOF; objective is optional).
+     */
+    private write(tool: OnbTool, args: Record<string, unknown>): void {
+        firstValueFrom(this.api.onboardingAction(tool, args)).catch(() => { /* non-blocking */ });
+    }
+
+    /**
+     * Gated write for the ONE required step (the asset): show a spinner, advance
+     * only on a confirmed ok, and surface an inline retry on failure (which is rare
+     * now that the write is a deterministic REST call, not a model turn).
+     */
+    private async gatedWrite(tool: OnbTool, args: Record<string, unknown>, onOk: () => void): Promise<void> {
+        this.lastWrite = { tool, args, onOk };
+        this.error.set(null);
+        this.streaming.set(true);
+        try {
+            const res = await firstValueFrom(this.api.onboardingAction(tool, args));
+            if (res?.status === 'ok') onOk();
+            else this.error.set(this.t('concierge.error'));
+        } catch {
+            this.error.set(this.t('concierge.error'));
+        } finally {
+            this.streaming.set(false);
         }
     }
 }
