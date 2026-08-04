@@ -40,6 +40,11 @@ export class SseChatDriver implements ChatStreamDriver {
         controller: AbortController;
     } | null = null;
 
+    /** True while the in-flight turn is the first-run onboarding concierge, so
+     *  its requests carry X-Omaad-Surface and the backend exempts them from the
+     *  tight AI chat rate limit (a first-run flow must never 429). */
+    private onboardingSurface = false;
+
     startTurn(
         message: string,
         onEvent: (e: ChatStreamEvent) => void,
@@ -56,6 +61,7 @@ export class SseChatDriver implements ChatStreamDriver {
             onClose();
         };
         this.active = { onEvent, close, controller };
+        this.onboardingSurface = context?.['onboarding'] === true;
         const body = context ? { message, context } : { message };
         void this.run('/agents/chat', body, onEvent, close, controller);
         return {
@@ -103,7 +109,12 @@ export class SseChatDriver implements ChatStreamDriver {
 
     private authHeaders(): Record<string, string> {
         const token = this.token.getToken();
-        return token ? { Authorization: `Bearer ${token}` } : {};
+        const headers: Record<string, string> = token
+            ? { Authorization: `Bearer ${token}` }
+            : {};
+        // Onboarding turns are exempt from the tight AI chat rate limit server-side.
+        if (this.onboardingSurface) headers['X-Omaad-Surface'] = 'onboarding';
+        return headers;
     }
 
     private async run(
