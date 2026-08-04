@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
-import { ApiService, Asset, AssetCreate, AssetUpdate } from '../../core/services/api.service';
+import { ApiService, Asset, AssetCreate, AssetUpdate, Debt } from '../../core/services/api.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AssetsStateService } from './assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
@@ -34,6 +34,12 @@ export class PatrimoineService {
         )),
     );
 
+    /** Debt list for the net-worth view (raw API shape). Its own cachedResource
+     *  so revisiting Patrimoine renders instantly instead of reflashing (P2-FE-1). */
+    private debtsResource = cachedResource<Debt[]>(
+        () => firstValueFrom(this.api.getDebts()),
+    );
+
     constructor() {
         // Invalidate whenever assets change externally (e.g. via the topbar quick-add).
         this.stateService.assetsUpdated$.subscribe(() => this.assetsResource.invalidate());
@@ -41,6 +47,8 @@ export class PatrimoineService {
         // transaction write also stales the asset list: manual entries, CSV
         // imports and recurring materialization all funnel through this event.
         this.stateService.transactionsUpdated$.subscribe(() => this.assetsResource.invalidate());
+        // Debt writes stale the debt list (keeps the net-worth view correct).
+        this.stateService.debtsUpdated$.subscribe(() => this.debtsResource.invalidate());
         // Clear cached user data on logout/login (see CACHE_RESET).
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }
@@ -170,8 +178,25 @@ export class PatrimoineService {
         return this.assetsResource.peek() ?? [];
     }
 
+    /** Debts (cached: TTL + stale-while-revalidate + dedup). */
+    getDebts(): Promise<Debt[]> {
+        return this.debtsResource.load();
+    }
+
+    /** Whether the debt list has loaded at least once (empty list counts, so a
+     *  debt-free user doesn't reflash a skeleton on revisit). */
+    hasCachedDebts(): boolean {
+        return this.debtsResource.peek() !== null;
+    }
+
+    /** Return cached debts synchronously (or empty array if none). */
+    getCachedDebts(): Debt[] {
+        return this.debtsResource.peek() ?? [];
+    }
+
     /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
         this.assetsResource.reset();
+        this.debtsResource.reset();
     }
 }

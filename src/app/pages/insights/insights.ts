@@ -8,6 +8,7 @@ import { ChartModule } from 'primeng/chart';
 
 import { I18nService } from '../../i18n/i18n.service';
 import { ApiService, InsightsResponse } from '../../core/services/api.service';
+import { InsightsService } from '../service/insights.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
@@ -134,6 +135,7 @@ export class InsightsPage implements OnInit {
     private platformId = inject(PLATFORM_ID);
     private cd = inject(ChangeDetectorRef);
     private api = inject(ApiService);
+    private insights = inject(InsightsService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
     private route = inject(ActivatedRoute);
@@ -177,16 +179,23 @@ export class InsightsPage implements OnInit {
     ngOnInit() { this.load(); }
 
     load() {
-        this.loading.set(true);
+        // No-flash revisit: render cached analytics synchronously and only show
+        // the skeleton on a cold first load; get() refreshes in the background.
+        const cached = this.insights.getCached();
+        if (cached) { this.data.set(cached); this.initChart(); }
+        this.loading.set(!this.insights.hasCached());
         this.error.set(false);
-        this.api.getInsights(undefined, 6).subscribe({
-            next: (res) => {
+        this.insights.get()
+            .then((res) => {
                 this.data.set(res);
                 this.loading.set(false);
                 this.initChart();
-            },
-            error: () => { this.error.set(true); this.loading.set(false); },
-        });
+            })
+            .catch(() => {
+                // Only a cold failure (nothing cached) surfaces the error state.
+                if (!this.insights.hasCached()) this.error.set(true);
+                this.loading.set(false);
+            });
     }
 
     fmtPct(pct: number): string { return `${Math.round(pct)}%`; }

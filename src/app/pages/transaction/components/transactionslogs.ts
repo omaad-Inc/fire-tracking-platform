@@ -632,7 +632,13 @@ export class TransactionLogs implements OnInit, OnDestroy {
     }
 
     private async load() {
-        this.loading.set(true);
+        // No-flash revisit: render the cached log synchronously and only skeleton
+        // on a cold first load; getRecords() refreshes in the bg (stale-while-revalidate).
+        if (this.transactionsService.hasCachedRecords()) {
+            this.allRecords.set(this.transactionsService.getCachedRecords());
+            this.emitMonth();
+        }
+        this.loading.set(!this.transactionsService.hasCachedRecords());
         try {
             const recs = await this.transactionsService.getRecords();
             this.allRecords.set(recs);

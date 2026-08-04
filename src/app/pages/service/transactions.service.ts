@@ -144,6 +144,18 @@ export class TransactionsService {
         return this.recordsResource.load();
     }
 
+    /** Whether the transaction list has loaded at least once (empty list counts,
+     *  so a first-time user doesn't reflash a skeleton on revisit). */
+    hasCachedRecords(): boolean {
+        return this.recordsResource.peek() !== null;
+    }
+
+    /** Return the cached transaction list synchronously (empty array if none),
+     *  for no-flash re-entry into the Transactions tab. */
+    getCachedRecords(): TransactionRecord[] {
+        return this.recordsResource.peek() ?? [];
+    }
+
     /**
      * Get transactions by type (direct, uncached, a rarely used filtered view).
      */
