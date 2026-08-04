@@ -4,13 +4,14 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
-import { ApiService } from '../../../core/services/api.service';
+import { ApiService, DurationKey } from '../../../core/services/api.service';
+import { BillingService } from '../../../core/services/billing.service';
 
 type Tier = 'pro' | 'premium';
 type Method = 'momo' | 'card';
 
 interface DurationOption {
-    key: 'd15' | 'm1' | 'm3' | 'm6';
+    key: DurationKey;
     /** Duration in months; 15 days is modelled as 0.5 for the per-month math. */
     months: number;
     xof: number;
@@ -18,27 +19,11 @@ interface DurationOption {
     popular?: boolean;
 }
 
-/**
- * Placeholder price ladder (config-driven, easy to change), anchored on the
- * S11 memo (Pro 4 000 / Premium 10 000 XOF per month; €5 / €12). Longer passes
- * are discounted per month to pull users off the short-pass treadmill.
- * XOF and EUR are set independently — never a raw FX conversion (see
- * CurrencyService double-convert note). Numbers are NOT final; revisit post-beta.
- */
-const PLAN_PRICING: Record<Tier, DurationOption[]> = {
-    pro: [
-        { key: 'd15', months: 0.5, xof: 2500, eur: 3 },
-        { key: 'm1', months: 1, xof: 4000, eur: 5 },
-        { key: 'm3', months: 3, xof: 10800, eur: 13.5, popular: true },
-        { key: 'm6', months: 6, xof: 19200, eur: 24 },
-    ],
-    premium: [
-        { key: 'd15', months: 0.5, xof: 6000, eur: 7 },
-        { key: 'm1', months: 1, xof: 10000, eur: 12 },
-        { key: 'm3', months: 3, xof: 27000, eur: 32, popular: true },
-        { key: 'm6', months: 6, xof: 48000, eur: 58 },
-    ],
-};
+// Prices are NOT defined here anymore: they come from GET /billing/plans
+// (billing_service.PRICING on the server) so there is ONE source of truth and
+// the FE can never drift from what the server actually charges. `popular` is a
+// pure presentation choice (which pass to highlight), so it stays on the FE.
+const POPULAR_DURATION: DurationKey = 'm3';
 
 @Component({
     selector: 'app-plan-checkout-sheet',
@@ -71,6 +56,11 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
 
                     <!-- Duration options -->
                     <div class="flex flex-col gap-2.5">
+                        @if (options().length === 0) {
+                            <div class="py-8 text-center text-surface-400 dark:text-surface-500">
+                                <i class="pi pi-spin pi-spinner !text-lg" aria-hidden="true"></i>
+                            </div>
+                        }
                         @for (opt of options(); track opt.key) {
                             <button type="button" (click)="selected.set(opt)"
                                     class="omaad-press relative w-full text-left rounded-xl border px-4 py-3.5 flex items-center justify-between transition-all"
@@ -153,7 +143,7 @@ const PLAN_PRICING: Record<Tier, DurationOption[]> = {
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('plans.checkout.total') }}</span>
                         <span class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ price(total()) }}</span>
                     </div>
-                    <button pButton (click)="pay()" [disabled]="paying()"
+                    <button pButton (click)="pay()" [disabled]="paying() || !selected()"
                             [label]="paying() ? t('plans.checkout.redirecting') : t('plans.checkout.cta', { plan: planName() })"
                             [icon]="paying() ? 'pi pi-spin pi-spinner' : 'pi pi-crown'"
                             class="omaad-press w-full !rounded-full !py-3.5 !font-bold !bg-ochre-500 !bg-gradient-to-r !from-ochre-400 !to-ochre-500 !border-0 !text-warm-900 hover:!from-ochre-500 hover:!to-ochre-600 shadow-lifted transition-all disabled:!opacity-70"></button>
@@ -171,6 +161,7 @@ export class PlanCheckoutSheet {
     private i18n = inject(I18nService);
     protected cs = inject(CurrencyService);
     private api = inject(ApiService);
+    private billing = inject(BillingService);
 
     /** Two-way visibility, and which tier is being purchased. */
     open = model<boolean>(false);
@@ -183,18 +174,35 @@ export class PlanCheckoutSheet {
 
     private isEur = computed(() => this.cs.currencyCode() === 'EUR');
 
-    options = computed<DurationOption[]>(() => PLAN_PRICING[this.tier()]);
+    /** Duration ladder for the current tier, sourced from GET /billing/plans
+     *  (empty until it loads). `months` is derived from the server's `days` for
+     *  the per-month math; `popular` is the FE highlight choice. */
+    options = computed<DurationOption[]>(() => {
+        const resp = this.billing.plans();
+        const plan = resp?.plans.find(p => p.plan === this.tier());
+        if (!plan) return [];
+        return plan.durations.map(d => ({
+            key: d.duration_key,
+            months: d.days / 30,
+            xof: d.xof,
+            eur: d.eur,
+            popular: d.duration_key === POPULAR_DURATION,
+        }));
+    });
     planName = computed(() => (this.tier() === 'pro' ? 'Pro' : 'Premium'));
 
     constructor() {
+        this.billing.loadPlans();
         // Default the highlighted (popular) pass and the rail that matches the
-        // user's currency whenever the sheet opens or the tier changes.
+        // user's currency whenever the sheet opens, the tier changes, or the
+        // prices finish loading.
         effect(() => {
             const opts = this.options();
-            const popular = opts.find(o => o.popular) ?? opts[0];
-            this.selected.set(popular);
             this.method.set(this.isEur() ? 'card' : 'momo');
             this.paymentPending.set(false);
+            if (opts.length) {
+                this.selected.set(opts.find(o => o.popular) ?? opts[0]);
+            }
         });
     }
 

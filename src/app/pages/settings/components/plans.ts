@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { I18nService } from '../../../i18n/i18n.service';
+import { CurrencyService } from '../../../core/services/currency.service';
+import { BillingService } from '../../../core/services/billing.service';
 import { PlanCheckoutSheet } from './plan-checkout-sheet';
 
 interface PlanFeature {
@@ -56,7 +58,7 @@ interface PlanFeature {
                         </div>
                         <div class="mt-6 flex items-baseline justify-center gap-1.5">
                             <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().free.amount }}</span>
-                            <span class="text-surface-500 text-sm">FCFA{{ pricing().free.period }}</span>
+                            <span class="text-surface-500 text-sm">{{ pricing().free.symbol }}{{ pricing().free.period }}</span>
                         </div>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5">{{ pricing().free.sub }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.freeTagline') }}</p>
@@ -91,7 +93,7 @@ interface PlanFeature {
                         </div>
                         <div class="mt-6 flex items-baseline justify-center gap-1.5">
                             <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">{{ pricing().pro.amount }}</span>
-                            <span class="text-surface-500 text-sm">FCFA{{ pricing().pro.period }}</span>
+                            <span class="text-surface-500 text-sm">{{ pricing().pro.symbol }}{{ pricing().pro.period }}</span>
                         </div>
                         <p class="text-xs text-surface-500 dark:text-surface-400 mt-1.5">{{ pricing().pro.sub }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400 mt-5 mb-6 min-h-10">{{ t('plans.proTagline') }}</p>
@@ -124,7 +126,7 @@ interface PlanFeature {
                         </div>
                         <div class="mt-6 flex items-baseline justify-center gap-1.5">
                             <span class="text-4xl font-bold text-white">{{ pricing().premium.amount }}</span>
-                            <span class="text-white/50 text-sm">FCFA{{ pricing().premium.period }}</span>
+                            <span class="text-white/50 text-sm">{{ pricing().premium.symbol }}{{ pricing().premium.period }}</span>
                         </div>
                         <p class="text-xs text-white/50 mt-1.5">{{ pricing().premium.sub }}</p>
                         <p class="text-sm text-white/70 mt-5 mb-6 min-h-10">{{ t('plans.premiumTagline') }}</p>
@@ -219,6 +221,13 @@ interface PlanFeature {
 export class PlansSettings {
     private i18n   = inject(I18nService);
     private router = inject(Router);
+    private cs      = inject(CurrencyService);
+    private billing = inject(BillingService);
+
+    constructor() {
+        // Prices come from GET /billing/plans (the single source), not hardcoded.
+        this.billing.loadPlans();
+    }
 
     t(key: string): string { return this.i18n.t(key); }
 
@@ -241,14 +250,28 @@ export class PlansSettings {
         this.sheetVisible.set(true);
     }
 
-    // Tier cards show the 1-month anchor price; the sheet reveals cheaper longer passes.
+    // Tier cards show the 1-month anchor price, sourced from /billing/plans (the
+    // sheet reveals the cheaper longer passes). Amount is in the user's display
+    // currency with the right symbol (no more hardcoded "FCFA" for EUR users);
+    // falls back to a dash until prices load.
     pricing = computed(() => {
         const t = (k: string) => this.i18n.t(k);
         const period = t('plans.perMonth');
+        const symbol = this.cs.config().symbol;
+        const isEur = this.cs.currencyCode() === 'EUR';
+        const plans = this.billing.plans();
+
+        const anchor = (tier: 'pro' | 'premium'): string => {
+            const m1 = plans?.plans.find(p => p.plan === tier)?.durations.find(d => d.duration_key === 'm1');
+            if (!m1) return '—';
+            const val = isEur ? m1.eur : m1.xof;
+            return this.cs.formatDisplayNumber(val, isEur && !Number.isInteger(val) ? 2 : 0);
+        };
+
         return {
-            free:    { amount: '0',      period, sub: t('plans.freeForever') },
-            pro:     { amount: '4 000',  period, sub: t('plans.orLongerPass') },
-            premium: { amount: '10 000', period, sub: t('plans.orLongerPass') },
+            free:    { amount: this.cs.formatDisplayNumber(0, 0), symbol, period, sub: t('plans.freeForever') },
+            pro:     { amount: anchor('pro'),                     symbol, period, sub: t('plans.orLongerPass') },
+            premium: { amount: anchor('premium'),                symbol, period, sub: t('plans.orLongerPass') },
         };
     });
 
