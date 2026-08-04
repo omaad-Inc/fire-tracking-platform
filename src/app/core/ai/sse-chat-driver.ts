@@ -44,6 +44,7 @@ export class SseChatDriver implements ChatStreamDriver {
         message: string,
         onEvent: (e: ChatStreamEvent) => void,
         onClose: () => void,
+        context?: Record<string, unknown>,
     ): ChatTurnHandle {
         this.abortActive(); // one turn at a time; a new turn supersedes a stale one
         const controller = new AbortController();
@@ -55,7 +56,8 @@ export class SseChatDriver implements ChatStreamDriver {
             onClose();
         };
         this.active = { onEvent, close, controller };
-        void this.run('/agents/chat', { message }, onEvent, close, controller);
+        const body = context ? { message, context } : { message };
+        void this.run('/agents/chat', body, onEvent, close, controller);
         return {
             cancel: () => {
                 controller.abort();

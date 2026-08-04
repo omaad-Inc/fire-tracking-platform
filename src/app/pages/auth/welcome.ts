@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../core/services/api.service';
 import { TokenService } from '../../core/services/token.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 
 type Step = 'created' | 'name' | 'notifications';
 
@@ -129,6 +130,7 @@ export class Welcome implements OnInit {
     private swPush = inject(SwPush);
     private messageService = inject(MessageService);
     private i18n = inject(I18nService);
+    private flags = inject(FeatureFlagsService);
 
     t(key: string): string { return this.i18n.t(key); }
 
@@ -240,6 +242,14 @@ export class Welcome implements OnInit {
     }
 
     finish(): void {
+        // A brand-new user always reaches Welcome (returning users never do), so
+        // this is the auto-launch point for the first-run concierge (S12 Phase 6).
+        // Behind ff_aiChat: with the flag off, fall back to the app as before.
+        if (this.flags.aiChat()) {
+            const lang = this.currentLang.replace('/', '') || 'fr';
+            this.router.navigate(['/', lang, 'onboarding'], { replaceUrl: true });
+            return;
+        }
         this.router.navigate([this.returnUrl], { replaceUrl: true });
     }
 

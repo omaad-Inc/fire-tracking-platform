@@ -29,7 +29,7 @@ export class MockChatDriver implements ChatStreamDriver {
         closed: boolean;
     } | null = null;
 
-    startTurn(message: string, onEvent: (e: ChatStreamEvent) => void, onClose: () => void): ChatTurnHandle {
+    startTurn(message: string, onEvent: (e: ChatStreamEvent) => void, onClose: () => void, _context?: Record<string, unknown>): ChatTurnHandle {
         this.teardown(); // one turn at a time; a new turn supersedes a stale one
         const script = buildScript(this.scenario(), message, this.i18n.lang());
         this.active = { script, onEvent, onClose, awaitingConfirm: false, closed: false };
