@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { ChatSessionService } from './chat-session.service';
 import { CHAT_STREAM_DRIVER, ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
 import { ChatStreamEvent, ToolCardVM } from './chat-events';
@@ -70,6 +71,7 @@ describe('ChatSessionService (event reducer)', () => {
         driver = new FakeDriver();
         TestBed.configureTestingModule({
             providers: [
+                provideHttpClient(),
                 ChatSessionService,
                 { provide: CHAT_STREAM_DRIVER, useValue: driver },
             ],
@@ -258,6 +260,7 @@ describe('ChatSessionService (per-user thread isolation)', () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
             providers: [
+                provideHttpClient(),
                 ChatSessionService,
                 { provide: CHAT_STREAM_DRIVER, useValue: new FakeDriver() },
                 { provide: AssetsStateService, useValue: {} },
