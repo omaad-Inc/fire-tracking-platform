@@ -15,6 +15,7 @@ import { MOCK_SCENARIO_IDS, MockScenarioId } from '../../core/ai/mock-scenarios'
 import { ChatThreadComponent } from './components/chat-thread';
 import { ChatInputBarComponent } from './components/chat-input-bar';
 import { ChatEmptyStateComponent } from './components/chat-empty-state';
+import { DashboardService } from '../service/dashboard.service';
 
 /**
  * /assistant: the ONE conversational surface (ARCH §2). S12 Phase 1 renders it
@@ -71,10 +72,31 @@ import { ChatEmptyStateComponent } from './components/chat-empty-state';
                 </div>
             }
 
+            <!-- New conversation: start fresh (clears the visible thread AND the
+                 agent's server-side memory). Shown only when there's something to
+                 clear; nudged left when the dev chip is present. -->
+            @if (svc.messages().length > 0) {
+                <button type="button" class="new-conv-btn" (click)="newConversation()"
+                        [disabled]="svc.streaming()" [style.right.px]="devtools() ? 132 : 8"
+                        [title]="t('assistant.newConversation.action')"
+                        [attr.aria-label]="t('assistant.newConversation.action')">
+                    <i class="pi pi-pen-to-square text-[13px]" aria-hidden="true"></i>
+                </button>
+            }
+
+            <!-- Undo toast: the reset is delayed to this window, so undo restores
+                 the thread with the agent's memory intact. -->
+            @if (showUndo()) {
+                <div class="new-conv-undo">
+                    <span>{{ t('assistant.newConversation.done') }}</span>
+                    <button type="button" (click)="undoNewConversation()">{{ t('assistant.newConversation.undo') }}</button>
+                </div>
+            }
+
             <!-- Thread / empty state (top padding clears the dev chip row) -->
             <div class="flex-1 min-h-0 relative" [class.pt-8]="devtools()">
                 @if (svc.messages().length === 0) {
-                    <app-chat-empty-state (pick)="onStarter($event)" />
+                    <app-chat-empty-state [populated]="populated()" (pick)="onStarter($event)" />
                 } @else {
                     <app-chat-thread />
                 }
@@ -121,16 +143,71 @@ import { ChatEmptyStateComponent } from './components/chat-empty-state';
             color: var(--p-surface-500);
         }
         .dev-btn:hover { background: var(--p-surface-200); }
+
+        .new-conv-btn {
+            position: absolute; top: 0.35rem; z-index: 20;
+            width: 1.9rem; height: 1.9rem; border-radius: 9999px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--p-surface-0); color: var(--p-surface-500);
+            border: 1px solid var(--p-surface-200); cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .new-conv-btn:hover:not(:disabled) { background: var(--p-surface-100); color: var(--p-surface-700); }
+        .new-conv-btn:disabled { opacity: 0.4; cursor: default; }
+
+        .new-conv-undo {
+            position: absolute; bottom: 5.5rem; left: 50%; transform: translateX(-50%);
+            z-index: 30; display: flex; align-items: center; gap: 0.75rem;
+            background: #1A2740; color: #fff; padding: 0.45rem 0.5rem 0.45rem 1rem;
+            border-radius: 9999px; font-size: 0.82rem; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            animation: undoIn 0.2s ease-out;
+        }
+        .new-conv-undo button {
+            background: rgba(228,169,107,0.16); color: #E4A96B; border: 0; cursor: pointer;
+            padding: 0.3rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.8rem;
+        }
+        .new-conv-undo button:hover { background: rgba(228,169,107,0.28); }
+        @keyframes undoIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
     `],
 })
 export class AssistantPage implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private route = inject(ActivatedRoute);
+    private dashboard = inject(DashboardService);
     svc = inject(ChatSessionService);
     mock = inject(MockChatDriver);
     t = (k: string) => this.i18n.t(k);
 
+    /** Portfolio already has data -> the empty state leads with advice (both
+     * agents share this panel). Reads the dashboard summary (hydrated from the
+     * device snapshot for a returning user, and force-loaded in ngOnInit for a
+     * cold one); a brand-new user with no data falls back to the recording-led
+     * variant. DashboardSummary is snake_case (net_worth / total_assets). */
+    readonly populated = computed(() => {
+        const s = this.dashboard.summaryData();
+        return !!s && ((s.net_worth ?? 0) > 0 || (s.total_assets ?? 0) > 0);
+    });
+
     readonly scenarioIds = MOCK_SCENARIO_IDS;
+
+    /** Undo affordance for "New conversation" (the server reset is delayed to
+     *  this window, so undo restores the thread with the agent's memory intact). */
+    readonly showUndo = signal(false);
+    private undoTimer: ReturnType<typeof setTimeout> | null = null;
+
+    newConversation(): void {
+        if (this.svc.streaming()) return;
+        this.svc.newConversation();
+        this.showUndo.set(true);
+        if (this.undoTimer) clearTimeout(this.undoTimer);
+        this.undoTimer = setTimeout(() => this.showUndo.set(false), 6000);
+    }
+
+    undoNewConversation(): void {
+        this.svc.undoNewConversation();
+        this.showUndo.set(false);
+        if (this.undoTimer) { clearTimeout(this.undoTimer); this.undoTimer = null; }
+    }
 
     @ViewChild(ChatThreadComponent) thread?: ChatThreadComponent;
     @ViewChild(ChatInputBarComponent) input?: ChatInputBarComponent;
@@ -146,6 +223,12 @@ export class AssistantPage implements OnInit, OnDestroy {
     private vvHandler = () => this.onViewportChange();
 
     ngOnInit(): void {
+        // Ensure the dashboard summary is loaded so `populated` is accurate even
+        // when the user lands on /assistant without visiting the dashboard first
+        // (dedups + cached; a returning user is already hydrated from the device
+        // snapshot). Fire-and-forget: an empty/failed summary just keeps the
+        // recording-led variant.
+        void this.dashboard.loadDashboard();
         // Deep-linkable scenario for device demos: /assistant?scenario=bulk_confirm
         const wanted = this.route.snapshot.queryParamMap.get('scenario') as MockScenarioId | null;
         if (wanted && MOCK_SCENARIO_IDS.includes(wanted)) {
@@ -159,6 +242,7 @@ export class AssistantPage implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.svc.stop();
+        if (this.undoTimer) clearTimeout(this.undoTimer);
         if (typeof window !== 'undefined' && window.visualViewport) {
             window.visualViewport.removeEventListener('resize', this.vvHandler);
             window.visualViewport.removeEventListener('scroll', this.vvHandler);

@@ -38,4 +38,21 @@ describe('ChatEmptyStateComponent (teaching empty state)', () => {
         expect(picked.length).toBe(1);
         expect(picked[0]).toContain('acheté une maison');
     });
+
+    it('leads with advice once the portfolio is populated (both agents represented)', async () => {
+        TestBed.configureTestingModule({ imports: [ChatEmptyStateComponent] });
+        await TestBed.inject(I18nService).loadLang('fr');
+        const fixture = TestBed.createComponent(ChatEmptyStateComponent);
+        fixture.componentRef.setInput('populated', true);
+        fixture.detectChanges();
+
+        const el = fixture.nativeElement as HTMLElement;
+        const buttons = el.querySelectorAll('button');
+        expect(buttons.length).toBe(4);
+        const text = el.textContent || '';
+        // Advice is surfaced (diversification question), and a recording example
+        // stays the top chip so config remains a first-class suggestion.
+        expect(text).toContain('diversifié');
+        expect(buttons[0].textContent || '').toContain('Ajoute une dépense');
+    });
 });

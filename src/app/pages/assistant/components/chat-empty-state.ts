@@ -1,12 +1,17 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { I18nService } from '../../../i18n/i18n.service';
 
 /**
  * Zero-message state that teaches by example (plan step 7, first-glance
- * directive): the assistant greets first, then four tappable starter prompts
- * cover the four things it can do (record an asset, a transaction, a goal, or
- * answer a question) so a brand-new user sees the full surface in one screen.
+ * directive): the assistant greets first, then four tappable starter prompts.
+ *
+ * The panel is shared by both agents (config records, the advisor advises), so
+ * the state adapts to the user (S12 Phase 5): a brand-new, empty portfolio gets
+ * the recording-led screen (get data in first, the advisor has nothing to
+ * ground on yet); a populated portfolio gets the advice-led variant, since the
+ * advisor is what pays off once there is data. A recording example stays the
+ * top chip in BOTH variants, so config remains a first-class suggestion.
  */
 @Component({
     selector: 'app-chat-empty-state',
@@ -20,10 +25,10 @@ import { I18nService } from '../../../i18n/i18n.service';
                 <i class="pi pi-sparkles text-2xl text-ochre-600 dark:text-ochre-300" aria-hidden="true"></i>
             </span>
             <h1 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1">
-                {{ t('assistant.empty.title') }}
+                {{ title() }}
             </h1>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6 max-w-xs">
-                {{ t('assistant.empty.subtitle') }}
+                {{ subtitle() }}
             </p>
             <div class="flex flex-col gap-2 w-full max-w-sm">
                 @for (prompt of prompts(); track $index) {
@@ -49,17 +54,29 @@ import { I18nService } from '../../../i18n/i18n.service';
 })
 export class ChatEmptyStateComponent {
     private i18n = inject(I18nService);
-    t = (k: string) => this.i18n.t(k);
+
+    /** True once the user already has a portfolio -> advice-led variant. */
+    populated = input(false);
 
     @Output() pick = new EventEmitter<string>();
 
+    private base = computed(() =>
+        this.populated() ? 'assistant.emptyReturning' : 'assistant.empty',
+    );
+
+    title = computed(() => {
+        this.i18n.lang();
+        return this.i18n.t(`${this.base()}.title`);
+    });
+
+    subtitle = computed(() => {
+        this.i18n.lang();
+        return this.i18n.t(`${this.base()}.subtitle`);
+    });
+
     prompts = computed(() => {
         this.i18n.lang(); // recompute on language switch
-        return [
-            this.i18n.t('assistant.empty.starter1'),
-            this.i18n.t('assistant.empty.starter2'),
-            this.i18n.t('assistant.empty.starter3'),
-            this.i18n.t('assistant.empty.starter4'),
-        ];
+        const b = this.base();
+        return [1, 2, 3, 4].map((n) => this.i18n.t(`${b}.starter${n}`));
     });
 }
