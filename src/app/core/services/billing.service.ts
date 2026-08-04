@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { ApiService, PaymentHistoryItem, SubscriptionStatus, UsageStatus } from './api.service';
+import { ApiService, PaymentHistoryItem, PlansResponse, SubscriptionStatus, UsageStatus } from './api.service';
 
 /**
  * Subscription + AI-usage state for the Abonnement settings page (S11 Phase 2).
@@ -29,8 +29,12 @@ export class BillingService {
     readonly subscription = signal<SubscriptionStatus | null>(null);
     readonly usage = signal<UsageStatus | null>(null);
     readonly payments = signal<PaymentHistoryItem[]>([]);
+    /** Server-authoritative pricing ladder (the single source of prices). */
+    readonly plans = signal<PlansResponse | null>(null);
     readonly loading = signal(false);
     readonly loaded = signal(false);
+
+    private plansFetched = false;
 
     private lastFetch: number | null = null;
     private readonly TTL = 5 * 60 * 1000;
@@ -77,5 +81,17 @@ export class BillingService {
 
     refresh(): void {
         this.load(true);
+    }
+
+    /** Fetch the pricing ladder once per session (prices are static within a
+     *  session). The checkout sheet reads `plans()` instead of a hardcoded grid,
+     *  so prices live in exactly one place: the server. */
+    loadPlans(): void {
+        if (this.plansFetched) return;
+        this.plansFetched = true;
+        this.api.getPlans().subscribe({
+            next: (p) => this.plans.set(p),
+            error: () => { this.plansFetched = false; },  // allow a later retry
+        });
     }
 }
