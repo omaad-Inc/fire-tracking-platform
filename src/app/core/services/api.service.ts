@@ -1045,6 +1045,13 @@ export class ApiService {
         return this.http.post<{ warmed: boolean }>(`${this.apiUrl}/agents/onboarding/warm`, {});
     }
 
+    /** Start a fresh conversation: clears the agent's server-side memory (DB
+     *  message window + rolling summary + open Config gather) so the next turn
+     *  carries no prior context. The audit/usage trail is untouched. */
+    resetConversation(): Observable<{ ok: boolean }> {
+        return this.http.post<{ ok: boolean }>(`${this.apiUrl}/agents/conversation/reset`, {});
+    }
+
     /** Deterministic first-run write (S12 Phase 6): runs one tool through the
      *  audited pipeline with NO model call, so the tap-first concierge never
      *  depends on an LLM correctly translating a tap into a tool call. */

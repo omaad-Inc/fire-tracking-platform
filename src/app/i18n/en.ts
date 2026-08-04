@@ -453,6 +453,11 @@ export const EN: Dict = {
   // S12: the real chat surface (/assistant). The aiAssistant block above is the
   // coming-soon teaser panel and disappears with it once the flag opens.
   assistant: {
+    newConversation: {
+      action: 'New conversation',
+      done: 'New conversation started',
+      undo: 'Undo',
+    },
     inputPlaceholder: 'Write a message…',
     inputConfirmPending: 'Confirm or cancel the action above to continue',
     inputAria: 'Message for the assistant',

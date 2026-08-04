@@ -451,6 +451,11 @@ export const FR = {
   // S12: the real chat surface (/assistant). The aiAssistant block above is the
   // coming-soon teaser panel and disappears with it once the flag opens.
   assistant: {
+    newConversation: {
+      action: 'Nouvelle conversation',
+      done: 'Nouvelle conversation démarrée',
+      undo: 'Annuler',
+    },
     inputPlaceholder: 'Écris un message…',
     inputConfirmPending: 'Confirme ou annule l\'action ci-dessus pour continuer',
     inputAria: 'Message pour l\'assistant',
