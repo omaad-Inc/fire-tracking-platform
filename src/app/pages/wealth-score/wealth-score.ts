@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
@@ -173,10 +173,19 @@ import { prefersReducedMotion } from '../../core/theme/chart-theme';
                                 <span class="text-2xl font-medium text-surface-400 ml-1">/ 100</span>
                             </div>
 
-                            <!-- Radar chart -->
-                            <div class="w-full max-w-[360px] mx-auto">
-                                <p-chart type="radar" [data]="chartData" [options]="chartOptions" class="w-full"
-                                         role="img" [attr.aria-label]="chartAriaLabel()"></p-chart>
+                            <!-- Radar chart (fixed height so the canvas is never
+                                 0-sized; skeleton until the dataset is ready, so it
+                                 is never blank). -->
+                            <div class="w-full max-w-[360px] mx-auto h-[260px]">
+                                @if (chartReady()) {
+                                    <p-chart type="radar" [data]="chartData" [options]="chartOptions"
+                                             class="block w-full h-full"
+                                             role="img" [attr.aria-label]="chartAriaLabel()"></p-chart>
+                                } @else {
+                                    <div class="h-full flex items-center justify-center">
+                                        <div class="w-[220px] h-[220px] rounded-full bg-surface-100 dark:bg-surface-800 animate-pulse"></div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -254,6 +263,18 @@ export class WealthScorePage implements OnInit {
     private router = inject(Router);
     private nav = inject(NavService);
 
+    /** True once the radar dataset is built (drives the skeleton -> chart swap). */
+    readonly chartReady = signal(false);
+
+    // Build the radar REACTIVELY: whenever the axes data lands (from a fresh
+    // load OR a cached snapshot, and regardless of whether ngOnInit's awaited
+    // load resolved), (re)build the dataset. Building only once in ngOnInit left
+    // the chart blank on prod when the score came from cache but the awaited
+    // load errored/lagged.
+    private readonly _rebuild = effect(() => {
+        if (this.scoreService.axes().length) this.buildChart();
+    });
+
     /** Navigate a recommendation's deep-link ("/pages/x?y=z"), lang-prefixed (S6-2). */
     actOnAxis(r: CoachingRecommendation) {
         const [path, query] = r.action_route.replace(/^\//, '').split('?');
@@ -309,8 +330,10 @@ export class WealthScorePage implements OnInit {
     }
 
     async ngOnInit() {
-        await this.scoreService.load();
-        this.buildChart();
+        // Trigger the load; the reactive effect (_rebuild) builds the radar when
+        // the axes land, so we do NOT call buildChart() here (it would race the
+        // data and, on a cache-hit + slow/failed fetch, leave the chart blank).
+        await this.scoreService.load().catch(() => { /* effect builds from cache if any */ });
         // Load coaching so each axis can surface its one top action (S6-2).
         this.coaching.load().catch(() => { /* non-critical: axes still render */ });
     }
@@ -395,7 +418,7 @@ export class WealthScorePage implements OnInit {
 
         this.chartOptions = {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false, // fill the fixed-height container (never a 0-size canvas)
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -420,5 +443,6 @@ export class WealthScorePage implements OnInit {
             },
             animation: prefersReducedMotion() ? false : { duration: 600, easing: 'easeOutQuart' },
         };
+        this.chartReady.set(true); // dataset is ready -> swap the skeleton for the chart
     }
 }

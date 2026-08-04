@@ -178,12 +178,12 @@ export class PricingWidget {
     t(key: string): string { return this.i18n.t(key); }
 
     freeFeatures() {
-        return ['freeF1','freeF2','freeF3','freeF4','freeF5','freeF6','freeF7','freeF8']
+        return ['freeF1','freeF2','freeF3','freeF4','freeF5','freeF6','freeF7','freeF8','freeF9']
             .map(k => this.t('landing.pricing.' + k));
     }
 
     proFeatures() {
-        return ['proF1','proF2','proF3','proF4','proF5','proF6','proF7']
+        return ['proF1','proF3','proF4','proF5','proF6','proF7']
             .map(k => this.t('landing.pricing.' + k));
     }
 

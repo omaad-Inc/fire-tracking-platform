@@ -279,13 +279,15 @@ export class PlansSettings {
         return Array.from({ length: count }, (_, i) => this.i18n.t(`${prefix}.f${i + 1}`));
     }
 
-    freeFeatures    = computed(() => this.featureList('plans.freeFeatures', 8));
-    proFeatures     = computed(() => this.featureList('plans.proFeatures', 7));
+    freeFeatures    = computed(() => this.featureList('plans.freeFeatures', 9));
+    proFeatures     = computed(() => this.featureList('plans.proFeatures', 6));
     premiumFeatures = computed(() => this.featureList('plans.premiumFeatures', 7));
 
     comparisonTable = computed((): PlanFeature[] => {
         const t = (k: string) => this.i18n.t(k);
         const unlimited = t('plans.unlimited');
+        const setupGrant = t('plans.compare.aiSetupGrant'); // free tier config-assistant grant
+        const aiMonthly = t('plans.compare.aiMonthly');     // paid tier config-assistant quota
         return [
             // The free tier is the complete manual tracker; data rights
             // (export) and security are NEVER paywalled (S11 plan matrix,
@@ -302,8 +304,8 @@ export class PlansSettings {
             { label: t('plans.compare.notifications'),      free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.dataExport'),         free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.shareLinks'),         free: '1',   pro: unlimited, premium: unlimited },
-            { label: t('plans.compare.aiAssistant'),        free: false, pro: true,  premium: true  },
-            { label: t('plans.compare.momoSync'),           free: false, pro: '2',   premium: unlimited },
+            { label: t('plans.compare.aiOnboarding'),       free: true,  pro: true,  premium: true  },
+            { label: t('plans.compare.aiAssistant'),        free: setupGrant, pro: aiMonthly, premium: aiMonthly },
             { label: t('plans.compare.smsAlerts'),          free: false, pro: true,  premium: true  },
             { label: t('plans.compare.automatedReports'),   free: false, pro: true,  premium: true  },
             { label: t('plans.compare.customAlerts'),       free: false, pro: true,  premium: true  },
@@ -312,6 +314,7 @@ export class PlansSettings {
             { label: t('plans.compare.customCategories'),   free: false, pro: true,  premium: true  },
             { label: t('plans.compare.prioritySupport'),    free: false, pro: true,  premium: true  },
             { label: t('plans.compare.aiAdvisor'),          free: false, pro: false, premium: true  },
+            { label: t('plans.compare.aiOpus'),             free: false, pro: false, premium: true  },
             { label: t('plans.compare.multiPortfolios'),    free: false, pro: false, premium: true  },
             { label: t('plans.compare.groupTontine'),       free: false, pro: false, premium: true  },
             { label: t('plans.compare.apiIntegrations'),    free: false, pro: false, premium: true  },
