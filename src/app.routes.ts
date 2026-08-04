@@ -6,6 +6,8 @@ import localeEn from '@angular/common/locales/en';
 import { LOCALE_ID } from '@angular/core';
 import { authGuard } from './app/core/guards/auth.guard';
 import { shareBootstrapGuard } from './app/core/guards/share.guard';
+import { aiChatGuard } from './app/core/guards/feature-flag.guard';
+import { onboardingRedirectGuard } from './app/core/guards/onboarding-redirect.guard';
 
 // Everything except the app shell (AppLayout) is lazy-loaded so a returning
 // logged-in user never downloads the marketing site, and a first-time visitor
@@ -103,6 +105,11 @@ export const appRoutes: Routes = [
     // Reached only at account creation; returning users never land here.
     { path: ':lang/welcome', loadComponent: () => import('./app/pages/auth/welcome').then(m => m.Welcome), canActivate: [authGuard] },
 
+    // First-run concierge (S12 Phase 6, full-screen, no app shell). Auto-launched
+    // from Welcome.finish for a brand-new user; behind ff_aiChat (aiChatGuard
+    // bounces to the dashboard when the flag is off, never notfound).
+    { path: ':lang/onboarding', canMatch: [aiChatGuard], canActivate: [authGuard], loadComponent: () => import('./app/pages/onboarding/onboarding-page').then(m => m.OnboardingPage) },
+
     // Main app with layout (protected routes)
     {
         path: ':lang',
@@ -115,7 +122,7 @@ export const appRoutes: Routes = [
             }
         ],
         children: [
-            { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
+            { path: '', canActivate: [onboardingRedirectGuard], loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
         ]
     },

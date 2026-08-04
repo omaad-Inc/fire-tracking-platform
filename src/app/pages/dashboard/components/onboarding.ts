@@ -1,199 +1,78 @@
-import { ChangeDetectionStrategy, Component, inject, computed, input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { TokenService } from '../../../core/services/token.service';
-import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 
-interface OnboardingStep {
-    icon: string;
-    iconBg: string;
-    title: string;
-    desc: string;
-    cta: string;
-    action: () => void;
-}
-
+/**
+ * Post-onboarding "prochaines etapes" nudge (S12 Phase 6). Replaces the old
+ * dashboard onboarding checklist: the guided first-run now lives in the
+ * full-screen concierge (/:lang/onboarding). This slim card is only the reopen
+ * entry for a user who skipped it. Same selector + input/output API as before,
+ * so the dashboard host is unchanged; the gating (showOnboarding / anyDone)
+ * still decides when it appears.
+ */
 @Component({
     changeDetection: ChangeDetectionStrategy.OnPush,
     selector: 'app-onboarding',
     standalone: true,
     imports: [CommonModule, ButtonModule, RippleModule],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-2xl overflow-hidden mb-12 sm:mb-8">
-            <!-- Header -->
-            <div class="bg-brand-900 px-6 py-8 sm:px-8 sm:py-10 text-center">
-                <div class="relative">
-                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 mb-4">
-                        <span class="w-2 h-2 rounded-full bg-positive-500"></span>
-                        <span class="text-white/80 text-xs font-medium">
-                            {{ t('onboarding.welcome') }}
-                        </span>
-                    </div>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">
-                        {{ t('onboarding.hello') }} {{ firstName() }} !
-                    </h2>
-                    <p class="text-brand-100 text-sm sm:text-base max-w-md mx-auto">
-                        {{ t('onboarding.intro') }}
-                    </p>
-                </div>
+        @if (flags.aiChat()) {
+        <div class="relative flex items-center gap-4 p-4 sm:p-5 mb-8 rounded-2xl border border-brand-200 dark:border-brand-700 bg-brand-50/60 dark:bg-brand-900/20">
+            <div class="shrink-0 w-11 h-11 rounded-xl bg-brand-700 dark:bg-brand-600 flex items-center justify-center">
+                <i class="pi pi-sparkles text-lg text-white" aria-hidden="true"></i>
             </div>
-
-            <!-- Steps -->
-            <div class="p-5 sm:p-8">
-                <!-- Primary path: configure by talking to the assistant (flag-gated) -->
-                @if (aiChat()) {
-                    <button (click)="openAssistant()"
-                            class="w-full flex items-center gap-4 p-4 sm:p-5 mb-5 rounded-2xl border-2 border-brand-200 dark:border-brand-700 bg-brand-50/60 dark:bg-brand-900/20 hover:border-brand-400 dark:hover:border-brand-500 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all duration-200 text-left cursor-pointer group">
-                        <div class="shrink-0 w-12 h-12 rounded-xl bg-brand-700 dark:bg-brand-600 flex items-center justify-center">
-                            <i class="pi pi-sparkles text-xl text-white"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-0.5 flex-wrap">
-                                <h3 class="font-semibold text-surface-900 dark:text-surface-0 text-sm sm:text-base">{{ t('onboarding.assistantTitle') }}</h3>
-                                <span class="px-1.5 py-0.5 rounded-full bg-ochre-500 text-white text-[10px] font-bold uppercase tracking-wide">{{ t('onboarding.assistantBadge') }}</span>
-                            </div>
-                            <p class="text-surface-500 dark:text-surface-400 text-xs sm:text-sm leading-relaxed">{{ t('onboarding.assistantDesc') }}</p>
-                        </div>
-                        <span class="hidden sm:inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-brand-700 dark:text-brand-300 group-hover:text-brand-500 dark:group-hover:text-brand-200 transition-colors">
-                            {{ t('onboarding.assistantCta') }} <i class="pi pi-arrow-right text-[10px]"></i>
-                        </span>
-                    </button>
-
-                    <!-- Fallback separator: the 3 manual steps remain below -->
-                    <div class="flex items-center gap-3 mb-5">
-                        <span class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></span>
-                        <span class="text-surface-400 dark:text-surface-500 text-xs">{{ t('onboarding.orManual') }}</span>
-                        <span class="flex-1 h-px bg-surface-200 dark:bg-surface-700"></span>
-                    </div>
-                }
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    @for (step of steps(); track step.title; let i = $index) {
-                        <div class="relative flex flex-col items-center text-center p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer group"
-                             [ngClass]="completedSteps().has(i)
-                                 ? 'border-positive-100 dark:border-positive-700/40 bg-positive-50 dark:bg-positive-700/10'
-                                 : 'border-surface-200 dark:border-surface-700 hover:border-brand-200 dark:hover:border-brand-700 hover:bg-brand-50/40 dark:hover:bg-brand-900/20'"
-                             (click)="step.action()">
-
-                            <!-- Step number badge -->
-                            <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                                 [ngClass]="completedSteps().has(i)
-                                     ? 'bg-positive text-white'
-                                     : 'bg-brand-700 dark:bg-brand-300 text-white dark:text-brand-900'">
-                                @if (completedSteps().has(i)) {
-                                    <i class="pi pi-check text-[10px]"></i>
-                                } @else {
-                                    {{ i + 1 }}
-                                }
-                            </div>
-
-                            <!-- Icon -->
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 mt-1 {{ step.iconBg }}">
-                                <i class="pi {{ step.icon }} text-xl text-white"></i>
-                            </div>
-
-                            <h3 class="font-semibold text-surface-900 dark:text-surface-0 text-sm mb-1">{{ step.title }}</h3>
-                            <p class="text-surface-500 dark:text-surface-400 text-xs leading-relaxed mb-3">{{ step.desc }}</p>
-
-                            @if (!completedSteps().has(i)) {
-                                <span class="text-xs font-semibold text-brand-700 dark:text-brand-300 group-hover:text-brand-500 dark:group-hover:text-brand-200 transition-colors">
-                                    {{ step.cta }} <i class="pi pi-arrow-right text-[10px] ml-0.5"></i>
-                                </span>
-                            } @else {
-                                <span class="text-xs font-semibold text-positive">
-                                    {{ t('onboarding.done') }}
-                                </span>
-                            }
-                        </div>
-                    }
-                </div>
-
-                <!-- Dismiss -->
-                <div class="flex justify-center mt-6">
-                    <button (click)="dismiss()"
-                            class="text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 text-xs transition-colors cursor-pointer">
-                        {{ t('onboarding.hide') }}
-                    </button>
-                </div>
+            <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-surface-900 dark:text-surface-0 text-sm sm:text-base">
+                    {{ t('onboarding.nudge.title') }}
+                </h3>
+                <p class="text-surface-500 dark:text-surface-400 text-xs sm:text-sm leading-relaxed">
+                    {{ t('onboarding.nudge.desc') }}
+                </p>
             </div>
+            <button pButton pRipple type="button" [label]="t('onboarding.nudge.cta')"
+                    class="shrink-0 !rounded-full !py-2 !px-4 !text-sm !font-semibold omaad-cta !border-0"
+                    (click)="start()"></button>
+            <button type="button" (click)="dismiss()" aria-label="Dismiss"
+                    class="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 cursor-pointer">
+                <i class="pi pi-times text-[11px]" aria-hidden="true"></i>
+            </button>
         </div>
+        }
     `
 })
 export class OnboardingComponent {
-    private router       = inject(Router);
+    private router = inject(Router);
     private tokenService = inject(TokenService);
-    private i18n         = inject(I18nService);
-    private flags        = inject(FeatureFlagsService);
+    private i18n = inject(I18nService);
+    protected flags = inject(FeatureFlagsService);
 
-    /** The assistant-first path is only offered when the chat flag is on;
-     * otherwise the card falls back to the 3 manual steps (prod default). */
-    aiChat = () => this.flags.aiChat();
-
-    hasAssets       = input<boolean>(false);
+    // Kept for host API compatibility (the dashboard binds these); the nudge no
+    // longer renders per-step state, so they are unused.
+    hasAssets = input<boolean>(false);
     hasTransactions = input<boolean>(false);
-    hasFireGoal     = input<boolean>(false);
+    hasFireGoal = input<boolean>(false);
 
-    @Output() addAsset  = new EventEmitter<void>();
+    @Output() addAsset = new EventEmitter<void>();
     @Output() dismissed = new EventEmitter<void>();
 
     t(key: string): string { return this.i18n.t(key); }
-
-    completedSteps = computed(() => {
-        const set = new Set<number>();
-        if (this.hasAssets())       set.add(0);
-        if (this.hasTransactions()) set.add(1);
-        if (this.hasFireGoal())     set.add(2);
-        return set;
-    });
-
-    firstName = () => {
-        const user = this.tokenService.user();
-        return user?.first_name || user?.email?.split('@')[0] || '';
-    };
 
     private get lang(): string {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         return match ? match[1] : 'fr';
     }
 
-    steps = computed<OnboardingStep[]>(() => {
-        const t = (k: string) => this.i18n.t(k);
-        return [
-            {
-                icon: 'pi-plus',
-                iconBg: 'bg-brand-700 dark:bg-brand-600',
-                title: t('onboarding.step1Title'),
-                desc:  t('onboarding.step1Desc'),
-                cta:   t('onboarding.step1Cta'),
-                action: () => this.addAsset.emit(),
-            },
-            {
-                icon: 'pi-arrow-right-arrow-left',
-                iconBg: 'bg-brand-700 dark:bg-brand-600',
-                title: t('onboarding.step2Title'),
-                desc:  t('onboarding.step2Desc'),
-                cta:   t('onboarding.step2Cta'),
-                action: () => this.router.navigate(['/', this.lang, 'pages', 'transaction']),
-            },
-            {
-                icon: 'pi-flag',
-                iconBg: 'bg-ochre-500',
-                title: t('onboarding.step3Title'),
-                desc:  t('onboarding.step3Desc'),
-                cta:   t('onboarding.step3Cta'),
-                action: () => this.router.navigate(['/', this.lang, 'pages', 'fire']),
-            },
-        ];
-    });
-
-    openAssistant() {
-        this.router.navigate(['/', this.lang, 'pages', 'assistant']);
+    /** Reopen the full-screen concierge (behind ff_aiChat; the guard bounces if off). */
+    start(): void {
+        this.router.navigate(['/', this.lang, 'onboarding']);
     }
 
-    dismiss() {
+    dismiss(): void {
         localStorage.setItem('omaad_onboarding_dismissed', 'true');
         this.dismissed.emit();
     }

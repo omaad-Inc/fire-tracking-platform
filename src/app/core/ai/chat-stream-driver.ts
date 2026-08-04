@@ -22,11 +22,17 @@ export interface ChatStreamDriver {
      * Send a user message and stream the reply.
      * Events flow through onEvent in order; onClose fires exactly once when
      * the stream ends (after message_stop, after error, or after cancel).
+     *
+     * `context` is the optional per-turn screen context (guard 11: the backend
+     * wraps it as data-not-instructions). The onboarding concierge passes
+     * { onboarding: true, first_name } here so the router keeps first-run turns
+     * on the onboarding agent (S12 Phase 6); the assistant page passes nothing.
      */
     startTurn(
         message: string,
         onEvent: (e: ChatStreamEvent) => void,
         onClose: () => void,
+        context?: Record<string, unknown>,
     ): ChatTurnHandle;
 
     /**

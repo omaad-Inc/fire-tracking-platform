@@ -952,6 +952,18 @@ export class ApiService {
             ?? this.http.get<Asset>(`${this.apiUrl}/assets/${id}`);
     }
 
+    /** First-run gate (S12 Phase 6): true when the user has no assets and has not
+     *  completed onboarding, so the FE routes them into the concierge. */
+    getOnboardingStatus(): Observable<{ should_onboard: boolean }> {
+        return this.http.get<{ should_onboard: boolean }>(`${this.apiUrl}/agents/onboarding-status`);
+    }
+
+    /** Pre-warm the onboarding prompt cache (S12 Phase 6) so the first concierge
+     *  tap is fast (~2-3s) instead of the cold start. Fire-and-forget on page load. */
+    warmOnboarding(): Observable<{ warmed: boolean }> {
+        return this.http.post<{ warmed: boolean }>(`${this.apiUrl}/agents/onboarding/warm`, {});
+    }
+
     createAsset(data: AssetCreate): Observable<Asset> {
         if (this.share.active()) return this.readonlyBlock;
         return this.http.post<Asset>(`${this.apiUrl}/assets`, data);
