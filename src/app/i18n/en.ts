@@ -133,6 +133,15 @@ export const EN: Dict = {
     backToPortfolio: 'Back to portfolio',
     sincePurchase: 'since purchase',
     brvmClose: 'BRVM price, close of {{date}}',
+    brvmHistoryTitle: 'BRVM history & performance',
+    brvmHistoryBuilding: 'Price history builds up day by day. Check back soon to see the curve.',
+    brvmCostBasis: 'Cost basis',
+    brvmCurrentValue: 'Current value',
+    brvmAbsoluteGain: 'Gain / loss',
+    brvmAnnualized: 'Annualized return',
+    brvmPriceReturn: 'Price change',
+    brvmPriceReturnSub: 'over the shown period',
+    brvmSinceLabel: 'since {{date}}',
     monthlyContribution: 'Monthly contribution',
     perCycle: 'per cycle',
     participants: 'Participants',
@@ -456,6 +465,11 @@ export const EN: Dict = {
   // S12: the real chat surface (/assistant). The aiAssistant block above is the
   // coming-soon teaser panel and disappears with it once the flag opens.
   assistant: {
+    askAi: {
+      button: 'Ask AI',
+      assetPrompt: 'What do you think of this asset in my portfolio?',
+      netWorthPrompt: 'Analyze my net worth and tell me what stands out.',
+    },
     newConversation: {
       action: 'New conversation',
       done: 'New conversation started',
@@ -859,6 +873,13 @@ export const EN: Dict = {
       budgetDesc: 'Budget exceeded, almost reached, or unusual spending',
       tontine: 'Tontine reminders',
       tontineDesc: 'Contribution due in the coming days',
+      milestone: 'FIRE milestones',
+      milestoneDesc: 'When you cross a step toward independence (25, 50, 75, 100%)',
+      reports: 'Reports',
+      reportMonthly: 'Monthly report',
+      reportMonthlyDesc: 'Last month\'s summary as a PDF',
+      reportDownload: 'Download PDF',
+      reportError: 'Could not generate the report right now',
       quietHours: 'Quiet hours',
       quietHoursDesc: 'No notifications during this window (local time)',
       quietFrom: 'From',

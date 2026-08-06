@@ -34,10 +34,16 @@ class FakeDriver implements ChatStreamDriver {
     private undoResolve!: () => void;
     private undoReject!: (e: unknown) => void;
 
-    startTurn(_m: string, onEvent: (e: ChatStreamEvent) => void, onClose: () => void): ChatTurnHandle {
+    /** The context passed to the most recent startTurn (AI-75). */
+    lastContext: Record<string, unknown> | undefined;
+    startTurnCount = 0;
+    startTurn(_m: string, onEvent: (e: ChatStreamEvent) => void, onClose: () => void,
+              context?: Record<string, unknown>): ChatTurnHandle {
         this.emit = onEvent;
         this.close = onClose;
         this.cancelled = false;
+        this.lastContext = context;
+        this.startTurnCount++;
         return { cancel: () => { this.cancelled = true; this.cancelCount++; onClose(); } };
     }
 
@@ -81,6 +87,17 @@ describe('ChatSessionService (event reducer)', () => {
             ],
         });
         svc = TestBed.inject(ChatSessionService);
+    });
+
+    it('primeContext attaches screen context to the NEXT turn only, then clears (AI-75)', () => {
+        svc.primeContext({ screen: 'asset_detail', asset_id: 42, asset_name: 'Maison' });
+        svc.send('que penses-tu de cet actif ?');
+        expect(driver.lastContext).toEqual({ screen: 'asset_detail', asset_id: 42, asset_name: 'Maison' });
+        driver.emit({ type: 'message_stop' });
+        driver.close();
+        // A later turn with nothing primed carries no context (one-shot grounding).
+        svc.send('et sinon ?');
+        expect(driver.lastContext).toBeUndefined();
     });
 
     it('send appends the user message and an assistant shell, and locks the composer', () => {
@@ -520,5 +537,60 @@ describe('ChatSessionService (UX-2 hung-stream watchdog)', () => {
         svc.confirm('p1', true);           // continuation stream opens
         jasmine.clock().tick(STALL_MS + 1);
         expect(svc.stalled()).toBeTrue();  // and IT can hang -> affordance shows
+    });
+});
+
+describe('ChatSessionService (UX-4 retry after a dropped stream)', () => {
+    let svc: ChatSessionService;
+    let driver: FakeDriver;
+
+    beforeEach(() => {
+        clearThreads();
+        driver = new FakeDriver();
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                provideHttpClient(),
+                ChatSessionService,
+                { provide: CHAT_STREAM_DRIVER, useValue: driver },
+            ],
+        });
+        svc = TestBed.inject(ChatSessionService);
+    });
+
+    afterEach(clearThreads);
+
+    it('retry after a mid-stream drop REPLACES the partial answer (no duplication)', () => {
+        svc.send('question');
+        driver.emit({ type: 'text_delta', text: 'Ton patrimoine pro' }); // …drop
+        driver.emit({ type: 'error', code: 'stream_error', message: 'offline' });
+        driver.close();
+
+        svc.retryLast();
+
+        // The failed tail (partial text + error bubble) is gone; the thread is
+        // back to the resent user message and a fresh assistant shell.
+        const msgs = svc.messages();
+        expect(msgs.length).toBe(2);
+        expect(msgs[0].role).toBe('user');
+        expect(msgs[0].text).toBe('question');
+        expect(msgs[1].blocks?.length ?? 0).toBe(0);
+        expect(svc.streaming()).toBeTrue();
+    });
+
+    it('retry KEEPS a failed turn whose write already landed (done card + undo)', () => {
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'ok', summary: 'Maison créée', undo_token: 'assets/1' });
+        driver.emit({ type: 'error', code: 'stream_error', message: 'offline' }); // dropped before message_stop
+        driver.close();
+
+        svc.retryLast();
+
+        // The done card (and its Annuler affordance) must survive the retry.
+        const cards = svc.messages().flatMap((m) =>
+            (m.blocks ?? []).filter((b) => b.kind === 'card'));
+        expect(cards.length).toBe(1);
+        expect(cards[0].kind === 'card' && cards[0].card.state).toBe('done');
     });
 });

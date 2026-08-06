@@ -120,6 +120,19 @@ export class ChatInputBarComponent {
         this.box?.nativeElement.focus();
     }
 
+    /** AI-75: seed the composer with a suggested question from an "Ask AI" entry
+     *  point, then focus so the user can review, edit, and send. */
+    prefill(text: string): void {
+        this.draft = text;
+        this.tick.update((n) => n + 1);
+        this.typing.emit(text.trim().length > 0);
+        queueMicrotask(() => {
+            const el = this.box?.nativeElement;
+            if (el) { el.value = text; el.focus(); }
+            this.autosize();
+        });
+    }
+
     submit(): void {
         const text = this.draft.trim();
         if (!text || this.confirmPending) return;

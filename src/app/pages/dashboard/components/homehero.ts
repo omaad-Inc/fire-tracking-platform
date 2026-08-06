@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subscription, merge } from 'rxjs';
 
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { DashboardService, DashboardStats, FIREProgress, ChartDataPoint } from '../../service/dashboard.service';
 import { CoachingService } from '../../service/coaching.service';
@@ -49,7 +50,18 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                 <!-- Hero: net worth as the one dominant number + trend + sparkline -->
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                     <div class="min-w-0">
-                        <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium mb-1">{{ t('dashboard.kpi.netWorth') }}</span>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="block text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('dashboard.kpi.netWorth') }}</span>
+                            @if (flags.aiChat()) {
+                                <button type="button" (click)="askAi()"
+                                        class="omaad-press inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full
+                                               text-brand-700 dark:text-ochre-400 hover:bg-brand-50 dark:hover:bg-ochre-400/10 transition-colors"
+                                        [attr.aria-label]="t('assistant.askAi.button')">
+                                    <i class="pi pi-sparkles" style="font-size: 10px" aria-hidden="true"></i>
+                                    {{ t('assistant.askAi.button') }}
+                                </button>
+                            }
+                        </div>
                         <div class="font-bold text-4xl md:text-5xl leading-none tracking-tight"
                              [ngClass]="realNetWorth() >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-negative'">
                             <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" [animate]="!reducedMotion" />
@@ -172,6 +184,8 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
 export class HomeHero implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private nav = inject(NavService);
+    private router = inject(Router);
+    flags = inject(FeatureFlagsService);
     private dashboardService = inject(DashboardService);
     private stateService = inject(AssetsStateService);
     coaching = inject(CoachingService);
@@ -298,4 +312,9 @@ export class HomeHero implements OnInit, OnDestroy {
     t(key: string, p?: Record<string, string | number>): string { return this.i18n.t(key, p); }
 
     link(...segments: string[]): any[] { return this.nav.link(...segments); }
+
+    /** AI-75: open the assistant grounded on the whole portrait (net worth). */
+    askAi(): void {
+        this.router.navigate(this.nav.link('pages', 'assistant'), { queryParams: { ask: 'networth' } });
+    }
 }

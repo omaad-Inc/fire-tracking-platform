@@ -60,6 +60,17 @@ export class ChatSessionService {
 
     private handle: ChatTurnHandle | null = null;
 
+    /** AI-75: screen context ("Ask AI" from asset detail / net worth) to attach
+     *  to the NEXT turn only. The backend folds it into a screen_context data
+     *  block (guard 11: data, never instructions); after that turn the ongoing
+     *  thread carries the topic, so it is a one-shot grounding, not sticky. */
+    private pendingContext: Record<string, unknown> | null = null;
+
+    /** Prime the next send with an "Ask AI" screen context (or clear it). */
+    primeContext(context: Record<string, unknown> | null): void {
+        this.pendingContext = context;
+    }
+
     // ─── Actions ─────────────────────────────────────────────────────────────
 
     send(text: string): void {
@@ -97,10 +108,15 @@ export class ChatSessionService {
         this.append({ id: nextId(), role: 'assistant', ts: Date.now(), blocks: [] });
         this.streaming.set(true);
         this.armStall();
+        // AI-75: attach any primed "Ask AI" context to THIS turn, then clear it
+        // so subsequent turns are contextless (the thread carries the topic).
+        const context = this.pendingContext ?? undefined;
+        this.pendingContext = null;
         this.handle = this.driver.startTurn(
             trimmed,
             (e) => this.reduce(e),
             () => this.closeTurn(),
+            context,
         );
     }
 
@@ -169,9 +185,15 @@ export class ChatSessionService {
         const msgs = this.messages();
         const lastUser = [...msgs].reverse().find((m) => m.role === 'user');
         if (!lastUser?.text) return;
-        // Drop the failed assistant tail so the thread does not stack error bubbles.
+        // UX-4: drop the WHOLE failed assistant tail — error bubble AND the
+        // partial text a mid-stream drop left behind — so the retried answer
+        // replaces it instead of rendering twice. Exception: a turn where a
+        // write already landed (a 'done' card) is kept, because removing it
+        // would erase the record of the write and its Annuler affordance.
         const last = msgs[msgs.length - 1];
-        if (last.role === 'assistant' && last.blocks?.every((b) => b.kind === 'error')) {
+        if (last.role === 'assistant'
+            && last.blocks?.some((b) => b.kind === 'error')
+            && !last.blocks.some((b) => b.kind === 'card' && b.card.state === 'done')) {
             this.messages.set(msgs.slice(0, -1));
         }
         const text = lastUser.text;

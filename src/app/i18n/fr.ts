@@ -131,6 +131,15 @@ export const FR = {
     backToPortfolio: 'Retour au patrimoine',
     sincePurchase: 'depuis l\'achat',
     brvmClose: 'Cours BRVM, clôture du {{date}}',
+    brvmHistoryTitle: 'Historique & performance BRVM',
+    brvmHistoryBuilding: 'L\'historique des cours se constitue jour après jour. Revenez bientôt pour voir la courbe.',
+    brvmCostBasis: 'Prix de revient',
+    brvmCurrentValue: 'Valeur actuelle',
+    brvmAbsoluteGain: 'Plus/moins-value',
+    brvmAnnualized: 'Rendement annualisé',
+    brvmPriceReturn: 'Variation du cours',
+    brvmPriceReturnSub: 'sur la période affichée',
+    brvmSinceLabel: 'depuis le {{date}}',
     monthlyContribution: 'Mise mensuelle',
     perCycle: 'par cycle',
     participants: 'Participants',
@@ -454,6 +463,11 @@ export const FR = {
   // S12: the real chat surface (/assistant). The aiAssistant block above is the
   // coming-soon teaser panel and disappears with it once the flag opens.
   assistant: {
+    askAi: {
+      button: 'Demander à l\'IA',
+      assetPrompt: 'Que penses-tu de cet actif dans mon patrimoine ?',
+      netWorthPrompt: 'Analyse mon patrimoine net et dis-moi ce qui ressort.',
+    },
     newConversation: {
       action: 'Nouvelle conversation',
       done: 'Nouvelle conversation démarrée',
@@ -857,6 +871,13 @@ export const FR = {
       budgetDesc: 'Budget dépassé, presque atteint ou dépense inhabituelle',
       tontine: 'Rappels de tontine',
       tontineDesc: 'Cotisation attendue dans les prochains jours',
+      milestone: 'Jalons FIRE',
+      milestoneDesc: 'Quand vous franchissez une étape vers votre indépendance (25, 50, 75, 100 %)',
+      reports: 'Rapports',
+      reportMonthly: 'Rapport mensuel',
+      reportMonthlyDesc: 'Votre bilan du mois dernier en PDF',
+      reportDownload: 'Télécharger le PDF',
+      reportError: 'Impossible de générer le rapport pour le moment',
       quietHours: 'Heures calmes',
       quietHoursDesc: 'Aucune notification pendant cette plage (heure locale)',
       quietFrom: 'De',

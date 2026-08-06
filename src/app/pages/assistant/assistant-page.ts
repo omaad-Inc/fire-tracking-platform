@@ -1,9 +1,10 @@
 import {
-    ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild,
+    AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild,
     computed, inject, signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { I18nService } from '../../i18n/i18n.service';
 import { ChatSessionService } from '../../core/ai/chat-session.service';
@@ -192,7 +193,7 @@ import { DashboardService } from '../service/dashboard.service';
         @keyframes undoIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
     `],
 })
-export class AssistantPage implements OnInit, OnDestroy {
+export class AssistantPage implements OnInit, AfterViewInit, OnDestroy {
     private i18n = inject(I18nService);
     private route = inject(ActivatedRoute);
     private dashboard = inject(DashboardService);
@@ -250,6 +251,10 @@ export class AssistantPage implements OnInit, OnDestroy {
 
     private vvHandler = () => this.onViewportChange();
 
+    /** AI-75: staged "Ask AI" question awaiting the composer view. */
+    private pendingSuggestion: string | null = null;
+    private qpSub?: Subscription;
+
     ngOnInit(): void {
         // Ensure the dashboard summary is loaded so `populated` is accurate even
         // when the user lands on /assistant without visiting the dashboard first
@@ -273,10 +278,72 @@ export class AssistantPage implements OnInit, OnDestroy {
             window.visualViewport.addEventListener('resize', this.vvHandler);
             window.visualViewport.addEventListener('scroll', this.vvHandler);
         }
+        // AI-75: react to EVERY navigation's query params, not just the first.
+        // The router reuses this component across /assistant?ask=… navigations,
+        // so a one-shot snapshot read in ngAfterViewInit would fire only once
+        // (the "same suggestions on every tab" bug). The stream fires each time.
+        this.qpSub = this.route.queryParamMap.subscribe((q) => this.applyAsk(q));
+    }
+
+    /** AI-75: an "Ask AI" entry point (asset detail, net worth) deep-links here
+     *  with ?ask=<screen>. Build the screen context, prime it for the next send,
+     *  and stage a suggested question; flushPrefill seeds the composer once the
+     *  input view exists (first load) or immediately (later navigations). */
+    private applyAsk(q: ParamMap): void {
+        const ask = q.get('ask');
+        if (!ask || !this.flags.aiChat() || this.svc.streaming()) return;
+        const primed = this.buildAskContext(ask, q);
+        if (!primed) return;
+        this.svc.primeContext(primed.context);
+        this.pendingSuggestion = primed.suggestion;
+        // Hide the generic starter chips now: this entry has its own question,
+        // and we don't want the same four suggestions on every "Ask AI" arrival.
+        this.composerHasText.set(true);
+        this.flushPrefill();
+    }
+
+    /** Seed the composer with the staged "Ask AI" question once the input exists.
+     *  On first load the params arrive (ngOnInit) before the view; ngAfterViewInit
+     *  re-flushes. On later navigations the input is already there. Deferred to a
+     *  microtask so the prefill's "typing" emit (which hides the starter chips)
+     *  lands AFTER the current change-detection pass, not during it. */
+    private flushPrefill(): void {
+        if (this.pendingSuggestion && this.input) {
+            const suggestion = this.pendingSuggestion;
+            this.pendingSuggestion = null;
+            queueMicrotask(() => this.input?.prefill(suggestion));
+        }
+    }
+
+    ngAfterViewInit(): void {
+        this.flushPrefill();
+    }
+
+    /** Map an ?ask=<screen> deep link to a screen_context + a suggested prompt.
+     *  Unknown screens are ignored (no context, no prefill). */
+    private buildAskContext(ask: string, q: ParamMap):
+        { context: Record<string, unknown>; suggestion: string } | null {
+        if (ask === 'asset') {
+            const id = Number(q.get('id'));
+            const name = q.get('name') || '';
+            if (!id) return null;
+            return {
+                context: { screen: 'asset_detail', asset_id: id, asset_name: name },
+                suggestion: this.t('assistant.askAi.assetPrompt'),
+            };
+        }
+        if (ask === 'networth') {
+            return {
+                context: { screen: 'net_worth' },
+                suggestion: this.t('assistant.askAi.netWorthPrompt'),
+            };
+        }
+        return null;
     }
 
     ngOnDestroy(): void {
         this.svc.stop();
+        this.qpSub?.unsubscribe();
         if (this.undoTimer) clearTimeout(this.undoTimer);
         if (typeof window !== 'undefined' && window.visualViewport) {
             window.visualViewport.removeEventListener('resize', this.vvHandler);

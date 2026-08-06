@@ -70,6 +70,33 @@ export interface Asset {
     updated_at: string;
 }
 
+/** One BRVM session close for a title, in the asset's NATIVE currency
+ *  (like Asset.current_value — the client converts to display currency once). */
+export interface BrvmHistoryPoint {
+    as_of: string;
+    close: number;
+    value: number;   // close × current quantity (position value at that close)
+}
+
+/** Per-title BRVM price history + performance (PRO-3, plans promise P4).
+ *  Money fields are in the asset's native currency. */
+export interface BrvmHistory {
+    ticker: string;
+    currency: string;
+    quantity: number | null;
+    quote_as_of: string | null;
+    cost_basis: number | null;
+    current_value: number;
+    absolute_gain: number | null;
+    absolute_gain_percent: number | null;
+    annualized_percent: number | null;
+    holding_period_days: number | null;
+    price_return_percent: number | null;
+    first_as_of: string | null;
+    last_as_of: string | null;
+    points: BrvmHistoryPoint[];
+}
+
 export interface AssetCreate {
     name: string;
     category: AssetCategory;
@@ -832,6 +859,7 @@ export interface NotificationPreferences {
     push_enabled: boolean;
     signal_budget: boolean;
     signal_tontine: boolean;
+    signal_milestone: boolean;   // S13 AI-72: FIRE-milestone alerts
     quiet_hours_start: string;   // "HH:MM" local time
     quiet_hours_end: string;
     timezone: string;            // IANA name
@@ -1018,6 +1046,12 @@ export class ApiService {
         return this.http.get(`${this.apiUrl}/export/transactions.csv`, { responseType: 'blob' });
     }
 
+    /** S13 AI-73: the Pro monthly report as a PDF blob (auth via interceptor).
+     *  No args => the most recent complete month. A 403 means the plan gate. */
+    downloadMonthlyReport(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/reports/monthly.pdf`, { responseType: 'blob' });
+    }
+
     // ========== ASSETS ==========
     getAssets(skip = 0, limit = 100): Observable<Asset[]> {
         const s = this.shared<Asset[]>(b => b.assets);
@@ -1031,6 +1065,15 @@ export class ApiService {
     getAsset(id: number): Observable<Asset> {
         return this.shared<Asset>(b => b.assets.find(a => a.id === id))
             ?? this.http.get<Asset>(`${this.apiUrl}/assets/${id}`);
+    }
+
+    /** PRO-3: BRVM price history + per-title performance for a tickered
+     *  STOCKS_BRVM asset. Pro-gated server-side. `days` optionally windows the
+     *  price series to the most recent N days. */
+    getAssetBrvmHistory(id: number, days?: number): Observable<BrvmHistory> {
+        let params = new HttpParams();
+        if (days != null) params = params.set('days', days.toString());
+        return this.http.get<BrvmHistory>(`${this.apiUrl}/assets/${id}/brvm-history`, { params });
     }
 
     /** First-run gate (S12 Phase 6): true when the user has no assets and has not

@@ -139,6 +139,33 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                                         (onChange)="save({ signal_tontine: $event.checked })"
                                         ariaLabelledBy="notif-tontine-label" />
                     </div>
+                    <div class="flex items-center justify-between gap-4 py-4">
+                        <div class="min-w-0">
+                            <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-milestone-label">{{ t('settings.notifs.milestone') }}</p>
+                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.milestoneDesc') }}</p>
+                        </div>
+                        <p-toggleswitch [ngModel]="prefs().signal_milestone"
+                                        (onChange)="save({ signal_milestone: $event.checked })"
+                                        ariaLabelledBy="notif-milestone-label" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group: reports (S13 AI-73). Pro feature; the button downloads a PDF. -->
+            <div class="mt-4 pt-8 border-t border-surface-200 dark:border-surface-800">
+                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.reports') }}</h3>
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.notifs.reportMonthly') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.reportMonthlyDesc') }}</p>
+                    </div>
+                    <button type="button" (click)="downloadReport()" [disabled]="reportBusy()"
+                            class="omaad-press inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full
+                                   border border-surface-300 dark:border-surface-600 text-surface-700 dark:text-surface-200
+                                   hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors disabled:opacity-50 shrink-0">
+                        <i class="pi shrink-0" [ngClass]="reportBusy() ? 'pi-spin pi-spinner' : 'pi-download'" style="font-size: 12px" aria-hidden="true"></i>
+                        {{ t('settings.notifs.reportDownload') }}
+                    </button>
                 </div>
             </div>
 
@@ -189,10 +216,11 @@ export class NotificationsSettings implements OnInit {
     // position. These are only ever visible if the network fails on a cold start.
     prefs = signal<NotificationPreferences>(this.cachedPrefs ?? {
         email_enabled: false, push_enabled: false,
-        signal_budget: false, signal_tontine: false,
+        signal_budget: false, signal_tontine: false, signal_milestone: false,
         quiet_hours_start: '21:00', quiet_hours_end: '08:00',
         timezone: 'Africa/Dakar',
     });
+    reportBusy = signal(false);
     // Once the user changes anything, a late-returning background revalidate
     // must not clobber their edit.
     private userTouched = false;
@@ -262,6 +290,29 @@ export class NotificationsSettings implements OnInit {
         } finally {
             this.pushBusy.set(false);
         }
+    }
+
+    /** S13 AI-73: fetch the monthly report PDF (via the auth interceptor) and
+     *  trigger a browser download. A 403 is the Pro gate, surfaced as a toast. */
+    downloadReport() {
+        this.reportBusy.set(true);
+        this.api.downloadMonthlyReport().subscribe({
+            next: (blob) => {
+                this.reportBusy.set(false);
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'omaad-rapport-mensuel.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            },
+            error: () => {
+                this.reportBusy.set(false);
+                this.toastError(this.t('settings.notifs.reportError'));
+            },
+        });
     }
 
     removeDevice(device: PushDevice) {
