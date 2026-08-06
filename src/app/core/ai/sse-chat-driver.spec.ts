@@ -80,6 +80,8 @@ describe('SseChatDriver', () => {
         });
         driver = TestBed.inject(SseChatDriver);
         fetchSpy = spyOn(window, 'fetch');
+        // UX-4 auto-retry: no real backoff waits in the suite.
+        (driver as unknown as { retryBackoffMs: number[] }).retryBackoffMs = [0, 0];
     });
 
     function runTurn(frames: string[]): Promise<ChatStreamEvent[]> {
@@ -108,6 +110,43 @@ describe('SseChatDriver', () => {
         const merged = frame({ type: 'text_delta', text: 'a' }) + frame({ type: 'message_stop' });
         const events = await runTurn([frame({ type: 'routed', agent: 'assistant' }), merged]);
         expect(events.map((e) => e.type)).toEqual(['routed', 'text_delta', 'message_stop']);
+    });
+
+    // ─── UX-3: the parser tolerates proxy reframing ────────────────────────────
+
+    it('parses CRLF-framed events (proxy/middleware framing)', async () => {
+        const events = await runTurn([
+            `data: ${JSON.stringify({ type: 'text_delta', text: 'Oui' })}\r\n\r\n`,
+            `data: ${JSON.stringify({ type: 'message_stop' })}\r\n\r\n`,
+        ]);
+        expect(events.map((e) => e.type)).toEqual(['text_delta', 'message_stop']);
+    });
+
+    it('parses a frame split across two network chunks, including a split CRLF', async () => {
+        const delta = JSON.stringify({ type: 'text_delta', text: 'Oui' });
+        const events = await runTurn([
+            `data: ${delta.slice(0, 8)}`,           // mid-JSON split
+            `${delta.slice(8)}\r`,                   // CR at the chunk boundary...
+            `\n\r\ndata: ${JSON.stringify({ type: 'message_stop' })}\r\n\r\n`, // ...LF opens the next
+        ]);
+        expect(events.map((e) => e.type)).toEqual(['text_delta', 'message_stop']);
+    });
+
+    it('ignores event:/id:/retry: fields and comment keep-alives', async () => {
+        const events = await runTurn([
+            ': keep-alive\n\n',
+            `event: message\nid: 7\nretry: 3000\ndata: ${JSON.stringify({ type: 'text_delta', text: 'a' })}\n\n`,
+            frame({ type: 'message_stop' }),
+        ]);
+        expect(events.map((e) => e.type)).toEqual(['text_delta', 'message_stop']);
+    });
+
+    it('a final frame the server never blank-line-terminated still dispatches', async () => {
+        const events = await runTurn([
+            frame({ type: 'text_delta', text: 'a' }),
+            `data: ${JSON.stringify({ type: 'message_stop' })}`, // body closes right here
+        ]);
+        expect(events.map((e) => e.type)).toEqual(['text_delta', 'message_stop']);
     });
 
     it('sends the Authorization header and POSTs to /agents/chat', async () => {
@@ -208,14 +247,67 @@ describe('SseChatDriver', () => {
         });
     });
 
-    it('a network error is a degraded bubble, not a logout', (done) => {
+    // ─── UX-4: silent retry of a pre-response network failure ────────────────
+
+    it('a network error before ANY response auto-retries, then streams cleanly', (done) => {
+        let call = 0;
+        fetchSpy.and.callFake(() =>
+            ++call === 1
+                ? Promise.reject(new TypeError('network blip'))
+                : Promise.resolve(sseResponse([frame({ type: 'text_delta', text: 'Oui.' }), frame({ type: 'message_stop' })])));
+        const events: ChatStreamEvent[] = [];
+        driver.startTurn('salut', (e) => events.push(e), () => {
+            expect(fetchSpy).toHaveBeenCalledTimes(2);
+            expect(events.some((e) => e.type === 'error')).toBeFalse();
+            expect(events.map((e) => e.type)).toEqual(['text_delta', 'message_stop']);
+            done();
+        });
+    });
+
+    it('a persistent network error exhausts the retries, THEN bubbles (no logout)', (done) => {
         fetchSpy.and.rejectWith(new TypeError('network down'));
         const events: ChatStreamEvent[] = [];
         driver.startTurn('salut', (e) => events.push(e), () => {
+            expect(fetchSpy).toHaveBeenCalledTimes(3); // 1 + 2 retries
             expect(authSpy.logout).not.toHaveBeenCalled();
-            expect(events.some((e) => e.type === 'error')).toBeTrue();
+            expect(events.filter((e) => e.type === 'error').length).toBe(1);
             done();
         });
+    });
+
+    it('a MID-STREAM drop never auto-retries: the server was already processing', (done) => {
+        const enc = new TextEncoder();
+        const body = new ReadableStream<Uint8Array>({
+            start(controller) {
+                controller.enqueue(enc.encode(frame({ type: 'text_delta', text: 'Voi' })));
+                controller.error(new TypeError('connection reset'));
+            },
+        });
+        fetchSpy.and.resolveTo(new Response(body, { status: 200, headers: { 'Content-Type': 'text/event-stream' } }));
+        const events: ChatStreamEvent[] = [];
+        driver.startTurn('salut', (e) => events.push(e), () => {
+            expect(fetchSpy).toHaveBeenCalledTimes(1); // no replay of a started turn
+            const err = events.find((e) => e.type === 'error');
+            expect(err && err.type === 'error' && err.code).toBe('stream_error');
+            done();
+        });
+    });
+
+    it('a /confirm network failure never auto-retries (the card is consumed on receipt)', async () => {
+        const closes = new CloseSignal();
+        fetchSpy.and.resolveTo(sseResponse([
+            frame({ type: 'confirm_required', card_id: 'card-r', diff: [{ op: 'create', label: 'x' }] }),
+        ]));
+        const events: ChatStreamEvent[] = [];
+        driver.startTurn('deux créations', (e) => events.push(e), () => closes.fire());
+        await closes.wait();
+        const callsBefore = fetchSpy.calls.count();
+
+        fetchSpy.and.rejectWith(new TypeError('network blip'));
+        driver.confirm('card-r', true);
+        await closes.wait();
+        expect(fetchSpy.calls.count()).toBe(callsBefore + 1); // exactly one confirm POST
+        expect(events.some((e) => e.type === 'error')).toBeTrue();
     });
 
     it('429 is a degraded bubble, not a logout', (done) => {

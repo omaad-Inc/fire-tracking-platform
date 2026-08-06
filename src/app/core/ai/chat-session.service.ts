@@ -169,9 +169,15 @@ export class ChatSessionService {
         const msgs = this.messages();
         const lastUser = [...msgs].reverse().find((m) => m.role === 'user');
         if (!lastUser?.text) return;
-        // Drop the failed assistant tail so the thread does not stack error bubbles.
+        // UX-4: drop the WHOLE failed assistant tail — error bubble AND the
+        // partial text a mid-stream drop left behind — so the retried answer
+        // replaces it instead of rendering twice. Exception: a turn where a
+        // write already landed (a 'done' card) is kept, because removing it
+        // would erase the record of the write and its Annuler affordance.
         const last = msgs[msgs.length - 1];
-        if (last.role === 'assistant' && last.blocks?.every((b) => b.kind === 'error')) {
+        if (last.role === 'assistant'
+            && last.blocks?.some((b) => b.kind === 'error')
+            && !last.blocks.some((b) => b.kind === 'card' && b.card.state === 'done')) {
             this.messages.set(msgs.slice(0, -1));
         }
         const text = lastUser.text;

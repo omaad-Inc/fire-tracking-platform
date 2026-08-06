@@ -6,6 +6,7 @@ import { TokenService } from '../services/token.service';
 import { AuthService } from '../services/auth.service';
 import { ChatStreamEvent } from './chat-events';
 import { ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
+import { SseParser } from './sse-parser';
 
 /**
  * S12 Phase 3 transport: the real pipe to POST /api/v1/agents/chat.
@@ -59,6 +60,14 @@ export class SseChatDriver implements ChatStreamDriver {
      *  its requests carry X-Omaad-Surface and the backend exempts them from the
      *  tight AI chat rate limit (a first-run flow must never 429). */
     private onboardingSurface = false;
+
+    /** UX-4 auto-retry backoff. Applies ONLY when the initial /agents/chat
+     *  fetch rejected before ANY response arrived: the server never answered,
+     *  so nothing was rendered and (almost certainly) nothing was processed —
+     *  a silent retry cannot duplicate content or writes. A /confirm request
+     *  is NEVER auto-retried: the server consumes the card on first receipt,
+     *  so a replay would surface a misleading confirm_expired. */
+    private retryBackoffMs: number[] = [400, 1200];
 
     startTurn(
         message: string,
@@ -142,9 +151,11 @@ export class SseChatDriver implements ChatStreamDriver {
         body: Record<string, unknown>,
         state: ActiveTurn,
         retriedAfterRefresh = false,
+        attempt = 0,
     ): Promise<void> {
         const controller = state.controller;
         let done = false;
+        let gotResponse = false;
         const finish = () => {
             if (done) return;
             done = true;
@@ -165,6 +176,7 @@ export class SseChatDriver implements ChatStreamDriver {
                 body: JSON.stringify(body),
                 signal: controller.signal,
             });
+            gotResponse = true;
 
             // COR-3: a 401 gets the same one-refresh-then-retry treatment the
             // AuthInterceptor gives XHR calls; this fetch bypasses interceptors.
@@ -200,26 +212,43 @@ export class SseChatDriver implements ChatStreamDriver {
 
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
-            let buffer = '';
+            const parser = new SseParser(); // UX-3: tolerant of proxy reframing
             for (;;) {
                 const { done: eof, value } = await reader.read();
                 if (eof) break;
-                buffer += decoder.decode(value, { stream: true });
-                let sep: number;
-                // SSE frames are separated by a blank line.
-                while ((sep = buffer.indexOf('\n\n')) !== -1) {
-                    const frame = buffer.slice(0, sep);
-                    buffer = buffer.slice(sep + 2);
-                    this.dispatchFrame(frame, onEvent);
+                for (const payload of parser.push(decoder.decode(value, { stream: true }))) {
+                    this.dispatchPayload(payload, onEvent);
                 }
+            }
+            // Drain the decoder (a multi-byte char split at EOF) and the parser
+            // (a final frame the server never blank-line-terminated).
+            for (const payload of parser.push(decoder.decode())) {
+                this.dispatchPayload(payload, onEvent);
+            }
+            for (const payload of parser.flush()) {
+                this.dispatchPayload(payload, onEvent);
             }
             // Server closes the body after message_stop / confirm_required /
             // error, so a clean end of stream is the single close signal.
             finish();
         } catch (err) {
+            const aborted = err instanceof DOMException && err.name === 'AbortError';
+            // UX-4: the initial request died before the server answered at all
+            // (fetch rejected, no Response): retry it silently. Nothing was
+            // rendered, so this can't duplicate content; mid-stream drops
+            // (gotResponse true) never auto-retry — the server was already
+            // processing, a replay could double the writes and the spend.
+            if (!aborted && !gotResponse && path === '/agents/chat'
+                && attempt < this.retryBackoffMs.length) {
+                await this.delay(this.retryBackoffMs[attempt]);
+                if (!controller.signal.aborted) {
+                    await this.run(path, body, state, retriedAfterRefresh, attempt + 1);
+                    return; // the retry owns state.finish now
+                }
+            }
             // AbortError == user pressed Stop / navigated away: just close, no
             // error bubble. Anything else is a degraded-mode bubble, no logout.
-            if (!(err instanceof DOMException && err.name === 'AbortError')) {
+            if (!aborted && !controller.signal.aborted) {
                 onEvent({
                     type: 'error',
                     code: 'stream_error',
@@ -228,6 +257,10 @@ export class SseChatDriver implements ChatStreamDriver {
             }
             finish();
         }
+    }
+
+    private delay(ms: number): Promise<void> {
+        return new Promise((r) => setTimeout(r, ms));
     }
 
     /**
@@ -245,16 +278,12 @@ export class SseChatDriver implements ChatStreamDriver {
         }
     }
 
-    private dispatchFrame(frame: string, onEvent: (e: ChatStreamEvent) => void): void {
-        for (const line of frame.split('\n')) {
-            if (!line.startsWith('data:')) continue;
-            const payload = line.slice(5).trim();
-            if (!payload) continue;
-            try {
-                onEvent(JSON.parse(payload) as ChatStreamEvent);
-            } catch {
-                // A malformed frame is not fatal: skip it, keep the stream alive.
-            }
+    private dispatchPayload(payload: string, onEvent: (e: ChatStreamEvent) => void): void {
+        if (!payload.trim()) return;
+        try {
+            onEvent(JSON.parse(payload) as ChatStreamEvent);
+        } catch {
+            // A malformed frame is not fatal: skip it, keep the stream alive.
         }
     }
 
