@@ -256,6 +256,156 @@
     }
 }
 
+// ── Premium filled form fields (omaad-form) ─────────────────────────
+// Opt-in wrapper: every input/select/datepicker inside gets a soft-filled,
+// rounded "card" field with an ochre focus ring — the native-app / premium
+// fintech look (Finary/Revolut). Put `omaad-form` on the dialog content and
+// drop the per-input hairline `!border-b` utility strings; this class owns
+// the look. Wins over the global `!important` input radius because it is
+// itself `!important` and later in source order.
+.omaad-form {
+
+    // The field surfaces themselves. p-inputnumber renders an inner
+    // .p-inputnumber-input; p-select is a container div; datepicker an input.
+    .p-inputtext,
+    .p-inputnumber-input,
+    .p-select,
+    .p-datepicker-input {
+        background: var(--p-surface-100) !important;
+        border: 1px solid transparent !important;
+        border-radius: var(--omaad-radius-input) !important;
+        box-shadow: none !important;
+        padding: 0.8rem 0.9rem !important;
+        color: var(--p-text-color) !important;
+        transition: background-color var(--motion-base) var(--ease-standard),
+                    border-color var(--motion-base) var(--ease-standard),
+                    box-shadow var(--motion-base) var(--ease-standard);
+    }
+
+    // Make number/date/text inputs and the whole width behave.
+    .p-inputnumber,
+    .p-datepicker,
+    .p-select { width: 100%; }
+
+    // Hover — quiet border hint only (no ring).
+    .p-inputtext:hover:not(:focus),
+    .p-inputnumber-input:hover:not(:focus),
+    .p-datepicker-input:hover:not(:focus),
+    .p-select:not(.p-disabled):not(.p-focus):hover {
+        border-color: var(--omaad-border) !important;
+    }
+
+    // Focus / open state — ochre ring + lifted-white fill.
+    .p-inputtext:focus,
+    .p-inputnumber-input:focus,
+    .p-datepicker-input:focus,
+    .p-select.p-focus {
+        border-color: var(--omaad-ochre-400) !important;
+        background: var(--p-surface-0) !important;
+        box-shadow: 0 0 0 3px rgba(199, 123, 60, 0.18) !important;
+        outline: none !important;
+    }
+
+    // p-select internal chrome: kill the default border/shadow, align label.
+    .p-select {
+        display: flex;
+        align-items: center;
+    }
+    .p-select-label { padding: 0 !important; }
+
+    // Datepicker: the calendar trigger becomes a trailing icon INSIDE the
+    // filled input, not a detached button beside it.
+    .p-datepicker {
+        position: relative;
+        display: flex;
+    }
+    .p-datepicker .p-datepicker-input {
+        flex: 1 1 auto;
+        padding-right: 2.9rem !important;
+    }
+    .p-datepicker-dropdown {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 2.9rem;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        color: var(--p-surface-500) !important;
+    }
+
+    // Fields carrying a unit affix reserve room on the right so the value
+    // never slides under the € / % chip.
+    .omaad-affix { position: relative; }
+    .omaad-affix .p-inputnumber-input,
+    .omaad-affix .p-inputtext { padding-right: 3.25rem !important; }
+
+    // Placeholder tone.
+    ::placeholder { color: var(--p-surface-400); opacity: 1; }
+}
+
+.app-dark .omaad-form {
+    .p-inputtext,
+    .p-inputnumber-input,
+    .p-select,
+    .p-datepicker-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    .p-inputtext:focus,
+    .p-inputnumber-input:focus,
+    .p-datepicker-input:focus,
+    .p-select.p-focus {
+        border-color: var(--omaad-ochre-400) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 0 0 3px rgba(216, 163, 105, 0.22) !important;
+    }
+}
+
+// Integrated unit affix (€ / % / m²) that sits INSIDE a filled field, against
+// a hairline divider, value-colored. Parent must be `position: relative`.
+.omaad-field-affix {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 1px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.85rem 0 0.7rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--p-surface-500);
+    border-left: 1px solid var(--omaad-border-subtle);
+    pointer-events: none;
+    border-top-right-radius: var(--omaad-radius-input);
+    border-bottom-right-radius: var(--omaad-radius-input);
+}
+
+// Quiet section header inside forms — groups fields into scannable blocks.
+.omaad-form-section {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--p-surface-400);
+}
+
+// While a modal dialog is open, retract the mobile chrome (FAB + bottom nav)
+// so it can never sit under or touch the dialog's footer CTAs. Both are
+// position:fixed, so hiding them causes no layout shift. Native-app behaviour:
+// a modal owns the screen.
+body:has(.p-overlay-mask) .fab-button,
+body:has(.p-overlay-mask) .mobile-bottom-nav { display: none !important; }
+
+// On mobile, keep a dialog off the very bottom edge so its footer buttons
+// always have breathing room (they were landing flush against the bottom nav).
+// Full-screen sheets (brvm-sheet) opt out — they own the whole viewport.
+@media (max-width: 991px) {
+    .p-dialog:not(.brvm-sheet) {
+        max-height: 90dvh !important;
+    }
+}
+
 // ── Tabular numbers for monetary values ─────────────────────────────
 app-amount,
 .tnum {
@@ -269,59 +419,100 @@ app-amount,
 // They now resolve to the new palette: SOLID navy, no gradients.
 // Gradient is reserved for the FireHero / hero cards only.
 // ═══════════════════════════════════════════════════════════════════
+// Primary CTA — SOLID navy (no gradient, per brand discipline) but lifted
+// off the surface with a soft brand-tinted shadow + a hairline top inset
+// highlight, so it reads dimensional and premium (Revolut-style elevation)
+// rather than a flat rectangle. Press collapses the lift.
 .omaad-cta {
     background: var(--omaad-brand-700) !important;
     border: none !important;
     color: #FFFFFF !important;
     font-weight: 600 !important;
-    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    letter-spacing: 0.01em;
+    box-shadow:
+        0 6px 16px -6px rgba(15, 26, 46, 0.50),
+        0 2px 5px -3px rgba(15, 26, 46, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+    transition: background-color var(--motion-base) var(--ease-standard),
+                transform var(--motion-fast) var(--ease-spring),
+                box-shadow var(--motion-base) var(--ease-standard);
 
-    &:hover {
-        background: var(--omaad-brand-800) !important;
-        box-shadow: 0 4px 14px rgba(15, 26, 46, 0.25);
+    @media (hover: hover) {
+        &:hover {
+            background: var(--omaad-brand-800) !important;
+            transform: translateY(-1px);
+            box-shadow:
+                0 12px 24px -8px rgba(15, 26, 46, 0.55),
+                0 4px 10px -4px rgba(15, 26, 46, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+        }
     }
 
     &:active {
         background: var(--omaad-brand-900) !important;
-        transform: translateY(1px);
+        transform: translateY(0) scale(0.98);
+        box-shadow:
+            0 3px 8px -5px rgba(15, 26, 46, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
     }
 }
 
 // Dark primary CTA is Savanna Ochre with dark text (accent discipline,
-// dark-mode audit 4.2). The old brand-300 fill read as a washed-out
-// near-white pill and competed with genuine ochre CTAs.
+// dark-mode audit 4.2). Shadow is ochre-tinted so the lift reads warm.
 .app-dark .omaad-cta {
     background: var(--omaad-ochre-400) !important;
     color: var(--omaad-warm-900) !important;
+    box-shadow:
+        0 6px 16px -6px rgba(199, 123, 60, 0.50),
+        0 2px 5px -3px rgba(0, 0, 0, 0.40),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
 
-    &:hover {
-        background: var(--omaad-ochre-300) !important;
+    @media (hover: hover) {
+        &:hover {
+            background: var(--omaad-ochre-300) !important;
+            box-shadow:
+                0 12px 24px -8px rgba(199, 123, 60, 0.55),
+                0 4px 10px -4px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+        }
     }
     &:active {
         background: var(--omaad-ochre-200) !important;
+        box-shadow:
+            0 3px 8px -5px rgba(199, 123, 60, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
     }
 }
 
+// Secondary — quiet TONAL fill (not a thin outline). Pairs with the CTA as a
+// matched button set and reads more premium than a hairline border.
 .omaad-secondary {
-    background: transparent !important;
-    border: 1.5px solid var(--p-surface-300) !important;
+    background: var(--p-surface-100) !important;
+    border: 1px solid transparent !important;
     color: var(--p-text-color) !important;
     font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: background-color var(--motion-base) var(--ease-standard),
+                transform var(--motion-fast) var(--ease-spring);
 
-    &:hover {
-        border-color: var(--omaad-brand-700) !important;
-        color: var(--omaad-brand-700) !important;
-        background: var(--omaad-brand-50) !important;
+    @media (hover: hover) {
+        &:hover {
+            background: var(--p-surface-200) !important;
+            color: var(--p-text-color) !important;
+        }
     }
+    &:active { transform: scale(0.98); }
 }
 
 .app-dark .omaad-secondary {
-    border-color: var(--p-surface-600) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--p-text-color) !important;
 
-    &:hover {
-        border-color: var(--omaad-brand-300) !important;
-        color: var(--omaad-brand-300) !important;
-        background: rgba(216, 223, 236, 0.06) !important;
+    @media (hover: hover) {
+        &:hover {
+            background: rgba(255, 255, 255, 0.11) !important;
+            color: var(--p-text-color) !important;
+        }
     }
 }
 
