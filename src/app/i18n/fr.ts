@@ -874,6 +874,8 @@ export const FR = {
       milestone: 'Jalons FIRE',
       milestoneDesc: 'Quand vous franchissez une étape vers votre indépendance (25, 50, 75, 100 %)',
       reports: 'Rapports',
+      weeklyReport: 'Bilan hebdomadaire',
+      weeklyReportDesc: 'Un récap de votre semaine par email chaque lundi (inclus avec Pro)',
       reportMonthly: 'Rapport mensuel',
       reportMonthlyDesc: 'Votre bilan du mois dernier en PDF',
       reportDownload: 'Télécharger le PDF',

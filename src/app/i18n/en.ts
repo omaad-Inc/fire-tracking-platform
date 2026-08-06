@@ -876,6 +876,8 @@ export const EN: Dict = {
       milestone: 'FIRE milestones',
       milestoneDesc: 'When you cross a step toward independence (25, 50, 75, 100%)',
       reports: 'Reports',
+      weeklyReport: 'Weekly recap',
+      weeklyReportDesc: 'A recap of your week by email every Monday (included with Pro)',
       reportMonthly: 'Monthly report',
       reportMonthlyDesc: 'Last month\'s summary as a PDF',
       reportDownload: 'Download PDF',
