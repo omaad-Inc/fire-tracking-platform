@@ -454,6 +454,11 @@ export const FR = {
   // S12: the real chat surface (/assistant). The aiAssistant block above is the
   // coming-soon teaser panel and disappears with it once the flag opens.
   assistant: {
+    askAi: {
+      button: 'Demander à l\'IA',
+      assetPrompt: 'Que penses-tu de cet actif dans mon patrimoine ?',
+      netWorthPrompt: 'Analyse mon patrimoine net et dis-moi ce qui ressort.',
+    },
     newConversation: {
       action: 'Nouvelle conversation',
       done: 'Nouvelle conversation démarrée',

@@ -34,10 +34,16 @@ class FakeDriver implements ChatStreamDriver {
     private undoResolve!: () => void;
     private undoReject!: (e: unknown) => void;
 
-    startTurn(_m: string, onEvent: (e: ChatStreamEvent) => void, onClose: () => void): ChatTurnHandle {
+    /** The context passed to the most recent startTurn (AI-75). */
+    lastContext: Record<string, unknown> | undefined;
+    startTurnCount = 0;
+    startTurn(_m: string, onEvent: (e: ChatStreamEvent) => void, onClose: () => void,
+              context?: Record<string, unknown>): ChatTurnHandle {
         this.emit = onEvent;
         this.close = onClose;
         this.cancelled = false;
+        this.lastContext = context;
+        this.startTurnCount++;
         return { cancel: () => { this.cancelled = true; this.cancelCount++; onClose(); } };
     }
 
@@ -81,6 +87,17 @@ describe('ChatSessionService (event reducer)', () => {
             ],
         });
         svc = TestBed.inject(ChatSessionService);
+    });
+
+    it('primeContext attaches screen context to the NEXT turn only, then clears (AI-75)', () => {
+        svc.primeContext({ screen: 'asset_detail', asset_id: 42, asset_name: 'Maison' });
+        svc.send('que penses-tu de cet actif ?');
+        expect(driver.lastContext).toEqual({ screen: 'asset_detail', asset_id: 42, asset_name: 'Maison' });
+        driver.emit({ type: 'message_stop' });
+        driver.close();
+        // A later turn with nothing primed carries no context (one-shot grounding).
+        svc.send('et sinon ?');
+        expect(driver.lastContext).toBeUndefined();
     });
 
     it('send appends the user message and an assistant shell, and locks the composer', () => {

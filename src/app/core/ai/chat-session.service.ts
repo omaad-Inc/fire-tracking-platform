@@ -60,6 +60,17 @@ export class ChatSessionService {
 
     private handle: ChatTurnHandle | null = null;
 
+    /** AI-75: screen context ("Ask AI" from asset detail / net worth) to attach
+     *  to the NEXT turn only. The backend folds it into a screen_context data
+     *  block (guard 11: data, never instructions); after that turn the ongoing
+     *  thread carries the topic, so it is a one-shot grounding, not sticky. */
+    private pendingContext: Record<string, unknown> | null = null;
+
+    /** Prime the next send with an "Ask AI" screen context (or clear it). */
+    primeContext(context: Record<string, unknown> | null): void {
+        this.pendingContext = context;
+    }
+
     // ─── Actions ─────────────────────────────────────────────────────────────
 
     send(text: string): void {
@@ -97,10 +108,15 @@ export class ChatSessionService {
         this.append({ id: nextId(), role: 'assistant', ts: Date.now(), blocks: [] });
         this.streaming.set(true);
         this.armStall();
+        // AI-75: attach any primed "Ask AI" context to THIS turn, then clear it
+        // so subsequent turns are contextless (the thread carries the topic).
+        const context = this.pendingContext ?? undefined;
+        this.pendingContext = null;
         this.handle = this.driver.startTurn(
             trimmed,
             (e) => this.reduce(e),
             () => this.closeTurn(),
+            context,
         );
     }
 

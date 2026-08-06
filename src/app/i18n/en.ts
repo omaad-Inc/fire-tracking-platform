@@ -456,6 +456,11 @@ export const EN: Dict = {
   // S12: the real chat surface (/assistant). The aiAssistant block above is the
   // coming-soon teaser panel and disappears with it once the flag opens.
   assistant: {
+    askAi: {
+      button: 'Ask AI',
+      assetPrompt: 'What do you think of this asset in my portfolio?',
+      netWorthPrompt: 'Analyze my net worth and tell me what stands out.',
+    },
     newConversation: {
       action: 'New conversation',
       done: 'New conversation started',

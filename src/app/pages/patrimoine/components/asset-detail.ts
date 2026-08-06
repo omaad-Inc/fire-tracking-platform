@@ -12,6 +12,7 @@ import { ApiService, Asset } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { NavService } from '../../../core/services/nav.service';
 import { ShareContextService } from '../../../core/services/share-context.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
@@ -63,6 +64,13 @@ import { nbspSafe } from '../../../core/util/nbsp';
                     </div>
                 </div>
                 <div *ngIf="!share.active()" class="flex items-center gap-1.5 shrink-0">
+                    @if (flags.aiChat()) {
+                        <button pButton icon="pi pi-sparkles" severity="secondary"
+                                [outlined]="true" size="small" (click)="askAi()"
+                                [attr.aria-label]="t('assistant.askAi.button')"
+                                [title]="t('assistant.askAi.button')"
+                                class="!w-9 !h-9 !p-0"></button>
+                    }
                     <button pButton icon="pi pi-pencil" severity="secondary"
                             [outlined]="true" size="small" (click)="editAsset()"
                             data-testid="asset-edit-btn"
@@ -618,6 +626,7 @@ export class AssetDetailPage implements OnInit {
     private router = inject(Router);
     private nav = inject(NavService);
     share = inject(ShareContextService);
+    flags = inject(FeatureFlagsService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
     private confirmationService = inject(ConfirmationService);
@@ -998,6 +1007,16 @@ export class AssetDetailPage implements OnInit {
         } else {
             this.nav.go('pages', 'patrimoine');
         }
+    }
+
+    /** AI-75: open the assistant grounded on THIS asset (screen context), with a
+     *  suggested question the user can edit and send. */
+    askAi() {
+        const a = this.asset();
+        if (!a) return;
+        this.router.navigate(this.nav.link('pages', 'assistant'), {
+            queryParams: { ask: 'asset', id: a.id, name: a.name },
+        });
     }
 
     editAsset() {
