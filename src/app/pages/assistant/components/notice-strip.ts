@@ -33,15 +33,19 @@ export class NoticeStripComponent {
             case 'disclaimer_cima': return this.i18n.t('assistant.notice.disclaimerCima');
             case 'quota_warning': return this.i18n.t('assistant.notice.quotaWarning');
             case 'quota_reached': return this.i18n.t('assistant.notice.quotaReached');
+            case 'turn_timeout': return this.i18n.t('assistant.notice.turnTimeout');
         }
     }
 
     icon(): string {
+        if (this.notice.kind === 'turn_timeout') return 'pi-clock';
         return this.notice.kind === 'disclaimer_cima' ? 'pi-info-circle' : 'pi-gauge';
     }
 
     toneClass(): string {
-        if (this.notice.kind === 'disclaimer_cima') {
+        // A turn timeout is a normal end, not a quota event: quiet system
+        // voice, no warning tint (and no upsell CTA — UX-1 code mapping).
+        if (this.notice.kind === 'disclaimer_cima' || this.notice.kind === 'turn_timeout') {
             return 'border-surface-300 dark:border-surface-600 text-surface-500 dark:text-surface-400 bg-surface-50 dark:bg-surface-800/60'; // dark-ok
         }
         return 'border-warning-400 dark:border-warning-500 text-warning-700 dark:text-warning-300 bg-warning-50 dark:bg-warning-900/20';

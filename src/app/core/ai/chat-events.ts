@@ -12,7 +12,7 @@
 
 export type ChatAgent = 'config' | 'assistant' | 'onboarding';
 
-export type NoticeKind = 'disclaimer_cima' | 'quota_warning' | 'quota_reached';
+export type NoticeKind = 'disclaimer_cima' | 'quota_warning' | 'quota_reached' | 'turn_timeout';
 
 export type ToolResultStatus = 'ok' | 'error' | 'cancelled';
 

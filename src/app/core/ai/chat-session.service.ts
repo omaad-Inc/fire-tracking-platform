@@ -49,6 +49,11 @@ export class ChatSessionService {
     readonly streaming = signal(false);
     /** card_id of a pending dry-run confirmation; blocks the composer. */
     readonly pendingConfirm = signal<string | null>(null);
+    /** UX-2 hung-stream watchdog: true when a streaming turn has gone STALL_MS
+     *  without a single event. A stream that hangs WITHOUT erroring otherwise
+     *  leaves the typing dots forever; this surfaces a "still working / retry"
+     *  affordance so the user can recover without a reload. */
+    readonly stalled = signal(false);
 
     /** Composer availability: no send while streaming or awaiting a confirm. */
     readonly inputLocked = computed(() => this.streaming() || this.pendingConfirm() !== null);
@@ -91,6 +96,7 @@ export class ChatSessionService {
         this.append({ id: nextId(), role: 'user', ts: Date.now(), text: trimmed });
         this.append({ id: nextId(), role: 'assistant', ts: Date.now(), blocks: [] });
         this.streaming.set(true);
+        this.armStall();
         this.handle = this.driver.startTurn(
             trimmed,
             (e) => this.reduce(e),
@@ -112,6 +118,7 @@ export class ChatSessionService {
         // parked request already closed its HTTP body, so streaming was false
         // during the pause; the mock never closed, so this is a no-op there.)
         this.streaming.set(true);
+        this.armStall(); // the continuation is a fresh stream: watch it too
         this.driver.confirm(cardId, approved);
     }
 
@@ -254,9 +261,48 @@ export class ChatSessionService {
         this.persist();
     }
 
+    // ─── UX-2: hung-stream watchdog ──────────────────────────────────────────
+    /** No-event window before the "still working / retry" affordance shows. */
+    private static readonly STALL_MS = 30_000;
+    private stallTimer: ReturnType<typeof setTimeout> | null = null;
+
+    /** (Re)start the inactivity countdown; called at turn start and per event. */
+    private armStall(): void {
+        this.clearStall();
+        this.stallTimer = setTimeout(() => this.stalled.set(true), ChatSessionService.STALL_MS);
+    }
+
+    private clearStall(): void {
+        if (this.stallTimer !== null) {
+            clearTimeout(this.stallTimer);
+            this.stallTimer = null;
+        }
+        this.stalled.set(false);
+    }
+
+    /** "Réessayer" on the stall affordance: abort the hung stream and resend
+     *  the last user message — recovery without a reload. Partial content that
+     *  already streamed is kept (same contract as Stop). */
+    retryStalled(): void {
+        if (!this.stalled()) return;
+        this.clearStall();
+        this.stop(); // closeTurn runs synchronously via the driver's finish
+        this.retryLast();
+    }
+
+    /** "Patienter" on the stall affordance: keep the turn alive and re-arm the
+     *  countdown so the affordance can resurface if the silence continues. */
+    dismissStall(): void {
+        this.stalled.set(false);
+        if (this.streaming()) this.armStall();
+    }
+
     // ─── Event reducer ───────────────────────────────────────────────────────
 
     private reduce(e: ChatStreamEvent): void {
+        // Any event proves the stream is alive: hide the affordance and
+        // restart the inactivity countdown (UX-2).
+        if (this.streaming()) this.armStall();
         switch (e.type) {
             case 'routed':
                 this.patchTail((m) => ({ ...m, agent: e.agent }));
@@ -335,6 +381,7 @@ export class ChatSessionService {
 
     private closeTurn(): void {
         this.streaming.set(false);
+        this.clearStall(); // UX-2: a closed turn can't be stalled
         // PERF-3 rollback: no optimistic row may outlive its turn. A stream
         // that died (or was stopped) between tool_use and tool_result would
         // otherwise leave a phantom pending row in the data views. A confirm

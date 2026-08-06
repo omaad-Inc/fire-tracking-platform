@@ -190,20 +190,20 @@ import { isTouchDevice } from '../../../core/util/touch';
             </ng-template>
 
             <ng-template #content>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-3 omaad-form">
                     <!-- Type toggle -->
                     <div class="flex flex-col gap-1 sm:col-span-2">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.typeLabel') }}</label>
-                        <div class="flex gap-2 p-1 bg-surface-100 dark:bg-surface-800 rounded-xl">
-                            <button (click)="record.type = 'Debt'"
-                                    class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
-                                    [ngClass]="record.type === 'Debt' ? 'bg-white dark:bg-surface-700 text-negative shadow-sm' : 'text-surface-500'">
-                                {{ t('debts.types.debt') }}
+                        <div class="flex gap-1.5 p-1.5 bg-surface-100 dark:bg-surface-800/80 rounded-2xl">
+                            <button (click)="record.type = 'Debt'" type="button"
+                                    class="omaad-press flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+                                    [ngClass]="record.type === 'Debt' ? 'bg-white dark:bg-surface-700 text-negative shadow-md ring-1 ring-negative/20' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'">
+                                <i class="pi pi-arrow-down text-xs"></i>{{ t('debts.types.debt') }}
                             </button>
-                            <button (click)="record.type = 'Receivable'"
-                                    class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all"
-                                    [ngClass]="record.type === 'Receivable' ? 'bg-white dark:bg-surface-700 text-positive shadow-sm' : 'text-surface-500'">
-                                {{ t('debts.types.receivable') }}
+                            <button (click)="record.type = 'Receivable'" type="button"
+                                    class="omaad-press flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+                                    [ngClass]="record.type === 'Receivable' ? 'bg-white dark:bg-surface-700 text-positive shadow-md ring-1 ring-positive/20' : 'text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'">
+                                <i class="pi pi-arrow-up text-xs"></i>{{ t('debts.types.receivable') }}
                             </button>
                         </div>
                     </div>
@@ -212,7 +212,7 @@ import { isTouchDevice } from '../../../core/util/touch';
                     <div class="flex flex-col gap-1 sm:col-span-2">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.name') }} <span class="text-negative">*</span></label>
                         <input pInputText [(ngModel)]="record.name" required
-                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
+                               class="w-full"
                                [placeholder]="t('debts.namePlaceholder')" />
                         @if (submitted && !record.name) {
                             <small class="text-negative text-xs mt-1">{{ t('debts.nameRequired') }}</small>
@@ -228,7 +228,7 @@ import { isTouchDevice } from '../../../core/util/touch';
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
-                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                       inputStyleClass="w-full" />
                         @if (submitted && !(record.total > 0)) {
                             <small class="text-negative text-xs mt-1">{{ t('debts.totalRequired') }}</small>
                         }
@@ -243,7 +243,7 @@ import { isTouchDevice } from '../../../core/util/touch';
                         <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="0"
                                        styleClass="w-full"
-                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                       inputStyleClass="w-full" />
                     </div>
 
                     <!-- Interest Rate -->
@@ -252,7 +252,7 @@ import { isTouchDevice } from '../../../core/util/touch';
                         <p-inputnumber [(ngModel)]="record.interestRate" mode="decimal"
                                        [minFractionDigits]="2" [maxFractionDigits]="2" suffix=" %"
                                        styleClass="w-full"
-                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                       inputStyleClass="w-full" />
                     </div>
 
                     <!-- Frequency -->
@@ -261,7 +261,7 @@ import { isTouchDevice } from '../../../core/util/touch';
                         <p-select [(ngModel)]="record.frequency" [options]="frequencies"
                                   optionLabel="label" optionValue="value"
                                   [placeholder]="t('debts.chooseFrequency')"
-                                  styleClass="w-full !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                  styleClass="w-full" />
                     </div>
 
                     <!-- Date -->
@@ -269,8 +269,18 @@ import { isTouchDevice } from '../../../core/util/touch';
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.date') }}</label>
                         <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
                                       dateFormat="yy-mm-dd" styleClass="w-full"
-                                      inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                      inputStyleClass="w-full" />
                     </div>
+
+                    <!-- Live remaining insight -->
+                    @if ((record.total || 0) > 0) {
+                        <div class="sm:col-span-2 flex items-center justify-between px-4 py-3 rounded-xl bg-surface-50 dark:bg-surface-800/60 border border-surface-100 dark:border-surface-700/60">
+                            <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('debts.remaining') }}</span>
+                            <span class="font-semibold tabular-nums" [ngClass]="record.type === 'Debt' ? 'text-negative' : 'text-positive'">
+                                <app-amount [value]="(record.total || 0) - (record.paid || 0)" />
+                            </span>
+                        </div>
+                    }
                 </div>
             </ng-template>
 
@@ -280,8 +290,8 @@ import { isTouchDevice } from '../../../core/util/touch';
                               [loading]="isSaving()"
                               (click)="saveRecord()"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button [label]="t('debts.cancel')" icon="pi pi-times" [outlined]="true"
-                              (click)="hideDialog()" styleClass="w-full !rounded-full !py-3" />
+                    <p-button [label]="t('debts.cancel')" icon="pi pi-times"
+                              (click)="hideDialog()" styleClass="w-full omaad-secondary !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
@@ -305,7 +315,7 @@ import { isTouchDevice } from '../../../core/util/touch';
 
             <ng-template #content>
                 @if (paymentRecord) {
-                    <div class="flex flex-col gap-6 pt-3">
+                    <div class="flex flex-col gap-6 pt-3 omaad-form">
                         <div class="grid grid-cols-3 gap-2 text-center">
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-3">
                                 <div class="text-[10px] text-surface-400 mb-1">{{ t('debts.total') }}</div>
@@ -328,7 +338,7 @@ import { isTouchDevice } from '../../../core/util/touch';
                                            [minFractionDigits]="0" [maxFractionDigits]="0"
                                            [min]="1" [max]="paymentRecord.total - paymentRecord.paid"
                                            styleClass="w-full"
-                                           inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
+                                           inputStyleClass="w-full !text-lg !font-semibold" />
                             @if (addPaymentSubmitted && !(addPaymentAmount! > 0)) {
                                 <small class="text-negative text-xs mt-1">{{ t('debts.amountRequired') }}</small>
                             }
@@ -342,8 +352,8 @@ import { isTouchDevice } from '../../../core/util/touch';
                     <p-button [label]="t('debts.payConfirm')" icon="pi pi-check"
                               (click)="confirmAddPayment()"
                               styleClass="w-full omaad-cta !rounded-full !py-3" />
-                    <p-button [label]="t('debts.cancel')" icon="pi pi-times" [outlined]="true"
-                              (click)="closeAddPaymentDialog()" styleClass="w-full !rounded-full !py-3" />
+                    <p-button [label]="t('debts.cancel')" icon="pi pi-times"
+                              (click)="closeAddPaymentDialog()" styleClass="w-full omaad-secondary !rounded-full !py-3" />
                 </div>
             </ng-template>
         </p-dialog>
