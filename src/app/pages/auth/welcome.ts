@@ -40,23 +40,39 @@ type Step = 'created' | 'name' | 'notifications';
                 <!-- Capture first + last name (both mandatory) so the app can
                      address the user and the account page is complete. -->
                 <div class="min-h-screen flex flex-col justify-center px-8 md:px-16 max-w-md w-full mx-auto step-in">
-                    <div class="mb-10">
-                        <div class="w-14 h-14 rounded-2xl bg-ochre-500/15 flex items-center justify-center mb-6">
-                            <i class="pi pi-user text-2xl text-ochre-500" aria-hidden="true"></i>
+                    <!-- Step indicator: name is step 2 of the short onboarding run -->
+                    <div class="flex items-center gap-2 mb-10" aria-hidden="true">
+                        @for (i of [0, 1, 2]; track i) {
+                            <span class="h-1.5 rounded-full transition-all duration-300"
+                                  [ngClass]="i <= 1
+                                      ? 'w-8 bg-ochre-500'
+                                      : 'w-4 bg-surface-200 dark:bg-surface-700'"></span>
+                        }
+                    </div>
+                    <div class="mb-8">
+                        <!-- Live initials avatar: fills in as the user types (premium
+                             touch that ties into the account page identity). -->
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300"
+                             [ngClass]="initials() ? 'bg-ochre-500 text-warm-900' : 'bg-ochre-500/15 text-ochre-500'">
+                            @if (initials(); as ini) {
+                                <span class="text-2xl font-bold tracking-tight">{{ ini }}</span>
+                            } @else {
+                                <i class="pi pi-user text-2xl" aria-hidden="true"></i>
+                            }
                         </div>
                         <h1 class="text-3xl md:text-4xl font-bold mb-3">{{ t('welcome.name.title') }}</h1>
                         <p class="text-surface-600 dark:text-surface-400">{{ t('welcome.name.subtitle') }}</p>
                     </div>
                     <label for="wfirst" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('welcome.name.label') }}</label>
-                    <input pInputText id="wfirst" type="text" autocomplete="given-name" autofocus
+                    <input pInputText id="wfirst" type="text" autocomplete="given-name" autocapitalize="words" autofocus
                            [placeholder]="t('welcome.name.placeholder')"
-                           class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 text-xl focus:!border-brand-700 focus:!shadow-none"
+                           class="omaad-name-input w-full"
                            [ngModel]="firstName()" (ngModelChange)="firstName.set($event)" name="wfirst"
                            [disabled]="isLoading()" />
-                    <label for="wlast" class="block text-surface-600 dark:text-surface-400 text-sm mb-2 mt-6">{{ t('welcome.name.lastLabel') }}</label>
-                    <input pInputText id="wlast" type="text" autocomplete="family-name"
+                    <label for="wlast" class="block text-surface-600 dark:text-surface-400 text-sm mb-2 mt-5">{{ t('welcome.name.lastLabel') }}</label>
+                    <input pInputText id="wlast" type="text" autocomplete="family-name" autocapitalize="words"
                            [placeholder]="t('welcome.name.lastPlaceholder')"
-                           class="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3 text-xl focus:!border-brand-700 focus:!shadow-none"
+                           class="omaad-name-input w-full"
                            [ngModel]="lastName()" (ngModelChange)="lastName.set($event)" name="wlast"
                            [disabled]="isLoading()" (keyup.enter)="saveName()" />
                     <button pButton pRipple type="button" [label]="t('welcome.name.continue')"
@@ -120,6 +136,33 @@ type Step = 'created' | 'name' | 'notifications';
         @keyframes welcomePopIn { 0% { opacity: 0; transform: scale(0.6); } 60% { transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
         .step-in { animation: welcomeStepIn 0.35s ease-out both; }
         .pop-in { animation: welcomePopIn 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+
+        /* Premium filled name fields — one consistent treatment (overrides the
+           global .p-inputtext skin via a higher-specificity element selector).
+           Filled surface, clear border, ochre focus ring. */
+        ::ng-deep input.omaad-name-input {
+            background: var(--p-surface-50) !important;
+            border: 1.5px solid var(--p-surface-200) !important;
+            border-radius: 0.85rem !important;
+            padding: 0.85rem 1rem !important;
+            font-size: 1.05rem !important;
+            box-shadow: none !important;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        ::ng-deep input.omaad-name-input:focus,
+        ::ng-deep input.omaad-name-input:focus-visible {
+            border-color: var(--omaad-ochre-500, #C77B3C) !important;
+            background: var(--p-surface-0) !important;
+            box-shadow: 0 0 0 3px rgba(199, 123, 60, 0.18) !important;
+        }
+        :host-context(.app-dark) ::ng-deep input.omaad-name-input {
+            background: var(--p-surface-800) !important;
+            border-color: var(--p-surface-700) !important;
+            color: var(--p-surface-0) !important;
+        }
+        :host-context(.app-dark) ::ng-deep input.omaad-name-input:focus {
+            background: var(--p-surface-900) !important;
+        }
     `]
 })
 export class Welcome implements OnInit {
@@ -143,6 +186,14 @@ export class Welcome implements OnInit {
     // Both names are required so the account page is complete and the app can
     // address the user fully.
     nameComplete = computed(() => !!this.firstName().trim() && !!this.lastName().trim());
+
+    // Live initials for the avatar: first letter of each name, uppercased.
+    // Empty until the user types, so the avatar falls back to the user icon.
+    initials = computed(() => {
+        const f = this.firstName().trim();
+        const l = this.lastName().trim();
+        return ((f[0] ?? '') + (l[0] ?? '')).toUpperCase();
+    });
 
     private currentLang = '/fr';
     private returnUrl = '/fr';
