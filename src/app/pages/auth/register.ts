@@ -82,15 +82,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                             [disabled]="code().length !== 6 || isLoading()"
                             (click)="submitCode()"></button>
 
-                    @if (isMobile) {
-                        <button type="button" (click)="openMailApp()"
-                                class="w-full mt-3 rounded-full border border-surface-300 dark:border-surface-600 py-3 text-base font-medium
-                                       text-surface-700 dark:text-surface-200 flex items-center justify-center gap-2 cursor-pointer
-                                       hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                            <i class="pi pi-inbox"></i>{{ t('auth.verifyCode.openMail') }}
-                        </button>
-                    }
-
                     <p class="text-surface-500 dark:text-surface-400 text-sm mt-6">
                         {{ t('auth.verifyCode.noCode') }}
                         <a class="text-brand-700 dark:text-ochre-400 hover:underline cursor-pointer ml-1"
@@ -353,12 +344,6 @@ export class Register {
     resendCooldown = signal(0);
     private cooldownInterval: ReturnType<typeof setInterval> | null = null;
 
-    // "Open Mail App" only makes sense on a touch device (a phone mailbox);
-    // on desktop checking email is trivial, so hide it there.
-    readonly isMobile = typeof window !== 'undefined'
-        && typeof window.matchMedia === 'function'
-        && window.matchMedia('(pointer: coarse)').matches;
-
     emailError = computed(() => this.emailTouched() && !EMAIL_RE.test(this.email().trim()));
     passwordLongEnough = computed(() => this.password().length >= MIN_PASSWORD_LEN);
     isFormValid = computed(() => EMAIL_RE.test(this.email().trim()) && this.passwordLongEnough());
@@ -482,10 +467,5 @@ export class Register {
         this.pendingEmail.set(null);
         this.code.set('');
         this.codeError.set(false);
-    }
-
-    openMailApp(): void {
-        // Best-effort: iOS Mail opens on message://. Harmless no-op elsewhere.
-        if (typeof window !== 'undefined') window.location.href = 'message://';
     }
 }
