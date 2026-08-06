@@ -72,6 +72,9 @@ export class ChatInputBarComponent {
     @Input() confirmPending = false;
     @Output() send = new EventEmitter<string>();
     @Output() stop = new EventEmitter<void>();
+    /** True while the composer holds text -> lets the empty state hide its
+     *  starter chips (on mobile a tall draft would otherwise cover them). */
+    @Output() typing = new EventEmitter<boolean>();
 
     @ViewChild('box') box?: ElementRef<HTMLTextAreaElement>;
 
@@ -93,6 +96,7 @@ export class ChatInputBarComponent {
     /** Cap the textarea at ~4 lines; scroll inside beyond that (no layout jump). */
     autosize(): void {
         this.tick.update((n) => n + 1);
+        this.typing.emit(this.draft.trim().length > 0);
         const el = this.box?.nativeElement;
         if (!el) return;
         el.style.height = 'auto';

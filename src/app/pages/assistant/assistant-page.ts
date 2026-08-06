@@ -10,6 +10,7 @@ import { ChatSessionService } from '../../core/ai/chat-session.service';
 import { CHAT_STREAM_DRIVER } from '../../core/ai/chat-stream-driver';
 import { MockChatDriver } from '../../core/ai/mock-chat-driver';
 import { SseChatDriver } from '../../core/ai/sse-chat-driver';
+import { ApiService } from '../../core/services/api.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { MOCK_SCENARIO_IDS, MockScenarioId } from '../../core/ai/mock-scenarios';
 import { ChatThreadComponent } from './components/chat-thread';
@@ -96,7 +97,8 @@ import { DashboardService } from '../service/dashboard.service';
             <!-- Thread / empty state (top padding clears the dev chip row) -->
             <div class="flex-1 min-h-0 relative" [class.pt-8]="devtools()">
                 @if (svc.messages().length === 0) {
-                    <app-chat-empty-state [populated]="populated()" (pick)="onStarter($event)" />
+                    <app-chat-empty-state [populated]="populated()"
+                        [hideSuggestions]="composerHasText()" (pick)="onStarter($event)" />
                 } @else {
                     <app-chat-thread />
                 }
@@ -108,6 +110,7 @@ import { DashboardService } from '../service/dashboard.service';
                     [streaming]="svc.streaming()"
                     [confirmPending]="svc.pendingConfirm() !== null"
                     (send)="svc.send($event)"
+                    (typing)="composerHasText.set($event)"
                     (stop)="svc.stop()" />
                 <p class="text-center text-[11px] text-surface-400 dark:text-surface-500 mt-1.5 px-4 select-none">
                     {{ t('assistant.inputHint') }}
@@ -174,6 +177,8 @@ export class AssistantPage implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private route = inject(ActivatedRoute);
     private dashboard = inject(DashboardService);
+    private api = inject(ApiService);
+    private flags = inject(FeatureFlagsService);
     svc = inject(ChatSessionService);
     mock = inject(MockChatDriver);
     t = (k: string) => this.i18n.t(k);
@@ -189,6 +194,10 @@ export class AssistantPage implements OnInit, OnDestroy {
     });
 
     readonly scenarioIds = MOCK_SCENARIO_IDS;
+
+    /** True while the composer holds a draft -> the empty state drops its
+     *  starter chips so a tall mobile draft never covers them. */
+    readonly composerHasText = signal(false);
 
     /** Undo affordance for "New conversation" (the server reset is delayed to
      *  this window, so undo restores the thread with the agent's memory intact). */
@@ -229,6 +238,13 @@ export class AssistantPage implements OnInit, OnDestroy {
         // snapshot). Fire-and-forget: an empty/failed summary just keeps the
         // recording-led variant.
         void this.dashboard.loadDashboard();
+        // PERF-4: warm the prompt cache for this user's landing agent so the
+        // first real message reads a warm prefix instead of paying the cold
+        // start. Real transport only (the mock driver makes no model calls);
+        // fire-and-forget: a failed warm just means the first turn is slower.
+        if (this.flags.aiChat()) {
+            this.api.warmChat().subscribe({ error: () => { /* best-effort */ } });
+        }
         // Deep-linkable scenario for device demos: /assistant?scenario=bulk_confirm
         const wanted = this.route.snapshot.queryParamMap.get('scenario') as MockScenarioId | null;
         if (wanted && MOCK_SCENARIO_IDS.includes(wanted)) {

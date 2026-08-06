@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputOtpModule } from 'primeng/inputotp';
 import { RippleModule } from 'primeng/ripple';
 import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
@@ -20,7 +21,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [ButtonModule, InputTextModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, ToastModule],
+    imports: [ButtonModule, InputTextModule, InputOtpModule, FormsModule, RouterModule, RippleModule, DividerModule, CommonModule, ToastModule],
     providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
@@ -37,36 +38,43 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
                 @if (pendingEmail(); as pending) {
                 <!-- In-app 6-digit code verification: verifies the address AND signs in -->
-                <div class="max-w-md" data-testid="verify-code">
+                <div class="max-w-md step-in" data-testid="verify-code">
                     <div class="w-14 h-14 rounded-2xl bg-ochre-500/15 flex items-center justify-center mb-6">
                         <i class="pi pi-envelope text-2xl text-ochre-500" aria-hidden="true"></i>
                     </div>
                     <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-0 mb-3">
                         {{ t('auth.verifyCode.title') }}
                     </h1>
-                    <p class="text-surface-600 dark:text-surface-400 mb-8">
+                    <p class="text-surface-600 dark:text-surface-400 mb-8 leading-relaxed">
                         {{ t('auth.verifyCode.subtitle') }}
-                        <strong class="text-surface-900 dark:text-surface-0">{{ pending }}</strong>
+                        <strong class="text-surface-900 dark:text-surface-0 whitespace-nowrap">{{ pending }}</strong>
                     </p>
 
-                    <label for="code" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('auth.verifyCode.codeLabel') }}</label>
-                    <input pInputText id="code" type="text" inputmode="numeric" autocomplete="one-time-code"
-                           maxlength="6" [placeholder]="t('auth.verifyCode.codePlaceholder')"
-                           class="w-full !bg-transparent !border-0 !border-b-2 !border-surface-300 dark:!border-surface-600 !rounded-none !px-0 !py-3
-                                  text-2xl tracking-[0.5em] text-center font-semibold focus:!border-ochre-500 focus:!shadow-none"
-                           [ngModel]="code()" (ngModelChange)="onCodeChange($event)" name="code"
-                           [disabled]="isLoading()" (keyup.enter)="submitCode()" />
+                    <!-- Segmented OTP field (native OTP feel: per-cell focus, paste,
+                         one-time-code autofill; auto-submits on the 6th digit). -->
+                    <label id="codeLabel" class="block text-surface-600 dark:text-surface-400 text-sm mb-3">{{ t('auth.verifyCode.codeLabel') }}</label>
+                    <p-inputOtp [ngModel]="code()" (ngModelChange)="onCodeChange($event)" name="code"
+                                [length]="6" [integerOnly]="true" variant="filled" [autofocus]="true"
+                                [disabled]="isLoading()"
+                                [styleClass]="codeError() ? 'omaad-otp otp-error' : 'omaad-otp'"
+                                aria-labelledby="codeLabel"></p-inputOtp>
 
-                    @if (codeError()) {
-                        <div role="alert" class="text-negative text-sm flex items-center gap-2 mt-3">
-                            <i class="pi pi-exclamation-circle"></i>
-                            {{ t('auth.verifyCode.codeInvalid') }}
-                        </div>
-                    }
+                    <div class="h-6 mt-3">
+                        @if (codeError()) {
+                            <div role="alert" class="text-negative text-sm flex items-center gap-2 otp-error-msg">
+                                <i class="pi pi-exclamation-circle"></i>
+                                {{ t('auth.verifyCode.codeInvalid') }}
+                            </div>
+                        } @else {
+                            <p class="text-surface-400 dark:text-surface-500 text-xs flex items-center gap-1.5">
+                                <i class="pi pi-clock text-[11px]"></i>{{ t('auth.verifyCode.expiryHint') }}
+                            </p>
+                        }
+                    </div>
 
                     <button pButton pRipple type="button" [label]="t('auth.verifyCode.verify')"
                             [loading]="isLoading()"
-                            class="w-full !rounded-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300 mt-6"
+                            class="w-full !rounded-full !py-3 !text-base !font-semibold !border-0 transition-all duration-300 mt-5"
                             [ngClass]="{
                                 'omaad-cta': code().length === 6 && !isLoading(),
                                 '!bg-surface-300 dark:!bg-surface-700 !text-surface-500 dark:!text-surface-400': code().length !== 6 || isLoading()
@@ -265,7 +273,59 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 </div>
             </div>
         </div>
-    `
+    `,
+    styles: [`
+        @keyframes registerStepIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .step-in { animation: registerStepIn 0.35s ease-out both; }
+
+        /* Segmented OTP cells (premium, native-OTP feel). We override the
+           global .p-inputtext skin on the cells: filled surface, clear
+           border, ochre focus ring. */
+        ::ng-deep .omaad-otp { display: flex; gap: 0.5rem; }
+        ::ng-deep .omaad-otp .p-inputotp-input {
+            width: clamp(2.6rem, 13vw, 3rem) !important;
+            height: 3.5rem !important;
+            padding: 0 !important;
+            text-align: center;
+            font-size: 1.375rem !important;
+            font-weight: 600;
+            color: var(--p-surface-900) !important;
+            background: var(--p-surface-50) !important;
+            border: 1.5px solid var(--p-surface-300) !important;
+            border-radius: 0.75rem !important;
+            box-shadow: none !important;
+            caret-color: var(--omaad-ochre-500, #C77B3C);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        ::ng-deep .omaad-otp .p-inputotp-input:focus,
+        ::ng-deep .omaad-otp .p-inputotp-input:focus-visible {
+            border-color: var(--omaad-ochre-500, #C77B3C) !important;
+            background: var(--p-surface-0) !important;
+            box-shadow: 0 0 0 3px rgba(199, 123, 60, 0.18) !important;
+        }
+        :host-context(.app-dark) ::ng-deep .omaad-otp .p-inputotp-input {
+            color: var(--p-surface-0) !important;
+            background: var(--p-surface-800) !important;
+            border-color: var(--p-surface-600) !important;
+        }
+        :host-context(.app-dark) ::ng-deep .omaad-otp .p-inputotp-input:focus {
+            background: var(--p-surface-900) !important;
+        }
+        /* Error: red cells + a quick shake, then the message fades in. */
+        ::ng-deep .omaad-otp.otp-error { animation: otpShake 0.4s ease; }
+        ::ng-deep .omaad-otp.otp-error .p-inputotp-input {
+            border-color: var(--p-red-400, #f87171) !important;
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15) !important;
+        }
+        @keyframes otpShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        .otp-error-msg { animation: registerStepIn 0.2s ease-out both; }
+    `]
 })
 export class Register {
     readonly authService = inject(AuthService);

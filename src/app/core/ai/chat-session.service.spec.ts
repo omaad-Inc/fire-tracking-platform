@@ -131,6 +131,46 @@ describe('ChatSessionService (event reducer)', () => {
         expect(assets).toHaveBeenCalledTimes(2);
     });
 
+    // ── PERF-3: optimistic pending rows in the data views ────────────────────
+
+    it('a streamed create renders an optimistic pending write, resolved on its tool_result', () => {
+        const state = TestBed.inject(AssetsStateService);
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison · Dakar', card_id: 'c1' });
+        expect(state.pendingAiAssets()).toEqual([
+            { cardId: 'c1', kind: 'asset', label: 'Maison · Dakar' },
+        ]);
+        // Reconcile: the pending row is gone the moment the write lands (the
+        // notify-driven refresh then renders the real row — never both).
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'ok', summary: 'Maison', undo_token: 'assets/12' });
+        expect(state.pendingAiWrites()).toEqual([]);
+    });
+
+    it('a failed create rolls its pending row back', () => {
+        const state = TestBed.inject(AssetsStateService);
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        expect(state.pendingAiAssets().length).toBe(1);
+        driver.emit({ type: 'tool_result', card_id: 'c1', status: 'error', summary: 'Détails invalides.' });
+        expect(state.pendingAiWrites()).toEqual([]);
+    });
+
+    it('read tools never render a pending write', () => {
+        const state = TestBed.inject(AssetsStateService);
+        svc.send('mon patrimoine ?');
+        driver.emit({ type: 'tool_use', tool: 'query_user_data', args_preview: 'net worth', card_id: 'c1' });
+        expect(state.pendingAiWrites()).toEqual([]);
+    });
+
+    it('a turn that dies between tool_use and tool_result clears its pending rows', () => {
+        const state = TestBed.inject(AssetsStateService);
+        svc.send('ajoute ma maison');
+        driver.emit({ type: 'tool_use', tool: 'create_asset', args_preview: 'Maison', card_id: 'c1' });
+        expect(state.pendingAiAssets().length).toBe(1);
+        driver.close(); // stream dropped before the result: no phantom rows
+        expect(state.pendingAiWrites()).toEqual([]);
+    });
+
     it('a failed write does NOT notify the data views', () => {
         const state = TestBed.inject(AssetsStateService);
         const assets = spyOn(state, 'notifyAssetsUpdated');
@@ -183,6 +223,33 @@ describe('ChatSessionService (event reducer)', () => {
         svc.confirm('park-1', true);
         expect(svc.pendingConfirm()).toBeNull();
         expect(driver.confirmCalls).toEqual([{ cardId: 'park-1', approved: true }]);
+    });
+
+    it('confirm re-locks the composer for the continuation, until its close (COR-1)', () => {
+        svc.send('ajoute ma maison et ma voiture');
+        driver.emit({ type: 'confirm_required', card_id: 'p1', diff: [{ op: 'create', label: 'x' }] });
+        // Real SSE park: the parked HTTP body closes before the user decides.
+        driver.close();
+        expect(svc.streaming()).toBeFalse();
+        expect(svc.inputLocked()).toBeTrue(); // pendingConfirm still holds the lock
+
+        svc.confirm('p1', true);
+        expect(svc.streaming()).toBeTrue(); // continuation in flight: Stop visible, composer locked
+
+        driver.emit({ type: 'tool_result', card_id: 'p1', status: 'ok', summary: 'Créé' });
+        driver.emit({ type: 'message_stop' });
+        driver.close();
+        expect(svc.streaming()).toBeFalse();
+        expect(svc.inputLocked()).toBeFalse();
+    });
+
+    it('the turn handle survives the park close, so Stop aborts the continuation (COR-1)', () => {
+        svc.send('ajoute ma maison et ma voiture');
+        driver.emit({ type: 'confirm_required', card_id: 'p2', diff: [{ op: 'create', label: 'x' }] });
+        driver.close(); // park: handle must be KEPT (pendingConfirm is set)
+        svc.confirm('p2', true);
+        svc.stop();
+        expect(driver.cancelled).toBeTrue();
     });
 
     it('a declined confirm leads to a cancelled card', () => {
