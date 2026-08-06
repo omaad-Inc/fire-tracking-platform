@@ -832,6 +832,7 @@ export interface NotificationPreferences {
     push_enabled: boolean;
     signal_budget: boolean;
     signal_tontine: boolean;
+    signal_milestone: boolean;   // S13 AI-72: FIRE-milestone alerts
     quiet_hours_start: string;   // "HH:MM" local time
     quiet_hours_end: string;
     timezone: string;            // IANA name
@@ -1016,6 +1017,12 @@ export class ApiService {
     /** Transactions as a CSV blob. */
     exportTransactionsCsv(): Observable<Blob> {
         return this.http.get(`${this.apiUrl}/export/transactions.csv`, { responseType: 'blob' });
+    }
+
+    /** S13 AI-73: the Pro monthly report as a PDF blob (auth via interceptor).
+     *  No args => the most recent complete month. A 403 means the plan gate. */
+    downloadMonthlyReport(): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/reports/monthly.pdf`, { responseType: 'blob' });
     }
 
     // ========== ASSETS ==========
