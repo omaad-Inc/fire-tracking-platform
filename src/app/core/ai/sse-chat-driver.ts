@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { I18nService } from '../../i18n/i18n.service';
 import { TokenService } from '../services/token.service';
@@ -19,12 +20,31 @@ import { ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
  * provider change in assistant-page; components and ChatSessionService are
  * untouched.
  *
- * Session-survival rules ([[session-survival-rules]]): ONLY a 401 (invalid
- * session) or a non-entitlement 403 logs out. A 403 PLAN_REQUIRED is the
- * upsell gate, surfaced as an error event, never a logout. Every other
- * failure (network, 429, 5xx, mid-stream drop) is a degraded-mode error
- * bubble, never a logout.
+ * Session-survival rules ([[session-survival-rules]]): a 401 gets ONE
+ * single-flight /auth/refresh attempt and a retry of the same request (the
+ * same treatment AuthInterceptor gives every HttpClient call — this driver
+ * bypasses interceptors, so it applies the rule itself). Only a DEFINITIVE
+ * refresh rejection logs out. A 403 PLAN_REQUIRED is the upsell gate,
+ * surfaced as an error event, never a logout. Every other failure (network,
+ * 429, 5xx, mid-stream drop) is a degraded-mode error bubble, never a logout.
  */
+
+/** One driver turn. `controller` and `finish` are reassigned per HTTP request
+ *  (the parked request, then the /confirm continuation), while the callbacks
+ *  stay those given to startTurn: confirmation is a pause, not a new turn. */
+interface ActiveTurn {
+    onEvent: (e: ChatStreamEvent) => void;
+    onClose: () => void;
+    controller: AbortController;
+    /** True once confirm_required streamed: the server closed the HTTP body
+     *  but the turn is only paused, so the callbacks must survive that close
+     *  for confirm() to resume through them (ARCH §4.1). */
+    parked: boolean;
+    /** Finalizer of the CURRENT request (idempotent). Kept on the turn so
+     *  cancel() always settles the request actually in flight. */
+    finish: () => void;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SseChatDriver implements ChatStreamDriver {
     private token = inject(TokenService);
@@ -32,13 +52,8 @@ export class SseChatDriver implements ChatStreamDriver {
     private i18n = inject(I18nService);
     private base = environment.apiUrl;
 
-    /** The in-flight turn's callbacks + abort, so confirm() can resume the
-     *  SAME turn (ARCH §4.1: confirmation is a pause, not a new conversation). */
-    private active: {
-        onEvent: (e: ChatStreamEvent) => void;
-        close: () => void;
-        controller: AbortController;
-    } | null = null;
+    /** The in-flight turn, so confirm() can resume the SAME turn. */
+    private active: ActiveTurn | null = null;
 
     /** True while the in-flight turn is the first-run onboarding concierge, so
      *  its requests carry X-Omaad-Surface and the backend exempts them from the
@@ -52,39 +67,44 @@ export class SseChatDriver implements ChatStreamDriver {
         context?: Record<string, unknown>,
     ): ChatTurnHandle {
         this.abortActive(); // one turn at a time; a new turn supersedes a stale one
-        const controller = new AbortController();
-        let closed = false;
-        const close = () => {
-            if (closed) return;
-            closed = true;
-            if (this.active?.controller === controller) this.active = null;
-            onClose();
+        const state: ActiveTurn = {
+            onEvent,
+            onClose,
+            controller: new AbortController(),
+            parked: false,
+            finish: () => {},
         };
-        this.active = { onEvent, close, controller };
+        this.active = state;
         this.onboardingSurface = context?.['onboarding'] === true;
         const body = context ? { message, context } : { message };
-        void this.run('/agents/chat', body, onEvent, close, controller);
+        void this.run('/agents/chat', body, state);
         return {
             cancel: () => {
-                controller.abort();
-                close();
+                // Read controller/finish at call time: confirm() reassigns them,
+                // so Stop during a continuation aborts THAT fetch, not the dead
+                // controller of the already-closed parked request.
+                state.parked = false; // a stopped turn is over, not paused
+                state.controller.abort();
+                state.finish();
+                // Cancel while parked: the parked request's finish already ran,
+                // so release the slot here.
+                if (this.active === state) this.active = null;
             },
         };
     }
 
     confirm(cardId: string, approved: boolean): void {
-        const a = this.active;
-        if (!a) return; // echo never parks; nothing to resume in Phase 3
+        const state = this.active;
+        if (!state) return; // no parked turn (e.g. reloaded mid-pause): nothing to resume
         // Resume the same turn: a fresh request whose events pipe back into the
-        // ORIGINAL onEvent/close. Phase 4's parked Config loop streams here.
-        const controller = new AbortController();
-        a.controller = controller;
+        // ORIGINAL onEvent/onClose. The continuation always terminates (the
+        // backend's resume path ends in message_stop), so un-park now.
+        state.parked = false;
+        state.controller = new AbortController();
         void this.run(
             '/agents/chat/confirm',
             { card_id: cardId, approved },
-            a.onEvent,
-            a.close,
-            controller,
+            state,
         );
     }
 
@@ -120,10 +140,24 @@ export class SseChatDriver implements ChatStreamDriver {
     private async run(
         path: string,
         body: Record<string, unknown>,
-        onEvent: (e: ChatStreamEvent) => void,
-        close: () => void,
-        controller: AbortController,
+        state: ActiveTurn,
+        retriedAfterRefresh = false,
     ): Promise<void> {
+        const controller = state.controller;
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            // A parked request keeps the turn alive for confirm(); anything
+            // else releases the slot before notifying the UI.
+            if (!state.parked && this.active === state) this.active = null;
+            state.onClose();
+        };
+        state.finish = finish;
+        const onEvent = (e: ChatStreamEvent) => {
+            if (e.type === 'confirm_required') state.parked = true;
+            state.onEvent(e);
+        };
         try {
             const res = await fetch(`${this.base}${path}`, {
                 method: 'POST',
@@ -132,9 +166,35 @@ export class SseChatDriver implements ChatStreamDriver {
                 signal: controller.signal,
             });
 
+            // COR-3: a 401 gets the same one-refresh-then-retry treatment the
+            // AuthInterceptor gives XHR calls; this fetch bypasses interceptors.
+            if (res.status === 401 && !retriedAfterRefresh) {
+                const outcome = await this.refreshOutcome();
+                if (outcome === 'refreshed') {
+                    // authHeaders() reads the fresh token at call time.
+                    await this.run(path, body, state, true);
+                    return; // the retry owns state.finish now
+                }
+                if (outcome === 'dead') {
+                    // The refresh itself was definitively rejected: the one
+                    // verdict that justifies a logout (survival rule).
+                    this.auth.logout();
+                    finish();
+                    return;
+                }
+                // Transient refresh failure: no verdict on the session.
+                onEvent({
+                    type: 'error',
+                    code: 'unavailable',
+                    message: this.t('assistant.errorState.unavailable'),
+                });
+                finish();
+                return;
+            }
+
             if (!res.ok || !res.body) {
                 await this.handleHttpError(res, onEvent);
-                close();
+                finish();
                 return;
             }
 
@@ -142,8 +202,8 @@ export class SseChatDriver implements ChatStreamDriver {
             const decoder = new TextDecoder();
             let buffer = '';
             for (;;) {
-                const { done, value } = await reader.read();
-                if (done) break;
+                const { done: eof, value } = await reader.read();
+                if (eof) break;
                 buffer += decoder.decode(value, { stream: true });
                 let sep: number;
                 // SSE frames are separated by a blank line.
@@ -153,9 +213,9 @@ export class SseChatDriver implements ChatStreamDriver {
                     this.dispatchFrame(frame, onEvent);
                 }
             }
-            // Server closes the body after message_stop / error, so a clean
-            // end of stream is the single close signal.
-            close();
+            // Server closes the body after message_stop / confirm_required /
+            // error, so a clean end of stream is the single close signal.
+            finish();
         } catch (err) {
             // AbortError == user pressed Stop / navigated away: just close, no
             // error bubble. Anything else is a degraded-mode bubble, no logout.
@@ -166,7 +226,22 @@ export class SseChatDriver implements ChatStreamDriver {
                     message: this.t('assistant.errorState.offline'),
                 });
             }
-            close();
+            finish();
+        }
+    }
+
+    /**
+     * One single-flight refresh attempt (shared with AuthInterceptor via
+     * AuthService.forceRefresh). 'refreshed' = new token in TokenService;
+     * 'dead' = the session was definitively rejected; 'transient' = the
+     * refresh call itself failed with no verdict (network/5xx).
+     */
+    private async refreshOutcome(): Promise<'refreshed' | 'dead' | 'transient'> {
+        try {
+            const token = await firstValueFrom(this.auth.forceRefresh());
+            return token ? 'refreshed' : 'dead';
+        } catch {
+            return 'transient';
         }
     }
 
@@ -195,9 +270,15 @@ export class SseChatDriver implements ChatStreamDriver {
             /* no JSON body */
         }
 
-        // 401: the session is genuinely invalid -> logout (survival rule).
+        // 401 after a successful refresh + retry: mirror AuthInterceptor (a
+        // replayed request's 401 surfaces retryably, only a refresh rejection
+        // logs out). Degraded bubble, keep the session.
         if (res.status === 401) {
-            this.auth.logout();
+            onEvent({
+                type: 'error',
+                code: 'unavailable',
+                message: this.t('assistant.errorState.unavailable'),
+            });
             return;
         }
         // 403 PLAN_REQUIRED is the entitlement gate, not an auth failure: no
@@ -221,7 +302,7 @@ export class SseChatDriver implements ChatStreamDriver {
             code: res.status === 429 ? 'rate_limited' : 'unavailable',
             message: this.t(
                 res.status === 429
-                    ? 'assistant.errorState.quotaReached'
+                    ? 'assistant.errorState.rateLimited'
                     : 'assistant.errorState.unavailable',
             ),
         });

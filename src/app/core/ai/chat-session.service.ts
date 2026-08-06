@@ -98,6 +98,11 @@ export class ChatSessionService {
     confirm(cardId: string, approved: boolean): void {
         this.pendingConfirm.set(null);
         this.updateCard(cardId, (c) => ({ ...c, state: approved ? 'running' : c.state }));
+        // The continuation streams through the original turn's callbacks; lock
+        // the composer and show Stop again until its close lands. (The SSE
+        // parked request already closed its HTTP body, so streaming was false
+        // during the pause; the mock never closed, so this is a no-op there.)
+        this.streaming.set(true);
         this.driver.confirm(cardId, approved);
     }
 
@@ -306,7 +311,10 @@ export class ChatSessionService {
 
     private closeTurn(): void {
         this.streaming.set(false);
-        this.handle = null;
+        // A confirm park closes the parked HTTP body but only PAUSES the turn:
+        // keep the handle so Stop during the /confirm continuation aborts that
+        // continuation. The turn's final close (no pending confirm) drops it.
+        if (this.pendingConfirm() === null) this.handle = null;
         // Drop an assistant shell that never received content (e.g. stopped
         // before the first event) so no empty bubble lingers.
         const msgs = this.messages();

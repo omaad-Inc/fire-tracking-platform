@@ -185,6 +185,33 @@ describe('ChatSessionService (event reducer)', () => {
         expect(driver.confirmCalls).toEqual([{ cardId: 'park-1', approved: true }]);
     });
 
+    it('confirm re-locks the composer for the continuation, until its close (COR-1)', () => {
+        svc.send('ajoute ma maison et ma voiture');
+        driver.emit({ type: 'confirm_required', card_id: 'p1', diff: [{ op: 'create', label: 'x' }] });
+        // Real SSE park: the parked HTTP body closes before the user decides.
+        driver.close();
+        expect(svc.streaming()).toBeFalse();
+        expect(svc.inputLocked()).toBeTrue(); // pendingConfirm still holds the lock
+
+        svc.confirm('p1', true);
+        expect(svc.streaming()).toBeTrue(); // continuation in flight: Stop visible, composer locked
+
+        driver.emit({ type: 'tool_result', card_id: 'p1', status: 'ok', summary: 'Créé' });
+        driver.emit({ type: 'message_stop' });
+        driver.close();
+        expect(svc.streaming()).toBeFalse();
+        expect(svc.inputLocked()).toBeFalse();
+    });
+
+    it('the turn handle survives the park close, so Stop aborts the continuation (COR-1)', () => {
+        svc.send('ajoute ma maison et ma voiture');
+        driver.emit({ type: 'confirm_required', card_id: 'p2', diff: [{ op: 'create', label: 'x' }] });
+        driver.close(); // park: handle must be KEPT (pendingConfirm is set)
+        svc.confirm('p2', true);
+        svc.stop();
+        expect(driver.cancelled).toBeTrue();
+    });
+
     it('a declined confirm leads to a cancelled card', () => {
         svc.send('importe mon relevé');
         driver.emit({ type: 'tool_use', tool: 'bulk_import', args_preview: '3 transactions', card_id: 'c3' });
