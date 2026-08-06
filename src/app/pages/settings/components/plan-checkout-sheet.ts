@@ -101,7 +101,7 @@ const POPULAR_DURATION: DurationKey = 'm3';
                             <button type="button" (click)="method.set('momo')"
                                     class="omaad-press rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
                                     [ngClass]="method() === 'momo'
-                                        ? 'border-brand-700 border-2 bg-brand-50 dark:bg-brand-900/20'
+                                        ? 'border-ochre-500 border-2 bg-ochre-50 dark:bg-ochre-900/20'
                                         : 'border-surface-200 dark:border-surface-700'">
                                 <i class="pi pi-mobile text-ochre-500" aria-hidden="true"></i>
                                 <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('plans.checkout.mobileMoney') }}</span>
@@ -113,7 +113,7 @@ const POPULAR_DURATION: DurationKey = 'm3';
                             <button type="button" (click)="method.set('card')"
                                     class="omaad-press rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
                                     [ngClass]="method() === 'card'
-                                        ? 'border-brand-700 border-2 bg-brand-50 dark:bg-brand-900/20'
+                                        ? 'border-ochre-500 border-2 bg-ochre-50 dark:bg-ochre-900/20'
                                         : 'border-surface-200 dark:border-surface-700'">
                                 <i class="pi pi-credit-card text-brand-700 dark:text-brand-300" aria-hidden="true"></i>
                                 <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('plans.checkout.card') }}</span>
