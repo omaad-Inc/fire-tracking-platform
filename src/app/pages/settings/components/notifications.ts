@@ -156,6 +156,15 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.reports') }}</h3>
                 <div class="flex items-center justify-between gap-4 py-4">
                     <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-weekly-label">{{ t('settings.notifs.weeklyReport') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.weeklyReportDesc') }}</p>
+                    </div>
+                    <p-toggleswitch [ngModel]="prefs().signal_weekly_report"
+                                    (onChange)="save({ signal_weekly_report: $event.checked })"
+                                    ariaLabelledBy="notif-weekly-label" />
+                </div>
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
                         <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.notifs.reportMonthly') }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.reportMonthlyDesc') }}</p>
                     </div>
@@ -217,6 +226,7 @@ export class NotificationsSettings implements OnInit {
     prefs = signal<NotificationPreferences>(this.cachedPrefs ?? {
         email_enabled: false, push_enabled: false,
         signal_budget: false, signal_tontine: false, signal_milestone: false,
+        signal_weekly_report: true,
         quiet_hours_start: '21:00', quiet_hours_end: '08:00',
         timezone: 'Africa/Dakar',
     });
