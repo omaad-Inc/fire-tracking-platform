@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 import { I18nService } from '../../i18n/i18n.service';
+import { CustomCategoryService } from '../../core/services/custom-category.service';
 import {
     ApiService, Budget, BudgetCreate, BudgetStatus, TransactionCategory,
 } from '../../core/services/api.service';
@@ -70,7 +71,7 @@ type Model = 'envelope' | 'flexible';
                     <app-ui-card padding="sm">
                         <div class="flex items-center justify-between gap-3 mb-2">
                             <div class="flex items-center gap-2 min-w-0">
-                                <span class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ t('categories.' + it.category) }}</span>
+                                <span class="font-semibold text-surface-900 dark:text-surface-0 truncate">{{ budgetLabel(it.category) }}</span>
                                 @if (it.over_budget) {
                                     <app-chip [label]="t('budgets.over')" tone="negative" />
                                 } @else if (it.percent_used >= 80) {
@@ -141,6 +142,7 @@ export class BudgetPage implements OnInit {
     private api = inject(ApiService);
     private budgetData = inject(BudgetDataService);
     private i18n = inject(I18nService);
+    private customCat = inject(CustomCategoryService);
     private cs = inject(CurrencyService);
     private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
@@ -171,7 +173,7 @@ export class BudgetPage implements OnInit {
         });
     }
 
-    ngOnInit() { this.load(); }
+    ngOnInit() { this.load(); this.customCat.load(); }
 
     async load() {
         this.error.set(false);
@@ -188,9 +190,19 @@ export class BudgetPage implements OnInit {
     /** Expense categories still available (exclude ones already budgeted, unless editing that one). */
     categoryOptions(): { value: TransactionCategory; label: string }[] {
         const taken = new Set(this.budgets().filter(b => b.id !== this.editingId()).map(b => b.category));
-        return BUDGET_CATS
+        const builtins = BUDGET_CATS
             .filter(c => !taken.has(c))
-            .map(c => ({ value: c, label: this.i18n.categoryLabel(c) }));
+            .map(c => ({ value: c as TransactionCategory, label: this.i18n.categoryLabel(c) }));
+        // PRO-4: expense custom categories are budgetable too.
+        const customs = this.customCat.expense()
+            .filter(c => !taken.has(c.value))
+            .map(c => ({ value: c.value as TransactionCategory, label: c.label }));
+        return [...builtins, ...customs];
+    }
+
+    /** Label for a budget row: localized built-in, or the user's custom label. */
+    budgetLabel(category: string): string {
+        return this.customCat.label(category);
     }
 
     barWidth(it: BudgetStatus): number {

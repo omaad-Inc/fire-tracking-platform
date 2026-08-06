@@ -17,6 +17,7 @@ import {
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
 } from '../../service/transactions.service';
 import { PatrimoineService } from '../../service/patrimoine.service';
+import { CustomCategoryService } from '../../../core/services/custom-category.service';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
@@ -449,6 +450,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
     private i18n = inject(I18nService);
+    private customCat = inject(CustomCategoryService);
     share = inject(ShareContextService);
     private router = inject(Router);
     private route  = inject(ActivatedRoute);
@@ -524,17 +526,24 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private static readonly MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
     accountOptions = signal<{ label: string; value: number }[]>([]);
 
-    readonly currentCategories = computed(() =>
-        this.formType() === 'Income' ? [...INCOME_CATEGORIES] : [...EXPENSE_CATEGORIES]
-    );
+    // Built-ins for the type + the user's custom categories of that kind (PRO-4).
+    readonly currentCategories = computed(() => {
+        const builtins = this.formType() === 'Income' ? [...INCOME_CATEGORIES] : [...EXPENSE_CATEGORIES];
+        const customs = this.customCat.forType(this.formType()).map(c => c.value);
+        return [...builtins, ...customs];
+    });
 
     getCatConfig(cat: string) {
+        if (CustomCategoryService.isCustom(cat)) {
+            const r = this.customCat.resolve(cat);
+            return { label: r.label, icon: r.icon, color: r.color, bg: '' };
+        }
         return CATEGORY_CONFIG[cat] ?? { label: cat, icon: 'pi pi-circle', color: '#94a3b8', bg: '' };
     }
 
-    /** Localized category label; falls back to the CATEGORY_CONFIG label then the raw key. */
+    /** Localized label for a built-in, or the user's label for a custom category. */
     categoryLabel(cat: string | undefined | null): string {
-        return this.i18n.categoryLabel(cat);
+        return this.customCat.label(cat);
     }
 
     setType(t: 'Income' | 'Expense' | 'Transfer') {
@@ -610,6 +619,8 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private sub?: Subscription;
 
     ngOnInit() {
+        // Load the user's custom categories (PRO-4) for the pickers + row labels.
+        this.customCat.load();
         // Restore filters from the URL (P3-8) before enabling the write-back effect.
         const qp = this.route.snapshot.queryParamMap;
         const mo = Number(qp.get('month'));
@@ -824,6 +835,10 @@ export class TransactionLogs implements OnInit, OnDestroy {
     // ── Helpers ───────────────────────────────────────────────────
     getCategoryConfig(rec: TransactionRecord) {
         const cat = rec.category || (rec.type === 'Income' ? 'other_income' : 'other_expense');
+        if (CustomCategoryService.isCustom(cat)) {
+            const r = this.customCat.resolve(cat);
+            return { label: r.label, icon: r.icon, color: r.color, bg: 'bg-warm-500/10' };
+        }
         return CATEGORY_CONFIG[cat] ?? { label: rec.name || cat, icon: 'pi pi-circle', color: '#94a3b8', bg: 'bg-warm-500/10' };
     }
 
