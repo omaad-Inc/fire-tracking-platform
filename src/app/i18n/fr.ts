@@ -518,6 +518,8 @@ export const FR = {
       offline: 'Tu es hors ligne. Vérifie ta connexion puis réessaie.',
       quotaReached: 'Tu as utilisé tous tes messages IA pour cette période. Passe au plan supérieur pour continuer sans attendre.',
       unavailable: 'L\'assistant est momentanément indisponible. Réessaie dans un instant.',
+      rateLimited: 'Tu envoies des messages un peu vite. Patiente un instant avant de réessayer.',
+      waitShortly: 'Réessaie dans un instant',
       generic: 'Une erreur est survenue pendant la réponse.',
     },
     empty: {

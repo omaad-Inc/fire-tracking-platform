@@ -520,6 +520,8 @@ export const EN: Dict = {
       offline: 'You are offline. Check your connection and try again.',
       quotaReached: 'You have used all your AI messages for this period. Upgrade your plan to keep going.',
       unavailable: 'The assistant is temporarily unavailable. Try again in a moment.',
+      rateLimited: 'You are sending messages a bit fast. Wait a moment before trying again.',
+      waitShortly: 'Try again shortly',
       generic: 'Something went wrong while answering.',
     },
     empty: {

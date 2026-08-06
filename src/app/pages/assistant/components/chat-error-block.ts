@@ -35,6 +35,12 @@ import { NavService } from '../../../core/services/nav.service';
                                 <i class="pi pi-crown" style="font-size: 10px" aria-hidden="true"></i>
                                 {{ t('assistant.errorState.upgrade') }}
                             </a>
+                        } @else if (waitOnly()) {
+                            <span class="inline-flex items-center gap-1.5 text-xs font-medium
+                                         text-surface-500 dark:text-surface-400">
+                                <i class="pi pi-clock" style="font-size: 10px" aria-hidden="true"></i>
+                                {{ t('assistant.errorState.waitShortly') }}
+                            </span>
                         } @else {
                             <button type="button"
                                     class="omaad-press inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full
@@ -61,8 +67,16 @@ export class ChatErrorBlockComponent {
     @Input() message = '';
     @Output() retry = new EventEmitter<void>();
 
+    /** Upgrade path: the quota ceiling AND the 403 entitlement gate both route
+     *  to the plans page; a Retry here would just fail again (UX-1). */
     quota(): boolean {
-        return this.code === 'QUOTA_REACHED';
+        return this.code === 'QUOTA_REACHED' || this.code === 'PLAN_REQUIRED';
+    }
+
+    /** 429: retrying immediately refails, so show a "try again shortly" state
+     *  with no Retry button instead of a failing-retry loop (UX-1). */
+    waitOnly(): boolean {
+        return this.code === 'rate_limited';
     }
 
     text(): string {
@@ -70,6 +84,8 @@ export class ChatErrorBlockComponent {
         switch (this.code) {
             case 'OFFLINE': return this.t('assistant.errorState.offline');
             case 'QUOTA_REACHED': return this.t('assistant.errorState.quotaReached');
+            case 'PLAN_REQUIRED': return this.t('assistant.errorState.quotaReached');
+            case 'rate_limited': return this.t('assistant.errorState.rateLimited');
             case 'UPSTREAM_UNAVAILABLE': return this.t('assistant.errorState.unavailable');
             default: return this.t('assistant.errorState.generic');
         }
