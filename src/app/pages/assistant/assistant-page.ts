@@ -96,7 +96,8 @@ import { DashboardService } from '../service/dashboard.service';
             <!-- Thread / empty state (top padding clears the dev chip row) -->
             <div class="flex-1 min-h-0 relative" [class.pt-8]="devtools()">
                 @if (svc.messages().length === 0) {
-                    <app-chat-empty-state [populated]="populated()" (pick)="onStarter($event)" />
+                    <app-chat-empty-state [populated]="populated()"
+                        [hideSuggestions]="composerHasText()" (pick)="onStarter($event)" />
                 } @else {
                     <app-chat-thread />
                 }
@@ -108,6 +109,7 @@ import { DashboardService } from '../service/dashboard.service';
                     [streaming]="svc.streaming()"
                     [confirmPending]="svc.pendingConfirm() !== null"
                     (send)="svc.send($event)"
+                    (typing)="composerHasText.set($event)"
                     (stop)="svc.stop()" />
                 <p class="text-center text-[11px] text-surface-400 dark:text-surface-500 mt-1.5 px-4 select-none">
                     {{ t('assistant.inputHint') }}
@@ -189,6 +191,10 @@ export class AssistantPage implements OnInit, OnDestroy {
     });
 
     readonly scenarioIds = MOCK_SCENARIO_IDS;
+
+    /** True while the composer holds a draft -> the empty state drops its
+     *  starter chips so a tall mobile draft never covers them. */
+    readonly composerHasText = signal(false);
 
     /** Undo affordance for "New conversation" (the server reset is delayed to
      *  this window, so undo restores the thread with the agent's memory intact). */

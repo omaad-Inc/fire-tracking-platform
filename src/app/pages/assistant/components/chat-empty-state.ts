@@ -30,6 +30,7 @@ import { I18nService } from '../../../i18n/i18n.service';
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6 max-w-xs">
                 {{ subtitle() }}
             </p>
+            @if (!hideSuggestions()) {
             <div class="flex flex-col gap-2 w-full max-w-sm">
                 @for (prompt of prompts(); track $index) {
                     <button type="button"
@@ -49,6 +50,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     </button>
                 }
             </div>
+            }
         </div>
     `,
 })
@@ -57,6 +59,10 @@ export class ChatEmptyStateComponent {
 
     /** True once the user already has a portfolio -> advice-led variant. */
     populated = input(false);
+
+    /** True while the composer holds a draft: hide the starter chips so a tall
+     *  mobile draft never covers them (they return when the input is emptied). */
+    hideSuggestions = input(false);
 
     @Output() pick = new EventEmitter<string>();
 
