@@ -28,6 +28,8 @@ class FakeDriver implements ChatStreamDriver {
     emit!: (e: ChatStreamEvent) => void;
     close!: () => void;
     cancelled = false;
+    /** Total cancels across turns (cancelled resets when a new turn starts). */
+    cancelCount = 0;
     confirmCalls: { cardId: string; approved: boolean }[] = [];
     private undoResolve!: () => void;
     private undoReject!: (e: unknown) => void;
@@ -36,7 +38,7 @@ class FakeDriver implements ChatStreamDriver {
         this.emit = onEvent;
         this.close = onClose;
         this.cancelled = false;
-        return { cancel: () => { this.cancelled = true; onClose(); } };
+        return { cancel: () => { this.cancelled = true; this.cancelCount++; onClose(); } };
     }
 
     confirm(cardId: string, approved: boolean): void {
@@ -425,5 +427,98 @@ describe('ChatSessionService (new conversation)', () => {
         expect(api.resetConversation).not.toHaveBeenCalled();
         svc.send('nouvelle question'); // send flushes the pending reset before the turn
         expect(api.resetConversation).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('ChatSessionService (UX-2 hung-stream watchdog)', () => {
+    const STALL_MS = 30_000;
+    let svc: ChatSessionService;
+    let driver: FakeDriver;
+
+    beforeEach(() => {
+        jasmine.clock().install();
+        clearThreads();
+        driver = new FakeDriver();
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                provideHttpClient(),
+                ChatSessionService,
+                { provide: CHAT_STREAM_DRIVER, useValue: driver },
+            ],
+        });
+        svc = TestBed.inject(ChatSessionService);
+    });
+
+    afterEach(() => {
+        jasmine.clock().uninstall();
+        clearThreads();
+    });
+
+    it('a silent stream surfaces the stall affordance after the window', () => {
+        svc.send('question');
+        expect(svc.stalled()).toBeFalse();
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeTrue();
+        expect(svc.streaming()).toBeTrue(); // the turn is still alive, only flagged
+    });
+
+    it('every event resets the countdown, so a live stream never stalls', () => {
+        svc.send('question');
+        jasmine.clock().tick(STALL_MS - 1000);
+        driver.emit({ type: 'text_delta', text: 'Ton patrimoine ' });
+        jasmine.clock().tick(STALL_MS - 1000);
+        driver.emit({ type: 'text_delta', text: 'progresse.' });
+        jasmine.clock().tick(STALL_MS - 1000);
+        expect(svc.stalled()).toBeFalse();
+    });
+
+    it('a late event hides an already-shown affordance', () => {
+        svc.send('question');
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeTrue();
+        driver.emit({ type: 'text_delta', text: 'finalement…' });
+        expect(svc.stalled()).toBeFalse();
+    });
+
+    it('closing the turn clears the watchdog (no phantom affordance)', () => {
+        svc.send('question');
+        driver.emit({ type: 'message_stop' });
+        driver.close();
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeFalse();
+    });
+
+    it('retryStalled aborts the hung turn and resends the last message — no reload', () => {
+        svc.send('question');
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeTrue();
+        svc.retryStalled();
+        expect(driver.cancelCount).toBe(1);       // the hung stream was aborted
+        expect(svc.stalled()).toBeFalse();
+        expect(svc.streaming()).toBeTrue();       // a fresh turn is running
+        const users = svc.messages().filter((m) => m.role === 'user');
+        expect(users[users.length - 1].text).toBe('question'); // same message resent
+    });
+
+    it('dismissStall keeps waiting and re-arms, so the affordance can resurface', () => {
+        svc.send('question');
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeTrue();
+        svc.dismissStall();
+        expect(svc.stalled()).toBeFalse();
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeTrue(); // silence continued: it comes back
+    });
+
+    it('the confirm continuation is watched too', () => {
+        svc.send('ajoute salaire et loyer');
+        driver.emit({ type: 'confirm_required', card_id: 'p1', diff: [{ op: 'create', label: 'x' }] });
+        driver.close(); // the parked HTTP body closes; the watchdog stops with it
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeFalse(); // paused on the user, not hung
+        svc.confirm('p1', true);           // continuation stream opens
+        jasmine.clock().tick(STALL_MS + 1);
+        expect(svc.stalled()).toBeTrue();  // and IT can hang -> affordance shows
     });
 });

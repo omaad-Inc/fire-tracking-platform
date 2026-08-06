@@ -513,6 +513,11 @@ export const EN: Dict = {
       disclaimerCima: 'Educational information: this is not personalized financial advice.',
       quotaWarning: 'You have few AI messages left in your current period.',
       quotaReached: 'You have used all your AI messages for this period.',
+      turnTimeout: 'This response took too long, so I stopped here. You can continue with a new message.',
+    },
+    stalled: {
+      message: 'The assistant is taking longer than expected…',
+      wait: 'Keep waiting',
     },
     errorState: {
       retry: 'Retry',

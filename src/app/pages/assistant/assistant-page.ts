@@ -85,6 +85,19 @@ import { DashboardService } from '../service/dashboard.service';
                 </button>
             }
 
+            <!-- UX-2 hung-stream watchdog: a stream that hangs without erroring
+                 would show typing dots forever. After a silent window the user
+                 gets a recovery affordance: retry (abort + resend) or keep
+                 waiting. No reload needed either way. -->
+            @if (svc.stalled()) {
+                <div class="new-conv-undo" role="status">
+                    <i class="pi pi-spin pi-spinner text-[12px]" aria-hidden="true"></i>
+                    <span>{{ t('assistant.stalled.message') }}</span>
+                    <button type="button" (click)="svc.retryStalled()">{{ t('assistant.errorState.retry') }}</button>
+                    <button type="button" class="stall-wait" (click)="svc.dismissStall()">{{ t('assistant.stalled.wait') }}</button>
+                </div>
+            }
+
             <!-- Undo toast: the reset is delayed to this window, so undo restores
                  the thread with the agent's memory intact. -->
             @if (showUndo()) {
@@ -170,6 +183,12 @@ import { DashboardService } from '../service/dashboard.service';
             padding: 0.3rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.8rem;
         }
         .new-conv-undo button:hover { background: rgba(228,169,107,0.28); }
+
+        /* UX-2: the "keep waiting" secondary action reads quieter than Retry. */
+        .new-conv-undo .stall-wait {
+            background: transparent; color: rgba(255,255,255,0.75); font-weight: 500;
+        }
+        .new-conv-undo .stall-wait:hover { background: rgba(255,255,255,0.12); }
         @keyframes undoIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
     `],
 })

@@ -511,6 +511,11 @@ export const FR = {
       disclaimerCima: 'Information à but éducatif : ceci n\'est pas un conseil financier personnalisé.',
       quotaWarning: 'Il te reste peu de messages IA sur ta période en cours.',
       quotaReached: 'Tu as utilisé tous tes messages IA pour cette période.',
+      turnTimeout: 'Cette réponse a pris trop de temps, je m\'arrête ici. Tu peux continuer avec un nouveau message.',
+    },
+    stalled: {
+      message: 'L\'assistant met plus de temps que prévu…',
+      wait: 'Patienter',
     },
     errorState: {
       retry: 'Réessayer',
