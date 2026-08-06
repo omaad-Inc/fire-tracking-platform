@@ -21,6 +21,15 @@ import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service'
 
 const MAX_PERSISTED = 200;
 
+/** Create tools -> the data-view kind their optimistic pending row belongs to
+ *  (AI kanban PERF-3). Read tools are absent on purpose: only writes render. */
+const CREATE_TOOL_KIND: Record<string, 'asset' | 'transaction' | 'goal' | 'debt'> = {
+    create_asset: 'asset',
+    create_transaction: 'transaction',
+    create_goal: 'goal',
+    create_debt: 'debt',
+};
+
 let uid = 0;
 const nextId = () => `m${Date.now().toString(36)}-${++uid}`;
 
@@ -264,9 +273,19 @@ export class ChatSessionService {
                     return { ...m, blocks };
                 });
                 break;
-            case 'tool_use':
+            case 'tool_use': {
                 this.pushBlock({ kind: 'card', card: { cardId: e.card_id, tool: e.tool, argsPreview: e.args_preview, state: 'running' } });
+                // PERF-3: a create renders an optimistic pending row in the
+                // relevant data view the moment it streams, so the app reacts
+                // before the model turn finishes. Resolved on its tool_result.
+                const kind = CREATE_TOOL_KIND[e.tool];
+                if (kind) {
+                    this.assetsState.addPendingAiWrite({
+                        cardId: e.card_id, kind, label: e.args_preview,
+                    });
+                }
                 break;
+            }
             case 'tool_result':
                 this.updateCard(e.card_id, (c) => ({
                     ...c,
@@ -274,6 +293,11 @@ export class ChatSessionService {
                     summary: e.summary,
                     undoToken: e.undo_token,
                 }));
+                // PERF-3 reconcile: drop the pending row FIRST, then (on success)
+                // fire the refresh, so the real row replaces the optimistic one
+                // and never renders alongside it. A failed write just removes it
+                // (the chat card carries the error).
+                this.assetsState.resolvePendingAiWrite(e.card_id);
                 // A successful write must refresh the app's data views (patrimoine,
                 // dashboard/net worth, …); otherwise the created row only appears
                 // after a hard reload. Covers both the streamed create and the
@@ -311,6 +335,11 @@ export class ChatSessionService {
 
     private closeTurn(): void {
         this.streaming.set(false);
+        // PERF-3 rollback: no optimistic row may outlive its turn. A stream
+        // that died (or was stopped) between tool_use and tool_result would
+        // otherwise leave a phantom pending row in the data views. A confirm
+        // park also passes here, harmlessly: its batch never streamed creates.
+        this.assetsState.clearPendingAiWrites();
         // A confirm park closes the parked HTTP body but only PAUSES the turn:
         // keep the handle so Stop during the /confirm continuation aborts that
         // continuation. The turn's final close (no pending confirm) drops it.

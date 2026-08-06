@@ -157,6 +157,31 @@ const GROUPS = [
                     }
                 </app-section-header>
 
+                <!-- Optimistic AI writes (PERF-3): an asset the assistant is
+                     creating right now, rendered the moment its tool call
+                     streams and replaced by the real row when the write lands
+                     (or removed if it fails; the chat card carries the error). -->
+                @if (aiPendingAssets().length > 0) {
+                    <div class="space-y-3 mb-3">
+                        @for (p of aiPendingAssets(); track p.cardId) {
+                            <div class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-dashed border-brand-300/60 dark:border-brand-700/60">
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-brand-100 dark:bg-brand-700/20 animate-pulse">
+                                        <i class="pi pi-sparkles text-brand-700 dark:text-ochre-400 text-lg"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-semibold text-surface-900 dark:text-surface-0 truncate">
+                                            {{ p.label || i18n.t('patrimoine.aiPendingLabel') }}
+                                        </div>
+                                        <div class="text-surface-500 dark:text-surface-400 text-sm">{{ i18n.t('patrimoine.aiPending') }}</div>
+                                    </div>
+                                </div>
+                                <i class="pi pi-spin pi-spinner text-surface-400 shrink-0 ml-4"></i>
+                            </div>
+                        }
+                    </div>
+                }
+
                 @if (loadingGroups()) {
                     <div class="space-y-3">
                         @for (i of [1,2,3,4,5]; track i) {
@@ -165,7 +190,7 @@ const GROUPS = [
                     </div>
                 } @else if (assetsLoadError()) {
                     <app-load-error (retry)="retryAssets()" />
-                } @else if (categoryGroups().length === 0) {
+                } @else if (categoryGroups().length === 0 && aiPendingAssets().length === 0) {
                     <!-- Activation moment: an empty portfolio must drive the user
                          straight into the add-asset wizard, not dead-end. -->
                     <div class="flex flex-col items-center justify-center py-16 px-6 text-center rounded-2xl border border-dashed border-surface-300 dark:border-surface-700">
@@ -275,6 +300,10 @@ export class Patrimoine implements OnInit, OnDestroy {
     private currencyService = inject(CurrencyService);
     private stateService = inject(AssetsStateService);
     private subscription?: Subscription;
+
+    /** Optimistic AI asset creates (PERF-3): rendered as pending rows above
+     *  the category groups while the assistant's write is in flight. */
+    readonly aiPendingAssets = this.stateService.pendingAiAssets;
 
     loadingGroups = signal(true);
     loadingDebts = signal(true);
