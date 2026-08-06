@@ -8,7 +8,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
-import { ApiService, Asset } from '../../../core/services/api.service';
+import { ApiService, Asset, BrvmHistory } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { NavService } from '../../../core/services/nav.service';
 import { ShareContextService } from '../../../core/services/share-context.service';
@@ -549,6 +549,102 @@ import { nbspSafe } from '../../../core/util/nbsp';
                     }
                 }
             </div>
+
+            <!-- PRO-3: per-title BRVM price history & performance (plans promise P4).
+                 Shown only for tickered BRVM titles once the series has loaded. -->
+            @if (showBrvmHistory()) {
+                <div class="detail-surface mt-6">
+                    <div class="flex items-center justify-between px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                        <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('assetDetail.brvmHistoryTitle') }}</h3>
+                        <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-500">
+                            {{ brvmHistory()!.ticker }}
+                        </span>
+                    </div>
+                    <div class="px-5 py-4">
+                        @if (brvmHistory()!.points.length >= 2) {
+                            <svg viewBox="0 0 600 160" width="100%" height="160" preserveAspectRatio="none" class="block w-full">
+                                <defs>
+                                    <linearGradient id="brvmGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" [attr.stop-color]="brvmUp() ? '#2F8F6E' : '#B0463E'" stop-opacity="0.25"/>
+                                        <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+                                    </linearGradient>
+                                </defs>
+                                <path [attr.d]="brvmChartPath()" fill="url(#brvmGrad)" />
+                                <polyline [attr.points]="brvmChartPoints()" fill="none"
+                                          [attr.stroke]="brvmUp() ? '#2F8F6E' : '#B0463E'"
+                                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                          vector-effect="non-scaling-stroke" />
+                            </svg>
+                            <div class="flex justify-between text-[11px] text-surface-400 mt-1">
+                                <span>{{ formatShortDate(brvmHistory()!.first_as_of!) }}</span>
+                                <span>{{ formatShortDate(brvmHistory()!.last_as_of!) }}</span>
+                            </div>
+                        } @else {
+                            <div class="flex items-start gap-2 text-xs text-surface-500 p-3 rounded-xl bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
+                                <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5"></i>
+                                <span>{{ t('assetDetail.brvmHistoryBuilding') }}</span>
+                            </div>
+                        }
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                            <!-- Cost basis -->
+                            <div class="rounded-xl border border-surface-100 dark:border-surface-800 p-3">
+                                <p class="kpi-label">{{ t('assetDetail.brvmCostBasis') }}</p>
+                                <div class="text-base font-bold text-surface-900 dark:text-surface-0 tabular-nums">
+                                    @if (brvmHistory()!.cost_basis != null) {
+                                        <app-amount [value]="toEur(brvmHistory()!.cost_basis!)" />
+                                    } @else { <span class="text-surface-400">, </span> }
+                                </div>
+                            </div>
+                            <!-- Current value -->
+                            <div class="rounded-xl border border-surface-100 dark:border-surface-800 p-3">
+                                <p class="kpi-label">{{ t('assetDetail.brvmCurrentValue') }}</p>
+                                <div class="text-base font-bold text-surface-900 dark:text-surface-0 tabular-nums">
+                                    <app-amount [value]="toEur(brvmHistory()!.current_value)" />
+                                </div>
+                            </div>
+                            <!-- Absolute gain (+ %) -->
+                            <div class="rounded-xl border border-surface-100 dark:border-surface-800 p-3">
+                                <p class="kpi-label">{{ t('assetDetail.brvmAbsoluteGain') }}</p>
+                                @if (brvmHistory()!.absolute_gain != null) {
+                                    <div class="text-base font-bold tabular-nums" [ngClass]="brvmHistory()!.absolute_gain! >= 0 ? 'text-positive' : 'text-negative'">
+                                        <app-amount [value]="toEur(brvmHistory()!.absolute_gain!)" [prefix]="brvmHistory()!.absolute_gain! >= 0 ? '+' : '-'" />
+                                    </div>
+                                    @if (brvmHistory()!.absolute_gain_percent != null) {
+                                        <p class="kpi-sub" [ngClass]="brvmHistory()!.absolute_gain_percent! >= 0 ? 'text-positive' : 'text-negative'">
+                                            {{ brvmHistory()!.absolute_gain_percent! >= 0 ? '+' : '' }}{{ brvmHistory()!.absolute_gain_percent | number:'1.1-1' }}%
+                                        </p>
+                                    }
+                                } @else {
+                                    <div class="text-base font-bold text-surface-400">, </div>
+                                }
+                            </div>
+                            <!-- Annualized return (if we know the purchase date) else price move -->
+                            <div class="rounded-xl border border-surface-100 dark:border-surface-800 p-3">
+                                @if (brvmHistory()!.annualized_percent != null) {
+                                    <p class="kpi-label">{{ t('assetDetail.brvmAnnualized') }}</p>
+                                    <div class="text-base font-bold tabular-nums" [ngClass]="brvmHistory()!.annualized_percent! >= 0 ? 'text-positive' : 'text-negative'">
+                                        {{ brvmHistory()!.annualized_percent! >= 0 ? '+' : '' }}{{ brvmHistory()!.annualized_percent | number:'1.1-1' }}%
+                                    </div>
+                                    @if (asset()!.purchase_date) {
+                                        <p class="kpi-sub">{{ t('assetDetail.brvmSinceLabel', { date: formatShortDate(asset()!.purchase_date!) }) }}</p>
+                                    }
+                                } @else {
+                                    <p class="kpi-label">{{ t('assetDetail.brvmPriceReturn') }}</p>
+                                    @if (brvmHistory()!.price_return_percent != null) {
+                                        <div class="text-base font-bold tabular-nums" [ngClass]="brvmUp() ? 'text-positive' : 'text-negative'">
+                                            {{ brvmHistory()!.price_return_percent! >= 0 ? '+' : '' }}{{ brvmHistory()!.price_return_percent | number:'1.1-1' }}%
+                                        </div>
+                                        <p class="kpi-sub">{{ t('assetDetail.brvmPriceReturnSub') }}</p>
+                                    } @else {
+                                        <div class="text-base font-bold text-surface-400">, </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         }
 
         <!-- Edit dialog — extracted to app-asset-edit-dialog (Sprint 2 split) -->
@@ -641,6 +737,20 @@ export class AssetDetailPage implements OnInit {
     asset = signal<Asset | null>(null);
     isSaving = signal(false);
     editDialog = false;
+
+    /** PRO-3: per-title BRVM price history + performance. Loaded lazily in
+     *  ngOnInit for tickered BRVM titles only; stays null (panel hidden) for
+     *  non-BRVM assets, in share mode, or when the Pro gate closes. */
+    brvmHistory = signal<BrvmHistory | null>(null);
+
+    /** A tickered BRVM title: the only asset kind with a live price series. */
+    readonly isBrvmTitle = computed(() => {
+        const a = this.asset();
+        return !!a && a.category === 'stocks_brvm' && !!a.ticker;
+    });
+
+    /** Show the BRVM history panel once the series has loaded. */
+    readonly showBrvmHistory = computed(() => this.isBrvmTitle() && this.brvmHistory() !== null);
 
     /** Current value converted from the asset's native currency to EUR base,
      *  so <app-amount> renders it correctly in the user's display currency. */
@@ -944,6 +1054,13 @@ export class AssetDetailPage implements OnInit {
         try {
             const a = await firstValueFrom(this.apiService.getAsset(id));
             this.asset.set(a);
+            // PRO-3: pull the BRVM price series for tickered BRVM titles. Skip in
+            // share mode (unauthenticated bundle); tolerate the Pro gate/no-data.
+            if (a.category === 'stocks_brvm' && a.ticker && !this.share.active()) {
+                try {
+                    this.brvmHistory.set(await firstValueFrom(this.apiService.getAssetBrvmHistory(a.id)));
+                } catch { /* Pro gate closed or no history yet: panel stays hidden */ }
+            }
         } catch {
             this.asset.set(null);
         } finally {
@@ -951,9 +1068,41 @@ export class AssetDetailPage implements OnInit {
         }
     }
 
+    /** Map a numeric series to SVG "x,y" points over a viewBox, top-origin.
+     *  Returns '' for fewer than two points (nothing to draw a line from). */
+    private svgPoints(values: number[], width: number, height: number, pad = 4): string {
+        if (values.length < 2) return '';
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = max - min || 1;
+        const span = height - pad * 2;
+        return values
+            .map((v, i) => {
+                const x = (i / (values.length - 1)) * width;
+                const y = height - pad - ((v - min) / range) * span;
+                return `${x.toFixed(1)},${y.toFixed(1)}`;
+            })
+            .join(' ');
+    }
+
+    private areaPath(points: string, baseline: number): string {
+        if (!points) return '';
+        const arr = points.split(' ');
+        const firstX = arr[0].split(',')[0];
+        const lastX = arr[arr.length - 1].split(',')[0];
+        return `M ${points.replace(/ /g, ' L ')} L ${lastX},${baseline} L ${firstX},${baseline} Z`;
+    }
+
+    /** Hero sparkline (180×60). BRVM titles use the REAL close series (empty
+     *  until at least two sessions exist); other categories keep the light
+     *  decorative spark. No pseudo-random data on the BRVM path. */
     sparklinePoints(): string {
         const a = this.asset();
         if (!a) return '';
+        if (this.isBrvmTitle()) {
+            const closes = this.brvmHistory()?.points.map(p => p.close) ?? [];
+            return this.svgPoints(closes, 180, 60);
+        }
         const isPositive = (this.gainLoss() ?? 0) >= 0;
         const seed = Math.abs(Math.round(a.current_value + a.id * 1337));
         const pts: [number, number][] = [];
@@ -968,13 +1117,20 @@ export class AssetDetailPage implements OnInit {
     }
 
     sparklinePath(): string {
-        const pts = this.sparklinePoints();
-        if (!pts) return '';
-        const arr = pts.split(' ').map(p => p.split(',').map(Number));
-        if (!arr.length) return '';
-        const first = arr[0];
-        const last = arr[arr.length - 1];
-        return `M ${pts.replace(/ /g, ' L ')} L ${last[0]},60 L ${first[0]},60 Z`;
+        return this.areaPath(this.sparklinePoints(), 60);
+    }
+
+    // ─── BRVM history panel chart (600×160, real position-value series) ──────
+    /** Sign of the price move over the window, for chart + stat coloring. */
+    readonly brvmUp = computed(() => (this.brvmHistory()?.price_return_percent ?? 0) >= 0);
+
+    brvmChartPoints(): string {
+        const pts = this.brvmHistory()?.points.map(p => p.value) ?? [];
+        return this.svgPoints(pts, 600, 160, 8);
+    }
+
+    brvmChartPath(): string {
+        return this.areaPath(this.brvmChartPoints(), 160);
     }
 
     formatDate(dt: string): string {
