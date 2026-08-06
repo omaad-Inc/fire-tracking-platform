@@ -1045,6 +1045,13 @@ export class ApiService {
         return this.http.post<{ warmed: boolean }>(`${this.apiUrl}/agents/onboarding/warm`, {});
     }
 
+    /** Pre-warm the chat prompt cache on assistant-page entry (AI kanban PERF-4):
+     *  the backend warms the bundle the user's first message would land on, so
+     *  the first token arrives from a warm prefix. Fire-and-forget; best-effort. */
+    warmChat(): Observable<{ warmed: boolean; agent: string }> {
+        return this.http.post<{ warmed: boolean; agent: string }>(`${this.apiUrl}/agents/warm`, {});
+    }
+
     /** Start a fresh conversation: clears the agent's server-side memory (DB
      *  message window + rolling summary + open Config gather) so the next turn
      *  carries no prior context. The audit/usage trail is untouched. */
