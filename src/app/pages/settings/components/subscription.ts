@@ -131,7 +131,11 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                     <section class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-5 mb-5">
                         <div class="flex items-center justify-between mb-3">
                             <h2 class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">{{ t('subscription.usage.title') }}</h2>
-                            @if (u.exceeded) {
+                            @if (u.exempt) {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-positive/12 text-positive">
+                                    <i class="pi pi-infinity !text-[10px]" aria-hidden="true"></i>{{ t('subscription.usage.unlimited') }}
+                                </span>
+                            } @else if (u.exceeded) {
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-negative/12 text-negative">
                                     <i class="pi pi-ban !text-[10px]" aria-hidden="true"></i>{{ t('subscription.usage.reached') }}
                                 </span>
@@ -164,6 +168,72 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                         <div class="mt-3 text-[12px] text-surface-400 dark:text-surface-500 tabular-nums">
                             {{ u.period_end ? t('subscription.usage.resetsOn', { date: resetLabel() }) : t('subscription.usage.freeGrant') }}
                         </div>
+                    </section>
+                }
+
+                <!-- ═══════ AI ADVISOR METER (PREM-4) ═══════ -->
+                @if (advisorUsage(); as a) {
+                    <section class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-5 mb-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h2 class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">{{ t('subscription.usage.advisorTitle') }}</h2>
+                            @if (a.exempt) {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-positive/12 text-positive">
+                                    <i class="pi pi-infinity !text-[10px]" aria-hidden="true"></i>{{ t('subscription.usage.unlimited') }}
+                                </span>
+                            } @else if (a.limit <= 0) {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-ochre-500/15 text-ochre-700 dark:text-ochre-300">
+                                    <i class="pi pi-crown !text-[10px]" aria-hidden="true"></i>Premium
+                                </span>
+                            } @else if (a.exceeded) {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-negative/12 text-negative">
+                                    <i class="pi pi-ban !text-[10px]" aria-hidden="true"></i>{{ t('subscription.usage.reached') }}
+                                </span>
+                            } @else if (a.warning) {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-warning/15 text-warning">
+                                    <i class="pi pi-exclamation-triangle !text-[10px]" aria-hidden="true"></i>{{ t('subscription.usage.low') }}
+                                </span>
+                            } @else {
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-positive/12 text-positive">
+                                    {{ t('subscription.usage.remaining', { n: a.remaining }) }}
+                                </span>
+                            }
+                        </div>
+
+                        @if (a.limit > 0) {
+                            <div class="flex items-end justify-between gap-3">
+                                <div>
+                                    <div class="text-2xl font-bold text-surface-900 dark:text-surface-0 tabular-nums leading-none">
+                                        {{ a.used }}<span class="text-base text-surface-400 dark:text-surface-500 font-medium"> / {{ a.limit }}</span>
+                                    </div>
+                                    <div class="text-[12.5px] text-surface-500 dark:text-surface-400 mt-1.5">
+                                        {{ a.period_end ? t('subscription.usage.messagesThisPeriod') : t('subscription.usage.advisorPreview') }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3.5 h-2 rounded-full bg-surface-200 dark:bg-surface-800 overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-500"
+                                     [style.width.%]="advisorPct()"
+                                     [ngClass]="a.exceeded ? 'bg-negative' : a.warning ? 'bg-warning' : 'bg-ochre-500'"></div>
+                            </div>
+
+                            <div class="mt-3 text-[12px] text-surface-400 dark:text-surface-500 tabular-nums">
+                                {{ a.period_end ? t('subscription.usage.resetsOn', { date: advisorResetLabel() }) : t('subscription.usage.advisorPreviewNote') }}
+                            </div>
+                        } @else {
+                            <p class="text-[13px] leading-snug text-surface-600 dark:text-surface-300">{{ t('subscription.usage.advisorLockedNote') }}</p>
+                        }
+
+                        <!-- Conversion nudge: the advisor is a Premium feature, so anyone
+                             not already on Premium (and not an exempt test account) sees
+                             the upgrade path here. -->
+                        @if (a.kind !== 'premium' && !a.exempt) {
+                            <a [routerLink]="['/', lang, 'pages', 'plans']" [queryParams]="{ tier: 'premium' }"
+                               class="omaad-press mt-4 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-ochre-500 hover:bg-ochre-400 text-warm-900 transition-colors">
+                                <i class="pi pi-crown" style="font-size: 10px" aria-hidden="true"></i>
+                                {{ t('subscription.usage.advisorUpgrade') }}
+                            </a>
+                        }
                     </section>
                 }
 
@@ -281,6 +351,21 @@ export class SubscriptionSettings implements OnInit {
         if (!u || u.limit <= 0) return 0;
         return Math.min(100, Math.round((u.used / u.limit) * 100));
     });
+
+    /** PREM-4: the ADVISOR bucket meter (the paid read-only advisor). Premium =
+     *  monthly quota; Pro = one-time lifetime preview; free = none (limit 0). */
+    readonly advisorUsage = computed(() => this.billing.usage()?.advisor ?? null);
+
+    advisorPct = computed<number>(() => {
+        const a = this.advisorUsage();
+        if (!a) return 0;
+        if (a.limit <= 0) return a.exceeded ? 100 : 0;  // free: locked, show a full track
+        return Math.min(100, Math.round((a.used / a.limit) * 100));
+    });
+
+    advisorResetLabel(): string {
+        return this.fmtDate(this.advisorUsage()?.period_end);
+    }
 
     /** Cancel is only meaningful on a live paid subscription that still renews. */
     canCancel(): boolean {

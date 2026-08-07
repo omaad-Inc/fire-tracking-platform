@@ -390,7 +390,7 @@ export class ChatSessionService {
                 this.pendingConfirm.set(e.card_id);
                 break;
             case 'notice':
-                this.pushBlock({ kind: 'notice', notice: { kind: e.kind, message: e.message } });
+                this.pushBlock({ kind: 'notice', notice: { kind: e.kind, message: e.message, bucket: e.bucket } });
                 break;
             case 'error':
                 this.pushBlock({ kind: 'error', code: e.code, message: e.message });

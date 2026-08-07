@@ -1,6 +1,6 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -221,12 +221,17 @@ interface PlanFeature {
 export class PlansSettings {
     private i18n   = inject(I18nService);
     private router = inject(Router);
+    private route  = inject(ActivatedRoute);
     private cs      = inject(CurrencyService);
     private billing = inject(BillingService);
 
     constructor() {
         // Prices come from GET /billing/plans (the single source), not hardcoded.
         this.billing.loadPlans();
+        // PREM-4: a `?tier=` deep-link (e.g. the advisor-preview upsell CTA lands
+        // here with tier=premium) opens the checkout sheet straight on that tier.
+        const tier = this.route.snapshot.queryParamMap.get('tier');
+        if (tier === 'pro' || tier === 'premium') this.openCheckout(tier);
     }
 
     t(key: string): string { return this.i18n.t(key); }
