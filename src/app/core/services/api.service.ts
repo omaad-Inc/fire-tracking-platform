@@ -251,6 +251,31 @@ export interface CustomCategoryCreate {
     color?: string | null;
 }
 
+// ── Custom alert rules (S13 PRO-1) ──────────────────────────────────────────
+export type AlertRuleType = 'category_spend' | 'balance_floor' | 'goal_deadline';
+
+export interface AlertRule {
+    id: number;
+    rule_type: AlertRuleType;
+    category: string | null;
+    account_id: number | null;
+    goal_id: number | null;
+    threshold: number | null;
+    threshold_currency: string | null;
+    days_before: number | null;
+    is_active: boolean;
+}
+
+export interface AlertRuleCreate {
+    rule_type: AlertRuleType;
+    category?: string | null;
+    account_id?: number | null;
+    goal_id?: number | null;
+    threshold?: number | null;
+    threshold_currency?: string | null;
+    days_before?: number | null;
+}
+
 export interface Transaction {
     id: number;
     type: TransactionType;
@@ -887,6 +912,7 @@ export interface NotificationPreferences {
     signal_tontine: boolean;
     signal_milestone: boolean;   // S13 AI-72: FIRE-milestone alerts
     signal_weekly_report: boolean;  // S13 PRO-2: weekly Pro recap email (opt-out)
+    signal_custom_rules: boolean;   // S13 PRO-1: master switch for custom alert rules
     quiet_hours_start: string;   // "HH:MM" local time
     quiet_hours_end: string;
     timezone: string;            // IANA name
@@ -1676,6 +1702,23 @@ export class ApiService {
 
     deleteCustomCategory(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/categories/custom/${id}`);
+    }
+
+    // ── Custom alert rules (S13 PRO-1) ─────────────────────────────────────
+    getAlertRules(): Observable<AlertRule[]> {
+        return this.http.get<AlertRule[]>(`${this.apiUrl}/alerts/rules`);
+    }
+
+    createAlertRule(data: AlertRuleCreate): Observable<AlertRule> {
+        return this.http.post<AlertRule>(`${this.apiUrl}/alerts/rules`, data);
+    }
+
+    updateAlertRule(id: number, changes: Partial<AlertRule>): Observable<AlertRule> {
+        return this.http.patch<AlertRule>(`${this.apiUrl}/alerts/rules/${id}`, changes);
+    }
+
+    deleteAlertRule(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/alerts/rules/${id}`);
     }
 
     getVapidPublicKey(): Observable<{ public_key: string }> {
