@@ -17,6 +17,10 @@ import { environment } from '../../../environments/environment';
     selector: 'app-sidebar',
     standalone: true,
     imports: [CommonModule, RouterModule, AvatarModule, DividerModule, AppMenu],
+    host: {
+        '(document:click)': 'onDocumentClick($event)',
+        '(document:keydown.escape)': 'userMenuOpen.set(false)',
+    },
     template: `
         <div class="layout-sidebar">
             <!-- Logo header, click to toggle sidebar; hover swaps logo for hamburger -->
@@ -91,6 +95,11 @@ import { environment } from '../../../environments/environment';
                         <i class="pi pi-cog text-brand-700 dark:text-brand-300"></i>
                         <span>{{ t('menu.preferences') }}</span>
                     </a>
+                    <a [routerLink]="['/'+lang, 'pages', 'settings', 'subscription']" (click)="userMenuOpen.set(false)"
+                       class="dropdown-item">
+                        <i class="pi pi-credit-card text-brand-700 dark:text-brand-300"></i>
+                        <span>{{ t('menu.subscription') }}</span>
+                    </a>
                     <a [routerLink]="['/'+lang, 'pages', 'fire']" (click)="userMenuOpen.set(false)"
                        class="dropdown-item">
                         <i class="pi pi-flag text-brand-700 dark:text-brand-300"></i>
@@ -140,6 +149,14 @@ export class AppSidebar {
     private getCurrentLang(): string {
         const m = this.router.url.match(/^\/(fr|en)(\/|$)/);
         return m ? m[1] : 'fr';
+    }
+
+    onDocumentClick(event: MouseEvent): void {
+        if (!this.userMenuOpen()) return;
+        const footer = this.el.nativeElement.querySelector('.sidebar-user-footer');
+        if (footer && !footer.contains(event.target as Node)) {
+            this.userMenuOpen.set(false);
+        }
     }
 
     get avatarUrl(): string | null {
