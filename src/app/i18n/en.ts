@@ -298,7 +298,7 @@ export const EN: Dict = {
     },
     proFeatures: {
       f1: 'Setup AI assistant (200 messages / month)',
-      f2: 'Custom alerts & SMS alerts',
+      f2: 'Custom alerts (push & email)',
       f3: 'Automated weekly email report',
       f4: 'BRVM history & per-stock performance',
       f5: 'Advanced PDF reports & unlimited shares',
@@ -332,7 +332,6 @@ export const EN: Dict = {
       aiSetupGrant: '20 messages',
       aiMonthly: '200 / mo',
       aiMonthlyPremium: '300 / mo',
-      smsAlerts: 'SMS alerts',
       automatedReports: 'Automated weekly report',
       customAlerts: 'Custom alerts',
       brvmHistory: 'Per-stock BRVM performance',

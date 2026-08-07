@@ -296,7 +296,7 @@ export const FR = {
     },
     proFeatures: {
       f1: 'Assistant IA de configuration (200 messages / mois)',
-      f2: 'Alertes personnalisées & alertes SMS',
+      f2: 'Alertes personnalisées (push & email)',
       f3: 'Rapport hebdomadaire automatique par email',
       f4: 'Historique & performance BRVM par titre',
       f5: 'Rapports PDF avancés & partages illimités',
@@ -330,7 +330,6 @@ export const FR = {
       aiSetupGrant: '20 messages',
       aiMonthly: '200 / mois',
       aiMonthlyPremium: '300 / mois',
-      smsAlerts: 'Alertes SMS',
       automatedReports: 'Rapport hebdomadaire automatique',
       customAlerts: 'Alertes personnalisées',
       brvmHistory: 'Performance BRVM par titre',
