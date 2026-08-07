@@ -1,11 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { BlogTopbar } from './blog-topbar';
 import { FooterWidget } from '../components/footerwidget';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN, withTrailingSlash } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { BlogPost, publishedPosts } from './posts';
@@ -126,7 +126,7 @@ import { BlogPost, publishedPosts } from './posts';
         .blog-filter::-webkit-scrollbar { display: none; }
     `]
 })
-export class BlogList {
+export class BlogList implements OnDestroy {
     private router = inject(Router);
     private i18n   = inject(I18nService);
     private seo    = inject(SeoService);
@@ -166,7 +166,42 @@ export class BlogList {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.seo.applyLocalized({ lang: this.lang as Lang, ...SEO_PAGES.blog });
+        this.setBlogJsonLd();
         this.analytics.trackPublic('blog_view', { view: 'list', lang: this.lang });
+    }
+
+    /** Tell crawlers this index is a Blog listing its published editions, so
+     *  Google can associate the articles with the collection and surface it for
+     *  blog/topic queries. Each post URL uses the trailing-slash 200 form. */
+    private setBlogJsonLd(): void {
+        const abs = (p: string) => (p.startsWith('http') ? p : `${SITE_ORIGIN}${p.startsWith('/') ? '' : '/'}${p}`);
+        const blogUrl = withTrailingSlash(`${SITE_ORIGIN}/${this.lang}/blog`);
+        this.seo.setJsonLd('jsonld-blog', {
+            '@context': 'https://schema.org',
+            '@type': 'Blog',
+            '@id': `${blogUrl}#blog`,
+            name: 'FIRE Africa par Omaad',
+            description: SEO_PAGES.blog[this.lang === 'en' ? 'en' : 'fr'].description,
+            url: blogUrl,
+            inLanguage: this.lang === 'en' ? 'en' : 'fr',
+            publisher: {
+                '@type': 'Organization',
+                name: 'Omaad',
+                logo: { '@type': 'ImageObject', url: `${SITE_ORIGIN}/icons/omaad-app-icon-512.png` }
+            },
+            blogPost: this.posts.map((p) => ({
+                '@type': 'BlogPosting',
+                headline: p.title,
+                datePublished: p.date,
+                url: withTrailingSlash(`${SITE_ORIGIN}/${this.lang}/blog/${p.slug}`),
+                image: abs(p.coverImage),
+                description: p.excerpt
+            }))
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.seo.removeJsonLd('jsonld-blog');
     }
 
     formatDate(iso: string): string {

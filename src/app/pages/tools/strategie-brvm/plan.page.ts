@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -574,7 +574,7 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
         </section>
     `
 })
-export class StrategiePlanPage {
+export class StrategiePlanPage implements OnDestroy {
     private seo = inject(SeoService);
     private platformId = inject(PLATFORM_ID);
     readonly layoutService = inject(LayoutService);
@@ -652,11 +652,24 @@ export class StrategiePlanPage {
     constructor() {
         applyChartDefaults();
         this.seo.apply({ title: PAGE_TITLE, description: PAGE_DESC, canonical: CANONICAL });
+        this.seo.setJsonLd('jsonld-breadcrumb-strategie', {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Omaad', item: 'https://omaad.africa/fr/landing/' },
+                { '@type': 'ListItem', position: 2, name: 'Outils', item: `${CANONICAL}/` },
+                { '@type': 'ListItem', position: 3, name: 'Planificateur de stratégie BRVM', item: `${CANONICAL}/` }
+            ]
+        });
         effect(() => {
             this.lines();
             this.layoutService.isDarkTheme();
             this.buildDonut();
         });
+    }
+
+    ngOnDestroy(): void {
+        this.seo.removeJsonLd('jsonld-breadcrumb-strategie');
     }
 
     private stocksForEngine() {
