@@ -86,7 +86,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                         <div class="w-5 h-5 rounded-full bg-ochre-100 dark:bg-ochre-700/30 flex items-center justify-center flex-shrink-0">
                                             <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs"></i>
                                         </div>
-                                        <span class="text-surface-700 dark:text-surface-300 text-sm font-medium">{{ t('landing.pricing.proIncludes') }}</span>
+                                        <span class="text-surface-700 dark:text-surface-300 text-sm font-medium">{{ t('plans.everythingFree') }}</span>
                                     </li>
                                     @for (f of proFeatures(); track f) {
                                         <li class="flex items-center gap-3">
@@ -127,7 +127,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                     <div class="w-5 h-5 rounded-full bg-ochre-500/20 flex items-center justify-center flex-shrink-0">
                                         <i class="pi pi-check text-ochre-400 text-xs"></i>
                                     </div>
-                                    <span class="text-white text-sm font-medium">{{ t('landing.pricing.premiumIncludes') }}</span>
+                                    <span class="text-white text-sm font-medium">{{ t('plans.everythingPro') }}</span>
                                 </li>
                                 @for (f of premiumFeatures(); track f) {
                                     <li class="flex items-center gap-3">
@@ -177,19 +177,19 @@ export class PricingWidget {
 
     t(key: string): string { return this.i18n.t(key); }
 
+    // Single source of truth: the SAME plans.* feature keys the /pages/plans
+    // page renders, so the landing pricing can never drift from the plans page
+    // again (it had its own stale copy until 2026-08-07).
     freeFeatures() {
-        return ['freeF1','freeF2','freeF3','freeF4','freeF5','freeF6','freeF7','freeF8','freeF9']
-            .map(k => this.t('landing.pricing.' + k));
+        return [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => this.t(`plans.freeFeatures.f${i}`));
     }
 
     proFeatures() {
-        return ['proF1','proF3','proF4','proF5','proF6','proF7']
-            .map(k => this.t('landing.pricing.' + k));
+        return [1, 2, 3, 4, 5, 6].map(i => this.t(`plans.proFeatures.f${i}`));
     }
 
     premiumFeatures() {
-        return ['premiumF1','premiumF2','premiumF3','premiumF4','premiumF5','premiumF6','premiumF7']
-            .map(k => this.t('landing.pricing.' + k));
+        return [1, 2, 3, 4, 5, 6, 7].map(i => this.t(`plans.premiumFeatures.f${i}`));
     }
 
     faqItems() {
