@@ -148,6 +148,15 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                                         (onChange)="save({ signal_milestone: $event.checked })"
                                         ariaLabelledBy="notif-milestone-label" />
                     </div>
+                    <div class="flex items-center justify-between gap-4 py-4">
+                        <div class="min-w-0">
+                            <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-custom-label">{{ t('settings.notifs.customRules') }}</p>
+                            <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.customRulesDesc') }}</p>
+                        </div>
+                        <p-toggleswitch [ngModel]="prefs().signal_custom_rules"
+                                        (onChange)="save({ signal_custom_rules: $event.checked })"
+                                        ariaLabelledBy="notif-custom-label" />
+                    </div>
                 </div>
             </div>
 
@@ -226,7 +235,7 @@ export class NotificationsSettings implements OnInit {
     prefs = signal<NotificationPreferences>(this.cachedPrefs ?? {
         email_enabled: false, push_enabled: false,
         signal_budget: false, signal_tontine: false, signal_milestone: false,
-        signal_weekly_report: true,
+        signal_weekly_report: true, signal_custom_rules: true,
         quiet_hours_start: '21:00', quiet_hours_end: '08:00',
         timezone: 'Africa/Dakar',
     });
