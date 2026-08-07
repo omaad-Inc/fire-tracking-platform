@@ -305,7 +305,7 @@ export const EN: Dict = {
       f6: 'Custom categories & priority support',
     },
     premiumFeatures: {
-      f1: 'Full AI advisor (your entire portfolio)',
+      f1: 'Full AI advisor, your entire portfolio (300 messages / month)',
       f2: 'Advanced analysis via Opus (automatic escalation)',
       f3: 'Multi-portfolios & households',
       f4: 'Group tontine management',
@@ -331,6 +331,7 @@ export const EN: Dict = {
       aiOpus: 'Advanced analysis (Opus)',
       aiSetupGrant: '20 messages',
       aiMonthly: '200 / mo',
+      aiMonthlyPremium: '300 / mo',
       smsAlerts: 'SMS alerts',
       automatedReports: 'Automated weekly report',
       customAlerts: 'Custom alerts',

@@ -303,7 +303,7 @@ export const FR = {
       f6: 'Catégories personnalisées & support prioritaire',
     },
     premiumFeatures: {
-      f1: 'Conseiller IA complet (tout votre patrimoine)',
+      f1: 'Conseiller IA complet, tout votre patrimoine (300 messages / mois)',
       f2: 'Analyses avancées via Opus (escalade automatique)',
       f3: 'Multi-portefeuilles & multi-foyers',
       f4: 'Gestion de tontine de groupe',
@@ -329,6 +329,7 @@ export const FR = {
       aiOpus: 'Analyses avancées (Opus)',
       aiSetupGrant: '20 messages',
       aiMonthly: '200 / mois',
+      aiMonthlyPremium: '300 / mois',
       smsAlerts: 'Alertes SMS',
       automatedReports: 'Rapport hebdomadaire automatique',
       customAlerts: 'Alertes personnalisées',
