@@ -214,6 +214,7 @@ export class Settings implements OnInit, OnDestroy {
         { key: 'security',      icon: 'pi-shield', label: () => this.t('menu.security') },
         { key: 'connections',   icon: 'pi-link',   label: () => this.t('settings.myConnections') },
         { key: 'preferences',   icon: 'pi-cog',    label: () => this.t('menu.preferences') },
+        { key: 'categories',    icon: 'pi-tags',   label: () => this.t('menu.categories') },
         { key: 'notifications', icon: 'pi-bell',   label: () => this.t('menu.notifications') },
         { key: 'subscription',  icon: 'pi-credit-card', label: () => this.t('menu.subscription') },
         { key: 'help',          icon: 'pi-question-circle', label: () => this.t('settings.getHelp') },

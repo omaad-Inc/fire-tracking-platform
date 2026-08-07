@@ -287,7 +287,8 @@ export class PlansSettings {
         const t = (k: string) => this.i18n.t(k);
         const unlimited = t('plans.unlimited');
         const setupGrant = t('plans.compare.aiSetupGrant'); // free tier config-assistant grant
-        const aiMonthly = t('plans.compare.aiMonthly');     // paid tier config-assistant quota
+        const aiMonthly = t('plans.compare.aiMonthly');     // Pro config-assistant quota
+        const aiMonthlyPremium = t('plans.compare.aiMonthlyPremium'); // Premium quota (ENT-1, ratified 300)
         return [
             // The free tier is the complete manual tracker; data rights
             // (export) and security are NEVER paywalled (S11 plan matrix,
@@ -305,7 +306,7 @@ export class PlansSettings {
             { label: t('plans.compare.dataExport'),         free: true,  pro: true,  premium: true  },
             { label: t('plans.compare.shareLinks'),         free: '1',   pro: unlimited, premium: unlimited },
             { label: t('plans.compare.aiOnboarding'),       free: true,  pro: true,  premium: true  },
-            { label: t('plans.compare.aiAssistant'),        free: setupGrant, pro: aiMonthly, premium: aiMonthly },
+            { label: t('plans.compare.aiAssistant'),        free: setupGrant, pro: aiMonthly, premium: aiMonthlyPremium },
             { label: t('plans.compare.smsAlerts'),          free: false, pro: true,  premium: true  },
             { label: t('plans.compare.automatedReports'),   free: false, pro: true,  premium: true  },
             { label: t('plans.compare.customAlerts'),       free: false, pro: true,  premium: true  },

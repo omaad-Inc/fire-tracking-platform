@@ -223,7 +223,33 @@ export type TransactionCategory =
     | 'travel' | 'gift_given' | 'family_support' | 'religious' | 'ceremony' | 'airtime' | 'tontine'
     | 'taxes' | 'savings' | 'investment' | 'debt_payment' | 'other_expense'
     // Transfer
-    | 'transfer';
+    | 'transfer'
+    // PRO-4: user-defined categories arrive as the sentinel "custom:<id>". The
+    // `string & {}` keeps built-in literal autocomplete while admitting any string.
+    | (string & {});
+
+// PRO-4: user-defined categories. `value` is the "custom:<id>" sentinel stored
+// on transactions/budgets.
+export type CustomCategoryKind = 'income' | 'expense';
+
+export interface CustomCategory {
+    id: number;
+    value: string;            // "custom:<id>"
+    label: string;
+    kind: CustomCategoryKind;
+    icon: string | null;
+    color: string | null;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CustomCategoryCreate {
+    label: string;
+    kind: CustomCategoryKind;
+    icon?: string | null;
+    color?: string | null;
+}
 
 export interface Transaction {
     id: number;
@@ -1625,6 +1651,23 @@ export class ApiService {
     updateNotificationPreferences(changes: Partial<NotificationPreferences>): Observable<NotificationPreferences> {
         return this.http.put<NotificationPreferences>(`${this.apiUrl}/notifications/preferences`, changes)
             .pipe(tap(prefs => this.cacheNotificationPreferences(prefs)));
+    }
+
+    // ── Custom categories (S13 PRO-4) ──────────────────────────────────────
+    getCustomCategories(): Observable<CustomCategory[]> {
+        return this.http.get<CustomCategory[]>(`${this.apiUrl}/categories/custom`);
+    }
+
+    createCustomCategory(data: CustomCategoryCreate): Observable<CustomCategory> {
+        return this.http.post<CustomCategory>(`${this.apiUrl}/categories/custom`, data);
+    }
+
+    updateCustomCategory(id: number, changes: Partial<CustomCategoryCreate>): Observable<CustomCategory> {
+        return this.http.patch<CustomCategory>(`${this.apiUrl}/categories/custom/${id}`, changes);
+    }
+
+    deleteCustomCategory(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/categories/custom/${id}`);
     }
 
     getVapidPublicKey(): Observable<{ public_key: string }> {
