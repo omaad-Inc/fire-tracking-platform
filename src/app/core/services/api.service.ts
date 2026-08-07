@@ -938,17 +938,25 @@ export interface SubscriptionStatus {
     cancel_at: string | null;
 }
 
-/** AI message quota for the usage meter. `period_end` is the reset date for a
- *  Pro window; null for the lifetime free trial (no reset). */
+/** AI usage meter for one bucket. `period_end` is the reset date for a period
+ *  window; null for a lifetime bucket (free setup grant, Pro advisor preview). */
 export interface UsageStatus {
     used: number;
     limit: number;
     remaining: number;
-    kind: 'pro' | 'free_trial';
+    kind: 'premium' | 'pro' | 'free_trial';
     period_start: string | null;
     period_end: string | null;
     exceeded: boolean;
     warning: boolean;
+    /** Allowlisted test/demo account: never gated (meter shows "unlimited"). */
+    exempt?: boolean;
+    /** PREM-4: the two buckets, present on the /billing/usage response. The
+     *  flat fields above mirror `config` for backward compatibility. `advisor`
+     *  is the paid read-only advisor (Premium monthly quota, Pro lifetime
+     *  preview, none for free). Absent on a nested bucket object itself. */
+    config?: UsageStatus;
+    advisor?: UsageStatus;
 }
 
 export interface CheckoutRequest {

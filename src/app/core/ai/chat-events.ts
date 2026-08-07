@@ -14,6 +14,11 @@ export type ChatAgent = 'config' | 'assistant' | 'onboarding';
 
 export type NoticeKind = 'disclaimer_cima' | 'quota_warning' | 'quota_reached' | 'turn_timeout';
 
+/** PREM-4: which AI quota bucket a quota notice refers to. `config` = the
+ *  everyday setup/write allowance (upsell target: Pro); `advisor` = the paid
+ *  read-only advisor (upsell target: Premium). */
+export type QuotaBucket = 'config' | 'advisor';
+
 export type ToolResultStatus = 'ok' | 'error' | 'cancelled';
 
 /** One line of a dry-run diff shown before a destructive/bulk write. */
@@ -32,7 +37,7 @@ export type ChatStreamEvent =
     | { type: 'tool_use'; tool: string; args_preview: string; card_id: string }
     | { type: 'tool_result'; card_id: string; status: ToolResultStatus; summary: string; undo_token?: string }
     | { type: 'confirm_required'; card_id: string; diff: ChatDiffLine[] }
-    | { type: 'notice'; kind: NoticeKind; message?: string }
+    | { type: 'notice'; kind: NoticeKind; message?: string; bucket?: QuotaBucket }
     | { type: 'message_stop'; usage_summary?: string }
     | { type: 'error'; code: string; message: string };
 
@@ -53,6 +58,8 @@ export interface ToolCardVM {
 export interface NoticeVM {
     kind: NoticeKind;
     message?: string;
+    /** PREM-4: set on quota notices so the upsell CTA can target Pro vs Premium. */
+    bucket?: QuotaBucket;
 }
 
 /** Ordered content of one assistant turn: text, cards and notices interleave. */
