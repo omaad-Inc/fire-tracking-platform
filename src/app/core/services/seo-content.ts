@@ -77,12 +77,12 @@ export const SEO_PAGES = {
     compoundInterest: {
         path: '/tools/compound-interest',
         fr: {
-            title: 'Calculateur d\'intérêts composés — Omaad',
-            description: "Visualisez la croissance de votre épargne dans le temps grâce aux intérêts composés, gratuitement, en EUR, XOF ou USD.",
+            title: 'Calculatrice d\'intérêts composés en FCFA | Omaad',
+            description: "Calculez vos intérêts composés en franc CFA (XOF) ou en euro, gratuitement. Simulez la croissance de votre épargne avec versements mensuels, graphique et détail année par année.",
         },
         en: {
-            title: 'Compound interest calculator — Omaad',
-            description: 'See how your savings grow over time with compound interest, free, in EUR, XOF or USD.',
+            title: 'Compound interest calculator | Omaad',
+            description: 'Calculate your compound interest in CFA franc (XOF) or euro, free. Simulate how your savings grow with monthly contributions, chart and year-by-year breakdown.',
         },
     },
     fireAfricaWelcome: {

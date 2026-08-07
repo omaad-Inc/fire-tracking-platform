@@ -6,4 +6,36 @@ Disallow: /en/auth
 Disallow: /share/
 Disallow: /g/
 
+# AI answer engines and assistants are explicitly welcome to crawl and cite Omaad.
+# (Public marketing pages and free tools; the Disallow rules above still apply.)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 Sitemap: https://omaad.africa/sitemap.xml
