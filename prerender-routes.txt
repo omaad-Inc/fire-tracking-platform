@@ -27,6 +27,8 @@
 /en/blog/pea-diaspora
 /fr/blog/preparer-retraite-brvm
 /en/blog/preparer-retraite-brvm
+/fr/blog/compte-titres-parcours-reel
+/en/blog/compte-titres-parcours-reel
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm

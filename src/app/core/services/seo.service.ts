@@ -34,6 +34,22 @@ export const SITE_ORIGIN = 'https://omaad.africa';
 const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/og/omaad-og-1200x630.png`;
 
 /**
+ * Ensure a page URL ends with a trailing slash, matching how Netlify serves
+ * the prerendered output (see `SeoService.apply`). Idempotent; leaves the
+ * query/hash and any already-slashed URL untouched. Never call on asset URLs
+ * (og images etc.) — only on canonical page URLs.
+ */
+export function withTrailingSlash(url: string): string {
+    try {
+        const u = new URL(url);
+        if (!u.pathname.endsWith('/')) u.pathname += '/';
+        return u.toString();
+    } catch {
+        return url.endsWith('/') ? url : `${url}/`;
+    }
+}
+
+/**
  * Per-route SEO: title, meta description, canonical, Open Graph/Twitter and
  * JSON-LD structured data. Works during prerendering (uses DOCUMENT, no
  * direct `window`/`document` globals) so crawlers get the tags in the
@@ -46,20 +62,28 @@ export class SeoService {
     private doc = inject(DOCUMENT);
 
     apply(cfg: SeoConfig): void {
+        // Netlify serves every prerendered page at its trailing-slash URL
+        // (`/outils/x/index.html` → `/outils/x/`) and 301-redirects the
+        // no-slash form to it. Advertise the trailing-slash URL everywhere
+        // (canonical, og:url, hreflang, sitemap) so Google's signals point at
+        // the 200 URL instead of a redirect — otherwise the sitemap URL, the
+        // canonical and each hreflang all resolve through a 301 hop, which
+        // wastes crawl budget and delays indexing on a low-authority domain.
+        const canonical = withTrailingSlash(cfg.canonical);
         this.title.setTitle(cfg.title);
         this.meta.updateTag({ name: 'description', content: cfg.description });
 
         this.meta.updateTag({ property: 'og:type', content: cfg.ogType ?? 'website' });
         this.meta.updateTag({ property: 'og:title', content: cfg.title });
         this.meta.updateTag({ property: 'og:description', content: cfg.description });
-        this.meta.updateTag({ property: 'og:url', content: cfg.canonical });
+        this.meta.updateTag({ property: 'og:url', content: canonical });
         this.meta.updateTag({ property: 'og:image', content: cfg.image ?? DEFAULT_OG_IMAGE });
         this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
         this.meta.updateTag({ name: 'twitter:title', content: cfg.title });
         this.meta.updateTag({ name: 'twitter:description', content: cfg.description });
         this.meta.updateTag({ name: 'twitter:image', content: cfg.image ?? DEFAULT_OG_IMAGE });
 
-        this.setCanonical(cfg.canonical);
+        this.setCanonical(canonical);
     }
 
     /**
@@ -98,9 +122,9 @@ export class SeoService {
             link.setAttribute('href', href);
             this.doc.head.appendChild(link);
         };
-        add('fr', `${SITE_ORIGIN}/fr${path}`);
-        add('en', `${SITE_ORIGIN}/en${path}`);
-        add('x-default', `${SITE_ORIGIN}/fr${path}`);
+        add('fr', withTrailingSlash(`${SITE_ORIGIN}/fr${path}`));
+        add('en', withTrailingSlash(`${SITE_ORIGIN}/en${path}`));
+        add('x-default', withTrailingSlash(`${SITE_ORIGIN}/fr${path}`));
     }
 
     /**

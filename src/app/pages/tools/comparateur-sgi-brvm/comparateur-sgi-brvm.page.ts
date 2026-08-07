@@ -19,10 +19,13 @@ const SORTS = [
 ] as const;
 type SortKey = (typeof SORTS)[number]['k'];
 
-const PAGE_TITLE = 'Comparateur des 41 SGI de la BRVM, frais, ouverture, garde (gratuit) | Omaad';
+const PAGE_TITLE = 'Comparateur des 41 SGI (courtiers) de la BRVM : frais, ouverture, garde (gratuit) | Omaad';
 const PAGE_DESC =
-    "Compare gratuitement les grilles tarifaires officielles des 41 SGI (courtiers) de la BRVM : frais d'ouverture, courtage, droits de garde, tenue de compte. Sans inscription.";
+    "Compare gratuitement les grilles tarifaires officielles des 41 SGI, les courtiers de la BRVM : frais d'ouverture, courtage, droits de garde, tenue de compte. Sans inscription.";
 const CANONICAL = 'https://omaad.africa/outils/comparateur-sgi-brvm';
+// Trailing-slash 200 URL Netlify actually serves (see SeoService); used for the
+// breadcrumb's self-reference so it never points at the 301 redirect.
+const CANONICAL_SLASH = `${CANONICAL}/`;
 const OG_IMAGE = 'https://omaad.africa/og/comparateur-sgi-og-1200x630.png';
 
 const NEWSLETTER_URL = 'https://fireafrica.beehiiv.com/subscribe?utm_source=omaad&utm_medium=outil&utm_campaign=comparateur-sgi';
@@ -32,6 +35,10 @@ const FAQ: { q: string; a: string }[] = [
     {
         q: "Qu'est-ce qu'une SGI ?",
         a: "Une SGI (Société de Gestion et d'Intermédiation) est un intermédiaire financier agréé par l'AMF-UMOA (ex-CREPMF), seul habilité à ouvrir des comptes-titres, exécuter des ordres de bourse et conserver des titres à la BRVM. Pour acheter des actions ou des obligations à la BRVM, passer par une SGI est obligatoire. Il en existe 41 dans les 8 pays de l'UEMOA."
+    },
+    {
+        q: 'SGI ou courtier : quelle différence à la BRVM ?',
+        a: "Aucune : à la BRVM, le courtier en bourse est la SGI. « Courtier » est le terme courant, « SGI » (Société de Gestion et d'Intermédiation) est l'appellation officielle de l'intermédiaire agréé par l'AMF-UMOA. Comparer les courtiers de la BRVM revient donc à comparer les 41 SGI : leurs frais de courtage, d'ouverture, de garde et de tenue de compte, ce que fait cet outil."
     },
     {
         q: "Combien coûte l'ouverture d'un compte-titres à la BRVM ?",
@@ -77,8 +84,8 @@ const CRITERIA: { t: string; d: string }[] = [
                         Comparateur des <em class="not-italic text-ochre-600 dark:text-ochre-400">41 SGI</em> de la BRVM
                     </h1>
                     <p class="mt-5 max-w-[58ch] text-[clamp(15px,2.4vw,18px)] text-surface-600 dark:text-surface-300">
-                        Une SGI (Société de Gestion et d'Intermédiation) est l'intermédiaire agréé chez qui tu ouvres
-                        ton compte-titres pour investir à la BRVM. Compare leurs frais officiels, côte à côte, gratuitement et sans inscription.
+                        Une SGI (Société de Gestion et d'Intermédiation) est le courtier agréé chez qui tu ouvres
+                        ton compte-titres pour investir à la BRVM. Compare les frais officiels des 41 courtiers, côte à côte, gratuitement et sans inscription.
                     </p>
                     <div class="mt-4 inline-flex items-center gap-2 text-[13px] font-medium text-ochre-600 dark:text-ochre-400">
                         <i class="pi pi-verified text-sm" aria-hidden="true"></i> Tarifs vérifiés sur les grilles officielles homologuées
@@ -403,6 +410,15 @@ export class ComparateurSgiBrvmPage implements OnDestroy {
                 acceptedAnswer: { '@type': 'Answer', text: f.a }
             }))
         });
+        this.seo.setJsonLd('jsonld-breadcrumb-sgi', {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Omaad', item: 'https://omaad.africa/fr/landing/' },
+                { '@type': 'ListItem', position: 2, name: 'Outils', item: 'https://omaad.africa/outils/comparateur-sgi-brvm/' },
+                { '@type': 'ListItem', position: 3, name: 'Comparateur des SGI de la BRVM', item: CANONICAL_SLASH }
+            ]
+        });
 
         // retour page 1 quand un filtre change
         effect(() => {
@@ -413,6 +429,7 @@ export class ComparateurSgiBrvmPage implements OnDestroy {
 
     ngOnDestroy(): void {
         this.seo.removeJsonLd('jsonld-faq-sgi');
+        this.seo.removeJsonLd('jsonld-breadcrumb-sgi');
     }
 
     goPage(n: number): void {

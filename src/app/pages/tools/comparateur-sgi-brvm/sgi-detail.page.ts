@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, computed, effect, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -150,7 +150,7 @@ import { PDF_BASE, SGIS, Sgi, fmtPct, getById, isFree } from './sgi-data';
         </div>
     `
 })
-export class SgiDetailPage {
+export class SgiDetailPage implements OnDestroy {
     private seo = inject(SeoService);
     private route = inject(ActivatedRoute);
     compare = inject(SgiCompareService);
@@ -183,7 +183,20 @@ export class SgiDetailPage {
                 canonical: `https://omaad.africa/outils/comparateur-sgi-brvm/sgi/${s.id}`,
                 image: 'https://omaad.africa/og/comparateur-sgi-og-1200x630.png'
             });
+            // SGI without a detailed tariff grid are thin/near-duplicate pages:
+            // noindex them (but keep `follow` so link equity flows back to the
+            // comparateur) so Google spends its limited crawl budget on the
+            // strong pages. Detailed grids stay indexable. Toggled every run
+            // because this component instance is reused across "Autres SGI".
+            if (s.tarif_status === 'complet') this.seo.removeRobots();
+            else this.seo.setRobots('noindex, follow');
         });
+    }
+
+    ngOnDestroy(): void {
+        // Robots meta persists across SPA navigation, clear it so a thin SGI's
+        // noindex never leaks onto the next page the user opens.
+        this.seo.removeRobots();
     }
 
     pct(s: Sgi): string | null {
