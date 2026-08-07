@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-07-31",
+  "updated_at": "2026-08-07",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -23,6 +23,17 @@
       "ticker": "NTLC",
       "nom": "Nestlé CI",
       "secteur": "Agro-industrie"
+    },
+    {
+      "emetteur": "SGCI",
+      "exercice": 2025,
+      "date_paiement": "2026-08-24",
+      "date_ex_dividende": "2026-08-21",
+      "montant_net_fcfa": 2606.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260806_-_avis_ndeg231_brvmdg_-_paiement_de_dividendes_exercice_2025_-_societe_generale_ci.pdf",
+      "ticker": "SGBC",
+      "nom": "Société Générale CI",
+      "secteur": "Banque"
     },
     {
       "emetteur": "CFAO MOTORS CI",
