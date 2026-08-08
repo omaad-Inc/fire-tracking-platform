@@ -6,9 +6,10 @@ export const environment = {
     version: '0.3.0',
     apiUrl: 'https://api.omaad.africa/api/v1',
     googleClientId: '338569032785-oosvdq7uk3jfhqtmqap4565dncceahud.apps.googleusercontent.com',
-    // S12 AI chat ships DARK in prod: flag off, flippable per device via the
-    // FeatureFlagsService localStorage override for owner/beta testing.
+    // S12 AI chat is LIVE in prod: on by default, no ?ff_aiChat= needed. The
+    // flag stays wired as the kill switch — set false here (or per device via
+    // the FeatureFlagsService override) to pull the chat without a rollback.
     featureFlags: {
-        aiChat: false
+        aiChat: true
     }
 };
