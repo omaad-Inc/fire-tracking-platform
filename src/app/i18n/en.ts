@@ -2599,6 +2599,12 @@ export const EN: Dict = {
         concentration_hhi: 'Concentration (HHI)',
         multi_currency: 'Multi-currency',
       },
+      // Dashboard card: the sub-score worth the most points if maxed out
+      lever: {
+        title: 'Biggest lever',
+        gain: '+{{points}} pts',
+        improve: 'Improve: {{label}}',
+      },
       pageTitle: 'Your Wealth Score',
       pageSubtitle: 'Your financial health summarized in a score out of 100.',
       refreshBtn: 'Refresh',

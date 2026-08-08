@@ -2599,6 +2599,12 @@ export const FR = {
         concentration_hhi: 'Concentration (HHI)',
         multi_currency: 'Multi-devises',
       },
+      // Dashboard card: the sub-score worth the most points if maxed out
+      lever: {
+        title: 'Plus gros levier',
+        gain: '+{{points}} pts',
+        improve: 'Améliorer : {{label}}',
+      },
       pageTitle: 'Votre Wealth Score',
       pageSubtitle: 'Votre santé financière résumée en un score sur 100.',
       refreshBtn: 'Actualiser',
