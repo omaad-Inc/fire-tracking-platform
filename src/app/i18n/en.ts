@@ -810,6 +810,8 @@ export const EN: Dict = {
     memberSince: 'Omaad member since {{date}}',
     upgradeProTitle: 'Upgrade to Omaad Pro',
     upgradeProDesc: 'Unlock advanced features',
+    upgradePremiumTitle: 'Upgrade to Omaad Premium',
+    upgradePremiumDesc: 'Advanced AI assistant and unlimited insights',
     myOmaad: 'My Omaad',
     myConnections: 'My connections',
     account: {
@@ -1015,6 +1017,11 @@ export const EN: Dict = {
     showAmounts: 'Show amounts',
     hideAmounts: 'Hide amounts',
     assistantHint: 'Set up your wealth by chatting with the assistant',
+    tierPro: 'Pro',
+    tierPremium: 'Premium',
+    upgradeToPro: 'Upgrade to Omaad Pro',
+    upgradeToPremium: 'Upgrade to Omaad Premium',
+    yourPlanPremium: 'Your Premium plan',
   },
   addAssets: {
     title: 'Add an asset',

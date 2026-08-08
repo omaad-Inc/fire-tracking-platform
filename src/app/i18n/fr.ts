@@ -808,6 +808,8 @@ export const FR = {
     memberSince: 'Membre Omaad depuis {{date}}',
     upgradeProTitle: 'Passer à Omaad Pro',
     upgradeProDesc: 'Débloquez les fonctionnalités avancées',
+    upgradePremiumTitle: 'Passer à Omaad Premium',
+    upgradePremiumDesc: 'Assistant IA avancé et analyses illimitées',
     myOmaad: 'Mon Omaad',
     myConnections: 'Mes connexions',
     account: {
@@ -1013,6 +1015,11 @@ export const FR = {
     showAmounts: 'Afficher les montants',
     hideAmounts: 'Masquer les montants',
     assistantHint: 'Configure ton patrimoine en discutant avec l\'assistant',
+    tierPro: 'Pro',
+    tierPremium: 'Premium',
+    upgradeToPro: 'Passer à Omaad Pro',
+    upgradeToPremium: 'Passer à Omaad Premium',
+    yourPlanPremium: 'Votre abonnement Premium',
   },
   addAssets: {
     title: 'Ajouter un actif',
