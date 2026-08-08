@@ -110,17 +110,19 @@ const POPULAR_DURATION: DurationKey = 'm3';
                                     <span class="px-1.5 py-0.5 rounded bg-sky-400 text-white text-[9px] font-bold">Wave</span>
                                 </div>
                             </button>
-                            <button type="button" (click)="method.set('card')"
-                                    class="omaad-press rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
-                                    [ngClass]="method() === 'card'
-                                        ? 'border-ochre-500 border-2 bg-ochre-50 dark:bg-ochre-900/20'
-                                        : 'border-surface-200 dark:border-surface-700'">
-                                <i class="pi pi-credit-card text-brand-700 dark:text-brand-300" aria-hidden="true"></i>
-                                <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('plans.checkout.card') }}</span>
-                                <div class="flex gap-1">
-                                    <span class="px-1.5 py-0.5 rounded bg-brand-800 text-white text-[9px] font-bold">Visa</span>
-                                    <span class="px-1.5 py-0.5 rounded bg-negative-500 text-white text-[9px] font-bold">MC</span>
-                                </div>
+                            <!-- Card rail parked until Bictorys. PayDunya's account carries no
+                                 card channel, so an invoice scoped to it renders a hosted page
+                                 with nothing payable — and we would already have written the
+                                 pending row, leaving a phantom "En attente" in the history. -->
+                            <button type="button" disabled
+                                    class="rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5
+                                           border-surface-200 dark:border-surface-700 opacity-60 cursor-not-allowed">
+                                <i class="pi pi-credit-card text-surface-400 dark:text-surface-500" aria-hidden="true"></i>
+                                <span class="font-semibold text-surface-500 dark:text-surface-400 text-sm">{{ t('plans.checkout.card') }}</span>
+                                <span class="px-1.5 py-0.5 rounded bg-surface-200 dark:bg-surface-700
+                                             text-surface-600 dark:text-surface-300 text-[9px] font-bold uppercase tracking-wide">
+                                    {{ t('plans.comingSoon') }}
+                                </span>
                             </button>
                         </div>
                         <!-- Renewal semantics differ by rail (S11 decision) -->
@@ -193,12 +195,14 @@ export class PlanCheckoutSheet {
 
     constructor() {
         this.billing.loadPlans();
-        // Default the highlighted (popular) pass and the rail that matches the
-        // user's currency whenever the sheet opens, the tier changes, or the
-        // prices finish loading.
+        // Default the highlighted (popular) pass whenever the sheet opens, the
+        // tier changes, or the prices finish loading. Mobile money is the only
+        // live rail while card is parked, so it is also the only default —
+        // EUR-preference users used to land on card, i.e. on an unpayable page.
+        // Restore `this.isEur() ? 'card' : 'momo'` when Bictorys carries cards.
         effect(() => {
             const opts = this.options();
-            this.method.set(this.isEur() ? 'card' : 'momo');
+            this.method.set('momo');
             this.paymentPending.set(false);
             if (opts.length) {
                 this.selected.set(opts.find(o => o.popular) ?? opts[0]);
