@@ -1,5 +1,4 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
 import { ApiService, PaymentHistoryItem, PlansResponse, SubscriptionStatus, UsageStatus } from './api.service';
 
 /**
@@ -53,30 +52,40 @@ export class BillingService {
         return s.renewal_type === 'auto' ? 'active_auto' : 'active_prepaid';
     });
 
-    /** Load (or refresh) subscription + usage. Cached for 5 min unless forced. */
+    /** Load (or refresh) subscription + usage + payments. Cached for 5 min
+     *  unless forced.
+     *
+     *  The three reads fire INDEPENDENTLY rather than through a forkJoin barrier:
+     *  the hero card only needs the subscription, so it must not wait on the
+     *  slowest of the three (payment history is the least important section and
+     *  self-hides). A previous forkJoin also meant a single failing payments
+     *  call blanked the whole page. Each stream now updates its own signal, and
+     *  only the subscription read is treated as load-critical. On a forced
+     *  refresh with data already cached we do NOT flip `loading`, so the page
+     *  keeps showing the current state while it revalidates (no skeleton flash). */
     load(force = false): void {
         const now = Date.now();
         if (!force && this.lastFetch && now - this.lastFetch < this.TTL) return;
         this.lastFetch = now;
-        this.loading.set(true);
-        forkJoin({
-            sub: this.api.getSubscription(),
-            usage: this.api.getUsage(),
-            payments: this.api.getPayments(),
-        }).subscribe({
-            next: ({ sub, usage, payments }) => {
+        const cold = !this.loaded();
+        if (cold) this.loading.set(true);
+
+        this.api.getSubscription().subscribe({
+            next: (sub) => {
                 this.subscription.set(sub);
-                this.usage.set(usage);
-                this.payments.set(payments);
                 this.loaded.set(true);
                 this.loading.set(false);
             },
             error: () => {
-                // Don't wedge the cache on a transient failure: allow a retry.
+                // The hero depends on this read: don't wedge the cache, allow retry.
                 this.lastFetch = null;
                 this.loading.set(false);
             },
         });
+        // Secondary sections: stream in independently, never block the hero and
+        // never blank the page if they fail (each section renders conditionally).
+        this.api.getUsage().subscribe({ next: (u) => this.usage.set(u), error: () => {} });
+        this.api.getPayments().subscribe({ next: (p) => this.payments.set(p), error: () => {} });
     }
 
     refresh(): void {

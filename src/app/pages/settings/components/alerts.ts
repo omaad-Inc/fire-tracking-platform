@@ -7,8 +7,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CustomCategoryService } from '../../../core/services/custom-category.service';
-import { AlertRule, AlertRuleType, ApiService, Asset, SavingGoal } from '../../../core/services/api.service';
+import { AlertRule, AlertRuleType, ApiService } from '../../../core/services/api.service';
 import { EXPENSE_CATEGORIES } from '../../service/transactions.service';
+import { AlertsDataService } from './alerts-data.service';
 
 type RuleForm = {
     rule_type: AlertRuleType;
@@ -40,12 +41,7 @@ type RuleForm = {
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.alerts.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.alerts.subtitle') }}</p>
 
-            @if (loading()) {
-                <div class="rounded-2xl h-72 bg-surface-100 dark:bg-surface-800/60 animate-pulse mb-5"></div>
-                <div class="rounded-2xl h-32 bg-surface-100 dark:bg-surface-800/60 animate-pulse"></div>
-            } @else {
-
-            <!-- ═══════ COMPOSER ═══════ -->
+            <!-- ═══════ COMPOSER (needs no server data: paints immediately) ═══════ -->
             <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
                 <div class="flex items-center justify-between mb-5">
                     <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-0">
@@ -150,7 +146,9 @@ type RuleForm = {
             </section>
 
             <!-- ═══════ LIST / EMPTY STATE ═══════ -->
-            @if (!rules().length) {
+            @if (rulesLoading()) {
+                <div class="rounded-2xl h-32 bg-surface-100 dark:bg-surface-800/60 animate-pulse"></div>
+            } @else if (!rules().length) {
                 <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 text-center">
                     <div class="w-12 h-12 rounded-2xl bg-ochre-500/10 flex items-center justify-center mx-auto mb-3">
                         <i class="pi pi-bell text-ochre-500 text-xl" aria-hidden="true"></i>
@@ -188,7 +186,6 @@ type RuleForm = {
                     </div>
                 </section>
             }
-            }
         </div>
     `,
 })
@@ -197,6 +194,7 @@ export class AlertsSettings implements OnInit {
     private api = inject(ApiService);
     private cs = inject(CurrencyService);
     private cats = inject(CustomCategoryService);
+    private data = inject(AlertsDataService);
     private messageService = inject(MessageService);
     private confirmationService = inject(ConfirmationService);
 
@@ -209,10 +207,11 @@ export class AlertsSettings implements OnInit {
     readonly selectClass = 'w-full bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 focus:border-ochre-500 focus:outline-none py-2 text-[15px] text-surface-900 dark:text-surface-0 rounded-none';
     readonly numClass = 'w-full bg-transparent border-0 focus:outline-none py-2 text-[15px] text-surface-900 dark:text-surface-0 tabular-nums placeholder:text-surface-400';
 
-    rules = signal<AlertRule[]>([]);
-    accounts = signal<Asset[]>([]);
-    goals = signal<SavingGoal[]>([]);
-    loading = signal(true);
+    // Cached, shared reads (P2-FE-1): instant on revisit, background revalidate.
+    readonly rules = this.data.rules;
+    readonly accounts = this.data.accounts;
+    readonly goals = this.data.goals;
+    readonly rulesLoading = this.data.rulesLoading;
     editingId = signal<number | null>(null);
     busy = signal(false);
     currencyCode = computed(() => this.cs.currencyCode());
@@ -228,14 +227,7 @@ export class AlertsSettings implements OnInit {
 
     ngOnInit() {
         this.cats.load();
-        this.api.getAlertRules().subscribe({ next: r => this.rules.set(r) });
-        this.api.getAssets().subscribe({ next: a => this.accounts.set(a) });
-        this.api.getSavingGoals().subscribe({
-            next: g => this.goals.set(g),
-            complete: () => this.loading.set(false),
-        });
-        // If goals errors, still drop the skeleton.
-        setTimeout(() => this.loading.set(false), 4000);
+        this.data.ensureLoaded();
     }
 
     private _blank(): RuleForm {
@@ -277,11 +269,11 @@ export class AlertsSettings implements OnInit {
         const f = this.form;
         const id = this.editingId();
 
-        const done = (msg: string) => {
+        const done = (msg: string, rule: AlertRule) => {
             this.busy.set(false);
             this.messageService.add({ severity: 'success', summary: msg, life: 3000 });
             this.resetForm();
-            this.api.getAlertRules().subscribe({ next: r => this.rules.set(r) });
+            this.data.upsertRule(rule);  // patch locally; no full-list refetch
         };
         const fail = (e: any) => {
             this.busy.set(false);
@@ -296,13 +288,13 @@ export class AlertsSettings implements OnInit {
             const changes: Partial<AlertRule> = f.rule_type === 'goal_deadline'
                 ? { days_before: f.days_before }
                 : { threshold: f.threshold, threshold_currency: this.currencyCode() };
-            this.api.updateAlertRule(id, changes).subscribe({ next: () => done(this.t('settings.alerts.updated')), error: fail });
+            this.api.updateAlertRule(id, changes).subscribe({ next: r => done(this.t('settings.alerts.updated'), r), error: fail });
         } else {
             const payload: any = { rule_type: f.rule_type };
             if (f.rule_type === 'category_spend') { payload.category = f.category; payload.threshold = f.threshold; payload.threshold_currency = this.currencyCode(); }
             else if (f.rule_type === 'balance_floor') { payload.account_id = f.account_id; payload.threshold = f.threshold; payload.threshold_currency = this.currencyCode(); }
             else { payload.goal_id = f.goal_id; payload.days_before = f.days_before; }
-            this.api.createAlertRule(payload).subscribe({ next: () => done(this.t('settings.alerts.added')), error: fail });
+            this.api.createAlertRule(payload).subscribe({ next: r => done(this.t('settings.alerts.added'), r), error: fail });
         }
     }
 
@@ -317,7 +309,7 @@ export class AlertsSettings implements OnInit {
             accept: () => this.api.deleteAlertRule(r.id).subscribe({
                 next: () => {
                     if (this.editingId() === r.id) this.resetForm();
-                    this.rules.set(this.rules().filter(x => x.id !== r.id));
+                    this.data.removeRule(r.id);
                     this.messageService.add({ severity: 'success', summary: this.t('settings.alerts.deleted'), life: 3000 });
                 },
                 error: () => this.messageService.add({ severity: 'error', summary: this.t('settings.alerts.saveError'), life: 4000 }),
