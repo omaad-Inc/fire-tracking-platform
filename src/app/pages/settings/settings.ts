@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { I18nService } from '../../i18n/i18n.service';
 import { TokenService } from '../../core/services/token.service';
 import { AuthService } from '../../core/services/auth.service';
+import { BillingService } from '../../core/services/billing.service';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -84,12 +85,14 @@ import { environment } from '../../../environments/environment';
                                 <span class="text-sm whitespace-nowrap">{{ sec.label() }}</span>
                             </a>
                         }
-                        <a [routerLink]="['/', lang, 'pages', 'plans']"
-                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full
-                                  text-ochre-700 dark:text-ochre-400 hover:bg-ochre-100 dark:hover:bg-ochre-900/20">
-                            <i class="pi pi-crown !text-sm shrink-0" aria-hidden="true"></i>
-                            <span class="text-sm whitespace-nowrap font-medium">{{ t('settings.upgradeProTitle') }}</span>
-                        </a>
+                        @if (upsellTarget()) {
+                            <a [routerLink]="['/', lang, 'pages', 'plans']"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full
+                                      text-ochre-700 dark:text-ochre-400 hover:bg-ochre-100 dark:hover:bg-ochre-900/20">
+                                <i class="pi pi-crown !text-sm shrink-0" aria-hidden="true"></i>
+                                <span class="text-sm whitespace-nowrap font-medium">{{ upsellTitle() }}</span>
+                            </a>
+                        }
                     </div>
                     <div class="mt-8 px-3">
                         <button (click)="logout()"
@@ -138,21 +141,23 @@ import { environment } from '../../../environments/environment';
                                 </div>
                             </div>
 
-                            <!-- Omaad Pro banner -->
-                            <a [routerLink]="['/', lang, 'pages', 'plans']"
-                               class="block mb-4 p-3 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
-                                      border border-ochre-200 dark:border-ochre-700/40 hover:shadow-sm transition-all">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
-                                        <i class="pi pi-crown text-warm-900" aria-hidden="true"></i>
+                            <!-- Upsell banner (free -> Pro, pro -> Premium, hidden for premium) -->
+                            @if (upsellTarget()) {
+                                <a [routerLink]="['/', lang, 'pages', 'plans']"
+                                   class="block mb-4 p-3 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
+                                          border border-ochre-200 dark:border-ochre-700/40 hover:shadow-sm transition-all">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
+                                            <i class="pi pi-crown text-warm-900" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">{{ upsellTitle() }}</p>
+                                            <p class="text-xs text-surface-600 dark:text-ochre-400/70">{{ upsellDesc() }}</p>
+                                        </div>
+                                        <i class="pi pi-chevron-right text-ochre-500 dark:text-ochre-400 text-xs shrink-0" aria-hidden="true"></i>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">{{ t('settings.upgradeProTitle') }}</p>
-                                        <p class="text-xs text-surface-600 dark:text-ochre-400/70">{{ t('settings.upgradeProDesc') }}</p>
-                                    </div>
-                                    <i class="pi pi-chevron-right text-ochre-500 dark:text-ochre-400 text-xs shrink-0" aria-hidden="true"></i>
-                                </div>
-                            </a>
+                                </a>
+                            }
 
                             <!-- Group: Mon Omaad — flat hairline rows, Finary-style -->
                             <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1 px-1">{{ t('settings.myOmaad') }}</h2>
@@ -204,6 +209,7 @@ export class Settings implements OnInit, OnDestroy {
     appVersion = environment.version;
     private tokenService = inject(TokenService);
     private authService  = inject(AuthService);
+    private billing      = inject(BillingService);
 
     lang = 'fr';
     /** Active section key, or null on the (mobile) home menu. */
@@ -265,12 +271,46 @@ export class Settings implements OnInit, OnDestroy {
         return this.sections.find(s => s.key === key)?.label() ?? this.t('settings.title');
     });
 
+    /** The tier the user has effectively reached. Beta courtesy lifts everyone
+     *  to at least Pro (mirrors billing_service.has_plan / notice-strip), so the
+     *  upsell banner never nags a courtesy-Pro user to "upgrade to Pro". */
+    private reachedTier = computed<'free' | 'pro' | 'premium'>(() => {
+        const plan = this.billing.effectivePlan() as 'free' | 'pro' | 'premium';
+        if (plan === 'premium') return 'premium';
+        return this.billing.betaCourtesy() ? 'pro' : plan;
+    });
+
+    /** What the upsell banner should offer, or null to hide it entirely.
+     *  free -> Pro, pro -> Premium, premium -> nothing. Hidden while the
+     *  subscription is still loading so no wrong CTA flashes. */
+    upsellTarget = computed<'pro' | 'premium' | null>(() => {
+        if (this.billing.state() === 'loading') return null;
+        switch (this.reachedTier()) {
+            case 'free':    return 'pro';
+            case 'pro':     return 'premium';
+            case 'premium': return null;
+        }
+    });
+
+    upsellTitle = computed(() =>
+        this.upsellTarget() === 'premium'
+            ? this.t('settings.upgradePremiumTitle')
+            : this.t('settings.upgradeProTitle'));
+
+    upsellDesc = computed(() =>
+        this.upsellTarget() === 'premium'
+            ? this.t('settings.upgradePremiumDesc')
+            : this.t('settings.upgradeProDesc'));
+
     ngOnInit() {
         // Settings pages scroll without showing a scrollbar (Finary feel).
         document.documentElement.classList.add('settings-no-scrollbar');
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.i18n.setLang(this.lang as 'fr' | 'en');
+        // Warm the subscription cache so the upsell banner reflects the real tier
+        // (free -> Pro, pro -> Premium, premium -> hidden) instead of the default.
+        this.billing.load();
         this.syncActiveSection(this.router.url);
         this.router.events
             .pipe(filter(e => e instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))

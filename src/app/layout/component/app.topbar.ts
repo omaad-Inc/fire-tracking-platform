@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,7 @@ import { LayoutService } from '../service/layout.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { filter } from 'rxjs/operators';
 import { TokenService } from '../../core/services/token.service';
+import { BillingService } from '../../core/services/billing.service';
 import { environment } from '../../../environments/environment';
 import { PrivacyService } from '../../core/services/privacy.service';
 import { AiAssistantService } from '../../core/services/ai-assistant.service';
@@ -83,14 +84,43 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                     }
                 </div>
 
-                <!-- UPGRADE PRO pill -->
-                <a [routerLink]="['/'+lang, 'pages', 'plans']"
-                   class="flex items-center gap-1 px-2.5 py-1.5 rounded-full
-                          bg-ochre-500 hover:bg-ochre-400 text-warm-900 text-[10px] lg:text-xs font-bold
-                          tracking-wider transition-all hover:shadow-lg">
-                    <i class="pi pi-crown" style="font-size:9px"></i>
-                    PRO
-                </a>
+                <!-- Tier-aware crown pill: free -> aspirational Pro CTA,
+                     pro -> quiet Premium CTA, premium -> prestige status chip,
+                     hidden while loading (no wrong-tier flash). -->
+                @if (pillMode() === 'upsell_pro') {
+                    <a [routerLink]="['/'+lang, 'pages', 'plans']"
+                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-full
+                              bg-gradient-to-br from-ochre-400 to-ochre-500 text-warm-900
+                              text-[10px] lg:text-xs font-bold tracking-wide
+                              ring-1 ring-ochre-300/40 shadow-sm
+                              transition-all hover:shadow-lg hover:-translate-y-px active:translate-y-0"
+                       [attr.aria-label]="t('topbar.upgradeToPro')" [title]="t('topbar.upgradeToPro')">
+                        <i class="pi pi-crown" style="font-size:9px" aria-hidden="true"></i>
+                        {{ t('topbar.tierPro') }}
+                    </a>
+                } @else if (pillMode() === 'upsell_premium') {
+                    <a [routerLink]="['/'+lang, 'pages', 'plans']"
+                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-full
+                              bg-ochre-500/10 text-ochre-700 dark:text-ochre-300
+                              text-[10px] lg:text-xs font-bold tracking-wide
+                              ring-1 ring-ochre-500/40
+                              transition-all hover:bg-ochre-500/20 hover:ring-ochre-500/60 hover:shadow-md"
+                       [attr.aria-label]="t('topbar.upgradeToPremium')" [title]="t('topbar.upgradeToPremium')">
+                        <i class="pi pi-crown" style="font-size:9px" aria-hidden="true"></i>
+                        {{ t('topbar.tierPremium') }}
+                    </a>
+                } @else if (pillMode() === 'status_premium') {
+                    <a [routerLink]="['/'+lang, 'pages', 'settings', 'subscription']"
+                       class="flex items-center gap-1.5 px-3 py-1.5 rounded-full
+                              bg-gradient-to-br from-ochre-500 to-ochre-600 text-warm-900
+                              text-[10px] lg:text-xs font-semibold tracking-wide
+                              ring-1 ring-ochre-200/50 shadow-sm
+                              transition-all hover:shadow-md"
+                       [attr.aria-label]="t('topbar.yourPlanPremium')" [title]="t('topbar.yourPlanPremium')">
+                        <i class="pi pi-crown" style="font-size:9px" aria-hidden="true"></i>
+                        {{ t('topbar.tierPremium') }}
+                    </a>
+                }
 
                 <!-- Add Assets Button - Desktop Only -->
                 <button
@@ -148,8 +178,32 @@ export class AppTopbar implements OnInit, OnDestroy {
     share           = inject(ShareContextService);
     private flags   = inject(FeatureFlagsService);
     private nav     = inject(NavService);
+    private billing = inject(BillingService);
 
     layoutService = inject(LayoutService);
+
+    /** Tier the user has effectively reached. Beta courtesy lifts everyone to at
+     *  least Pro (mirrors billing_service.has_plan / settings.ts / notice-strip),
+     *  so a courtesy-Pro user is never nagged to "upgrade to Pro". */
+    private reachedTier = computed<'free' | 'pro' | 'premium'>(() => {
+        const plan = this.billing.effectivePlan() as 'free' | 'pro' | 'premium';
+        if (plan === 'premium') return 'premium';
+        return this.billing.betaCourtesy() ? 'pro' : plan;
+    });
+
+    /** What the topbar crown pill should be, or null to hide it:
+     *  free -> aspirational "Pro" upsell CTA (-> /plans)
+     *  pro  -> aspirational "Premium" upsell CTA (-> /plans)
+     *  premium -> quiet "Premium" prestige status chip (-> Abonnement)
+     *  Hidden while the subscription is still loading (no wrong-tier flash). */
+    pillMode = computed<'upsell_pro' | 'upsell_premium' | 'status_premium' | null>(() => {
+        if (this.billing.state() === 'loading') return null;
+        switch (this.reachedTier()) {
+            case 'free':    return 'upsell_pro';
+            case 'pro':     return 'upsell_premium';
+            case 'premium': return 'status_premium';
+        }
+    });
 
     /** S12: flag on -> the real chat surface; flag off -> the teaser panel. */
     openAssistant(): void {
@@ -186,6 +240,9 @@ export class AppTopbar implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.lang = this.getCurrentLang();
+        // Warm the subscription cache so the crown pill reflects the real tier
+        // (free -> Pro CTA, pro -> Premium CTA, premium -> status chip).
+        this.billing.load();
         this.maybeShowAssistantHint();
     }
 
