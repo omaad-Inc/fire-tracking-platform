@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, effect, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
@@ -9,6 +9,11 @@ import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
+import { chartTheme } from '../../../core/theme/chart-theme';
+import { LayoutService } from '../../../layout/service/layout.service';
+import { AllocationDonutComponent } from './allocation-donut';
+import { AllocationTicksComponent } from './allocation-ticks';
+import { TooltipModule } from 'primeng/tooltip';
 
 interface GroupConfig {
     id: string;
@@ -60,20 +65,29 @@ const CATEGORY_BGS: Record<string, string> = {
 };
 
 
-const DONUT_COLORS_LIGHT = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#3D3B35', '#6E6A60', '#9C988C', '#C2BDB1', '#08111E', '#71421C'];
-// Validated dark categorical (dark-mode audit Batch 3) + 2 steel tails.
-const DONUT_COLORS_DARK  = ['#C77B3C', '#5B84C4', '#A98F2C', '#B0574A', '#2FA3B5', '#9678D6', '#86A04B', '#B6699F', '#8593AB', '#5C6B89'];
-
-function getDonutColors(): string[] {
-    const isDark = typeof document !== 'undefined' &&
-        (document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark'));
-    return isDark ? DONUT_COLORS_DARK : DONUT_COLORS_LIGHT;
-}
+// Per-asset donut colors cycle the OMAAD brand categorical (chartTheme, the
+// ochre-anchored jewel set validated in both modes) — assets have no fixed
+// taxonomy here so the ramp cycles by rank; slice gaps show the card surface.
 
 @Component({
     selector: 'app-patrimoine-category-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent, LoadErrorComponent],
+    imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent, LoadErrorComponent,
+              AllocationDonutComponent, AllocationTicksComponent, TooltipModule],
+    styles: [`
+        /* Same fix as patrimoineprogress: PrimeNG p-chart has no styleClass and
+           wraps the canvas in an unstyled div; complete the height chain so the
+           plot fills the flex zone instead of collapsing to ~250px. */
+        :host ::ng-deep .netw-plot p-chart {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        :host ::ng-deep .netw-plot p-chart > div {
+            width: 100%;
+            height: 100%;
+        }
+    `],
     template: `
         @if (loadError) {
             <app-load-error (retry)="reload()" />
@@ -131,13 +145,14 @@ function getDonutColors(): string[] {
                 </div>
             </div>
 
-            <!-- ── Charts row ── -->
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mb-8">
+            <!-- ── Charts row: strict 50/50, equal heights (reference layout) ── -->
+            <div class="grid grid-cols-1 min-[1150px]:grid-cols-2 gap-5 items-stretch mb-8">
 
                 <!-- Progression chart -->
-                <div class="xl:col-span-7 relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
-                    <div class="relative flex items-center justify-between mb-4">
-                        <span class="font-semibold text-surface-900 dark:text-surface-0">Progression</span>
+                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card
+                            p-4 md:px-[26px] md:py-[22px] h-[340px] min-[861px]:h-[380px] min-[1150px]:h-[460px] flex flex-col">
+                    <div class="relative flex items-center justify-between mb-2">
+                        <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.progression') }}</span>
                         <div class="flex items-center gap-1">
                             @for (r of ranges; track r.months) {
                                 <button (click)="changeRange(r.months)"
@@ -152,54 +167,86 @@ function getDonutColors(): string[] {
                     </div>
 
                     @if (loadingChart) {
-                        <div class="relative flex items-center justify-center h-52">
-                            <i class="pi pi-spin pi-spinner text-2xl text-surface-400"></i>
+                        <div class="relative flex-1 min-h-0 animate-pulse">
+                            <div class="h-full bg-surface-200 dark:bg-surface-700 rounded"></div>
                         </div>
                     } @else if (!lineData) {
-                        <div class="relative flex flex-col items-center justify-center h-52 text-center">
+                        <div class="relative flex-1 min-h-0 flex flex-col items-center justify-center text-center">
                             <i class="pi pi-chart-line text-3xl text-surface-400 mb-3"></i>
                             <p class="text-surface-500 text-sm">{{ i18n.t('patrimoine.noDataYet') }}</p>
                         </div>
                     } @else {
-                        <div class="relative mb-3">
-                            <div class="text-surface-500 dark:text-surface-400 text-xs">{{ todayLabel }}</div>
-                            <div class="text-surface-900 dark:text-surface-0 font-bold text-xl"><app-amount [value]="totalValue" /></div>
-                        </div>
                         <div class="relative">
-                            <p-chart type="line" [data]="lineData" [options]="lineOptions" styleClass="w-full" [height]="'240px'" />
+                            <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">{{ todayLabel }}</div>
+                            <div class="text-surface-900 dark:text-surface-0 font-bold text-xl"><app-amount [value]="totalValue" /></div>
+                            @if (variationAbs !== null) {
+                                <div class="flex items-center flex-wrap gap-2 mt-0.5">
+                                    <app-amount [value]="absVariation" [prefix]="variationAbs < 0 ? '−' : '+'"
+                                                class="text-sm font-semibold"
+                                                [ngClass]="variationAbs >= 0 ? 'text-positive' : 'text-negative'" />
+                                    @if (variationPct !== null) {
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                                              [ngClass]="variationAbs >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
+                                            <i class="pi text-[9px]" [ngClass]="variationAbs >= 0 ? 'pi-caret-up' : 'pi-caret-down'" aria-hidden="true"></i>
+                                            {{ absVariationPct | number:'1.1-2' }}%
+                                        </span>
+                                    }
+                                    <span class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t(variationLabelKey()) }}</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="relative flex-1 min-h-0 mt-3.5">
+                            <div class="netw-plot absolute inset-0">
+                                <p-chart type="line" [data]="lineData" [options]="lineOptions" class="block w-full h-full" />
+                            </div>
+                        </div>
+                        <!-- 3 x-labels (start / mid / end), aligned to the 52px y-gutter -->
+                        <div class="relative h-6 ml-[52px] text-[11px] text-surface-400 dark:text-surface-500">
+                            <span class="absolute left-0 bottom-0.5">{{ xStart }}</span>
+                            <span class="absolute left-1/2 -translate-x-1/2 bottom-0.5">{{ xMid }}</span>
+                            <span class="absolute right-0 bottom-0.5">{{ xEnd }}</span>
                         </div>
                     }
                 </div>
 
-                <!-- Donut chart -->
-                <div class="xl:col-span-5 relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5">
-                    <div class="relative flex items-center justify-between mb-4">
-                        <span class="font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.allocation') }}</span>
-                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
+                <!-- Répartition (per-asset), same donut + tick-rows pattern as the patrimoine page -->
+                <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card
+                            p-4 md:px-[26px] md:py-[22px] h-full flex flex-col">
+                    <div class="relative flex items-center justify-between mb-2">
+                        <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.allocation') }}</span>
+                        <span class="text-surface-500 dark:text-surface-400 text-sm">
+                            {{ items.length }} {{ items.length > 1 ? i18n.t('patrimoine.units.assetOther') : i18n.t('patrimoine.units.assetOne') }}
+                        </span>
                     </div>
 
                     @if (items.length === 0) {
-                        <div class="flex flex-col items-center justify-center h-52 text-center">
+                        <div class="flex-1 flex flex-col items-center justify-center text-center">
                             <i class="pi pi-chart-pie text-3xl text-surface-400 mb-3"></i>
-                            <p class="text-surface-500 text-sm">Aucun actif</p>
+                            <p class="text-surface-500 text-sm">{{ i18n.t('patrimoine.noAssetsShort') }}</p>
                         </div>
-                    } @else if (donutData) {
-                        <!-- Donut: hover a slice to reveal its share in the center (no legend) -->
-                        <div class="flex items-center justify-center py-4 min-h-[280px]">
-                            <div class="relative" style="width:260px; height:260px">
-                                <p-chart type="doughnut" [data]="donutData" [options]="donutOptions" styleClass="w-full h-full" [height]="'260px'" />
-                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
-                                    @if (hovered; as h) {
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs leading-tight line-clamp-2">{{ h.name }}</span>
-                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="h.value" /></span>
-                                        <span class="text-brand-700 dark:text-ochre-400 text-sm font-semibold mt-0.5">{{ h.pct }} %</span>
-                                    } @else {
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs">Total</span>
-                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="totalValue" /></span>
-                                        <span class="text-surface-400 dark:text-surface-500 text-xs mt-0.5">{{ items.length }} actif{{ items.length > 1 ? 's' : '' }}</span>
-                                    }
-                                </div>
-                            </div>
+                    } @else {
+                        <div class="flex-1 min-h-0 grid grid-cols-1 min-[861px]:grid-cols-[44fr_56fr] min-[1150px]:grid-cols-[200px_minmax(0,1fr)]
+                                    gap-2 min-[861px]:gap-[22px] pt-[18px] items-center">
+                            <app-allocation-donut [segments]="allocRows" [ariaLabel]="i18n.t('patrimoine.allocation')"
+                                    class="w-[220px] min-[861px]:w-[min(280px,90%)] min-[1150px]:w-[200px] mx-auto">
+                                <span class="text-[13px] font-semibold text-surface-900 dark:text-surface-0 tabular-nums"><app-amount [value]="totalValue" /></span>
+                                <span class="text-[11px] text-surface-500 dark:text-surface-400 mt-0.5">
+                                    {{ items.length }} {{ items.length > 1 ? i18n.t('patrimoine.units.assetOther') : i18n.t('patrimoine.units.assetOne') }}
+                                </span>
+                            </app-allocation-donut>
+                            <!-- Rows: [name | ticks | %], bounded flex; scrolls if a category
+                                 holds more assets than the card height fits. -->
+                            <ul class="min-w-0 self-stretch min-h-0 flex flex-col justify-center overflow-y-auto">
+                                @for (row of allocRows; track row.label) {
+                                    <li class="grid grid-cols-[minmax(0,1fr)_52px] min-[861px]:grid-cols-[minmax(100px,32%)_minmax(0,1fr)_52px]
+                                               items-center gap-x-3.5 flex-1 min-h-[42px] max-h-[62px] shrink-0"
+                                        [pTooltip]="row.tooltip" tooltipPosition="left">
+                                        <span class="text-sm truncate text-surface-900 dark:text-surface-100">{{ row.label }}</span>
+                                        <app-allocation-ticks class="max-[860px]:!hidden" [pct]="row.share" [color]="row.color" />
+                                        <span class="text-[13px] text-surface-500 dark:text-surface-400 text-right tabular-nums">{{ row.pct }} %</span>
+                                    </li>
+                                }
+                            </ul>
                         </div>
                     }
                 </div>
@@ -265,7 +312,19 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     private patrimoineService = inject(PatrimoineService);
     private dashboardService = inject(DashboardService);
     private cs = inject(CurrencyService);
+    private layout = inject(LayoutService);
     i18n = inject(I18nService);
+
+    /** Theme flips rebuild the theme-dependent visuals with the current data
+     *  (this component uses plain properties, so charts don't recolor on their
+     *  own — the "invisible chart until refresh" bug). */
+    private themeEffect = effect(() => {
+        this.layout.isDarkTheme();                 // tracked dependency
+        if (this.loading) return;                  // first build happens in ngOnInit/loadLineChart
+        if (this.items.length > 0) this.buildAllocRows();
+        if (this.lastPoints.length > 0) this.buildLineChart(this.lastPoints);
+        this.cd.markForCheck();
+    });
 
     // ── State (plain properties, not signals, avoids effect timing issues) ──
     loading = true;
@@ -294,11 +353,33 @@ export class PatrimoineCategoryDetailPage implements OnInit {
 
     lineData: any = null;
     lineOptions: any = null;
-    donutData: any = null;
-    donutOptions: any = null;
-    // Hover-driven donut center (replaces the legend list, Finary-style)
-    hovered: { name: string; value: number; pct: number } | null = null;
-    private hoveredIdx = -1;
+
+    /** Per-asset allocation rows (sorted desc): drives the SVG donut, the tick
+     *  bars, and the tooltips — same shape as the patrimoine Répartition card. */
+    allocRows: { label: string; amount: number; color: string; share: number; pct: string; tooltip: string }[] = [];
+
+    /** Variation over the selected range (first → last point, EUR base). */
+    variationAbs: number | null = null;
+    variationPct: number | null = null;
+    get absVariation(): number { return Math.abs(this.variationAbs ?? 0); }
+    get absVariationPct(): number { return Math.abs(this.variationPct ?? 0); }
+
+    variationLabelKey(): string {
+        switch (this.selectedMonths) {
+            case 3:  return 'patrimoine.variation3m';
+            case 6:  return 'patrimoine.variation6m';
+            case 12: return 'patrimoine.variation1y';
+            default: return 'patrimoine.variationMax';
+        }
+    }
+
+    /** 3 x-labels: range start / midpoint / range end (reference pattern). */
+    xStart = '';
+    xMid = '';
+    xEnd = '';
+
+    /** Last loaded series, kept so a theme flip can rebuild without refetching. */
+    private lastPoints: ChartDataPoint[] = [];
 
     async ngOnInit() {
         const categoryId = this.route.snapshot.paramMap.get('categoryId') ?? '';
@@ -327,9 +408,9 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         const purchaseTotal = this.items.reduce((s, i) => s + Math.max(0, i.value - (i.deltaAbs ?? 0)), 0);
         this.totalDeltaPct  = purchaseTotal > 0 ? (this.totalDeltaAbs / purchaseTotal) * 100 : 0;
 
-        // Build donut synchronously before revealing the page
+        // Build allocation rows synchronously before revealing the page
         if (this.items.length > 0) {
-            this.buildDonut();
+            this.buildAllocRows();
         }
 
         // Reveal the page
@@ -361,6 +442,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
                 this.currentGroup.categories,
                 this.selectedMonths
             );
+            this.lastPoints = pts;
             if (pts.length > 0 && isPlatformBrowser(this.platformId)) {
                 this.buildLineChart(pts);
             } else {
@@ -374,14 +456,39 @@ export class PatrimoineCategoryDetailPage implements OnInit {
 
     private buildLineChart(points: ChartDataPoint[]) {
         // Brand-tokenized chart line, same in light + dark, switching shade.
-        const isDark = document.documentElement.classList.contains('app-dark');
+        // Signal, not a DOM read: themeEffect rebuilds on toggle.
+        const isDark = this.layout.isDarkTheme();
         const color = isDark ? '#D8A369' : '#1A2740';        // ochre-400 hero / brand-700
         const textMuted = isDark ? '#8593AB' : '#6E6A60';   // muted steel / warm-500
         const cs = this.cs;
 
-        // Soft vertical area-fill gradient under the line (data-viz, Finary-style).
-        const fillTop = isDark ? 'rgba(216,163,105,0.20)' : 'rgba(26,39,64,0.15)';
+        // Vertical area-fill: 13% of the line color fading to transparent
+        // (reference spec) — the line, not the fill, carries the data.
+        const fillTop = isDark ? 'rgba(216,163,105,0.13)' : 'rgba(26,39,64,0.13)';
         const fillBottom = isDark ? 'rgba(216,163,105,0)' : 'rgba(26,39,64,0)';
+
+        const values = points.map(p => p.value);
+        const dataMin = values.length ? Math.min(...values) : 0;
+        const dataMax = values.length ? Math.max(...values) : 1;
+        const span = Math.max(dataMax - dataMin, 1);
+        // 5 gridlines evenly stepped across the data with ~4% headroom above.
+        const yMin = Math.floor(dataMin);
+        const yMax = Math.ceil(dataMax + span * 0.04);
+        const gridColor = isDark ? 'rgba(245, 247, 251, 0.10)' : 'rgba(20, 19, 15, 0.10)';
+
+        // 3 x-labels + variation over the selected range (real total vs first point).
+        this.xStart = points[0]?.label ?? '';
+        this.xMid = points.length > 2 ? points[Math.floor(points.length / 2)].label : '';
+        this.xEnd = points.length > 1 ? points[points.length - 1].label : '';
+        const first = points[0]?.value ?? null;
+        if (first !== null) {
+            const delta = this.totalValue - first;
+            this.variationAbs = delta;
+            this.variationPct = first > 0 ? (delta / first) * 100 : null;
+        } else {
+            this.variationAbs = null;
+            this.variationPct = null;
+        }
 
         this.lineData = {
             labels: points.map(p => p.label),
@@ -397,8 +504,10 @@ export class PatrimoineCategoryDetailPage implements OnInit {
                     return g;
                 },
                 borderColor: color,
-                tension: 0.4,
-                borderWidth: 2.5,
+                tension: 0,
+                borderJoinStyle: 'round',
+                borderCapStyle: 'round',
+                borderWidth: 1.5,
                 pointRadius: 0,
                 pointHoverRadius: 5,
                 pointBackgroundColor: color,
@@ -424,55 +533,46 @@ export class PatrimoineCategoryDetailPage implements OnInit {
                 }
             },
             scales: {
-                x: {
-                    ticks: { color: textMuted, font: { size: 10 }, maxTicksLimit: 8, autoSkip: true },
-                    grid: { display: false }
-                },
+                // Axis hidden: exactly 3 x-labels are rendered as positioned HTML.
+                x: { display: false },
                 y: {
-                    ticks: { color: textMuted, font: { size: 10 }, callback: cs.tickFormatter() },
-                    grid: { display: false }
-                }
+                    min: yMin,
+                    max: yMax,
+                    ticks: {
+                        count: 5,
+                        color: textMuted,
+                        font: { size: 11 },
+                        callback: cs.tickFormatter(),
+                        crossAlign: 'far' as const,
+                        padding: 8,
+                    },
+                    // 5 dashed horizontal gridlines only (border.dash styles grid lines in v4).
+                    grid: { color: gridColor, drawTicks: false },
+                    border: { display: false, dash: [4, 4] },
+                    afterFit: (scale: any) => { scale.width = 52; },
+                },
             },
             interaction: { intersect: false, mode: 'index' },
             elements: { point: { radius: 0, hoverRadius: 5 } }
         };
     }
 
-    private buildDonut() {
-        const isDark = document.documentElement.classList.contains('app-dark');
-        const sliceBorder = isDark ? '#0F1A2E' : '#ffffff';  // matches card bg for clean gaps
-        const donutColors = getDonutColors();
-        const colors = this.items.map((_, i) => donutColors[i % donutColors.length]);
-
-        this.donutData = {
-            labels: this.items.map(i => i.name),
-            datasets: [{
-                data: this.items.map(i => i.value),
-                backgroundColor: colors,
-                borderColor: sliceBorder,
-                borderWidth: 2,
-                hoverOffset: 10,
-                hoverBorderColor: sliceBorder,
-            }]
-        };
-
-        this.donutOptions = {
-            cutout: '72%',
-            maintainAspectRatio: false,
-            // Hovering a slice drives the center label (Finary-style), no legend, no tooltip.
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: false },
-            },
-            onHover: (_event: any, elements: any[]) => {
-                const idx = elements && elements.length ? elements[0].index : -1;
-                if (idx === this.hoveredIdx) return;
-                this.hoveredIdx = idx;
-                const item = idx >= 0 ? this.items[idx] : null;
-                this.hovered = item ? { name: item.name, value: item.value, pct: this.sharePct(item) } : null;
-                this.cd.detectChanges();
-            },
-        };
+    private buildAllocRows() {
+        const total = this.totalValue;
+        const colors = chartTheme(this.layout.isDarkTheme()).categorical;
+        this.allocRows = [...this.items]
+            .sort((a, b) => b.value - a.value)
+            .map((item, i) => {
+                const share = total > 0 ? (item.value / total) * 100 : 0;
+                return {
+                    label: item.name,
+                    amount: item.value,
+                    color: colors[i % colors.length],
+                    share,
+                    pct: this.sharePctLabel(share),
+                    tooltip: `${item.name} · ${this.cs.format(item.value, 0)}`,
+                };
+            });
     }
 
     // ── Helpers ──
@@ -481,9 +581,11 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         return this.totalValue > 0 ? Math.round((item.value / this.totalValue) * 100) : 0;
     }
 
-    donutColor(index: number): string {
-        const colors = getDonutColors();
-        return colors[index % colors.length];
+    /** "0 %" is a lie for a non-empty asset (reference rule): <0.5 → "<1". */
+    private sharePctLabel(share: number): string {
+        if (share > 0 && share < 0.5) return '<1';
+        if (share > 0 && share < 1) return '1';
+        return String(Math.round(share));
     }
 
     getCategoryIcon(cat?: string): string  { return CATEGORY_ICONS[cat ?? ''] ?? 'pi pi-box'; }
