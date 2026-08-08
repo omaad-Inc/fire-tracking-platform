@@ -154,7 +154,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                     <div class="space-y-4">
                         @for (q of faqItems(); track q.q) {
                             <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-6 border border-surface-200 dark:border-surface-700">
-                                <h4 class="font-semibold text-surface-900 dark:text-surface-0 mb-2 flex items-center gap-2">
+                                <h4 class="text-subheading font-semibold text-surface-900 dark:text-surface-0 mb-2 flex items-center gap-2">
                                     <i class="pi pi-question-circle text-brand-700 dark:text-ochre-400"></i>{{ q.q }}
                                 </h4>
                                 <p class="text-surface-600 dark:text-surface-300">{{ q.a }}</p>

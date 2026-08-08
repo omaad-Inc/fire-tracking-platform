@@ -6,6 +6,7 @@ import { SavingsService, SavingsGoalDisplay } from '../../service/savings.servic
 import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
+import { UiCardComponent } from '../../../core/ui';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 
@@ -24,9 +25,9 @@ interface GoalDisplay {
 @Component({
     standalone: true,
     selector: 'app-savings-progress',
-    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent, UiCardComponent],
     template: `
-        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col">
+        <app-ui-card [flush]="true" padding="md" innerClass="relative overflow-hidden h-full flex flex-col">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ i18n.t('dashboard.savingsProgress') }}</div>
                 <a [routerLink]="link('pages', 'goals')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
@@ -97,7 +98,7 @@ interface GoalDisplay {
                     }
                 </ul>
             }
-        </div>
+        </app-ui-card>
     `
 })
 export class SavingsProgress implements OnInit, OnDestroy {

@@ -222,7 +222,7 @@ const CRITERIA: { t: string; d: string }[] = [
                             <li class="flex gap-4 rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 p-5">
                                 <span class="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-brand-700 text-sm font-bold text-white">{{ $index + 1 }}</span>
                                 <div>
-                                    <h3 class="font-semibold text-surface-900 dark:text-surface-0">{{ line.t }}</h3>
+                                    <h3 class="text-subheading font-semibold text-surface-900 dark:text-surface-0">{{ line.t }}</h3>
                                     <p class="mt-1 text-[14.5px] leading-relaxed text-surface-600 dark:text-surface-300">{{ line.d }}</p>
                                 </div>
                             </li>
@@ -241,7 +241,7 @@ const CRITERIA: { t: string; d: string }[] = [
                             <div class="flex gap-4 rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-800 p-5">
                                 <span class="text-lg font-bold text-ochre-600 dark:text-ochre-400">{{ ($index + 1).toString().padStart(2, '0') }}</span>
                                 <div>
-                                    <h3 class="font-semibold text-surface-900 dark:text-surface-0">{{ c.t }}</h3>
+                                    <h3 class="text-subheading font-semibold text-surface-900 dark:text-surface-0">{{ c.t }}</h3>
                                     <p class="mt-1 text-[14.5px] leading-relaxed text-surface-600 dark:text-surface-300">{{ c.d }}</p>
                                 </div>
                             </div>

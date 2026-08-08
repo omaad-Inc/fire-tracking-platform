@@ -204,7 +204,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             <div class="relative flex items-center justify-between gap-2 mb-4">
                                 <div class="flex items-center gap-2">
                                     <i class="pi pi-history text-brand-700 dark:text-ochre-400"></i>
-                                    <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.activity.title') }}</h3>
+                                    <h3 class="text-subheading font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.activity.title') }}</h3>
                                 </div>
                                 @if (contributions().length > 0) {
                                     <span class="text-xs text-surface-500 dark:text-surface-400">
@@ -283,7 +283,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
                             <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5">
                                 <div class="relative flex items-center gap-2 mb-2">
                                     <i class="pi pi-comment text-ochre-500"></i>
-                                    <h3 class="font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.fields.note') }}</h3>
+                                    <h3 class="text-subheading font-semibold text-surface-900 dark:text-surface-0 m-0">{{ i18n.t('goals.fields.note') }}</h3>
                                 </div>
                                 <p class="relative text-sm text-surface-700 dark:text-surface-300 whitespace-pre-wrap m-0">{{ userNote() }}</p>
                             </div>
@@ -292,7 +292,7 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
 
                     <!-- RIGHT, details panel -->
                     <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 self-start">
-                        <h3 class="relative font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
+                        <h3 class="relative text-subheading font-semibold text-surface-900 dark:text-surface-0 mb-4 m-0">
                             {{ i18n.t('goals.detail.details') }}
                         </h3>
                         <dl class="relative flex flex-col divide-y divide-surface-200 dark:divide-surface-800">

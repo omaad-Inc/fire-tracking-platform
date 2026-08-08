@@ -8,6 +8,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
+import { UiCardComponent } from '../../../core/ui';
 
 interface TransactionDisplay {
     id: string;
@@ -25,9 +26,9 @@ interface TransactionDisplay {
 @Component({
     standalone: true,
     selector: 'app-recent-transactions-widget',
-    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent, UiCardComponent],
     template: `
-        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full">
+        <app-ui-card [flush]="true" padding="md" innerClass="relative overflow-hidden h-full">
             <div class="relative flex justify-between items-center mb-6">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">{{ t('dashboard.recentTransactions') }}</div>
                 <a [routerLink]="link('pages', 'transaction')" class="text-brand-700 dark:text-brand-300 hover:text-brand-500 dark:hover:text-brand-200 font-medium text-sm transition-colors">
@@ -90,7 +91,7 @@ interface TransactionDisplay {
                     }
                 </div>
             }
-        </div>
+        </app-ui-card>
     `
 })
 export class RecentTransactionsWidget implements OnInit, OnDestroy {
