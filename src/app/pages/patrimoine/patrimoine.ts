@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, 
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
-import { ChartModule } from 'primeng/chart';
+import { AllocationDonutComponent } from './components/allocation-donut';
+import { AllocationTicksComponent } from './components/allocation-ticks';
+import { TooltipModule } from 'primeng/tooltip';
 import { I18nService } from '../../i18n/i18n.service';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine.service';
 import { AssetsStateService } from '../service/assets-state.service';
@@ -12,7 +14,9 @@ import { NavService } from '../../core/services/nav.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
-import { SectionHeaderComponent } from '../../core/ui';
+import { SectionHeaderComponent, UiCardComponent } from '../../core/ui';
+import { chartTheme } from '../../core/theme/chart-theme';
+import { LayoutService } from '../../layout/service/layout.service';
 
 interface CategoryGroupCard {
     id: string;
@@ -29,11 +33,24 @@ interface CategoryGroupCard {
 // differentiates the category, not the color. (Phase 2 identity rule.)
 const GROUP_BG = '#1A2740';
 
-// Allocation donut palette. Light: navy/ochre/warm spread (unchanged).
-// Dark: the validated dark categorical (dark-mode audit Batch 3) — the old
-// single shared array put #1A2740 navy slices on a navy card.
-const DONUT_COLORS_LIGHT = ['#1A2740', '#C77B3C', '#4D5F80', '#D8A369', '#2C3E5E', '#9C988C', '#71421C', '#8A98AE'];
-const DONUT_COLORS_DARK  = ['#C77B3C', '#5B84C4', '#A98F2C', '#B0574A', '#2FA3B5', '#9678D6', '#86A04B', '#B6699F'];
+// Allocation-donut slice colors come from the central chart palette
+// (chartTheme().categorical), the single validated source for both modes.
+// No local hex arrays: see core/theme/chart-theme.ts.
+
+// Répartition colors come from the OMAAD brand categorical (chartTheme, the
+// ochre-anchored jewel set validated with the dataviz six-checks in both
+// modes) — not the Finary reference pastels. Fixed slot per category so color
+// follows the entity, never its rank; literal navy #1A2740 is deliberately
+// absent (fails the lightness band on white and vanishes on navy dark cards —
+// steel blue is navy's chart-safe voice). 'other' takes the muted neutral.
+const GROUP_SLOT: Record<string, number> = {
+    real_estate:  0,   // ochre — the brand anchor
+    stocks_bonds: 1,   // steel blue (navy's voice)
+    savings:      2,   // gold
+    crypto:       3,   // terracotta
+    tontine:      4,   // teal
+    mobile_money: 5,   // violet
+};
 
 // Group labels are resolved via i18n at render time (patrimoine.groups.<id>).
 const GROUPS = [
@@ -50,12 +67,13 @@ const GROUPS = [
     selector: 'app-patrimoine',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, PatrimoineProgress, ChartModule, AppAmountComponent, LoadErrorComponent, SectionHeaderComponent],
+    imports: [CommonModule, PatrimoineProgress, AllocationDonutComponent, AllocationTicksComponent, TooltipModule,
+              AppAmountComponent, LoadErrorComponent, SectionHeaderComponent, UiCardComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
 
             <!-- Net-worth hero -->
-            <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 sm:p-6">
+            <app-ui-card padding="md" innerClass="sm:p-6">
                 <div class="flex flex-wrap items-end justify-between gap-4">
                     <div class="min-w-0">
                         <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ i18n.t('patrimoine.netWorth') }}</span>
@@ -107,33 +125,88 @@ const GROUPS = [
                         </div>
                     </div>
                 }
-            </div>
+            </app-ui-card>
 
             <!-- Progression + allocation donut -->
-            <div class="grid grid-cols-12 gap-4 md:gap-6">
-                <div class="col-span-12 xl:col-span-8">
-                    <app-patrimoine-progress />
-                </div>
-                <div class="col-span-12 xl:col-span-4 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-5 flex flex-col">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.allocation') }}</span>
-                        <span class="text-surface-500 dark:text-surface-400 text-sm">{{ categoryGroups().length }} {{ categoryGroups().length > 1 ? i18n.t('patrimoine.units.categoryOther') : i18n.t('patrimoine.units.categoryOne') }}</span>
-                    </div>
-                    @if (donutData(); as dd) {
-                        <div class="flex-1 flex items-center justify-center py-2">
-                            <div class="relative" style="width:230px;height:230px">
-                                <p-chart type="doughnut" [data]="dd" [options]="donutOptions" styleClass="w-full h-full" [height]="'230px'" />
-                                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
-                                    @if (hovered(); as h) {
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs leading-tight line-clamp-2">{{ h.name }}</span>
-                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="h.value" /></span>
-                                        <span class="text-brand-700 dark:text-ochre-400 text-sm font-semibold mt-0.5">{{ h.pct }} %</span>
-                                    } @else {
-                                        <span class="text-surface-500 dark:text-surface-400 text-xs">{{ i18n.t('patrimoine.allocationTotal') }}</span>
-                                        <span class="font-bold text-surface-900 dark:text-surface-0 text-lg leading-tight mt-0.5"><app-amount [value]="totalAssets()" /></span>
-                                    }
-                                </div>
+            <!-- Strict 50/50 (minmax(0,1fr) via grid-cols-2): plain 1fr would let
+                 content min-width break the ratio. Stack ≤1150px per reference. -->
+            <div class="grid grid-cols-1 min-[1150px]:grid-cols-2 gap-5 items-stretch">
+                <app-patrimoine-progress />
+                <app-ui-card padding="none" innerClass="h-full flex flex-col p-4 md:px-[26px] md:py-[22px]">
+                    <!-- Head: Actifs/Passifs tabs + grouping pill + view toggle (reference) -->
+                    <div class="flex items-start justify-between border-b border-surface-200 dark:border-surface-800">
+                        <div class="flex gap-7">
+                            @for (tab of ['assets', 'passifs']; track tab) {
+                                <button type="button" (click)="allocTab.set($any(tab))"
+                                        class="relative pt-1 pb-3.5 text-[1.05rem] transition-colors"
+                                        [ngClass]="allocTab() === tab
+                                            ? 'font-semibold text-surface-900 dark:text-surface-0 after:absolute after:left-0 after:right-0 after:-bottom-px after:h-[2.5px] after:bg-surface-900 dark:after:bg-surface-0'
+                                            : 'text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'">
+                                    {{ i18n.t(tab === 'assets' ? 'patrimoine.assetsTab' : 'patrimoine.liabilities') }}
+                                </button>
+                            }
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="h-[38px] p-[3px] flex items-center rounded-full bg-surface-100 dark:bg-surface-800">
+                                <button type="button" (click)="allocView.set('chart')" [attr.aria-label]="i18n.t('patrimoine.viewChart')"
+                                        class="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                                        [ngClass]="allocView() === 'chart' ? 'bg-surface-200 dark:bg-surface-600 text-surface-900 dark:text-surface-0' : 'text-surface-500 dark:text-surface-400'">
+                                    <i class="pi pi-chart-pie text-sm" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" (click)="allocView.set('table')" [attr.aria-label]="i18n.t('patrimoine.viewTable')"
+                                        class="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                                        [ngClass]="allocView() === 'table' ? 'bg-surface-200 dark:bg-surface-600 text-surface-900 dark:text-surface-0' : 'text-surface-500 dark:text-surface-400'">
+                                    <i class="pi pi-table text-sm" aria-hidden="true"></i>
+                                </button>
                             </div>
+                        </div>
+                    </div>
+                    @if (allocRows().length) {
+                        @if (allocView() === 'chart') {
+                            <!-- Body grid (reference): compact 200px donut column, list dominates.
+                                 ≤1150 stacked cards → 44/56; ≤860 donut stacks above the list. -->
+                            <div class="flex-1 min-h-0 grid grid-cols-1 min-[861px]:grid-cols-[44fr_56fr] min-[1150px]:grid-cols-[200px_minmax(0,1fr)]
+                                        gap-2 min-[861px]:gap-[22px] pt-[18px] items-center">
+                                <app-allocation-donut [segments]="allocRows()" [ariaLabel]="i18n.t('patrimoine.allocation')"
+                                        class="w-[220px] min-[861px]:w-[min(280px,90%)] min-[1150px]:w-[200px] mx-auto">
+                                    <span class="text-[13px] font-semibold text-surface-900 dark:text-surface-0 tabular-nums"><app-amount [value]="allocTotal()" /></span>
+                                    <span class="text-[11px] text-surface-500 dark:text-surface-400 mt-0.5">
+                                        {{ i18n.t(allocTab() === 'assets' ? 'patrimoine.allocationTotal' : 'patrimoine.allocationTotalDebts') }}
+                                    </span>
+                                </app-allocation-donut>
+                                <!-- Rows: [name | ticks | %], bounded flex (42–62px) so the list
+                                     fills the body with zero dead space, never space-between. -->
+                                <ul class="min-w-0 self-stretch flex flex-col justify-center min-h-0">
+                                    @for (row of allocRows(); track row.label) {
+                                        <!-- name | ticks | % — the TICKS column is the flexible one.
+                                             (An fr-based name column collapses it: fr math hands the
+                                             name 32/33 of free space; a 32-percent cap fixes that.) -->
+                                        <li class="grid grid-cols-[minmax(0,1fr)_52px] min-[861px]:grid-cols-[minmax(100px,32%)_minmax(0,1fr)_52px]
+                                                   items-center gap-x-3.5 flex-1 min-h-[42px] max-h-[62px]"
+                                            [pTooltip]="row.tooltip" tooltipPosition="left">
+                                            <span class="text-sm truncate text-surface-900 dark:text-surface-100">{{ row.label }}</span>
+                                            <app-allocation-ticks class="max-[860px]:!hidden" [pct]="row.share" [color]="row.color" />
+                                            <span class="text-[13px] text-surface-500 dark:text-surface-400 text-right tabular-nums">{{ row.pct }} %</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        } @else {
+                            <!-- Table view: the amounts, in full -->
+                            <ul class="flex-1 min-h-0 flex flex-col justify-center pt-[18px]">
+                                @for (row of allocRows(); track row.label) {
+                                    <li class="grid grid-cols-[14px_minmax(0,1fr)_auto_52px] items-center gap-x-3 flex-1 min-h-[42px] max-h-[62px]">
+                                        <span class="w-2.5 h-2.5 rounded-full" [style.backgroundColor]="row.color" aria-hidden="true"></span>
+                                        <span class="text-sm truncate text-surface-900 dark:text-surface-100">{{ row.label }}</span>
+                                        <app-amount [value]="row.amount" class="text-sm font-semibold text-surface-900 dark:text-surface-0 tabular-nums" />
+                                        <span class="text-[13px] text-surface-500 dark:text-surface-400 text-right tabular-nums">{{ row.pct }} %</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    } @else if (allocTab() === 'passifs') {
+                        <div class="flex-1 flex items-center justify-center py-10">
+                            <span class="text-surface-400 text-sm">{{ i18n.t('patrimoine.noDebtsRecorded') }}</span>
                         </div>
                     } @else {
                         <div class="flex-1 flex flex-col items-center justify-center gap-3 text-center py-10">
@@ -144,7 +217,7 @@ const GROUPS = [
                             </button>
                         </div>
                     }
-                </div>
+                </app-ui-card>
             </div>
 
             <!-- Actifs section -->
@@ -197,7 +270,7 @@ const GROUPS = [
                         <div class="w-16 h-16 rounded-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
                             <i class="pi pi-box text-2xl text-brand-700 dark:text-ochre-400"></i>
                         </div>
-                        <h3 class="font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('patrimoine.emptyStateTitle') }}</h3>
+                        <h3 class="text-subheading font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('patrimoine.emptyStateTitle') }}</h3>
                         <p class="text-surface-500 dark:text-surface-400 text-sm max-w-sm mb-5">{{ i18n.t('patrimoine.emptyStateDesc') }}</p>
                         <button (click)="navigateToAddAsset()"
                                 class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-sm font-semibold transition-colors">
@@ -299,6 +372,7 @@ export class Patrimoine implements OnInit, OnDestroy {
     private patrimoineService = inject(PatrimoineService);
     private currencyService = inject(CurrencyService);
     private stateService = inject(AssetsStateService);
+    private layoutService = inject(LayoutService);
     private subscription?: Subscription;
 
     /** Optimistic AI asset creates (PERF-3): rendered as pending rows above
@@ -358,42 +432,50 @@ export class Patrimoine implements OnInit, OnDestroy {
         return base > 0 ? (this.assetDeltaAbs() / base) * 100 : 0;
     });
 
-    // ── Allocation donut (hover-driven center, no legend) ──
-    hovered = signal<{ name: string; value: number; pct: number } | null>(null);
-    private hoveredIdx = -1;
+    // ── Répartition (omaad-dashboard-v2 reference port) ──
+    allocTab = signal<'assets' | 'passifs'>('assets');
+    allocView = signal<'chart' | 'table'>('chart');
 
-    donutData = computed(() => {
-        const groups = this.categoryGroups();
-        if (!groups.length) return null;
-        const isDark = document.documentElement.classList.contains('app-dark');
-        const sliceBorder = isDark ? '#111B2E' : '#ffffff';
-        const donutColors = isDark ? DONUT_COLORS_DARK : DONUT_COLORS_LIGHT;
-        return {
-            labels: groups.map(g => g.label),
-            datasets: [{
-                data: groups.map(g => g.totalValue),
-                backgroundColor: groups.map((_, i) => donutColors[i % donutColors.length]),
-                borderColor: sliceBorder,
-                borderWidth: 2,
-                hoverOffset: 10,
-                hoverBorderColor: sliceBorder,
-            }],
-        };
+    /** Rows for the active tab, sorted desc. Everything derives from the live
+     *  signals: share = raw %, pct = display label ("<1" under 0.5%), tooltip
+     *  carries the amount (chart-view rows intentionally hide amounts). */
+    allocRows = computed(() => {
+        // Reactive to the theme toggle: isDarkTheme() is a signal, so a flip
+        // recolors slices/ticks with the mode's validated brand set.
+        const t = chartTheme(this.layoutService.isDarkTheme());
+        const segs = this.allocTab() === 'assets'
+            ? this.categoryGroups().map(g => ({
+                  label: g.label,
+                  amount: g.totalValue,
+                  color: g.id in GROUP_SLOT ? t.categorical[GROUP_SLOT[g.id]] : t.series.muted,
+              }))
+            : this.debts().filter(d => d.type === 'i_owe').map((d, i) => ({
+                  label: d.name,
+                  amount: this.currencyService.toEurFromNative(d.current_amount, d.currency),
+                  color: t.categorical[i % t.categorical.length],
+              }));
+        const total = segs.reduce((s, x) => s + x.amount, 0);
+        return segs
+            .sort((a, b) => b.amount - a.amount)
+            .map(seg => {
+                const share = total > 0 ? (seg.amount / total) * 100 : 0;
+                return {
+                    ...seg,
+                    share,
+                    pct: this.sharePctLabel(share),
+                    tooltip: `${seg.label} · ${this.currencyService.format(seg.amount, 0)}`,
+                };
+            });
     });
 
-    donutOptions: any = {
-        cutout: '72%',
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        onHover: (_e: any, els: any[]) => {
-            const idx = els && els.length ? els[0].index : -1;
-            if (idx === this.hoveredIdx) return;
-            this.hoveredIdx = idx;
-            const groups = this.categoryGroups();
-            const g = idx >= 0 ? groups[idx] : null;
-            this.hovered.set(g ? { name: g.label, value: g.totalValue, pct: this.groupSharePct(g) } : null);
-        },
-    };
+    allocTotal = computed(() => this.allocTab() === 'assets' ? this.totalAssets() : this.totalDebts());
+
+    /** "0 %" is a lie for a non-empty category (reference rule): <0.5 → "<1". */
+    private sharePctLabel(share: number): string {
+        if (share > 0 && share < 0.5) return '<1';
+        if (share > 0 && share < 1) return '1';
+        return String(Math.round(share));
+    }
 
     groupSharePct(group: CategoryGroupCard): number {
         const tot = this.totalAssets();

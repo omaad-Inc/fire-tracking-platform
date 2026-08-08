@@ -8,6 +8,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
+import { LayoutService } from '../../../layout/service/layout.service';
 
 @Component({
     selector: 'app-savings-progress',
@@ -60,6 +61,7 @@ import { AppAmountComponent } from '../../../core/components/app-amount.componen
 export class SavingsProgress implements OnInit, OnDestroy {
     platformId = inject(PLATFORM_ID);
     i18n = inject(I18nService);
+    private layout = inject(LayoutService);
     private cd = inject(ChangeDetectorRef);
     private savingsService = inject(SavingsService);
     private stateService = inject(AssetsStateService);
@@ -85,6 +87,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
     ];
 
     themeEffect = effect(() => {
+        this.layout.isDarkTheme();               // tracked: theme flips rebuild too
         if (this.allPoints().length > 0) {
             this.buildChart();
         }
@@ -151,7 +154,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
         const cs = this.cs;
 
         // Brand-700 (light) / ochre-400 (dark), matches the chart-theme primary series.
-        const isDark = document.documentElement.classList.contains('app-dark') || document.body.classList.contains('app-dark');
+        const isDark = this.layout.isDarkTheme();
         const borderColor = isDark ? '#D8A369' : '#1A2740';
 
         // Soft vertical area-fill gradient under the line (data-viz, Finary-style).

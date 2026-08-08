@@ -5,8 +5,9 @@
  * background, axis labels are secondary text, and one accent color owns
  * the primary series. A second accent (ochre) is reserved for highlights
  * (selected slice, comparison series). Categorical palettes for things
- * like the asset-distribution donut use a warm-gray scale so the data
- * itself, not the colors, does the storytelling.
+ * like the asset-distribution donut use one muted jewel-tone set shared by
+ * both light and dark (slot i is the same hue in each mode), tuned so the
+ * data, not loud colors, does the storytelling while staying legible.
  *
  * Usage:
  *
@@ -73,15 +74,22 @@ const LIGHT: ChartThemeTokens = {
         muted: '#C2BDB1',
     },
 
+    // Muted jewel tones, mirroring the DARK set's hue order (so a donut slice
+    // keeps its hue across modes) with teal + olive darkened for white
+    // contrast. Validated with the dataviz six-checks against #FFFFFF: all 8 in
+    // the lightness band, chroma >= 0.10, adjacent-pair CVD >= 7.8 (floor band,
+    // relies on the donut's 2px slice gaps as secondary encoding), normal-vision
+    // >= 15.7, contrast >= 3:1. Do NOT hand-edit a slot without re-running the
+    // validator (scripts/validate_palette.js).
     categorical: [
-        '#1A2740', // brand-700 (primary)
-        '#C77B3C', // ochre-500 (accent)
-        '#4D5F80', // brand-400
-        '#D8A369', // ochre-400
-        '#3D3B35', // warm-700
-        '#6E6A60', // warm-500
-        '#9C988C', // warm-400
-        '#C2BDB1', // warm-300
+        '#C77B3C', // ochre (brand anchor)
+        '#5B84C4', // steel blue
+        '#A98F2C', // gold
+        '#B0574A', // terracotta
+        '#0B8DA0', // teal (darkened for white contrast)
+        '#9678D6', // violet
+        '#6E8A3C', // olive (darkened for white contrast)
+        '#B6699F', // mauve
     ],
 
     tooltip: {

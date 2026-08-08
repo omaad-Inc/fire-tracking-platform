@@ -1,3 +1,14 @@
+// Base heading layer.
+//
+// The CANONICAL type system is the semantic scale (Tailwind `text-display` /
+// `text-title` / `text-heading` / `text-subheading` / `text-eyebrow`), used
+// directly or via the `core/ui` primitives (`app-page-header`,
+// `app-section-header`). App headings should carry one of those classes.
+//
+// This base rule is only the FALLBACK for a heading that ships without a size
+// class (so it lands on-scale instead of the browser's UA sizes). Its per-level
+// sizes mirror the semantic tokens exactly, so the two systems can no longer
+// diverge. Do NOT reintroduce an independent size ladder here.
 h1,
 h2,
 h3,
@@ -7,8 +18,6 @@ h6 {
     margin: 1.5rem 0 1rem 0;
     font-family: inherit;
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
     color: var(--text-color);
 
     &:first-child {
@@ -16,28 +25,38 @@ h6 {
     }
 }
 
-h1 {
-    font-size: 2.5rem;
-}
-
-h2 {
+h1 {                       // == text-title
     font-size: 2rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
 }
 
-h3 {
-    font-size: 1.75rem;
+h2 {                       // == text-heading
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+}
+
+h3 {                       // == text-subheading
+    font-size: 1.25rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
 }
 
 h4 {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
 }
 
 h5 {
-    font-size: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.4;
 }
 
 h6 {
-    font-size: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.45;
 }
 
 mark {

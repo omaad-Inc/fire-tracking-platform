@@ -10,6 +10,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { AxisScore, CoachingRecommendation } from '../../core/services/api.service';
 import { NavService } from '../../core/services/nav.service';
 import { prefersReducedMotion } from '../../core/theme/chart-theme';
+import { LayoutService } from '../../layout/service/layout.service';
 
 @Component({
     selector: 'app-wealth-score-page',
@@ -259,6 +260,7 @@ export class WealthScorePage implements OnInit {
 
     scoreService = inject(WealthScoreService);
     coaching = inject(CoachingService);
+    private layout = inject(LayoutService);
     private i18n = inject(I18nService);
     private router = inject(Router);
     private nav = inject(NavService);
@@ -272,6 +274,7 @@ export class WealthScorePage implements OnInit {
     // the chart blank on prod when the score came from cache but the awaited
     // load errored/lagged.
     private readonly _rebuild = effect(() => {
+        this.layout.isDarkTheme();               // tracked: theme flips rebuild too
         if (this.scoreService.axes().length) this.buildChart();
     });
 
@@ -398,7 +401,7 @@ export class WealthScorePage implements OnInit {
 
         // Brand-tokenized radar palette. Ochre = the single accent (data-viz);
         // grid / labels use warm neutrals so it reads on both themes.
-        const isDark = document.documentElement.classList.contains('app-dark');
+        const isDark = this.layout.isDarkTheme();
         const gridColor = isDark ? 'rgba(245,247,251,0.10)' : 'rgba(26,39,64,0.12)';
         const labelColor = isDark ? '#8593AB' : '#6E6A60'; // muted steel / warm-500
 

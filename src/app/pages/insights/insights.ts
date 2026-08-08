@@ -1,6 +1,6 @@
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { prefersReducedMotion } from '../../core/theme/chart-theme';
-import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -14,6 +14,7 @@ import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
 import { WealthScorePage } from '../wealth-score/wealth-score';
+import { LayoutService } from '../../layout/service/layout.service';
 import { CoachingPanel } from './components/coaching-panel';
 
 type HubTab = 'analyses' | 'score' | 'conseils';
@@ -140,6 +141,13 @@ export class InsightsPage implements OnInit {
     private cs = inject(CurrencyService);
     private route = inject(ActivatedRoute);
     private router = inject(Router);
+    private layout = inject(LayoutService);
+
+    /** Rebuild the trend chart when the theme flips (colors are theme-dependent). */
+    private themeEffect = effect(() => {
+        this.layout.isDarkTheme();               // tracked dependency
+        if (this.data()) this.initChart();
+    });
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
     /** Analyses hub tab, derived from the URL (?tab=) so it reacts to any navigation
@@ -216,7 +224,7 @@ export class InsightsPage implements OnInit {
         const d = this.data();
         if (!d) return;
         const cs = this.cs;
-        const isDark = document.documentElement.classList.contains('app-dark');
+        const isDark = this.layout.isDarkTheme();
         const grid = isDark ? 'rgba(245,247,251,0.08)' : 'rgba(110,106,96,0.12)';
         const axis = isDark ? '#8593AB' : '#6E6A60';
         // Semantic colors: income = positive, expenses = negative, net = the ochre hero.

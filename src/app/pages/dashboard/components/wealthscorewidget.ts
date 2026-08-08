@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
@@ -6,13 +6,15 @@ import { WealthScoreService } from '../../service/wealth-score.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 import { prefersReducedMotion } from '../../../core/theme/chart-theme';
+import { LayoutService } from '../../../layout/service/layout.service';
+import { UiCardComponent } from '../../../core/ui';
 
 @Component({
     selector: 'app-wealth-score-widget',
     standalone: true,
-    imports: [CommonModule, RouterModule, ChartModule],
+    imports: [CommonModule, RouterModule, ChartModule, UiCardComponent],
     template: `
-        <div class="relative overflow-hidden bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 h-full flex flex-col">
+        <app-ui-card [flush]="true" padding="md" innerClass="relative overflow-hidden h-full flex flex-col">
             <div class="relative flex items-center justify-between mb-4">
                 <div class="font-semibold text-xl text-surface-900 dark:text-surface-0">
                     {{ t('landing.wealthScore.eyebrow') }}
@@ -66,7 +68,7 @@ import { prefersReducedMotion } from '../../../core/theme/chart-theme';
                     </div>
                 </div>
             }
-        </div>
+        </app-ui-card>
     `
 })
 export class WealthScoreDashboardWidget implements OnInit {
@@ -74,9 +76,16 @@ export class WealthScoreDashboardWidget implements OnInit {
     private i18n = inject(I18nService);
     private router = inject(Router);
     private nav = inject(NavService);
+    private layout = inject(LayoutService);
 
     chartData: any = {};
     chartOptions: any = {};
+
+    /** Rebuild the radar on theme flips (grid/point colors are theme-dependent). */
+    private themeEffect = effect(() => {
+        this.layout.isDarkTheme();                    // tracked dependency
+        if (this.scoreService.axes().length) this.buildChart();
+    });
 
     t(key: string): string { return this.i18n.t(key); }
 
@@ -117,7 +126,7 @@ export class WealthScoreDashboardWidget implements OnInit {
         const axes = this.scoreService.axes();
         if (!axes.length) return;
 
-        const isDark = document.documentElement.classList.contains('app-dark');
+        const isDark = this.layout.isDarkTheme();
         const gridColor = isDark ? 'rgba(245, 247, 251, 0.10)' : 'rgba(26, 39, 64, 0.12)';
 
         this.chartData = {
