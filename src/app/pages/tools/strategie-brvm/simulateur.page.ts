@@ -6,7 +6,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { chartTheme, isDarkMode, applyChartDefaults } from '../../../core/theme/chart-theme';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { PlanService } from './plan.service';
-import { DISCLAIMER, fmtFCFA, fmtFCFAfull, IRVM_DEFAUT_PCT } from './data/referentiel';
+import { fmtFCFA, fmtFCFAfull, IRVM_DEFAUT_PCT } from './data/referentiel';
 import { projectDRIP } from './projections';
 
 const PAGE_TITLE = 'Simulateur DRIP BRVM : dividendes réinvestis et revenus passifs | Omaad';
@@ -40,7 +40,7 @@ interface Param {
             </p>
         </header>
 
-        <div class="mt-5 grid gap-4 lg:grid-cols-[320px_1fr]">
+        <div class="mt-5 grid items-stretch gap-4 lg:grid-cols-[320px_1fr]">
             <!-- Paramètres -->
             <div class="rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
                 <h2 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Hypothèses</h2>
@@ -50,7 +50,7 @@ interface Param {
                             <span class="flex items-baseline justify-between text-[12.5px]">
                                 <span class="font-medium text-surface-600 dark:text-surface-300">{{ p.label }}</span>
                                 <span class="font-semibold tabular-nums text-surface-900 dark:text-surface-0">
-                                    {{ p.unit === 'F' ? full(value(p.key)) : value(p.key) }} {{ p.unit }}</span>
+                                    {{ p.unit === 'FCFA' ? full(value(p.key)) : value(p.key) }} {{ p.unit }}</span>
                             </span>
                             <input type="range" [min]="p.min" [max]="p.max" [step]="p.step"
                                    [ngModel]="value(p.key)" (ngModelChange)="setValue(p.key, $event)"
@@ -65,27 +65,27 @@ interface Param {
             </div>
 
             <!-- Résultats -->
-            <div class="space-y-4">
+            <div class="flex flex-col gap-4">
                 <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
                         <div class="text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">Valeur finale</div>
-                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-surface-900 dark:text-surface-0">{{ compact(final().value) }} F</div>
+                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-surface-900 dark:text-surface-0">{{ compact(final().value) }} FCFA</div>
                     </div>
                     <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
                         <div class="text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">Capital investi</div>
-                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-surface-900 dark:text-surface-0">{{ compact(final().invested) }} F</div>
+                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-surface-900 dark:text-surface-0">{{ compact(final().invested) }} FCFA</div>
                     </div>
                     <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
                         <div class="text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">Dividendes nets / an</div>
-                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">{{ compact(final().dividendsNet) }} F</div>
+                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">{{ compact(final().dividendsNet) }} FCFA</div>
                     </div>
                     <div class="rounded-xl border border-surface-200 bg-surface-50 p-4 dark:border-surface-700 dark:bg-surface-800">
                         <div class="text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:text-surface-400">Soit par mois</div>
-                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">{{ full(final().dividendsMonthly) }} F</div>
+                        <div class="mt-1.5 text-lg font-extrabold tabular-nums text-emerald-700 dark:text-emerald-400">{{ full(final().dividendsMonthly) }} FCFA</div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800">
+                <div class="flex flex-col rounded-2xl border border-surface-200 bg-surface-50 p-5 dark:border-surface-700 dark:bg-surface-800 lg:grow">
                     <div class="flex items-baseline justify-between">
                         <h2 class="text-[15px] font-bold text-surface-900 dark:text-surface-0">Valeur du portefeuille et dividendes nets</h2>
                         <button type="button" (click)="showTable.set(!showTable())"
@@ -93,8 +93,8 @@ interface Param {
                             {{ showTable() ? 'Voir le graphique' : 'Voir le tableau' }}</button>
                     </div>
                     @if (!showTable()) {
-                        <div class="mt-3">
-                            <p-chart type="line" [data]="chartData" [options]="chartOptions" height="320px" />
+                        <div class="relative mt-3 min-h-[320px] flex-1">
+                            <p-chart class="absolute inset-0" type="line" [data]="chartData" [options]="chartOptions" height="100%" />
                         </div>
                     } @else {
                         <div class="mt-3 overflow-x-auto">
@@ -102,10 +102,10 @@ interface Param {
                                 <thead>
                                     <tr class="border-b border-surface-200 text-left text-[11px] uppercase tracking-[0.06em] text-surface-500 dark:border-surface-600 dark:text-surface-400">
                                         <th class="py-2 pr-3 font-semibold">Année</th>
-                                        <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Investi</th>
-                                        <th class="py-2 pr-3 text-right font-semibold">Valeur</th>
-                                        <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Div. nets/an</th>
-                                        <th class="py-2 text-right font-semibold">Div. nets/mois</th>
+                                        <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Investi (FCFA)</th>
+                                        <th class="py-2 pr-3 text-right font-semibold">Valeur (FCFA)</th>
+                                        <th class="hidden py-2 pr-3 text-right font-semibold sm:table-cell">Div. nets/an (FCFA)</th>
+                                        <th class="py-2 text-right font-semibold">Div. nets/mois (FCFA)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -123,8 +123,6 @@ interface Param {
                         </div>
                     }
                 </div>
-
-                <p class="text-[12px] leading-relaxed text-surface-400 dark:text-surface-500">{{ disclaimer }}</p>
             </div>
         </div>
     `
@@ -135,12 +133,11 @@ export class StrategieSimulateurPage {
     readonly layoutService = inject(LayoutService);
     private planSvc = inject(PlanService);
 
-    readonly disclaimer = DISCLAIMER;
     readonly planYield = this.planSvc.weightedYieldGross();
 
     readonly params: Param[] = [
-        { key: 'initial',   label: 'Capital initial',              min: 0,       max: 20_000_000, step: 100_000, unit: 'F' },
-        { key: 'monthly',   label: 'DCA mensuel',                  min: 0,       max: 1_000_000,  step: 5_000,   unit: 'F' },
+        { key: 'initial',   label: 'Capital initial',              min: 0,       max: 20_000_000, step: 100_000, unit: 'FCFA' },
+        { key: 'monthly',   label: 'DCA mensuel',                  min: 0,       max: 1_000_000,  step: 5_000,   unit: 'FCFA' },
         { key: 'years',     label: 'Horizon',                      min: 1,       max: 30,         step: 1,       unit: 'ans' },
         { key: 'yieldPct',  label: 'Yield brut de départ',         min: 1,       max: 12,         step: 0.1,     unit: '%' },
         { key: 'growthDiv', label: 'Croissance du dividende',      min: 0,       max: 12,         step: 0.5,     unit: '%/an' },
@@ -233,7 +230,7 @@ export class StrategieSimulateurPage {
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { position: 'bottom', labels: { color: t.textMuted, usePointStyle: true, boxWidth: 8, font: { size: 11 } } },
-                tooltip: { callbacks: { label: (ctx: any) => ` ${ctx.dataset.label} : ${fmtFCFAfull(ctx.parsed.y)} F` } },
+                tooltip: { callbacks: { label: (ctx: any) => ` ${ctx.dataset.label} : ${fmtFCFAfull(ctx.parsed.y)} FCFA` } },
             },
             scales: {
                 x: { grid: { display: false }, ticks: { color: t.textMuted, font: { size: 11 } }, title: { display: true, text: 'Années', color: t.textMuted, font: { size: 11 } } },
