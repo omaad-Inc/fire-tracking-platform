@@ -1,8 +1,14 @@
 /**
  * Moteur de projections de l'outil Stratégie BRVM.
- * Porté tel quel (fonctions pures) depuis l'app d'origine
- * (BRVM_INVETSMENT_STRATEGY/src/utils/projections.js) ; seules les signatures
- * sont typées et les positions personnelles remplacées par des paramètres.
+ * Porté (fonctions pures) depuis l'app d'origine
+ * (BRVM_INVETSMENT_STRATEGY/src/utils/projections.js) ; les signatures sont
+ * typées et les positions personnelles remplacées par des paramètres.
+ *
+ * `projectDRIP` corrige deux défauts du modèle d'origine : la croissance du
+ * dividende y était appliquée au rendement sur la valeur de marché, alors que
+ * cette valeur capitalisait déjà de l'appréciation des cours (croissance
+ * comptée deux fois), et le réinvestissement portait sur le dividende brut
+ * alors que l'IRVM est retenu à la source.
  */
 
 export interface DcaPoint {
@@ -45,24 +51,33 @@ export interface DripPoint {
     dividendsAnnual: number;
     dividendsNet: number;
     dividendsMonthly: number;
+    /** Rendement brut sur la valeur de marché de l'année (%). */
+    yieldOnValue: number;
 }
 
 /**
- * Projection DRIP : dividendes réinvestis pendant `dripYears`, croissance du
- * dividende `growthDiv`%/an, appréciation des cours 5%/an (hypothèse fixe du
- * modèle d'origine).
+ * Projection DRIP : dividendes nets réinvestis pendant `dripYears`, croissance
+ * du dividende par action `growthDiv`%/an, appréciation des cours
+ * `priceGrowth`%/an.
+ *
+ * Le rendement suit les actions plutôt que les taux : le cours vaut
+ * P0 × (1+a)^t et le dividende par action D0 × (1+g)^t, d'où un rendement sur
+ * la valeur de marché y(t) = y0 × ((1+g)/(1+a))^t. Il ne reste constant que si
+ * le dividende croît au même rythme que les cours.
  */
-export function projectDRIP({ initial, monthly, years, yieldPct, growthDiv, dripYears, taxRate }: {
+export function projectDRIP({ initial, monthly, years, yieldPct, growthDiv, priceGrowth, dripYears, taxRate }: {
     initial: number; monthly: number; years: number; yieldPct: number;
-    growthDiv: number; dripYears: number; taxRate: number;
+    growthDiv: number; priceGrowth: number; dripYears: number; taxRate: number;
 }): DripPoint[] {
     const data: DripPoint[] = [];
     let value = initial;
     let invested = initial;
-    let curYield = yieldPct / 100;
+    const y0 = yieldPct / 100;
     const divGrowth = growthDiv / 100;
-    const monthlyPriceGrowth = Math.pow(1.05, 1 / 12) - 1;
+    const annualPriceGrowth = priceGrowth / 100;
+    const monthlyPriceGrowth = Math.pow(1 + annualPriceGrowth, 1 / 12) - 1;
     for (let y = 0; y <= years; y++) {
+        const curYield = y0 * Math.pow((1 + divGrowth) / (1 + annualPriceGrowth), y);
         const divAnnual = value * curYield;
         const divNet = divAnnual * (1 - taxRate / 100);
         data.push({
@@ -72,14 +87,14 @@ export function projectDRIP({ initial, monthly, years, yieldPct, growthDiv, drip
             dividendsAnnual: Math.round(divAnnual),
             dividendsNet: Math.round(divNet),
             dividendsMonthly: Math.round(divNet / 12),
+            yieldOnValue: +(curYield * 100).toFixed(4),
         });
         if (y < years) {
             for (let m = 0; m < 12; m++) {
                 value = value * (1 + monthlyPriceGrowth) + monthly;
                 invested += monthly;
             }
-            if (y < dripYears) value += divAnnual;
-            curYield = curYield * (1 + divGrowth);
+            if (y < dripYears) value += divNet;
         }
     }
     return data;
