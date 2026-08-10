@@ -24,6 +24,12 @@ describe('OnboardingPage (concierge)', () => {
 
     const tick = async () => { await Promise.resolve(); await Promise.resolve(); await Promise.resolve(); };
 
+    /** The app's thousands separator: a NO-BREAK space (U+00A0). Intl emits the
+     *  narrow U+202F for fr-FR and CurrencyService normalizes it (nbspSafe) —
+     *  budget Android fonts have no glyph for U+202F. Spelled out here so the
+     *  expectations below never hinge on an invisible character. */
+    const NB = '\u00A0';
+
     async function setup() {
         navigate = jasmine.createSpy('navigate');
         failTool = null;
@@ -38,7 +44,14 @@ describe('OnboardingPage (concierge)', () => {
             providers: [
                 { provide: TokenService, useValue: { user: () => ({ first_name: 'Luffy' }) } },
                 { provide: Router, useValue: { url: '/fr/onboarding', navigate } },
-                { provide: CurrencyService, useValue: { convert: (e: number) => e, formatDisplayNumber: (v: number) => `${Math.round(v)} FCFA` } },
+                {
+                    provide: CurrencyService, useValue: {
+                        convert: (e: number) => e,
+                        // Mirrors the real formatter: grouped, no symbol, 0 decimals.
+                        formatDisplayNumber: (v: number) =>
+                            String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0'),
+                    },
+                },
                 { provide: DashboardService, useValue: { loadDashboard: () => Promise.resolve(), summaryData: () => ({ total_assets: 500000, total_debts: 0 }) } },
                 { provide: AssetsStateService, useValue: { notifyAssetsUpdated: () => {} } },
                 { provide: ApiService, useValue: { warmOnboarding: () => of({ warmed: true }), onboardingAction: action } },
@@ -117,6 +130,72 @@ describe('OnboardingPage (concierge)', () => {
         await tick();
         expect(cmp.beat()).toBe('reveal');
         expect(cmp.error()).toBeNull();
+    });
+
+    it('offers no BRVM tile — a BRVM stock needs the app catalog picker (ticker + price + qty)', async () => {
+        const fixture = await setup();
+        const cmp = fixture.componentInstance;
+
+        const tiles = cmp.tiles();
+        expect(tiles.some(t => t.category === 'stocks_brvm')).toBeFalse();
+        expect(tiles.some(t => t.key === 'brvm')).toBeFalse();
+        // Every remaining tile is a category that needs no predefined list.
+        expect(tiles.map(t => t.category)).toEqual([
+            'mobile_money', 'mobile_money', 'savings_account', 'real_estate',
+            'vehicle', 'cash', 'tontine', 'other',
+        ]);
+
+        cmp.beat.set('asset');
+        fixture.detectChanges();
+        expect((fixture.nativeElement as HTMLElement).textContent || '').not.toContain('BRVM');
+    });
+
+    it('groups the amount as it is typed and still writes the raw number', async () => {
+        const fixture = await setup();
+        const cmp = fixture.componentInstance;
+
+        const el = document.createElement('input');
+        el.value = '75000';
+        cmp.onAmountInput({ target: el } as unknown as Event);
+
+        // Displayed grouped, stored raw.
+        expect(cmp.amountText()).toBe(`75${NB}000`);
+        expect(el.value).toBe(`75${NB}000`);
+        expect(cmp.assetAmount()).toBe(75000);
+
+        // Re-typing over an already-grouped value stays stable (no digit loss),
+        // and junk characters never reach the value.
+        el.value = `75${NB}000a`;
+        cmp.onAmountInput({ target: el } as unknown as Event);
+        expect(cmp.assetAmount()).toBe(75000);
+        expect(el.value).toBe(`75${NB}000`);
+
+        // The payload keeps the plain number the API expects.
+        cmp.beat.set('asset');
+        cmp.selectTile({ key: 'wave', label: 'Wave', category: 'mobile_money', icon: 'pi-wallet' } as any);
+        cmp.assetName.set('Wave');
+        cmp.onAmountInput({ target: Object.assign(document.createElement('input'), { value: '50000000' }) } as unknown as Event);
+        expect(cmp.amountText()).toBe(`50${NB}000${NB}000`);
+        cmp.submitAsset();
+        await tick();
+        expect(action).toHaveBeenCalledWith('create_asset', {
+            name: 'Wave', category: 'mobile_money', current_value: 50000000, currency: 'XOF',
+        });
+    });
+
+    it('clears the amount when the tile changes so no stale value carries over', async () => {
+        const fixture = await setup();
+        const cmp = fixture.componentInstance;
+
+        cmp.beat.set('asset');
+        cmp.selectTile({ key: 'wave', label: 'Wave', category: 'mobile_money', icon: 'pi-wallet' } as any);
+        cmp.onAmountInput({ target: Object.assign(document.createElement('input'), { value: '1000' }) } as unknown as Event);
+        expect(cmp.assetAmount()).toBe(1000);
+
+        cmp.cancelTile();
+        expect(cmp.assetAmount()).toBeNull();
+        expect(cmp.amountText()).toBe('');
+        expect(cmp.canSaveAsset()).toBeFalse();
     });
 
     it('handoff still navigates even if mark_onboarding_complete fails (never strands)', async () => {
