@@ -1,10 +1,9 @@
 import {
-    ChangeDetectionStrategy, Component, OnDestroy, computed, inject, signal,
+    ChangeDetectionStrategy, Component, ElementRef, OnDestroy, computed, inject, signal, viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { RippleModule } from 'primeng/ripple';
 import { firstValueFrom } from 'rxjs';
@@ -32,6 +31,13 @@ import { ApiService } from '../../core/services/api.service';
  * completion always navigates so a rare failure never strands the user. The FE
  * renders the tap affordances and the net-worth reveal (0 -> X count-up). Skippable
  * at every step, no dead-ends.
+ *
+ * Catalog rule ([[catalog-scope-wa-first]]): the tiles only offer categories that
+ * need NO predefined instrument list. BRVM stocks are deliberately absent — the
+ * real BRVM flow needs the 47-instrument picker (ticker + price per share +
+ * quantity, add-asset-page) and create_asset carries no ticker field, so a tile
+ * here could only produce a tickerless stocks_brvm asset the quote engine can
+ * never revalue. BRVM is added properly from inside the app.
  */
 
 type Beat = 'currency' | 'asset' | 'reveal' | 'objective' | 'done';
@@ -39,46 +45,66 @@ type Ccy = 'XOF' | 'EUR';
 type OnbTool = 'update_user_ai_profile' | 'create_asset' | 'mark_onboarding_complete';
 
 interface Tile { key: string; label: string; category: string; icon: string; }
-interface Objective { key: string; label: string; }
+interface Objective { key: string; label: string; hint: string; icon: string; }
+
+/** Total beats shown in the progress bar (currency, asset, objective). */
+const STEPS = 3;
 
 @Component({
     selector: 'app-onboarding-page',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, RippleModule],
+    imports: [CommonModule, FormsModule, InputTextModule, RippleModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-    <div class="onb-shell">
-      <!-- Skip: never a dead-end (ratified). Lands on the dashboard; the nudge reopens. -->
-      <button type="button" class="onb-skip" (click)="skip()" [disabled]="streaming()">
-        {{ t('concierge.skip') }}
-      </button>
-
-      <div class="onb-card">
-        <!-- Header: sparkle + warm greeting + progress dots -->
-        <div class="text-center">
-          <div class="onb-badge"><i class="pi pi-sparkles" aria-hidden="true"></i></div>
-          <h1 class="onb-title">
-            {{ t('concierge.hello') }}<span *ngIf="firstName()"> {{ firstName() }}</span>
-          </h1>
-          <div class="onb-dots" aria-hidden="true">
-            @for (i of [0,1,2]; track i) {
-              <span class="onb-dot" [class.on]="stepIndex() >= i" [class.cur]="stepIndex() === i"></span>
+    <div class="onb-shell relative w-full flex items-center justify-center">
+      <!-- Top bar: progress on the left, skip on the right. Skip is a real,
+           readable control (never a dead-end, ratified): it lands on the
+           dashboard and the nudge reopens the flow. -->
+      <header class="onb-top absolute top-0 inset-x-0 flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-1.5 flex-1 max-w-[11rem]">
+          <span class="text-[0.72rem] font-semibold tracking-wide text-white/55">
+            {{ t('concierge.step', { n: stepIndex() + 1, total: steps }) }}
+          </span>
+          <div class="flex gap-1" role="progressbar"
+               [attr.aria-valuenow]="stepIndex() + 1" [attr.aria-valuemin]="1" [attr.aria-valuemax]="steps">
+            @for (i of stepList; track i) {
+              <span class="h-1 flex-1 rounded-full transition-colors duration-300"
+                    [class]="stepIndex() >= i ? 'bg-ochre-500' : 'bg-white/15'"></span>
             }
           </div>
         </div>
+        <button type="button" (click)="skip()" [disabled]="streaming()"
+                class="shrink-0 min-h-[44px] px-4 py-2 rounded-full text-sm font-semibold
+                       text-white/90 bg-white/10 border border-white/25 backdrop-blur
+                       transition-colors hover:bg-white/20 hover:border-white/40 hover:text-white
+                       disabled:opacity-40 disabled:pointer-events-none">
+          {{ t('concierge.skip') }}
+        </button>
+      </header>
 
-        <!-- Concierge line: the agent's streamed words, or the static beat prompt.
-             Hidden on reveal/done, where the card carries its own caption. -->
-        @if (beat() !== 'reveal' && beat() !== 'done') {
-          <p class="onb-line" [class.dim]="!conciergeLine()">
-            {{ conciergeLine() || t(promptKey()) }}
-          </p>
-        }
+      <div class="onb-in w-full max-w-[26rem] flex flex-col gap-5">
+        <!-- Header: sparkle + warm greeting -->
+        <div class="text-center">
+          <div class="onb-badge bg-ochre-500/20 text-ochre-300"><i class="pi pi-sparkles" aria-hidden="true"></i></div>
+          <h1 class="text-[1.6rem] font-bold leading-tight tracking-tight text-white">
+            {{ t('concierge.hello') }}<span *ngIf="firstName()"> {{ firstName() }}</span>
+          </h1>
+          <!-- Concierge line: the agent's streamed words, or the static beat prompt.
+               Hidden on reveal/done, where the card carries its own caption. -->
+          @if (beat() !== 'reveal' && beat() !== 'done') {
+            <p class="mt-2.5 text-base leading-relaxed text-white/70">{{ conciergeLine() || t(promptKey()) }}</p>
+          }
+        </div>
 
         @if (error()) {
-          <div class="onb-error">
-            <span>{{ error() }}</span>
-            <button type="button" class="onb-retry" (click)="retry()">{{ t('concierge.retry') }}</button>
+          <div role="alert"
+               class="flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-sm
+                      bg-negative-500/10 border border-negative-500/30 text-negative-300">
+            <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+            <span class="flex-1 text-left">{{ error() }}</span>
+            <button type="button" (click)="retry()" class="shrink-0 font-semibold text-white underline">
+              {{ t('concierge.retry') }}
+            </button>
           </div>
         }
 
@@ -86,13 +112,14 @@ interface Objective { key: string; label: string; }
         @switch (beat()) {
 
           @case ('currency') {
-            <div class="onb-chips">
+            <div class="flex flex-col gap-2.5">
               @for (c of currencies; track c.code) {
-                <button type="button" pRipple class="onb-chip"
-                        [class.sel]="currency() === c.code"
-                        [disabled]="streaming()"
-                        (click)="pickCurrency(c.code)">
-                  {{ c.label }}
+                <button type="button" pRipple (click)="pickCurrency(c.code)" [disabled]="streaming()"
+                        class="onb-row" [class.onb-row-sel]="currency() === c.code">
+                  <span class="onb-tok text-xs font-bold">{{ symbolOf(c.code) }}</span>
+                  <span class="flex-1 text-left text-[0.98rem] font-semibold">{{ c.label }}</span>
+                  <i class="pi pi-check shrink-0 !text-sm text-ochre-400 transition-opacity"
+                     [class.opacity-0]="currency() !== c.code" aria-hidden="true"></i>
                 </button>
               }
             </div>
@@ -102,76 +129,99 @@ interface Objective { key: string; label: string; }
             @if (!selectedTile()) {
               <!-- Tiles show instantly: the currency write is fire-and-forget and
                    never gates this step. -->
-              <div class="onb-tiles">
-                @for (tile of tiles(); track tile.key) {
-                  <button type="button" pRipple class="onb-tile"
-                          (click)="selectTile(tile)">
-                    <i class="pi {{ tile.icon }}" aria-hidden="true"></i>
-                    <span>{{ tile.label }}</span>
+              <div class="grid grid-cols-2 gap-2.5">
+                @for (tile of tiles(); track tile.key; let idx = $index) {
+                  <button type="button" pRipple (click)="selectTile(tile)"
+                          class="onb-tile onb-tile-in group"
+                          [style.animation-delay]="(idx * 0.03) + 's'">
+                    <span class="onb-tok transition-colors group-hover:bg-ochre-500/30">
+                      <i class="pi {{ tile.icon }}" aria-hidden="true"></i>
+                    </span>
+                    <span class="text-[0.8rem] font-medium leading-snug">{{ tile.label }}</span>
                   </button>
                 }
               </div>
               @if (addedCount() > 0) {
-                <button type="button" class="onb-secondary" (click)="goObjective()">
+                <button type="button" pRipple (click)="goObjective()"
+                        class="onb-btn text-white bg-white/5 border border-white/25 hover:bg-white/10 hover:border-white/40">
                   {{ t('concierge.asset.enough') }}
+                  <i class="pi pi-arrow-right !text-sm" aria-hidden="true"></i>
                 </button>
               }
             } @else {
-              <!-- Tiny inline form: name (prefilled, editable) + amount, currency prefilled -->
-              <div class="onb-form">
-                <label class="onb-flabel">{{ t('concierge.form.nameLabel') }}</label>
-                <input pInputText type="text" class="onb-input"
-                       [ngModel]="assetName()" (ngModelChange)="assetName.set($event)"
-                       [disabled]="streaming()" />
-                <label class="onb-flabel">{{ t('concierge.form.amountLabel') }} ({{ currency() }})</label>
-                <input pInputText type="number" inputmode="numeric" class="onb-input"
-                       [placeholder]="t('concierge.form.amountPlaceholder')"
-                       [ngModel]="assetAmount()" (ngModelChange)="assetAmount.set($event)"
-                       [disabled]="streaming()" (keyup.enter)="submitAsset()" />
-                <div class="onb-form-actions">
-                  <button type="button" class="onb-secondary" (click)="cancelTile()" [disabled]="streaming()">
-                    {{ t('concierge.form.back') }}
-                  </button>
-                  <button pButton pRipple type="button" [label]="t('concierge.form.save')"
-                          class="onb-primary" [loading]="streaming()"
-                          [disabled]="!canSaveAsset() || streaming()" (click)="submitAsset()"></button>
+              <!-- Amount-first form: the amount is the hero (grouped live as it is
+                   typed), the name is prefilled from the tile and stays editable. -->
+              <div class="flex flex-col gap-2">
+                <div class="onb-amount-box flex items-baseline justify-center gap-3 px-4 py-4 rounded-2xl mb-1
+                            bg-white/5 border border-white/15 transition-colors">
+                  <input #amountInput type="text" inputmode="numeric" autocomplete="off"
+                         class="onb-amount flex-1 min-w-0 w-full bg-transparent border-0 outline-none p-0
+                                text-[2rem] font-bold tracking-tight tabular-nums text-right text-white"
+                         [attr.aria-label]="t('concierge.form.amountLabel')"
+                         [placeholder]="t('concierge.form.amountPlaceholder')"
+                         [value]="amountText()" [disabled]="streaming()"
+                         (input)="onAmountInput($event)" (keyup.enter)="submitAsset()" />
+                  <span class="shrink-0 text-base font-semibold"
+                        [class]="assetAmount() !== null ? 'text-ochre-300' : 'text-white/55'">{{ symbolOf(currency()) }}</span>
                 </div>
+
+                <label for="onb-name" class="text-[0.78rem] font-semibold text-white/60">{{ t('concierge.form.nameLabel') }}</label>
+                <input id="onb-name" #nameInput pInputText type="text"
+                       class="w-full !bg-white/5 !text-white !border !border-white/20 !rounded-xl !px-4 !py-3 !text-[0.95rem] focus:!border-ochre-500/70 focus:!shadow-none"
+                       [ngModel]="assetName()" (ngModelChange)="assetName.set($event)"
+                       [disabled]="streaming()" (keyup.enter)="submitAsset()" />
+
+                <button type="button" pRipple (click)="submitAsset()" [disabled]="!canSaveAsset() || streaming()"
+                        class="onb-btn onb-btn-primary mt-2.5">
+                  @if (streaming()) { <i class="pi pi-spin pi-spinner !text-sm" aria-hidden="true"></i> }
+                  {{ t('concierge.form.save') }}
+                </button>
+                <button type="button" (click)="cancelTile()" [disabled]="streaming()" class="onb-btn onb-btn-ghost">
+                  {{ t('concierge.form.back') }}
+                </button>
               </div>
             }
           }
 
           @case ('reveal') {
-            <div class="onb-reveal">
-              <span class="onb-reveal-cap">{{ t('concierge.reveal.caption') }}</span>
-              <span class="onb-reveal-value">{{ revealDisplay() }}</span>
-              <div class="onb-form-actions onb-center">
-                <button type="button" class="onb-secondary" (click)="addAnother()" [disabled]="streaming()">
-                  {{ t('concierge.reveal.addAnother') }}
-                </button>
-                <button pButton pRipple type="button" [label]="t('concierge.reveal.continue')"
-                        class="onb-primary" (click)="goObjective()" [disabled]="streaming()"></button>
-              </div>
+            <div class="flex flex-col items-center gap-2 text-center">
+              <span class="text-[0.95rem] text-white/70">{{ t('concierge.reveal.caption') }}</span>
+              <span class="text-[2.4rem] font-extrabold tracking-tight tabular-nums leading-tight text-white">
+                {{ revealDisplay() }}<span class="ml-1.5 text-base font-semibold text-white/60">{{ symbolOf(currency()) }}</span>
+              </span>
+              <button type="button" pRipple (click)="goObjective()" [disabled]="streaming()"
+                      class="onb-btn onb-btn-primary mt-4">
+                {{ t('concierge.reveal.continue') }}
+                <i class="pi pi-arrow-right !text-sm" aria-hidden="true"></i>
+              </button>
+              <button type="button" (click)="addAnother()" [disabled]="streaming()" class="onb-btn onb-btn-ghost">
+                {{ t('concierge.reveal.addAnother') }}
+              </button>
             </div>
           }
 
           @case ('objective') {
-            <div class="onb-chips onb-wrap">
+            <div class="flex flex-col gap-2.5">
               @for (o of objectives(); track o.key) {
-                <button type="button" pRipple class="onb-chip"
-                        [disabled]="streaming()" (click)="pickObjective(o)">
-                  {{ o.label }}
+                <button type="button" pRipple (click)="pickObjective(o)" [disabled]="streaming()" class="onb-row">
+                  <span class="onb-tok"><i class="pi {{ o.icon }}" aria-hidden="true"></i></span>
+                  <span class="flex-1 min-w-0 flex flex-col gap-0.5 text-left">
+                    <span class="text-[0.98rem] font-semibold">{{ o.label }}</span>
+                    <span class="text-[0.78rem] leading-snug text-white/55">{{ o.hint }}</span>
+                  </span>
+                  <i class="pi pi-chevron-right shrink-0 !text-xs text-white/35" aria-hidden="true"></i>
                 </button>
               }
             </div>
-            <button type="button" class="onb-secondary" (click)="finishNoObjective()" [disabled]="streaming()">
+            <button type="button" (click)="finishNoObjective()" [disabled]="streaming()" class="onb-btn onb-btn-ghost">
               {{ t('concierge.objective.later') }}
             </button>
           }
 
           @case ('done') {
-            <div class="onb-reveal">
-              <div class="onb-badge onb-ok"><i class="pi pi-check" aria-hidden="true"></i></div>
-              <span class="onb-reveal-cap">{{ t('concierge.done') }}</span>
+            <div class="flex flex-col items-center gap-2 text-center">
+              <div class="onb-badge bg-positive-500/20 text-positive-300"><i class="pi pi-check" aria-hidden="true"></i></div>
+              <span class="text-[0.95rem] text-white/70">{{ t('concierge.done') }}</span>
             </div>
           }
         }
@@ -179,99 +229,75 @@ interface Objective { key: string; label: string; }
     </div>
   `,
     styles: [`
+    /* Only what Tailwind utilities cannot express (safe-area env(), the shell
+       gradient, keyframes) or what would be repeated on a dozen elements.
+       Everything else is utility classes — component styles are budgeted. */
     :host { display: block; }
     .onb-shell {
-      position: relative; min-height: 100dvh; width: 100%;
-      display: flex; align-items: center; justify-content: center;
-      padding: 1.25rem;
+      min-height: 100dvh;
+      padding: calc(4.5rem + env(safe-area-inset-top)) 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
       background: radial-gradient(120% 120% at 50% 0%, #24365a 0%, #1A2740 45%, #10182a 100%);
     }
-    .onb-skip {
-      position: absolute; top: max(0.9rem, env(safe-area-inset-top)); right: 1rem;
-      color: rgba(255,255,255,0.6); font-size: 0.85rem; cursor: pointer;
-      background: transparent; border: 0;
-    }
-    .onb-skip:hover { color: rgba(255,255,255,0.9); }
-    .onb-skip:disabled { opacity: 0.4; cursor: default; }
+    .onb-top { padding: calc(1rem + env(safe-area-inset-top)) 1.25rem 0; }
 
-    .onb-card {
-      width: 100%; max-width: 30rem; display: flex; flex-direction: column; gap: 1.25rem;
-      animation: onbIn 0.4s ease-out both;
-    }
-    @keyframes onbIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-
+    /* Shared shapes (repeated on every row / tile / button). */
     .onb-badge {
       width: 3.25rem; height: 3.25rem; margin: 0 auto 0.9rem; border-radius: 1rem;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 1.35rem;
+    }
+    .onb-tok {
+      flex: none; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem;
       display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(199,123,60,0.18); color: #E4A96B; font-size: 1.35rem;
+      background: rgb(199 123 60 / 0.18); color: #DFB78A;
     }
-    .onb-badge.onb-ok { background: rgba(52,199,120,0.16); color: #4ade80; }
-    .onb-title { color: #fff; font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
-
-    .onb-dots { display: flex; gap: 0.4rem; justify-content: center; margin-top: 0.9rem; }
-    .onb-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: rgba(255,255,255,0.2); transition: all .3s; }
-    .onb-dot.on { background: #C77B3C; }
-    .onb-dot.cur { transform: scale(1.25); box-shadow: 0 0 0 4px rgba(199,123,60,0.18); }
-
-    .onb-line { color: rgba(255,255,255,0.92); text-align: center; font-size: 1.02rem; line-height: 1.5; min-height: 1.5em; }
-    .onb-line.dim { color: rgba(255,255,255,0.72); }
-
-    .onb-error {
-      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
-      color: #fca5a5; font-size: 0.85rem;
+    .onb-row, .onb-tile {
+      background: rgb(255 255 255 / 0.05); border: 1px solid rgb(255 255 255 / 0.12);
+      color: #fff; cursor: pointer; transition: background .18s, border-color .18s, transform .18s;
     }
-    .onb-retry { color: #fff; text-decoration: underline; background: transparent; border: 0; cursor: pointer; }
-
-    .onb-chips { display: flex; gap: 0.6rem; justify-content: center; }
-    .onb-chips.onb-wrap { flex-wrap: wrap; }
-    .onb-chip {
-      padding: 0.7rem 1.1rem; border-radius: 9999px; cursor: pointer;
-      background: rgba(255,255,255,0.06); color: #fff;
-      border: 1.5px solid rgba(255,255,255,0.18); font-weight: 600; font-size: 0.95rem;
-      transition: all .18s;
-    }
-    .onb-chip:hover:not(:disabled) { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.35); }
-    .onb-chip.sel { background: #C77B3C; border-color: #C77B3C; }
-    .onb-chip:disabled { opacity: 0.5; cursor: default; }
-
-    .onb-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-    @media (min-width: 420px) { .onb-tiles { grid-template-columns: repeat(4, 1fr); } }
+    .onb-row { display: flex; align-items: center; gap: 0.85rem; width: 100%; padding: 0.9rem 1rem; border-radius: 1rem; }
     .onb-tile {
-      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-      padding: 0.85rem 0.4rem; border-radius: 0.9rem; cursor: pointer;
-      background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.14);
-      color: #fff; font-size: 0.78rem; text-align: center; transition: all .18s;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      padding: 1rem 0.5rem; border-radius: 1rem; text-align: center;
     }
-    .onb-tile i { font-size: 1.15rem; color: #E4A96B; }
-    .onb-tile:hover:not(:disabled) { background: rgba(199,123,60,0.14); border-color: rgba(199,123,60,0.5); transform: translateY(-2px); }
-    .onb-tile:disabled { opacity: 0.5; cursor: default; }
-
-    .onb-loading {
-      display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
-      padding: 1.5rem 0; color: rgba(255,255,255,0.75);
+    .onb-row:hover:not(:disabled), .onb-tile:hover:not(:disabled) {
+      background: rgb(199 123 60 / 0.12); border-color: rgb(199 123 60 / 0.45);
     }
-    .onb-loading i { font-size: 1.5rem; color: #E4A96B; }
-    .onb-loading span { font-size: 0.9rem; }
+    .onb-row:active:not(:disabled), .onb-tile:active:not(:disabled) { transform: scale(0.98); }
+    .onb-row:disabled, .onb-tile:disabled { opacity: 0.5; cursor: default; }
+    .onb-row-sel { background: rgb(199 123 60 / 0.16); border-color: #C77B3C; }
 
-    .onb-form { display: flex; flex-direction: column; gap: 0.35rem; }
-    .onb-flabel { color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 0.4rem; }
-    .onb-input {
-      width: 100%; background: rgba(255,255,255,0.06) !important; color: #fff !important;
-      border: 1.5px solid rgba(255,255,255,0.2) !important; border-radius: 0.7rem !important;
-      padding: 0.7rem 0.9rem !important;
+    .onb-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; min-height: 48px; padding: 0.85rem 1.25rem; border-radius: 9999px;
+      font-size: 0.98rem; font-weight: 600; cursor: pointer;
+      transition: background .18s, border-color .18s, color .18s, transform .18s;
     }
-    .onb-form-actions { display: flex; gap: 0.6rem; justify-content: space-between; align-items: center; margin-top: 0.9rem; }
-    .onb-form-actions.onb-center { justify-content: center; }
-    .onb-secondary { color: rgba(255,255,255,0.7); background: transparent; border: 0; cursor: pointer; font-size: 0.9rem; }
-    .onb-secondary:hover:not(:disabled) { color: #fff; }
-    .onb-secondary:disabled { opacity: 0.4; cursor: default; }
-    .onb-primary { --p-button-background: #C77B3C; --p-button-border-color: #C77B3C; --p-button-hover-background: #b06d33; border-radius: 9999px !important; }
+    .onb-btn:active:not(:disabled) { transform: scale(0.985); }
+    .onb-btn:disabled { cursor: default; opacity: 0.45; }
+    /* WCAG (tailwind.config.js): an ochre-500 fill takes DARK text, never white. */
+    .onb-btn-primary { background: #C77B3C; color: #2D1B0E; box-shadow: 0 14px 30px -16px rgb(199 123 60 / 0.95); }
+    .onb-btn-primary:hover:not(:disabled) { background: #D8A369; }
+    .onb-btn-primary:disabled { box-shadow: none; }
+    .onb-btn-ghost { background: transparent; color: rgb(255 255 255 / 0.6); min-height: 44px; }
+    .onb-btn-ghost:hover:not(:disabled) { color: #fff; }
 
-    .onb-reveal { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; }
-    .onb-reveal-cap { color: rgba(255,255,255,0.75); font-size: 0.95rem; }
-    .onb-reveal-value {
-      color: #fff; font-size: 2.25rem; font-weight: 800; letter-spacing: -0.02em;
-      font-variant-numeric: tabular-nums;
+    /* One focus affordance for the hero amount: the bare input hands its ring to
+       the box around it (same ochre + halo as the app-wide :focus-visible ring,
+       which stays untouched for every other control). */
+    .onb-amount:focus-visible { outline: none; }
+    .onb-amount-box:focus-within {
+      border-color: #C77B3C; background: rgb(199 123 60 / 0.1);
+      box-shadow: 0 0 0 3px rgb(216 163 105 / 0.25);
+    }
+    .onb-amount::placeholder { color: rgb(255 255 255 / 0.28); font-weight: 600; }
+
+    .onb-in { animation: onbIn .4s ease-out both; }
+    .onb-tile-in { animation: onbTileIn .32s ease-out both; }
+    @keyframes onbIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    @keyframes onbTileIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .onb-in, .onb-tile-in { animation: none; }
+      .onb-row, .onb-tile, .onb-btn { transition: none; }
     }
   `],
 })
@@ -284,7 +310,10 @@ export class OnboardingPage implements OnDestroy {
     private assetsState = inject(AssetsStateService);
     private api = inject(ApiService);
 
-    t = (k: string) => this.i18n.t(k);
+    t = (k: string, p?: Record<string, string | number>) => this.i18n.t(k, p);
+
+    readonly steps = STEPS;
+    readonly stepList = Array.from({ length: STEPS }, (_, i) => i);
 
     // ── State ──────────────────────────────────────────────────────────────
     readonly beat = signal<Beat>('currency');
@@ -302,11 +331,19 @@ export class OnboardingPage implements OnDestroy {
     readonly selectedTile = signal<Tile | null>(null);
     readonly assetName = signal('');
     readonly assetAmount = signal<number | null>(null);
+    /** What the amount field DISPLAYS: the same grouped format the reveal and the
+     *  rest of the app use (100 000, not 100000). assetAmount stays the raw number
+     *  sent to the API, so the write payload is unchanged. */
+    readonly amountText = signal('');
     readonly revealDisplay = signal('');
+
+    private readonly amountInput = viewChild<ElementRef<HTMLInputElement>>('amountInput');
+    private readonly nameInput = viewChild<ElementRef<HTMLInputElement>>('nameInput');
 
     /** The last gated write (the asset), replayed by retry() after a failure. */
     private lastWrite: { tool: OnbTool; args: Record<string, unknown>; onOk: () => void } | null = null;
     private raf: number | null = null;
+    private focusTimer: ReturnType<typeof setTimeout> | null = null;
 
     readonly currencies = [
         { code: 'XOF' as Ccy, label: 'FCFA (XOF)' },
@@ -315,6 +352,8 @@ export class OnboardingPage implements OnDestroy {
 
     readonly firstName = computed(() => this.tokens.user()?.first_name?.trim() || '');
 
+    /** Only categories that need NO predefined instrument list (see the class
+     *  doc): BRVM lives in the app's picker, never here. */
     readonly tiles = computed<Tile[]>(() => {
         const T = (k: string) => this.i18n.t(k);
         return [
@@ -322,7 +361,7 @@ export class OnboardingPage implements OnDestroy {
             { key: 'om', label: T('concierge.tiles.orangeMoney'), category: 'mobile_money', icon: 'pi-mobile' },
             { key: 'bank', label: T('concierge.tiles.bank'), category: 'savings_account', icon: 'pi-building' },
             { key: 'realestate', label: T('concierge.tiles.realEstate'), category: 'real_estate', icon: 'pi-home' },
-            { key: 'brvm', label: T('concierge.tiles.brvm'), category: 'stocks_brvm', icon: 'pi-chart-line' },
+            { key: 'vehicle', label: T('concierge.tiles.vehicle'), category: 'vehicle', icon: 'pi-car' },
             { key: 'cash', label: T('concierge.tiles.cash'), category: 'cash', icon: 'pi-money-bill' },
             { key: 'tontine', label: T('concierge.tiles.tontine'), category: 'tontine', icon: 'pi-users' },
             { key: 'other', label: T('concierge.tiles.other'), category: 'other', icon: 'pi-ellipsis-h' },
@@ -332,9 +371,9 @@ export class OnboardingPage implements OnDestroy {
     readonly objectives = computed<Objective[]>(() => {
         const T = (k: string) => this.i18n.t(k);
         return [
-            { key: 'financial_freedom', label: T('concierge.objectives.freedom') },
-            { key: 'buy_property', label: T('concierge.objectives.property') },
-            { key: 'build_savings', label: T('concierge.objectives.savings') },
+            { key: 'financial_freedom', label: T('concierge.objectives.freedom'), hint: T('concierge.objectives.freedomHint'), icon: 'pi-flag' },
+            { key: 'buy_property', label: T('concierge.objectives.property'), hint: T('concierge.objectives.propertyHint'), icon: 'pi-home' },
+            { key: 'build_savings', label: T('concierge.objectives.savings'), hint: T('concierge.objectives.savingsHint'), icon: 'pi-shield' },
         ];
     });
 
@@ -365,7 +404,13 @@ export class OnboardingPage implements OnDestroy {
 
     ngOnDestroy(): void {
         if (this.raf != null && typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.raf);
+        if (this.focusTimer != null) clearTimeout(this.focusTimer);
     }
+
+    /** Display symbol for a currency the concierge offers. Read from the LOCAL
+     *  pick, not CurrencyService, whose config still reflects the saved profile
+     *  while the (fire-and-forget) currency write is in flight. */
+    symbolOf(code: Ccy): string { return code === 'EUR' ? '€' : 'FCFA'; }
 
     // ── Beat (a): currency ─────────────────────────────────────────────────
     pickCurrency(code: Ccy): void {
@@ -384,10 +429,62 @@ export class OnboardingPage implements OnDestroy {
         if (this.streaming()) return;
         this.selectedTile.set(tile);
         this.assetName.set(tile.key === 'other' ? '' : tile.label);
-        this.assetAmount.set(null);
+        this.setAmount(null);
         this.error.set(null);
+        // "Autre" needs a name first; every other tile is prefilled, so the amount
+        // is the only thing left to type.
+        this.focusField(tile.key === 'other' ? 'name' : 'amount');
     }
-    cancelTile(): void { this.selectedTile.set(null); }
+    cancelTile(): void { this.selectedTile.set(null); this.setAmount(null); }
+
+    /**
+     * Amount keystroke: keep only digits (onboarding captures whole units — the
+     * reveal and every money surface round to 0 decimals anyway), re-group with
+     * the app's own formatter, and restore the caret by digit position so typing
+     * mid-number does not jump to the end.
+     */
+    onAmountInput(ev: Event): void {
+        const el = ev.target as HTMLInputElement;
+        const raw = el.value;
+        const caret = el.selectionStart ?? raw.length;
+        const digitsBeforeCaret = (raw.slice(0, caret).match(/\d/g) || []).length;
+
+        const digits = raw.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 15);
+        const value = digits ? Number(digits) : null;
+        this.assetAmount.set(value);
+        const formatted = value === null ? '' : this.currencySvc.formatDisplayNumber(value);
+        this.amountText.set(formatted);
+
+        // The [value] binding only writes when the signal CHANGES, so a keystroke
+        // that leaves the formatted text identical (a stray letter) would linger
+        // in the DOM. Write it back ourselves, then place the caret.
+        el.value = formatted;
+        let pos = formatted.length, seen = 0;
+        for (let i = 0; i < formatted.length; i++) {
+            if (/\d/.test(formatted[i])) {
+                seen++;
+                if (seen === digitsBeforeCaret) { pos = i + 1; break; }
+            }
+        }
+        if (digitsBeforeCaret === 0) pos = 0;
+        try { el.setSelectionRange(pos, pos); } catch { /* not supported */ }
+    }
+
+    private setAmount(value: number | null): void {
+        this.assetAmount.set(value);
+        this.amountText.set(value === null ? '' : this.currencySvc.formatDisplayNumber(value));
+    }
+
+    /** Focus the field the user is expected to fill next (the keyboard opens on
+     *  the amount, Revolut-style). Deferred: the form renders on the next tick. */
+    private focusField(which: 'amount' | 'name'): void {
+        if (typeof window === 'undefined') return;
+        if (this.focusTimer != null) clearTimeout(this.focusTimer);
+        this.focusTimer = setTimeout(() => {
+            const el = which === 'name' ? this.nameInput() : this.amountInput();
+            el?.nativeElement?.focus();
+        }, 60);
+    }
 
     submitAsset(): void {
         if (!this.canSaveAsset() || this.streaming()) return;
@@ -408,7 +505,7 @@ export class OnboardingPage implements OnDestroy {
     addAnother(): void {
         this.selectedTile.set(null);
         this.assetName.set('');
-        this.assetAmount.set(null);
+        this.setAmount(null);
         this.conciergeLine.set('');
         this.beat.set('asset');
     }
