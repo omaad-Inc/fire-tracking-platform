@@ -16,7 +16,7 @@ const PAGE_DESC =
 const CANONICAL = 'https://omaad.africa/outils/strategie-brvm/simulateur';
 
 interface Param {
-    key: 'initial' | 'monthly' | 'years' | 'yieldPct' | 'growthDiv' | 'dripYears' | 'taxRate';
+    key: 'initial' | 'monthly' | 'years' | 'yieldPct' | 'growth' | 'dripYears' | 'taxRate';
     label: string;
     min: number;
     max: number;
@@ -59,8 +59,11 @@ interface Param {
                     }
                 </div>
                 <p class="mt-4 text-[11.5px] leading-relaxed text-surface-400 dark:text-surface-500">
-                    Hypothèse fixe du modèle : appréciation des cours de 5%/an. Le DRIP s'arrête après
-                    « années de réinvestissement » ; ensuite les dividendes sont perçus en revenu.
+                    Le modèle fait croître le dividende au même rythme que les cours, comme sur la BRVM à long
+                    terme : le rendement reste donc à {{ yieldPct() }}% sur la valeur du portefeuille.
+                    Rendement total = {{ growth() }}% de croissance + {{ netYield() }}% de dividende net d'IRVM,
+                    soit <strong class="font-semibold">{{ totalReturn() }}%/an</strong>. Les dividendes sont
+                    réinvestis nets d'impôt ; passé les « années de réinvestissement », ils sont perçus en revenu.
                 </p>
             </div>
 
@@ -140,7 +143,7 @@ export class StrategieSimulateurPage {
         { key: 'monthly',   label: 'DCA mensuel',                  min: 0,       max: 1_000_000,  step: 5_000,   unit: 'FCFA' },
         { key: 'years',     label: 'Horizon',                      min: 1,       max: 30,         step: 1,       unit: 'ans' },
         { key: 'yieldPct',  label: 'Yield brut de départ',         min: 1,       max: 12,         step: 0.1,     unit: '%' },
-        { key: 'growthDiv', label: 'Croissance du dividende',      min: 0,       max: 12,         step: 0.5,     unit: '%/an' },
+        { key: 'growth',    label: 'Croissance (cours et dividende)', min: 0,    max: 12,         step: 0.5,     unit: '%/an' },
         { key: 'dripYears', label: 'Années de réinvestissement',   min: 0,       max: 30,         step: 1,       unit: 'ans' },
         { key: 'taxRate',   label: 'IRVM',                         min: 0,       max: 30,         step: 1,       unit: '%' },
     ];
@@ -149,7 +152,13 @@ export class StrategieSimulateurPage {
     readonly monthly = signal(this.planSvc.plan().dcaMonthly || 50_000);
     readonly years = signal(15);
     readonly yieldPct = signal(this.planYield > 0 ? this.planYield : 5.5);
-    readonly growthDiv = signal(5);
+    /**
+     * Un seul curseur pilote la croissance du dividende par action et celle des
+     * cours. Sur la BRVM les deux se suivent : le rendement sur la valeur de
+     * marché reste alors stable, et le modèle garde un seul chiffre à régler.
+     * Le moteur, lui, sait les traiter séparément (voir `projectDRIP`).
+     */
+    readonly growth = signal(5);
     readonly dripYears = signal(10);
     readonly taxRate = signal(IRVM_DEFAUT_PCT);
 
@@ -160,12 +169,18 @@ export class StrategieSimulateurPage {
         monthly: this.monthly(),
         years: this.years(),
         yieldPct: this.yieldPct(),
-        growthDiv: this.growthDiv(),
+        growthDiv: this.growth(),
+        priceGrowth: this.growth(),
         dripYears: Math.min(this.dripYears(), this.years()),
         taxRate: this.taxRate(),
     }));
 
     readonly final = computed(() => this.series()[this.series().length - 1]);
+
+    readonly netYield = computed(() => +(this.yieldPct() * (1 - this.taxRate() / 100)).toFixed(1));
+
+    /** Rendement total du modèle : croissance des cours + dividende net d'IRVM. */
+    readonly totalReturn = computed(() => +(this.growth() + this.netYield()).toFixed(1));
 
     chartData: any = null;
     chartOptions: any = null;
