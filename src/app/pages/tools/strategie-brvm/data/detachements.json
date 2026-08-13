@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-08-07",
+  "updated_at": "2026-08-13",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -22,6 +22,17 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20260730_-_avis_ndeg228_brvmdg_-_paiement_de_dividendes_exo_2025_-_nestle_ci.pdf",
       "ticker": "NTLC",
       "nom": "Nestlé CI",
+      "secteur": "Agro-industrie"
+    },
+    {
+      "emetteur": "SAPH CI",
+      "exercice": 2025,
+      "date_paiement": "2026-08-28",
+      "date_ex_dividende": "2026-08-27",
+      "montant_net_fcfa": 489.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260812_-_avis_ndeg238_brvmdg_-_paiement_de_dividendes_exo_2025_-_saph_ci.pdf",
+      "ticker": "SPHC",
+      "nom": "SAPH",
       "secteur": "Agro-industrie"
     },
     {
