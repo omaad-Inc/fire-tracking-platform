@@ -268,6 +268,48 @@ export const FR = {
     unlimited: 'Illimité',
     choose: 'Choisir',
     orLongerPass: 'ou passe plus longue, moins chère',
+    seeAllBenefits: 'Voir les {{n}}+ avantages',
+    hideBenefits: 'Masquer le comparatif',
+    // Hero benefits: 4-5 QUANTIFIED lines per tier (Revolut pattern). Numbers
+    // must mirror backend constants (FEATURE_TIERS + quota settings): 20 setup
+    // grant, 200 Pro / 300 Premium messages, share cap 1 -> unlimited.
+    hero: {
+      free: {
+        b1: 'Patrimoine complet, actifs illimités',
+        b2: 'Cours BRVM automatiques chaque jour',
+        b3: '20 messages IA de configuration offerts',
+        b4: 'Export de vos données, pour toujours',
+      },
+      pro: {
+        b1: '200 messages IA de configuration / mois',
+        b2: 'Alertes personnalisées push & email',
+        b3: 'Historique & performance BRVM par titre',
+        b4: 'Rapport hebdo email + PDF mensuel',
+        b5: 'Partages de portefeuille illimités',
+      },
+      premium: {
+        b1: 'Conseiller IA complet, 300 messages / mois',
+        b2: 'Analyses avancées via Opus',
+        b3: 'Multi-portefeuilles & multi-foyers',
+        b4: 'Tontine de groupe',
+        b5: 'API & exports programmés',
+      },
+    },
+    cta: {
+      join: 'Passer à {{plan}}',
+      current: 'Votre plan',
+      currentBeta: 'Votre plan (offert bêta)',
+      downgradeFree: 'Revenir au plan Gratuit',
+      renew: 'Renouveler',
+    },
+    // Comparison group headers: 25 rows become 4 scannable clusters, and the
+    // "free = complete tracker" position (S11, ratified) reads as a statement.
+    group: {
+      tracking: 'Suivi de patrimoine',
+      automation: 'Automatisation & rapports',
+      ai: 'Intelligence artificielle',
+      premium: 'Exclusivités Premium',
+    },
     checkout: {
       chooseDuration: 'Choisis ta durée',
       saveMore: 'Plus c\'est long, plus tu économises',
@@ -347,6 +389,7 @@ export const FR = {
   },
   subscription: {
     yourPlan: 'Ton plan',
+    viewBenefits: 'Voir les avantages du plan',
     planFree: 'Gratuit',
     onDate: 'Le {{date}}',
     expiresInDays: 'Expire dans {{n}} jour(s)',
@@ -815,6 +858,11 @@ export const FR = {
     upgradePremiumTitle: 'Passer à Omaad Premium',
     upgradePremiumDesc: 'Assistant IA avancé et analyses illimitées',
     myOmaad: 'Mon Omaad',
+    groups: {
+      account: 'Compte',
+      app: 'Application',
+    },
+    planBeta: 'offert bêta',
     myConnections: 'Mes connexions',
     account: {
       myProfile: 'Mon profil',

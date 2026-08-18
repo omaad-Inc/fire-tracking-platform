@@ -7,6 +7,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { TokenService } from '../../core/services/token.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BillingService } from '../../core/services/billing.service';
+import { CurrencyService } from '../../core/services/currency.service';
 import { environment } from '../../../environments/environment';
 
 /**
@@ -85,12 +86,25 @@ import { environment } from '../../../environments/environment';
                                 <span class="text-sm whitespace-nowrap">{{ sec.label() }}</span>
                             </a>
                         }
-                        @if (upsellTarget()) {
-                            <a [routerLink]="['/', lang, 'pages', 'plans']"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-left w-full
-                                      text-ochre-700 dark:text-ochre-400 hover:bg-ochre-100 dark:hover:bg-ochre-900/20">
-                                <i class="pi pi-crown !text-sm shrink-0" aria-hidden="true"></i>
-                                <span class="text-sm whitespace-nowrap font-medium">{{ upsellTitle() }}</span>
+                        <!-- Rail plan card: same owned-object identity as the mobile home. -->
+                        @if (!billingLoading()) {
+                            <a [routerLink]="planCardLink()" [queryParams]="planCardParams()"
+                               class="relative block overflow-hidden rounded-xl p-3 mt-3 transition-all hover:shadow-lifted"
+                               [ngClass]="planCardClass()">
+                                @if (planTier() === 'premium') {
+                                    <div class="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-ochre-400 via-ochre-500 to-ochre-400" aria-hidden="true"></div>
+                                }
+                                <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full blur-2xl" [ngClass]="planCardGlow()" aria-hidden="true"></div>
+                                <p class="relative text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" [ngClass]="pcMuted()">
+                                    {{ t('subscription.yourPlan') }}
+                                </p>
+                                <div class="relative flex items-center justify-between gap-2">
+                                    <span class="text-sm font-bold" [ngClass]="pcText()">{{ planName() }}</span>
+                                    <span class="flex items-center gap-1 text-[11px] font-medium" [ngClass]="pcLink()">
+                                        {{ planTier() === 'free' ? t('subscription.cta.goPro') : t('subscription.viewBenefits') }}
+                                        <i class="pi pi-chevron-right !text-[9px]" aria-hidden="true"></i>
+                                    </span>
+                                </div>
                             </a>
                         }
                     </div>
@@ -108,91 +122,116 @@ import { environment } from '../../../environments/environment';
                     <!-- ═══════ MOBILE home menu (Finary settings home) ═══════ -->
                     @if (!activeSection()) {
                         <div class="lg:hidden">
-                            <!-- Top bar: back to app + help pill -->
+                            <!-- Top bar: back to app + tier-aware pill (Revolut's Upgrade slot:
+                                 non-premium users get the upgrade pill, Premium gets help) -->
                             <div class="flex items-center justify-between pt-1 mb-4">
                                 <button (click)="close()" [attr.aria-label]="t('common.back')"
                                         class="w-10 h-10 flex items-center justify-center rounded-full shrink-0
                                                hover:bg-surface-100 dark:hover:bg-surface-800 transition-all">
                                     <i class="pi pi-arrow-left text-surface-700 dark:text-surface-200" aria-hidden="true"></i>
                                 </button>
-                                <a [routerLink]="['/', lang, 'pages', 'settings', 'help']"
-                                   class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-ochre-100 dark:bg-ochre-900/30
-                                          text-ochre-700 dark:text-ochre-300 text-sm font-semibold transition-all
-                                          hover:bg-ochre-200 dark:hover:bg-ochre-900/50">
-                                    {{ t('settings.getHelp') }}
-                                    <i class="pi pi-question-circle text-xs" aria-hidden="true"></i>
-                                </a>
-                            </div>
-
-                            <!-- Profile block -->
-                            <div class="flex items-center gap-4 mb-4 px-1">
-                                <div class="w-14 h-14 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0">
-                                    @if (avatarUrl()) {
-                                        <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover">
-                                    } @else {
-                                        <span class="text-2xl font-bold text-surface-500">{{ userInitials() }}</span>
-                                    }
-                                </div>
-                                <div class="min-w-0">
-                                    <h1 class="text-xl font-bold text-surface-900 dark:text-surface-0 truncate">{{ userName() }}</h1>
-                                    <p class="text-sm text-surface-500 dark:text-surface-400">
-                                        {{ t('settings.memberSince', { date: memberSince() }) }}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Upsell banner (free -> Pro, pro -> Premium, hidden for premium) -->
-                            @if (upsellTarget()) {
-                                <a [routerLink]="['/', lang, 'pages', 'plans']"
-                                   class="block mb-4 p-3 rounded-2xl bg-ochre-100 dark:bg-ochre-900/20
-                                          border border-ochre-200 dark:border-ochre-700/40 hover:shadow-sm transition-all">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-xl bg-ochre-500 flex items-center justify-center shrink-0">
-                                            <i class="pi pi-crown text-warm-900" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="font-semibold text-ochre-700 dark:text-ochre-400 text-sm">{{ upsellTitle() }}</p>
-                                            <p class="text-xs text-surface-600 dark:text-ochre-400/70">{{ upsellDesc() }}</p>
-                                        </div>
-                                        <i class="pi pi-chevron-right text-ochre-500 dark:text-ochre-400 text-xs shrink-0" aria-hidden="true"></i>
-                                    </div>
-                                </a>
-                            }
-
-                            <!-- Group: Mon Omaad — flat hairline rows, Finary-style -->
-                            <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1 px-1">{{ t('settings.myOmaad') }}</h2>
-                            <div class="mb-5 divide-y divide-surface-200 dark:divide-surface-800">
-                                @for (sec of mainSections; track sec.key) {
-                                    <a [routerLink]="['/', lang, 'pages', 'settings', sec.key]"
-                                       class="flex items-center gap-4 py-3 px-1 cursor-pointer
-                                              hover:bg-surface-50 dark:hover:bg-surface-900/60 transition-all">
-                                        <i class="pi {{ sec.icon }} text-ochre-600 dark:text-ochre-400 text-base w-6 text-center shrink-0" aria-hidden="true"></i>
-                                        <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ sec.label() }}</span>
-                                        <i class="pi pi-chevron-right text-surface-400 text-xs shrink-0" aria-hidden="true"></i>
+                                @if (upsellTarget(); as up) {
+                                    <a [routerLink]="['/', lang, 'pages', 'plans']" [queryParams]="{ tier: up }"
+                                       class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-ochre-500 hover:bg-ochre-400
+                                              text-warm-900 text-sm font-bold transition-all">
+                                        <i class="pi pi-crown text-xs" aria-hidden="true"></i>
+                                        {{ up === 'pro' ? 'Pro' : 'Premium' }}
+                                    </a>
+                                } @else {
+                                    <a [routerLink]="['/', lang, 'pages', 'settings', 'help']"
+                                       class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-ochre-100 dark:bg-ochre-900/30
+                                              text-ochre-700 dark:text-ochre-300 text-sm font-semibold transition-all
+                                              hover:bg-ochre-200 dark:hover:bg-ochre-900/50">
+                                        {{ t('settings.getHelp') }}
+                                        <i class="pi pi-question-circle text-xs" aria-hidden="true"></i>
                                     </a>
                                 }
                             </div>
 
-                            <!-- Group: Aide -->
-                            <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-1 px-1">{{ t('settings.help') }}</h2>
-                            <div class="mb-4 divide-y divide-surface-200 dark:divide-surface-800">
-                                <a [routerLink]="['/', lang, 'pages', 'settings', 'help']"
-                                   class="flex items-center gap-4 py-3 px-1 cursor-pointer
-                                          hover:bg-surface-50 dark:hover:bg-surface-900/60 transition-all">
-                                    <i class="pi pi-question-circle text-ochre-600 dark:text-ochre-400 text-base w-6 text-center shrink-0" aria-hidden="true"></i>
-                                    <span class="flex-1 text-surface-900 dark:text-surface-0 font-medium">{{ t('settings.getHelp') }}</span>
-                                    <i class="pi pi-chevron-right text-surface-400 text-xs shrink-0" aria-hidden="true"></i>
-                                </a>
+                            <!-- Identity: centered and celebrated, avatar ringed in the tier color -->
+                            <div class="flex flex-col items-center text-center mb-6 px-1">
+                                <div class="w-20 h-20 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0"
+                                     [ngClass]="avatarRing()">
+                                    @if (avatarUrl()) {
+                                        <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover">
+                                    } @else {
+                                        <span class="text-3xl font-bold text-surface-500">{{ userInitials() }}</span>
+                                    }
+                                </div>
+                                <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-0 truncate max-w-full mt-3">{{ userName() }}</h1>
+                                <p class="text-sm text-surface-500 dark:text-surface-400 mt-0.5">
+                                    {{ t('settings.memberSince', { date: memberSince() }) }}
+                                </p>
                             </div>
 
-                            <!-- Logout pill + version -->
-                            <button (click)="logout()"
-                                    class="px-6 py-2 rounded-full bg-surface-200 dark:bg-surface-800
-                                           text-surface-700 dark:text-surface-200 text-sm font-semibold
-                                           hover:bg-surface-300 dark:hover:bg-surface-700 transition-colors">
-                                {{ t('settings.account.logoutButton') }}
-                            </button>
-                            <p class="text-xs text-surface-500 dark:text-surface-400 mt-3 pb-1 px-1">Omaad · v{{ appVersion }}</p>
+                            <!-- Plan card: the plan as an owned object, ALWAYS visible (free users
+                                 get the aspiration variant, never a promo strip; Premium finally
+                                 gets its status back). Tier ambiance shared with plans/Abonnement. -->
+                            @if (billingLoading()) {
+                                <div class="rounded-2xl h-[4.5rem] bg-surface-100 dark:bg-surface-800/60 animate-pulse mb-6"></div>
+                            } @else {
+                                <a [routerLink]="planCardLink()" [queryParams]="planCardParams()"
+                                   class="relative block overflow-hidden rounded-2xl p-4 mb-6 transition-all hover:shadow-lifted"
+                                   [ngClass]="planCardClass()">
+                                    @if (planTier() === 'premium') {
+                                        <div class="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-ochre-400 via-ochre-500 to-ochre-400" aria-hidden="true"></div>
+                                    }
+                                    <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-2xl" [ngClass]="planCardGlow()" aria-hidden="true"></div>
+                                    <p class="relative text-[10px] font-semibold uppercase tracking-[0.16em] mb-1.5" [ngClass]="pcMuted()">
+                                        {{ t('subscription.yourPlan') }}
+                                    </p>
+                                    <div class="relative flex items-center justify-between gap-3">
+                                        <span class="flex items-center gap-2 text-xl font-bold tracking-tight" [ngClass]="pcText()">
+                                            {{ planName() }}
+                                            @if (billing.state() === 'beta') {
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/12 text-white inline-flex items-center gap-1">
+                                                    <i class="pi pi-gift !text-[9px]" aria-hidden="true"></i>{{ t('settings.planBeta') }}
+                                                </span>
+                                            }
+                                        </span>
+                                        <span class="flex items-center gap-1.5 text-[12.5px] font-medium shrink-0" [ngClass]="pcLink()">
+                                            {{ planTier() === 'free' ? t('subscription.cta.goPro') : t('subscription.viewBenefits') }}
+                                            <i class="pi pi-chevron-right !text-[10px]" aria-hidden="true"></i>
+                                        </span>
+                                    </div>
+                                </a>
+                            }
+
+                            <!-- Grouped rounded containers (Revolut sheet feel): neutral icon
+                                 chips, one accent on the page (the plan card), living values. -->
+                            @for (group of rowGroups; track group.titleKey) {
+                                <h2 class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2 px-1">
+                                    {{ t(group.titleKey) }}
+                                </h2>
+                                <div class="mb-5 rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900/50
+                                            shadow-sm overflow-hidden divide-y divide-surface-100 dark:divide-surface-800">
+                                    @for (sec of group.rows; track sec.key) {
+                                        <a [routerLink]="['/', lang, 'pages', 'settings', sec.key]"
+                                           class="flex items-center gap-3.5 px-4 py-3.5 cursor-pointer
+                                                  hover:bg-surface-50 dark:hover:bg-surface-900/60 transition-all">
+                                            <span class="w-8 h-8 rounded-lg bg-surface-100 dark:bg-surface-800 flex items-center justify-center shrink-0">
+                                                <i class="pi {{ sec.icon }} text-surface-500 dark:text-surface-400 !text-sm" aria-hidden="true"></i>
+                                            </span>
+                                            <span class="flex-1 min-w-0 text-[14.5px] font-medium text-surface-900 dark:text-surface-0 truncate">{{ sec.label() }}</span>
+                                            @if (sec.value(); as v) {
+                                                <span class="text-[12.5px] text-surface-400 dark:text-surface-500 shrink-0">{{ v }}</span>
+                                            }
+                                            <i class="pi pi-chevron-right text-surface-400 !text-xs shrink-0" aria-hidden="true"></i>
+                                        </a>
+                                    }
+                                </div>
+                            }
+
+                            <!-- Logout + version, centered footer -->
+                            <div class="flex flex-col items-center pt-1">
+                                <button (click)="logout()"
+                                        class="px-6 py-2 rounded-full bg-surface-200 dark:bg-surface-800
+                                               text-surface-700 dark:text-surface-200 text-sm font-semibold
+                                               hover:bg-surface-300 dark:hover:bg-surface-700 transition-colors">
+                                    {{ t('settings.account.logoutButton') }}
+                                </button>
+                                <p class="text-xs text-surface-500 dark:text-surface-400 mt-3 pb-1 text-center">Omaad · v{{ appVersion }}</p>
+                            </div>
                         </div>
                     }
 
@@ -209,7 +248,8 @@ export class Settings implements OnInit, OnDestroy {
     appVersion = environment.version;
     private tokenService = inject(TokenService);
     private authService  = inject(AuthService);
-    private billing      = inject(BillingService);
+    protected billing    = inject(BillingService);
+    private cs           = inject(CurrencyService);
 
     lang = 'fr';
     /** Active section key, or null on the (mobile) home menu. */
@@ -221,13 +261,40 @@ export class Settings implements OnInit, OnDestroy {
         { key: 'connections',   icon: 'pi-link',   label: () => this.t('settings.myConnections') },
         { key: 'preferences',   icon: 'pi-cog',    label: () => this.t('menu.preferences') },
         { key: 'categories',    icon: 'pi-tags',   label: () => this.t('menu.categories') },
-        { key: 'alerts',        icon: 'pi-bell',   label: () => this.t('menu.alerts') },
+        { key: 'alerts',        icon: 'pi-flag',   label: () => this.t('menu.alerts') },
         { key: 'notifications', icon: 'pi-bell',   label: () => this.t('menu.notifications') },
         { key: 'subscription',  icon: 'pi-credit-card', label: () => this.t('menu.subscription') },
         { key: 'help',          icon: 'pi-question-circle', label: () => this.t('settings.getHelp') },
     ];
-    /** Home-menu rows ("Mon Omaad" group): everything except help, which has its own group. */
-    readonly mainSections = this.sections.filter(s => s.key !== 'help');
+
+    /** Mobile home rows in three semantic groups (subscription is NOT a row:
+     *  the plan card above the groups owns that destination). `value` feeds the
+     *  right-hand living value; it must only read state already in memory. */
+    readonly rowGroups: { titleKey: string; rows: { key: string; icon: string; label: () => string; value: () => string | null }[] }[] = [
+        {
+            titleKey: 'settings.groups.account',
+            rows: [
+                { key: 'account',     icon: 'pi-user',   label: () => this.t('menu.myAccount'),        value: () => null },
+                { key: 'security',    icon: 'pi-shield', label: () => this.t('menu.security'),         value: () => null },
+                { key: 'connections', icon: 'pi-link',   label: () => this.t('settings.myConnections'), value: () => null },
+            ],
+        },
+        {
+            titleKey: 'settings.groups.app',
+            rows: [
+                { key: 'preferences',   icon: 'pi-sliders-h', label: () => this.t('menu.preferences'),   value: () => `${this.lang.toUpperCase()} · ${this.cs.config().symbol}` },
+                { key: 'categories',    icon: 'pi-tags',      label: () => this.t('menu.categories'),    value: () => null },
+                { key: 'alerts',        icon: 'pi-flag',      label: () => this.t('menu.alerts'),        value: () => null },
+                { key: 'notifications', icon: 'pi-bell',      label: () => this.t('menu.notifications'), value: () => null },
+            ],
+        },
+        {
+            titleKey: 'settings.help',
+            rows: [
+                { key: 'help', icon: 'pi-question-circle', label: () => this.t('settings.getHelp'), value: () => null },
+            ],
+        },
+    ];
 
     private user = this.tokenService.user;
 
@@ -292,15 +359,60 @@ export class Settings implements OnInit, OnDestroy {
         }
     });
 
-    upsellTitle = computed(() =>
-        this.upsellTarget() === 'premium'
-            ? this.t('settings.upgradePremiumTitle')
-            : this.t('settings.upgradeProTitle'));
+    // ── Plan card (the owned-object slot, mobile home + rail) ───────────────
 
-    upsellDesc = computed(() =>
-        this.upsellTarget() === 'premium'
-            ? this.t('settings.upgradePremiumDesc')
-            : this.t('settings.upgradeProDesc'));
+    readonly planTier = this.reachedTier;
+    billingLoading = computed(() => this.billing.state() === 'loading');
+
+    planName(): string {
+        const tier = this.planTier();
+        return tier === 'free' ? this.t('plans.free') : tier === 'pro' ? 'Pro' : 'Premium';
+    }
+
+    /** Paid/beta users land on their Abonnement page; free users on the plans
+     *  page, Pro tab (the aspiration path). */
+    planCardLink(): unknown[] {
+        return this.planTier() === 'free'
+            ? ['/', this.lang, 'pages', 'plans']
+            : ['/', this.lang, 'pages', 'settings', 'subscription'];
+    }
+    planCardParams(): Record<string, string> | null {
+        return this.planTier() === 'free' ? { tier: 'pro' } : null;
+    }
+
+    // Tier ambiance, shared identity with /pages/plans and the Abonnement hero.
+    planCardClass(): string {
+        switch (this.planTier()) {
+            case 'premium': return 'bg-brand-950 border border-brand-700/50 shadow-md';
+            case 'pro':     return 'bg-gradient-to-br from-brand-700 to-brand-800 shadow-md';
+            case 'free':    return 'bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-sm';
+        }
+    }
+    planCardGlow(): string {
+        switch (this.planTier()) {
+            case 'premium': return 'bg-ochre-400/15';
+            case 'pro':     return 'bg-ochre-500/25';
+            case 'free':    return 'bg-brand-700/10';
+        }
+    }
+    pcText(): string {
+        return this.planTier() === 'free' ? 'text-surface-900 dark:text-surface-0' : 'text-white';
+    }
+    pcMuted(): string {
+        return this.planTier() === 'free' ? 'text-surface-400 dark:text-surface-500' : 'text-white/55';
+    }
+    pcLink(): string {
+        return this.planTier() === 'free' ? 'text-ochre-600 dark:text-ochre-400' : 'text-white/70';
+    }
+
+    /** Avatar ring in the tier color (quiet for free). */
+    avatarRing(): string {
+        switch (this.planTier()) {
+            case 'premium': return 'ring-2 ring-ochre-400';
+            case 'pro':     return 'ring-2 ring-ochre-500/80';
+            case 'free':    return 'ring-1 ring-surface-200 dark:ring-surface-700';
+        }
+    }
 
     ngOnInit() {
         // Settings pages scroll without showing a scrollbar (Finary feel).

@@ -35,12 +35,15 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                 <div class="rounded-2xl h-28 bg-surface-100 dark:bg-surface-800/60 animate-pulse"></div>
             } @else {
 
-                <!-- ═══════ HERO CARD (navy, the signature object) ═══════ -->
-                <section class="relative overflow-hidden rounded-3xl p-6 mb-5 text-white
-                                bg-gradient-to-br from-brand-700 to-brand-800 shadow-xl">
-                    <div class="absolute -right-12 -top-12 w-44 h-44 rounded-full bg-ochre-500/25 blur-2xl" aria-hidden="true"></div>
+                <!-- ═══════ HERO CARD (tier-tinted §4: Premium = near-black navy + gold
+                     line, Pro/beta = navy + ochre glow, Free/expired = neutral) ═══════ -->
+                <section class="relative overflow-hidden rounded-3xl p-6 mb-5" [ngClass]="heroClass()">
+                    @if (heroTier() === 'premium') {
+                        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ochre-400 via-ochre-500 to-ochre-400" aria-hidden="true"></div>
+                    }
+                    <div class="absolute -right-12 -top-12 w-44 h-44 rounded-full blur-2xl" [ngClass]="heroGlow()" aria-hidden="true"></div>
 
-                    <p class="relative text-[11px] font-semibold uppercase tracking-[0.16em] text-white/55 mb-3">
+                    <p class="relative text-[11px] font-semibold uppercase tracking-[0.16em] mb-3" [ngClass]="hMuted()">
                         {{ t('subscription.yourPlan') }}
                     </p>
 
@@ -49,22 +52,22 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
 
                         @switch (state()) {
                             @case ('beta') {
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/12 text-white">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
                                     <i class="pi pi-gift !text-[11px]" aria-hidden="true"></i>{{ t('subscription.pills.beta') }}
                                 </span>
                             }
                             @case ('active_prepaid') {
-                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/12 text-white">
+                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{{ t('subscription.pills.active') }}
                                 </span>
                             }
                             @case ('active_auto') {
-                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/12 text-white">
+                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{{ t('subscription.pills.active') }}
                                 </span>
                             }
                             @case ('cancelling') {
-                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/12 text-white">
+                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>{{ t('subscription.pills.ending') }}
                                 </span>
                             }
@@ -74,52 +77,60 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                                 </span>
                             }
                             @case ('expired') {
-                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/12 text-white/80">
+                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
                                     <span class="w-1.5 h-1.5 rounded-full bg-surface-400"></span>{{ t('subscription.pills.expired') }}
                                 </span>
                             }
                         }
                     </div>
 
+                    <!-- Revolut's "View plan benefits >": the owner-state card is also
+                         the door to the benefits story (lands on this plan's tab). -->
+                    <a [routerLink]="['/', lang, 'pages', 'plans']" [queryParams]="{ tier: heroTier() }"
+                       class="relative mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors" [ngClass]="hLink()">
+                        {{ t('subscription.viewBenefits') }}
+                        <i class="pi pi-chevron-right !text-[10px]" aria-hidden="true"></i>
+                    </a>
+
                     <!-- State body -->
                     @switch (state()) {
                         @case ('beta') {
-                            <p class="relative mt-3.5 text-sm leading-relaxed text-white/70 max-w-[38ch]">{{ t('subscription.body.beta') }}</p>
-                            <p class="relative mt-3 text-[12.5px] text-white/55">{{ t('subscription.body.betaNoPayment') }}</p>
+                            <p class="relative mt-3.5 text-sm leading-relaxed max-w-[38ch]" [ngClass]="hBody()">{{ t('subscription.body.beta') }}</p>
+                            <p class="relative mt-3 text-[12.5px]" [ngClass]="hMuted()">{{ t('subscription.body.betaNoPayment') }}</p>
                             <button pButton (click)="openSheet('premium')" [label]="t('subscription.cta.discoverPremium')"
                                     icon="pi pi-crown" class="omaad-press mt-5 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('free') {
-                            <p class="relative mt-3.5 text-sm leading-relaxed text-white/70 max-w-[38ch]">{{ t('subscription.body.free') }}</p>
+                            <p class="relative mt-3.5 text-sm leading-relaxed max-w-[38ch]" [ngClass]="hBody()">{{ t('subscription.body.free') }}</p>
                             <button pButton (click)="openSheet('pro')" [label]="t('subscription.cta.goPro')"
                                     icon="pi pi-crown" class="omaad-press mt-5 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('active_prepaid') {
-                            <div class="relative mt-4 pt-4 border-t border-white/10">
+                            <div class="relative mt-4 pt-4 border-t" [ngClass]="hBorder()">
                                 <div class="text-[15px] font-semibold">{{ t('subscription.expiresInDays', { n: daysLeft() }) }}</div>
-                                <div class="text-[12.5px] text-white/55 mt-1 tabular-nums">{{ periodEndLabel() }}</div>
+                                <div class="text-[12.5px] mt-1 tabular-nums" [ngClass]="hMuted()">{{ periodEndLabel() }}</div>
                             </div>
                             <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.renewOneClick')"
                                     icon="pi pi-refresh" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('active_auto') {
-                            <div class="relative mt-4 pt-4 border-t border-white/10">
+                            <div class="relative mt-4 pt-4 border-t" [ngClass]="hBorder()">
                                 <div class="text-[15px] font-semibold">{{ t('subscription.autoRenewsOn', { date: periodEndDate() }) }}</div>
-                                <div class="text-[12.5px] text-white/55 mt-1">{{ t('subscription.autoRenewNote') }}</div>
+                                <div class="text-[12.5px] mt-1" [ngClass]="hMuted()">{{ t('subscription.autoRenewNote') }}</div>
                             </div>
                         }
                         @case ('cancelling') {
-                            <p class="relative mt-4 pt-4 border-t border-white/10 text-sm text-white/70">{{ t('subscription.body.cancelling', { date: periodEndDate() }) }}</p>
+                            <p class="relative mt-4 pt-4 border-t text-sm" [ngClass]="hBorder() + ' ' + hBody()">{{ t('subscription.body.cancelling', { date: periodEndDate() }) }}</p>
                             <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.reactivate')"
                                     icon="pi pi-replay" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('past_due') {
-                            <p class="relative mt-4 pt-4 border-t border-white/10 text-sm text-white/70">{{ t('subscription.body.pastDue') }}</p>
+                            <p class="relative mt-4 pt-4 border-t text-sm" [ngClass]="hBorder() + ' ' + hBody()">{{ t('subscription.body.pastDue') }}</p>
                             <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.updatePayment')"
                                     icon="pi pi-credit-card" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('expired') {
-                            <p class="relative mt-4 pt-4 border-t border-white/10 text-sm text-white/70">{{ t('subscription.body.expired', { date: periodEndDate() }) }}</p>
+                            <p class="relative mt-4 pt-4 border-t text-sm" [ngClass]="hBorder() + ' ' + hBody()">{{ t('subscription.body.expired', { date: periodEndDate() }) }}</p>
                             <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.reactivate')"
                                     icon="pi pi-replay" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
@@ -332,6 +343,56 @@ export class SubscriptionSettings implements OnInit {
         if (st === 'free' || st === 'loading') return this.t('subscription.planFree');
         const p = this.subscription()?.plan;
         return p === 'premium' ? 'Premium' : p === 'pro' ? 'Pro' : this.t('subscription.planFree');
+    }
+
+    // ── Tier-tinted hero (§4): the same identity system as /pages/plans, so
+    // "your plan card" and the plans page tier screen rhyme. Expired falls back
+    // to the neutral tint (access is re-locked) while keeping the old plan name.
+    heroTier = computed<'free' | 'pro' | 'premium'>(() => {
+        const st = this.state();
+        if (st === 'beta') return 'pro';
+        if (st === 'free' || st === 'loading' || st === 'expired') return 'free';
+        return this.subscription()?.plan === 'premium' ? 'premium' : 'pro';
+    });
+
+    private isNeutral(): boolean {
+        return this.heroTier() === 'free';
+    }
+
+    heroClass(): string {
+        switch (this.heroTier()) {
+            case 'premium': return 'bg-brand-950 text-white border border-brand-700/50 shadow-xl';
+            case 'pro':     return 'bg-gradient-to-br from-brand-700 to-brand-800 text-white shadow-xl';
+            case 'free':    return 'bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-surface-900 dark:text-surface-0 shadow-sm';
+        }
+    }
+
+    heroGlow(): string {
+        switch (this.heroTier()) {
+            case 'premium': return 'bg-ochre-400/15';
+            case 'pro':     return 'bg-ochre-500/25';
+            case 'free':    return 'bg-brand-700/10';
+        }
+    }
+
+    hMuted(): string {
+        return this.isNeutral() ? 'text-surface-400 dark:text-surface-500' : 'text-white/55';
+    }
+    hBody(): string {
+        return this.isNeutral() ? 'text-surface-600 dark:text-surface-300' : 'text-white/70';
+    }
+    hBorder(): string {
+        return this.isNeutral() ? 'border-surface-200 dark:border-surface-800' : 'border-white/10';
+    }
+    hPill(): string {
+        return this.isNeutral()
+            ? 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300'
+            : 'bg-white/12 text-white';
+    }
+    hLink(): string {
+        return this.isNeutral()
+            ? 'text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200'
+            : 'text-white/70 hover:text-white';
     }
 
     /** The tier to re-buy/renew: the current paid plan, defaulting to Pro. */
