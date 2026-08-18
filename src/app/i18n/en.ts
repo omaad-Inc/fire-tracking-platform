@@ -270,6 +270,48 @@ export const EN: Dict = {
     unlimited: 'Unlimited',
     choose: 'Choose',
     orLongerPass: 'or a longer, cheaper pass',
+    seeAllBenefits: 'See all {{n}}+ benefits',
+    hideBenefits: 'Hide comparison',
+    // Hero benefits: 4-5 QUANTIFIED lines per tier (Revolut pattern). Numbers
+    // must mirror backend constants (FEATURE_TIERS + quota settings): 20 setup
+    // grant, 200 Pro / 300 Premium messages, share cap 1 -> unlimited.
+    hero: {
+      free: {
+        b1: 'Full wealth tracking, unlimited assets',
+        b2: 'Automatic daily BRVM quotes',
+        b3: '20 free AI setup messages',
+        b4: 'Export your data, forever',
+      },
+      pro: {
+        b1: '200 AI setup messages / month',
+        b2: 'Custom push & email alerts',
+        b3: 'BRVM history & performance per stock',
+        b4: 'Weekly email report + monthly PDF',
+        b5: 'Unlimited portfolio shares',
+      },
+      premium: {
+        b1: 'Full AI advisor, 300 messages / month',
+        b2: 'Advanced analyses via Opus',
+        b3: 'Multi-portfolios & multi-households',
+        b4: 'Group tontine',
+        b5: 'API & scheduled exports',
+      },
+    },
+    cta: {
+      join: 'Upgrade to {{plan}}',
+      current: 'Your plan',
+      currentBeta: 'Your plan (free during beta)',
+      downgradeFree: 'Return to the Free plan',
+      renew: 'Renew',
+    },
+    // Comparison group headers: 25 rows become 4 scannable clusters, and the
+    // "free = complete tracker" position (S11, ratified) reads as a statement.
+    group: {
+      tracking: 'Wealth tracking',
+      automation: 'Automation & reports',
+      ai: 'Artificial intelligence',
+      premium: 'Premium exclusives',
+    },
     checkout: {
       chooseDuration: 'Choose your duration',
       saveMore: 'The longer you go, the more you save',
@@ -349,6 +391,7 @@ export const EN: Dict = {
   },
   subscription: {
     yourPlan: 'Your plan',
+    viewBenefits: 'View plan benefits',
     planFree: 'Free',
     onDate: 'On {{date}}',
     expiresInDays: 'Expires in {{n}} day(s)',
@@ -817,6 +860,11 @@ export const EN: Dict = {
     upgradePremiumTitle: 'Upgrade to Omaad Premium',
     upgradePremiumDesc: 'Advanced AI assistant and unlimited insights',
     myOmaad: 'My Omaad',
+    groups: {
+      account: 'Account',
+      app: 'App',
+    },
+    planBeta: 'free in beta',
     myConnections: 'My connections',
     account: {
       myProfile: 'My profile',
