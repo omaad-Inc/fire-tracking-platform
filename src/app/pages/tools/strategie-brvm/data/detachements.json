@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-08-15",
+  "updated_at": "2026-08-20",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -694,17 +694,6 @@
       "ticker": "SNTS",
       "nom": "Sonatel",
       "secteur": "Télécoms"
-    },
-    {
-      "emetteur": "BANK OF AFRICA CI",
-      "exercice": 2024,
-      "date_paiement": "2025-05-20",
-      "date_ex_dividende": "2025-05-16",
-      "montant_net_fcfa": 469.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250505_-_avis_ndeg092_brvmdg_-_paiement_de_dividendes_exo_2024_-_boa_ci.pdf",
-      "ticker": "BOAC",
-      "nom": "BOA Côte d'Ivoire",
-      "secteur": "Banque"
     }
   ]
 }
