@@ -65,12 +65,26 @@ describe('OnboardingPage (concierge)', () => {
 
     afterEach(() => TestBed.resetTestingModule());
 
-    it('renders the currency beat with both chips and greets by first name', async () => {
+    it('offers every display currency and greets by first name', async () => {
         const fixture = await setup();
         const text = (fixture.nativeElement as HTMLElement).textContent || '';
         expect(text).toContain('Luffy');
-        expect(text).toContain('FCFA (XOF)');
+        // Omaad is used in UEMOA and in CEMAC, so both CFA zones are offered here
+        // and each names its zone: the two francs share the FCFA symbol, so
+        // "FCFA" alone cannot tell a Libreville user from a Dakar one.
+        expect(text).toContain("FCFA (Afrique de l'Ouest)");
+        expect(text).toContain('FCFA (Afrique centrale)');
         expect(text).toContain('Euro (EUR)');
+        expect(text).toContain('Dollar (USD)');
+    });
+
+    it('picks XAF as a display currency', async () => {
+        const fixture = await setup();
+        const cmp = fixture.componentInstance;
+
+        cmp.pickCurrency('XAF');
+        expect(cmp.beat()).toBe('asset');
+        expect(action).toHaveBeenCalledWith('update_user_ai_profile', { preferred_currency: 'XAF' });
     });
 
     it('currency tap advances to the asset beat instantly and writes the currency', async () => {

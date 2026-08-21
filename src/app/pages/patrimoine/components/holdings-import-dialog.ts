@@ -180,6 +180,9 @@ export class HoldingsImportDialog {
     /** Emitted after a successful commit (count of created assets). */
     @Output() imported = new EventEmitter<number>();
 
+    // Deliberately NOT offering XAF: this imports a BRVM statement, and BRVM
+    // instruments are quoted in XOF (UEMOA). A Central-Africa user still reads
+    // the resulting holdings in their own display currency.
     readonly currencyOptions = [
         { label: 'FCFA (XOF)', value: 'XOF' },
         { label: 'Euro (€)', value: 'EUR' },
