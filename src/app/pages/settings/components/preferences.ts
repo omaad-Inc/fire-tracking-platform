@@ -225,10 +225,17 @@ export class PreferencesSettings implements OnInit {
         { name: 'English', code: 'en' }
     ];
 
+    // Display currency: what the user READS their portfolio in, independent of the
+    // currency each asset is stored in. Both CFA francs are offered and must name
+    // their zone: two entries both reading "Franc CFA / FCFA" are unusable, and a
+    // Gabonese user picking XOF would be labelled in the wrong zone's currency.
+    // (USD was already listed here but the backend enum rejected it with a 422
+    // until the display-currency migration; it works now.)
     currencies = [
-        { name: 'XOF - Franc CFA', code: 'XOF', symbol: 'FCFA' },
-        { name: 'EUR - Euro',       code: 'EUR', symbol: '€'    },
-        { name: 'USD - Dollar US',  code: 'USD', symbol: '$'    }
+        { name: 'XOF - Franc CFA (Afrique de l\'Ouest)', code: 'XOF', symbol: 'FCFA' },
+        { name: 'XAF - Franc CFA (Afrique centrale)',    code: 'XAF', symbol: 'FCFA' },
+        { name: 'EUR - Euro',                            code: 'EUR', symbol: '€'    },
+        { name: 'USD - Dollar US',                       code: 'USD', symbol: '$'    }
     ];
 
     selectedLanguage = 'fr';

@@ -761,7 +761,7 @@ export class AssetDetailPage implements OnInit {
     /** Symbol of the asset's own (native) currency, the edit form works in it. */
     assetSymbol(): string {
         const c = (this.asset()?.currency || 'EUR').toUpperCase();
-        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+        return this.cs.symbolFor(c);
     }
     editForm: AssetEditForm = {
         name: '',

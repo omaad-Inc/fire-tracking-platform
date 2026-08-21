@@ -41,7 +41,7 @@ import { ApiService } from '../../core/services/api.service';
  */
 
 type Beat = 'currency' | 'asset' | 'reveal' | 'objective' | 'done';
-type Ccy = 'XOF' | 'EUR';
+type Ccy = 'XOF' | 'XAF' | 'EUR' | 'USD';
 type OnbTool = 'update_user_ai_profile' | 'create_asset' | 'mark_onboarding_complete';
 
 interface Tile { key: string; label: string; category: string; icon: string; }
@@ -345,9 +345,15 @@ export class OnboardingPage implements OnDestroy {
     private raf: number | null = null;
     private focusTimer: ReturnType<typeof setTimeout> | null = null;
 
+    // The display currency the user reads their portfolio in. Both CFA zones are
+    // offered and labelled by zone: Omaad is used in UEMOA and in CEMAC, and the
+    // two francs share a symbol, so "FCFA" alone cannot tell a Gabonese user
+    // apart from a Senegalese one. Changeable later in Reglages.
     readonly currencies = [
-        { code: 'XOF' as Ccy, label: 'FCFA (XOF)' },
+        { code: 'XOF' as Ccy, label: 'FCFA (Afrique de l\'Ouest)' },
+        { code: 'XAF' as Ccy, label: 'FCFA (Afrique centrale)' },
         { code: 'EUR' as Ccy, label: 'Euro (EUR)' },
+        { code: 'USD' as Ccy, label: 'Dollar (USD)' },
     ];
 
     readonly firstName = computed(() => this.tokens.user()?.first_name?.trim() || '');
@@ -410,7 +416,10 @@ export class OnboardingPage implements OnDestroy {
     /** Display symbol for a currency the concierge offers. Read from the LOCAL
      *  pick, not CurrencyService, whose config still reflects the saved profile
      *  while the (fire-and-forget) currency write is in flight. */
-    symbolOf(code: Ccy): string { return code === 'EUR' ? '€' : 'FCFA'; }
+    symbolOf(code: Ccy): string {
+        // Not a binary test: USD would otherwise render with an FCFA token.
+        return ({ EUR: '€', USD: '$', XOF: 'FCFA', XAF: 'FCFA' } as Record<Ccy, string>)[code];
+    }
 
     // ── Beat (a): currency ─────────────────────────────────────────────────
     pickCurrency(code: Ccy): void {

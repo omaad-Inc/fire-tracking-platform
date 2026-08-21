@@ -67,15 +67,17 @@ export class CurrencySuffixComponent {
     currency = model.required<string>();
     ariaLabel = model('Devise');
     open = signal(false);
+    private readonly cs = inject(CurrencyService);
+    // The currency an asset is HELD in. Both CFA francs are listed and labelled by
+    // zone: they share the FCFA symbol, so "FCFA" alone cannot distinguish a
+    // Dakar account from a Libreville one.
     readonly options = [
-        { label: 'FCFA (XOF)', value: 'XOF' },
+        { label: 'FCFA (Afrique de l\'Ouest)', value: 'XOF' },
+        { label: 'FCFA (Afrique centrale)', value: 'XAF' },
         { label: 'Euro (€)', value: 'EUR' },
         { label: 'Dollar ($)', value: 'USD' },
     ];
-    symbol = computed(() => {
-        const c = this.currency();
-        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
-    });
+    symbol = computed(() => this.cs.symbolFor(this.currency()));
     pick(v: string) { this.currency.set(v); this.open.set(false); }
     close() { this.open.set(false); }
 }
@@ -1160,7 +1162,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     /** Symbol for the currently selected asset currency (drives inline hints). */
     curSymbol(): string {
         const c = this.assetForm.currency;
-        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+        return this.cs.symbolFor(c);
     }
 
     // Two-tier duotone chrome (S7b PA-1): the four West-Africa hero classes

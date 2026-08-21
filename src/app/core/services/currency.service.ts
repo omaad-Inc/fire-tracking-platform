@@ -13,10 +13,18 @@ export interface CurrencyConfig {
     locale: string;
 }
 
-// Fallback rates used before /fx/rates loads or when offline. XOF is a fixed
-// EUR peg; USD is a stale placeholder overridden by the live backend rate.
+// Fallback rates used before /fx/rates loads or when offline. Both CFA francs are
+// fixed EUR pegs at the same treaty rate (XOF = West Africa / UEMOA, XAF =
+// Central Africa / CEMAC); USD is a stale placeholder overridden by the live
+// backend rate.
+//
+// A code missing here is NOT a visual bug: `config` below falls back to EUR, so
+// the whole app would silently render a user's portfolio in euros with a euro
+// symbol, and `rateOf` would fall back to rate 1 and mis-scale every figure by
+// 656x. Keep this map in step with the backend SUPPORTED_CURRENCIES.
 const CURRENCIES: Record<string, CurrencyConfig> = {
     XOF: { code: 'XOF', symbol: 'FCFA',  rate: 655.957, locale: 'fr-FR' },
+    XAF: { code: 'XAF', symbol: 'FCFA',  rate: 655.957, locale: 'fr-FR' },
     EUR: { code: 'EUR', symbol: '€',      rate: 1,       locale: 'fr-FR' },
     USD: { code: 'USD', symbol: '$',      rate: 1.08,    locale: 'en-US' },
 };
@@ -67,6 +75,14 @@ export class CurrencyService {
         const live = this.liveRates()[base.code];
         return live && live > 0 ? { ...base, rate: live } : base;
     });
+
+    /** The trailing symbol for ANY currency code, not just the active one.
+     *  Call sites used to inline `c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€'`,
+     *  a chain that defaults to the euro, so XAF rendered as euros. One lookup
+     *  keeps every screen correct as codes are added. */
+    symbolFor(code: string | null | undefined): string {
+        return CURRENCIES[(code || 'EUR').toUpperCase()]?.symbol ?? code ?? '';
+    }
 
     /** Rate (units per EUR) for any currency code: live → hardcoded fallback → 1. */
     rateOf(code: string | null | undefined): number {

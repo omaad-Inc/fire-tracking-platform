@@ -272,7 +272,7 @@ export class CsvImportDialog implements OnInit {
         { key: 'map' as Step, label: 'transactions.import.stepMap' },
         { key: 'review' as Step, label: 'transactions.import.stepReview' },
     ];
-    readonly currencyOptions = ['XOF', 'EUR', 'USD'];
+    readonly currencyOptions = ['XOF', 'XAF', 'EUR', 'USD'];
     readonly decimalOptions = [
         { label: '1 234.56', value: '.' },
         { label: '1 234,56', value: ',' },

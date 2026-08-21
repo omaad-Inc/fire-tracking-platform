@@ -511,7 +511,8 @@ export class TransactionLogs implements OnInit, OnDestroy {
 
     /** Currencies a transaction can be entered in. */
     readonly currencyOptions = [
-        { label: 'FCFA (XOF)', value: 'XOF' },
+        { label: 'FCFA (Afrique de l\'Ouest)', value: 'XOF' },
+        { label: 'FCFA (Afrique centrale)', value: 'XAF' },
         { label: 'Euro (€)', value: 'EUR' },
         { label: 'Dollar ($)', value: 'USD' },
     ];
@@ -519,7 +520,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     /** Symbol for the currently selected transaction currency. */
     curSymbol(): string {
         const c = this.form.currency;
-        return c === 'XOF' ? 'FCFA' : c === 'USD' ? '$' : '€';
+        return this.cs.symbolFor(c);
     }
 
     // Monetary accounts (cash / savings / mobile money) for the account selector
