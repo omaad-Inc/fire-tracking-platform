@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-08-20",
+  "updated_at": "2026-08-22",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -12,6 +12,17 @@
       "ticker": "SVAC",
       "nom": "Servair Abidjan",
       "secteur": "Services"
+    },
+    {
+      "emetteur": "VIVO ENERGY CI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-25",
+      "date_ex_dividende": "2026-09-24",
+      "montant_net_fcfa": 96.67,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260821_-_avis_ndeg249_brvmdg_-_paiement_de_dividendes_-_exercice_2025_-_vivo_energy_ci.pdf",
+      "ticker": "SHEC",
+      "nom": "Vivo Energy CI",
+      "secteur": "Distribution"
     },
     {
       "emetteur": "NESTLE CI",
