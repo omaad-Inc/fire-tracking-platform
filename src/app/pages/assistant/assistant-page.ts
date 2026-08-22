@@ -124,7 +124,8 @@ import { DashboardService } from '../service/dashboard.service';
                     [streaming]="svc.streaming()"
                     [confirmPending]="svc.pendingConfirm() !== null"
                     (send)="svc.send($event)"
-                    (typing)="composerHasText.set($event)"
+                    (typing)="onComposerTyping($event)"
+                    (composerFocus)="warmForIntent()"
                     (stop)="svc.stop()" />
                 <p class="text-center text-[11px] text-surface-400 dark:text-surface-500 mt-1.5 px-4 select-none">
                     {{ t('assistant.inputHint') }}
@@ -218,6 +219,10 @@ export class AssistantPage implements OnInit, AfterViewInit, OnDestroy {
     /** True while the composer holds a draft -> the empty state drops its
      *  starter chips so a tall mobile draft never covers them. */
     readonly composerHasText = signal(false);
+    /** One warm per page visit: the server also refuses a warm while the prefix
+     *  is hot, so a stray extra call costs nothing, but there is no reason to
+     *  make it. */
+    private warmRequested = false;
 
     /** Undo affordance for "New conversation" (the server reset is delayed to
      *  this window, so undo restores the thread with the agent's memory intact). */
@@ -262,13 +267,10 @@ export class AssistantPage implements OnInit, AfterViewInit, OnDestroy {
         // snapshot). Fire-and-forget: an empty/failed summary just keeps the
         // recording-led variant.
         void this.dashboard.loadDashboard();
-        // PERF-4: warm the prompt cache for this user's landing agent so the
-        // first real message reads a warm prefix instead of paying the cold
-        // start. Real transport only (the mock driver makes no model calls);
-        // fire-and-forget: a failed warm just means the first turn is slower.
-        if (this.flags.aiChat()) {
-            this.api.warmChat().subscribe({ error: () => { /* best-effort */ } });
-        }
+        // PERF-4 warming moved OFF page entry (cost audit 2026-08-22): 103 of
+        // 147 prod warms were never followed by a message inside the cache TTL,
+        // i.e. 71% of the warm spend paid for a prefix nobody used. The warm now
+        // fires on the first sign of intent instead — see onComposerTyping.
         // Deep-linkable scenario for device demos: /assistant?scenario=bulk_confirm
         const wanted = this.route.snapshot.queryParamMap.get('scenario') as MockScenarioId | null;
         if (wanted && MOCK_SCENARIO_IDS.includes(wanted)) {
@@ -300,6 +302,27 @@ export class AssistantPage implements OnInit, AfterViewInit, OnDestroy {
         // and we don't want the same four suggestions on every "Ask AI" arrival.
         this.composerHasText.set(true);
         this.flushPrefill();
+    }
+
+    /** Text appearing in the composer is the backstop intent signal, for paths
+     *  that fill the box without a focus event first (the ?ask= deep link and a
+     *  starter-chip prefill both go through `prefill`, which emits `typing`).
+     *  Warming on intent instead of on page entry is what stops us paying for
+     *  visitors who open the assistant, read the last thread and leave: 103 of
+     *  147 prod warms were never used (cost audit 2026-08-22). */
+    onComposerTyping(hasText: boolean): void {
+        this.composerHasText.set(hasText);
+        if (hasText) this.warmForIntent();
+    }
+
+    /** Warm the prompt cache once per visit, on the first sign the user means to
+     *  send something (composer focus, or text appearing via typing / a prefill).
+     *  Focus comes first and buys the most lead time; typing is the backstop for
+     *  any path that fills the box without focusing it. */
+    warmForIntent(): void {
+        if (this.warmRequested || !this.flags.aiChat()) return;
+        this.warmRequested = true;
+        this.api.warmChat().subscribe({ error: () => { /* best-effort */ } });
     }
 
     /** Seed the composer with the staged "Ask AI" question once the input exists.

@@ -31,6 +31,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                 [disabled]="confirmPending"
                 [(ngModel)]="draft"
                 (ngModelChange)="autosize()"
+                (focus)="composerFocus.emit()"
                 (keydown.enter)="onEnter($event)"
                 [attr.aria-label]="t('assistant.inputAria')"
                 autocomplete="off"
@@ -75,6 +76,12 @@ export class ChatInputBarComponent {
     /** True while the composer holds text -> lets the empty state hide its
      *  starter chips (on mobile a tall draft would otherwise cover them). */
     @Output() typing = new EventEmitter<boolean>();
+    /** Fires when the user focuses the composer — the earliest reliable sign a
+     *  message is coming, and the moment the page uses to warm the prompt cache
+     *  (cost audit 2026-08-22). Focus is intentional on mobile: it opens the
+     *  keyboard. Emitted on every focus; the page warms once per visit and the
+     *  server refuses a warm while the prefix is hot. */
+    @Output() composerFocus = new EventEmitter<void>();
 
     @ViewChild('box') box?: ElementRef<HTMLTextAreaElement>;
 
