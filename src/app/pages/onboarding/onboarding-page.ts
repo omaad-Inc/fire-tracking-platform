@@ -566,12 +566,17 @@ export class OnboardingPage implements OnDestroy {
     }
 
     // ── Handoff ────────────────────────────────────────────────────────────
-    private async handoff(): Promise<void> {
+    private handoff(): void {
         this.beat.set('done');
-        // Mark complete, then ALWAYS navigate: the asset is already saved, so a
-        // rare completion failure must never strand the user on the done screen
-        // (a missed flag only re-prompts onboarding on the next login).
-        try { await this.write('mark_onboarding_complete', {}); } catch { /* proceed */ }
+        // Fire the completion write and ALWAYS navigate: the asset is already
+        // saved, so a rare failure must never strand the user on the done screen
+        // (a missed flag only re-prompts onboarding on the next login). write()
+        // is deliberately not awaited (it swallows its own failure), so nothing
+        // here delays the dashboard. This request overlaps the objective write
+        // fired in the same tick from pickObjective(); for a brand-new user both
+        // create the UserAiProfile row, so the server-side get-or-create is
+        // race-safe (it was not, and the loser's write was silently dropped).
+        this.write('mark_onboarding_complete', {});
         this.goDashboard();
     }
 
