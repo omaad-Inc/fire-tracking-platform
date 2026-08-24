@@ -962,6 +962,11 @@ export interface SubscriptionStatus {
     renewal_type: RenewalTypeName | null;
     current_period_end: string | null;
     cancel_at: string | null;
+    /** The paid period has ended but access persists for a few more days.
+     *  Without this the card could only say "Active / expires in 0 days",
+     *  which hid the lapse instead of prompting a renewal. */
+    in_grace: boolean;
+    grace_ends_at: string | null;
 }
 
 /** AI usage meter for one bucket. `period_end` is the reset date for a period
