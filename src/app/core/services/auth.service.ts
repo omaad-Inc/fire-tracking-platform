@@ -451,9 +451,21 @@ export class AuthService {
         } else {
             // Server-side error
             if (error.error?.detail) {
-                errorMessage = typeof error.error.detail === 'string' 
-                    ? error.error.detail 
-                    : JSON.stringify(error.error.detail);
+                const detail = error.error.detail;
+                if (typeof detail === 'string') {
+                    errorMessage = detail;
+                } else if (Array.isArray(detail) && detail.length) {
+                    // FastAPI/Pydantic 422: detail is an array of field errors.
+                    // JSON.stringify'ing it showed the user raw JSON and buried
+                    // the actual message — which matters now that validators
+                    // return something worth reading ("Did you mean gmail.com?").
+                    const first = detail[0];
+                    errorMessage = (typeof first?.msg === 'string' ? first.msg : JSON.stringify(detail))
+                        // Pydantic prefixes custom ValueErrors with "Value error, ".
+                        .replace(/^Value error,\s*/i, '');
+                } else {
+                    errorMessage = JSON.stringify(detail);
+                }
             } else if (error.status === 401) {
                 errorMessage = 'Invalid credentials';
             } else if (error.status === 400) {
