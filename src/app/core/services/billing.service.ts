@@ -19,6 +19,7 @@ export type SubscriptionUiState =
     | 'active_auto'
     | 'cancelling'
     | 'past_due'
+    | 'grace'
     | 'expired';
 
 @Injectable({ providedIn: 'root' })
@@ -48,6 +49,10 @@ export class BillingService {
         if (!s.plan) return s.beta_courtesy ? 'beta' : 'free';
         if (s.status === 'expired' || s.status === 'cancelled') return 'expired';
         if (s.cancel_at) return 'cancelling';           // active, but won't renew
+        // Lapsed but still inside the grace window. Checked BEFORE the active
+        // states: the row is still ACTIVE, so without this the card rendered
+        // "Actif — Expire dans 0 jour(s)" and read like a healthy plan.
+        if (s.in_grace) return 'grace';
         if (s.status === 'past_due') return 'past_due';  // card dunning window
         return s.renewal_type === 'auto' ? 'active_auto' : 'active_prepaid';
     });

@@ -16,12 +16,14 @@ import { CurrencyService } from '../../../core/services/currency.service';
 const SUB_FREE: SubscriptionStatus = {
     effective_plan: 'free', beta_courtesy: false, plan: null,
     status: null, renewal_type: null, current_period_end: null, cancel_at: null,
+    in_grace: false, grace_ends_at: null,
 };
 const SUB_BETA: SubscriptionStatus = { ...SUB_FREE, beta_courtesy: true };
 const SUB_PRO_PREPAID: SubscriptionStatus = {
     effective_plan: 'pro', beta_courtesy: false, plan: 'pro',
     status: 'active', renewal_type: 'prepaid',
     current_period_end: '2099-01-01T00:00:00Z', cancel_at: null,
+    in_grace: false, grace_ends_at: null,
 };
 const SUB_PREMIUM_PREPAID: SubscriptionStatus = {
     ...SUB_PRO_PREPAID, effective_plan: 'premium', plan: 'premium',

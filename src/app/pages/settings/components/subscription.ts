@@ -66,6 +66,11 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{{ t('subscription.pills.active') }}
                                 </span>
                             }
+                            @case ('grace') {
+                                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>{{ t('subscription.pills.lapsed') }}
+                                </span>
+                            }
                             @case ('cancelling') {
                                 <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>{{ t('subscription.pills.ending') }}
@@ -111,6 +116,15 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                                 <div class="text-[12.5px] mt-1 tabular-nums" [ngClass]="hMuted()">{{ periodEndLabel() }}</div>
                             </div>
                             <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.renewOneClick')"
+                                    icon="pi pi-refresh" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
+                        }
+                        @case ('grace') {
+                            <div class="relative mt-4 pt-4 border-t" [ngClass]="hBorder()">
+                                <div class="text-[15px] font-semibold">{{ t('subscription.graceEndedOn', { date: periodEndDate() }) }}</div>
+                                <div class="text-[12.5px] mt-1 tabular-nums" [ngClass]="hMuted()">{{ t('subscription.graceAccessUntil', { date: graceEndsDate() }) }}</div>
+                            </div>
+                            <p class="relative mt-3 text-sm leading-relaxed max-w-[38ch]" [ngClass]="hBody()">{{ t('subscription.body.grace') }}</p>
+                            <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.renewNow')"
                                     icon="pi pi-refresh" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('active_auto') {
@@ -177,7 +191,7 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                         </div>
 
                         <div class="mt-3 text-[12px] text-surface-400 dark:text-surface-500 tabular-nums">
-                            {{ u.period_end ? t('subscription.usage.resetsOn', { date: resetLabel() }) : t('subscription.usage.freeGrant') }}
+                            {{ u.period_end ? (windowClosed(u.period_end) ? t('subscription.usage.periodEndedOn', { date: resetLabel() }) : t('subscription.usage.resetsOn', { date: resetLabel() })) : t('subscription.usage.freeGrant') }}
                         </div>
                     </section>
                 }
@@ -229,7 +243,7 @@ import { PlanCheckoutSheet } from './plan-checkout-sheet';
                             </div>
 
                             <div class="mt-3 text-[12px] text-surface-400 dark:text-surface-500 tabular-nums">
-                                {{ a.period_end ? t('subscription.usage.resetsOn', { date: advisorResetLabel() }) : t('subscription.usage.advisorPreviewNote') }}
+                                {{ a.period_end ? (windowClosed(a.period_end) ? t('subscription.usage.periodEndedOn', { date: advisorResetLabel() }) : t('subscription.usage.resetsOn', { date: advisorResetLabel() })) : t('subscription.usage.advisorPreviewNote') }}
                             </div>
                         } @else {
                             <p class="text-[13px] leading-snug text-surface-600 dark:text-surface-300">{{ t('subscription.usage.advisorLockedNote') }}</p>
@@ -441,6 +455,17 @@ export class SubscriptionSettings implements OnInit {
     }
     resetLabel(): string {
         return this.fmtDate(this.usage()?.period_end);
+    }
+
+    /** True once a bucket's window has closed — during grace the quota window is
+     *  the period that already ended, so "resets on <past date>" would be a lie.
+     *  The allowance genuinely does not refill until the user renews. */
+    windowClosed(iso: string | null | undefined): boolean {
+        return !!iso && new Date(iso).getTime() <= Date.now();
+    }
+
+    graceEndsDate(): string {
+        return this.fmtDate(this.subscription()?.grace_ends_at);
     }
 
     fmtDate(iso: string | null | undefined): string {
