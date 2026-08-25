@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-08-24",
+  "updated_at": "2026-08-25",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -682,17 +682,6 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20250515_-_avis_ndeg108_brvmdg_-_paiement_de_dividendes_exo_2024_-_boa_sn.pdf",
       "ticker": "BOAS",
       "nom": "BOA Sénégal",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BICI CI",
-      "exercice": 2024,
-      "date_paiement": "2025-05-23",
-      "date_ex_dividende": "2025-05-21",
-      "montant_net_fcfa": 944.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250502_-_avis_ndeg090_brvmdg_-_paiement_de_dividendes_exercice_2024_-_bicici.pdf",
-      "ticker": "BICC",
-      "nom": "BICICI",
       "secteur": "Banque"
     }
   ]
