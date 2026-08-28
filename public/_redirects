@@ -3,4 +3,9 @@
 # tools, /outils/**) en FR et EN, index.html racine, assets. Tout le reste
 # (routes applicatives : /fr/dashboard, /share/**, …) retombe sur le shell
 # client-side.
+# L'ancienne politique de confidentialité bilingue vit désormais en FR sur
+# /confidentialite/ (page exigée par Google Play). 301 pour les URLs indexées.
+/fr/legal/privacy /confidentialite/ 301
+/en/legal/privacy /confidentialite/ 301
+
 /* /index.csr.html 200

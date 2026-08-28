@@ -9,8 +9,6 @@
 /en/qui-sommes-nous
 /fr/legal/mentions
 /en/legal/mentions
-/fr/legal/privacy
-/en/legal/privacy
 /fr/legal/terms
 /en/legal/terms
 /fr/tools/fire-simulator
@@ -29,6 +27,8 @@
 /en/blog/preparer-retraite-brvm
 /fr/blog/compte-titres-parcours-reel
 /en/blog/compte-titres-parcours-reel
+/fr/blog/comparer-sgi-brvm
+/en/blog/comparer-sgi-brvm
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm
@@ -76,3 +76,6 @@
 /outils/strategie-brvm
 /outils/strategie-brvm/detachements
 /outils/strategie-brvm/simulateur
+/confidentialite
+/supprimer-mon-compte
+/support

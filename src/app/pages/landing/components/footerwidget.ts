@@ -61,6 +61,7 @@ import { NewsletterSignup } from './newsletter-signup';
                                 <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>
                                 <li><a routerLink="/outils/comparateur-sgi-brvm" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</a></li>
                                 <li><a routerLink="/outils/strategie-brvm" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</a></li>
+                                <li><a routerLink="/support" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Support', 'Support') }}</a></li>
                             </ul>
                         </div>
 
@@ -77,9 +78,10 @@ import { NewsletterSignup } from './newsletter-signup';
                         <div class="col-span-6 md:col-span-3 lg:col-span-2">
                             <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.legalTitle') }}</h4>
                             <ul class="space-y-3">
-                                <li><a [routerLink]="[currentLang, 'legal', 'privacy']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
+                                <li><a routerLink="/confidentialite" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'legal', 'terms']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
                                 <li><a [routerLink]="[currentLang, 'legal', 'mentions']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalMentions') }}</a></li>
+                                <li><a routerLink="/supprimer-mon-compte" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Supprimer mon compte', 'Delete my account') }}</a></li>
                             </ul>
                         </div>
                     </div>

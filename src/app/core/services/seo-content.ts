@@ -118,17 +118,8 @@ export const SEO_PAGES = {
             description: 'Legal notice for the Omaad website and application.',
         },
     },
-    legalPrivacy: {
-        path: '/legal/privacy',
-        fr: {
-            title: 'Politique de confidentialité — Omaad',
-            description: "Comment Omaad collecte, utilise et protège vos données personnelles.",
-        },
-        en: {
-            title: 'Privacy policy — Omaad',
-            description: 'How Omaad collects, uses and protects your personal data.',
-        },
-    },
+    // legalPrivacy retiré : la politique de confidentialité vit désormais sur
+    // /confidentialite (FR only, sans :lang), SEO géré dans confidentialite.ts.
     legalTerms: {
         path: '/legal/terms',
         fr: {

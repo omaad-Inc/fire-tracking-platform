@@ -70,11 +70,22 @@ export const appRoutes: Routes = [
             { path: 'simulateur', loadComponent: () => import('./app/pages/tools/strategie-brvm/simulateur.page').then(m => m.StrategieSimulateurPage) },
         ],
     },
+    // Pages légales publiques exigées par Google Play (FR, sans préfixe :lang,
+    // prérendues) : politique de confidentialité + chemin de suppression de
+    // compte joignable depuis le web (store/LISTING_PACK.md "Blocking URLs").
+    { path: 'confidentialite', loadComponent: () => import('./app/pages/landing/components/confidentialite').then(m => m.ConfidentialitePage) },
+    { path: 'supprimer-mon-compte', loadComponent: () => import('./app/pages/landing/components/supprimer-mon-compte').then(m => m.SupprimerMonComptePage) },
+    // Support URL exigée par App Store Connect (utile aussi côté Play).
+    { path: 'support', loadComponent: () => import('./app/pages/landing/components/support').then(m => m.SupportPage) },
+
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },
     { path: ':lang/faq', loadComponent: () => import('./app/pages/landing/components/faq').then(m => m.FaqPage) },
     { path: ':lang/legal/mentions', loadComponent: () => import('./app/pages/landing/components/legal-mentions').then(m => m.LegalMentionsPage) },
-    { path: ':lang/legal/privacy', loadComponent: () => import('./app/pages/landing/components/legal-privacy').then(m => m.LegalPrivacyPage) },
+    // L'ancienne politique bilingue /:lang/legal/privacy est remplacée par
+    // /confidentialite (Netlify 301 dans public/_redirects pour les URLs déjà
+    // indexées ; cette route couvre les navigations internes côté SPA).
+    { path: ':lang/legal/privacy', redirectTo: '/confidentialite' },
     { path: ':lang/legal/terms', loadComponent: () => import('./app/pages/landing/components/legal-terms').then(m => m.LegalTermsPage) },
     { path: ':lang/qui-sommes-nous', loadComponent: () => import('./app/pages/landing/components/qui-sommes-nous').then(m => m.QuiSommesNousPage) },
     { path: ':lang/about', loadComponent: () => import('./app/pages/landing/components/qui-sommes-nous').then(m => m.QuiSommesNousPage) },
