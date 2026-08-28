@@ -6,6 +6,8 @@
  * web-native blocks, zero em dashes) and is fetched on demand by the reader.
  * Editions are a numbered series and display in ascending order (#000 first).
  */
+import { SITE_ORIGIN } from '../../../core/services/seo.service';
+
 export interface BlogPost {
     edition: string;
     slug: string;
@@ -15,29 +17,33 @@ export interface BlogPost {
     tags: string[];
     excerpt: string;
     readingMinutes: number;
-    coverImage: string;           // unique per post
+    coverImage: string;           // unique per post, app-relative (assets/…)
     contentPath: string;          // normalized blocks JSON
 }
 
-// One distinct cover per edition (verified reachable). No two posts share one.
+// One distinct cover per edition, self-hosted. These used to be hotlinked from
+// images.unsplash.com, which meant a cover could vanish for reasons we do not
+// control (CDN reachability from West Africa, blockers, hotlink policy). They
+// are now served from our own origin, so they are also service-worker cached
+// and satisfy a strict `img-src 'self'`. Index N is edition #NNN.
 const COVERS = [
-    'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1604594849809-dfedbc827105?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1579621970590-9d624316904b?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1591696205602-2f950c417cb9?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&q=80&auto=format',
-    'https://images.unsplash.com/photo-1448630360428-65456885c650?w=1200&q=80&auto=format',
+    'assets/blog/covers/edition-000.jpg',
+    'assets/blog/covers/edition-001.jpg',
+    'assets/blog/covers/edition-002.jpg',
+    'assets/blog/covers/edition-003.jpg',
+    'assets/blog/covers/edition-004.jpg',
+    'assets/blog/covers/edition-005.jpg',
+    'assets/blog/covers/edition-006.jpg',
+    'assets/blog/covers/edition-007.jpg',
+    'assets/blog/covers/edition-008.jpg',
+    'assets/blog/covers/edition-009.jpg',
+    'assets/blog/covers/edition-010.jpg',
+    'assets/blog/covers/edition-011.jpg',
+    'assets/blog/covers/edition-012.jpg',
+    'assets/blog/covers/edition-013.jpg',
+    'assets/blog/covers/edition-014.jpg',
+    'assets/blog/covers/edition-015.jpg',
+    'assets/blog/covers/edition-016.jpg',
 ];
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -279,3 +285,16 @@ export function findPostBySlug(slug: string): BlogPost | undefined {
     const post = BLOG_POSTS.find(p => p.slug === slug);
     return post && isPostPublished(post) ? post : undefined;
 }
+
+/**
+ * Absolute URL for a cover, for Open Graph / Twitter / JSON-LD, which reject a
+ * relative path. `coverImage` is app-relative so the <img> works under any
+ * locale prefix; social crawlers need the fully qualified form.
+ */
+export function absoluteCoverUrl(coverImage: string): string {
+    if (coverImage.startsWith('http')) return coverImage;
+    return `${SITE_ORIGIN}${coverImage.startsWith('/') ? '' : '/'}${coverImage}`;
+}
+
+/** Shown when a cover fails to load, so a card never renders an empty box. */
+export const COVER_FALLBACK = 'assets/blog/covers/fallback.svg';

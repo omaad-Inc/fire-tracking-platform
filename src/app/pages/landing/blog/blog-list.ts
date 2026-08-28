@@ -8,7 +8,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN, withTrailingSlash } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
 import { AnalyticsService } from '../../../core/services/analytics.service';
-import { BlogPost, publishedPosts } from './posts';
+import { BlogPost, COVER_FALLBACK, absoluteCoverUrl, publishedPosts } from './posts';
 
 @Component({
     selector: 'app-blog-list',
@@ -69,7 +69,8 @@ import { BlogPost, publishedPosts } from './posts';
                             <div class="relative aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800">
                                 <img [src]="post.coverImage" [alt]="post.title"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                     loading="lazy" />
+                                     width="1200" height="750" loading="lazy" decoding="async"
+                                     (error)="onCoverError($event)" />
                                 <span class="absolute top-3 left-3 px-2 py-1 rounded-md bg-brand-900/90 text-white text-[10px] font-bold tracking-widest">
                                     #{{ post.edition }}
                                 </span>
@@ -174,7 +175,6 @@ export class BlogList implements OnDestroy {
      *  Google can associate the articles with the collection and surface it for
      *  blog/topic queries. Each post URL uses the trailing-slash 200 form. */
     private setBlogJsonLd(): void {
-        const abs = (p: string) => (p.startsWith('http') ? p : `${SITE_ORIGIN}${p.startsWith('/') ? '' : '/'}${p}`);
         const blogUrl = withTrailingSlash(`${SITE_ORIGIN}/${this.lang}/blog`);
         this.seo.setJsonLd('jsonld-blog', {
             '@context': 'https://schema.org',
@@ -194,7 +194,7 @@ export class BlogList implements OnDestroy {
                 headline: p.title,
                 datePublished: p.date,
                 url: withTrailingSlash(`${SITE_ORIGIN}/${this.lang}/blog/${p.slug}`),
-                image: abs(p.coverImage),
+                image: absoluteCoverUrl(p.coverImage),
                 description: p.excerpt
             }))
         });
@@ -202,6 +202,13 @@ export class BlogList implements OnDestroy {
 
     ngOnDestroy(): void {
         this.seo.removeJsonLd('jsonld-blog');
+    }
+
+    /** A cover that fails to load falls back to the brand plate, never an empty box. */
+    onCoverError(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        if (img.src.endsWith(COVER_FALLBACK)) return;
+        img.src = COVER_FALLBACK;
     }
 
     formatDate(iso: string): string {
