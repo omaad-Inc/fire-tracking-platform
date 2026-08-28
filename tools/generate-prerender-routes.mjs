@@ -41,6 +41,11 @@ const strategieRoutes = [
     '/outils/strategie-brvm/simulateur',
 ];
 
+// ── Pages légales exigées par Google Play (FR only, no :lang prefix) ──
+// /confidentialite remplace l'ancienne /:lang/legal/privacy (301 Netlify) ;
+// /supprimer-mon-compte est le chemin de suppression web exigé par Play.
+const legalRoutes = ['/confidentialite', '/supprimer-mon-compte'];
+
 // ── Blog article slugs (parsed from the static posts metadata) ──
 // Only editions whose newsletter has already been SENT (send `date` today or
 // earlier) are prerendered/sitemapped; unsent future editions must not leak to
@@ -65,7 +70,6 @@ const LANG_PATHS = [
     '/faq',
     '/qui-sommes-nous',
     '/legal/mentions',
-    '/legal/privacy',
     '/legal/terms',
     '/tools/fire-simulator',
     '/tools/compound-interest',
@@ -84,7 +88,7 @@ const langRoutes = [...LANG_PATHS, ...NOINDEX_LANG_PATHS].flatMap((p) => LANGS.m
 
 // ── prerender-routes.txt ──
 // '/' (home) renders the landing too; keep it so the bare origin is prerendered.
-const prerenderRoutes = ['/', ...langRoutes, ...comparateurRoutes, ...strategieRoutes];
+const prerenderRoutes = ['/', ...langRoutes, ...comparateurRoutes, ...strategieRoutes, ...legalRoutes];
 writeFileSync(
     new URL('../prerender-routes.txt', import.meta.url),
     prerenderRoutes.join('\n') + '\n'
@@ -106,7 +110,7 @@ const xml = (path) => {
 };
 
 const langEntries = LANG_PATHS.map(xml).join('\n');
-const sgiEntries = [...comparateurSitemapRoutes, ...strategieRoutes]
+const sgiEntries = [...comparateurSitemapRoutes, ...strategieRoutes, ...legalRoutes]
     .map((r) => `    <url><loc>${ORIGIN}${slash(r)}</loc></url>`)
     .join('\n');
 
@@ -118,4 +122,4 @@ ${sgiEntries}
 </urlset>
 `;
 writeFileSync(new URL('../public/sitemap.xml', import.meta.url), sitemap);
-console.log(`sitemap.xml généré : ${LANG_PATHS.length * LANGS.length + comparateurSitemapRoutes.length + strategieRoutes.length} URLs indexables (dont ${blogSlugs.length} articles × ${LANGS.length} ; ${sgiDetailAll.length - sgiDetailIndexable.length} fiches SGI thin exclues → noindex)`);
+console.log(`sitemap.xml généré : ${LANG_PATHS.length * LANGS.length + comparateurSitemapRoutes.length + strategieRoutes.length + legalRoutes.length} URLs indexables (dont ${blogSlugs.length} articles × ${LANGS.length} ; ${sgiDetailAll.length - sgiDetailIndexable.length} fiches SGI thin exclues → noindex)`);

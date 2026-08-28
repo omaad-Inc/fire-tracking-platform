@@ -179,7 +179,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                             {{ t('auth.register.legalPre') }}
                             <a [routerLink]="[currentLang, 'legal', 'terms']" target="_blank" class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.terms') }}</a>
                             {{ t('auth.register.and') }}
-                            <a [routerLink]="[currentLang, 'legal', 'privacy']" target="_blank" class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.privacy') }}</a>
+                            <a routerLink="/confidentialite" target="_blank" class="text-brand-700 dark:text-brand-300 hover:underline cursor-pointer">{{ t('auth.register.privacy') }}</a>
                         </p>
                     </form>
                 </div>
