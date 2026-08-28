@@ -55,7 +55,7 @@ const GROUP_SLOT: Record<string, number> = {
 // Group labels are resolved via i18n at render time (patrimoine.groups.<id>).
 const GROUPS = [
     { id: 'real_estate',    icon: 'pi pi-building',   bg: GROUP_BG, categories: ['real_estate'] },
-    { id: 'stocks_bonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
+    { id: 'stocks_bonds',   icon: 'pi pi-chart-line', bg: GROUP_BG, categories: ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds'] },
     { id: 'savings',        icon: 'pi pi-dollar',     bg: GROUP_BG, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
     { id: 'crypto',         icon: 'pi pi-bitcoin',    bg: GROUP_BG, categories: ['crypto'] },
     { id: 'tontine',        icon: 'pi pi-users',      bg: GROUP_BG, categories: ['tontine'] },

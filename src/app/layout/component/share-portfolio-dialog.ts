@@ -7,7 +7,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 
 const ALL_CATEGORIES = [
-    'real_estate', 'stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'cash',
+    'real_estate', 'stocks_brvm', 'stocks_intl', 'fcp', 'bonds', 'crypto', 'cash',
     'savings_account', 'mobile_money', 'retirement', 'life_insurance',
     'business', 'vehicle', 'tontine', 'commodities', 'collectibles', 'other',
 ];

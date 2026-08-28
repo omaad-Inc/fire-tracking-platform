@@ -19,7 +19,7 @@ import {
 
 // Categories that a brokerage statement can plausibly hold.
 const HOLDING_CATS: AssetCategory[] = [
-    'stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'commodities', 'other',
+    'stocks_brvm', 'stocks_intl', 'fcp', 'bonds', 'crypto', 'commodities', 'other',
 ];
 
 type Step = 'upload' | 'review';

@@ -10,7 +10,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { ApiService, AssetCreate, AssetCategory, BrvmInstrument } from '../../../core/services/api.service';
+import { ApiService, AssetCreate, AssetCategory, BrvmInstrument, FcpInstrument } from '../../../core/services/api.service';
 import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes.guard';
 import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
@@ -369,6 +369,26 @@ interface CategoryCard {
                                                 </span>
                                             </button>
                                         </div>
+                                        } @else if (assetForm.category === 'fcp') {
+                                        <!-- FCP/OPCVM: same Finary-style tappable row, opens the fund
+                                             picker sheet; the form never expands or shifts. -->
+                                        <div class="flex flex-col gap-2 md:col-span-2">
+                                            <span id="aa-fcp-label" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fcp.pickLabel') }} <span class="text-negative">*</span></span>
+                                            <button type="button" (click)="openFcpSheet()" aria-labelledby="aa-fcp-label" [attr.aria-haspopup]="'dialog'"
+                                                    class="w-full flex items-center justify-between gap-3 py-3 text-left cursor-pointer
+                                                           border-b border-surface-300 dark:border-surface-600
+                                                           focus-visible:outline-none focus-visible:border-brand-700 dark:focus-visible:border-ochre-400 transition-colors">
+                                                <span class="truncate" [class.text-surface-500]="!assetForm.name" [class.dark:text-surface-400]="!assetForm.name">
+                                                    {{ assetForm.name || t('addAssets.fcp.pickPlaceholder') }}
+                                                </span>
+                                                <span class="flex items-center gap-2 shrink-0">
+                                                    @if (assetForm.ticker && fcpPickedSgo()) {
+                                                        <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-ochre-50 text-ochre-700 dark:bg-ochre-500/15 dark:text-ochre-300 max-w-40 truncate">{{ fcpPickedSgo() }}</span>
+                                                    }
+                                                    <i class="pi pi-chevron-right text-surface-400 !text-xs" aria-hidden="true"></i>
+                                                </span>
+                                            </button>
+                                        </div>
                                         } @else {
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <label for="aa-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
@@ -446,16 +466,18 @@ interface CategoryCard {
                                         <!-- QUANTITY-BASED -->
                                         @if (isQuantityBased()) {
                                             <div class="flex flex-col gap-2">
-                                                <label for="aa-qty" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.quantity') }}</label>
-                                                <p-inputnumber inputId="aa-qty" styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event < 1) ? 1 : $event"
-                                                    mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="0" [min]="1" [allowEmpty]="false"
+                                                <!-- FCP parts can be fractional (unlike share counts). -->
+                                                <label for="aa-qty" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ assetForm.category === 'fcp' ? t('addAssets.fcp.quantityLabel') : t('addAssets.fields.quantity') }}</label>
+                                                <p-inputnumber inputId="aa-qty" styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event <= 0) ? 1 : $event"
+                                                    mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="assetForm.category === 'fcp' ? 4 : 0" [min]="assetForm.category === 'fcp' ? 0.0001 : 1" [allowEmpty]="false"
                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
                                             </div>
                                             <div class="flex flex-col gap-2">
-                                                @if (assetForm.category === 'stocks_brvm') {
-                                                <!-- BRVM (S9-B1): current value per share leads; purchase
-                                                     price is demoted to the optional details below. -->
-                                                <label for="aa-unit-cur-ess" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.currentPricePerShare') }} <span class="text-negative">*</span></label>
+                                                @if (assetForm.category === 'stocks_brvm' || assetForm.category === 'fcp') {
+                                                <!-- BRVM (S9-B1) + FCP: current value per share/part leads;
+                                                     purchase price is demoted to the optional details below.
+                                                     For FCP the picker prefills the latest published VL. -->
+                                                <label for="aa-unit-cur-ess" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ assetForm.category === 'fcp' ? t('addAssets.fcp.currentVlPerUnit') : t('addAssets.brvm.currentPricePerShare') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-unit-cur-ess" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                         inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
@@ -544,7 +566,7 @@ interface CategoryCard {
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
                                                     <!-- Current unit value (quantity-based). For BRVM this
                                                          leads as an essential above, so it is not repeated here. -->
-                                                    @if (isQuantityBased() && assetForm.category !== 'stocks_brvm') {
+                                                    @if (isQuantityBased() && assetForm.category !== 'stocks_brvm' && assetForm.category !== 'fcp') {
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-unit-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
                                                             <div class="relative">
@@ -555,11 +577,11 @@ interface CategoryCard {
                                                         </div>
                                                     }
 
-                                                    <!-- BRVM (S9-B1): purchase price per share, optional. Affects
-                                                         performance history only; current value is what leads. -->
-                                                    @if (assetForm.category === 'stocks_brvm') {
+                                                    <!-- BRVM (S9-B1) + FCP: purchase price per share/part, optional.
+                                                         Affects performance history only; current value is what leads. -->
+                                                    @if (assetForm.category === 'stocks_brvm' || assetForm.category === 'fcp') {
                                                         <div class="flex flex-col gap-2">
-                                                            <label for="aa-brvm-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.purchasePricePerShare') }}</label>
+                                                            <label for="aa-brvm-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ assetForm.category === 'fcp' ? t('addAssets.fcp.purchasePricePerUnit') : t('addAssets.brvm.purchasePricePerShare') }}</label>
                                                             <div class="relative">
                                                                 <p-inputnumber inputId="aa-brvm-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
                                                                     inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
@@ -1053,6 +1075,96 @@ interface CategoryCard {
                     </div>
                 </div>
             </p-dialog>
+
+            <!-- FCP/OPCVM fund picker sheet: same Finary-style full-screen sheet
+                 as the BRVM picker (shared brvm-sheet skin), plus a category
+                 chip row (117 funds vs 47 stocks) and the latest VL per row. -->
+            <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="fcpSheetOpen()" (visibleChange)="fcpSheetOpen.set($event)" [modal]="true"
+                      [draggable]="false" [resizable]="false" [showHeader]="false" [dismissableMask]="false"
+                      [closeOnEscape]="true" appendTo="body" styleClass="brvm-sheet" [blockScroll]="true"
+                      ariaLabelledBy="fcp-sheet-title" (onShow)="focusFcpSearch()">
+                <div class="flex flex-col h-full">
+                    <div class="flex items-center justify-between gap-2 px-4 sm:px-6 pt-4 pb-1 shrink-0">
+                        <button type="button" (click)="fcpOtherMode() ? fcpOtherMode.set(false) : closeFcpSheet()"
+                                [attr.aria-label]="t('common.back')"
+                                class="w-9 h-9 -ml-2 flex items-center justify-center rounded-full hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer text-surface-600 dark:text-surface-300">
+                            <i class="pi pi-chevron-left" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" (click)="closeFcpSheet()" [attr.aria-label]="t('common.close')"
+                                class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 cursor-pointer text-surface-600 dark:text-surface-300">
+                            <i class="pi pi-times !text-sm" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 min-h-0 overflow-y-auto">
+                        <div class="w-full max-w-3xl mx-auto px-5 sm:px-8 pb-10">
+                            <h2 id="fcp-sheet-title" class="text-2xl sm:text-3xl font-bold text-surface-900 dark:text-surface-0 mt-1 mb-6 sm:mb-8">{{ t('addAssets.fcp.sheetTitle') }}</h2>
+
+                            @if (!fcpOtherMode()) {
+                                <div class="relative mb-5 sm:mb-6">
+                                    <i class="pi pi-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-400" aria-hidden="true"></i>
+                                    <input #fcpSearchInput pInputText type="text" [ngModel]="fcpSearch()" (ngModelChange)="fcpSearch.set($event)"
+                                           [attr.aria-label]="t('addAssets.fcp.searchPlaceholder')" [placeholder]="t('addAssets.fcp.searchPlaceholder')"
+                                           class="w-full !text-base !py-3 !pl-8 !bg-transparent !border-0 !border-b-2 !border-ochre-300 dark:!border-ochre-500/50 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400 !shadow-none" />
+                                </div>
+
+                                <!-- Category chips (Actions / Obligations / Diversifié / Monétaire) -->
+                                <div class="flex flex-wrap gap-2 mb-5">
+                                    @for (g of FCP_GROUPS; track g) {
+                                        <button type="button" (click)="fcpCatFilter.set(g)"
+                                                [attr.aria-pressed]="fcpCatFilter() === g"
+                                                class="px-3 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-colors border"
+                                                [ngClass]="fcpCatFilter() === g
+                                                    ? 'bg-brand-700 text-white border-brand-700 dark:bg-ochre-500/20 dark:text-ochre-300 dark:border-ochre-500/50'
+                                                    : 'bg-transparent text-surface-600 dark:text-surface-300 border-surface-300 dark:border-surface-600 hover:bg-surface-100 dark:hover:bg-surface-800'">
+                                            {{ t('addAssets.fcp.groups.' + g) }}
+                                        </button>
+                                    }
+                                </div>
+
+                                <p class="text-sm text-surface-500 dark:text-surface-400 mb-1">{{ t('addAssets.fcp.listLabel') }}</p>
+
+                                <div>
+                                    @for (inst of filteredFcpInstruments(); track inst.slug) {
+                                        <button type="button" (click)="pickFcpInstrument(inst)"
+                                                class="w-full flex items-center gap-3 sm:gap-4 py-3 rounded-xl text-left cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors">
+                                            <span class="shrink-0 w-11 h-11 rounded-full bg-brand-50 dark:bg-brand-700/25 text-brand-700 dark:text-ochre-300 flex items-center justify-center text-xs font-bold" aria-hidden="true">{{ fcpBadge(inst) }}</span>
+                                            <span class="flex-1 min-w-0">
+                                                <span class="block truncate text-surface-900 dark:text-surface-0 font-medium">{{ inst.name }}</span>
+                                                <span class="block text-xs text-surface-500 dark:text-surface-400 truncate">{{ inst.sgo }}{{ inst.category ? ' · ' + inst.category : '' }}</span>
+                                            </span>
+                                            @if (inst.latest_vl) {
+                                                <span class="shrink-0 text-xs text-surface-500 dark:text-surface-400 tabular-nums">{{ formatVl(inst.latest_vl) }}</span>
+                                            }
+                                            @if (assetForm.ticker === inst.slug) { <i class="pi pi-check text-ochre-500 shrink-0" aria-hidden="true"></i> }
+                                        </button>
+                                    } @empty {
+                                        <p class="text-center text-sm text-surface-400 py-10">{{ t('addAssets.fcp.noMatch') }}</p>
+                                    }
+                                    <!-- Unlisted fallback (new funds launch regularly) -->
+                                    <button type="button" (click)="startFcpOther()"
+                                            class="w-full flex items-center gap-3 sm:gap-4 py-3 mt-1 rounded-xl text-left cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800/60 transition-colors">
+                                        <span class="shrink-0 w-11 h-11 rounded-full border border-dashed border-surface-300 dark:border-surface-600 text-surface-400 flex items-center justify-center" aria-hidden="true"><i class="pi pi-pencil !text-sm"></i></span>
+                                        <span class="flex-1 text-surface-700 dark:text-surface-200">{{ t('addAssets.fcp.other') }}</span>
+                                        <i class="pi pi-chevron-right text-surface-400 !text-xs shrink-0" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            } @else {
+                                <div class="flex flex-col gap-6 max-w-md">
+                                    <div class="flex flex-col gap-2">
+                                        <label for="fcp-other-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fcp.otherLabel') }}</label>
+                                        <input id="fcp-other-name" pInputText type="text" [ngModel]="fcpOtherName()" (ngModelChange)="fcpOtherName.set($event)"
+                                               [placeholder]="t('addAssets.fcp.otherPlaceholder')"
+                                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400" />
+                                    </div>
+                                    <button pButton type="button" [label]="t('common.confirm')" [disabled]="!fcpOtherName().trim()"
+                                            class="omaad-cta !rounded-full self-start !px-8" (click)="confirmFcpOther()"></button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </p-dialog>
         </div>
     `
 })
@@ -1121,6 +1233,64 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     /** Short monogram for a result badge (first two letters of the ticker). */
     brvmBadge(ticker: string): string { return (ticker || '?').slice(0, 2); }
 
+    /**
+     * FCP/OPCVM fund picker: same Finary-style sheet as the BRVM picker.
+     * Selection state lives on assetForm (name + ticker, where ticker holds
+     * the richbourse fund slug); '' means a free-typed name (no auto-revalue).
+     */
+    fcpInstruments = signal<FcpInstrument[]>([]);
+    fcpSheetOpen = signal(false);
+    fcpSearch = signal('');
+    fcpOtherMode = signal(false);
+    fcpOtherName = signal('');
+    /** Category chip filter ('all' or one of FCP_GROUPS). */
+    fcpCatFilter = signal('all');
+    readonly FCP_GROUPS = ['all', 'actions', 'obligations', 'diversifie', 'monetaire'] as const;
+
+    /** Map a verbatim richbourse category label to a chip group. */
+    private fcpGroupOf(category: string | null): string {
+        const c = (category || '').toLowerCase();
+        if (c.startsWith('obligat') || c.includes('créance')) return 'obligations';
+        if (c.startsWith('action') || c.includes('capital-risque')) return 'actions';
+        if (c.startsWith('monétaire') || c.startsWith('monetaire')) return 'monetaire';
+        if (c.startsWith('diversifié') || c.startsWith('diversifie')) return 'diversifie';
+        return 'all';
+    }
+
+    /** Catalog filtered by the chip group + search (name/SGO/category, caseless). */
+    filteredFcpInstruments = computed(() => {
+        const q = this.fcpSearch().trim().toLowerCase();
+        const group = this.fcpCatFilter();
+        let rows = this.fcpInstruments();
+        if (group !== 'all') rows = rows.filter(i => this.fcpGroupOf(i.category) === group);
+        if (!q) return rows;
+        return rows.filter(i =>
+            i.name.toLowerCase().includes(q)
+            || (i.sgo || '').toLowerCase().includes(q)
+            || (i.category || '').toLowerCase().includes(q));
+    });
+
+    /** Monogram for a fund badge: SGO initials (e.g. "CGF GESTION" -> "CG"). */
+    fcpBadge(inst: FcpInstrument): string {
+        const src = inst.sgo || inst.name || '?';
+        const words = src.split(/\s+/).filter(Boolean);
+        return (words.length >= 2 ? words[0][0] + words[1][0] : src.slice(0, 2)).toUpperCase();
+    }
+
+    /** SGO of the currently picked fund (chip on the form's fund row). */
+    fcpPickedSgo(): string {
+        const slug = this.assetForm.ticker;
+        if (!slug) return '';
+        return this.fcpInstruments().find(i => i.slug === slug)?.sgo || '';
+    }
+
+    /** Latest VL for a picker row, plain FCFA (regular spaces: U+202F renders
+     *  as tofu on some devices, the CFA numbers bug). */
+    formatVl(vl: number): string {
+        const s = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(vl);
+        return s.replace(/[\u202F\u00A0]/g, ' ') + ' FCFA';
+    }
+
     assetForm: AssetFormData = {
         name: '', description: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
         purchaseDate: '', institution: '', owners: [],
@@ -1165,10 +1335,11 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return this.cs.symbolFor(c);
     }
 
-    // Two-tier duotone chrome (S7b PA-1): the four West-Africa hero classes
-    // (our differentiators: immobilier, BRVM, tontine, mobile money) carry the
-    // ochre accent; every other class stays in the navy/neutral family. One
-    // accent, two families — hierarchy and brand story without rainbow soup.
+    // Two-tier duotone chrome (S7b PA-1): the West-Africa hero classes
+    // (our differentiators: immobilier, BRVM, FCP/OPCVM, tontine, mobile
+    // money) carry the ochre accent; every other class stays in the
+    // navy/neutral family. One accent, two families — hierarchy and brand
+    // story without rainbow soup.
     private static readonly HERO_BG = 'bg-gradient-to-br from-ochre-50 to-ochre-100 dark:from-ochre-900/50 dark:to-surface-800';
     private static readonly HERO_FG = 'text-ochre-700 dark:text-ochre-400';
     private static readonly CARD_BG = 'bg-gradient-to-br from-brand-50 to-surface-100 dark:from-brand-600/40 dark:to-surface-800';
@@ -1185,6 +1356,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         const values: { value: AssetCategory; icon: string; hero?: boolean }[] = [
             { value: 'real_estate',     icon: 'pi-home',       hero: true },
             { value: 'stocks_brvm',     icon: 'pi-chart-line', hero: true },
+            { value: 'fcp',             icon: 'pi-chart-pie',  hero: true },
             { value: 'tontine',         icon: 'pi-users',      hero: true },
             { value: 'mobile_money',    icon: 'pi-mobile',     hero: true },
             { value: 'cash',            icon: 'pi-wallet' },
@@ -1268,6 +1440,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             // form directly, passing deepLink explicitly (never re-read below).
             this.selectCategory(cat as AssetCategory, true);
             if (this.assetForm.category === 'stocks_brvm') this.loadBrvmInstruments();
+            if (this.assetForm.category === 'fcp') this.loadFcpInstruments();
             // Strip ?category so the URL bar is clean and going back / re-picking
             // a class behaves as a fresh choice (not a stale deep-link).
             this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
@@ -1333,6 +1506,11 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         this.brvmOtherMode.set(false);
         this.brvmSearch.set('');
         this.brvmOtherName.set('');
+        this.fcpSheetOpen.set(false);
+        this.fcpOtherMode.set(false);
+        this.fcpSearch.set('');
+        this.fcpOtherName.set('');
+        this.fcpCatFilter.set('all');
         this.currentStep.set(0);
     }
 
@@ -1387,6 +1565,63 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         this.assetForm.ticker = '';
         this.assetForm.name = name;
         this.brvmSheetOpen.set(false);
+    }
+
+    // ── FCP/OPCVM fund picker (mirrors the BRVM sheet flow) ──────────────
+
+    /** Fetch the FCP catalog once (idempotent), when the FCP form is in play. */
+    private loadFcpInstruments(): void {
+        if (this.fcpInstruments().length) return;
+        this.api.getFcpInstruments().subscribe({
+            next: rows => this.fcpInstruments.set(rows),
+            error: () => { /* picker degrades to free-text via the "Autre" path */ },
+        });
+    }
+
+    @ViewChild('fcpSearchInput') private fcpSearchInput?: ElementRef<HTMLInputElement>;
+
+    /** Open the full-screen fund sheet (loads the catalog on first open). */
+    openFcpSheet(): void {
+        this.loadFcpInstruments();
+        this.fcpSearch.set('');
+        this.fcpCatFilter.set('all');
+        this.fcpOtherMode.set(false);
+        this.fcpOtherName.set(this.assetForm.ticker ? '' : this.assetForm.name);
+        this.fcpSheetOpen.set(true);
+    }
+
+    focusFcpSearch(): void {
+        setTimeout(() => this.fcpSearchInput?.nativeElement.focus(), 50);
+    }
+
+    closeFcpSheet(): void { this.fcpSheetOpen.set(false); }
+
+    /**
+     * Pick a catalog fund from the sheet: fills name + slug (in ticker),
+     * defaults amounts to FCFA (UEMOA funds are valued in XOF) and prefills
+     * the per-part value with the latest published VL, then closes the sheet.
+     */
+    pickFcpInstrument(inst: FcpInstrument): void {
+        this.assetForm.ticker = inst.slug;
+        this.assetForm.name = inst.name;
+        this.assetForm.currency = 'XOF';
+        if (inst.latest_vl && inst.latest_vl > 0) this.assetForm.currentPrice = inst.latest_vl;
+        this.fcpSheetOpen.set(false);
+    }
+
+    /** Switch the sheet to the "Autre (non listé)" free-text sub-screen. */
+    startFcpOther(): void {
+        this.fcpOtherMode.set(true);
+        this.fcpOtherName.set('');
+    }
+
+    /** Confirm a free-typed (unlisted) fund: name only, no slug (no auto-revalue). */
+    confirmFcpOther(): void {
+        const name = this.fcpOtherName().trim();
+        if (!name) return;
+        this.assetForm.ticker = '';
+        this.assetForm.name = name;
+        this.fcpSheetOpen.set(false);
     }
 
     // ── Real-estate multi-section wizard (S9 UI, Finary-style) ───────────
@@ -1528,7 +1763,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     isQuantityBased(): boolean {
-        return ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'collectibles', 'commodities'].includes(this.assetForm.category);
+        return ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds', 'crypto', 'collectibles', 'commodities'].includes(this.assetForm.category);
     }
 
     isSimpleBalanceCategory(): boolean {
@@ -1536,7 +1771,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     }
 
     isInstitutionBased(): boolean {
-        return ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
+        return ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds', 'crypto', 'life_insurance', 'savings_account', 'cash', 'real_estate'].includes(this.assetForm.category);
     }
 
     private static readonly NAME_PH_CATS = ['tontine', 'mobile_money', 'real_estate', 'stocks_brvm', 'stocks_intl', 'crypto', 'vehicle'];
@@ -1546,14 +1781,14 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return this.i18n.t(key);
     }
 
-    private static readonly INST_LABEL_CATS = ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'savings_account', 'cash', 'life_insurance', 'real_estate'];
+    private static readonly INST_LABEL_CATS = ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds', 'crypto', 'savings_account', 'cash', 'life_insurance', 'real_estate'];
     institutionLabel(): string {
         const cat = this.assetForm.category;
         const key = AddAssetPage.INST_LABEL_CATS.includes(cat) ? `addAssets.wizard.instLabel.${cat}` : 'addAssets.wizard.instLabel.default';
         return this.i18n.t(key);
     }
 
-    private static readonly INST_PH_CATS = ['stocks_brvm', 'stocks_intl', 'crypto', 'savings_account', 'cash', 'life_insurance', 'real_estate'];
+    private static readonly INST_PH_CATS = ['stocks_brvm', 'stocks_intl', 'fcp', 'crypto', 'savings_account', 'cash', 'life_insurance', 'real_estate'];
     institutionPlaceholder(): string {
         const cat = this.assetForm.category;
         return AddAssetPage.INST_PH_CATS.includes(cat) ? this.i18n.t(`addAssets.wizard.instPh.${cat}`) : '';
@@ -1574,9 +1809,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         // (purchase or current) is enough to save; everything else is optional.
         if (f.category === 'real_estate') return f.purchasePrice > 0 || f.currentPrice > 0;
         if (f.category === 'vehicle') return f.purchasePrice > 0;
-        // BRVM (S9-B1): essentials are the picked stock (name) + current value per
-        // share; purchase price is demoted to the optional details disclosure.
-        if (f.category === 'stocks_brvm') return !!f.name.trim() && f.currentPrice > 0;
+        // BRVM (S9-B1) + FCP: essentials are the picked instrument (name) +
+        // current value per share/part; purchase price is demoted to the
+        // optional details disclosure.
+        if (f.category === 'stocks_brvm' || f.category === 'fcp') return !!f.name.trim() && f.currentPrice > 0;
         if (this.isQuantityBased()) return f.purchasePrice > 0;
         return f.currentPrice > 0;
     }
@@ -1686,9 +1922,10 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                     location: f.region || undefined,
                     notes: isQtyBased ? JSON.stringify({ quantity: qty }) : (reNotes || undefined),
                     quantity: isQtyBased ? qty : undefined,
-                    // BRVM (S9-B1): persist the catalog ticker so the S9-B2 engine
-                    // can revalue this holding automatically. '' for free-typed.
-                    ticker: f.category === 'stocks_brvm' && f.ticker ? f.ticker : undefined,
+                    // Market picker identity: brvm.org ticker (STOCKS_BRVM) or
+                    // richbourse fund slug (FCP), so the market engines can
+                    // revalue this holding automatically. '' for free-typed.
+                    ticker: (f.category === 'stocks_brvm' || f.category === 'fcp') && f.ticker ? f.ticker : undefined,
                     surface_m2: isRE && f.surfaceM2 > 0 ? f.surfaceM2 : undefined,
                     price_per_m2_purchase: isRE && f.surfaceM2 > 0 && f.purchasePrice > 0
                         ? Math.round(f.purchasePrice / f.surfaceM2) : undefined,

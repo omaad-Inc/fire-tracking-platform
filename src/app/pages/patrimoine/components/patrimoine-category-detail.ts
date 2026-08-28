@@ -30,7 +30,7 @@ const BRAND_COLOR = '#1A2740';
 // Group labels are resolved via i18n at render time (patrimoine.groups.<id>).
 const GROUPS: GroupConfig[] = [
     { id: 'real_estate',    icon: 'pi pi-building',   bg: BRAND_BG, color: BRAND_COLOR, categories: ['real_estate'] },
-    { id: 'stocks_bonds',   icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks_brvm', 'stocks_intl', 'bonds'] },
+    { id: 'stocks_bonds',   icon: 'pi pi-chart-line', bg: BRAND_BG, color: BRAND_COLOR, categories: ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds'] },
     { id: 'savings',        icon: 'pi pi-dollar',     bg: BRAND_BG, color: BRAND_COLOR, categories: ['savings_account', 'cash', 'life_insurance', 'retirement'] },
     { id: 'crypto',         icon: 'pi pi-bitcoin',    bg: BRAND_BG, color: BRAND_COLOR, categories: ['crypto'] },
     { id: 'tontine',        icon: 'pi pi-users',      bg: BRAND_BG, color: BRAND_COLOR, categories: ['tontine'] },

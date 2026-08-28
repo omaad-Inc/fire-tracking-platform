@@ -49,6 +49,7 @@ const CATEGORY_COLORS_LIGHT: Record<string, string> = {
     'real_estate':    '#1A2740', // brand-700 (anchor)
     'stocks_brvm':    '#C77B3C', // ochre-500 (accent, BRVM identity)
     'stocks_intl':    '#8B4F26', // deep ochre, international stocks
+    'fcp':            '#C77B3C', // ochre-500, same as BRVM (owner directive: one UEMOA-market color)
     'bonds':          '#4D5F80', // brand-400
     'crypto':         '#D8A369', // ochre-400
     'cash':           '#3D3B35', // warm-700
@@ -73,6 +74,7 @@ const CATEGORY_COLORS_DARK: Record<string, string> = {
     'real_estate':    '#5B84C4', // steel blue (anchor)
     'stocks_brvm':    '#C77B3C', // ochre, BRVM identity
     'stocks_intl':    '#B0574A', // terracotta, sibling of BRVM
+    'fcp':            '#C77B3C', // ochre, same as BRVM (owner directive: one UEMOA-market color)
     'savings_account':'#A98F2C', // gold (épargne)
     'cash':           '#2FA3B5', // teal (liquid)
     'tontine':        '#B6699F', // mauve
