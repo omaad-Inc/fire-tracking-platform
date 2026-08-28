@@ -21,6 +21,7 @@ export function getAssetFormShape(category: AssetCategory): AssetFormShape {
         case 'savings_account': return 'SIMPLE_BALANCE';
         case 'stocks_brvm':
         case 'stocks_intl':
+        case 'fcp':
         case 'bonds':
         case 'crypto':
         case 'commodities':     return 'QUANTITY_BASED';

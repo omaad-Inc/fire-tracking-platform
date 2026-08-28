@@ -91,7 +91,7 @@ import { nbspSafe } from '../../../core/util/nbsp';
                         </div>
                         @if (asset()!.quote_as_of) {
                             <p class="text-surface-400 dark:text-surface-500 text-xs mt-1.5">
-                                <i class="pi pi-sync text-[10px] mr-1" aria-hidden="true"></i>{{ t('assetDetail.brvmClose', { date: formatShortDate(asset()!.quote_as_of!) }) }}
+                                <i class="pi pi-sync text-[10px] mr-1" aria-hidden="true"></i>{{ t(asset()!.category === 'fcp' ? 'assetDetail.fcpVl' : 'assetDetail.brvmClose', { date: formatShortDate(asset()!.quote_as_of!) }) }}
                             </p>
                         }
                         @if (gainLoss() !== null) {
@@ -783,7 +783,7 @@ export class AssetDetailPage implements OnInit {
         mobileMoneyOperator: '',
     };
 
-    readonly QUANTITY_CATEGORIES = ['stocks_brvm', 'stocks_intl', 'bonds', 'crypto', 'collectibles', 'commodities'];
+    readonly QUANTITY_CATEGORIES = ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds', 'crypto', 'collectibles', 'commodities'];
     isQuantityBased = computed(() => this.QUANTITY_CATEGORIES.includes(this.asset()?.category ?? ''));
 
     /** The form shape for the currently-loaded asset, drives the edit modal switch. */
@@ -1152,7 +1152,7 @@ export class AssetDetailPage implements OnInit {
         const cat = this.asset()?.category;
         const catToGroup: Record<string, string> = {
             real_estate: 'real_estate',
-            stocks_brvm: 'stocks_bonds', stocks_intl: 'stocks_bonds', bonds: 'stocks_bonds',
+            stocks_brvm: 'stocks_bonds', stocks_intl: 'stocks_bonds', fcp: 'stocks_bonds', bonds: 'stocks_bonds',
             savings_account: 'savings', cash: 'savings', life_insurance: 'savings', retirement: 'savings',
             crypto: 'crypto',
             business: 'other', vehicle: 'other', collectibles: 'other', commodities: 'other', other: 'other',

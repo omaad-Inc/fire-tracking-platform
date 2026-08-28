@@ -14,6 +14,7 @@ export type AssetCategory =
     | 'real_estate'
     | 'stocks_brvm'
     | 'stocks_intl'
+    | 'fcp'
     | 'bonds'
     | 'crypto'
     | 'cash'
@@ -139,6 +140,19 @@ export interface BrvmInstrument {
     sector: string | null;
     country: string | null;
     currency: string;
+}
+
+/** A pickable FCP/OPCVM fund (UEMOA). `slug` is the richbourse fund id,
+ *  stored on assets.ticker so the FCP engine can revalue the holding;
+ *  latest_vl/vl_as_of prefill the per-part value in the add wizard. */
+export interface FcpInstrument {
+    slug: string;
+    name: string;
+    sgo: string | null;
+    category: string | null;
+    currency: string;
+    latest_vl: number | null;
+    vl_as_of: string | null;
 }
 
 export interface TontineCycleView {
@@ -1198,6 +1212,11 @@ export class ApiService {
     /** The pickable BRVM equity universe (S9-B1): reference data for the picker. */
     getBrvmInstruments(): Observable<BrvmInstrument[]> {
         return this.http.get<BrvmInstrument[]>(`${this.apiUrl}/market/brvm/instruments`);
+    }
+
+    /** The pickable FCP/OPCVM fund universe: reference data for the picker. */
+    getFcpInstruments(): Observable<FcpInstrument[]> {
+        return this.http.get<FcpInstrument[]>(`${this.apiUrl}/market/fcp/instruments`);
     }
 
     // ========== TONTINE CYCLES ==========
