@@ -78,3 +78,4 @@
 /outils/strategie-brvm/simulateur
 /confidentialite
 /supprimer-mon-compte
+/support

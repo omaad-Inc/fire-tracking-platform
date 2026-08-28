@@ -75,6 +75,8 @@ export const appRoutes: Routes = [
     // compte joignable depuis le web (store/LISTING_PACK.md "Blocking URLs").
     { path: 'confidentialite', loadComponent: () => import('./app/pages/landing/components/confidentialite').then(m => m.ConfidentialitePage) },
     { path: 'supprimer-mon-compte', loadComponent: () => import('./app/pages/landing/components/supprimer-mon-compte').then(m => m.SupprimerMonComptePage) },
+    // Support URL exigée par App Store Connect (utile aussi côté Play).
+    { path: 'support', loadComponent: () => import('./app/pages/landing/components/support').then(m => m.SupportPage) },
 
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },

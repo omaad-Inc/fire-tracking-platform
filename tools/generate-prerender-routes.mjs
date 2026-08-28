@@ -41,10 +41,11 @@ const strategieRoutes = [
     '/outils/strategie-brvm/simulateur',
 ];
 
-// ── Pages légales exigées par Google Play (FR only, no :lang prefix) ──
+// ── Pages exigées par les stores (FR only, no :lang prefix) ──
 // /confidentialite remplace l'ancienne /:lang/legal/privacy (301 Netlify) ;
-// /supprimer-mon-compte est le chemin de suppression web exigé par Play.
-const legalRoutes = ['/confidentialite', '/supprimer-mon-compte'];
+// /supprimer-mon-compte est le chemin de suppression web exigé par Play ;
+// /support est la Support URL exigée par App Store Connect.
+const legalRoutes = ['/confidentialite', '/supprimer-mon-compte', '/support'];
 
 // ── Blog article slugs (parsed from the static posts metadata) ──
 // Only editions whose newsletter has already been SENT (send `date` today or

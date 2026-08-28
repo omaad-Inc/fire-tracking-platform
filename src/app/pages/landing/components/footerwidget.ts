@@ -61,6 +61,7 @@ import { NewsletterSignup } from './newsletter-signup';
                                 <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>
                                 <li><a routerLink="/outils/comparateur-sgi-brvm" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</a></li>
                                 <li><a routerLink="/outils/strategie-brvm" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</a></li>
+                                <li><a routerLink="/support" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Support', 'Support') }}</a></li>
                             </ul>
                         </div>
 
