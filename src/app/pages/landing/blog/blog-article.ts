@@ -11,7 +11,7 @@ import { NewsletterSignup } from '../components/newsletter-signup';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
-import { BlogPost, findPostBySlug, publishedPosts } from './posts';
+import { BlogPost, COVER_FALLBACK, absoluteCoverUrl, findPostBySlug, publishedPosts } from './posts';
 
 /** Normalized web-native blocks (assets/blog/edition-NNN.json, built by
  *  resources/build_blog.py). No em dashes, no email HTML. */
@@ -101,7 +101,9 @@ interface RBlock {
                     <!-- Cover -->
                     <div class="max-w-[860px] mx-auto mb-12 md:mb-16">
                         <img [src]="p.coverImage" [alt]="p.title"
-                             class="w-full aspect-[16/9] object-cover rounded-2xl shadow-sm" />
+                             class="w-full aspect-[16/9] object-cover rounded-2xl shadow-sm"
+                             width="1200" height="750" decoding="async"
+                             (error)="onCoverError($event)" />
                     </div>
 
                     <!-- Body -->
@@ -251,7 +253,9 @@ interface RBlock {
                                        class="group block rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-ochre-500/40 hover:shadow-md transition-all">
                                         <div class="aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800">
                                             <img [src]="r.coverImage" [alt]="r.title"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                 width="1200" height="750" loading="lazy" decoding="async"
+                                                 (error)="onCoverError($event)" />
                                         </div>
                                         <div class="p-4">
                                             <div class="text-[10px] font-bold tracking-widest text-ochre-600 dark:text-ochre-400 mb-1">ÉDITION #{{ r.edition }}</div>
@@ -415,17 +419,24 @@ export class BlogArticle implements OnInit, OnDestroy {
         });
     }
 
+    /** A cover that fails to load falls back to the brand plate, never an empty box. */
+    onCoverError(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        if (img.src.endsWith(COVER_FALLBACK)) return;
+        img.src = COVER_FALLBACK;
+    }
+
     private applyArticleSeo(p: BlogPost): void {
         const text = { title: `${p.title} · Omaad`, description: p.excerpt };
         const path = `/blog/${p.slug}`;
-        this.seo.applyLocalized({ lang: this.lang as Lang, path, fr: text, en: text, image: p.coverImage, ogType: 'article' });
+        this.seo.applyLocalized({ lang: this.lang as Lang, path, fr: text, en: text, image: absoluteCoverUrl(p.coverImage), ogType: 'article' });
         this.seo.setJsonLd('jsonld-article', {
             '@context': 'https://schema.org',
             '@type': 'Article',
             headline: p.title,
             description: p.excerpt,
             datePublished: p.date,
-            image: p.coverImage,
+            image: absoluteCoverUrl(p.coverImage),
             author: { '@type': 'Organization', name: 'Omaad' },
             publisher: {
                 '@type': 'Organization',
