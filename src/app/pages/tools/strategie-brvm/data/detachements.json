@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-08-25",
+  "updated_at": "2026-08-28",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -22,6 +22,17 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20260821_-_avis_ndeg249_brvmdg_-_paiement_de_dividendes_-_exercice_2025_-_vivo_energy_ci.pdf",
       "ticker": "SHEC",
       "nom": "Vivo Energy CI",
+      "secteur": "Distribution"
+    },
+    {
+      "emetteur": "NEI-CEDA CI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-10",
+      "date_ex_dividende": "2026-09-09",
+      "montant_net_fcfa": 159.54,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260827_-_avis_ndeg252_brvmdg_-_paiement_de_dividendes_exo_2025_-_nei-ceda_ci.pdf",
+      "ticker": "NEIC",
+      "nom": "NEI-CEDA CI",
       "secteur": "Distribution"
     },
     {
