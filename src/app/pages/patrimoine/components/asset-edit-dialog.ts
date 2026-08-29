@@ -79,6 +79,14 @@ export class AssetEditDialogComponent {
         return this.asset?.category ? getAssetFormShape(this.asset.category) : 'TOTAL_VALUE';
     }
 
+    /** A catalog-resolved market holding (BRVM stock / FCP fund with a
+     *  ticker/slug): its name IS the catalog's, so it cannot be free-typed
+     *  into a divergent spelling here (the backend drops renames too). */
+    isCanonicalInstrument(): boolean {
+        return !!this.asset?.ticker
+            && (this.asset.category === 'stocks_brvm' || this.asset.category === 'fcp');
+    }
+
     get tontineStatusOptions() {
         return [
             { value: 'en_cours',   label: this.t('assetDetail.tontineStatusInProgress') },

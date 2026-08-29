@@ -136,6 +136,7 @@ export const FR = {
     sincePurchase: 'depuis l\'achat',
     brvmClose: 'Cours BRVM, clôture du {{date}}',
     fcpVl: 'VL du {{date}}',
+    canonicalNameLocked: 'Titre du catalogue officiel : le nom n\'est pas modifiable.',
     brvmHistoryTitle: 'Historique & performance BRVM',
     brvmHistoryBuilding: 'L\'historique des cours se constitue jour après jour. Revenez bientôt pour voir la courbe.',
     brvmCostBasis: 'Prix de revient',

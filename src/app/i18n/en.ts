@@ -138,6 +138,7 @@ export const EN: Dict = {
     sincePurchase: 'since purchase',
     brvmClose: 'BRVM price, close of {{date}}',
     fcpVl: 'NAV of {{date}}',
+    canonicalNameLocked: 'Official catalog security: the name cannot be edited.',
     brvmHistoryTitle: 'BRVM history & performance',
     brvmHistoryBuilding: 'Price history builds up day by day. Check back soon to see the curve.',
     brvmCostBasis: 'Cost basis',

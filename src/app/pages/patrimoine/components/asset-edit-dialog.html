@@ -19,13 +19,24 @@
     </ng-template>
     <ng-template #content>
         <div class="space-y-6 pt-2 omaad-form">
-            <!-- Name (shared across all shapes) -->
+            <!-- Name (shared across all shapes). A catalog-resolved market
+                 holding (BRVM stock / FCP with a ticker) keeps its canonical
+                 identity: the name is read-only, the backend drops renames
+                 anyway (owner-89 duplicate incident). -->
             <div class="flex flex-col gap-1.5">
                 <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.assetName') }}</label>
                 <input pInputText [(ngModel)]="form.name"
                        [placeholder]="t('assetDetail.assetName')"
+                       [readonly]="isCanonicalInstrument()"
+                       [class.opacity-60]="isCanonicalInstrument()"
                        data-testid="asset-name-input"
                        class="w-full" />
+                @if (isCanonicalInstrument()) {
+                    <p class="text-xs text-surface-400 dark:text-surface-500 m-0 flex items-center gap-1.5">
+                        <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-ochre-50 text-ochre-700 dark:bg-ochre-500/15 dark:text-ochre-300">{{ asset!.ticker }}</span>
+                        {{ t('assetDetail.canonicalNameLocked') }}
+                    </p>
+                }
             </div>
 
             @switch (formShape()) {
