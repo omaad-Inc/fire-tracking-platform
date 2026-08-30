@@ -370,124 +370,17 @@ export class DashboardService {
         }
     }
 
-    /**
-     * Compute worth progression client-side using asset purchase_date + linear interpolation.
-     * months = 0 → all-time view: starts 3 months before the earliest purchase_date.
-     * months > 0 → last N months.
-     */
-    private async computeProgressionClientSide(months: number, categories?: string[]): Promise<{
-        labels: string[];
-        assets: number[];
-        debts: number[];
-        netWorth: number[];
-    }> {
-        const [allAssets, debts] = await Promise.all([
-            firstValueFrom(this.api.getAssets(0, 200)),
-            // The category view charts assets only, skip the debts request.
-            categories ? Promise.resolve([]) : firstValueFrom(this.api.getDebts(0, 100))
-        ]);
-        const assets = categories
-            ? allAssets.filter(a => categories.includes(a.category ?? ''))
-            : allAssets;
-
-        // Values from the API are NATIVE (multi-currency), every figure must
-        // go through FX to the EUR base before being summed or interpolated.
-        const toEur = (v: number, c: string | null | undefined) =>
-            this.currencyService.toEurFromNative(v, c);
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        // Determine the start of the chart window
-        let startDate: Date;
-        if (months === 0) {
-            // All-time: find earliest purchase_date among all assets
-            let earliest = new Date(today);
-            for (const asset of assets) {
-                if (asset.purchase_date) {
-                    const d = new Date(asset.purchase_date);
-                    if (d < earliest) earliest = d;
-                }
-            }
-            // Start 3 months before first purchase so curve clearly starts from 0
-            startDate = new Date(earliest.getFullYear(), earliest.getMonth() - 3, 1);
-        } else {
-            startDate = new Date(today.getFullYear(), today.getMonth() - (months - 1), 1);
-        }
-
-        // Build monthly point list from startDate to today
-        const pointDates: Date[] = [];
-        let cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-        while (cur <= today) {
-            pointDates.push(new Date(cur));
-            cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
-        }
-
-        const MONTH_NAMES = this.monthNames();
-        const labels: string[] = [];
-        const assetsArr: number[] = [];
-        const debtsArr: number[] = [];
-        const netWorthArr: number[] = [];
-
-        const lastIdx = pointDates.length - 1;
-        for (let idx = 0; idx < pointDates.length; idx++) {
-            const pointDate = pointDates[idx];
-            const monthsAgo = lastIdx - idx; // how many months before current
-
-            // For the current month point, use actual current values, no interpolation
-            const isCurrentMonth =
-                pointDate.getFullYear() === today.getFullYear() &&
-                pointDate.getMonth() === today.getMonth();
-
-            let totalAssets = 0;
-            for (const asset of assets) {
-                const currentEur = toEur(asset.current_value, asset.currency);
-                if (!asset.purchase_date) {
-                    totalAssets += currentEur;
-                    continue;
-                }
-                const assetStart = new Date(asset.purchase_date);
-                if (assetStart <= pointDate) {
-                    if (isCurrentMonth) {
-                        // This IS the current value, no interpolation needed
-                        totalAssets += currentEur;
-                    } else {
-                        // Historical point: interpolate linearly from purchase to current
-                        const purchaseVal = asset.purchase_value != null
-                            ? toEur(asset.purchase_value, asset.currency)
-                            : currentEur;
-                        const totalDays = Math.max(1, (today.getTime() - assetStart.getTime()) / 86_400_000);
-                        const elapsed = Math.max(0, (pointDate.getTime() - assetStart.getTime()) / 86_400_000);
-                        const pct = Math.min(1, elapsed / totalDays);
-                        totalAssets += purchaseVal + (currentEur - purchaseVal) * pct;
-                    }
-                }
-                // asset not yet acquired at this point → skip (value = 0)
-            }
-
-            let totalDebts = 0;
-            for (const debt of debts) {
-                if (debt.type === 'i_owe') {
-                    const monthly = debt.monthly_payment ?? 0;
-                    totalDebts += toEur(debt.current_amount + monthly * monthsAgo, debt.currency);
-                }
-            }
-
-            const year = pointDate.getFullYear();
-            const month = pointDate.getMonth();
-            // Compact label: always show year on January or first point
-            const showYear = month === 0 || idx === 0;
-            labels.push(showYear ? `${MONTH_NAMES[month]} ${year}` : MONTH_NAMES[month]);
-            assetsArr.push(Math.round(totalAssets));
-            debtsArr.push(Math.round(totalDebts));
-            netWorthArr.push(Math.max(0, Math.round(totalAssets - totalDebts)));
-        }
-
-        return { labels, assets: assetsArr, debts: debtsArr, netWorth: netWorthArr };
-    }
+    // computeProgressionClientSide lived here: it drew a straight line from
+    // each asset's purchase price to its value today and, for an asset with no
+    // purchase_date, repeated today's value across every past month. It
+    // reported figures that were never measured and could not react to a
+    // transaction. Every chart that used it now reads a real series (the
+    // worth-progression snapshots, or /assets/history/by-category), so it is
+    // deliberately gone rather than left around to be reached for again.
 
     /**
-     * Get worth progression for line chart (client-side interpolation)
+     * Net-worth progression: real persisted snapshots per month, today's live
+     * totals for the current month.
      */
     async getWorthProgression(months: number = 12): Promise<ChartDataPoint[]> {
         return this.worthProgressionResource(months).load();
@@ -504,51 +397,45 @@ export class DashboardService {
             // reuses the /dashboard/summary payload when available) over
             // client-side interpolation; fall back to the client computation
             // when the endpoint is unavailable or for all-time (months=0).
+            // months = 0 is the UI's "Max"; the endpoint counts real months, so
+            // ask for a long window rather than falling back to the client-side
+            // interpolation this replaced.
             try {
-                if (months > 0) {
-                    const rows = await firstValueFrom(this.api.getWorthProgression(months));
-                    if (rows?.length) {
-                        return rows.map(r => ({ label: this.formatDateLabel(r.date), value: Math.round(r.net_worth) }));
-                    }
+                const rows = await firstValueFrom(
+                    this.api.getWorthProgression(months === 0 ? 120 : months)
+                );
+                if (rows?.length) {
+                    return rows.map(r => ({ label: this.formatDateLabel(r.date), value: Math.round(r.net_worth) }));
                 }
-            } catch { /* fall through to the client-side computation */ }
-            try {
-                const { labels, netWorth } = await this.computeProgressionClientSide(months);
-                return labels.map((label, idx) => ({ label, value: netWorth[idx] }));
-            } catch {
-                return [];
-            }
+            } catch { /* nothing true to draw */ }
+            return [];
         }, true); // persist: the hero sparkline paints instantly on refresh
     }
 
-    /**
-     * Get worth progression with breakdown (client-side interpolation)
-     */
-    async getWorthProgressionDetailed(months: number = 12): Promise<{
-        labels: string[];
-        assets: number[];
-        debts: number[];
-        netWorth: number[];
-    }> {
-        try {
-            return await this.computeProgressionClientSide(months);
-        } catch (error) {
-            console.error('Error computing worth progression:', error);
-            return { labels: [], assets: [], debts: [], netWorth: [] };
-        }
-    }
 
     /**
-     * Get total assets progression, Patrimoine Total Brut (client-side interpolation)
+     * Gross-assets progression ("Patrimoine Total Brut"): the same snapshot-backed
+     * series, charting total_assets instead of net worth.
      */
     async getTotalAssetsProgression(months: number = 12): Promise<ChartDataPoint[]> {
         return this.progression(`assets_progression_${months}`, async () => {
+            // Real gross assets per month: persisted snapshots where they exist,
+            // otherwise rebuilt server-side from each asset's own source of
+            // truth. NOT the old client-side purchase -> today ramp, which
+            // reported a value for every month that was never measured and
+            // could not react to a transaction. months = 0 is the UI's "Max".
             try {
-                const { labels, assets } = await this.computeProgressionClientSide(months);
-                return labels.map((label, idx) => ({ label, value: assets[idx] }));
-            } catch {
-                return [];
-            }
+                const rows = await firstValueFrom(
+                    this.api.getWorthProgression(months === 0 ? 120 : months)
+                );
+                if (rows?.length) {
+                    return rows.map(r => ({
+                        label: this.formatDateLabel(r.date),
+                        value: Math.round(r.total_assets),
+                    }));
+                }
+            } catch { /* nothing true to draw: an empty chart, not an invented one */ }
+            return [];
         }).load();
     }
 
@@ -566,10 +453,30 @@ export class DashboardService {
     }
 
     private async computeCategoryProgressionClientSide(categories: string[], months: number): Promise<ChartDataPoint[]> {
-        // Same engine as the net-worth progression, filtered to the category
-        // group and charting the assets series only.
-        const { labels, assets } = await this.computeProgressionClientSide(months, categories);
-        return labels.map((label, idx) => ({ label, value: assets[idx] }));
+        // The group's REAL series, summed server-side from each asset's own
+        // source of truth (an account's ledger, a title's quotes, a recorded
+        // value). This used to be interpolated here from purchase_value to
+        // current_value, which drew a FLAT line for any asset without a
+        // purchase_date — every livret and most assurance vie rows — so the
+        // Épargne chart never moved however much money went through it.
+        // months = 0 means "Max" in the UI; the API counts real months.
+        const history = await firstValueFrom(
+            this.api.getCategoryHistory(categories, months === 0 ? 120 : months)
+        );
+        return history.points.map(p => ({
+            label: this.formatMonthLabel(p.date),
+            value: p.value,
+        }));
+    }
+
+    /** 'YYYY-MM-DD' -> 'Août 2026', matching the other charts' labels. Built
+     *  from the parts: `new Date('2026-08-31')` parses as UTC and can render as
+     *  the previous day (hence the previous month) west of GMT. */
+    private formatMonthLabel(iso: string): string {
+        const [y, m] = iso.split('-').map(Number);
+        const names = this.monthNames();
+        if (!y || !m) return iso;
+        return `${names[m - 1]} ${y}`;
     }
 
     // ==================== PRIVATE HELPERS ====================

@@ -8,7 +8,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
-import { ApiService, Asset, BrvmHistory } from '../../../core/services/api.service';
+import { ApiService, Asset, AssetHistory, BrvmHistory } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { NavService } from '../../../core/services/nav.service';
 import { ShareContextService } from '../../../core/services/share-context.service';
@@ -108,7 +108,11 @@ import { nbspSafe } from '../../../core/util/nbsp';
                             </div>
                         }
                     </div>
-                    <!-- Mini chart (SVG sparkline) -->
+                    <!-- Mini chart: the REAL value series. Hidden entirely when
+                         there are fewer than two true points — no decorative
+                         fallback, which is what used to make this look alive
+                         while describing nothing. -->
+                    @if (hasHistory()) {
                     <div class="flex-shrink-0">
                         <svg viewBox="0 0 180 60" width="180" height="60" preserveAspectRatio="none">
                             <defs>
@@ -126,6 +130,7 @@ import { nbspSafe } from '../../../core/util/nbsp';
                                       stroke-linejoin="round" />
                         </svg>
                     </div>
+                    }
                 </div>
             </div>
 
@@ -550,6 +555,52 @@ import { nbspSafe } from '../../../core/util/nbsp';
                 }
             </div>
 
+            <!-- Variation par mois. Every asset with a real series gets it; for a
+                 monetary account it is the month's net movement (salaries in,
+                 spending out), reconstructed from the ledger. Newest first. -->
+            @if (monthlyChanges().length) {
+                <div class="detail-surface mt-6">
+                    <div class="flex items-center justify-between px-5 py-4 border-b border-surface-200 dark:border-surface-700">
+                        <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('assetDetail.monthlyVariationTitle') }}</h3>
+                        @if (history()!.change != null) {
+                            <span class="text-sm font-bold tabular-nums"
+                                  [class.text-positive]="history()!.change! >= 0"
+                                  [class.text-negative]="history()!.change! < 0">
+                                <app-amount [value]="toEur(history()!.change!)"
+                                            [prefix]="history()!.change! >= 0 ? '+' : '-'" />
+                            </span>
+                        }
+                    </div>
+                    <div class="px-5 py-2 divide-y divide-surface-100 dark:divide-surface-800">
+                        @for (m of monthlyChanges(); track m.month) {
+                            <div class="flex items-center justify-between py-2.5">
+                                <span class="text-sm text-surface-600 dark:text-surface-300">{{ formatMonth(m.month) }}</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-sm font-semibold tabular-nums"
+                                          [class.text-positive]="m.change! > 0"
+                                          [class.text-negative]="m.change! < 0"
+                                          [class.text-surface-400]="m.change === 0">
+                                        @if (m.change === 0) {
+                                            {{ t('assetDetail.monthlyVariationFlat') }}
+                                        } @else {
+                                            <app-amount [value]="toEur(m.change!)" [prefix]="m.change! > 0 ? '+' : '-'" />
+                                        }
+                                    </span>
+                                    <span class="text-xs text-surface-400 tabular-nums w-20 text-right">
+                                        <app-amount [value]="toEur(m.value)" />
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (history()!.complete_from) {
+                        <div class="px-5 pb-4 pt-1 text-[11px] text-surface-400">
+                            {{ t('assetDetail.monthlyVariationSince') }} {{ formatShortDate(history()!.complete_from!) }}
+                        </div>
+                    }
+                </div>
+            }
+
             <!-- PRO-3: per-title BRVM price history & performance (plans promise P4).
                  Shown only for tickered BRVM titles once the series has loaded. -->
             @if (showBrvmHistory()) {
@@ -737,6 +788,25 @@ export class AssetDetailPage implements OnInit {
     asset = signal<Asset | null>(null);
     isSaving = signal(false);
     editDialog = false;
+
+    /** The asset's REAL value series, whatever kind it is: an account's balance
+     *  derived from its ledger, a market title's quotes, or the recorded points
+     *  of a manually-valued asset. Null (or empty) means we have nothing true to
+     *  draw — the chart then hides instead of inventing a shape, which is the
+     *  whole point of this: the old hero spark was pseudo-random noise seeded
+     *  from current_value, so an épargne account looked frozen while its balance
+     *  actually moved. */
+    history = signal<AssetHistory | null>(null);
+
+    /** Enough real points to draw a line from. */
+    readonly hasHistory = computed(() => (this.history()?.points.length ?? 0) >= 2);
+
+    /** Months that carry a move, newest first — the "variation par mois" list.
+     *  The first month of a window has nothing to compare against, so it is
+     *  dropped rather than shown as a zero. */
+    readonly monthlyChanges = computed(() =>
+        (this.history()?.monthly ?? []).filter(m => m.change !== null).reverse()
+    );
 
     /** PRO-3: per-title BRVM price history + performance. Loaded lazily in
      *  ngOnInit for tickered BRVM titles only; stays null (panel hidden) for
@@ -1054,6 +1124,14 @@ export class AssetDetailPage implements OnInit {
         try {
             const a = await firstValueFrom(this.apiService.getAsset(id));
             this.asset.set(a);
+            // The real value series, for EVERY asset kind. Skip in share mode
+            // (unauthenticated bundle); a failure just leaves the chart hidden,
+            // which is the honest state when there is nothing to draw.
+            if (!this.share.active()) {
+                try {
+                    this.history.set(await firstValueFrom(this.apiService.getAssetHistory(a.id)));
+                } catch { /* no series: the hero chart stays hidden */ }
+            }
             // PRO-3: pull the BRVM price series for tickered BRVM titles. Skip in
             // share mode (unauthenticated bundle); tolerate the Pro gate/no-data.
             if (a.category === 'stocks_brvm' && a.ticker && !this.share.active()) {
@@ -1093,27 +1171,17 @@ export class AssetDetailPage implements OnInit {
         return `M ${points.replace(/ /g, ' L ')} L ${lastX},${baseline} L ${firstX},${baseline} Z`;
     }
 
-    /** Hero sparkline (180×60). BRVM titles use the REAL close series (empty
-     *  until at least two sessions exist); other categories keep the light
-     *  decorative spark. No pseudo-random data on the BRVM path. */
+    /** Hero sparkline (180×60), drawn from the asset's REAL value series.
+     *
+     *  There is no decorative fallback any more. This used to emit a
+     *  pseudo-random walk seeded from `current_value + id * 1337` for every
+     *  non-BRVM asset, which described nothing: a livret whose balance moved
+     *  with every salary drew the same squiggle, so the chart read as frozen.
+     *  With fewer than two real points we return '' and the template hides the
+     *  chart — an honest blank beats a confident lie. */
     sparklinePoints(): string {
-        const a = this.asset();
-        if (!a) return '';
-        if (this.isBrvmTitle()) {
-            const closes = this.brvmHistory()?.points.map(p => p.close) ?? [];
-            return this.svgPoints(closes, 180, 60);
-        }
-        const isPositive = (this.gainLoss() ?? 0) >= 0;
-        const seed = Math.abs(Math.round(a.current_value + a.id * 1337));
-        const pts: [number, number][] = [];
-        let y = 30;
-        for (let i = 0; i < 10; i++) {
-            const rnd = ((seed * (i + 1) * 7919) % 1000) / 1000;
-            const step = (rnd - 0.4) * 8;
-            y = Math.max(5, Math.min(55, y + step + (isPositive ? 1.5 : -1.5)));
-            pts.push([i * 20, y]);
-        }
-        return pts.map(([x, yv]) => `${x},${60 - yv}`).join(' ');
+        if (!this.asset() || !this.hasHistory()) return '';
+        return this.svgPoints(this.history()!.points.map(p => p.value), 180, 60);
     }
 
     sparklinePath(): string {
@@ -1142,6 +1210,16 @@ export class AssetDetailPage implements OnInit {
         if (!dt) return ', ';
         const [y, m, d] = dt.split('-');
         return `${d}/${m}/${y}`;
+    }
+
+    /** 'YYYY-MM' as a month label ("août 2026"). Built from the parts rather
+     *  than `new Date('2026-08')`, which Safari parses as UTC and can render as
+     *  the previous month in a negative-offset timezone. */
+    formatMonth(month: string): string {
+        const [y, m] = month.split('-').map(Number);
+        if (!y || !m) return month;
+        return new Date(y, m - 1, 1)
+            .toLocaleDateString(this.numLocale, { month: 'long', year: 'numeric' });
     }
 
     goBack() {

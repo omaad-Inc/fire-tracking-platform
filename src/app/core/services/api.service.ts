@@ -73,6 +73,49 @@ export interface Asset {
 
 /** One BRVM session close for a title, in the asset's NATIVE currency
  *  (like Asset.current_value — the client converts to display currency once). */
+/** One point of an asset's real value series. */
+export interface AssetHistoryPoint {
+    date: string;
+    value: number;
+}
+
+/** A month's closing value and the move since the month before. */
+export interface MonthlyChange {
+    month: string;                  // 'YYYY-MM'
+    value: number;
+    change: number | null;          // null for the first month shown
+    change_percent: number | null;
+}
+
+/** An asset's REAL value series, for any asset kind. `source` says where it
+ *  comes from — 'transactions' (an account's balance, derived from its ledger),
+ *  'quotes' (a market title) or 'recorded' (points written down for a
+ *  manually-valued asset). Never fabricated: an asset with no history returns
+ *  an empty `points`, which must render as no chart rather than a decorative
+ *  one. Money is in the asset's native currency. */
+export interface AssetHistory {
+    asset_id: number;
+    currency: string;
+    source: 'transactions' | 'quotes' | 'recorded';
+    points: AssetHistoryPoint[];
+    monthly: MonthlyChange[];
+    change: number | null;
+    change_percent: number | null;
+    complete_from: string | null;   // derived series: earliest trustworthy date
+}
+
+/** A category group's combined series. EUR base, not a native currency: a group
+ *  can hold XOF and EUR assets at once. */
+export interface CategoryHistory {
+    categories: string[];
+    currency: string;
+    points: AssetHistoryPoint[];
+    monthly: MonthlyChange[];
+    change: number | null;
+    change_percent: number | null;
+    complete_from: string | null;
+}
+
 export interface BrvmHistoryPoint {
     as_of: string;
     close: number;
@@ -805,6 +848,10 @@ export interface WorthProgression {
     total_assets: number;
     total_debts: number;
     net_worth: number;
+    /** false when the point is a real persisted snapshot (or today's live
+     *  totals); true when it was rebuilt from the assets' own series because no
+     *  snapshot exists for that month. Never a straight-line guess. */
+    estimated?: boolean;
 }
 
 /**
@@ -1145,6 +1192,24 @@ export class ApiService {
     getAsset(id: number): Observable<Asset> {
         return this.shared<Asset>(b => b.assets.find(a => a.id === id))
             ?? this.http.get<Asset>(`${this.apiUrl}/assets/${id}`);
+    }
+
+    /** An asset's real value series + per-month variation, for ANY asset kind.
+     *  Free (unlike the BRVM panel below): it replaces the decorative chart
+     *  every asset used to show. */
+    getAssetHistory(id: number, months = 12): Observable<AssetHistory> {
+        const params = new HttpParams().set('months', months.toString());
+        return this.http.get<AssetHistory>(`${this.apiUrl}/assets/${id}/history`, { params });
+    }
+
+    /** The combined REAL value series for a group of asset categories, in EUR
+     *  base (a group can mix currencies, so the server converts once). Backs the
+     *  patrimoine category chart. */
+    getCategoryHistory(categories: string[], months = 12): Observable<CategoryHistory> {
+        const params = new HttpParams()
+            .set('categories', categories.join(','))
+            .set('months', months.toString());
+        return this.http.get<CategoryHistory>(`${this.apiUrl}/assets/history/by-category`, { params });
     }
 
     /** PRO-3: BRVM price history + per-title performance for a tickered
