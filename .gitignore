@@ -49,3 +49,6 @@ CLAUDE.md
 
 # Playwright artifacts
 /test-results/
+
+# Playwright screenshot output from the smoke specs (local artifacts).
+e2e-out/
