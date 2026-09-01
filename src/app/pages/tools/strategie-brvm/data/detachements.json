@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-08-28",
+  "updated_at": "2026-09-01",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -671,28 +671,6 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg113_brvmdg_-_paiement_de_dividendes_exo_2024_-_boab.pdf",
       "ticker": "BOAB",
       "nom": "BOA Bénin",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "SICABLE",
-      "exercice": 2024,
-      "date_paiement": "2025-06-02",
-      "date_ex_dividende": "2025-05-28",
-      "montant_net_fcfa": 128.1,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250516_-_avis_ndeg109_brvmdg_-_paiement_de_dividendes_exercice_2024_-_sicable_ci.pdf",
-      "ticker": "SCBC",
-      "nom": "Sicable CI",
-      "secteur": "Industrie"
-    },
-    {
-      "emetteur": "BANK OF AFRICA SN",
-      "exercice": 2024,
-      "date_paiement": "2025-06-02",
-      "date_ex_dividende": "2025-05-28",
-      "montant_net_fcfa": 350.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250515_-_avis_ndeg108_brvmdg_-_paiement_de_dividendes_exo_2024_-_boa_sn.pdf",
-      "ticker": "BOAS",
-      "nom": "BOA Sénégal",
       "secteur": "Banque"
     }
   ]
