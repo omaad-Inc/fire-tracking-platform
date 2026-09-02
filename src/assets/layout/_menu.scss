@@ -157,14 +157,6 @@
         text-overflow: ellipsis;
     }
 
-    .sidebar-user-email {
-        font-size: 0.75rem;
-        color: var(--text-color-secondary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
     .sidebar-user-toggle {
         color: var(--text-color-secondary);
         font-size: 0.875rem;
@@ -411,28 +403,6 @@
             }
         }
     }
-}
-
-.layout-submenu-enter-from,
-.layout-submenu-leave-to {
-    max-height: 0;
-    opacity: 0;
-}
-
-.layout-submenu-enter-to,
-.layout-submenu-leave-from {
-    max-height: 1000px;
-    opacity: 1;
-}
-
-.layout-submenu-leave-active {
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-}
-
-.layout-submenu-enter-active {
-    overflow: hidden;
-    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
 // Menu separator

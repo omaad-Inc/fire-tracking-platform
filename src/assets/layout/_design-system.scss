@@ -143,23 +143,6 @@
     --omaad-scrim: rgba(3, 8, 18, 0.65);
 }
 
-// Elevation utilities — one class per tier, works in both schemes.
-.omaad-elev-1 {
-    background: var(--omaad-surface-1);
-    border: 1px solid var(--omaad-border-subtle);
-    box-shadow: var(--omaad-shadow-rest);
-}
-.omaad-elev-2 {
-    background: var(--omaad-surface-2);
-    border: 1px solid var(--omaad-border-subtle);
-    box-shadow: var(--omaad-shadow-hover);
-}
-.omaad-elev-3 {
-    background: var(--omaad-surface-3);
-    border: 1px solid var(--omaad-border);
-    box-shadow: var(--omaad-shadow-elevated);
-}
-
 // Overlay scrim: dialogs/sheets must visually dominate the page behind.
 // PrimeNG's default dark mask is too weak on a dark canvas.
 .p-overlay-mask {
@@ -181,7 +164,6 @@
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.card-hover:hover,
 .card:has(> [role="link"]:hover) {
     box-shadow: var(--omaad-shadow-hover);
 }
@@ -440,15 +422,6 @@ $native-field-focus: "input:not([type='checkbox']):not([type='radio']):not([type
     border-bottom-right-radius: var(--omaad-radius-input);
 }
 
-// Quiet section header inside forms — groups fields into scannable blocks.
-.omaad-form-section {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--p-surface-400);
-}
-
 // While a modal dialog is open, retract the mobile chrome (FAB + bottom nav)
 // so it can never sit under or touch the dialog's footer CTAs. Both are
 // position:fixed, so hiding them causes no layout shift. Native-app behaviour:
@@ -595,87 +568,6 @@ app-amount,
         background: var(--omaad-ochre-700) !important;
         transform: translateY(1px);
     }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// PHASE 1 — Legacy gradient overrides (transitional)
-// ═══════════════════════════════════════════════════════════════════
-//
-// Many components hardcode multi-stop Tailwind gradients
-// (`from-emerald-500 to-cyan-500`, etc.) for primary CTAs and chrome
-// icons. Rather than sweep 100+ template strings in one pass, we
-// neutralize them here so the new identity lands immediately.
-//
-// Templates will migrate to clean tokens (`bg-brand-700`, etc.) in Phase 2.
-// Once migration is complete, this whole block can be deleted.
-//
-// Rules:
-//  - Brand chrome gradients (emerald-cyan, emerald-emerald, indigo-cyan,
-//    indigo-violet) → solid navy (--omaad-brand-700).
-//  - Premium-accent gradients (amber-orange, ochre-like)        → solid ochre.
-//  - Status / hero "atmospheric" gradients (very low alpha, e.g.
-//    `from-emerald-500/5 via-transparent to-cyan-500/5`) are
-//    deliberately NOT touched; those backgrounds stay decorative.
-
-// — Brand chrome (icon containers, primary buttons) → solid navy —
-// Two patterns to neutralize:
-//   1. Hue-mixing gradients like emerald-cyan, indigo-cyan, sky-cyan
-//   2. Same-hue light-to-dark gradients like cyan-500 → cyan-600
-[class*="from-emerald-500"][class*="to-cyan-500"]:not([class*="/"]),
-[class*="from-emerald-500"][class*="to-emerald-600"]:not([class*="/"]),
-[class*="from-emerald-500"][class*="to-cyan-600"]:not([class*="/"]),
-[class*="from-indigo-500"][class*="to-cyan-500"]:not([class*="/"]),
-[class*="from-indigo-500"][class*="to-indigo-600"]:not([class*="/"]),
-[class*="from-indigo-500"][class*="to-violet-500"]:not([class*="/"]),
-[class*="from-indigo-600"][class*="to-cyan-500"]:not([class*="/"]),
-[class*="from-emerald-600"][class*="to-cyan-600"]:not([class*="/"]),
-[class*="from-cyan-500"][class*="to-cyan-600"]:not([class*="/"]),
-[class*="from-cyan-500"][class*="to-blue-500"]:not([class*="/"]),
-[class*="from-violet-500"][class*="to-violet-600"]:not([class*="/"]),
-[class*="from-pink-500"][class*="to-rose-500"]:not([class*="/"]),
-[class*="from-sky-500"][class*="to-cyan-500"]:not([class*="/"]),
-[class*="from-blue-500"][class*="to-indigo-500"]:not([class*="/"]) {
-    background-color: var(--omaad-brand-700) !important;
-    background-image: none !important;
-    color: #FFFFFF !important;
-}
-
-.app-dark {
-    [class*="from-emerald-500"][class*="to-cyan-500"]:not([class*="/"]),
-    [class*="from-emerald-500"][class*="to-emerald-600"]:not([class*="/"]),
-    [class*="from-emerald-500"][class*="to-cyan-600"]:not([class*="/"]),
-    [class*="from-indigo-500"][class*="to-cyan-500"]:not([class*="/"]),
-    [class*="from-indigo-500"][class*="to-indigo-600"]:not([class*="/"]),
-    [class*="from-indigo-500"][class*="to-violet-500"]:not([class*="/"]),
-    [class*="from-indigo-600"][class*="to-cyan-500"]:not([class*="/"]),
-    [class*="from-emerald-600"][class*="to-cyan-600"]:not([class*="/"]),
-    [class*="from-cyan-500"][class*="to-cyan-600"]:not([class*="/"]),
-    [class*="from-cyan-500"][class*="to-blue-500"]:not([class*="/"]),
-    [class*="from-violet-500"][class*="to-violet-600"]:not([class*="/"]),
-    [class*="from-pink-500"][class*="to-rose-500"]:not([class*="/"]),
-    [class*="from-sky-500"][class*="to-cyan-500"]:not([class*="/"]),
-    [class*="from-blue-500"][class*="to-indigo-500"]:not([class*="/"]) {
-        background-color: var(--omaad-brand-300) !important;
-        color: var(--omaad-brand-900) !important;
-    }
-}
-
-// — Destructive gradients (rose-red etc.) → solid negative —
-[class*="from-rose-500"][class*="to-red-500"]:not([class*="/"]),
-[class*="from-red-500"][class*="to-rose-500"]:not([class*="/"]),
-[class*="from-rose-500"][class*="to-orange-500"]:not([class*="/"]) {
-    background-color: var(--omaad-negative) !important;
-    background-image: none !important;
-    color: #FFFFFF !important;
-}
-
-// — Premium accent gradients (warm tones) → solid ochre —
-[class*="from-amber-500"][class*="to-orange-500"]:not([class*="/"]),
-[class*="from-amber-400"][class*="to-orange-500"]:not([class*="/"]),
-[class*="from-orange-500"][class*="to-amber-500"]:not([class*="/"]) {
-    background-color: var(--omaad-ochre-500) !important;
-    background-image: none !important;
-    color: #FFFFFF !important;
 }
 
 // — PrimeNG button hover/active default ring colors fix —

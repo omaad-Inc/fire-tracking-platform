@@ -61,11 +61,6 @@
             display: none;
         }
 
-        &.layout-topbar-action-highlight {
-            background-color: var(--primary-color);
-            color: var(--primary-contrast-color);
-        }
-
         // AI Assistant sparkle — ochre accent to mirror the sidebar entry
         &.ai-topbar-btn {
             color: var(--omaad-ochre-500, #C77B3C);
@@ -80,17 +75,8 @@
         margin-right: 0.5rem;
     }
 
-    .layout-topbar-menu-button {
-        display: none;
-    }
-
     .layout-topbar-actions {
         margin-left: auto;
-        display: flex;
-        gap: 1rem;
-    }
-
-    .layout-topbar-menu-content {
         display: flex;
         gap: 1rem;
     }
@@ -98,16 +84,6 @@
     .layout-config-menu {
         display: flex;
         gap: 1rem;
-    }
-
-    // Mobile user icon - hidden on desktop
-    .mobile-user-icon {
-        display: none;
-    }
-
-    // Desktop menu - visible on desktop
-    .desktop-menu {
-        display: block;
     }
 }
 
@@ -126,24 +102,6 @@
 
         .layout-menu-button {
             display: none !important; // Hide hamburger on mobile
-        }
-
-        .layout-topbar-menu-button {
-            display: none !important; // Hide 3 dots on mobile
-        }
-
-        // Mobile user icon - visible on mobile
-        .mobile-user-icon {
-            display: flex !important;
-        }
-
-        // Desktop menu - hidden on mobile
-        .desktop-menu {
-            display: none !important;
-        }
-
-        .layout-topbar-menu-content {
-            flex-direction: column;
         }
     }
 }
