@@ -2,6 +2,7 @@ import { Injectable, inject, computed, signal } from '@angular/core';
 import { TokenService } from './token.service';
 import { ApiService } from './api.service';
 import { AnalyticsService } from './analytics.service';
+import { PrivacyService } from './privacy.service';
 import { ShareContextService } from './share-context.service';
 import { nbspSafe } from '../util/nbsp';
 import { firstValueFrom } from 'rxjs';
@@ -31,12 +32,24 @@ const CURRENCIES: Record<string, CurrencyConfig> = {
 
 const FX_CACHE_KEY = 'omaad_fx_rates';
 
+/**
+ * What a masked amount reads as under privacy mode (P0-3). Matches the glyph
+ * `<app-amount>` already renders, so a hidden screen speaks one language whether
+ * the amount came from the component or from a formatted string.
+ *
+ * The axis variant is shorter because it repeats down a chart's whole y-axis:
+ * five bullets per tick reads as noise, three reads as "withheld".
+ */
+const MASK = '•••••';
+const MASK_TICK = '•••';
+
 @Injectable({ providedIn: 'root' })
 export class CurrencyService {
     private tokenService = inject(TokenService);
     private api = inject(ApiService);
     private analytics = inject(AnalyticsService);
     private share = inject(ShareContextService);
+    private privacy = inject(PrivacyService);
 
     /** Live rates_per_eur fetched from the backend (empty until loaded). */
     private liveRates = signal<Record<string, number>>({});
@@ -136,12 +149,24 @@ export class CurrencyService {
         return displayValue / rate;
     }
 
-    /** Format a EUR value as a localized amount + the app's currency symbol.
-     *  Uses decimal formatting + our own symbol (FCFA / € / $) instead of Intl's
-     *  currency style, so XOF renders as "FCFA" everywhere, not Intl's "F CFA", *  matching app-amount and the rest of the UI. Symbol trails the number
-     *  (FR / West-African convention). */
+    /**
+     * Format a EUR value as a localized amount + the app's currency symbol.
+     * Uses decimal formatting + our own symbol (FCFA / € / $) instead of Intl's
+     * currency style, so XOF renders as "FCFA" everywhere, not Intl's "F CFA",
+     * matching app-amount and the rest of the UI. Symbol trails the number
+     * (FR / West-African convention).
+     *
+     * MASKS under privacy mode (P0-3). Privacy used to live only inside
+     * `<app-amount>`, which meant it covered template text and nothing else:
+     * chart tooltips, axis ticks, aria-labels, select option labels and the
+     * coaching sentences all take a STRING, so a component cannot reach them,
+     * and every one of them stayed readable with the eye shut. Masking here
+     * instead puts it on the seam they already share, and inverts the failure
+     * mode: forget to think about privacy and you now get masking, not a leak.
+     */
     format(eurValue: number, fractionDigits = 0): string {
         const { symbol, locale } = this.config();
+        if (this.privacy.hidden()) return `${MASK} ${symbol}`;
         const displayValue = this.convert(eurValue);
         const n = nbspSafe(new Intl.NumberFormat(locale, {
             maximumFractionDigits: fractionDigits,
@@ -150,8 +175,10 @@ export class CurrencyService {
         return `${n} ${symbol}`;
     }
 
-    /** Format a EUR value as a plain number string (no currency symbol) in the display locale. */
+    /** Format a EUR value as a plain number string (no currency symbol) in the
+     *  display locale. Masks under privacy mode, same reasoning as format(). */
     formatNumber(eurValue: number, fractionDigits = 0): string {
+        if (this.privacy.hidden()) return MASK;
         const displayValue = this.convert(eurValue);
         const { locale } = this.config();
         return nbspSafe(new Intl.NumberFormat(locale, {
@@ -163,7 +190,14 @@ export class CurrencyService {
     /** Format a value ALREADY in the display currency, WITHOUT converting it again.
      *  Use for figures computed directly in the display currency (e.g. the FIRE
      *  number = display-currency annual expenses ÷ withdrawal rate); passing such a
-     *  value to formatNumber() would multiply it by the FX rate a second time. */
+     *  value to formatNumber() would multiply it by the FX rate a second time.
+     *
+     *  Deliberately does NOT mask, unlike format()/formatNumber() above. Every
+     *  one of its callers is a place where masking would break the screen rather
+     *  than protect it: subscription PRICES (you cannot check out against
+     *  `•••••`, and a plan price is not the user's money anyway) and the figure
+     *  a user is currently TYPING into a form or the numpad. If a genuine user
+     *  amount ever needs this, mask at that call site on PrivacyService. */
     formatDisplayNumber(displayValue: number | null | undefined, fractionDigits = 0): string {
         const { locale } = this.config();
         return nbspSafe(new Intl.NumberFormat(locale, {
@@ -172,9 +206,13 @@ export class CurrencyService {
         }).format(displayValue ?? 0));
     }
 
-    /** Y-axis tick formatter for Chart.js (passed as a plain function ref). */
+    /** Y-axis tick formatter for Chart.js (passed as a plain function ref).
+     *  Masks under privacy mode: an axis reading "0 / 250K / 500K" hands over
+     *  the scale of everything plotted against it, which is most of what the
+     *  eye toggle is meant to withhold. The chart shape stays, the numbers go. */
     tickFormatter(): (value: number) => string {
         return (value: number) => {
+            if (this.privacy.hidden()) return MASK_TICK;
             const converted = this.convert(value);
             if (Math.abs(converted) >= 1_000_000)
                 return (converted / 1_000_000).toFixed(1) + 'M';

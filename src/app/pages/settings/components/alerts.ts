@@ -6,6 +6,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { PrivacyService } from '../../../core/services/privacy.service';
 import { CustomCategoryService } from '../../../core/services/custom-category.service';
 import { AlertRule, AlertRuleType, ApiService } from '../../../core/services/api.service';
 import { EXPENSE_CATEGORIES } from '../../service/transactions.service';
@@ -193,6 +194,7 @@ export class AlertsSettings implements OnInit {
     private i18n = inject(I18nService);
     private api = inject(ApiService);
     private cs = inject(CurrencyService);
+    private privacy = inject(PrivacyService);
     private cats = inject(CustomCategoryService);
     private data = inject(AlertsDataService);
     private messageService = inject(MessageService);
@@ -321,10 +323,14 @@ export class AlertsSettings implements OnInit {
         return this.RULE_TYPES.find(r => r.key === t)?.icon || 'pi pi-bell';
     }
 
-    /** Human one-liner for the list, in the rule's stored currency. */
+    /** Human one-liner for the list, in the rule's stored currency. Thresholds
+     *  mask under privacy mode: "alert me under 50 000" states the scale of the
+     *  account it watches, which is what the eye toggle withholds (P0-3). */
     summaryFor(r: AlertRule): string {
         const amt = (v: number | null, cur: string | null) =>
-            `${(v ?? 0).toLocaleString('fr-FR').replace(/ /g, ' ')} ${cur || ''}`.trim();
+            this.privacy.hidden()
+                ? `••••• ${cur || ''}`.trim()
+                : `${(v ?? 0).toLocaleString('fr-FR').replace(/ /g, ' ')} ${cur || ''}`.trim();
         if (r.rule_type === 'category_spend') {
             return this.t('settings.alerts.summarySpend', { cat: this.cats.resolve(r.category).label, amount: amt(r.threshold, r.threshold_currency) });
         }
