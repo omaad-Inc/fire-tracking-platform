@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, TontineSchedule } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { PrivacyService } from '../../../core/services/privacy.service';
 import { nbspSafe } from '../../../core/util/nbsp';
 
 /**
@@ -138,6 +139,7 @@ export class TontineCyclesComponent implements OnInit {
 
     private api = inject(ApiService);
     readonly i18n = inject(I18nService);
+    private privacy = inject(PrivacyService);
 
     loading = signal(true);
     error = signal(false);
@@ -177,8 +179,11 @@ export class TontineCyclesComponent implements OnInit {
         }
     }
 
-    /** Native-currency amount: the backend returns values in the asset's own currency. */
+    /** Native-currency amount: the backend returns values in the asset's own
+     *  currency, so this never goes through CurrencyService and has to carry the
+     *  privacy mask itself (P0-3). */
     money(v: number): string {
+        if (this.privacy.hidden()) return `••••• ${this.currency}`;
         const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
         return `${nbspSafe(v.toLocaleString(locale, { maximumFractionDigits: 0 }))} ${this.currency}`;
     }

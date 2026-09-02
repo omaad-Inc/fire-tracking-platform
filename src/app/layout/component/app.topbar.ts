@@ -13,12 +13,18 @@ import { AiAssistantService } from '../../core/services/ai-assistant.service';
 import { ShareContextService } from '../../core/services/share-context.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { NavService } from '../../core/services/nav.service';
+import { NotificationCenterService } from '../../core/services/notification-center.service';
 import { SharePortfolioDialog } from './share-portfolio-dialog';
 
 @Component({
     selector: 'app-topbar',
     standalone: true,
     imports: [RouterModule, CommonModule, SharePortfolioDialog],
+    host: {
+        // Regaining focus should not leave a stale unread badge. TTL-guarded
+        // inside the service, so alt-tabbing costs no extra requests.
+        '(window:focus)': 'refreshInbox()',
+    },
     template: ` <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
             @if (!share.active()) {
@@ -54,6 +60,33 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                     <i aria-hidden="true" class="pi" [ngClass]="privacyService.hidden() ? 'pi-eye-slash' : 'pi-eye'"></i>
                 </button>
 
+                <!-- Notification center (P1-1). Desktop AND mobile: on mobile
+                     the bell is the ONLY way in, there is no sidebar.
+                     The badge sits OUTSIDE the anchor, in the same wrapper
+                     idiom as the assistant coach-mark below, because the shell
+                     hides any <span> inside a .layout-topbar-action (that rule
+                     exists to drop text labels next to the icons) and it would
+                     silently swallow the count. -->
+                <div class="relative flex">
+                    <a [routerLink]="notifLink()"
+                       class="layout-topbar-action no-underline"
+                       data-testid="notif-bell"
+                       [attr.aria-label]="bellLabel()" [title]="t('topbar.notifications')">
+                        <i class="pi pi-bell"></i>
+                    </a>
+                    @if (unreadCount() > 0) {
+                        <!-- Ochre fill, so the count needs dark text. Decorative:
+                             the count is already in the bell's aria-label. -->
+                        <span data-testid="notif-badge"
+                              aria-hidden="true"
+                              class="absolute top-0.5 right-0.5 pointer-events-none
+                                     min-w-[1rem] h-4 px-1 rounded-full grid place-items-center
+                                     bg-ochre-500 text-warm-900 text-[10px] font-bold leading-none">
+                            {{ unreadLabel() }}
+                        </span>
+                    }
+                </div>
+
                 <!-- Share portfolio -->
                 <button type="button" class="layout-topbar-action" (click)="shareOpen.set(true)"
                         [attr.aria-label]="t('shareDialog.title')" [title]="t('shareDialog.title')">
@@ -74,13 +107,21 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                         <i class="pi pi-sparkles"></i>
                     </button>
                     @if (assistantHint()) {
-                        <div class="absolute top-full right-0 mt-2 z-[60] w-max max-w-[15rem] cursor-pointer ai-hint-tip"
-                             role="status" (click)="dismissAssistantHint()">
+                        <!-- A real button, not a role=status div: tapping it goes to
+                             the assistant (mobile parity), which is the thing the
+                             copy is inviting, so it must be reachable by keyboard
+                             and announced as an action. Anchored to the sparkle's
+                             own wrapper, so it follows the icon wherever the topbar
+                             layout puts it (the crown pill changes width by tier)
+                             with no offset to keep in sync. -->
+                        <button type="button"
+                                class="absolute top-full right-0 mt-2 z-[60] w-max max-w-[15rem] text-left ai-hint-tip"
+                                (click)="openAssistant()">
                             <span class="absolute -top-1 right-3 w-2.5 h-2.5 rotate-45 bg-ochre-500"></span>
-                            <div class="relative rounded-xl bg-ochre-500 text-warm-900 text-[11px] font-semibold leading-snug px-3 py-2 shadow-lg">
+                            <span class="relative block rounded-xl bg-ochre-500 text-warm-900 text-[11px] font-semibold leading-snug px-3 py-2 shadow-lg">
                                 {{ t('topbar.assistantHint') }}
-                            </div>
-                        </div>
+                            </span>
+                        </button>
                     }
                 </div>
 
@@ -179,6 +220,29 @@ export class AppTopbar implements OnInit, OnDestroy {
     private flags   = inject(FeatureFlagsService);
     private nav     = inject(NavService);
     private billing = inject(BillingService);
+    private notifs  = inject(NotificationCenterService);
+
+    /** Unread inbox entries, badge on the bell (whole inbox, not a page of it). */
+    unreadCount = this.notifs.unreadCount;
+    /** Two digits max: a precise 47 tells the user nothing a "9+" doesn't. */
+    unreadLabel = computed(() => (this.unreadCount() > 9 ? '9+' : String(this.unreadCount())));
+
+    notifLink(): any[] {
+        return this.nav.link('pages', 'notifications');
+    }
+
+    /** Bell label carries the count, so a screen reader gets it from the button
+     *  itself rather than from the decorative badge. */
+    bellLabel = computed(() => {
+        const base = this.i18n.t('topbar.notifications');
+        const n = this.unreadCount();
+        return n > 0 ? `${base} (${this.i18n.t('notifCenter.unreadAria', { count: n })})` : base;
+    });
+
+    /** Serve-from-cache-or-fetch; a no-op inside the TTL. */
+    refreshInbox(): void {
+        if (!this.share.active()) this.notifs.ensureLoaded();
+    }
 
     layoutService = inject(LayoutService);
 
@@ -222,6 +286,8 @@ export class AppTopbar implements OnInit, OnDestroy {
     assistantHint = signal(false);
     private hintTimer: ReturnType<typeof setTimeout> | null = null;
     private hintDecided = false;
+    /** Dismisses the coach-mark on the first interaction outside it. */
+    private outsideHandler: ((e: Event) => void) | null = null;
 
     constructor() {
         this.router.events.pipe(
@@ -229,6 +295,20 @@ export class AppTopbar implements OnInit, OnDestroy {
             takeUntilDestroyed(),
         ).subscribe(() => {
             this.lang = this.getCurrentLang();
+            // Retire the coach-mark on navigation (P0-4). The bubble hangs over
+            // the page (it has to: growing the topbar to fit it would shift the
+            // whole layout), so on a 390px screen it sits squarely on the first
+            // card's heading. That is a fair price for the two seconds it takes
+            // to read on the screen it appeared on, and no price at all worth
+            // paying on the next three screens the user visits. Nothing used to
+            // clear it but its own 8s timer, so it followed them around.
+            //
+            // Hidden WITHOUT marking it seen: a user who navigates immediately
+            // never read it, and burning the one-shot on that would mean the
+            // hint silently never does its job. It stays available for a later
+            // visit; the timer, a click, or opening the assistant retire it for
+            // good.
+            this.hideAssistantHint();
         });
         // On a fresh login the user id lands after /auth/me, i.e. AFTER ngOnInit;
         // react when it first appears so the hint fires on first login too, not
@@ -243,11 +323,14 @@ export class AppTopbar implements OnInit, OnDestroy {
         // Warm the subscription cache so the crown pill reflects the real tier
         // (free -> Pro CTA, pro -> Premium CTA, premium -> status chip).
         this.billing.load();
+        // Warm the inbox so the bell badge is correct on first paint.
+        this.refreshInbox();
         this.maybeShowAssistantHint();
     }
 
     ngOnDestroy() {
         if (this.hintTimer) clearTimeout(this.hintTimer);
+        this.detachOutsideDismiss();
     }
 
     private seenKey(): string | null {
@@ -266,17 +349,55 @@ export class AppTopbar implements OnInit, OnDestroy {
         try { if (localStorage.getItem(key) === '1') return; } catch { return; }
         this.assistantHint.set(true);
         this.hintTimer = setTimeout(() => this.markAssistantSeen(), 8000);
+        this.attachOutsideDismiss();
     }
 
-    /** Tap on the coach-mark dismisses it (and marks it seen). */
-    dismissAssistantHint(): void {
-        this.markAssistantSeen();
+    /**
+     * The first click or Escape anywhere else retires it. Since the bubble
+     * covers page content, the user must never have to work around it: one tap
+     * on whatever they were actually reaching for is enough to clear it, and
+     * that tap still reaches its target (the listener only observes).
+     */
+    private attachOutsideDismiss(): void {
+        if (typeof document === 'undefined' || this.outsideHandler) return;
+        this.outsideHandler = (e: Event) => {
+            if (e instanceof KeyboardEvent && e.key !== 'Escape') return;
+            // A click on the bubble or the sparkle is handled by their own
+            // click, which opens the assistant; don't race it.
+            const target = e.target as Node | null;
+            if (e.type === 'pointerdown' && target instanceof Element
+                && target.closest('.ai-hint-tip, .ai-topbar-btn')) return;
+            this.markAssistantSeen();
+        };
+        // pointerdown, not click: it fires before the page reacts, so the
+        // bubble is gone by the time the user's actual target responds.
+        document.addEventListener('pointerdown', this.outsideHandler, true);
+        document.addEventListener('keydown', this.outsideHandler, true);
     }
 
-    private markAssistantSeen(): void {
+    private detachOutsideDismiss(): void {
+        if (typeof document === 'undefined' || !this.outsideHandler) return;
+        document.removeEventListener('pointerdown', this.outsideHandler, true);
+        document.removeEventListener('keydown', this.outsideHandler, true);
+        this.outsideHandler = null;
+    }
+
+    /** Take the bubble down without spending the one-shot (used on navigation). */
+    private hideAssistantHint(): void {
         if (!this.assistantHint()) return;
         this.assistantHint.set(false);
         if (this.hintTimer) { clearTimeout(this.hintTimer); this.hintTimer = null; }
+        this.detachOutsideDismiss();
+    }
+
+    /**
+     * Retire the hint for good. Unlike hideAssistantHint() this does NOT require
+     * the bubble to be on screen: a user who navigated away (which hides it) and
+     * then found the assistant anyway has discovered it, and re-teaching them
+     * next session would be a nag.
+     */
+    private markAssistantSeen(): void {
+        this.hideAssistantHint();
         const key = this.seenKey();
         if (key) { try { localStorage.setItem(key, '1'); } catch { /* storage off: shown once this session */ } }
     }

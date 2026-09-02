@@ -4,12 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset, AssetHistory, BrvmHistory } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { PrivacyService } from '../../../core/services/privacy.service';
 import { NavService } from '../../../core/services/nav.service';
 import { ShareContextService } from '../../../core/services/share-context.service';
 import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
@@ -21,18 +21,18 @@ import { AssetFormShape, getAssetFormShape, TontineStatus } from '../asset-form-
 import { AssetEditDialogComponent, AssetEditForm } from './asset-edit-dialog';
 import { toLocalDateStr } from '../../../core/util/date';
 import { nbspSafe } from '../../../core/util/nbsp';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-asset-detail',
     standalone: true,
     imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule,
-              ConfirmDialogModule, ToastModule, AppAmountComponent, TontineCyclesComponent,
+              ToastModule, AppAmountComponent, TontineCyclesComponent,
               AssetEditDialogComponent],
-    providers: [ConfirmationService, MessageService],
+    providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <p-toast position="top-center" />
-        <p-confirmdialog />
 
         @if (loading()) {
             <div class="animate-pulse space-y-6">
@@ -776,10 +776,11 @@ export class AssetDetailPage implements OnInit {
     flags = inject(FeatureFlagsService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
-    private confirmationService = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
     private messageService = inject(MessageService);
     readonly cs = inject(CurrencyService);
     readonly i18n = inject(I18nService);
+    private privacy = inject(PrivacyService);
     t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
 
     readonly Math = Math;
@@ -989,6 +990,22 @@ export class AssetDetailPage implements OnInit {
     /** Locale for Intl number/date formatting, bound to the active language. */
     private get numLocale(): string { return this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US'; }
 
+    /**
+     * A money value in the asset's OWN currency, for the spec-row builders.
+     *
+     * Those rows are plain strings, so they cannot use `<app-amount>` the way
+     * the rest of this screen does, and they read the native currency directly
+     * rather than going through CurrencyService, so they bypassed the privacy
+     * mask on both counts (P0-3). This is the one place they all now share.
+     * `suffix` carries the "/m²" and "/month" qualifiers, which stay visible:
+     * they say what the figure measures, not how much of it there is.
+     */
+    private nativeMoney(value: number, currency: string, suffix = '', digits = 0): string {
+        if (this.privacy.hidden()) return `••••• ${currency}${suffix}`;
+        const n = nbspSafe(value.toLocaleString(this.numLocale, { maximumFractionDigits: digits }));
+        return `${n} ${currency}${suffix}`;
+    }
+
     /** Rows for the "Informations générales" card. Always at least 3 rows so the card is never sparse. */
     generalInfoRows = computed<{ label: string; value: string; icon: string; valueClass?: string }[]>(() => {
         const a = this.asset();
@@ -1018,7 +1035,6 @@ export class AssetDetailPage implements OnInit {
         const a = this.asset();
         if (!a) return [];
         const t = (k: string) => this.t(k);
-        const loc = this.numLocale;
         const perMonth = t('assetDetail.perMonthShort');
         const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
 
@@ -1026,11 +1042,11 @@ export class AssetDetailPage implements OnInit {
             rows.push({ label: t('assetDetail.area'), value: `${a.surface_m2} m²`, icon: 'pi-arrows-alt' });
         }
         if (a.price_per_m2_purchase) {
-            rows.push({ label: t('assetDetail.pricePerM2Purchase'), value: `${nbspSafe(a.price_per_m2_purchase.toLocaleString(loc))} ${a.currency}/m²`, icon: 'pi-shopping-cart' });
+            rows.push({ label: t('assetDetail.pricePerM2Purchase'), value: this.nativeMoney(a.price_per_m2_purchase, a.currency, '/m²'), icon: 'pi-shopping-cart' });
         }
         if (a.surface_m2 && a.surface_m2 > 0) {
             const current = Math.round(a.current_value / a.surface_m2);
-            rows.push({ label: t('assetDetail.currentPricePerM2'), value: `${nbspSafe(current.toLocaleString(loc))} ${a.currency}/m²`, icon: 'pi-chart-line', valueClass: 'text-brand-700 dark:text-brand-300' });
+            rows.push({ label: t('assetDetail.currentPricePerM2'), value: this.nativeMoney(current, a.currency, '/m²'), icon: 'pi-chart-line', valueClass: 'text-brand-700 dark:text-brand-300' });
         }
         if (a.purchase_date) {
             rows.push({ label: t('assetDetail.purchaseDate'), value: this.formatShortDate(a.purchase_date), icon: 'pi-calendar' });
@@ -1042,7 +1058,7 @@ export class AssetDetailPage implements OnInit {
             rows.push({ label: t('assetDetail.location'), value: a.location, icon: 'pi-map-marker' });
         }
         if (a.rental_income) {
-            rows.push({ label: t('assetDetail.rentalIncome'), value: `${nbspSafe(a.rental_income.toLocaleString(loc))} ${a.currency}${perMonth}`, icon: 'pi-home', valueClass: 'text-positive' });
+            rows.push({ label: t('assetDetail.rentalIncome'), value: this.nativeMoney(a.rental_income, a.currency, perMonth), icon: 'pi-home', valueClass: 'text-positive' });
         }
         // Always have at least one row
         if (!rows.length) {
@@ -1056,7 +1072,6 @@ export class AssetDetailPage implements OnInit {
         const a = this.asset();
         if (!a) return [];
         const t = (k: string) => this.t(k);
-        const loc = this.numLocale;
         const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
         const gain = this.gainLoss();
         const pct = this.gainLossPct();
@@ -1065,7 +1080,7 @@ export class AssetDetailPage implements OnInit {
             const sign = gain >= 0 ? '+' : '−';
             rows.push({
                 label: t('assetDetail.totalGainLoss'),
-                value: `${sign} ${nbspSafe(Math.abs(gain).toLocaleString(loc, { maximumFractionDigits: 2 }))} ${a.currency}`,
+                value: `${sign} ${this.nativeMoney(Math.abs(gain), a.currency, '', 2)}`,
                 icon: gain >= 0 ? 'pi-arrow-up' : 'pi-arrow-down',
                 valueClass: gain >= 0 ? 'text-positive' : 'text-negative',
             });
@@ -1095,13 +1110,12 @@ export class AssetDetailPage implements OnInit {
         const a = this.asset();
         if (!a) return [];
         const t = (k: string) => this.t(k);
-        const loc = this.numLocale;
         const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
 
         if (a.tontine_monthly_contribution != null) {
             rows.push({
                 label: t('assetDetail.monthlyContribution'),
-                value: `${nbspSafe(a.tontine_monthly_contribution.toLocaleString(loc))} ${a.currency}`,
+                value: this.nativeMoney(a.tontine_monthly_contribution, a.currency),
                 icon: 'pi-wallet',
             });
         }
@@ -1384,16 +1398,12 @@ export class AssetDetailPage implements OnInit {
         });
     }
 
-    confirmDelete() {
-        this.confirmationService.confirm({
+    async confirmDelete() {
+        const ok = await this.feedback.confirm({
+            title: this.t('assetDetail.deleteConfirmHeader'),
             message: this.t('assetDetail.deleteConfirmMsg', { name: this.asset()?.name ?? '' }),
-            header: this.t('assetDetail.deleteConfirmHeader'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.t('common.delete'),
-            rejectLabel: this.t('common.cancel'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: () => this.deleteAsset()
         });
+        if (ok) this.deleteAsset();
     }
 
     private deleteAsset() {
@@ -1404,7 +1414,7 @@ export class AssetDetailPage implements OnInit {
                 this.stateService.notifyAssetsUpdated();
                 this.goBack();
             },
-            error: () => this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('assetDetail.deleteError'), life: 4000 })
+            error: () => this.feedback.error(this.t('assetDetail.deleteError'))
         });
     }
 }

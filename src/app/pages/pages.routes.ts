@@ -28,6 +28,9 @@ export default [
     { path: 'patrimoine/assets/:id', loadComponent: () => import('./patrimoine/components/asset-detail').then(m => m.AssetDetailPage) },
     { path: 'debts', loadComponent: () => import('./debts/debtsdashboard').then(m => m.DebtsDashboard) },
     { path: 'insights', loadComponent: () => import('./insights/insights').then(m => m.InsightsPage) },
+    // Notification center (P1-1). Reached from the topbar bell, not from the
+    // nav model: like Settings, it is a utility surface, not a sixth hub.
+    { path: 'notifications', loadComponent: () => import('./notifications/notification-center').then(m => m.NotificationCenterPage) },
     // S12: the ONE chat surface, dark-shipped behind featureFlags.aiChat.
     { path: 'assistant', canMatch: [aiChatGuard], loadComponent: () => import('./assistant/assistant-page').then(m => m.AssistantPage) },
     { path: 'settings', loadChildren: () => import('./settings/settings.routes') },

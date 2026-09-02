@@ -9,7 +9,7 @@
     "lint:dark": "node scripts/check-dark-classes.mjs",
     "build": "npm run i18n:guard && npm run lint:dark && npm run prerender:routes && ng build",
     "build:pwa": "npm run i18n:guard && npm run prerender:routes && ng build --configuration production",
-    "serve:pwa": "npx http-server dist/omaad-wealth/browser -p 8080 -c-1",
+    "serve:pwa": "node tools/serve-pwa.mjs",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write \"**/*.{js,mjs,ts,mts,d.ts,html}\" --cache",
     "test": "ng test",

@@ -635,21 +635,22 @@ export interface InsightsResponse {
     anomalies: InsightAnomaly[];
 }
 
-export interface FinancialAlert {
-    kind: 'over_budget' | 'near_limit' | 'anomaly';
-    severity: 'high' | 'medium';
-    category: TransactionCategory;
-    spent: number | null;
-    budgeted: number | null;
-    percent_used: number | null;
-    amount: number | null;
-    average: number | null;
-    ratio: number | null;
+/** One notification-center entry (P1-1). `text` is already resolved to the
+ *  user's stored `preferred_language` server-side, so it is rendered as-is.
+ *  `link` holds a MOBILE route and is deliberately NOT navigated verbatim on
+ *  the web: see NOTIF_WEB_ROUTES in notification-center.service.ts. */
+export interface InboxItem {
+    id: number;
+    kind: string;
+    text: string;
+    link: string;
+    read: boolean;
+    created_at: string;
 }
 
-export interface AlertsResponse {
-    period: string;
-    alerts: FinancialAlert[];
+export interface InboxResponse {
+    items: InboxItem[];
+    unread_count: number;
 }
 
 /** Coaching (Sprint 6). A recommendation carries WHY (metrics/amounts/context
@@ -1569,6 +1570,18 @@ export class ApiService {
         return this.http.put<User>(`${this.apiUrl}/users/me/fire-settings`, data);
     }
 
+    /**
+     * Record the answer to the AI consent sheet. One endpoint for all three
+     * moments (first acceptance, refusal, later withdrawal from Settings)
+     * because they write the same pair of columns; the full profile comes back
+     * so the caller refreshes its cached user from the response instead of a
+     * second round trip. Go through AiConsentService rather than calling this
+     * directly, so the cached user is always updated with it.
+     */
+    setAiConsent(granted: boolean): Observable<User> {
+        return this.http.put<User>(`${this.apiUrl}/users/me/ai-consent`, { granted });
+    }
+
     uploadAvatar(file: File): Observable<User> {
         const formData = new FormData();
         formData.append('file', file);
@@ -1721,12 +1734,6 @@ export class ApiService {
         return this.http.get<InsightsResponse>(`${this.apiUrl}/insights`, { params });
     }
 
-    getFinancialAlerts(period?: string): Observable<AlertsResponse> {
-        let params = new HttpParams();
-        if (period) params = params.set('period', period);
-        return this.http.get<AlertsResponse>(`${this.apiUrl}/insights/alerts`, { params });
-    }
-
     // ── Coaching (Sprint 6) ─────────────────────────────────────────────────
     getCoachingRecommendations(): Observable<CoachingResponse> {
         return this.http.get<CoachingResponse>(`${this.apiUrl}/coaching/recommendations`);
@@ -1825,6 +1832,23 @@ export class ApiService {
 
     removePushSubscription(endpoint: string): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/notifications/push-subscription/delete`, { endpoint });
+    }
+
+    // ── Notification center / inbox (P1-1) ─────────────────────────────────
+    /** The stored history behind every push/email, so a dismissed notification
+     *  is never lost. `text` arrives already resolved to the user's language;
+     *  `unread_count` spans the WHOLE inbox (it drives the topbar badge, not
+     *  just this page). */
+    getInbox(limit = 50, offset = 0): Observable<InboxResponse> {
+        const params = new HttpParams()
+            .set('limit', limit.toString())
+            .set('offset', offset.toString());
+        return this.http.get<InboxResponse>(`${this.apiUrl}/notifications/inbox`, { params });
+    }
+
+    /** Mark specific entries read, or the whole inbox with `{ all: true }`. */
+    markInboxRead(payload: { ids?: number[]; all?: boolean }): Observable<{ updated: number }> {
+        return this.http.post<{ updated: number }>(`${this.apiUrl}/notifications/inbox/read`, payload);
     }
 
     // ========== BILLING / SUBSCRIPTION (S11) ==========

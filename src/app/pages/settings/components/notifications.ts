@@ -191,24 +191,24 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
             <div class="mt-4 pt-8 border-t border-surface-200 dark:border-surface-800">
                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.quietHours') }}</h3>
                 <p class="text-sm text-surface-500 dark:text-surface-400 mb-5">{{ t('settings.notifs.quietHoursDesc') }}</p>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 omaad-quiet-form">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 omaad-form">
                     <div class="flex flex-col gap-1">
                         <label for="quiet-start" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietFrom') }}</label>
                         <input id="quiet-start" type="time" [ngModel]="prefs().quiet_hours_start"
                                (ngModelChange)="save({ quiet_hours_start: $event })"
-                               class="py-2.5 bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 text-surface-900 dark:text-surface-0 focus:border-brand-700 dark:focus:border-ochre-400 focus:outline-none" />
+                               class="text-surface-900 dark:text-surface-0" />
                     </div>
                     <div class="flex flex-col gap-1">
                         <label for="quiet-end" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.quietTo') }}</label>
                         <input id="quiet-end" type="time" [ngModel]="prefs().quiet_hours_end"
                                (ngModelChange)="save({ quiet_hours_end: $event })"
-                               class="py-2.5 bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 text-surface-900 dark:text-surface-0 focus:border-brand-700 dark:focus:border-ochre-400 focus:outline-none" />
+                               class="text-surface-900 dark:text-surface-0" />
                     </div>
                     <div class="flex flex-col gap-1 col-span-2 md:col-span-1">
                         <label for="quiet-tz" class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.timezone') }}</label>
                         <p-select inputId="quiet-tz" [ngModel]="prefs().timezone" [options]="timezones"
                                   (onChange)="save({ timezone: $event.value })"
-                                  class="w-full" styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                  class="w-full" styleClass="w-full" />
                     </div>
                 </div>
             </div>

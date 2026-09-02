@@ -1,6 +1,6 @@
 import {
     AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild,
-    computed, inject, signal,
+    computed, effect, inject, signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -17,6 +17,8 @@ import { MOCK_SCENARIO_IDS, MockScenarioId } from '../../core/ai/mock-scenarios'
 import { ChatThreadComponent } from './components/chat-thread';
 import { ChatInputBarComponent } from './components/chat-input-bar';
 import { ChatEmptyStateComponent } from './components/chat-empty-state';
+import { AiConsentService } from '../../core/ai/ai-consent.service';
+import { AiConsentBar, AiConsentPanel, AiConsentSheet } from '../../core/ai/ai-consent-sheet';
 import { DashboardService } from '../service/dashboard.service';
 
 /**
@@ -28,11 +30,19 @@ import { DashboardService } from '../service/dashboard.service';
  * The thread scrolls internally; the composer never moves (no layout shift).
  * The mobile keyboard is handled through visualViewport so the composer rides
  * above the keyboard instead of being covered by it.
+ *
+ * It is also where the AI consent gate lives (P0-1) — on the room, not on any
+ * one door, because a notification tap and an `?ask=` deep link both land here.
+ * See AiConsentService for why the gate belongs here rather than on the topbar
+ * sparkle or the home quick action.
  */
 @Component({
     selector: 'app-assistant-page',
     standalone: true,
-    imports: [CommonModule, ChatThreadComponent, ChatInputBarComponent, ChatEmptyStateComponent],
+    imports: [
+        CommonModule, ChatThreadComponent, ChatInputBarComponent, ChatEmptyStateComponent,
+        AiConsentSheet, AiConsentPanel, AiConsentBar,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         ChatSessionService,
@@ -108,9 +118,19 @@ import { DashboardService } from '../service/dashboard.service';
                 </div>
             }
 
-            <!-- Thread / empty state (top padding clears the dev chip row) -->
+            <!-- Thread / empty state (top padding clears the dev chip row).
+                 While consent is undecided the room paints nothing but a quiet
+                 spinner: showing the composer first and pulling it away a beat
+                 later is worse than a short, honest wait. -->
             <div class="flex-1 min-h-0 relative" [class.pt-8]="devtools()">
-                @if (svc.messages().length === 0) {
+                @if (consent.undecided()) {
+                    <div class="h-full flex items-center justify-center">
+                        <i class="pi pi-spin pi-spinner text-xl text-surface-300 dark:text-surface-600"
+                           aria-hidden="true"></i>
+                    </div>
+                } @else if (consent.gated() && svc.messages().length === 0) {
+                    <app-ai-consent-panel (enable)="openConsentSheet()" />
+                } @else if (svc.messages().length === 0) {
                     <app-chat-empty-state [populated]="populated()"
                         [hideSuggestions]="composerHasText()" (pick)="onStarter($event)" />
                 } @else {
@@ -118,20 +138,30 @@ import { DashboardService } from '../service/dashboard.service';
                 }
             </div>
 
-            <!-- Composer: pinned under the thread, never moves -->
+            <!-- Composer: pinned under the thread, never moves. Without consent
+                 the box that would SEND something is the only thing swapped out,
+                 so past answers stay readable above it. -->
             <div class="shrink-0 max-w-2xl mx-auto w-full px-1 pb-1">
-                <app-chat-input-bar
-                    [streaming]="svc.streaming()"
-                    [confirmPending]="svc.pendingConfirm() !== null"
-                    (send)="svc.send($event)"
-                    (typing)="onComposerTyping($event)"
-                    (composerFocus)="warmForIntent()"
-                    (stop)="svc.stop()" />
-                <p class="text-center text-[11px] text-surface-400 dark:text-surface-500 mt-1.5 px-4 select-none">
-                    {{ t('assistant.inputHint') }}
-                </p>
+                @if (consent.gated()) {
+                    @if (svc.messages().length > 0) {
+                        <app-ai-consent-bar (enable)="openConsentSheet()" />
+                    }
+                } @else if (!consent.undecided()) {
+                    <app-chat-input-bar
+                        [streaming]="svc.streaming()"
+                        [confirmPending]="svc.pendingConfirm() !== null"
+                        (send)="svc.send($event)"
+                        (typing)="onComposerTyping($event)"
+                        (composerFocus)="warmForIntent()"
+                        (stop)="svc.stop()" />
+                    <p class="text-center text-[11px] text-surface-400 dark:text-surface-500 mt-1.5 px-4 select-none">
+                        {{ t('assistant.inputHint') }}
+                    </p>
+                }
             </div>
         </div>
+
+        <app-ai-consent-sheet [(open)]="consentSheetOpen" />
     `,
     styles: [`
         :host { display: block; }
@@ -202,7 +232,46 @@ export class AssistantPage implements OnInit, AfterViewInit, OnDestroy {
     private flags = inject(FeatureFlagsService);
     svc = inject(ChatSessionService);
     mock = inject(MockChatDriver);
+    consent = inject(AiConsentService);
     t = (k: string) => this.i18n.t(k);
+
+    /** Visibility of the consent sheet (two-way bound). */
+    readonly consentSheetOpen = signal(false);
+    /** One ask per visit: a user who dismissed the sheet without answering gets
+     *  the quiet gate, not the same modal again on the next change detection. */
+    private consentAsked = false;
+
+    constructor() {
+        // The gate. An effect rather than ngOnInit work because it needs the
+        // server's answer, which is normally still in flight on the first paint;
+        // the effect re-runs when it lands, and the flag keeps it single-shot.
+        //
+        // Only ACT once `settled` is true. An unrefreshed profile also reads as
+        // 'unknown' (absence of a decision is never a consent), and asking on
+        // that would push the sheet at someone who accepted months ago, on every
+        // cold start. Same rule as the mobile screen's `settled` guard.
+        effect(() => {
+            if (!this.consent.settled()) return;
+            const state = this.consent.state();
+            if (state === 'granted') {
+                // The composer does not exist while the gate is shut, so a
+                // question staged by an ?ask= deep link is still pending here.
+                // setTimeout, not queueMicrotask: the input view is only in the
+                // DOM after this change-detection pass finishes.
+                setTimeout(() => this.flushPrefill());
+                return;
+            }
+            if (this.consentAsked || state !== 'unknown') return;
+            this.consentAsked = true;
+            this.consentSheetOpen.set(true);
+        });
+    }
+
+    /** Re-ask from the gate's CTA. Turning the assistant back on always re-shows
+     *  the disclosure: a bare switch would grant consent to something unstated. */
+    openConsentSheet(): void {
+        this.consentSheetOpen.set(true);
+    }
 
     /** Portfolio already has data -> the empty state leads with advice (both
      * agents share this panel). Reads the dashboard summary (hydrated from the
@@ -261,6 +330,12 @@ export class AssistantPage implements OnInit, AfterViewInit, OnDestroy {
     private qpSub?: Subscription;
 
     ngOnInit(): void {
+        // Confirm consent against the server before the room can send anything.
+        // The web app only fetches /auth/me at sign-in, so a returning session
+        // paints from a profile localStorage may have held for weeks; this is
+        // the one deliberate refresh that makes the gate's verdict trustworthy
+        // (the mobile app gets the same fact free on /mobile/bootstrap).
+        this.consent.ensureSettled();
         // Ensure the dashboard summary is loaded so `populated` is accurate even
         // when the user lands on /assistant without visiting the dashboard first
         // (dedups + cached; a returning user is already hydrated from the device

@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService } from 'primeng/api';
 import { ApiService, BrokerConnection, BrokerProvider } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
     jokko_fi: { name: 'Jokko FI', flag: '🇸🇳' },
@@ -23,11 +23,10 @@ const PROVIDER_META: Record<BrokerProvider, { name: string; flag: string }> = {
 @Component({
     selector: 'app-connections-settings',
     standalone: true,
-    imports: [CommonModule, ButtonModule, ToastModule, ConfirmDialogModule],
-    providers: [MessageService, ConfirmationService],
+    imports: [CommonModule, ButtonModule, ToastModule],
+    providers: [MessageService],
     template: `
         <p-toast position="top-center"></p-toast>
-        <p-confirmDialog></p-confirmDialog>
 
         <div class="max-w-2xl mx-auto lg:mx-0 px-1">
             <!-- Header (title hidden on mobile: the shell's slim header shows it) -->
@@ -161,7 +160,7 @@ export class ConnectionsSettings implements OnInit {
     private api = inject(ApiService);
     private i18n = inject(I18nService);
     private messageService = inject(MessageService);
-    private confirmationService = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
 
     lang = 'fr';
     loading = signal(true);
@@ -229,25 +228,23 @@ export class ConnectionsSettings implements OnInit {
         }
     }
 
-    confirmDelete(conn: BrokerConnection): void {
+    async confirmDelete(conn: BrokerConnection): Promise<void> {
         this.openMenuId.set(null);
-        this.confirmationService.confirm({
-            header: this.t('broker.deleteConfirmTitle'),
+        const ok = await this.feedback.confirm({
+            title: this.t('broker.deleteConfirmTitle'),
             message: this.t('broker.deleteConfirmDetail'),
-            acceptLabel: this.t('broker.delete'),
-            rejectLabel: 'Annuler',
-            acceptButtonStyleClass: '!bg-red-600 !border-red-600',
-            accept: () => this.deleteConnection(conn),
+            confirmLabel: this.t('broker.delete'),
         });
+        if (ok) await this.deleteConnection(conn);
     }
 
     async deleteConnection(conn: BrokerConnection): Promise<void> {
         try {
             await firstValueFrom(this.api.deleteBrokerConnection(conn.id));
             this.connections.update(list => list.filter(c => c.id !== conn.id));
-            this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('broker.deleteSuccess'), life: 3000 });
+            this.feedback.success(this.t('broker.deleteSuccess'));
         } catch {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('broker.deleteFailed'), life: 4000 });
+            this.feedback.error(this.t('broker.deleteFailed'));
         }
     }
 

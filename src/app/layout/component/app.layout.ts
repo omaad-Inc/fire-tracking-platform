@@ -18,11 +18,12 @@ import { ShareContextService } from '../../core/services/share-context.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { applyChartDefaults } from '../../core/theme/chart-theme';
+import { FeedbackHostComponent } from '../../core/ui/feedback-host.component';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, QuickAddSheet, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, QuickAddSheet, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent, FeedbackHostComponent],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <!-- Skip link: first focusable element; visually hidden until focused -->
         <a href="#main-content" (click)="focusMain($event)"
@@ -65,6 +66,12 @@ import { applyChartDefaults } from '../../core/theme/chart-theme';
                 <app-pin-lock />
             }
         }
+
+        <!-- The three feedback voices (P1-5), mounted ONCE for the whole shell:
+             confirm sheet, success sheet, error snackbar. Outside the share and
+             PIN branches on purpose, so a failure can still be reported while
+             the app is locked or in the read-only share shell. -->
+        <app-feedback-host />
     </div> `
 })
 export class AppLayout implements OnInit, OnDestroy {

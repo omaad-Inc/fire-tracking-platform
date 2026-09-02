@@ -342,9 +342,13 @@ interface CategoryCard {
                                 </div>
                             </div>
 
-                            <!-- Form content (omaad-quiet-form: hairline rows win
-                                 over the global input-radius skin, see _design-system.scss) -->
-                            <div class="flex-1 omaad-quiet-form">
+                            <!-- Form content. The omaad-form class owns the field look
+                                 for every control in here (filled, rounded,
+                                 ochre focus ring), so fields carry no
+                                 per-field border/fill/radius utilities: adding
+                                 any back re-forks the idiom P1-5 converged.
+                                 See _design-system.scss. -->
+                            <div class="flex-1 omaad-form">
                                 <!-- Step 1: Per-category form -->
                                 @if (currentStep() === 1) {
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-7">
@@ -355,9 +359,7 @@ interface CategoryCard {
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <span id="aa-brvm-label" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.pickLabel') }} <span class="text-negative">*</span></span>
                                             <button type="button" (click)="openBrvmSheet()" aria-labelledby="aa-brvm-label" [attr.aria-haspopup]="'dialog'"
-                                                    class="w-full flex items-center justify-between gap-3 py-3 text-left cursor-pointer
-                                                           border-b border-surface-300 dark:border-surface-600
-                                                           focus-visible:outline-none focus-visible:border-brand-700 dark:focus-visible:border-ochre-400 transition-colors">
+                                                    class="omaad-field-button w-full flex items-center justify-between gap-3 text-left cursor-pointer transition-colors">
                                                 <span class="truncate" [class.text-surface-500]="!assetForm.name" [class.dark:text-surface-400]="!assetForm.name">
                                                     {{ assetForm.name || t('addAssets.brvm.pickPlaceholder') }}
                                                 </span>
@@ -375,9 +377,7 @@ interface CategoryCard {
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <span id="aa-fcp-label" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fcp.pickLabel') }} <span class="text-negative">*</span></span>
                                             <button type="button" (click)="openFcpSheet()" aria-labelledby="aa-fcp-label" [attr.aria-haspopup]="'dialog'"
-                                                    class="w-full flex items-center justify-between gap-3 py-3 text-left cursor-pointer
-                                                           border-b border-surface-300 dark:border-surface-600
-                                                           focus-visible:outline-none focus-visible:border-brand-700 dark:focus-visible:border-ochre-400 transition-colors">
+                                                    class="omaad-field-button w-full flex items-center justify-between gap-3 text-left cursor-pointer transition-colors">
                                                 <span class="truncate" [class.text-surface-500]="!assetForm.name" [class.dark:text-surface-400]="!assetForm.name">
                                                     {{ assetForm.name || t('addAssets.fcp.pickPlaceholder') }}
                                                 </span>
@@ -393,7 +393,7 @@ interface CategoryCard {
                                         <div class="flex flex-col gap-2 md:col-span-2">
                                             <label for="aa-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
                                             <input pInputText id="aa-name" [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
-                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                   class="w-full" />
                                         </div>
                                         }
 
@@ -407,25 +407,25 @@ interface CategoryCard {
                                                 <label for="aa-t-monthly" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineMonthly') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-t-monthly" styleClass="w-full" [(ngModel)]="assetForm.tontineMonthlyContribution" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="aa-t-participants" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.tontineParticipants') }} <span class="text-negative">*</span></label>
                                                 <p-inputnumber inputId="aa-t-participants" styleClass="w-full" [(ngModel)]="assetForm.tontineParticipants" [min]="2" [max]="100"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                    inputStyleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="aa-t-start" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.startDate') }} <span class="text-negative">*</span></label>
                                                 <p-datepicker inputId="aa-t-start" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineStartDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                       inputStyleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="aa-t-freq" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.frequency') }}</label>
                                                 <p-select inputId="aa-t-freq" [(ngModel)]="assetForm.tontineFrequency" [options]="tontineFrequencyOptions()" optionLabel="label" optionValue="value"
-                                                    styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                    styleClass="w-full" />
                                             </div>
                                             @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
                                                 <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
@@ -447,13 +447,13 @@ interface CategoryCard {
                                                 <label for="aa-mm-provider" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.provider') }} <span class="text-negative">*</span></label>
                                                 <p-select inputId="aa-mm-provider" [(ngModel)]="assetForm.mobileMoneyProvider" [options]="mobileMoneyProviders" optionLabel="label" optionValue="value"
                                                     [placeholder]="t('addAssets.wizard.selectProvider')"
-                                                    styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                    styleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="aa-mm-balance" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentBalance') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-mm-balance" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -470,7 +470,7 @@ interface CategoryCard {
                                                 <label for="aa-qty" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ assetForm.category === 'fcp' ? t('addAssets.fcp.quantityLabel') : t('addAssets.fields.quantity') }}</label>
                                                 <p-inputnumber inputId="aa-qty" styleClass="w-full" [ngModel]="assetForm.quantity" (ngModelChange)="assetForm.quantity = ($event == null || $event <= 0) ? 1 : $event"
                                                     mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="assetForm.category === 'fcp' ? 4 : 0" [min]="assetForm.category === 'fcp' ? 0.0001 : 1" [allowEmpty]="false"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                    inputStyleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 @if (assetForm.category === 'stocks_brvm' || assetForm.category === 'fcp') {
@@ -480,14 +480,14 @@ interface CategoryCard {
                                                 <label for="aa-unit-cur-ess" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ assetForm.category === 'fcp' ? t('addAssets.fcp.currentVlPerUnit') : t('addAssets.brvm.currentPricePerShare') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-unit-cur-ess" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                                 } @else {
                                                 <label for="aa-unit-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.unitPurchasePrice') }} <span class="text-negative">*</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-unit-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                                 }
@@ -502,7 +502,7 @@ interface CategoryCard {
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-balance" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -523,7 +523,7 @@ interface CategoryCard {
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -539,7 +539,7 @@ interface CategoryCard {
                                                 </label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="aa-current" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -571,7 +571,7 @@ interface CategoryCard {
                                                             <label for="aa-unit-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.currentUnitValue') }}</label>
                                                             <div class="relative">
                                                                 <p-inputnumber inputId="aa-unit-cur" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                    inputStyleClass="w-full !pr-24" />
                                                                 <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                             </div>
                                                         </div>
@@ -584,7 +584,7 @@ interface CategoryCard {
                                                             <label for="aa-brvm-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ assetForm.category === 'fcp' ? t('addAssets.fcp.purchasePricePerUnit') : t('addAssets.brvm.purchasePricePerShare') }}</label>
                                                             <div class="relative">
                                                                 <p-inputnumber inputId="aa-brvm-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0" [maxFractionDigits]="2"
-                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                    inputStyleClass="w-full !pr-24" />
                                                                 <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                             </div>
                                                         </div>
@@ -596,7 +596,7 @@ interface CategoryCard {
                                                             <label for="aa-buy-date" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
                                                             <p-datepicker inputId="aa-buy-date" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
                                                                    dateFormat="yy-mm-dd" styleClass="w-full"
-                                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                                   inputStyleClass="w-full" />
                                                         </div>
                                                     }
 
@@ -607,7 +607,7 @@ interface CategoryCard {
                                                             <label for="aa-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.purchaseInitialValue') }}</label>
                                                             <div class="relative">
                                                                 <p-inputnumber inputId="aa-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                                    inputStyleClass="w-full !pr-24" />
                                                                 <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                             </div>
                                                         </div>
@@ -618,7 +618,7 @@ interface CategoryCard {
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-institution" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ institutionLabel() }}</label>
                                                             <input pInputText id="aa-institution" [(ngModel)]="assetForm.institution" [placeholder]="institutionPlaceholder()"
-                                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                                   class="w-full" />
                                                         </div>
                                                     }
 
@@ -628,12 +628,12 @@ interface CategoryCard {
                                                             <label for="aa-t-payout" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.payoutDate') }}</label>
                                                             <p-datepicker inputId="aa-t-payout" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
                                                                    dateFormat="yy-mm-dd" styleClass="w-full"
-                                                                   inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                                   inputStyleClass="w-full" />
                                                         </div>
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-t-status" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
                                                             <p-select inputId="aa-t-status" [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
-                                                                styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                                styleClass="w-full" />
                                                         </div>
                                                     }
 
@@ -642,7 +642,7 @@ interface CategoryCard {
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-surface" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.area') }}</label>
                                                             <p-inputnumber inputId="aa-surface" styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²" placeholder="Ex : 150"
-                                                                inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                                inputStyleClass="w-full" />
                                                         </div>
                                                         @if (assetForm.surfaceM2 > 0 && assetForm.purchasePrice > 0) {
                                                             <div class="flex items-center justify-between px-1 py-2 rounded-lg bg-brand-50/60 dark:bg-brand-900/30 border border-brand-100 dark:border-brand-800">
@@ -655,7 +655,7 @@ interface CategoryCard {
                                                         <div class="flex flex-col gap-2">
                                                             <label for="aa-region" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.region') }}</label>
                                                             <input pInputText id="aa-region" [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
-                                                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                                   class="w-full" />
                                                         </div>
                                                     }
                                                 </div>
@@ -746,7 +746,7 @@ interface CategoryCard {
                             </div>
 
                             <!-- Section content -->
-                            <div class="flex-1 omaad-quiet-form">
+                            <div class="flex-1 omaad-form">
                                 <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 mb-6">{{ t('addAssets.re.sections.' + reSections[reSection() - 1].key) }}</h2>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-7">
                                     @switch (reSection()) {
@@ -754,42 +754,42 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2 md:col-span-2">
                                                 <label for="re-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
                                                 <input pInputText id="re-name" [(ngModel)]="assetForm.name" placeholder="Ex : Appartement Dakar Plateau"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                       class="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2 md:col-span-2">
                                                 <label for="re-desc" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.description') }} <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
                                                 <input pInputText id="re-desc" [(ngModel)]="assetForm.description" [placeholder]="t('addAssets.re.fields.descriptionPh')"
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                       class="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-type" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.type') }}</label>
                                                 <p-select inputId="re-type" [(ngModel)]="assetForm.reType" [options]="reTypeOptions" optionLabel="label" optionValue="value"
                                                           [placeholder]="t('addAssets.re.fields.typePh')" appendTo="body"
-                                                          styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                          styleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-usage" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.usage') }}</label>
                                                 <p-select inputId="re-usage" [(ngModel)]="assetForm.reUsage" [options]="reUsageOptions" optionLabel="label" optionValue="value"
                                                           [placeholder]="t('addAssets.re.fields.usagePh')" appendTo="body"
-                                                          styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                          styleClass="w-full" />
                                             </div>
                                         }
                                         @case (2) {
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-surface" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.surface') }}</label>
                                                 <p-inputnumber inputId="re-surface" styleClass="w-full" [(ngModel)]="assetForm.surfaceM2" [min]="0" [minFractionDigits]="0" [maxFractionDigits]="1" suffix=" m²"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                    inputStyleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-rooms" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.rooms') }}</label>
                                                 <p-inputnumber inputId="re-rooms" styleClass="w-full" [(ngModel)]="assetForm.reRooms" [min]="0" [maxFractionDigits]="0" [useGrouping]="false"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                    inputStyleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-year" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.year') }}</label>
                                                 <p-select inputId="re-year" [(ngModel)]="assetForm.reConstructionDate" [options]="reYearOptions" optionLabel="label" optionValue="value"
                                                           [filter]="true" [resetFilterOnHide]="true" [placeholder]="t('addAssets.re.fields.yearPh')" appendTo="body"
-                                                          styleClass="w-full !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none !shadow-none" />
+                                                          styleClass="w-full" />
                                             </div>
                                         }
                                         @case (3) {
@@ -797,7 +797,7 @@ interface CategoryCard {
                                                 <label for="re-buy" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.purchaseValue') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-buy" styleClass="w-full" [(ngModel)]="assetForm.purchasePrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -805,7 +805,7 @@ interface CategoryCard {
                                                 <label for="re-cur" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.currentValue') }} <span class="text-surface-500 dark:text-surface-400 text-xs">{{ t('addAssets.wizard.optional') }}</span></label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-cur" styleClass="w-full" [(ngModel)]="assetForm.currentPrice" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -813,7 +813,7 @@ interface CategoryCard {
                                                 <label for="re-date" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.purchaseDate') }}</label>
                                                 <p-datepicker inputId="re-date" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="purchaseDateObj" [showIcon]="true" [showButtonBar]="true"
                                                        dateFormat="yy-mm-dd" styleClass="w-full" appendTo="body"
-                                                       inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                       inputStyleClass="w-full" />
                                             </div>
                                         }
                                         @case (4) {
@@ -821,7 +821,7 @@ interface CategoryCard {
                                                 <label for="re-agency" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.agency') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-agency" styleClass="w-full" [(ngModel)]="assetForm.reAgencyFees" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -829,7 +829,7 @@ interface CategoryCard {
                                                 <label for="re-notary" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.notary') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-notary" styleClass="w-full" [(ngModel)]="assetForm.reNotaryFees" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -837,7 +837,7 @@ interface CategoryCard {
                                                 <label for="re-reno" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.renovation') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-reno" styleClass="w-full" [(ngModel)]="assetForm.reRenovationFees" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -845,7 +845,7 @@ interface CategoryCard {
                                                 <label for="re-furn" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.furnishing') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-furn" styleClass="w-full" [(ngModel)]="assetForm.reFurnishingCosts" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -858,20 +858,20 @@ interface CategoryCard {
                                                 <label for="re-loan" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.loanAmount') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-loan" styleClass="w-full" [(ngModel)]="assetForm.loanAmount" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-rate" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.loanRate') }}</label>
                                                 <p-inputnumber inputId="re-rate" styleClass="w-full" [(ngModel)]="assetForm.loanRate" [min]="0" [max]="100" [minFractionDigits]="0" [maxFractionDigits]="2" suffix=" %"
-                                                    inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                    inputStyleClass="w-full" />
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <label for="re-month" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.loanMonthly') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-month" styleClass="w-full" [(ngModel)]="assetForm.loanMonthly" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -884,7 +884,7 @@ interface CategoryCard {
                                                 <label for="re-rent" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.rent') }}</label>
                                                 <div class="relative">
                                                     <p-inputnumber inputId="re-rent" styleClass="w-full" [(ngModel)]="assetForm.reMonthlyRent" [min]="0" mode="decimal" [minFractionDigits]="0"
-                                                        inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !pr-24" />
+                                                        inputStyleClass="w-full !pr-24" />
                                                     <app-currency-suffix [(currency)]="assetForm.currency" [ariaLabel]="t('addAssets.wizard.currency')" />
                                                 </div>
                                             </div>
@@ -893,7 +893,7 @@ interface CategoryCard {
                                             <div class="flex flex-col gap-2 md:col-span-2">
                                                 <label for="re-locality" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.re.fields.locality') }}</label>
                                                 <input pInputText id="re-locality" [(ngModel)]="assetForm.region" placeholder="Ex : Dakar, Abidjan, Paris..."
-                                                       class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                                       class="w-full" />
                                             </div>
                                             <div class="md:col-span-2 mt-2">
                                                 <h3 class="text-surface-500 dark:text-surface-400 text-sm mb-3">{{ t('addAssets.wizard.owners') }}</h3>
@@ -1030,7 +1030,7 @@ interface CategoryCard {
                                     <i class="pi pi-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-400" aria-hidden="true"></i>
                                     <input #brvmSearchInput pInputText type="text" [ngModel]="brvmSearch()" (ngModelChange)="brvmSearch.set($event)"
                                            [attr.aria-label]="t('addAssets.brvm.searchPlaceholder')" [placeholder]="t('addAssets.brvm.searchPlaceholder')"
-                                           class="w-full !text-base !py-3 !pl-8 !bg-transparent !border-0 !border-b-2 !border-ochre-300 dark:!border-ochre-500/50 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400 !shadow-none" />
+                                           class="w-full !text-base !pl-8" />
                                 </div>
 
                                 <p class="text-sm text-surface-500 dark:text-surface-400 mb-1">{{ t('addAssets.brvm.listLabel') }}</p>
@@ -1065,7 +1065,7 @@ interface CategoryCard {
                                         <label for="brvm-other-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.brvm.otherLabel') }}</label>
                                         <input id="brvm-other-name" pInputText type="text" [ngModel]="brvmOtherName()" (ngModelChange)="brvmOtherName.set($event)"
                                                [placeholder]="t('addAssets.brvm.otherPlaceholder')"
-                                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400" />
+                                               class="w-full" />
                                     </div>
                                     <button pButton type="button" [label]="t('common.confirm')" [disabled]="!brvmOtherName().trim()"
                                             class="omaad-cta !rounded-full self-start !px-8" (click)="confirmBrvmOther()"></button>
@@ -1105,7 +1105,7 @@ interface CategoryCard {
                                     <i class="pi pi-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-400" aria-hidden="true"></i>
                                     <input #fcpSearchInput pInputText type="text" [ngModel]="fcpSearch()" (ngModelChange)="fcpSearch.set($event)"
                                            [attr.aria-label]="t('addAssets.fcp.searchPlaceholder')" [placeholder]="t('addAssets.fcp.searchPlaceholder')"
-                                           class="w-full !text-base !py-3 !pl-8 !bg-transparent !border-0 !border-b-2 !border-ochre-300 dark:!border-ochre-500/50 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400 !shadow-none" />
+                                           class="w-full !text-base !pl-8" />
                                 </div>
 
                                 <!-- Category chips (Actions / Obligations / Diversifié / Monétaire) -->
@@ -1155,7 +1155,7 @@ interface CategoryCard {
                                         <label for="fcp-other-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fcp.otherLabel') }}</label>
                                         <input id="fcp-other-name" pInputText type="text" [ngModel]="fcpOtherName()" (ngModelChange)="fcpOtherName.set($event)"
                                                [placeholder]="t('addAssets.fcp.otherPlaceholder')"
-                                               class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-ochre-500 dark:focus:!border-ochre-400" />
+                                               class="w-full" />
                                     </div>
                                     <button pButton type="button" [label]="t('common.confirm')" [disabled]="!fcpOtherName().trim()"
                                             class="omaad-cta !rounded-full self-start !px-8" (click)="confirmFcpOther()"></button>

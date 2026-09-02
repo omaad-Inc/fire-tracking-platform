@@ -6,6 +6,7 @@ import {
 import { AssetsStateService } from '../../pages/service/assets-state.service';
 import { ApiService } from '../services/api.service';
 import { CHAT_THREAD_KEY_PREFIX, TokenService } from '../services/token.service';
+import { AiConsentService } from './ai-consent.service';
 
 /**
  * Thread state for the S12 chat surface (Phase 1).
@@ -43,6 +44,7 @@ export class ChatSessionService {
     private assetsState = inject(AssetsStateService);
     private tokens = inject(TokenService);
     private api = inject(ApiService);
+    private consent = inject(AiConsentService);
 
     readonly messages = signal<ChatMessageVM[]>(this.restore());
     /** True while a turn is streaming (input disabled, Stop visible). */
@@ -93,6 +95,21 @@ export class ChatSessionService {
     }
 
     private doSend(trimmed: string): void {
+        // Consent belt to the composer's brace (P0-1). The composer is not
+        // rendered while the gate is shut, so this should be unreachable; it is
+        // here so that no future entry point can start a turn through an open
+        // gate. Not a silent drop: the bubble tells them why, and the room
+        // behind it has already swapped to the gate's CTA.
+        if (this.consent.gated()) {
+            this.append({ id: nextId(), role: 'user', ts: Date.now(), text: trimmed });
+            this.append({
+                id: nextId(), role: 'assistant', ts: Date.now(),
+                blocks: [{ kind: 'error', code: 'AI_CONSENT_REQUIRED', message: '' }],
+            });
+            this.persist();
+            return;
+        }
+
         // Offline short-circuit: degraded bubble, no turn started.
         if (typeof navigator !== 'undefined' && navigator.onLine === false) {
             this.append({ id: nextId(), role: 'user', ts: Date.now(), text: trimmed });

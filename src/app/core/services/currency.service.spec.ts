@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { WritableSignal, signal } from '@angular/core';
 import { of } from 'rxjs';
 
 import { CurrencyService } from './currency.service';
@@ -6,6 +7,7 @@ import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { AnalyticsService } from './analytics.service';
 import { ShareContextService } from './share-context.service';
+import { PrivacyService } from './privacy.service';
 
 /**
  * Pure money-math unit tests for CurrencyService (P4-TEST-1). The injected
@@ -66,5 +68,71 @@ describe('CurrencyService (rate math)', () => {
         expect(svc.format(1000)).toBe('655\u00a0957 FCFA');
         expect(svc.formatNumber(1000)).toBe('655\u00a0957');
         expect(svc.formatDisplayNumber(655957)).toBe('655\u00a0957');
+    });
+});
+
+/**
+ * P0-3: privacy mode is enforced HERE, in the formatters, not only inside
+ * `<app-amount>`. A component can mask template text and nothing else, while
+ * chart tooltips, axis ticks, aria-labels and option labels all take a string
+ * and so went straight round it. These tests pin which formatters mask and,
+ * just as importantly, which one must not.
+ */
+describe('CurrencyService (privacy mode)', () => {
+    let svc: CurrencyService;
+    let hidden: WritableSignal<boolean>;
+
+    beforeEach(() => {
+        hidden = signal(false);
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                CurrencyService,
+                { provide: ApiService, useValue: { getFxRates: () => of({ rates: {}, as_of: '' }), updateProfile: () => of({}) } },
+                { provide: TokenService, useValue: { user: () => ({ preferred_currency: 'XOF' }), setUser: () => {} } },
+                { provide: AnalyticsService, useValue: { track: () => {} } },
+                { provide: ShareContextService, useValue: { active: () => false, currency: () => 'EUR' } },
+                { provide: PrivacyService, useValue: { hidden } },
+            ],
+        });
+        svc = TestBed.inject(CurrencyService);
+    });
+
+    it('shows real amounts while the eye is open', () => {
+        expect(svc.format(1000)).toBe('655\u00a0957 FCFA');
+        expect(svc.formatNumber(1000)).toBe('655\u00a0957');
+        // 1000 EUR is 655 957 FCFA, so the tick takes the thousands branch.
+        expect(svc.tickFormatter()(1000)).toBe('656K');
+    });
+
+    it('masks EUR-base user amounts once the eye is shut', () => {
+        hidden.set(true);
+        // The symbol survives: it says which currency is withheld, not how much.
+        expect(svc.format(1000)).toBe('••••• FCFA');
+        expect(svc.formatNumber(1000)).toBe('•••••');
+        // No digit of the real figure may survive anywhere in the output.
+        expect(svc.format(1000)).not.toMatch(/\d/);
+        expect(svc.formatNumber(1000)).not.toMatch(/\d/);
+    });
+
+    it('masks chart axis ticks, which would otherwise hand over the scale', () => {
+        hidden.set(true);
+        for (const v of [0, 1_000, 250_000, 5_000_000]) {
+            expect(svc.tickFormatter()(v)).toBe('•••');
+        }
+    });
+
+    it('does NOT mask formatDisplayNumber: prices and typed input must stay readable', () => {
+        hidden.set(true);
+        // Subscription prices (you cannot check out against a mask) and the
+        // figure a user is currently typing both come through here.
+        expect(svc.formatDisplayNumber(655957)).toBe('655\u00a0957');
+    });
+
+    it('reverses cleanly, so nothing caches the mask', () => {
+        hidden.set(true);
+        expect(svc.formatNumber(1000)).toBe('•••••');
+        hidden.set(false);
+        expect(svc.formatNumber(1000)).toBe('655\u00a0957');
     });
 });

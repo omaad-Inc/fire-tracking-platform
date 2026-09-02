@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
 import { AppTopbar } from './app.topbar';
 import { I18nService } from '../../i18n/i18n.service';
 import { TokenService } from '../../core/services/token.service';
@@ -10,6 +10,8 @@ import { ShareContextService } from '../../core/services/share-context.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { NavService } from '../../core/services/nav.service';
 import { LayoutService } from '../service/layout.service';
+import { BillingService } from '../../core/services/billing.service';
+import { NotificationCenterService } from '../../core/services/notification-center.service';
 
 /**
  * The assistant sparkle is easy to miss on mobile, so a one-shot discovery hint
@@ -18,13 +20,15 @@ import { LayoutService } from '../service/layout.service';
  */
 describe('AppTopbar (assistant discovery hint)', () => {
     let navGo: jasmine.Spy;
+    let routerEvents: Subject<NavigationEnd>;
 
     function setup(opts: { aiChat: boolean; userId: number | null }): AppTopbar {
         navGo = jasmine.createSpy('go');
+        routerEvents = new Subject<NavigationEnd>();
         TestBed.configureTestingModule({
             imports: [AppTopbar],
             providers: [
-                { provide: Router, useValue: { events: of(), url: '/fr', navigate: () => {} } },
+                { provide: Router, useValue: { events: routerEvents, url: '/fr', navigate: () => {} } },
                 { provide: I18nService, useValue: { t: (k: string) => k, lang: () => 'fr' } },
                 { provide: TokenService, useValue: { user: () => (opts.userId != null ? { id: opts.userId } : null) } },
                 { provide: PrivacyService, useValue: { hidden: () => false, toggle: () => {} } },
@@ -33,6 +37,26 @@ describe('AppTopbar (assistant discovery hint)', () => {
                 { provide: FeatureFlagsService, useValue: { aiChat: () => opts.aiChat } },
                 { provide: NavService, useValue: { go: navGo } },
                 { provide: LayoutService, useValue: { layoutConfig: { update: () => {} }, isDarkTheme: () => false } },
+                // The topbar grew a tier-aware crown pill after these tests were
+                // written, which pulled in BillingService -> ApiService ->
+                // HttpClient and made all five fail on a missing provider. The
+                // pill is not what they are about, so it is stubbed out.
+                {
+                    provide: BillingService,
+                    useValue: {
+                        load: () => {},
+                        state: () => 'ready',
+                        effectivePlan: () => 'free',
+                        betaCourtesy: () => false,
+                    },
+                },
+                // Same story as BillingService above: the topbar grew a
+                // notification bell (P1-1), which pulls in ApiService ->
+                // HttpClient. The bell is not what these tests are about.
+                {
+                    provide: NotificationCenterService,
+                    useValue: { unreadCount: () => 0, ensureLoaded: () => {} },
+                },
             ],
         });
         return TestBed.createComponent(AppTopbar).componentInstance;
@@ -75,6 +99,79 @@ describe('AppTopbar (assistant discovery hint)', () => {
         expect(c.assistantHint()).toBeFalse();
         expect(localStorage.getItem('omaad_assistant_seen:5')).toBe('1');
         expect(navGo).toHaveBeenCalledWith('pages', 'assistant');
+    });
+
+    // ── P0-4: the coach-mark must not follow the user around ──────────────
+    //
+    // It hangs over the page (growing the topbar to fit it would shift the whole
+    // layout), so on a 390px screen it lands on the first card's heading. That
+    // is fine for the seconds it takes to read on the screen it appeared on, and
+    // not fine on the next three screens. Nothing used to take it down but its
+    // own 8s timer.
+    it('navigating away takes the coach-mark down', () => {
+        const c = setup({ aiChat: true, userId: 5 });
+        c.ngOnInit();
+        expect(c.assistantHint()).toBeTrue();
+
+        routerEvents.next(new NavigationEnd(1, '/fr', '/fr/pages/patrimoine'));
+
+        expect(c.assistantHint()).toBeFalse();
+    });
+
+    it('navigating does NOT spend the one-shot: the hint can still teach later', () => {
+        const c = setup({ aiChat: true, userId: 5 });
+        c.ngOnInit();
+        routerEvents.next(new NavigationEnd(1, '/fr', '/fr/pages/patrimoine'));
+
+        // A user who navigated straight away never read it. Marking it seen here
+        // would mean the hint silently never does its job for that user.
+        expect(localStorage.getItem('omaad_assistant_seen:5')).toBeNull();
+    });
+
+    it('opening the assistant retires it for good even once it is off screen', () => {
+        const c = setup({ aiChat: true, userId: 5 });
+        c.ngOnInit();
+        routerEvents.next(new NavigationEnd(1, '/fr', '/fr/pages/patrimoine'));
+        expect(c.assistantHint()).toBeFalse();
+
+        // They found the assistant on their own; re-teaching next session nags.
+        c.openAssistant();
+
+        expect(localStorage.getItem('omaad_assistant_seen:5')).toBe('1');
+    });
+
+    it('Escape dismisses it, and that counts as seen', () => {
+        const c = setup({ aiChat: true, userId: 5 });
+        c.ngOnInit();
+        expect(c.assistantHint()).toBeTrue();
+
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+        expect(c.assistantHint()).toBeFalse();
+        expect(localStorage.getItem('omaad_assistant_seen:5')).toBe('1');
+    });
+
+    it('a click on the page dismisses it, so it is never in the way twice', () => {
+        const c = setup({ aiChat: true, userId: 5 });
+        c.ngOnInit();
+        expect(c.assistantHint()).toBeTrue();
+
+        document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+        expect(c.assistantHint()).toBeFalse();
+        expect(localStorage.getItem('omaad_assistant_seen:5')).toBe('1');
+    });
+
+    it('stops listening once retired, so a later click is not swallowed', () => {
+        const c = setup({ aiChat: true, userId: 5 });
+        c.ngOnInit();
+        document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        localStorage.removeItem('omaad_assistant_seen:5');
+
+        // With the listener detached, another click must not re-write the key.
+        document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+        expect(localStorage.getItem('omaad_assistant_seen:5')).toBeNull();
     });
 
     it('is per-user: user B still sees it after user A dismissed', () => {

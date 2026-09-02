@@ -243,6 +243,20 @@ export class TransactionsService {
     /**
      * Update a transaction
      */
+    /**
+     * Update a transaction.
+     *
+     * CONTRACT, and it is a trap: `record.amount` here must be the amount in
+     * `record.currency` (NATIVE), because that is what the API stores. That is
+     * the opposite of `TransactionRecord.amount` as READ back from
+     * mapTransactionToRecord, which is EUR-base for display and summaries.
+     * Handing this method a record straight off the list therefore posts the
+     * EUR value as if it were XOF and divides the amount by the 655.957 peg.
+     * `nativeAmount` is deliberately NOT preferred over `amount` here: the edit
+     * dialog spreads the old record (stale `nativeAmount`) and overrides
+     * `amount` with the user's new input, so trusting `nativeAmount` would
+     * silently discard every edit.
+     */
     async updateRecord(record: TransactionRecord): Promise<TransactionRecord> {
         if (!record.id) throw new Error('Missing id');
 
@@ -286,9 +300,17 @@ export class TransactionsService {
      */
     async deleteRecords(ids: string[]): Promise<void> {
         try {
-            await Promise.all(ids.map(id =>
-                firstValueFrom(this.api.deleteTransaction(parseInt(id)))
-            ));
+            // SEQUENTIAL, not Promise.all. Deleting a transaction reverses its
+            // ledger effect on the account (S11-TX-1), and that reversal is a
+            // read-modify-write on the account balance with no row lock, so
+            // concurrent deletes against the SAME account lose updates: three
+            // parallel deletes of 1 000 XOF each all returned 204 and moved the
+            // balance by 1 000 instead of 3 000 (verified on the local stack).
+            // One at a time is correct against the backend as it stands; the
+            // race itself still needs fixing server-side.
+            for (const id of ids) {
+                await firstValueFrom(this.api.deleteTransaction(parseInt(id)));
+            }
             this.markTransactionsChanged();
         } catch (error) {
             console.error('Error deleting transactions:', error);
@@ -337,17 +359,27 @@ export class TransactionsService {
             t.type === 'transfer' ? 'Transfer'
             : (t.type === 'income' || t.type === 'investment') ? 'Income'
             : 'Expense';
+        // The API hands back MIXED category casing: some rows carry the enum
+        // VALUE ("shopping"), others its NAME ("SHOPPING"), depending on which
+        // writer created them (verified live: 186 upper vs 87 lower on the dev
+        // DB, both still being written). Every frontend dictionary
+        // (CATEGORY_CONFIG, the categories.* i18n block, INCOME/EXPENSE_
+        // CATEGORIES) is keyed lowercase, and the declared OpenAPI enum is
+        // lowercase too, so an uppercase row missed every lookup and rendered
+        // as its own raw key ("SALARY"). `type` is already normalised two lines
+        // up for the same reason; this is the same defence for `category`.
+        const category = t.category ? String(t.category).toLowerCase() : t.category;
         return {
             id: t.id.toString(),
             date: t.date,
-            name: CATEGORY_DISPLAY_MAP[t.category] || t.category,
+            name: CATEGORY_DISPLAY_MAP[category] || category,
             type,
             // Convert native → EUR base for display/summaries; keep native for editing.
             amount: this.currencyService.toEurFromNative(t.amount, t.currency),
             nativeAmount: t.amount,
             currency: t.currency,
             remarks: t.description ?? undefined,
-            category: t.category,
+            category,
             accountId: t.account_id ?? undefined,
             accountName: t.account_name ?? undefined,
             fromAccountId: t.from_account_id ?? undefined,

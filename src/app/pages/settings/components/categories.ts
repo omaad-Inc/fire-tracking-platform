@@ -1,12 +1,12 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CustomCategory, CustomCategoryKind } from '../../../core/services/api.service';
 import { CustomCategoryService } from '../../../core/services/custom-category.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
  * Settings → Categories (S13 PRO-4). Built to the settings-redesign bar
@@ -19,11 +19,10 @@ import { CustomCategoryService } from '../../../core/services/custom-category.se
 @Component({
     selector: 'app-settings-categories',
     standalone: true,
-    imports: [CommonModule, FormsModule, ConfirmDialogModule, ToastModule],
-    providers: [ConfirmationService, MessageService],
+    imports: [CommonModule, FormsModule, ToastModule],
+    providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <p-confirmDialog [style]="{ width: '92vw', maxWidth: '420px' }" styleClass="!rounded-2xl" appendTo="body" />
 
         <div class="max-w-2xl mx-auto pb-12">
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.categories.title') }}</h2>
@@ -210,7 +209,7 @@ import { CustomCategoryService } from '../../../core/services/custom-category.se
 export class CategoriesSettings implements OnInit {
     private i18n = inject(I18nService);
     private messageService = inject(MessageService);
-    private confirmationService = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
     svc = inject(CustomCategoryService);
 
     readonly ICONS = [
@@ -292,16 +291,12 @@ export class CategoriesSettings implements OnInit {
         });
     }
 
-    confirmRemove(c: CustomCategory) {
-        this.confirmationService.confirm({
-            header: this.t('settings.categories.deleteTitle'),
+    async confirmRemove(c: CustomCategory) {
+        const ok = await this.feedback.confirm({
+            title: this.t('settings.categories.deleteTitle'),
             message: this.t('settings.categories.deleteBody', { label: c.label }),
-            acceptLabel: this.t('common.delete'),
-            rejectLabel: this.t('common.cancel'),
-            acceptButtonStyleClass: 'p-button-danger',
-            rejectButtonStyleClass: 'p-button-text',
-            accept: () => this.remove(c),
         });
+        if (ok) this.remove(c);
     }
 
     private remove(c: CustomCategory) {

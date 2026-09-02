@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { grantAiConsent } from './fixtures/ai-consent';
 
 /**
  * S12 Phase 1 smoke: the mock-driven chat surface. Exercises the flows the
@@ -21,6 +22,9 @@ async function login(page: Page) {
 }
 
 async function openAssistant(page: Page, scenario?: string) {
+    // P0-1: the composer only exists past the consent gate. The gate itself is
+    // covered by ai-consent.smoke.spec.ts; here it is just a precondition.
+    await grantAiConsent(page);
     // Fresh thread each test so assertions do not see prior runs.
     await page.evaluate(() => localStorage.removeItem('omaad_chat_thread_v1'));
     await page.goto(`/fr/pages/assistant${scenario ? `?scenario=${scenario}` : ''}`);

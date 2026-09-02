@@ -6,6 +6,7 @@ import { ChatStreamEvent } from './chat-events';
 import { TokenService } from '../services/token.service';
 import { AuthService } from '../services/auth.service';
 import { FeatureFlagsService } from '../services/feature-flags.service';
+import { AiConsentService } from './ai-consent.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { inject as ngInject } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -66,16 +67,19 @@ function frame(event: ChatStreamEvent): string {
 describe('SseChatDriver', () => {
     let driver: SseChatDriver;
     let authSpy: jasmine.SpyObj<AuthService>;
+    let consentSpy: jasmine.SpyObj<AiConsentService>;
     let fetchSpy: jasmine.Spy;
 
     beforeEach(() => {
         authSpy = jasmine.createSpyObj<AuthService>('AuthService', ['logout', 'forceRefresh']);
+        consentSpy = jasmine.createSpyObj<AiConsentService>('AiConsentService', ['markRefusedByServer']);
         TestBed.configureTestingModule({
             providers: [
                 SseChatDriver,
                 { provide: TokenService, useValue: { getToken: () => 'test-token' } },
                 { provide: AuthService, useValue: authSpy },
                 { provide: I18nService, useValue: { t: (k: string) => k } },
+                { provide: AiConsentService, useValue: consentSpy },
             ],
         });
         driver = TestBed.inject(SseChatDriver);
@@ -235,6 +239,23 @@ describe('SseChatDriver', () => {
             expect(authSpy.logout).not.toHaveBeenCalled();
             const err = events.find((e) => e.type === 'error');
             expect(err && err.type === 'error' && err.code).toBe('PLAN_REQUIRED');
+            done();
+        });
+    });
+
+    // P0-1: the consent gate answers with a BARE STRING detail (the
+    // EMAIL_NOT_VERIFIED convention), not the {code} envelope the entitlement
+    // gate uses. Without that shape being matched, the catch-all below would log
+    // out every user whose consent the server has not recorded the moment
+    // AI_CONSENT_ENFORCED is turned on, i.e. the moment the web gate ships.
+    it('403 AI_CONSENT_REQUIRED re-gates the room and does NOT log out', (done) => {
+        fetchSpy.and.resolveTo(sseResponse([], 403, { detail: 'AI_CONSENT_REQUIRED' }));
+        const events: ChatStreamEvent[] = [];
+        driver.startTurn('salut', (e) => events.push(e), () => {
+            expect(authSpy.logout).not.toHaveBeenCalled();
+            expect(consentSpy.markRefusedByServer).toHaveBeenCalledTimes(1);
+            const err = events.find((e) => e.type === 'error');
+            expect(err && err.type === 'error' && err.code).toBe('AI_CONSENT_REQUIRED');
             done();
         });
     });
@@ -415,6 +436,7 @@ describe('CHAT_STREAM_DRIVER feature-flag swap', () => {
                 { provide: TokenService, useValue: { getToken: () => null } },
                 { provide: AuthService, useValue: {} },
                 { provide: I18nService, useValue: { t: (k: string) => k } },
+                { provide: AiConsentService, useValue: { markRefusedByServer: () => {} } },
                 { provide: FeatureFlagsService, useValue: { aiChat: () => aiChatOn } },
                 // Mirrors the assistant-page provider exactly.
                 {

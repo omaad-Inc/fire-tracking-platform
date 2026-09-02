@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { ChatStreamEvent } from './chat-events';
 import { ChatStreamDriver, ChatTurnHandle } from './chat-stream-driver';
 import { SseParser } from './sse-parser';
+import { AiConsentService } from './ai-consent.service';
 
 /**
  * S12 Phase 3 transport: the real pipe to POST /api/v1/agents/chat.
@@ -51,6 +52,7 @@ export class SseChatDriver implements ChatStreamDriver {
     private token = inject(TokenService);
     private auth = inject(AuthService);
     private i18n = inject(I18nService);
+    private consent = inject(AiConsentService);
     private base = environment.apiUrl;
 
     /** The in-flight turn, so confirm() can resume the SAME turn. */
@@ -291,13 +293,17 @@ export class SseChatDriver implements ChatStreamDriver {
         res: Response,
         onEvent: (e: ChatStreamEvent) => void,
     ): Promise<void> {
-        let detail: { code?: string } = {};
+        let detail: { code?: string } | string = {};
         try {
             const parsed = await res.json();
             detail = parsed?.detail ?? parsed ?? {};
         } catch {
             /* no JSON body */
         }
+        // The consent gate answers with a bare string detail, like
+        // EMAIL_NOT_VERIFIED does, not the {code} envelope the entitlement gate
+        // uses — so match both shapes.
+        const code = typeof detail === 'string' ? detail : detail?.code;
 
         // 401 after a successful refresh + retry: mirror AuthInterceptor (a
         // replayed request's 401 surfaces retryably, only a refresh rejection
@@ -312,11 +318,27 @@ export class SseChatDriver implements ChatStreamDriver {
         }
         // 403 PLAN_REQUIRED is the entitlement gate, not an auth failure: no
         // logout, surface it so the UI can route to the upsell.
-        if (res.status === 403 && detail?.code === 'PLAN_REQUIRED') {
+        if (res.status === 403 && code === 'PLAN_REQUIRED') {
             onEvent({
                 type: 'error',
                 code: 'PLAN_REQUIRED',
                 message: this.t('assistant.errorState.quotaReached'),
+            });
+            return;
+        }
+        // 403 AI_CONSENT_REQUIRED is the consent gate (backend
+        // AI_CONSENT_ENFORCED), not an auth failure. Without this branch the
+        // catch-all below would LOG OUT every user whose consent the server has
+        // not recorded the moment that flag is turned on — which is precisely
+        // the moment this gate ships. The server is authoritative, so drop the
+        // local grant: the room re-gates behind this bubble and its CTA is the
+        // way back in.
+        if (res.status === 403 && code === 'AI_CONSENT_REQUIRED') {
+            this.consent.markRefusedByServer();
+            onEvent({
+                type: 'error',
+                code: 'AI_CONSENT_REQUIRED',
+                message: this.t('assistant.consent.blockedTurn'),
             });
             return;
         }

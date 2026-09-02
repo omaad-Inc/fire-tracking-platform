@@ -96,23 +96,36 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                     }
                 </div>
 
-                <!-- This-month cash-flow + savings-rate strip -->
+                <!-- This-month cash-flow + savings-rate strip.
+                     Every amount goes through <app-amount>, which owns both the
+                     EUR to display-currency conversion and the privacy mask. These
+                     three used to call cs.formatNumber directly, so with amounts
+                     hidden the net worth above blurred while the income and
+                     expenses right under it stayed perfectly readable, which is
+                     the exact over-the-shoulder case the eye toggle exists for.
+                     The count-up is off here: the hero already has its one reveal
+                     on the net-worth figure, and three more competing with it
+                     reads as flicker. -->
                 <div class="mt-5 pt-4 border-t border-surface-100 dark:border-surface-800 flex flex-wrap items-center gap-x-6 gap-y-3">
                     <span class="text-xs font-semibold uppercase tracking-wide text-surface-400 dark:text-surface-500 w-full sm:w-auto">{{ t('home.thisMonth') }}</span>
                     <div class="flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-positive shrink-0"></span>
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('insights.income') }}</span>
-                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ cs.formatNumber(monthlyIncome()) }}</span>
+                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
+                            <app-amount [value]="monthlyIncome()" [animate]="false" />
+                        </span>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-negative/70 shrink-0"></span>
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('insights.expenses') }}</span>
-                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ cs.formatNumber(monthlyExpenses()) }}</span>
+                        <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">
+                            <app-amount [value]="monthlyExpenses()" [animate]="false" />
+                        </span>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <span class="text-surface-500 dark:text-surface-400 text-sm">{{ t('insights.net') }}</span>
                         <span class="font-semibold text-sm" [ngClass]="monthlyNet() >= 0 ? 'text-positive' : 'text-negative'">
-                            {{ monthlyNet() >= 0 ? '+' : '−' }}{{ cs.formatNumber(abs(monthlyNet())) }}
+                            <app-amount [value]="abs(monthlyNet())" [prefix]="monthlyNet() >= 0 ? '+' : '−'" [animate]="false" />
                         </span>
                     </div>
                     @if (hasFlux()) {

@@ -67,7 +67,13 @@ export class I18nService {
      * returns the raw key only if a category is somehow unknown.
      */
     categoryLabel(cat?: string | null): string {
-        const key = cat || 'other_expense';
+        // Lowercased on the way in: the API returns MIXED category casing, the
+        // enum VALUE for some rows ("groceries") and its NAME for others
+        // ("HOUSING"), depending on which writer created them. The
+        // `categories.*` dictionary is keyed lowercase, so an uppercase value
+        // missed the lookup and this returned the raw key, which is how
+        // "HOUSING" reached the Analyses page as visible copy.
+        const key = (cat || 'other_expense').toLowerCase();
         const path = `categories.${key}`;
         const label = this.t(path);
         return label !== path ? label : key;

@@ -9,6 +9,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { SelectModule } from 'primeng/select';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { PrivacyService } from '../../../core/services/privacy.service';
 import { GoalContributionCreate, LiquidAsset, SavingGoal } from '../../../core/services/api.service';
 import { nbspSafe } from '../../../core/util/nbsp';
 
@@ -225,6 +226,7 @@ export class GoalAllocateDialogComponent {
 
     i18n = inject(I18nService);
     cs = inject(CurrencyService);
+    private privacy = inject(PrivacyService);
 
     mode = signal<AllocationMode>('contribute');
     submitted = signal(false);
@@ -283,8 +285,11 @@ export class GoalAllocateDialogComponent {
         return v === k ? category : v;
     }
 
+    /** Masks under privacy mode: these are the user's own savings figures, and
+     *  a hand-rolled string cannot lean on <app-amount> to do it (P0-3). */
     formatCurrency(v: number): string {
         const sym = this.cs.config().symbol;
+        if (this.privacy.hidden()) return `${sym}•••••`;
         return `${sym}${nbspSafe(v.toLocaleString(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US', { maximumFractionDigits: 0 }))}`;
     }
 }
