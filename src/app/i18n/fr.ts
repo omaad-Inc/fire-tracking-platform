@@ -934,6 +934,8 @@ export const FR = {
       photoUpdatedTitle: 'Photo mise à jour',
       photoUpdatedDetail: 'Votre photo de profil a été modifiée.',
       photoUploadFailed: 'Impossible de télécharger la photo.',
+      photoRemoveTitle: 'Supprimer la photo ?',
+      photoRemoveBody: 'Votre photo de profil sera retirée de votre compte.',
       photoRemovedTitle: 'Photo supprimée',
       photoRemovedDetail: 'Votre photo de profil a été retirée.',
       photoRemoveFailed: 'Impossible de supprimer la photo.',

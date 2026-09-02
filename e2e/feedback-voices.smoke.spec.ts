@@ -103,19 +103,20 @@ test('feedback: one host serves every shell state, and no p-confirmDialog return
 
     // The settings routes are IMMERSIVE (no topbar), which is why the host is
     // mounted outside the shell's share/PIN branches rather than beside them.
-    // Settings → Account and Settings → Abonnement are NOT in this list yet:
-    // their two confirms are the last on the old dialog, held back because
-    // those files carry unrelated in-progress work. Add both here in the same
-    // change that migrates them, so the no-stale-dialog assertion covers the
-    // whole app again.
+    // Every route that had a confirm. Account and Abonnement joined the list
+    // when their two confirms migrated, which completes the sweep: there is now
+    // no p-confirmDialog anywhere in the app, and this list is what keeps it
+    // that way.
     const routes = [
         '/fr',
         '/fr/pages/transaction',
         '/fr/pages/debts',
         '/fr/pages/goals',
+        '/fr/pages/settings/account',
         '/fr/pages/settings/alerts',
         '/fr/pages/settings/categories',
         '/fr/pages/settings/connections',
+        '/fr/pages/settings/subscription',
     ];
     for (const route of routes) {
         await page.goto(route);

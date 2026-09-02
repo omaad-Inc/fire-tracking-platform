@@ -936,6 +936,8 @@ export const EN: Dict = {
       photoUpdatedTitle: 'Photo updated',
       photoUpdatedDetail: 'Your profile picture was updated.',
       photoUploadFailed: 'Could not upload the photo.',
+      photoRemoveTitle: 'Remove your photo?',
+      photoRemoveBody: 'Your profile picture will be removed from your account.',
       photoRemovedTitle: 'Photo removed',
       photoRemovedDetail: 'Your profile picture was removed.',
       photoRemoveFailed: 'Could not remove the photo.',
