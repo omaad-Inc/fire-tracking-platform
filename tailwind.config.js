@@ -6,7 +6,15 @@ export default {
     // can carry extra classes (settings adds settings-no-scrollbar, browser
     // extensions inject their own) and dark: variants must keep applying.
     darkMode: ['selector', '.app-dark'],
-    content: ['./src/**/*.{html,ts,scss,css}', './index.html'],
+    // Only files that can put a class on a DOM node. Scanning .scss/.css made
+    // Tailwind emit a utility for every class name a stylesheet merely
+    // mentions (selectors, comments), and .spec.ts files never render:
+    // dropping both trims the built stylesheet with no visual effect (P2-2).
+    content: [
+        './src/**/*.{html,ts}',
+        '!./src/**/*.spec.ts',
+        './index.html'
+    ],
     plugins: [PrimeUI],
     theme: {
         screens: {
