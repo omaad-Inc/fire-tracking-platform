@@ -11,6 +11,8 @@ import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService, TwoFactorSetup, LoginEventEntry } from '../../../core/services/auth.service';
 import { PinService } from '../../../core/services/pin.service';
+import { AiConsentService } from '../../../core/ai/ai-consent.service';
+import { AiConsentSheet } from '../../../core/ai/ai-consent-sheet';
 import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
 
@@ -21,6 +23,7 @@ import { firstValueFrom } from 'rxjs';
         CommonModule, FormsModule,
         ButtonModule, InputTextModule, PasswordModule,
         DialogModule, ToastModule,
+        AiConsentSheet,
     ],
     providers: [MessageService],
     template: `
@@ -302,7 +305,64 @@ import { firstValueFrom } from 'rxjs';
                 </div>
             </section>
 
-            <!-- ── 4. Session actuelle ──────────────────────────────── -->
+            <!-- ── 4. Assistant IA ──────────────────────────────────── -->
+            <!-- Withdrawal lives in Security, not Preferences: it is a consent
+                 to a data transfer, and this is the page people look at when
+                 they want to know what leaves their account. -->
+            <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
+                <div class="flex items-center gap-3 pb-4">
+                    <div class="w-9 h-9 rounded-xl bg-ochre-100 dark:bg-ochre-900/30 flex items-center justify-center shrink-0">
+                        <i class="pi pi-sparkles text-ochre-600 dark:text-ochre-300"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('security.ai.title') }}</h2>
+                        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 m-0">{{ t('security.ai.sub') }}</p>
+                    </div>
+                </div>
+
+                <div class="pb-2">
+                    @if (aiConsentGranted()) {
+                        <div class="flex items-center justify-between gap-3 p-4 rounded-2xl bg-positive/10 border border-positive-100 dark:border-positive-700/40">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-positive/10 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-check text-positive"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('security.ai.granted') }}</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">
+                                        {{ t('security.ai.grantedOn', { date: formatDate(user()?.ai_consent_at || undefined) }) }}
+                                    </p>
+                                </div>
+                            </div>
+                            <button pButton [label]="t('security.ai.withdraw')" severity="danger" size="small" [outlined]="true"
+                                    [loading]="aiConsentSaving()" (click)="withdrawAiConsent()" class="shrink-0"></button>
+                        </div>
+                    } @else {
+                        <div class="flex items-center justify-between gap-3 p-4 rounded-2xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-surface-100 dark:bg-surface-700 flex items-center justify-center shrink-0">
+                                    <i class="pi pi-sparkles text-surface-400 dark:text-surface-500"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('security.ai.notGranted') }}</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.ai.notGrantedSub') }}</p>
+                                </div>
+                            </div>
+                            <!-- Re-granting always re-shows the disclosure: a bare
+                                 switch here would grant consent to something unstated. -->
+                            <button pButton [label]="t('security.ai.grant')" [outlined]="true" size="small"
+                                    class="shrink-0 !text-ochre-600 dark:!text-ochre-400 !border-ochre-400 dark:!border-ochre-500"
+                                    (click)="showAiConsentSheet.set(true)"></button>
+                        </div>
+                    }
+                    <p class="text-xs text-surface-500 dark:text-surface-400 mt-3 flex items-start gap-2">
+                        <i class="pi pi-info-circle text-brand-700 dark:text-brand-300 mt-0.5 shrink-0"></i>
+                        {{ t('security.ai.hint') }}
+                    </p>
+                </div>
+            </section>
+
+            <!-- ── 5. Session actuelle ──────────────────────────────── -->
             <section class="pt-6 first:pt-0 border-t first:border-t-0 border-surface-200 dark:border-surface-800">
                 <div class="flex items-center gap-3 pb-4">
                     <div class="w-9 h-9 rounded-xl bg-brand-700/10 dark:bg-brand-300/15 flex items-center justify-center shrink-0">
@@ -488,6 +548,10 @@ import { firstValueFrom } from 'rxjs';
                 </div>
             </ng-template>
         </p-dialog>
+
+        <!-- The assistant's own disclosure sheet, reused verbatim: the notice a
+             user re-grants against must be the notice they first saw. -->
+        <app-ai-consent-sheet [(open)]="showAiConsentSheet" (answered)="onAiConsentAnswered($event)" />
     `
 })
 export class SecuritySettings implements OnInit {
@@ -496,9 +560,53 @@ export class SecuritySettings implements OnInit {
     private authService  = inject(AuthService);
     private msgService   = inject(MessageService);
     pinService           = inject(PinService);
+    private aiConsent    = inject(AiConsentService);
     private i18n         = inject(I18nService);
 
-    t(key: string): string { return this.i18n.t(key); }
+    t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
+
+    // ── AI consent (P0-1) ────────────────────────────────────────────────
+    /** Server-side state, read through the same service the assistant gate
+     *  uses, so both surfaces can never disagree about what was allowed. */
+    aiConsentGranted = computed(() => this.aiConsent.state() === 'granted');
+    showAiConsentSheet = signal(false);
+    aiConsentSaving = signal(false);
+
+    /**
+     * Withdraw. No confirm dialog: it is instantly reversible from the button
+     * that replaces it, and the safe direction here is off. Withdrawal is stored
+     * as a plain decline (the two are the same state server-side).
+     */
+    withdrawAiConsent(): void {
+        if (this.aiConsentSaving()) return;
+        this.aiConsentSaving.set(true);
+        this.aiConsent.setConsent(false).subscribe({
+            next: () => {
+                this.aiConsentSaving.set(false);
+                this.msgService.add({
+                    severity: 'success', summary: this.t('common.success'),
+                    detail: this.t('security.ai.withdrawnDetail'), life: 3000,
+                });
+            },
+            error: () => {
+                this.aiConsentSaving.set(false);
+                this.msgService.add({
+                    severity: 'error', summary: this.t('common.error'),
+                    detail: this.t('security.ai.saveFailed'), life: 4000,
+                });
+            },
+        });
+    }
+
+    /** The sheet has already stored the answer; confirm it in the same voice as
+     *  every other change on this page. */
+    onAiConsentAnswered(granted: boolean): void {
+        this.msgService.add({
+            severity: 'success', summary: this.t('common.success'),
+            detail: this.t(granted ? 'security.ai.grantedDetail' : 'security.ai.withdrawnDetail'),
+            life: 3000,
+        });
+    }
 
     // ── PIN setup state ──
     pinSetupActive = false;
@@ -612,6 +720,9 @@ export class SecuritySettings implements OnInit {
         // TOTP 2FA is for local (non-Google) accounts; Google runs its own.
         if (!this.isGoogleUser()) this.loadTwofaStatus();
         this.loadLoginHistory();
+        // Confirm the AI consent row against the server: this page states what
+        // leaves the account, so it must not report a weeks-old cached profile.
+        this.aiConsent.ensureSettled();
     }
 
     // ── Login history & session revocation ──────────────────────────────────
@@ -792,10 +903,13 @@ export class SecuritySettings implements OnInit {
         return 'récemment';
     }
 
+    /** Opportunistic fix while adding the AI consent row: this was pinned to
+     *  fr-FR, so an English user read French month names. */
     formatDate(isoDate?: string): string {
-        if (!isoDate) return ', ';
+        if (!isoDate) return '';
         const d = new Date(isoDate);
-        return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        const locale = this.i18n.lang() === 'en' ? 'en-GB' : 'fr-FR';
+        return d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     // ── Password dialog actions ────────────────────────────────────────

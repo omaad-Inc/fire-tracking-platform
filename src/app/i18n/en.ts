@@ -541,6 +541,35 @@ export const EN: Dict = {
       done: 'New conversation started',
       undo: 'Undo',
     },
+    // P0-1: the consent gate. Three plain lines carry the whole notice, on
+    // purpose: a wall of legal prose is not consent, it is something people
+    // tap past.
+    consent: {
+      title: 'Your go-ahead before we start',
+      intro: 'The assistant reads your portfolio to answer you. It can do nothing until you allow it.',
+      reads: {
+        title: 'What it reads',
+        body: 'Your portfolio, your accounts and your transactions from the last 30 days.',
+      },
+      destination: {
+        title: 'Where that data goes',
+        body: 'To Anthropic, who run the Claude model. It is not kept after the answer, and never used to train the model.',
+      },
+      neverSent: {
+        title: 'What Omaad never sends',
+        body: 'Not your name, not your email, not your phone number: amounts and categories, nothing that names you.',
+      },
+      revocable: 'You can withdraw your consent at any time in Settings → Security.',
+      accept: 'Allow the assistant',
+      decline: 'Not now',
+      saveFailed: 'Could not save your choice. Please try again.',
+      dormantTitle: 'Assistant on standby',
+      dormantBody: 'You have not allowed the assistant to read your portfolio. Nothing is sent to it.',
+      enable: 'Turn the assistant on',
+      enableShort: 'Turn on',
+      barBody: 'The assistant is on standby. Your past answers stay readable, nothing new is sent to it.',
+      blockedTurn: 'The assistant needs your go-ahead before it can read your portfolio.',
+    },
     inputPlaceholder: 'Write a message…',
     inputConfirmPending: 'Confirm or cancel the action above to continue',
     inputAria: 'Message for the assistant',
@@ -2098,6 +2127,23 @@ export const EN: Dict = {
     },
   },
   security: {
+    // P0-1: AI consent lives here, not in Preferences, because it is a consent
+    // to a data transfer and this is the page people open to find out what
+    // leaves their account. The disclosure itself is assistant.consent.*.
+    ai: {
+      title: 'AI assistant',
+      sub: 'What the assistant is allowed to read',
+      granted: 'Assistant allowed',
+      grantedOn: 'Allowed on {{date}}',
+      withdraw: 'Withdraw',
+      notGranted: 'Assistant not allowed',
+      notGrantedSub: 'No data is sent to it',
+      grant: 'Allow',
+      hint: 'The assistant reads your portfolio and recent transactions to answer you. Your name, email and phone number are never sent.',
+      grantedDetail: 'The assistant is now allowed',
+      withdrawnDetail: 'Consent withdrawn',
+      saveFailed: 'Could not save your choice',
+    },
     methodTitle: 'Sign-in method',
     methodSub: 'How you sign in to Omaad',
     emailPassword: 'Email & password',

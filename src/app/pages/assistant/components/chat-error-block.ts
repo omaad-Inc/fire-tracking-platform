@@ -27,6 +27,10 @@ import { NavService } from '../../../core/services/nav.service';
                    aria-hidden="true"></i>
                 <div class="min-w-0 flex-1">
                     <p class="text-[13px] leading-snug text-surface-700 dark:text-surface-200">{{ text() }}</p>
+                    <!-- The consent gate owns its own CTA (it has replaced the
+                         composer by the time this renders), so this bubble
+                         carries no action: a Retry here would just refail. -->
+                    @if (!consentMissing()) {
                     <div class="flex items-center gap-2 mt-2.5">
                         @if (quota()) {
                             <a [routerLink]="plansLink()"
@@ -53,6 +57,7 @@ import { NavService } from '../../../core/services/nav.service';
                             </button>
                         }
                     </div>
+                    }
                 </div>
             </div>
         </div>
@@ -79,6 +84,12 @@ export class ChatErrorBlockComponent {
         return this.code === 'rate_limited';
     }
 
+    /** The consent gate refused the turn (P0-1). Actionless bubble: the gate
+     *  has already replaced the composer with its own CTA. */
+    consentMissing(): boolean {
+        return this.code === 'AI_CONSENT_REQUIRED';
+    }
+
     text(): string {
         if (this.message) return this.message;
         switch (this.code) {
@@ -86,6 +97,7 @@ export class ChatErrorBlockComponent {
             case 'QUOTA_REACHED': return this.t('assistant.errorState.quotaReached');
             case 'PLAN_REQUIRED': return this.t('assistant.errorState.quotaReached');
             case 'rate_limited': return this.t('assistant.errorState.rateLimited');
+            case 'AI_CONSENT_REQUIRED': return this.t('assistant.consent.blockedTurn');
             case 'UPSTREAM_UNAVAILABLE': return this.t('assistant.errorState.unavailable');
             default: return this.t('assistant.errorState.generic');
         }

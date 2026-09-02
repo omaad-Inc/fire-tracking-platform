@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { grantAiConsent } from './fixtures/ai-consent';
 
 /**
  * Cost-audit guard (2026-08-22): the prompt-cache warm must fire on INTENT,
@@ -33,6 +34,10 @@ test('assistant: the cache warm waits for intent and fires once per visit', asyn
     });
 
     await login(page);
+    // P0-1: warming is only reachable through the composer, which only exists
+    // past the consent gate (a warm carries the real snapshot, so the backend
+    // gates it too).
+    await grantAiConsent(page);
 
     await page.evaluate(() => localStorage.removeItem('omaad_chat_thread_v1'));
     await page.goto('/fr/pages/assistant?scenario=plain');

@@ -411,6 +411,7 @@ describe('ChatSessionService (new conversation)', () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
             providers: [
+                provideHttpClient(),
                 ChatSessionService,
                 { provide: CHAT_STREAM_DRIVER, useValue: driver },
                 { provide: ApiService, useValue: api },

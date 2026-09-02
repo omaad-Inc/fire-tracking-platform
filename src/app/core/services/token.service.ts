@@ -41,6 +41,16 @@ export interface User {
     updated_at?: string;
     // auth_provider is not returned by backend, inferred from login method
     auth_provider?: 'email' | 'google' | 'apple';
+    /**
+     * AI consent (store launch). Rides on the user profile, so /auth/me is all
+     * the app needs to know whether it still owes someone the consent sheet.
+     * Exactly one of the two is ever set server-side; both null (or, on a
+     * profile cached by a build that predates the field, both undefined) means
+     * "never asked". Read them through AiConsentService, never directly: the
+     * absence of a decision is not a consent, and that rule lives in one place.
+     */
+    ai_consent_at?: string | null;
+    ai_consent_declined_at?: string | null;
 }
 
 @Injectable({

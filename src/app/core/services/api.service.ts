@@ -1569,6 +1569,18 @@ export class ApiService {
         return this.http.put<User>(`${this.apiUrl}/users/me/fire-settings`, data);
     }
 
+    /**
+     * Record the answer to the AI consent sheet. One endpoint for all three
+     * moments (first acceptance, refusal, later withdrawal from Settings)
+     * because they write the same pair of columns; the full profile comes back
+     * so the caller refreshes its cached user from the response instead of a
+     * second round trip. Go through AiConsentService rather than calling this
+     * directly, so the cached user is always updated with it.
+     */
+    setAiConsent(granted: boolean): Observable<User> {
+        return this.http.put<User>(`${this.apiUrl}/users/me/ai-consent`, { granted });
+    }
+
     uploadAvatar(file: File): Observable<User> {
         const formData = new FormData();
         formData.append('file', file);

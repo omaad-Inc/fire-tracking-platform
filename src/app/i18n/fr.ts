@@ -539,6 +539,35 @@ export const FR = {
       done: 'Nouvelle conversation démarrée',
       undo: 'Annuler',
     },
+    // P0-1: the consent gate. Three plain lines carry the whole notice, on
+    // purpose: a wall of legal prose is not consent, it is something people
+    // tap past.
+    consent: {
+      title: 'Ton accord avant de commencer',
+      intro: 'L\'assistant lit ton patrimoine pour te répondre. Il ne peut rien faire tant que tu ne l\'as pas autorisé.',
+      reads: {
+        title: 'Ce qu\'il lit',
+        body: 'Ton patrimoine, tes comptes et tes transactions des 30 derniers jours.',
+      },
+      destination: {
+        title: 'Où vont ces données',
+        body: 'Chez Anthropic, qui fait tourner le modèle Claude. Elles ne sont pas conservées après la réponse, ni utilisées pour entraîner le modèle.',
+      },
+      neverSent: {
+        title: 'Ce qu\'Omaad n\'envoie jamais',
+        body: 'Ni ton nom, ni ton e-mail, ni ton numéro : des montants et des catégories, rien qui te nomme.',
+      },
+      revocable: 'Tu peux retirer ton accord à tout moment dans Paramètres → Sécurité.',
+      accept: 'Autoriser l\'assistant',
+      decline: 'Pas maintenant',
+      saveFailed: 'Impossible d\'enregistrer ton choix. Réessaie.',
+      dormantTitle: 'Assistant en veille',
+      dormantBody: 'Tu n\'as pas autorisé l\'assistant à lire ton patrimoine. Rien ne lui est envoyé.',
+      enable: 'Activer l\'assistant',
+      enableShort: 'Activer',
+      barBody: 'L\'assistant est en veille. Tes anciennes réponses restent lisibles, rien de nouveau ne lui est envoyé.',
+      blockedTurn: 'L\'assistant a besoin de ton accord avant de lire ton patrimoine.',
+    },
     inputPlaceholder: 'Écris un message…',
     inputConfirmPending: 'Confirme ou annule l\'action ci-dessus pour continuer',
     inputAria: 'Message pour l\'assistant',
@@ -2096,6 +2125,23 @@ export const FR = {
     },
   },
   security: {
+    // P0-1: AI consent lives here, not in Préférences, because it is a consent
+    // to a data transfer and this is the page people open to find out what
+    // leaves their account. The disclosure itself is assistant.consent.*.
+    ai: {
+      title: 'Assistant IA',
+      sub: 'Ce que l\'assistant est autorisé à lire',
+      granted: 'Assistant autorisé',
+      grantedOn: 'Accord donné le {{date}}',
+      withdraw: 'Retirer',
+      notGranted: 'Assistant non autorisé',
+      notGrantedSub: 'Aucune donnée ne lui est envoyée',
+      grant: 'Autoriser',
+      hint: 'L\'assistant lit votre patrimoine et vos transactions récentes pour vous répondre. Votre nom, votre e-mail et votre numéro ne sont jamais transmis.',
+      grantedDetail: 'L\'assistant est autorisé',
+      withdrawnDetail: 'Autorisation retirée',
+      saveFailed: 'Impossible d\'enregistrer votre choix',
+    },
     methodTitle: 'Méthode de connexion',
     methodSub: 'Comment vous vous connectez à Omaad',
     emailPassword: 'Email & mot de passe',
