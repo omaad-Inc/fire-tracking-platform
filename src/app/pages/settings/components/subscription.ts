@@ -2,15 +2,15 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { ApiService } from '../../../core/services/api.service';
 import { BillingService } from '../../../core/services/billing.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PlanCheckoutSheet } from './plan-checkout-sheet';
 import { APP_LINK_SUBSCRIPTION_SUCCESS, isMobileDevice, openInApp } from '../../../core/util/app-link';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
  * Settings → Abonnement (S11 Phase 3). "Where am I, how much AI have I used,
@@ -22,11 +22,10 @@ import { APP_LINK_SUBSCRIPTION_SUCCESS, isMobileDevice, openInApp } from '../../
 @Component({
     selector: 'app-settings-subscription',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule, ConfirmDialogModule, ToastModule, PlanCheckoutSheet],
-    providers: [ConfirmationService, MessageService],
+    imports: [CommonModule, RouterModule, ButtonModule, ToastModule, PlanCheckoutSheet],
+    providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <p-confirmDialog [style]="{ width: '92vw', maxWidth: '420px' }" styleClass="!rounded-2xl" appendTo="body" />
         <app-plan-checkout-sheet [open]="sheetOpen()" (openChange)="sheetOpen.set($event)" [tier]="sheetTier()" />
 
         <div class="max-w-2xl mx-auto pb-12">
@@ -376,7 +375,7 @@ export class SubscriptionSettings implements OnInit {
     private api = inject(ApiService);
     private router = inject(Router);
     private route = inject(ActivatedRoute);
-    private confirm = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
     private toast = inject(MessageService);
     private cs = inject(CurrencyService);
     protected billing = inject(BillingService);
@@ -590,26 +589,25 @@ export class SubscriptionSettings implements OnInit {
         this.sheetOpen.set(true);
     }
 
-    confirmCancel(): void {
-        this.confirm.confirm({
-            header: this.t('subscription.cancelConfirm.title'),
+    async confirmCancel(): Promise<void> {
+        const ok = await this.feedback.confirm({
+            title: this.t('subscription.cancelConfirm.title'),
             message: this.t('subscription.cancelConfirm.message'),
-            acceptLabel: this.t('subscription.cancelConfirm.accept'),
-            rejectLabel: this.t('common.cancel'),
-            acceptButtonStyleClass: 'p-button-danger',
-            accept: () => this.doCancel(),
+            confirmLabel: this.t('subscription.cancelConfirm.accept'),
+            // Not a delete: a cancellation keeps the account and the paid
+            // period. The default trash medallion said the opposite.
+            icon: 'pi-times-circle',
         });
+        if (ok) this.doCancel();
     }
 
     private doCancel(): void {
         this.api.cancelSubscription().subscribe({
             next: () => {
                 this.billing.refresh();
-                this.toast.add({ severity: 'success', summary: this.t('subscription.cancelConfirm.doneTitle'), detail: this.t('subscription.cancelConfirm.doneBody'), life: 4000 });
+                this.feedback.success(this.t('subscription.cancelConfirm.doneBody'));
             },
-            error: () => {
-                this.toast.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('subscription.cancelConfirm.error'), life: 4000 });
-            },
+            error: () => this.feedback.error(this.t('subscription.cancelConfirm.error')),
         });
     }
 
