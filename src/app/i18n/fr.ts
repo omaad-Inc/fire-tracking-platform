@@ -1114,6 +1114,16 @@ export const FR = {
     upgradeToPremium: 'Passer à Omaad Premium',
     yourPlanPremium: 'Votre abonnement Premium',
   },
+  notifCenter: {
+    title: 'Notifications',
+    subtitle: 'Vos alertes et rappels, y compris ceux que vous avez balayés.',
+    markAll: 'Tout lire',
+    today: 'Aujourd\'hui',
+    yesterday: 'Hier',
+    unreadAria: '{{count}} non lues',
+    emptyTitle: 'Rien pour le moment',
+    emptyMessage: 'Vos alertes de budget, rappels de tontine, jalons d\'objectif et bilans hebdomadaires apparaîtront ici, même si vous avez balayé la notification.',
+  },
   addAssets: {
     title: 'Ajouter un actif',
     step0Title: 'Choisissez un type d\'actif',

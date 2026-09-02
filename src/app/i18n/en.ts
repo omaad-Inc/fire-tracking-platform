@@ -1116,6 +1116,16 @@ export const EN: Dict = {
     upgradeToPremium: 'Upgrade to Omaad Premium',
     yourPlanPremium: 'Your Premium plan',
   },
+  notifCenter: {
+    title: 'Notifications',
+    subtitle: 'Your alerts and reminders, including the ones you swiped away.',
+    markAll: 'Mark all read',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    unreadAria: '{{count}} unread',
+    emptyTitle: 'Nothing yet',
+    emptyMessage: 'Your budget alerts, tontine reminders, goal milestones and weekly reports will appear here, even if you swiped the notification away.',
+  },
   addAssets: {
     title: 'Add an asset',
     step0Title: 'Choose an asset type',

@@ -11,6 +11,7 @@ import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { NavService } from '../../core/services/nav.service';
 import { LayoutService } from '../service/layout.service';
 import { BillingService } from '../../core/services/billing.service';
+import { NotificationCenterService } from '../../core/services/notification-center.service';
 
 /**
  * The assistant sparkle is easy to miss on mobile, so a one-shot discovery hint
@@ -48,6 +49,13 @@ describe('AppTopbar (assistant discovery hint)', () => {
                         effectivePlan: () => 'free',
                         betaCourtesy: () => false,
                     },
+                },
+                // Same story as BillingService above: the topbar grew a
+                // notification bell (P1-1), which pulls in ApiService ->
+                // HttpClient. The bell is not what these tests are about.
+                {
+                    provide: NotificationCenterService,
+                    useValue: { unreadCount: () => 0, ensureLoaded: () => {} },
                 },
             ],
         });
