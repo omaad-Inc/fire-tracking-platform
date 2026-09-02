@@ -256,6 +256,14 @@
     }
 }
 
+// Native form controls that should read as omaad-form fields. Kept as
+// single-line variables because a selector wrapped across lines would gain a
+// descendant combinator and silently style the wrong element.
+$native-field-base: "input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='color']):not([type='submit']):not([type='button']):not([type='reset']), select, textarea";
+$native-field-selectors: $native-field-base;
+$native-field-hover: "input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='color']):not([type='submit']):not([type='button']):not([type='reset']):hover:not(:focus), select:hover:not(:focus), textarea:hover:not(:focus)";
+$native-field-focus: "input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='color']):not([type='submit']):not([type='button']):not([type='reset']):focus, select:focus, textarea:focus";
+
 // ── Premium filled form fields (omaad-form) ─────────────────────────
 // Opt-in wrapper: every input/select/datepicker inside gets a soft-filled,
 // rounded "card" field with an ochre focus ring — the native-app / premium
@@ -272,7 +280,14 @@
     .p-select,
     .p-datepicker-input {
         background: var(--p-surface-100) !important;
-        border: 1px solid transparent !important;
+        // A VISIBLE hairline, not `transparent` (P1-5). The fill is
+        // --p-surface-100, which is the exact colour of the app body ground
+        // (rgb(241,245,249) both), so on any in-page card the field was
+        // invisible in light mode: no fill contrast and no edge. It only ever
+        // read inside a dialog, which paints surface-0 behind it. The edge is
+        // what makes the idiom usable outside dialogs, which is the whole
+        // point of converging on it.
+        border: 1px solid var(--omaad-border) !important;
         border-radius: var(--omaad-radius-input) !important;
         box-shadow: none !important;
         padding: 0.8rem 0.9rem !important;
@@ -341,8 +356,62 @@
     .omaad-affix .p-inputnumber-input,
     .omaad-affix .p-inputtext { padding-right: 3.25rem !important; }
 
+    // ── Native controls (P1-5) ──────────────────────────────────────
+    // `omaad-form` used to skin PrimeNG components only, so a form built from
+    // plain <input>/<select>/<textarea> could not converge on it: it had to
+    // re-derive the filled look in per-field utility strings, which is exactly
+    // the drift P1-5 removes. Native controls now get the SAME field, so those
+    // forms converge by adding one class.
+    //
+    // Toggles are not fields: a filled 0.8rem box around a checkbox is wrong,
+    // so those types keep their native chrome. PrimeNG's own inputs need no
+    // exclusion here, because the rules above claim them with `!important`
+    // and these deliberately carry none. (Do NOT reach for `[class*='p-']` to
+    // exclude them: that substring also matches Tailwind's `p-4`/`px-2`.)
+    // Each selector stays on ONE line: a wrapped `:not()` would read as a
+    // descendant combinator and style the wrong element.
+    #{$native-field-selectors} {
+        width: 100%;
+        background: var(--p-surface-100);
+        // Same visible hairline as the PrimeNG fields above, for the same
+        // reason: the fill alone does not separate a field from the ground.
+        border: 1px solid var(--omaad-border);
+        border-radius: var(--omaad-radius-input);
+        box-shadow: none;
+        padding: 0.8rem 0.9rem;
+        color: var(--p-text-color);
+        font: inherit;
+        transition: background-color var(--motion-base) var(--ease-standard),
+                    border-color var(--motion-base) var(--ease-standard),
+                    box-shadow var(--motion-base) var(--ease-standard);
+    }
+
+    #{$native-field-hover} { border-color: var(--omaad-border); }
+
+    #{$native-field-focus} {
+        border-color: var(--omaad-ochre-400);
+        background: var(--p-surface-0);
+        box-shadow: 0 0 0 3px rgba(199, 123, 60, 0.18);
+        outline: none;
+    }
+
     // Placeholder tone.
     ::placeholder { color: var(--p-surface-400); opacity: 1; }
+}
+
+.app-dark .omaad-form {
+    #{$native-field-selectors} {
+        background: rgba(255, 255, 255, 0.05);
+        // Native date/time controls paint their own LIGHT chrome otherwise:
+        // the app sets no color-scheme, so the clock/calendar glyph stays
+        // near-black on the dark fill (same trap as the P1-2 checkboxes).
+        color-scheme: dark;
+    }
+    #{$native-field-focus} {
+        border-color: var(--omaad-ochre-400);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(216, 163, 105, 0.22);
+    }
 }
 
 .app-dark .omaad-form {

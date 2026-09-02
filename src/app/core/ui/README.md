@@ -34,7 +34,6 @@ Introduced in Sprint 2 (Design System Elevation).
 | `app-page-header` | Top-of-page eyebrow + title + subtitle + actions slot |
 | `app-section-header` | In-page section title + subtitle + actions slot |
 | `app-ui-card` | Standard card shell (radius, border, shadow, padding) |
-| `app-stat-card` | KPI tile (label + projected value + icon + trend) |
 | `app-empty-state` | Designed empty block (icon + title + message + CTA slot) |
 | `app-chip` | Tokenized status/category pill |
 
