@@ -1,8 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PrivacyService } from '../../../core/services/privacy.service';
@@ -32,11 +31,8 @@ type RuleForm = {
 @Component({
     selector: 'app-settings-alerts',
     standalone: true,
-    imports: [CommonModule, FormsModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule],
     template: `
-        <p-toast position="top-center" />
-
         <div class="max-w-2xl mx-auto pb-12">
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.alerts.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.alerts.subtitle') }}</p>
@@ -196,7 +192,6 @@ export class AlertsSettings implements OnInit {
     private privacy = inject(PrivacyService);
     private cats = inject(CustomCategoryService);
     private data = inject(AlertsDataService);
-    private messageService = inject(MessageService);
     private feedback = inject(FeedbackService);
 
     readonly MAX = 20;
@@ -272,7 +267,7 @@ export class AlertsSettings implements OnInit {
 
         const done = (msg: string, rule: AlertRule) => {
             this.busy.set(false);
-            this.messageService.add({ severity: 'success', summary: msg, life: 3000 });
+            this.feedback.success(msg);
             this.resetForm();
             this.data.upsertRule(rule);  // patch locally; no full-list refetch
         };
@@ -281,7 +276,7 @@ export class AlertsSettings implements OnInit {
             const msg = e?.status === 409 ? this.t('settings.alerts.capReached', { n: this.MAX })
                 : e?.status === 403 ? this.t('settings.alerts.proOnly')
                 : this.t('settings.alerts.saveError');
-            this.messageService.add({ severity: 'error', summary: msg, life: 4000 });
+            this.feedback.error(msg);
         };
 
         if (id !== null) {

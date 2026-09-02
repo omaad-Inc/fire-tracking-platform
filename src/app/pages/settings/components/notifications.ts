@@ -5,11 +5,11 @@ import { SwPush } from '@angular/service-worker';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { firstValueFrom } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { ApiService, NotificationPreferences, PushDevice } from '../../../core/services/api.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
  * Settings → Notifications (S9-B3): channel + signal opt-ins, quiet hours,
@@ -20,10 +20,8 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
 @Component({
     selector: 'app-settings-notifications',
     standalone: true,
-    imports: [CommonModule, FormsModule, ToggleSwitchModule, SelectModule, DividerModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, ToggleSwitchModule, SelectModule, DividerModule],
     template: `
-        <p-toast position="top-center" />
         <div class="px-1">
 
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.title') }}</h2>
@@ -218,9 +216,9 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
 })
 export class NotificationsSettings implements OnInit {
     private i18n = inject(I18nService);
+    private feedback = inject(FeedbackService);
     private api = inject(ApiService);
     private swPush = inject(SwPush);
-    private messageService = inject(MessageService);
 
     // Seed synchronously from the last-known cache so the real toggle states
     // paint on the first frame (flash-free). `loading` is the skeleton gate and
@@ -301,7 +299,7 @@ export class NotificationsSettings implements OnInit {
             await firstValueFrom(this.api.registerPushSubscription(subscription.toJSON() as object, label));
             this.save({ push_enabled: true });
             this.refreshDevices();
-            this.messageService.add({ severity: 'success', summary: this.t('settings.notifs.pushEnabled'), life: 3000 });
+            this.feedback.success(this.t('settings.notifs.pushEnabled'));
         } catch {
             // Permission denied, 503 (keys not configured), or subscribe failure.
             this.prefs.update(p => ({ ...p, push_enabled: false }));
@@ -366,7 +364,7 @@ export class NotificationsSettings implements OnInit {
     }
 
     private toastError(detail: string) {
-        this.messageService.add({ severity: 'error', summary: detail, life: 4000 });
+        this.feedback.error(detail);
     }
 
     t(key: string, params?: Record<string, string | number>): string {

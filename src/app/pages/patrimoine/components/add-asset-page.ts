@@ -20,6 +20,7 @@ import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
 import { toLocalDateStr } from '../../../core/util/date';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
  * Tappable currency chip rendered inside an amount input's suffix slot (S7b
@@ -1173,6 +1174,8 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     readonly isTouch = isTouchDevice();
 
     private router = inject(Router);
+
+    private feedback = inject(FeedbackService);
     private route = inject(ActivatedRoute);
     private location = inject(Location);
     private patrimoineService = inject(PatrimoineService);
@@ -1948,7 +1951,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             const detail = error?.error?.detail
                 ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
                 : this.i18n.t('addAssets.wizard.addError');
-            this.messageService.add({ severity: 'error', summary: this.i18n.t('common.error'), detail, life: 6000 });
+            this.feedback.error(this.i18n.t('common.error'));
         } finally {
             this.isSubmitting.set(false);
         }

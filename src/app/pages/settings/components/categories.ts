@@ -1,8 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { I18nService } from '../../../i18n/i18n.service';
 import { CustomCategory, CustomCategoryKind } from '../../../core/services/api.service';
 import { CustomCategoryService } from '../../../core/services/custom-category.service';
@@ -19,11 +18,8 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 @Component({
     selector: 'app-settings-categories',
     standalone: true,
-    imports: [CommonModule, FormsModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule],
     template: `
-        <p-toast position="top-center" />
-
         <div class="max-w-2xl mx-auto pb-12">
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.categories.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.categories.subtitle') }}</p>
@@ -208,7 +204,6 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 })
 export class CategoriesSettings implements OnInit {
     private i18n = inject(I18nService);
-    private messageService = inject(MessageService);
     private feedback = inject(FeedbackService);
     svc = inject(CustomCategoryService);
 
@@ -274,11 +269,7 @@ export class CategoriesSettings implements OnInit {
         req.subscribe({
             next: () => {
                 this.busy.set(false);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: id !== null ? this.t('settings.categories.updated') : this.t('settings.categories.added', { label }),
-                    life: 3000,
-                });
+                this.feedback.success(id !== null ? this.t('settings.categories.updated') : this.t('settings.categories.added', { label }));
                 this.resetForm();
             },
             error: (e) => {
@@ -286,7 +277,7 @@ export class CategoriesSettings implements OnInit {
                 const msg = e?.status === 409 ? this.t('settings.categories.duplicate')
                     : e?.status === 403 ? this.t('settings.categories.proOnly')
                     : this.t('settings.categories.saveError');
-                this.messageService.add({ severity: 'error', summary: msg, life: 4000 });
+                this.feedback.error(msg);
             },
         });
     }
@@ -303,13 +294,9 @@ export class CategoriesSettings implements OnInit {
         this.svc.remove(c.id).subscribe({
             next: () => {
                 if (this.editingId() === c.id) this.resetForm();
-                this.messageService.add({
-                    severity: 'success', summary: this.t('settings.categories.deleted', { label: c.label }), life: 3000,
-                });
+                this.feedback.success(this.t('settings.categories.deleted', { label: c.label }));
             },
-            error: () => this.messageService.add({
-                severity: 'error', summary: this.t('settings.categories.saveError'), life: 4000,
-            }),
+            error: () => this.feedback.error(this.t('settings.categories.saveError')),
         });
     }
 

@@ -5,8 +5,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 
 import { I18nService } from '../../i18n/i18n.service';
 import { CustomCategoryService } from '../../core/services/custom-category.service';
@@ -18,6 +16,7 @@ import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
 import { BudgetDataService } from '../service/budget-data.service';
+import { FeedbackService } from '../../core/ui/feedback.service';
 
 // Expense categories a user can budget (single source: the categories.* dict).
 const BUDGET_CATS: TransactionCategory[] = [
@@ -34,13 +33,10 @@ type Model = 'envelope' | 'flexible';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule, SelectModule,
-        InputNumberModule, ToastModule,
-        AppAmountComponent, LoadErrorComponent,
+        InputNumberModule, AppAmountComponent, LoadErrorComponent,
         PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent,
     ],
-    providers: [MessageService],
     template: `
-        <p-toast />
         @if (!embedded) {
             <app-page-header icon="pi-chart-pie" [title]="t('budgets.title')" [subtitle]="t('budgets.subtitle')">
                 <button actions pButton size="small" icon="pi pi-plus"
@@ -140,11 +136,11 @@ type Model = 'envelope' | 'flexible';
 })
 export class BudgetPage implements OnInit {
     private api = inject(ApiService);
+    private feedback = inject(FeedbackService);
     private budgetData = inject(BudgetDataService);
     private i18n = inject(I18nService);
     private customCat = inject(CustomCategoryService);
     private cs = inject(CurrencyService);
-    private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
     @Input() embedded = false;
@@ -247,22 +243,22 @@ export class BudgetPage implements OnInit {
             next: () => {
                 this.saving.set(false);
                 this.dialog.set(false);
-                this.toast.add({ severity: 'success', summary: this.t(id !== null ? 'budgets.updated' : 'budgets.created') });
+                this.feedback.success(this.t(id !== null ? 'budgets.updated' : 'budgets.created'));
                 this.budgetData.invalidate();
                 this.load();
             },
             error: (e) => {
                 this.saving.set(false);
                 const detail = e?.status === 409 ? this.t('budgets.duplicate') : this.t('common.error');
-                this.toast.add({ severity: 'error', summary: detail });
+                this.feedback.error(detail);
             },
         });
     }
 
     remove(it: BudgetStatus) {
         this.api.deleteBudget(it.budget_id).subscribe({
-            next: () => { this.toast.add({ severity: 'success', summary: this.t('budgets.deleted') }); this.budgetData.invalidate(); this.load(); },
-            error: () => this.toast.add({ severity: 'error', summary: this.t('common.error') }),
+            next: () => { this.feedback.success(this.t('budgets.deleted')); this.budgetData.invalidate(); this.load(); },
+            error: () => this.feedback.error(this.t('common.error')),
         });
     }
 }

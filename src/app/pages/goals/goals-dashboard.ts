@@ -4,8 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subscription, map } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { I18nService } from '../../i18n/i18n.service';
 import { ShareContextService } from '../../core/services/share-context.service';
 import { SavingGoal } from '../../core/services/api.service';
@@ -20,6 +19,7 @@ import { SavingsProgress } from './components/goals-progress-chart';
 import { progressPercent } from './goal-utils';
 import { PageHeaderComponent } from '../../core/ui';
 import { FireDashboardPage } from '../fire/fire-dashboard';
+import { FeedbackService } from '../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-goals-dashboard',
@@ -28,7 +28,6 @@ import { FireDashboardPage } from '../fire/fire-dashboard';
     imports: [
         CommonModule,
         ButtonModule,
-        ToastModule,
         AppAmountComponent,
         GoalCardComponent,
         GoalAddDialogComponent,
@@ -37,7 +36,6 @@ import { FireDashboardPage } from '../fire/fire-dashboard';
         PageHeaderComponent,
         FireDashboardPage,
     ],
-    providers: [MessageService],
     template: `
         <div class="flex flex-col gap-6">
             <!-- Header -->
@@ -170,13 +168,12 @@ import { FireDashboardPage } from '../fire/fire-dashboard';
             (save)="onSave($event)"
         />
 
-        <p-toast position="top-center" />
     `,
 })
 export class GoalsDashboardPage implements OnInit, OnDestroy {
     private savings = inject(SavingsService);
+    private feedback = inject(FeedbackService);
     private state = inject(AssetsStateService);
-    private message = inject(MessageService);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
     share = inject(ShareContextService);
@@ -239,7 +236,7 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
             this.goals.set(goals);
         } catch (err) {
             console.error('Error loading goals:', err);
-            this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.messages.loadError'), life: 4000 });
+            this.feedback.error(this.i18n.t('goals.messages.loadError'));
         } finally {
             this.loading.set(false);
         }
@@ -254,13 +251,13 @@ export class GoalsDashboardPage implements OnInit, OnDestroy {
         this.saving.set(true);
         try {
             await this.savings.createGoal(payload.create);
-            this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.messages.created'), life: 3000 });
+            this.feedback.success(this.i18n.t('goals.messages.created'));
             this.addDialogVisible = false;
             await this.loadGoals();
             this.state.notifySavingsUpdated();
         } catch (err) {
             console.error('Error saving goal:', err);
-            this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.messages.saveError'), life: 4000 });
+            this.feedback.error(this.i18n.t('goals.messages.saveError'));
         } finally {
             this.saving.set(false);
         }

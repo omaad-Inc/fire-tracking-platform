@@ -8,9 +8,8 @@ import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { FileUploadModule } from 'primeng/fileupload';
-import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+
 import { I18nService } from '../../../i18n/i18n.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
@@ -21,11 +20,8 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 @Component({
     selector: 'app-settings-account',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, InputTextModule, AvatarModule, TagModule, DividerModule, FileUploadModule, ToastModule, DialogModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, InputTextModule, AvatarModule, TagModule, DividerModule, FileUploadModule, DialogModule],
     template: `
-        <p-toast position="top-center"></p-toast>
-
         <!-- Delete Account Confirmation Dialog -->
         <p-dialog
             [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'"
@@ -207,7 +203,6 @@ export class AccountSettings implements OnInit {
     private authService = inject(AuthService);
     private apiService = inject(ApiService);
     private tokenService = inject(TokenService);
-    private messageService = inject(MessageService);
     private feedback = inject(FeedbackService);
 
     user = this.tokenService.user;
@@ -286,24 +281,14 @@ export class AccountSettings implements OnInit {
         
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            this.messageService.add({
-                severity: 'error',
-                summary: this.t('common.error'),
-                detail: this.t('settings.account.photoTooLarge'),
-                life: 5000
-            });
+            this.feedback.error(this.t('settings.account.photoTooLarge'));
             return;
         }
 
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(file.type)) {
-            this.messageService.add({
-                severity: 'error',
-                summary: this.t('common.error'),
-                detail: this.t('settings.account.photoFormatError'),
-                life: 5000
-            });
+            this.feedback.error(this.t('settings.account.photoFormatError'));
             return;
         }
         
@@ -319,23 +304,13 @@ export class AccountSettings implements OnInit {
                 this.authService.getCurrentUser().subscribe({
                     next: () => {
                         this.isUploadingAvatar.set(false);
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: this.t('common.success'),
-                            detail: this.t('settings.account.photoUpdatedDetail'),
-                            life: 3000
-                        });
+                        this.feedback.success(this.t('settings.account.photoUpdatedDetail'));
                     }
                 });
             },
             error: (error) => {
                 this.isUploadingAvatar.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: this.t('common.error'),
-                    detail: error?.error?.detail || this.t('settings.account.photoUploadFailed'),
-                    life: 5000
-                });
+                this.feedback.error(error?.error?.detail || this.t('settings.account.photoUploadFailed'));
             }
         });
     }
@@ -370,23 +345,13 @@ export class AccountSettings implements OnInit {
                 this.authService.getCurrentUser().subscribe({
                     next: () => {
                         this.isSaving.set(false);
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: this.t('common.success'),
-                            detail: this.t('settings.account.profileUpdatedDetail'),
-                            life: 3000
-                        });
+                        this.feedback.success(this.t('settings.account.profileUpdatedDetail'));
                     }
                 });
             },
             error: (error) => {
                 this.isSaving.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: this.t('common.error'),
-                    detail: error?.error?.detail || this.t('settings.account.profileUpdateFailed'),
-                    life: 5000
-                });
+                this.feedback.error(error?.error?.detail || this.t('settings.account.profileUpdateFailed'));
             }
         });
     }
@@ -412,22 +377,12 @@ export class AccountSettings implements OnInit {
         this.apiService.deleteAccount().subscribe({
             next: () => {
                 this.showDeleteDialog = false;
-                this.messageService.add({
-                    severity: 'success',
-                    summary: this.t('common.success'),
-                    detail: this.t('settings.account.deleteSuccessDetail'),
-                    life: 3000
-                });
+                this.feedback.success(this.t('settings.account.deleteSuccessDetail'));
                 setTimeout(() => this.authService.logout(), 1500);
             },
             error: (error) => {
                 this.isDeleting.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: this.t('common.error'),
-                    detail: error?.error?.detail || this.t('settings.account.deleteAccountFailed'),
-                    life: 5000
-                });
+                this.feedback.error(error?.error?.detail || this.t('settings.account.deleteAccountFailed'));
             }
         });
     }

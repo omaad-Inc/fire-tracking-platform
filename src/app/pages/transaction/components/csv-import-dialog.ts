@@ -19,6 +19,7 @@ import {
 } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { ChipComponent } from '../../../core/ui';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 // Category choices per direction (single source: the i18n `categories.*` dict).
 const INCOME_CATS: TransactionCategory[] = [
@@ -259,6 +260,7 @@ interface ReviewRow extends TxnPreviewItem {
 })
 export class CsvImportDialog implements OnInit {
     private api = inject(ApiService);
+    private feedback = inject(FeedbackService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
     private toast = inject(MessageService);
@@ -369,7 +371,7 @@ export class CsvImportDialog implements OnInit {
             },
             error: () => {
                 this.previewing.set(false);
-                this.toast.add({ severity: 'error', summary: this.t('transactions.import.previewError') });
+                this.feedback.error(this.t('transactions.import.previewError'));
             },
         });
     }
@@ -461,15 +463,12 @@ export class CsvImportDialog implements OnInit {
             next: (res) => {
                 this.committing.set(false);
                 this.visible.set(false);
-                this.toast.add({
-                    severity: 'success',
-                    summary: this.t('transactions.import.done', { created: res.created, skipped: res.skipped }),
-                });
+                this.feedback.success(this.t('transactions.import.done', { created: res.created, skipped: res.skipped }));
                 this.imported.emit(res.created);
             },
             error: () => {
                 this.committing.set(false);
-                this.toast.add({ severity: 'error', summary: this.t('transactions.import.commitError') });
+                this.feedback.error(this.t('transactions.import.commitError'));
             },
         });
     }

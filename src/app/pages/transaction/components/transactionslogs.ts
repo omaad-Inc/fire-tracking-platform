@@ -8,10 +8,9 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
-import { ToastModule } from 'primeng/toast';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { MessageService } from 'primeng/api';
+
 import {
     TransactionsService, TransactionRecord,
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
@@ -43,12 +42,10 @@ interface DayGroup {
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule,
         InputTextModule, InputNumberModule, SelectModule,
-        ToastModule, DatePickerModule, AppAmountComponent,
+        DatePickerModule, AppAmountComponent,
         LoadErrorComponent, CsvImportDialog, MultiSelectModule, TransactionsTable
     ],
-    providers: [MessageService],
     template: `
-        <p-toast position="top-center" />
         <app-csv-import-dialog #csvImport (imported)="onImported()" />
 
         <!-- ── Top bar ───────────────────────────────────────────── -->
@@ -579,7 +576,6 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private transactionsService = inject(TransactionsService);
     private patrimoineService   = inject(PatrimoineService);
     private state               = inject(AssetsStateService);
-    private messageService      = inject(MessageService);
     private feedback            = inject(FeedbackService);
     private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
@@ -1059,7 +1055,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
+                this.feedback.success(this.t('transactions.toast.updatedDetail'));
             } else {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
@@ -1074,12 +1070,11 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? this.t('transactions.form.income') : this.t('transactions.form.expense'))),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
+                this.feedback.success(this.t('transactions.toast.savedDetail'));
             }
             this.dialogVisible = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'),
-                detail: err?.message || this.t('transactions.toast.saveError'), life: 5000 });
+            this.feedback.error(err?.message || this.t('transactions.toast.saveError'));
         } finally {
             this.isSaving.set(false);
         }
@@ -1288,9 +1283,9 @@ export class TransactionLogs implements OnInit, OnDestroy {
         }
         this.isBulking.set(false);
         if (failed) {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('transactions.table.bulkPartial', { n: failed }), life: 4000 });
+            this.feedback.error(this.t('transactions.table.bulkPartial', { n: failed }));
         } else {
-            this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.table.bulkRecategorized', { n: recs.length }), life: 3000 });
+            this.feedback.success(this.t('transactions.table.bulkRecategorized', { n: recs.length }));
         }
         this.clearSelection();
         // Re-read rather than patching locally: updateRecord can normalise

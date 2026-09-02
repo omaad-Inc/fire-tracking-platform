@@ -2,8 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { I18nService } from '../../../i18n/i18n.service';
 import { ApiService } from '../../../core/services/api.service';
 import { BillingService } from '../../../core/services/billing.service';
@@ -22,10 +21,8 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 @Component({
     selector: 'app-settings-subscription',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule, ToastModule, PlanCheckoutSheet],
-    providers: [MessageService],
+    imports: [CommonModule, RouterModule, ButtonModule, PlanCheckoutSheet],
     template: `
-        <p-toast position="top-center" />
         <app-plan-checkout-sheet [open]="sheetOpen()" (openChange)="sheetOpen.set($event)" [tier]="sheetTier()" />
 
         <div class="max-w-2xl mx-auto pb-12">
@@ -376,7 +373,6 @@ export class SubscriptionSettings implements OnInit {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
     private feedback = inject(FeedbackService);
-    private toast = inject(MessageService);
     private cs = inject(CurrencyService);
     protected billing = inject(BillingService);
 

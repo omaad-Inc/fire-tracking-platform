@@ -1,9 +1,8 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { MessageService } from 'primeng/api';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -23,13 +22,9 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
     standalone: true,
     selector: 'app-debts-progress',
     imports: [
-        CommonModule, FormsModule, ButtonModule, ToastModule,
-        InputTextModule, SelectModule, InputNumberModule,
+        CommonModule, FormsModule, ButtonModule, InputTextModule, SelectModule, InputNumberModule,
         DialogModule, DatePickerModule, AppAmountComponent, LoadErrorComponent],
-    providers: [MessageService],
     template: `
-        <p-toast position="top-center" />
-
         <!-- ── Top bar ── -->
         <div class="flex flex-col gap-2 mb-5">
             <div class="flex items-center gap-2">
@@ -364,7 +359,6 @@ export class DebtsProgress implements OnInit {
 
     private debtsService        = inject(DebtsService);
     cs = inject(CurrencyService);
-    private messageService      = inject(MessageService);
     private feedback = inject(FeedbackService);
     private i18n = inject(I18nService);
     share = inject(ShareContextService);
@@ -507,15 +501,15 @@ export class DebtsProgress implements OnInit {
             if (this.record.id) {
                 const updated = await this.debtsService.updateRecord(this.record);
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.updatedDetail'), life: 3000 });
+                this.feedback.success(this.t('debts.toast.updatedDetail'));
             } else {
                 const created = await this.debtsService.addRecord(this.record);
                 this.allRecords.update(rs => [...rs, created]);
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.createdDetail'), life: 3000 });
+                this.feedback.success(this.t('debts.toast.createdDetail'));
             }
             this.productDialog = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('debts.toast.saveError'), life: 5000 });
+            this.feedback.error(err?.message || this.t('debts.toast.saveError'));
         } finally {
             this.isSaving.set(false);
         }
@@ -546,10 +540,10 @@ export class DebtsProgress implements OnInit {
         try {
             const updated = await this.debtsService.addPayment(this.paymentRecord.id, this.addPaymentAmount!);
             this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-            this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.paymentAddedDetail'), life: 3000 });
+            this.feedback.success(this.t('debts.toast.paymentAddedDetail'));
             this.closeAddPaymentDialog();
         } catch {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('debts.toast.paymentError'), life: 4000 });
+            this.feedback.error(this.t('debts.toast.paymentError'));
         }
     }
 }

@@ -6,22 +6,20 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { Observable } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-settings-preferences',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule],
     template: `
-        <p-toast position="top-center" />
         <div class="max-w-2xl mx-auto pb-10">
             <!-- Language & region card -->
             <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
@@ -182,12 +180,12 @@ import { ApiService } from '../../../core/services/api.service';
 })
 export class PreferencesSettings implements OnInit {
     private layoutService = inject(LayoutService);
+    private feedback = inject(FeedbackService);
     private router = inject(Router);
     private i18n = inject(I18nService);
     private currencyService = inject(CurrencyService);
     private tokenService = inject(TokenService);
     private api = inject(ApiService);
-    private messageService = inject(MessageService);
 
     exporting = signal(false);
 
@@ -215,7 +213,7 @@ export class PreferencesSettings implements OnInit {
             },
             error: () => {
                 this.exporting.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('settings.preferences.exportError'), life: 4000 });
+                this.feedback.error(this.t('settings.preferences.exportError'));
             }
         });
     }

@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Output, effect, inject, input, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import {
     TransactionsService, TransactionRecord,
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
@@ -11,6 +10,7 @@ import { PatrimoineService } from '../../pages/service/patrimoine.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
+import { FeedbackService } from '../../core/ui/feedback.service';
 
 /** Monetary asset categories usable as a transaction account. Mirrors
  *  TransactionLogs.MONETARY_CATEGORIES, keep the two in sync. */
@@ -26,11 +26,8 @@ const LAST_ACCOUNT_KEY = 'omaad_quick_account';
 @Component({
     selector: 'app-quick-add-sheet',
     standalone: true,
-    imports: [CommonModule, ToastModule, FocusTrapDirective],
-    providers: [MessageService],
+    imports: [CommonModule, FocusTrapDirective],
     template: `
-        <p-toast position="top-center" key="quickadd" />
-
         <!-- Backdrop -->
         <div class="fixed inset-0 z-[1100] transition-opacity duration-300"
              [class.pointer-events-none]="!open()"
@@ -169,10 +166,11 @@ export class QuickAddSheet {
     @Output() close = new EventEmitter<void>();
 
     private txService = inject(TransactionsService);
+
+    private feedback = inject(FeedbackService);
     private patrimoineService = inject(PatrimoineService);
     private cs = inject(CurrencyService);
     private router = inject(Router);
-    private toast = inject(MessageService);
     readonly i18n = inject(I18nService);
 
     readonly keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'back'];
@@ -312,16 +310,10 @@ export class QuickAddSheet {
             localStorage.setItem(LAST_ACCOUNT_KEY, String(this.accountId()));
             // TransactionsService.addRecord() now fires notifyTransactionsUpdated()
             // itself (single source), so widgets refresh without a second emit here.
-            this.toast.add({
-                key: 'quickadd', severity: 'success',
-                summary: this.i18n.t('common.success'), detail: this.i18n.t('quickAdd.saved'), life: 1800,
-            });
+            this.feedback.success(this.i18n.t('quickAdd.saved'));
             this.close.emit();
         } catch {
-            this.toast.add({
-                key: 'quickadd', severity: 'error',
-                summary: this.i18n.t('common.error'), detail: this.i18n.t('quickAdd.saveError'), life: 2500,
-            });
+            this.feedback.error(this.i18n.t('quickAdd.saveError'));
         } finally {
             this.saving.set(false);
         }

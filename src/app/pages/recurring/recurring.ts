@@ -6,8 +6,6 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
 
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../core/services/currency.service';
@@ -21,6 +19,7 @@ import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponen
 import { isTouchDevice } from '../../core/util/touch';
 import { toLocalDateStr } from '../../core/util/date';
 import { AssetsStateService } from '../service/assets-state.service';
+import { FeedbackService } from '../../core/ui/feedback.service';
 
 const INCOME_CATS: TransactionCategory[] = ['salary', 'freelance', 'rental_income', 'other_income'];
 const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tontine', 'subscriptions', 'utilities', 'transport', 'groceries', 'other_expense'];
@@ -31,13 +30,10 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule, SelectModule,
-        InputNumberModule, DatePickerModule, ToastModule,
-        AppAmountComponent, LoadErrorComponent,
+        InputNumberModule, DatePickerModule, AppAmountComponent, LoadErrorComponent,
         PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent,
     ],
-    providers: [MessageService],
     template: `
-        <p-toast />
         @if (!embedded) {
             <app-page-header icon="pi-sync" [title]="t('recurring.title')" [subtitle]="t('recurring.subtitle')">
                 <button actions pButton [outlined]="true" size="small" icon="pi pi-bolt"
@@ -141,10 +137,11 @@ export class RecurringPage implements OnInit {
     readonly isTouch = isTouchDevice();
 
     private api = inject(ApiService);
+
+    private feedback = inject(FeedbackService);
     readonly cs = inject(CurrencyService);
     private state = inject(AssetsStateService);
     private i18n = inject(I18nService);
-    private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
     /** When shown inside another page (e.g. the Transactions tab), skip the big
@@ -184,11 +181,11 @@ export class RecurringPage implements OnInit {
     runNow() {
         this.api.runRecurring().subscribe({
             next: (res) => {
-                this.toast.add({ severity: 'success', summary: this.t('recurring.runDone', { count: res.created }) });
+                this.feedback.success(this.t('recurring.runDone', { count: res.created }));
                 this.load();
                 if ((res?.created ?? 0) > 0) this.notifyMaterialized();
             },
-            error: () => this.toast.add({ severity: 'error', summary: this.t('common.error') }),
+            error: () => this.feedback.error(this.t('common.error')),
         });
     }
 
@@ -243,17 +240,17 @@ export class RecurringPage implements OnInit {
             next: () => {
                 this.saving.set(false);
                 this.dialog = false;
-                this.toast.add({ severity: 'success', summary: this.t('recurring.created') });
+                this.feedback.success(this.t('recurring.created'));
                 this.load();
             },
-            error: () => { this.saving.set(false); this.toast.add({ severity: 'error', summary: this.t('common.error') }); },
+            error: () => { this.saving.set(false); this.feedback.error(this.t('common.error')); },
         });
     }
 
     remove(r: RecurringRule) {
         this.api.deleteRecurringRule(r.id).subscribe({
-            next: () => { this.toast.add({ severity: 'success', summary: this.t('recurring.deleted') }); this.load(); },
-            error: () => this.toast.add({ severity: 'error', summary: this.t('common.error') }),
+            next: () => { this.feedback.success(this.t('recurring.deleted')); this.load(); },
+            error: () => this.feedback.error(this.t('common.error')),
         });
     }
 }

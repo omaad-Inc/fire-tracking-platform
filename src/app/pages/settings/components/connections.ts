@@ -224,7 +224,7 @@ export class ConnectionsSettings implements OnInit {
             this.connections.update(list => list.map(c => c.id === conn.id ? updated : c));
             this.messageService.add({ severity: 'info', summary: this.t('common.info'), detail: this.t('broker.syncTriggered'), life: 3000 });
         } catch {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('broker.syncFailed'), life: 4000 });
+            this.feedback.error(this.t('broker.syncFailed'));
         }
     }
 

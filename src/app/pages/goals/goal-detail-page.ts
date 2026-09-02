@@ -594,7 +594,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
                 const cur = this.goal();
                 if (cur) this.goal.set({ ...cur, share_token: res.share_token });
             },
-            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.share.error'), life: 4000 }); },
+            error: () => { this.shareBusy.set(false); this.feedback.error(this.i18n.t('goals.share.error')); },
         });
     }
 
@@ -618,9 +618,9 @@ export class GoalDetailPage implements OnInit, OnDestroy {
                 this.shareUrl.set('');
                 const cur = this.goal();
                 if (cur) this.goal.set({ ...cur, share_token: null });
-                this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.share.revoked'), life: 4000 });
+                this.feedback.success(this.i18n.t('goals.share.revoked'));
             },
-            error: () => { this.shareBusy.set(false); this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.share.error'), life: 4000 }); },
+            error: () => { this.shareBusy.set(false); this.feedback.error(this.i18n.t('goals.share.error')); },
         });
     }
 
@@ -682,10 +682,10 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         try {
             if (payload.mode === 'contribute') {
                 await firstValueFrom(this.api.contributeToGoal(g.id, payload.body));
-                this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.messages.contributed'), life: 3000 });
+                this.feedback.success(this.i18n.t('goals.messages.contributed'));
             } else {
                 await firstValueFrom(this.api.deallocateFromGoal(g.id, payload.body));
-                this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.messages.deallocated'), life: 3000 });
+                this.feedback.success(this.i18n.t('goals.messages.deallocated'));
             }
             this.allocateDialogVisible = false;
             this.state.notifySavingsUpdated();
@@ -693,7 +693,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         } catch (err: any) {
             console.error('Error allocating:', err);
             const detail = err?.error?.detail || this.i18n.t('goals.messages.contributeError');
-            this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail, life: 5000 });
+            this.feedback.error(this.i18n.t('common.error'));
         } finally {
             this.allocating.set(false);
         }
@@ -704,13 +704,13 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         this.saving.set(true);
         try {
             await firstValueFrom(this.api.updateSavingGoal(payload.update.id, payload.update.patch));
-            this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.messages.updated'), life: 3000 });
+            this.feedback.success(this.i18n.t('goals.messages.updated'));
             this.editDialogVisible = false;
             this.state.notifySavingsUpdated();
             await this.loadAll(payload.update.id, /* silent */ true);
         } catch (err) {
             console.error('Error saving goal:', err);
-            this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.messages.saveError'), life: 4000 });
+            this.feedback.error(this.i18n.t('goals.messages.saveError'));
         } finally {
             this.saving.set(false);
         }

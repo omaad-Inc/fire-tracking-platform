@@ -15,6 +15,7 @@ import { AiConsentService } from '../../../core/ai/ai-consent.service';
 import { AiConsentSheet } from '../../../core/ai/ai-consent-sheet';
 import { I18nService } from '../../../i18n/i18n.service';
 import { firstValueFrom } from 'rxjs';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-settings-security',
@@ -556,6 +557,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class SecuritySettings implements OnInit {
     private tokenService = inject(TokenService);
+    private feedback = inject(FeedbackService);
     private apiService   = inject(ApiService);
     private authService  = inject(AuthService);
     private msgService   = inject(MessageService);
@@ -583,17 +585,11 @@ export class SecuritySettings implements OnInit {
         this.aiConsent.setConsent(false).subscribe({
             next: () => {
                 this.aiConsentSaving.set(false);
-                this.msgService.add({
-                    severity: 'success', summary: this.t('common.success'),
-                    detail: this.t('security.ai.withdrawnDetail'), life: 3000,
-                });
+                this.feedback.success(this.t('security.ai.withdrawnDetail'));
             },
             error: () => {
                 this.aiConsentSaving.set(false);
-                this.msgService.add({
-                    severity: 'error', summary: this.t('common.error'),
-                    detail: this.t('security.ai.saveFailed'), life: 4000,
-                });
+                this.feedback.error(this.t('security.ai.saveFailed'));
             },
         });
     }
@@ -601,11 +597,7 @@ export class SecuritySettings implements OnInit {
     /** The sheet has already stored the answer; confirm it in the same voice as
      *  every other change on this page. */
     onAiConsentAnswered(granted: boolean): void {
-        this.msgService.add({
-            severity: 'success', summary: this.t('common.success'),
-            detail: this.t(granted ? 'security.ai.grantedDetail' : 'security.ai.withdrawnDetail'),
-            life: 3000,
-        });
+        this.feedback.success(this.t(granted ? 'security.ai.grantedDetail' : 'security.ai.withdrawnDetail'));
     }
 
     // ── PIN setup state ──
@@ -642,10 +634,10 @@ export class SecuritySettings implements OnInit {
                 // Confirm step, check match
                 if (this.pinSetupInput === this.pinSetupFirstEntry) {
                     await this.pinService.setPin(this.pinSetupInput);
-                    this.msgService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('security.pinEnabledDetail'), life: 3000 });
+                    this.feedback.success(this.t('security.pinEnabledDetail'));
                     this.pinSetupActive = false;
                 } else {
-                    this.msgService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('security.pinMismatchDetail'), life: 4000 });
+                    this.feedback.error(this.t('security.pinMismatchDetail'));
                     this.pinSetupInput = '';
                     this.pinSetupStep = 'new';
                     this.pinSetupFirstEntry = '';
@@ -662,7 +654,7 @@ export class SecuritySettings implements OnInit {
 
     removePin() {
         this.pinService.removePin();
-        this.msgService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('security.pinRemovedDetail'), life: 3000 });
+        this.feedback.success(this.t('security.pinRemovedDetail'));
     }
 
     onLockDelayChange(event: Event) {
@@ -743,10 +735,10 @@ export class SecuritySettings implements OnInit {
         this.authService.logoutOtherDevices().subscribe({
             next: () => {
                 this.signingOut.set(false);
-                this.msgService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('security.sessions.signedOutOthers'), life: 4000 });
+                this.feedback.success(this.t('security.sessions.signedOutOthers'));
                 this.loadLoginHistory();
             },
-            error: err => { this.signingOut.set(false); this.msgService.add({ severity: 'error', summary: this.t('common.error'), detail: err?.message || this.t('security.2fa.error'), life: 4000 }); },
+            error: err => { this.signingOut.set(false); this.feedback.error(err?.message || this.t('security.2fa.error')); },
         });
     }
 
@@ -843,7 +835,9 @@ export class SecuritySettings implements OnInit {
     }
 
     private toast2fa(detail: string, severity: 'success' | 'error'): void {
-        this.msgService.add({ severity, summary: severity === 'success' ? this.t('common.success') : this.t('common.error'), detail, life: 4000 });
+        // Two voices, not one card in two colours (P1-5).
+        if (severity === 'success') this.feedback.success(detail);
+        else this.feedback.error(detail);
     }
 
     // ── Login icon: google = logo SVG inside span, email = pi-sign-in ──
@@ -944,14 +938,13 @@ export class SecuritySettings implements OnInit {
             // The backend revokes every session on password change and hands
             // this device a fresh token, adopt it so we stay signed in.
             if (res?.access_token) this.tokenService.setToken(res.access_token);
-            this.msgService.add({ severity: 'success', summary: this.t('common.success'),
-                detail: this.t('security.passwordChangedDetail'), life: 4000 });
+            this.feedback.success(this.t('security.passwordChangedDetail'));
             this.closePasswordDialog();
         } catch (err: any) {
             const detail = err?.error?.detail === 'Incorrect current password'
                 ? this.t('security.currentPwIncorrect')
                 : this.t('security.changeError');
-            this.msgService.add({ severity: 'error', summary: this.t('common.error'), detail, life: 5000 });
+            this.feedback.error(this.t('common.error'));
         } finally {
             this.savingPassword.set(false);
         }

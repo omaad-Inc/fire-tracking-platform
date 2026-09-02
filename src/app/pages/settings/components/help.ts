@@ -5,11 +5,11 @@ import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { environment } from '../../../../environments/environment';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 interface FaqItem {
     questionKey: string;
@@ -20,11 +20,8 @@ interface FaqItem {
 @Component({
     selector: 'app-settings-help',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, TextareaModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, TextareaModule],
     template: `
-        <p-toast position="top-center" />
-
         <div class="flex flex-col gap-5">
 
             <!-- ── Search bar ────────────────────────────────────── -->
@@ -165,8 +162,8 @@ interface FaqItem {
 })
 export class HelpSettings {
     private http = inject(HttpClient);
+    private feedback = inject(FeedbackService);
     private tokenService = inject(TokenService);
-    private messageService = inject(MessageService);
     i18n = inject(I18nService);
     appVersion = environment.version;
 
@@ -239,22 +236,12 @@ export class HelpSettings {
         this.http.post(`${environment.apiUrl}/contact`, payload).subscribe({
             next: () => {
                 this.isSending.set(false);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: this.i18n.t('common.success'),
-                    detail: this.i18n.t('help.sendSuccessDetail'),
-                    life: 5000
-                });
+                this.feedback.success(this.i18n.t('help.sendSuccessDetail'));
                 this.contactForm = { subject: '', message: '' };
             },
             error: () => {
                 this.isSending.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: this.i18n.t('common.error'),
-                    detail: this.i18n.t('help.sendErrorDetail'),
-                    life: 5000
-                });
+                this.feedback.error(this.i18n.t('help.sendErrorDetail'));
             }
         });
     }
