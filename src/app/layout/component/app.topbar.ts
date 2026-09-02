@@ -14,6 +14,7 @@ import { ShareContextService } from '../../core/services/share-context.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { NavService } from '../../core/services/nav.service';
 import { NotificationCenterService } from '../../core/services/notification-center.service';
+import { CommandPaletteService } from '../../core/services/command-palette.service';
 import { SharePortfolioDialog } from './share-portfolio-dialog';
 
 @Component({
@@ -44,8 +45,14 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
         </div>
 
         <div class="layout-topbar-actions">
-            <!-- Desktop ONLY: dark mode toggle -->
+            <!-- Desktop ONLY: command palette trigger (P2-5) + dark mode toggle -->
             <div class="layout-config-menu hidden lg:flex">
+                @if (!share.active()) {
+                    <button type="button" class="layout-topbar-action" (click)="palette.show()" data-testid="palette-trigger"
+                            [attr.aria-label]="paletteTriggerLabel" [title]="paletteTriggerLabel">
+                        <i aria-hidden="true" class="pi pi-search"></i>
+                    </button>
+                }
                 <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()"
                         [attr.aria-label]="t('topbar.toggleTheme')" [title]="t('topbar.toggleTheme')">
                     <i aria-hidden="true" [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
@@ -215,6 +222,12 @@ export class AppTopbar implements OnInit, OnDestroy {
     private i18n = inject(I18nService);
     private tokenService = inject(TokenService);
     privacyService  = inject(PrivacyService);
+    palette         = inject(CommandPaletteService);
+    private paletteI18n = inject(I18nService);
+    /** "Search or act (⌘K)": the shortcut hint follows the platform, the copy the language. */
+    get paletteTriggerLabel(): string {
+        return this.paletteI18n.t('palette.trigger', { shortcut: CommandPaletteService.shortcutLabel() });
+    }
     aiAssistant     = inject(AiAssistantService);
     share           = inject(ShareContextService);
     private flags   = inject(FeatureFlagsService);

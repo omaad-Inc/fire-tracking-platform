@@ -2975,6 +2975,28 @@ export const FR = {
     appDesc: ': suis ton patrimoine et ton chemin vers FIRE.',
   },
 
+  // Palette de commandes (P2-5) : Cmd/Ctrl+K.
+  palette: {
+    title: 'Palette de commandes',
+    placeholder: 'Rechercher une page, une action, un actif...',
+    empty: 'Aucun résultat pour « {{q}} »',
+    trigger: 'Rechercher ou agir ({{shortcut}})',
+    group: {
+      recent: 'Récents',
+      navigation: 'Navigation',
+      actions: 'Actions',
+      settings: 'Réglages',
+      assets: 'Actifs',
+      goals: 'Objectifs',
+    },
+    actions: {
+      quickAdd: 'Ajouter une transaction',
+      addAsset: 'Ajouter un actif',
+      theme: 'Basculer le mode sombre',
+      lang: 'Switch to English',
+    },
+  },
+
   // Bilan hebdomadaire (P2-4) : la vue in-app du récap du lundi. Voix "vous",
   // comme l'email.
   weeklyReport: {

@@ -2975,6 +2975,28 @@ export const EN: Dict = {
     appDesc: ': track your wealth and your path to FIRE.',
   },
 
+  // Command palette (P2-5): Cmd/Ctrl+K.
+  palette: {
+    title: 'Command palette',
+    placeholder: 'Search a page, an action, an asset...',
+    empty: 'No results for "{{q}}"',
+    trigger: 'Search or act ({{shortcut}})',
+    group: {
+      recent: 'Recent',
+      navigation: 'Navigation',
+      actions: 'Actions',
+      settings: 'Settings',
+      assets: 'Assets',
+      goals: 'Goals',
+    },
+    actions: {
+      quickAdd: 'Add a transaction',
+      addAsset: 'Add an asset',
+      theme: 'Toggle dark mode',
+      lang: 'Passer en français',
+    },
+  },
+
   // Weekly recap (P2-4): the in-app view of the Monday recap.
   weeklyReport: {
     title: 'Weekly recap',
