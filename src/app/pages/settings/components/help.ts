@@ -1,12 +1,12 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 
 import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/services/api.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { FeedbackService } from '../../../core/ui/feedback.service';
@@ -28,10 +28,10 @@ interface FaqItem {
             <div class="px-1">
                 <h2 class="relative text-xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ i18n.t('help.title') }}</h2>
                 <p class="relative text-sm text-surface-500 dark:text-surface-400 mb-4">{{ i18n.t('help.subtitle') }}</p>
-                <div class="relative">
-                    <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none"></i>
+                <div class="relative omaad-form omaad-field-lead">
+                    <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none z-10"></i>
                     <input pInputText [(ngModel)]="searchQuery" [placeholder]="i18n.t('help.searchPlaceholder')"
-                           class="w-full !pl-10 !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                           class="w-full" />
                 </div>
             </div>
 
@@ -98,18 +98,20 @@ interface FaqItem {
                 </div>
 
                 <div class="pb-2">
-                    <div class="flex flex-col gap-6">
+                    <!-- omaad-form owns the field look (P1-5): the subject and
+                         message controls carry no fill/border/radius utilities. -->
+                    <div class="flex flex-col gap-6 omaad-form">
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('help.subject') }}</label>
                             <input pInputText [(ngModel)]="contactForm.subject"
                                    [placeholder]="i18n.t('help.subjectPlaceholder')"
-                                   class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400" />
+                                   class="w-full" />
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('help.message') }}</label>
                             <textarea pTextarea [(ngModel)]="contactForm.message" rows="4"
                                       [placeholder]="i18n.t('help.messagePlaceholder')"
-                                      class="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 resize-none"></textarea>
+                                      class="w-full resize-none"></textarea>
                         </div>
                         <div class="flex items-center justify-between gap-4 flex-wrap">
                             <p class="text-xs text-surface-500 dark:text-surface-400 flex items-center gap-1.5">
@@ -161,8 +163,8 @@ interface FaqItem {
     `
 })
 export class HelpSettings {
-    private http = inject(HttpClient);
     private feedback = inject(FeedbackService);
+    private api = inject(ApiService);
     private tokenService = inject(TokenService);
     i18n = inject(I18nService);
     appVersion = environment.version;
@@ -233,7 +235,7 @@ export class HelpSettings {
             message: this.contactForm.message
         };
 
-        this.http.post(`${environment.apiUrl}/contact`, payload).subscribe({
+        this.api.sendContactMessage(payload).subscribe({
             next: () => {
                 this.isSending.set(false);
                 this.feedback.success(this.i18n.t('help.sendSuccessDetail'));

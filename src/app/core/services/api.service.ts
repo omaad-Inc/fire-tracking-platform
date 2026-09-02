@@ -635,6 +635,15 @@ export interface InsightsResponse {
     anomalies: InsightAnomaly[];
 }
 
+/** Support contact form payload (Settings -> Aide). */
+export interface ContactMessage {
+    fullName: string;
+    email: string;
+    company: string;
+    needType: string;
+    message: string;
+}
+
 /** One notification-center entry (P1-1). `text` is already resolved to the
  *  user's stored `preferred_language` server-side, so it is rendered as-is.
  *  `link` holds a MOBILE route and is deliberately NOT navigated verbatim on
@@ -1832,6 +1841,15 @@ export class ApiService {
 
     removePushSubscription(endpoint: string): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/notifications/push-subscription/delete`, { endpoint });
+    }
+
+    // ── Support contact (P1-5) ─────────────────────────────────────────────
+    /** Settings -> Aide contact form. Lives here because every HTTP call goes
+     *  through ApiService; help.ts used to inject HttpClient directly, which
+     *  bypassed the interceptors (auth header, refresh retry, share
+     *  read-only block). */
+    sendContactMessage(payload: ContactMessage): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/contact`, payload);
     }
 
     // ── Notification center / inbox (P1-1) ─────────────────────────────────

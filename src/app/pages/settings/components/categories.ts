@@ -64,15 +64,16 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                     </div>
                 </div>
 
-                <!-- Name + kind -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                <!-- Name + kind. omaad-form owns the field look (P1-5), so the
+                     input below carries no fill/border/radius utilities. -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 omaad-form">
                     <div>
                         <label for="cat-name" class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">
                             {{ t('settings.categories.name') }}
                         </label>
                         <input id="cat-name" type="text" [(ngModel)]="form.label" maxlength="50"
                                [placeholder]="t('settings.categories.labelPlaceholder')"
-                               class="w-full bg-transparent border-0 border-b border-surface-300 dark:border-surface-600 focus:border-ochre-500 dark:focus:border-ochre-400 focus:outline-none py-2 text-[15px] text-surface-900 dark:text-surface-0 placeholder:text-surface-400 dark:placeholder:text-surface-500 rounded-none" />
+                               class="w-full text-[15px] text-surface-900 dark:text-surface-0" />
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">

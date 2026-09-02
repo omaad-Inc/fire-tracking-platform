@@ -326,6 +326,20 @@ $native-field-focus: "input:not([type='checkbox']):not([type='radio']):not([type
         color: var(--p-surface-500) !important;
     }
 
+    // Fields with a LEADING icon (a search box, say) reserve room on the left,
+    // so the value never slides under the glyph. Needed because this class sets
+    // `padding` with `!important`, which beats a template-level `!pl-10` of
+    // equal weight on later source order: the icon and the placeholder ended up
+    // drawn on top of each other on Settings -> Aide.
+    &.omaad-field-lead .p-inputtext,
+    &.omaad-field-lead .p-inputnumber-input,
+    &.omaad-field-lead input,
+    &.omaad-field-lead textarea,
+    .omaad-field-lead .p-inputtext,
+    .omaad-field-lead .p-inputnumber-input,
+    .omaad-field-lead input,
+    .omaad-field-lead textarea { padding-left: 2.6rem !important; }
+
     // Fields carrying a unit affix reserve room on the right so the value
     // never slides under the € / % chip.
     .omaad-affix { position: relative; }

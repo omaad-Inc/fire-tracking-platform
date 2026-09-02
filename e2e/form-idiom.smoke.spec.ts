@@ -123,6 +123,30 @@ test('omaad-form fields read as fields on an in-page surface, light and dark', a
     }
 });
 
+test('omaad-form: a leading icon never sits under the value', async ({ page }) => {
+    // `omaad-form` sets `padding` with `!important`, which beats a
+    // template-level `!pl-10` of equal weight on later source order. On
+    // Settings -> Aide that drew the magnifier glyph on top of the placeholder.
+    // `omaad-field-lead` reserves the room; this asserts the clearance, because
+    // an icon overlapping text is invisible to tsc, to lint:dark and to a
+    // screenshot baseline that simply re-records it.
+    await login(page);
+    await page.setViewportSize({ width: 1280, height: 950 });
+    await page.goto('/fr/pages/settings/help');
+    const input = page.locator('input[placeholder*="Rechercher"]').first();
+    await expect(input).toBeVisible({ timeout: 30_000 });
+
+    const clearance = await input.evaluate(el => {
+        const cs = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        const icon = el.parentElement!.querySelector('i');
+        if (!icon) return Number.POSITIVE_INFINITY;   // no leading icon: nothing to clear
+        const textStart = box.left + parseFloat(cs.paddingLeft);
+        return textStart - icon.getBoundingClientRect().right;
+    });
+    expect(clearance, 'the value starts under the leading icon').toBeGreaterThan(2);
+});
+
 test('the retired stat-card primitive is really gone', async ({ page }) => {
     // It had zero call sites for ~a year while six surfaces hand-rolled their
     // own KPI tiles, so it was deleted rather than left in limbo. If it ever
