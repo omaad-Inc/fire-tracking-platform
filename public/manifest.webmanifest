@@ -91,10 +91,10 @@
       "icons": [{ "src": "icons/omaad-app-icon-96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Épargne",
-      "short_name": "Épargne",
-      "description": "Suivre votre épargne",
-      "url": "/fr/pages/savings",
+      "name": "Objectifs",
+      "short_name": "Objectifs",
+      "description": "Suivre vos objectifs d'épargne",
+      "url": "/fr/pages/goals",
       "icons": [{ "src": "icons/omaad-app-icon-96.png", "sizes": "96x96" }]
     }
   ],
