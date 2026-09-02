@@ -25,6 +25,12 @@ import { expect, Page, test } from '@playwright/test';
  *    spelled `<p-confirmdialog />` and a case-sensitive grep walked straight
  *    past it while the dev build failed on it.
  *
+ * RUNNING THIS: /auth/login is rate limited 10/minute. These specs log in per
+ * test (and the voices spec also logs in once via the API to seed), so running
+ * both P1-5 guard files back-to-back trips the limit and every test then fails
+ * on a screen that is actually the login page. That looks exactly like a real
+ * regression and is not one. Run one file at a time, or space them ~2 minutes.
+ *
  * Prereqs (local): ng serve :4200, backend :8000 on omaad_dev, demo user.
  * This spec seeds and removes its OWN fixtures (a throwaway transaction and a
  * throwaway custom category), so it never consumes demo data.
