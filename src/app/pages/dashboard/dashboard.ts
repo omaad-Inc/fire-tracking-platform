@@ -28,65 +28,82 @@ import { I18nService } from '../../i18n/i18n.service';
              since the KPI cards carry the visible titles (P2-A11Y-2). -->
         <h1 class="sr-only">{{ t('dashboard.pageTitle') }}</h1>
 
-        <!-- S5-1 "Am I okay?" hero: net worth + trend, this-month cash-flow, the one
-             nudge, and FIRE as a secondary indicator. Subsumes the old flat KPI row
-             and the top alerts banner. -->
-        <div class="omaad-enter"><app-home-hero /></div>
+        <!-- P2-6: below xl the home is the single column it always was, in the
+             historical order (hero, markets, onboarding, situation, month,
+             debts). From xl (1200px) it becomes two independent columns: a main
+             column (8/12) with the hero, the markets card and this month's
+             activity, and a rail (4/12) with the situation band (score over
+             savings) and the debts band. The two wrappers are display:contents
+             below xl, so their children are the flex column's items and the
+             order-N classes keep the phone order; from xl they are real grid
+             cells and each column flows on its own, which is what avoids dead
+             air between blocks of unequal height. Measured at 1440px the two
+             columns land within ~60px of each other. -->
+        <div class="flex flex-col xl:grid xl:grid-cols-12 xl:gap-x-8 xl:items-start" data-testid="home-grid">
 
-        <!-- Markets card (P2-3): the home-screen entry to the market hub. Market
-             reference data, so it shows for a brand-new account as well and
-             sits between the hero and the personal story bands. -->
-        <div class="omaad-enter omaad-d1 pb-6 md:pb-8"><app-market-glance-widget /></div>
+        <!-- Main column -->
+        <div class="contents xl:block xl:col-span-8">
+            <!-- S5-1 "Am I okay?" hero: net worth + trend, this-month cash-flow, the one
+                 nudge, and FIRE as a secondary indicator. Subsumes the old flat KPI row
+                 and the top alerts banner. -->
+            <div class="omaad-enter order-1" data-testid="home-hero"><app-home-hero /></div>
 
-        <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
-        @if (showOnboarding()) {
-            <div class="pb-6">
-                <app-onboarding
-                    [hasAssets]="hasAssets()"
-                    [hasTransactions]="hasTransactions()"
-                    [hasFireGoal]="hasFireGoal()"
-                    (addAsset)="openAddAsset()"
-                    (dismissed)="showOnboarding.set(false)"
-                />
-            </div>
-        }
+            <!-- Markets card (P2-3): the home-screen entry to the market hub. Market
+                 reference data, so it shows for a brand-new account as well and
+                 sits between the hero and the personal story bands. -->
+            <div class="omaad-enter omaad-d1 pb-6 md:pb-8 order-2"><app-market-glance-widget /></div>
 
-        <!-- S5-2: the widgets below are reordered into a deliberate story with
-             higher-altitude band headers (widgets self-title, so headers group
-             rather than repeat). Each band pairs HEIGHT-COMPATIBLE widgets so a
-             two-up row never puts a tall card (the radar) beside a short one (a
-             one-line debts list), which would leave a hollow gap.
-             A brand-new user (onboarding guide showing) does not see this stack of
-             empty cards at all: the home is hero + onboarding until they add their
-             first data, then the story bands appear. -->
+            <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
+            @if (showOnboarding()) {
+                <div class="pb-6 order-3">
+                    <app-onboarding
+                        [hasAssets]="hasAssets()"
+                        [hasTransactions]="hasTransactions()"
+                        [hasFireGoal]="hasFireGoal()"
+                        (addAsset)="openAddAsset()"
+                        (dismissed)="showOnboarding.set(false)"
+                    />
+                </div>
+            }
+
+            <!-- S5-2: the story bands. Widgets self-title, so band headers group
+                 rather than repeat. A brand-new user (onboarding guide showing)
+                 does not see this stack of empty cards at all: the home is hero +
+                 onboarding until they add their first data. -->
+            @if (!showOnboarding()) {
+                <!-- Band 2: this month (activity) -->
+                <section class="omaad-enter omaad-d2 mt-8 md:mt-10 order-5" data-testid="home-month">
+                    <app-section-header [title]="t('home.sections.month')" [subtitle]="t('home.sections.monthSub')" />
+                    <app-recent-transactions-widget />
+                </section>
+            }
+        </div>
+
+        <!-- Rail -->
         @if (!showOnboarding()) {
-        <div class="space-y-8 md:space-y-10">
-            <!-- Band 1: where you stand (health score + savings momentum) -->
-            <section class="omaad-enter omaad-d1">
+        <div class="contents xl:block xl:col-start-9 xl:col-span-4">
+            <!-- Band 1: where you stand (health score + savings momentum).
+                 Two-up at md; the rail at xl stacks them again. -->
+            <section class="omaad-enter omaad-d1 order-4" data-testid="home-situation">
                 <app-section-header [title]="t('home.sections.situation')" [subtitle]="t('home.sections.situationSub')" />
-                <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8">
-                    <div class="col-span-12 md:col-span-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-4 md:gap-6 lg:gap-8">
+                    <div data-testid="home-score">
                         <app-wealth-score-widget />
                     </div>
-                    <div class="col-span-12 md:col-span-6">
+                    <div>
                         <app-savings-progress />
                     </div>
                 </div>
             </section>
 
-            <!-- Band 2: this month (activity) -->
-            <section class="omaad-enter omaad-d2">
-                <app-section-header [title]="t('home.sections.month')" [subtitle]="t('home.sections.monthSub')" />
-                <app-recent-transactions-widget />
-            </section>
-
-            <!-- Band 3: debts (what you owe), full-width list like recent transactions -->
-            <section class="omaad-enter omaad-d3">
+            <!-- Band 3: debts (what you owe) -->
+            <section class="omaad-enter omaad-d3 mt-8 md:mt-10 order-6" data-testid="home-debts">
                 <app-section-header [title]="t('home.sections.debts')" [subtitle]="t('home.sections.debtsSub')" />
                 <app-debts-overview />
             </section>
         </div>
         }
+        </div>
     `
 })
 export class Dashboard implements OnInit {
