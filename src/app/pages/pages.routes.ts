@@ -31,6 +31,14 @@ export default [
     // Notification center (P1-1). Reached from the topbar bell, not from the
     // nav model: like Settings, it is a utility surface, not a sixth hub.
     { path: 'notifications', loadComponent: () => import('./notifications/notification-center').then(m => m.NotificationCenterPage) },
+    // Marchés (P2-3): free market reference data. Reached from the sidebar and
+    // from the Patrimoine hero (the mobile app's only entry point).
+    { path: 'marches', loadComponent: () => import('./marches/marches-hub').then(m => m.MarchesHubPage) },
+    { path: 'marches/actions', loadComponent: () => import('./marches/brvm-board-page').then(m => m.BrvmBoardPage) },
+    { path: 'marches/fcp', loadComponent: () => import('./marches/fcp-board-page').then(m => m.FcpBoardPage) },
+    { path: 'marches/action/:id', data: { kind: 'stock' }, loadComponent: () => import('./marches/instrument-detail-page').then(m => m.InstrumentDetailPage) },
+    { path: 'marches/fonds/:id', data: { kind: 'fund' }, loadComponent: () => import('./marches/instrument-detail-page').then(m => m.InstrumentDetailPage) },
+    { path: 'marches/indice/:id', data: { kind: 'index' }, loadComponent: () => import('./marches/instrument-detail-page').then(m => m.InstrumentDetailPage) },
     // S12: the ONE chat surface, dark-shipped behind featureFlags.aiChat.
     { path: 'assistant', canMatch: [aiChatGuard], loadComponent: () => import('./assistant/assistant-page').then(m => m.AssistantPage) },
     { path: 'settings', loadChildren: () => import('./settings/settings.routes') },

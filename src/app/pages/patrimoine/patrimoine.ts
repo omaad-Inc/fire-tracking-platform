@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
 import { AllocationDonutComponent } from './components/allocation-donut';
@@ -67,7 +67,7 @@ const GROUPS = [
     selector: 'app-patrimoine',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, PatrimoineProgress, AllocationDonutComponent, AllocationTicksComponent, TooltipModule,
+    imports: [CommonModule, RouterLink, PatrimoineProgress, AllocationDonutComponent, AllocationTicksComponent, TooltipModule,
               AppAmountComponent, LoadErrorComponent, SectionHeaderComponent, UiCardComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
@@ -100,6 +100,13 @@ const GROUPS = [
                                 <app-amount [value]="totalDebts()" [prefix]="totalDebts() > 0 ? '-' : ''" />
                             </div>
                         </div>
+                        <!-- Markets hub (P2-3): the same globe the mobile app puts on this
+                             tab; on mobile it is the only way to the market hub. -->
+                        <a [routerLink]="nav.link('pages', 'marches')" data-testid="patrimoine-markets-link"
+                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium omaad-press
+                                  bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
+                            <i class="pi pi-globe text-xs" aria-hidden="true"></i>{{ i18n.t('menu.markets') }}
+                        </a>
                     </div>
                 </div>
 
@@ -367,7 +374,7 @@ const GROUPS = [
 })
 export class Patrimoine implements OnInit, OnDestroy {
     private router = inject(Router);
-    private nav = inject(NavService);
+    protected nav = inject(NavService);
     i18n = inject(I18nService);
     private patrimoineService = inject(PatrimoineService);
     private currencyService = inject(CurrencyService);

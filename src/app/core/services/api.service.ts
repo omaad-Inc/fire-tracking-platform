@@ -196,7 +196,51 @@ export interface FcpInstrument {
     currency: string;
     latest_vl: number | null;
     vl_as_of: string | null;
+    /** Performance since 1 January / over 12 months, in percent (Marchés). */
+    perf_ytd?: number | null;
+    perf_1y?: number | null;
 }
+
+// ── Marchés (P2-3): free market reference data, XOF native, never converted ──
+
+/** One headline BRVM index: latest level in POINTS, signed day move, and the
+ *  last 30 stored closes (oldest first) for a sparkline. */
+export interface BrvmIndexEntry {
+    code: string;                 // verbatim source code, e.g. 'BRVM-C'
+    name: string;
+    value: number;
+    change_percent: number | null;
+    as_of: string;                // ISO date of the level
+    spark: number[];
+}
+
+export interface BrvmIndicesResponse {
+    market_open: boolean;         // clock-only, not holiday-aware (server-side)
+    session_date: string;
+    indices: BrvmIndexEntry[];
+}
+
+export interface BrvmIndexHistoryPoint { as_of: string; value: number; change_percent?: number | null; }
+export interface BrvmIndexHistoryResponse { code: string; name: string; points: BrvmIndexHistoryPoint[]; }
+
+/** Latest close per listed equity, XOF, alphabetical by name. `change_percent`
+ *  is null when the source omitted the previous close: render a dash, never 0. */
+export interface BrvmBoardQuote {
+    ticker: string;
+    name: string;
+    sector: string | null;
+    country: string | null;
+    close_xof: number;
+    change_percent: number | null;
+    volume: number | null;
+    as_of: string;
+}
+
+export interface BrvmTickerHistoryPoint { as_of: string; close_xof: number; }
+export interface BrvmTickerHistoryResponse { ticker: string; name: string; points: BrvmTickerHistoryPoint[]; }
+
+export interface FcpVlHistoryPoint { as_of: string; vl_xof: number; }
+export interface FcpVlHistoryResponse { slug: string; name: string; points: FcpVlHistoryPoint[]; }
 
 export interface TontineCycleView {
     cycle_number: number;
@@ -1292,6 +1336,33 @@ export class ApiService {
     /** The pickable FCP/OPCVM fund universe: reference data for the picker. */
     getFcpInstruments(): Observable<FcpInstrument[]> {
         return this.http.get<FcpInstrument[]>(`${this.apiUrl}/market/fcp/instruments`);
+    }
+
+    // ========== MARCHÉS (P2-3): free market surface, auth-only like the pickers ==========
+    /** Headline BRVM indices with spark series and the ambient market status. */
+    getBrvmIndices(): Observable<BrvmIndicesResponse> {
+        return this.http.get<BrvmIndicesResponse>(`${this.apiUrl}/market/brvm/indices`);
+    }
+
+    /** Stored EOD series for one index code (e.g. 'BRVM-C'); 404 on unknown code. */
+    getBrvmIndexHistory(code: string): Observable<BrvmIndexHistoryResponse> {
+        return this.http.get<BrvmIndexHistoryResponse>(`${this.apiUrl}/market/brvm/indices/${encodeURIComponent(code)}/history`);
+    }
+
+    /** Latest close per listed equity with day change (XOF, alphabetical). */
+    getBrvmQuotes(): Observable<BrvmBoardQuote[]> {
+        return this.http.get<BrvmBoardQuote[]>(`${this.apiUrl}/market/brvm/quotes`);
+    }
+
+    /** Raw market price series for one ticker. The personal P&L history stays on
+     *  /assets/{id}/brvm-history (Pro); this one is market data, free. */
+    getBrvmTickerHistory(ticker: string): Observable<BrvmTickerHistoryResponse> {
+        return this.http.get<BrvmTickerHistoryResponse>(`${this.apiUrl}/market/brvm/instruments/${encodeURIComponent(ticker)}/history`);
+    }
+
+    /** Stored VL series for one fund; VLs publish weekly so the series is sparse. */
+    getFcpVlHistory(slug: string): Observable<FcpVlHistoryResponse> {
+        return this.http.get<FcpVlHistoryResponse>(`${this.apiUrl}/market/fcp/instruments/${encodeURIComponent(slug)}/history`);
     }
 
     // ========== TONTINE CYCLES ==========
