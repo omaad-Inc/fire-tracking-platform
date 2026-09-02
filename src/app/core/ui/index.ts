@@ -5,3 +5,6 @@ export { SectionHeaderComponent } from './section-header.component';
 export { UiCardComponent } from './ui-card.component';
 export { EmptyStateComponent } from './empty-state.component';
 export { ChipComponent, type ChipTone } from './chip.component';
+// Feedback voices (P1-5): confirm sheet, success sheet, error snackbar.
+export { FeedbackService, type ConfirmOptions } from './feedback.service';
+export { FeedbackHostComponent } from './feedback-host.component';

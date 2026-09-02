@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -8,7 +8,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
@@ -18,6 +17,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { ShareContextService } from '../../../core/services/share-context.service';
 import { isTouchDevice } from '../../../core/util/touch';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     standalone: true,
@@ -25,11 +25,10 @@ import { isTouchDevice } from '../../../core/util/touch';
     imports: [
         CommonModule, FormsModule, ButtonModule, ToastModule,
         InputTextModule, SelectModule, InputNumberModule,
-        DialogModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent, LoadErrorComponent],
-    providers: [MessageService, ConfirmationService],
+        DialogModule, DatePickerModule, AppAmountComponent, LoadErrorComponent],
+    providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <p-confirmDialog />
 
         <!-- ── Top bar ── -->
         <div class="flex flex-col gap-2 mb-5">
@@ -366,7 +365,7 @@ export class DebtsProgress implements OnInit {
     private debtsService        = inject(DebtsService);
     cs = inject(CurrencyService);
     private messageService      = inject(MessageService);
-    private confirmationService = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
     private i18n = inject(I18nService);
     share = inject(ShareContextService);
 
@@ -478,25 +477,21 @@ export class DebtsProgress implements OnInit {
         this.isEdit = false;
     }
 
-    deleteRecord(record: DebtRecord) {
-        this.confirmationService.confirm({
+    async deleteRecord(record: DebtRecord) {
+        const ok = await this.feedback.confirm({
+            title: this.t('debts.toast.confirmHeader'),
             message: this.t('debts.messages.deleteConfirm', { name: record.name }),
-            header: this.t('debts.toast.confirmHeader'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.t('debts.toast.accept'),
-            rejectLabel: this.t('debts.toast.reject'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: async () => {
-                if (!record.id) return;
-                try {
-                    await this.debtsService.deleteRecords([record.id]);
-                    this.allRecords.update(rs => rs.filter(r => r.id !== record.id));
-                    this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('debts.toast.deletedDetail'), life: 3000 });
-                } catch {
-                    this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('debts.toast.deleteError'), life: 4000 });
-                }
-            }
+            confirmLabel: this.t('debts.toast.accept'),
+            cancelLabel: this.t('debts.toast.reject'),
         });
+        if (!ok || !record.id) return;
+        try {
+            await this.debtsService.deleteRecords([record.id]);
+            this.allRecords.update(rs => rs.filter(r => r.id !== record.id));
+            this.feedback.success(this.t('debts.toast.deletedDetail'));
+        } catch {
+            this.feedback.error(this.t('debts.toast.deleteError'));
+        }
     }
 
     async saveRecord() {

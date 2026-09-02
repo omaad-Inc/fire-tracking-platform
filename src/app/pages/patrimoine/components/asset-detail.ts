@@ -4,9 +4,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset, AssetHistory, BrvmHistory } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -22,18 +21,18 @@ import { AssetFormShape, getAssetFormShape, TontineStatus } from '../asset-form-
 import { AssetEditDialogComponent, AssetEditForm } from './asset-edit-dialog';
 import { toLocalDateStr } from '../../../core/util/date';
 import { nbspSafe } from '../../../core/util/nbsp';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-asset-detail',
     standalone: true,
     imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule,
-              ConfirmDialogModule, ToastModule, AppAmountComponent, TontineCyclesComponent,
+              ToastModule, AppAmountComponent, TontineCyclesComponent,
               AssetEditDialogComponent],
-    providers: [ConfirmationService, MessageService],
+    providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <p-toast position="top-center" />
-        <p-confirmdialog />
 
         @if (loading()) {
             <div class="animate-pulse space-y-6">
@@ -777,7 +776,7 @@ export class AssetDetailPage implements OnInit {
     flags = inject(FeatureFlagsService);
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
-    private confirmationService = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
     private messageService = inject(MessageService);
     readonly cs = inject(CurrencyService);
     readonly i18n = inject(I18nService);
@@ -1399,16 +1398,12 @@ export class AssetDetailPage implements OnInit {
         });
     }
 
-    confirmDelete() {
-        this.confirmationService.confirm({
+    async confirmDelete() {
+        const ok = await this.feedback.confirm({
+            title: this.t('assetDetail.deleteConfirmHeader'),
             message: this.t('assetDetail.deleteConfirmMsg', { name: this.asset()?.name ?? '' }),
-            header: this.t('assetDetail.deleteConfirmHeader'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.t('common.delete'),
-            rejectLabel: this.t('common.cancel'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: () => this.deleteAsset()
         });
+        if (ok) this.deleteAsset();
     }
 
     private deleteAsset() {
@@ -1419,7 +1414,7 @@ export class AssetDetailPage implements OnInit {
                 this.stateService.notifyAssetsUpdated();
                 this.goBack();
             },
-            error: () => this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('assetDetail.deleteError'), life: 4000 })
+            error: () => this.feedback.error(this.t('assetDetail.deleteError'))
         });
     }
 }

@@ -9,10 +9,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import {
     TransactionsService, TransactionRecord,
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
@@ -28,6 +27,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
 import { LayoutService } from '../../../layout/service/layout.service';
 import { CsvImportDialog } from './csv-import-dialog';
 import { isTouchDevice } from '../../../core/util/touch';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 import { LG, mediaQuery } from '../../../core/util/breakpoint';
 import { TransactionsTable, TxTableRow } from './transactions-table';
 
@@ -43,13 +43,12 @@ interface DayGroup {
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule,
         InputTextModule, InputNumberModule, SelectModule,
-        ToastModule, ConfirmDialogModule, DatePickerModule, AppAmountComponent,
+        ToastModule, DatePickerModule, AppAmountComponent,
         LoadErrorComponent, CsvImportDialog, MultiSelectModule, TransactionsTable
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [MessageService],
     template: `
         <p-toast position="top-center" />
-        <p-confirmDialog />
         <app-csv-import-dialog #csvImport (imported)="onImported()" />
 
         <!-- ── Top bar ───────────────────────────────────────────── -->
@@ -581,7 +580,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private patrimoineService   = inject(PatrimoineService);
     private state               = inject(AssetsStateService);
     private messageService      = inject(MessageService);
-    private confirmationService = inject(ConfirmationService);
+    private feedback            = inject(FeedbackService);
     private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
     private i18n = inject(I18nService);
@@ -1086,25 +1085,24 @@ export class TransactionLogs implements OnInit, OnDestroy {
         }
     }
 
-    deleteRecord(rec: TransactionRecord) {
-        this.confirmationService.confirm({
+    async deleteRecord(rec: TransactionRecord) {
+        // Three voices (P1-5): confirm BEFORE, success sheet AFTER, failure as
+        // the negative snackbar, so "deleted" and "could not delete" can never
+        // be mistaken for one another at a glance.
+        const ok = await this.feedback.confirm({
+            title: this.t('transactions.confirm.header'),
             message: this.t('transactions.confirm.deleteMessage'),
-            header: this.t('transactions.confirm.header'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.t('transactions.confirm.accept'),
-            rejectLabel: this.t('transactions.confirm.reject'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: async () => {
-                if (!rec.id) return;
-                try {
-                    await this.transactionsService.deleteRecords([rec.id]);
-                    this.allRecords.update(rs => rs.filter(r => r.id !== rec.id));
-                    this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.deletedDetail'), life: 3000 });
-                } catch {
-                    this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
-                }
-            }
+            confirmLabel: this.t('transactions.confirm.accept'),
+            cancelLabel: this.t('transactions.confirm.reject'),
         });
+        if (!ok || !rec.id) return;
+        try {
+            await this.transactionsService.deleteRecords([rec.id]);
+            this.allRecords.update(rs => rs.filter(r => r.id !== rec.id));
+            this.feedback.success(this.t('transactions.toast.deletedDetail'));
+        } catch {
+            this.feedback.error(this.t('transactions.toast.deleteError'));
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────
@@ -1232,38 +1230,35 @@ export class TransactionLogs implements OnInit, OnDestroy {
         return this.tableRows().filter(r => keys.has(r.key)).map(r => r.rec);
     }
 
-    bulkDelete(): void {
+    async bulkDelete(): Promise<void> {
         const recs = this.selectedRecords().filter(r => !!r.id);
         if (!recs.length) return;
-        this.confirmationService.confirm({
+        const ok = await this.feedback.confirm({
+            title: this.t('transactions.confirm.header'),
             message: this.t('transactions.table.bulkDeleteConfirm', { n: recs.length }),
-            header: this.t('transactions.confirm.header'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.t('transactions.confirm.accept'),
-            rejectLabel: this.t('transactions.confirm.reject'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: async () => {
-                const ids = recs.map(r => r.id!);
-                this.isBulking.set(true);
-                try {
-                    await this.transactionsService.deleteRecords(ids);
-                    const gone = new Set(ids);
-                    this.allRecords.update(rs => rs.filter(r => !r.id || !gone.has(r.id)));
-                    // Each delete moves an account balance (S11-TX-1), so the
-                    // rest of the app has to hear about it.
-                    this.state.notifyTransactionsUpdated();
-                    this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.table.bulkDeleted', { n: ids.length }), life: 3000 });
-                    this.clearSelection();
-                } catch {
-                    this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('transactions.toast.deleteError'), life: 4000 });
-                    // The server is the truth after a partial failure.
-                    this.transactionsService.clearCache();
-                    this.load();
-                } finally {
-                    this.isBulking.set(false);
-                }
-            },
+            confirmLabel: this.t('transactions.confirm.accept'),
+            cancelLabel: this.t('transactions.confirm.reject'),
         });
+        if (!ok) return;
+        const ids = recs.map(r => r.id!);
+        this.isBulking.set(true);
+        try {
+            await this.transactionsService.deleteRecords(ids);
+            const gone = new Set(ids);
+            this.allRecords.update(rs => rs.filter(r => !r.id || !gone.has(r.id)));
+            // Each delete moves an account balance (S11-TX-1), so the rest of
+            // the app has to hear about it.
+            this.state.notifyTransactionsUpdated();
+            this.feedback.success(this.t('transactions.table.bulkDeleted', { n: ids.length }));
+            this.clearSelection();
+        } catch {
+            this.feedback.error(this.t('transactions.toast.deleteError'));
+            // The server is the truth after a partial failure.
+            this.transactionsService.clearCache();
+            this.load();
+        } finally {
+            this.isBulking.set(false);
+        }
     }
 
     async bulkRecategorize(): Promise<void> {

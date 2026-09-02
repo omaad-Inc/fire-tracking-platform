@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Subscription, map } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { I18nService } from '../../i18n/i18n.service';
 import { ShareContextService } from '../../core/services/share-context.service';
 import { SavingGoal } from '../../core/services/api.service';
@@ -37,7 +37,7 @@ import { FireDashboardPage } from '../fire/fire-dashboard';
         PageHeaderComponent,
         FireDashboardPage,
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [MessageService],
     template: `
         <div class="flex flex-col gap-6">
             <!-- Header -->

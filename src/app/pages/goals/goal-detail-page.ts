@@ -4,9 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { I18nService } from '../../i18n/i18n.service';
 import {
     ApiService,
@@ -24,17 +23,18 @@ import { GoalAddDialogComponent, GoalSavePayload } from './components/goal-add-d
 import { GoalAllocateDialogComponent, AllocatePayload } from './components/goal-allocate-dialog';
 import { templateOf } from './goal-templates';
 import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPercent, templateKeyOf } from './goal-utils';
+import { FeedbackService } from '../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-goal-detail-page',
     standalone: true,
     imports: [
         CommonModule,
-        ButtonModule, ToastModule, ConfirmDialogModule, DialogModule,
+        ButtonModule, ToastModule, DialogModule,
         AppAmountComponent, GoalAddDialogComponent, GoalAllocateDialogComponent,
         LoadErrorComponent,
     ],
-    providers: [MessageService, ConfirmationService],
+    providers: [MessageService],
     template: `
         <div class="flex flex-col gap-6">
 
@@ -366,7 +366,6 @@ import { computeStatus, monthlyContributionNeeded, monthsRemaining, progressPerc
         </p-dialog>
 
         <p-toast position="top-center" />
-        <p-confirmDialog />
     `,
 })
 export class GoalDetailPage implements OnInit, OnDestroy {
@@ -376,7 +375,7 @@ export class GoalDetailPage implements OnInit, OnDestroy {
     private api = inject(ApiService);
     private state = inject(AssetsStateService);
     private message = inject(MessageService);
-    private confirm = inject(ConfirmationService);
+    private feedback = inject(FeedbackService);
     cs = inject(CurrencyService);
     i18n = inject(I18nService);
     share = inject(ShareContextService);
@@ -638,52 +637,42 @@ export class GoalDetailPage implements OnInit, OnDestroy {
         this.allocateDialogVisible = true;
     }
 
-    confirmDelete() {
+    async confirmDelete() {
         const g = this.goal();
         if (!g) return;
-        this.confirm.confirm({
+        const ok = await this.feedback.confirm({
+            title: this.i18n.t('common.confirm'),
             message: this.i18n.t('goals.messages.deleteConfirm', { name: g.name }),
-            header: this.i18n.t('common.confirm'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.i18n.t('common.delete'),
-            rejectLabel: this.i18n.t('common.cancel'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: async () => {
-                try {
-                    await firstValueFrom(this.api.deleteSavingGoal(g.id));
-                    this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.messages.deleted'), life: 3000 });
-                    this.state.notifySavingsUpdated();
-                    this.back();
-                } catch (err) {
-                    console.error('Error deleting goal:', err);
-                    this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.messages.deleteError'), life: 4000 });
-                }
-            },
         });
+        if (!ok) return;
+        try {
+            await firstValueFrom(this.api.deleteSavingGoal(g.id));
+            this.feedback.success(this.i18n.t('goals.messages.deleted'));
+            this.state.notifySavingsUpdated();
+            this.back();
+        } catch (err) {
+            console.error('Error deleting goal:', err);
+            this.feedback.error(this.i18n.t('goals.messages.deleteError'));
+        }
     }
 
-    confirmDeleteContribution(c: GoalContribution) {
+    async confirmDeleteContribution(c: GoalContribution) {
         const g = this.goal();
         if (!g) return;
-        this.confirm.confirm({
+        const ok = await this.feedback.confirm({
+            title: this.i18n.t('common.confirm'),
             message: this.i18n.t('goals.activity.deleteConfirm'),
-            header: this.i18n.t('common.confirm'),
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: this.i18n.t('common.delete'),
-            rejectLabel: this.i18n.t('common.cancel'),
-            acceptButtonStyleClass: '!bg-negative !border-negative',
-            accept: async () => {
-                try {
-                    await firstValueFrom(this.api.deleteGoalContribution(g.id, c.id));
-                    this.message.add({ severity: 'success', summary: this.i18n.t('common.success'), detail: this.i18n.t('goals.activity.deleted'), life: 3000 });
-                    this.state.notifySavingsUpdated();
-                    await this.loadAll(g.id, /* silent */ true);
-                } catch (err) {
-                    console.error('Error deleting contribution:', err);
-                    this.message.add({ severity: 'error', summary: this.i18n.t('common.error'), detail: this.i18n.t('goals.activity.deleteError'), life: 4000 });
-                }
-            },
         });
+        if (!ok) return;
+        try {
+            await firstValueFrom(this.api.deleteGoalContribution(g.id, c.id));
+            this.feedback.success(this.i18n.t('goals.activity.deleted'));
+            this.state.notifySavingsUpdated();
+            await this.loadAll(g.id, /* silent */ true);
+        } catch (err) {
+            console.error('Error deleting contribution:', err);
+            this.feedback.error(this.i18n.t('goals.activity.deleteError'));
+        }
     }
 
     async onAllocate(payload: AllocatePayload) {
