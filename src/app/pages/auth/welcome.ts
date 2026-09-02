@@ -103,7 +103,7 @@ type Step = 'created' | 'name' | 'notifications';
                             @for (n of mockNotifs; track n.title) {
                                 <div class="flex gap-3 rounded-2xl bg-surface-0 dark:bg-surface-800 p-3.5 mb-2.5 last:mb-0">
                                     <div class="w-9 h-9 shrink-0 rounded-lg bg-brand-700 flex items-center justify-center">
-                                        <img src="assets/brand/omaad-icon.svg" alt="" class="w-5 h-5">
+                                        <img src="assets/brand/omaad-icon.svg" alt="" class="w-5 h-5" width="20" height="20">
                                     </div>
                                     <div class="min-w-0">
                                         <div class="flex items-center justify-between gap-2">

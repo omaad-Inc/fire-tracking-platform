@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, OnDestroy, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -44,7 +44,7 @@ interface RBlock {
 @Component({
     selector: 'app-blog-article',
     standalone: true,
-    imports: [CommonModule, RouterModule, RippleModule, BlogTopbar, FooterWidget, NewsletterSignup],
+    imports: [CommonModule, NgOptimizedImage, RouterModule, RippleModule, BlogTopbar, FooterWidget, NewsletterSignup],
     template: `
         <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
             <!-- Reading progress -->
@@ -100,10 +100,14 @@ interface RBlock {
 
                     <!-- Cover -->
                     <div class="max-w-[860px] mx-auto mb-12 md:mb-16">
-                        <img [src]="p.coverImage" [alt]="p.title"
-                             class="w-full aspect-[16/9] object-cover rounded-2xl shadow-sm"
-                             width="1200" height="750" decoding="async"
-                             (error)="onCoverError($event)" />
+                        <!-- LCP of a prerendered route: priority = fetchpriority=high + a preload
+                             link in the prerendered head. fill: the 16/9 box owns the size and
+                             object-cover crops the 3:2 file into it, so no hint can drift. -->
+                        <div class="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-sm bg-surface-100 dark:bg-surface-800">
+                            <img [ngSrc]="p.coverImage" [alt]="p.title" fill priority
+                                 class="object-cover" decoding="async"
+                                 (error)="onCoverError($event)" />
+                        </div>
                     </div>
 
                     <!-- Body -->
@@ -251,10 +255,10 @@ interface RBlock {
                                 @for (r of related(); track r.slug) {
                                     <a [routerLink]="['/', lang, 'blog', r.slug]"
                                        class="group block rounded-2xl overflow-hidden bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-ochre-500/40 hover:shadow-md transition-all">
-                                        <div class="aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800">
-                                            <img [src]="r.coverImage" [alt]="r.title"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                 width="1200" height="750" loading="lazy" decoding="async"
+                                        <div class="relative aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800">
+                                            <img [ngSrc]="r.coverImage" [alt]="r.title" fill
+                                                 class="object-cover group-hover:scale-105 transition-transform duration-500"
+                                                 loading="lazy" decoding="async"
                                                  (error)="onCoverError($event)" />
                                         </div>
                                         <div class="p-4">

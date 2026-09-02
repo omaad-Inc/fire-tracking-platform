@@ -97,7 +97,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                     <div class="relative group shrink-0">
                         @if (user()?.avatar_url) {
                             <img [src]="getAvatarUrl()" alt="Profile"
-                                 class="w-20 h-20 rounded-full object-cover ring-2 ring-surface-200 dark:ring-surface-700">
+                                 class="w-20 h-20 rounded-full object-cover ring-2 ring-surface-200 dark:ring-surface-700" width="80" height="80">
                         } @else {
                             <div class="w-20 h-20 rounded-full bg-gradient-to-br from-brand-700 to-brand-800 ring-2 ring-surface-200 dark:ring-surface-700 flex items-center justify-center text-white font-semibold text-2xl">
                                 {{ userInitials }}

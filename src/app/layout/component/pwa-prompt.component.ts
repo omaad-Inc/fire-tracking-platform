@@ -40,7 +40,7 @@ import { I18nService } from '../../i18n/i18n.service';
                             shadow-xl shadow-card p-4">
                     <div class="flex items-start gap-3">
                         <div class="w-11 h-11 rounded-xl bg-brand-700 flex items-center justify-center shrink-0 shadow-lg">
-                            <img src="assets/brand/omaad-icon-mono-white.svg" alt="Omaad" class="w-7 h-7">
+                            <img src="assets/brand/omaad-icon-mono-white.svg" alt="Omaad" class="w-7 h-7" width="28" height="28" loading="lazy">
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-surface-900 dark:text-surface-0 text-sm leading-tight">{{ t('pwaPrompt.installTitle') }}</p>

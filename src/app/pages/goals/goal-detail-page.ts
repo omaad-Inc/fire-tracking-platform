@@ -121,7 +121,7 @@ import { FeedbackService } from '../../core/ui/feedback.service';
                 <!-- HERO -->
                 <div class="relative rounded-2xl overflow-hidden bg-surface-100 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                     <div class="relative h-56 sm:h-72 lg:h-80">
-                        <img [src]="heroImage()" [alt]="g.name" class="w-full h-full object-cover" (error)="onHeroError()" />
+                        <img [src]="heroImage()" [alt]="g.name" class="w-full h-full object-cover" width="1200" height="675" fetchpriority="high" (error)="onHeroError()" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent"></div>
                         <span class="absolute top-4 right-4 inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-md shadow-sm" [ngClass]="badgeClass()">
                             <i [class]="badgeIcon() + ' text-[11px]'"></i>

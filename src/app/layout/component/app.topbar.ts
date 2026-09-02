@@ -35,7 +35,7 @@ import { SharePortfolioDialog } from './share-portfolio-dialog';
                    class="lg:hidden flex items-center justify-center shrink-0">
                     <div class="w-9 h-9 rounded-full bg-surface-800 dark:bg-surface-700 flex items-center justify-center overflow-hidden">
                         @if (avatarUrl) {
-                            <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover">
+                            <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover" width="40" height="40">
                         } @else {
                             <i class="pi pi-user text-surface-200"></i>
                         }

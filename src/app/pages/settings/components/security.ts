@@ -150,7 +150,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                         <div class="space-y-4">
                             <p class="text-xs text-surface-500 dark:text-surface-400">{{ t('security.2fa.setupHint') }}</p>
                             <div class="flex flex-col items-center gap-3">
-                                <img [src]="twofaSetup()!.qr_data_uri" alt="QR" class="w-44 h-44 rounded-xl border border-surface-200 dark:border-surface-700 bg-white p-2" /><!-- dark-ok: QR quiet zone must stay white -->
+                                <img [src]="twofaSetup()!.qr_data_uri" alt="QR" class="w-44 h-44 rounded-xl border border-surface-200 dark:border-surface-700 bg-white p-2" width="176" height="176" /><!-- dark-ok: QR quiet zone must stay white -->
                                 <code class="text-xs font-mono text-surface-500 dark:text-surface-400 break-all text-center max-w-full">{{ twofaSetup()!.secret }}</code>
                             </div>
                             <input pInputText type="text" inputmode="numeric" [(ngModel)]="twofaCode" name="twofaCode" [placeholder]="t('security.2fa.codePlaceholder')" maxlength="6"

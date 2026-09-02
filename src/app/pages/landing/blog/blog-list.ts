@@ -1,5 +1,5 @@
 import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { BlogTopbar } from './blog-topbar';
@@ -13,7 +13,7 @@ import { BlogPost, COVER_FALLBACK, absoluteCoverUrl, publishedPosts } from './po
 @Component({
     selector: 'app-blog-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, RippleModule, BlogTopbar, FooterWidget],
+    imports: [CommonModule, NgOptimizedImage, RouterModule, RippleModule, BlogTopbar, FooterWidget],
     template: `
         <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
             <!-- Resource topbar (same pattern as the BRVM tools) -->
@@ -67,9 +67,11 @@ import { BlogPost, COVER_FALLBACK, absoluteCoverUrl, publishedPosts } from './po
 
                             <!-- Cover -->
                             <div class="relative aspect-[16/10] overflow-hidden bg-surface-100 dark:bg-surface-800">
-                                <img [src]="post.coverImage" [alt]="post.title"
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                     width="1200" height="750" loading="lazy" decoding="async"
+                                <!-- fill: the 16/10 box owns the size and object-cover crops the
+                                     3:2 file into it, so no ratio hint can drift from the asset. -->
+                                <img [ngSrc]="post.coverImage" [alt]="post.title" fill
+                                     class="object-cover group-hover:scale-105 transition-transform duration-500"
+                                     loading="lazy" decoding="async"
                                      (error)="onCoverError($event)" />
                                 <span class="absolute top-3 left-3 px-2 py-1 rounded-md bg-brand-900/90 text-white text-[10px] font-bold tracking-widest">
                                     #{{ post.edition }}

@@ -40,7 +40,7 @@ const RATES: Record<string, { rate: number; locale: string }> = {
                 <div class="w-full max-w-md bg-surface-0 dark:bg-surface-900 rounded-3xl overflow-hidden shadow-xl border border-surface-200 dark:border-surface-800">
                     <!-- Hero image -->
                     <div class="relative h-44 bg-brand-900">
-                        <img [src]="heroImage()" alt="" class="w-full h-full object-cover" (error)="imgError.set(true)" />
+                        <img [src]="heroImage()" alt="" class="w-full h-full object-cover" width="1200" height="675" fetchpriority="high" (error)="imgError.set(true)" />
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-5">
                             @if (g.owner_name) {
