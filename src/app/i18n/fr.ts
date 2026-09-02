@@ -1801,6 +1801,11 @@ export const FR = {
     },
   },
   insights: {
+    periodLabel: 'Période analysée',
+    period3m: '3 mois',
+    period6m: '6 mois',
+    period12m: '12 mois',
+    periodMax: 'Max',
     title: 'Analyses',
     subtitle: 'Où va votre argent, comment il évolue et ce qui ressort.',
     income: 'Revenus',

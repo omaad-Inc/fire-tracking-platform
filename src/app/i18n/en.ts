@@ -1803,6 +1803,11 @@ export const EN: Dict = {
     },
   },
   insights: {
+    periodLabel: 'Period analysed',
+    period3m: '3 months',
+    period6m: '6 months',
+    period12m: '12 months',
+    periodMax: 'Max',
     title: 'Insights',
     subtitle: 'Where your money goes, how it trends, and what stands out.',
     income: 'Income',

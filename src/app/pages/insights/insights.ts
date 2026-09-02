@@ -59,7 +59,18 @@ type HubTab = 'analyses' | 'score' | 'conseils';
         } @else if (!data() || (data()!.income === 0 && data()!.expenses === 0)) {
             <app-empty-state icon="pi-chart-bar" [title]="t('insights.empty.title')" [message]="t('insights.empty.desc')" />
         } @else {
-            <!-- Period KPIs -->
+            <!-- Current-month KPIs. Labelled with the month on purpose: the
+                 API scopes income/expenses/net/savings_rate AND the category
+                 breakdown to the CURRENT MONTH and does NOT vary them with the
+                 months parameter, which only sizes the trend series. An
+                 unlabelled block next to a period selector read as though the
+                 selector governed these numbers too. -->
+            <div class="flex items-baseline justify-between gap-2 mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500"
+                      data-testid="insights-kpi-period">
+                    {{ periodLabel(data()!.period) }}
+                </span>
+            </div>
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
                 <app-ui-card padding="sm">
                     <div class="text-xs text-surface-400 uppercase tracking-wide mb-1">{{ t('insights.income') }}</div>
@@ -81,9 +92,24 @@ type HubTab = 'analyses' | 'score' | 'conseils';
                 </app-ui-card>
             </div>
 
-            <!-- Trend -->
+            <!-- Trend, with the window selector. It lives HERE rather than at
+                 page level because months only sizes this series (P1-3). -->
             <app-ui-card class="mb-5">
-                <div class="font-semibold text-surface-900 dark:text-surface-0 mb-3">{{ t('insights.trendTitle') }}</div>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div class="font-semibold text-surface-900 dark:text-surface-0">{{ t('insights.trendTitle') }}</div>
+                    <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl p-1"
+                         role="tablist" [attr.aria-label]="t('insights.periodLabel')" data-testid="insights-period">
+                        @for (p of periods; track p.months) {
+                            <button type="button" role="tab"
+                                    [attr.aria-selected]="months() === p.months"
+                                    [attr.data-months]="p.months"
+                                    (click)="setMonths(p.months)"
+                                    [class]="periodClass(p.months)">
+                                {{ p.label }}
+                            </button>
+                        }
+                    </div>
+                </div>
                 <p-chart type="line" [data]="chartData" [options]="chartOptions" class="w-full min-h-[220px] md:min-h-[280px]"
                          role="img" [attr.aria-label]="t('insights.trendTitle')" />
             </app-ui-card>
@@ -98,7 +124,7 @@ type HubTab = 'analyses' | 'score' | 'conseils';
                         @for (c of shownCategories(); track c.category) {
                             <div>
                                 <div class="flex items-center justify-between gap-2 mb-1">
-                                    <span class="text-sm text-surface-800 dark:text-surface-200 truncate">{{ t('categories.' + c.category) }}</span>
+                                    <span class="text-sm text-surface-800 dark:text-surface-200 truncate">{{ categoryLabel(c.category) }}</span>
                                     <div class="flex items-center gap-2 shrink-0">
                                         <span class="text-sm font-semibold text-surface-900 dark:text-surface-0"><app-amount [value]="c.amount" /></span>
                                         @if (c.delta_pct === null) {
@@ -160,6 +186,50 @@ export class InsightsPage implements OnInit {
         { initialValue: this.parseTab(this.route.snapshot.queryParamMap.get('tab')) },
     );
 
+    /** Month windows offered. Max is 24 because the backend bounds `months`
+     *  to 2..24; anything larger would 422. */
+    get periods() {
+        return [
+            { months: 3,  label: this.t('insights.period3m')  },
+            { months: 6,  label: this.t('insights.period6m')  },
+            { months: 12, label: this.t('insights.period12m') },
+            { months: 24, label: this.t('insights.periodMax') },
+        ];
+    }
+
+    /** Selected window, derived from the URL like `tab` is, so back/forward and
+     *  a pasted link all land on the right period. */
+    months = toSignal(
+        this.route.queryParamMap.pipe(map(qp => this.parseMonths(qp.get('months')))),
+        { initialValue: this.parseMonths(this.route.snapshot.queryParamMap.get('months')) },
+    );
+
+    private parseMonths(raw: string | null): number {
+        const n = Number(raw);
+        // Only the offered windows are honoured; anything else falls back to the
+        // 6-month default rather than silently querying an arbitrary window.
+        return [3, 6, 12, 24].includes(n) ? n : 6;
+    }
+
+    setMonths(m: number) {
+        if (m === this.months()) return;
+        // Navigate only; `months` is derived from the URL, and the reload is
+        // driven by the effect below so back/forward refetch too.
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { months: m === 6 ? null : m },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        });
+    }
+
+    periodClass(m: number): string {
+        const base = 'omaad-press px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-200 cursor-pointer';
+        return this.months() === m
+            ? `${base} bg-surface-0 dark:bg-surface-950 text-brand-700 dark:text-ochre-400 shadow-card`
+            : `${base} text-surface-500 dark:text-surface-400`;
+    }
+
     setTab(t: HubTab) {
         // Navigate only; `tab` is derived from the URL.
         this.router.navigate([], {
@@ -184,16 +254,25 @@ export class InsightsPage implements OnInit {
     chartData: any;
     chartOptions: any;
 
-    ngOnInit() { this.load(); }
+    /** Reload whenever the window changes, including via back/forward, since
+     *  `months` is derived from the URL rather than from the click. */
+    private periodEffect = effect(() => {
+        this.months();
+        this.load();
+    });
+
+    ngOnInit() { /* the period effect performs the initial load */ }
 
     load() {
+        const months = this.months();
         // No-flash revisit: render cached analytics synchronously and only show
         // the skeleton on a cold first load; get() refreshes in the background.
-        const cached = this.insights.getCached();
+        // Cache is per-window, so toggling back to a seen window never flashes.
+        const cached = this.insights.getCached(months);
         if (cached) { this.data.set(cached); this.initChart(); }
-        this.loading.set(!this.insights.hasCached());
+        this.loading.set(!this.insights.hasCached(months));
         this.error.set(false);
-        this.insights.get()
+        this.insights.get(months)
             .then((res) => {
                 this.data.set(res);
                 this.loading.set(false);
@@ -201,12 +280,27 @@ export class InsightsPage implements OnInit {
             })
             .catch(() => {
                 // Only a cold failure (nothing cached) surfaces the error state.
-                if (!this.insights.hasCached()) this.error.set(true);
+                if (!this.insights.hasCached(months)) this.error.set(true);
                 this.loading.set(false);
             });
     }
 
     fmtPct(pct: number): string { return `${Math.round(pct)}%`; }
+
+    /** "2026-09" -> "Septembre 2026" / "September 2026". */
+    periodLabel(period: string): string {
+        const m = /^(\d{4})-(\d{2})$/.exec(period ?? '');
+        if (!m) return period ?? '';
+        const d = new Date(Number(m[1]), Number(m[2]) - 1, 1);
+        const s = d.toLocaleDateString(this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR',
+            { month: 'long', year: 'numeric' });
+        return s.replace(/^\w/, c => c.toUpperCase());
+    }
+
+    /** Category display name. Goes through I18nService, which lowercases the key:
+     *  this endpoint returns MIXED casing and a raw `categories.HOUSING` lookup
+     *  used to render the key itself on the page. */
+    categoryLabel(cat: string): string { return this.i18n.categoryLabel(cat); }
 
     /** Only categories with spend this period — drop the 0-this-month/-100% noise. */
     shownCategories() {

@@ -39,3 +39,46 @@ describe('I18nService.t', () => {
         expect(svc.categoryLabel('unknown_cat')).toBe('unknown_cat');
     });
 });
+
+/**
+ * P1-3 guard. The API returns MIXED transaction-category casing, the enum VALUE
+ * for some rows ("groceries") and its NAME for others ("HOUSING"), depending on
+ * which writer created them. The `categories.*` dictionary is keyed lowercase,
+ * so an uppercase value missed the lookup and this helper returned the raw key,
+ * which is how "HOUSING" reached the Analyses page as visible copy.
+ */
+describe('I18nService.categoryLabel', () => {
+    let svc: I18nService;
+
+    beforeEach(() => {
+        svc = new I18nService();
+        (svc as unknown as { dicts: Record<string, unknown> }).dicts = {
+            fr: { categories: { salary: 'Salaire', housing: 'Logement', other_expense: 'Autres' } },
+        };
+        svc.lang.set('fr');
+    });
+
+    it('resolves a lowercase key', () => {
+        expect(svc.categoryLabel('housing')).toBe('Logement');
+    });
+
+    it('resolves an UPPERCASE key from the API', () => {
+        expect(svc.categoryLabel('HOUSING')).toBe('Logement');
+        expect(svc.categoryLabel('SALARY')).toBe('Salaire');
+    });
+
+    it('resolves mixed case', () => {
+        expect(svc.categoryLabel('Housing')).toBe('Logement');
+    });
+
+    it('falls back to other_expense for null/empty', () => {
+        expect(svc.categoryLabel(null)).toBe('Autres');
+        expect(svc.categoryLabel('')).toBe('Autres');
+    });
+
+    it('returns the normalised key (not a raw uppercase one) when truly unknown', () => {
+        // A category this build has no label for should still read as a slug,
+        // never as SCREAMING_CASE in the UI.
+        expect(svc.categoryLabel('SOME_NEW_CATEGORY')).toBe('some_new_category');
+    });
+});
