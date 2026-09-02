@@ -2980,6 +2980,7 @@ export const EN: Dict = {
   markets: {
     title: 'Markets',
     subtitle: 'BRVM closing prices, UEMOA funds and currencies',
+    homeSubtitle: 'BRVM indices · close of {{date}}',
     indices: 'BRVM indices',
     sessionOpen: 'Market open',
     sessionClosed: 'Market closed',

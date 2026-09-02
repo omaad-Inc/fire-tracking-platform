@@ -2980,6 +2980,7 @@ export const FR = {
   markets: {
     title: 'Marchés',
     subtitle: 'Cours de clôture BRVM, fonds UEMOA et devises',
+    homeSubtitle: 'Indices BRVM · clôture du {{date}}',
     indices: 'Indices BRVM',
     sessionOpen: 'Marché ouvert',
     sessionClosed: 'Marché fermé',

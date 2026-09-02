@@ -6,6 +6,7 @@ import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
+import { MarketGlanceWidget } from './components/marketglancewidget';
 import { SectionHeaderComponent } from '../../core/ui/section-header.component';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
@@ -20,7 +21,7 @@ import { I18nService } from '../../i18n/i18n.service';
     imports: [
         CommonModule, HomeHero, SavingsProgress, DebtsOverview,
         RecentTransactionsWidget, WealthScoreDashboardWidget, OnboardingComponent,
-        SectionHeaderComponent
+        MarketGlanceWidget, SectionHeaderComponent
     ],
     template: `
         <!-- One <h1> per page for a correct heading hierarchy; visually hidden
@@ -31,6 +32,11 @@ import { I18nService } from '../../i18n/i18n.service';
              nudge, and FIRE as a secondary indicator. Subsumes the old flat KPI row
              and the top alerts banner. -->
         <div class="omaad-enter"><app-home-hero /></div>
+
+        <!-- Markets card (P2-3): the home-screen entry to the market hub. Market
+             reference data, so it shows for a brand-new account as well and
+             sits between the hero and the personal story bands. -->
+        <div class="omaad-enter omaad-d1 pb-6 md:pb-8"><app-market-glance-widget /></div>
 
         <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
         @if (showOnboarding()) {

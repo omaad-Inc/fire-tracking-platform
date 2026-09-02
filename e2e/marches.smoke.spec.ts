@@ -80,8 +80,16 @@ test.describe('marchés hub', () => {
             const label = `${vp}/${theme}/${lang}`;
 
             try {
+                // Home entry: the market card on Synthèse is how a phone reaches
+                // the hub (the sidebar is hidden there, the bottom bar keeps five hubs).
+                await page.goto(`/${lang}/`);
+                const home = page.getByTestId('mk-home');
+                await expect(home, `${label} home market card`).toBeVisible({ timeout: 30_000 });
+                await expect(home).toContainText('pts');
+                await home.click();
+                await expect(page, `${label} home card opens the hub`).toHaveURL(/\/pages\/marches$/, { timeout: 20_000 });
+
                 // Hub
-                await page.goto(`/${lang}/pages/marches`);
                 await expect(page.getByTestId('mk-indices'), `${label} indices`).toBeVisible({ timeout: 30_000 });
                 await expect(page.getByTestId('mk-board'), `${label} board`).toBeVisible();
                 await expect(page.getByTestId('mk-fx'), `${label} fx`).toBeVisible();
