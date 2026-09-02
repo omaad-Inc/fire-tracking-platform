@@ -452,6 +452,15 @@ export const EN: Dict = {
     },
     momoFootnote: 'No automatic charge on Mobile Money. We remind you 3 days before it expires, and you renew in one tap.',
     founderFootnote: 'Lifetime founder pricing reserved for the first 100 subscribers.',
+    payment: {
+      successTitle: 'Subscription activated',
+      successBody: 'Open the Omaad app: your account is already upgraded, nothing else to do.',
+      errorTitle: 'Payment not completed',
+      errorBody: 'Nothing was charged. You can try again whenever you like.',
+      openApp: 'Open the app',
+      openAppHint: 'The app did not open? Just go back to Omaad from your home screen: the upgrade applies on its own.',
+      dismiss: 'Dismiss',
+    },
     history: {
       title: 'History',
       status: {
@@ -936,8 +945,6 @@ export const EN: Dict = {
       photoUpdatedTitle: 'Photo updated',
       photoUpdatedDetail: 'Your profile picture was updated.',
       photoUploadFailed: 'Could not upload the photo.',
-      photoRemoveTitle: 'Remove your photo?',
-      photoRemoveBody: 'Your profile picture will be removed from your account.',
       photoRemovedTitle: 'Photo removed',
       photoRemovedDetail: 'Your profile picture was removed.',
       photoRemoveFailed: 'Could not remove the photo.',

@@ -77,6 +77,10 @@ export const appRoutes: Routes = [
     { path: 'supprimer-mon-compte', loadComponent: () => import('./app/pages/landing/components/supprimer-mon-compte').then(m => m.SupprimerMonComptePage) },
     // Support URL exigée par App Store Connect (utile aussi côté Play).
     { path: 'support', loadComponent: () => import('./app/pages/landing/components/support').then(m => m.SupportPage) },
+    // Retour de paiement PSP (PayDunya/Bictorys return_url) : public, car un
+    // utilisateur qui paie depuis l'application n'a pas de session web ; la page
+    // confirme le retour et rouvre l'app (omaad://). noindex.
+    { path: 'paiement/retour', loadComponent: () => import('./app/pages/landing/components/paiement-retour').then(m => m.PaiementRetourPage) },
 
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },

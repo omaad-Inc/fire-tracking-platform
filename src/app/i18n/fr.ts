@@ -450,6 +450,15 @@ export const FR = {
     },
     momoFootnote: 'Pas de débit automatique en Mobile Money. On te prévient 3 jours avant l\'expiration, tu renouvelles en un clic.',
     founderFootnote: 'Prix fondateur à vie réservé aux 100 premiers abonnés.',
+    payment: {
+      successTitle: 'Abonnement activé',
+      successBody: 'Ouvre l\'application Omaad : ton compte est déjà à niveau, rien d\'autre à faire.',
+      errorTitle: 'Paiement non finalisé',
+      errorBody: 'Rien n\'a été débité. Tu peux réessayer quand tu veux.',
+      openApp: 'Ouvrir l\'application',
+      openAppHint: 'L\'application ne s\'est pas ouverte ? Reviens simplement sur Omaad depuis ton écran d\'accueil : la mise à niveau s\'applique toute seule.',
+      dismiss: 'Fermer',
+    },
     history: {
       title: 'Historique',
       status: {
@@ -934,8 +943,6 @@ export const FR = {
       photoUpdatedTitle: 'Photo mise à jour',
       photoUpdatedDetail: 'Votre photo de profil a été modifiée.',
       photoUploadFailed: 'Impossible de télécharger la photo.',
-      photoRemoveTitle: 'Supprimer la photo ?',
-      photoRemoveBody: 'Votre photo de profil sera retirée de votre compte.',
       photoRemovedTitle: 'Photo supprimée',
       photoRemovedDetail: 'Votre photo de profil a été retirée.',
       photoRemoveFailed: 'Impossible de supprimer la photo.',

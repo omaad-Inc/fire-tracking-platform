@@ -9,22 +9,23 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ApiService } from '../../../core/services/api.service';
 import { TokenService, User } from '../../../core/services/token.service';
 import { environment } from '../../../../environments/environment';
-import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-settings-account',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, InputTextModule, AvatarModule, TagModule, DividerModule, FileUploadModule, ToastModule, DialogModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, InputTextModule, AvatarModule, TagModule, DividerModule, FileUploadModule, ToastModule, ConfirmDialogModule, DialogModule],
+    providers: [MessageService, ConfirmationService],
     template: `
         <p-toast position="top-center"></p-toast>
+        <p-confirmDialog></p-confirmDialog>
 
         <!-- Delete Account Confirmation Dialog -->
         <p-dialog
@@ -208,7 +209,7 @@ export class AccountSettings implements OnInit {
     private apiService = inject(ApiService);
     private tokenService = inject(TokenService);
     private messageService = inject(MessageService);
-    private feedback = inject(FeedbackService);
+    private confirmationService = inject(ConfirmationService);
 
     user = this.tokenService.user;
     isSaving = signal(false);
@@ -340,23 +341,38 @@ export class AccountSettings implements OnInit {
         });
     }
 
-    async deleteAvatar(): Promise<void> {
-        // The copy here was hardcoded French; it now goes through i18n like
-        // every other confirm.
-        const ok = await this.feedback.confirm({
-            title: this.t('settings.account.photoRemoveTitle'),
-            message: this.t('settings.account.photoRemoveBody'),
-        });
-        if (!ok) return;
-        this.apiService.deleteAvatar().subscribe({
-            next: () => {
-                this.authService.getCurrentUser().subscribe({
-                    next: () => this.feedback.success(this.t('settings.account.photoRemovedDetail')),
+    deleteAvatar(): void {
+        this.confirmationService.confirm({
+            message: 'Supprimer votre photo de profil ?',
+            header: 'Confirmer la suppression',
+            icon: 'pi pi-exclamation-triangle',
+            acceptLabel: 'Supprimer',
+            rejectLabel: 'Annuler',
+            acceptButtonStyleClass: '!bg-negative !border-negative',
+            accept: () => {
+                this.apiService.deleteAvatar().subscribe({
+                    next: () => {
+                        this.authService.getCurrentUser().subscribe({
+                            next: () => {
+                                this.messageService.add({
+                                    severity: 'success',
+                                    summary: this.t('common.success'),
+                                    detail: this.t('settings.account.photoRemovedDetail'),
+                                    life: 3000
+                                });
+                            }
+                        });
+                    },
+                    error: (error) => {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: this.t('common.error'),
+                            detail: error?.error?.detail || this.t('settings.account.photoRemoveFailed'),
+                            life: 5000
+                        });
+                    }
                 });
-            },
-            error: (error) => {
-                this.feedback.error(error?.error?.detail || this.t('settings.account.photoRemoveFailed'));
-            },
+            }
         });
     }
 

@@ -51,7 +51,8 @@ const USAGE_STALE_WINDOW: UsageStatus = {
     },
 } as unknown as UsageStatus;
 
-function setup(sub: SubscriptionStatus, usage: UsageStatus | null = null): SubscriptionSettings {
+function setup(sub: SubscriptionStatus, usage: UsageStatus | null = null,
+               queryParams: Record<string, string> = {}): SubscriptionSettings {
     const api = jasmine.createSpyObj<ApiService>('ApiService', [
         'getSubscription', 'getUsage', 'getPayments', 'getPlans',
     ]);
@@ -78,7 +79,7 @@ function setup(sub: SubscriptionStatus, usage: UsageStatus | null = null): Subsc
             provideRouter([]),
             { provide: ApiService, useValue: api },
             { provide: CurrencyService, useValue: cs },
-            { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({}) } } },
+            { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(queryParams) } } },
         ],
     });
     const fixture = TestBed.createComponent(SubscriptionSettings);
@@ -122,5 +123,42 @@ describe('SubscriptionSettings grace state', () => {
         expect(c.windowClosed(LAPSED_AT)).toBeTrue();
         expect(c.windowClosed('2099-01-01T00:00:00Z')).toBeFalse();
         expect(c.windowClosed(null)).toBeFalse();
+    });
+});
+
+/**
+ * PSP return leg (web-checkout round trip, no-IAP strategy): the hosted
+ * checkout redirects back here with ?payment=success|error. The banner is
+ * informational only — the plan still comes from the server — and the success
+ * copy tells the user the mobile app is already upgraded (no deep link).
+ */
+describe('SubscriptionSettings payment return banner', () => {
+    afterEach(() => TestBed.resetTestingModule());
+
+    it('no ?payment param: no banner', () => {
+        const c = setup(SUB_PREMIUM_LIVE);
+        expect(c.paymentBanner()).toBeNull();
+    });
+
+    it('?payment=success shows the success banner without touching the state machine', () => {
+        const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'success' });
+        expect(c.paymentBanner()).toBe('success');
+        expect(c.state()).toBe('active_prepaid');
+    });
+
+    it('?payment=error shows the quiet failure note', () => {
+        const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'error' });
+        expect(c.paymentBanner()).toBe('error');
+    });
+
+    it('an unknown outcome is ignored', () => {
+        const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'whatever' });
+        expect(c.paymentBanner()).toBeNull();
+    });
+
+    it('the banner is dismissible', () => {
+        const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'success' });
+        c.paymentBanner.set(null);
+        expect(c.paymentBanner()).toBeNull();
     });
 });

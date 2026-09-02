@@ -1,15 +1,16 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { ApiService } from '../../../core/services/api.service';
 import { BillingService } from '../../../core/services/billing.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PlanCheckoutSheet } from './plan-checkout-sheet';
-import { FeedbackService } from '../../../core/ui/feedback.service';
+import { APP_LINK_SUBSCRIPTION_SUCCESS, isMobileDevice, openInApp } from '../../../core/util/app-link';
 
 /**
  * Settings → Abonnement (S11 Phase 3). "Where am I, how much AI have I used,
@@ -21,13 +22,60 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 @Component({
     selector: 'app-settings-subscription',
     standalone: true,
-    imports: [CommonModule, RouterModule, ButtonModule, ToastModule, PlanCheckoutSheet],
-    providers: [MessageService],
+    imports: [CommonModule, RouterModule, ButtonModule, ConfirmDialogModule, ToastModule, PlanCheckoutSheet],
+    providers: [ConfirmationService, MessageService],
     template: `
         <p-toast position="top-center" />
+        <p-confirmDialog [style]="{ width: '92vw', maxWidth: '420px' }" styleClass="!rounded-2xl" appendTo="body" />
         <app-plan-checkout-sheet [open]="sheetOpen()" (openChange)="sheetOpen.set($event)" [tier]="sheetTier()" />
 
         <div class="max-w-2xl mx-auto pb-12">
+
+            <!-- ═══════ PSP RETURN BANNER (?payment=success|error) ═══════
+                 The hosted checkout lands back here. The redirect decides
+                 NOTHING (webhook/confirm-only grants), so the banner speaks
+                 about the round trip, not the entitlement: success tells the
+                 user the mobile app already reflects the tier from our
+                 backend (no deep link needed), error stays quiet and factual. -->
+            @if (paymentBanner(); as banner) {
+                <div role="status" class="flex items-start gap-3 rounded-2xl px-4 py-3.5 mb-5 border"
+                     [ngClass]="banner === 'success'
+                        ? 'bg-positive/10 border-positive/25 text-surface-900 dark:text-surface-0'
+                        : 'bg-surface-0 dark:bg-surface-900/50 border-surface-200 dark:border-surface-800 text-surface-900 dark:text-surface-0'">
+                    <span class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                          [ngClass]="banner === 'success' ? 'bg-positive/15 text-positive' : 'bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400'">
+                        <i class="pi !text-sm" [ngClass]="banner === 'success' ? 'pi-check' : 'pi-info-circle'" aria-hidden="true"></i>
+                    </span>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[14.5px] font-semibold leading-snug">
+                            {{ t(banner === 'success' ? 'subscription.payment.successTitle' : 'subscription.payment.errorTitle') }}
+                        </div>
+                        <div class="text-[12.5px] text-surface-600 dark:text-surface-300 mt-0.5 leading-relaxed">
+                            {{ t(banner === 'success' ? 'subscription.payment.successBody' : 'subscription.payment.errorBody') }}
+                        </div>
+                        <!-- On a phone the browser can hand back to the app (omaad://
+                             scheme); a custom scheme cannot detect the app, so a
+                             still-visible page after the attempt gets the plain hint. -->
+                        @if (banner === 'success' && onMobile()) {
+                            <button type="button" (click)="openApp()" [disabled]="openingApp()"
+                                    class="omaad-press mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ochre-500 hover:bg-ochre-400 text-warm-900 text-[13px] font-bold transition-colors disabled:opacity-70">
+                                <i class="pi !text-xs" [ngClass]="openingApp() ? 'pi-spin pi-spinner' : 'pi-mobile'" aria-hidden="true"></i>
+                                {{ t('subscription.payment.openApp') }}
+                            </button>
+                            @if (openAppFailed()) {
+                                <p role="status" class="mt-2 text-[12px] text-surface-500 dark:text-surface-400 leading-relaxed">
+                                    {{ t('subscription.payment.openAppHint') }}
+                                </p>
+                            }
+                        }
+                    </div>
+                    <button type="button" (click)="paymentBanner.set(null)"
+                            class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                            [attr.aria-label]="t('subscription.payment.dismiss')">
+                        <i class="pi pi-times !text-xs" aria-hidden="true"></i>
+                    </button>
+                </div>
+            }
 
             @if (state() === 'loading') {
                 <div class="rounded-3xl h-44 bg-surface-100 dark:bg-surface-800/60 animate-pulse mb-5"></div>
@@ -327,7 +375,8 @@ export class SubscriptionSettings implements OnInit {
     private i18n = inject(I18nService);
     private api = inject(ApiService);
     private router = inject(Router);
-    private feedback = inject(FeedbackService);
+    private route = inject(ActivatedRoute);
+    private confirm = inject(ConfirmationService);
     private toast = inject(MessageService);
     private cs = inject(CurrencyService);
     protected billing = inject(BillingService);
@@ -336,10 +385,30 @@ export class SubscriptionSettings implements OnInit {
     sheetOpen = signal(false);
     sheetTier = signal<'pro' | 'premium'>('premium');
 
+    /** The PSP return banner (?payment=success|error), dismissible. Null = no
+     *  round trip landed on this open. */
+    paymentBanner = signal<'success' | 'error' | null>(null);
+    readonly onMobile = signal(false);
+    readonly openingApp = signal(false);
+    readonly openAppFailed = signal(false);
+
+    async openApp(): Promise<void> {
+        if (this.openingApp()) return;
+        this.openingApp.set(true);
+        this.openAppFailed.set(false);
+        const switched = await openInApp(APP_LINK_SUBSCRIPTION_SUCCESS);
+        this.openingApp.set(false);
+        if (!switched) this.openAppFailed.set(true);
+    }
+
     readonly state = this.billing.state;
     readonly subscription = this.billing.subscription;
     readonly usage = this.billing.usage;
     readonly payments = this.billing.payments;
+
+    /** Webhook lag after a successful return: one more refresh so the hero
+     *  catches a grant that landed a few seconds after the redirect. */
+    private static readonly RETURN_RECHECK_MS = 4000;
 
     ngOnInit(): void {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
@@ -348,6 +417,25 @@ export class SubscriptionSettings implements OnInit {
         // out-of-band (a webhook grant, a renewal, an expiry cron), so a stale
         // cache would misreport the plan. Cheap, and correct.
         this.billing.load(true);
+        this.readPaymentReturn();
+    }
+
+    /** PayDunya/Bictorys redirect back to this page with ?payment=…; the
+     *  param is consumed once (stripped from the URL so a reload or a share
+     *  does not replay the banner) and never used to decide the plan. */
+    private readPaymentReturn(): void {
+        const outcome = this.route.snapshot.queryParamMap.get('payment');
+        if (outcome !== 'success' && outcome !== 'error') return;
+        this.paymentBanner.set(outcome);
+        this.onMobile.set(isMobileDevice());
+        this.router.navigate([], {
+            queryParams: { payment: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        }).catch(() => { /* URL cosmetics only */ });
+        if (outcome === 'success') {
+            setTimeout(() => this.billing.load(true), SubscriptionSettings.RETURN_RECHECK_MS);
+        }
     }
 
     planLabel(): string {
@@ -502,25 +590,26 @@ export class SubscriptionSettings implements OnInit {
         this.sheetOpen.set(true);
     }
 
-    async confirmCancel(): Promise<void> {
-        const ok = await this.feedback.confirm({
-            title: this.t('subscription.cancelConfirm.title'),
+    confirmCancel(): void {
+        this.confirm.confirm({
+            header: this.t('subscription.cancelConfirm.title'),
             message: this.t('subscription.cancelConfirm.message'),
-            confirmLabel: this.t('subscription.cancelConfirm.accept'),
-            // Not a delete: a cancellation keeps the account and the paid
-            // period. The default trash medallion said the opposite.
-            icon: 'pi-times-circle',
+            acceptLabel: this.t('subscription.cancelConfirm.accept'),
+            rejectLabel: this.t('common.cancel'),
+            acceptButtonStyleClass: 'p-button-danger',
+            accept: () => this.doCancel(),
         });
-        if (ok) this.doCancel();
     }
 
     private doCancel(): void {
         this.api.cancelSubscription().subscribe({
             next: () => {
                 this.billing.refresh();
-                this.feedback.success(this.t('subscription.cancelConfirm.doneBody'));
+                this.toast.add({ severity: 'success', summary: this.t('subscription.cancelConfirm.doneTitle'), detail: this.t('subscription.cancelConfirm.doneBody'), life: 4000 });
             },
-            error: () => this.feedback.error(this.t('subscription.cancelConfirm.error')),
+            error: () => {
+                this.toast.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('subscription.cancelConfirm.error'), life: 4000 });
+            },
         });
     }
 
