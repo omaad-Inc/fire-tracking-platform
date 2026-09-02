@@ -13,6 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { AuthService } from './app/core/services/auth.service';
 import { TokenService } from './app/core/services/token.service';
+import { LanguageSyncService } from './app/core/services/language-sync.service';
 import { ERROR_REPORTER, EventsErrorReporter, GlobalErrorHandler } from './app/core/services/error-reporter';
 
 /**
@@ -137,6 +138,10 @@ export const appConfig: ApplicationConfig = {
             const i18n = inject(I18nService);
             return i18n.loadLang(i18n.lang());
         }),
+        // Persist in-app language switches on the profile (P3-1). Instantiated
+        // here so its effect watches the lang signal from the first render;
+        // it is a no-op during prerender and while signed out.
+        provideAppInitializer(() => { inject(LanguageSyncService); }),
         // Kick (do NOT await) the cookie session restore at bootstrap when the
         // device has a session hint, so the /auth/refresh round-trip overlaps
         // JS boot + route activation instead of serializing after them. The
