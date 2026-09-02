@@ -2975,6 +2975,28 @@ export const EN: Dict = {
     appDesc: ': track your wealth and your path to FIRE.',
   },
 
+  // Weekly recap (P2-4): the in-app view of the Monday recap.
+  weeklyReport: {
+    title: 'Weekly recap',
+    subtitle: 'Your week in numbers',
+    netSavings: 'Net savings this week',
+    savingsRate: 'Savings rate: {{pct}}',
+    income: 'Income',
+    expenses: 'Expenses',
+    netWorth: 'Net worth',
+    fireProgress: 'FIRE progress: {{pct}}',
+    topExpenses: 'Top spending',
+    goals: 'Your goals',
+    footnote: 'The last 7 completed days. Net worth and FIRE progress are the picture as of now.',
+    emptyTitle: 'Your first recap is waiting',
+    emptyBody: 'Add an asset or a transaction and every Monday you will get your week in numbers: savings, spending, FIRE progress.',
+    addAsset: 'Add an asset',
+    proTitle: 'The weekly recap is included with Pro',
+    proBody: 'Every Monday, your week in numbers: net savings, spending, net worth and FIRE progress, in the app and by email.',
+    proCta: 'Discover Pro',
+    open: 'See the latest recap',
+  },
+
   // Markets (P2-3): BRVM, UEMOA funds, currencies. The exchange's own figures,
   // in FCFA or points, never converted.
   markets: {

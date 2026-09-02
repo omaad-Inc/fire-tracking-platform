@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { SwPush } from '@angular/service-worker';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { SelectModule } from 'primeng/select';
@@ -8,6 +9,7 @@ import { DividerModule } from 'primeng/divider';
 
 import { firstValueFrom } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 import { ApiService, NotificationPreferences, PushDevice } from '../../../core/services/api.service';
 import { FeedbackService } from '../../../core/ui/feedback.service';
 
@@ -20,7 +22,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 @Component({
     selector: 'app-settings-notifications',
     standalone: true,
-    imports: [CommonModule, FormsModule, ToggleSwitchModule, SelectModule, DividerModule],
+    imports: [CommonModule, FormsModule, RouterLink, ToggleSwitchModule, SelectModule, DividerModule],
     template: `
         <div class="px-1">
 
@@ -165,6 +167,12 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                     <div class="min-w-0">
                         <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-weekly-label">{{ t('settings.notifs.weeklyReport') }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.weeklyReportDesc') }}</p>
+                        <!-- P2-4: the recap also lives in the app; the link is the
+                             discoverable path for someone who never opens the email. -->
+                        <a [routerLink]="nav.link('pages', 'reports', 'weekly')" data-testid="notif-weekly-open"
+                           class="inline-flex items-center gap-1 mt-1 text-sm font-semibold text-ochre-600 dark:text-ochre-300 hover:underline">
+                            {{ t('weeklyReport.open') }}<i class="pi pi-arrow-right text-[10px]" aria-hidden="true"></i>
+                        </a>
                     </div>
                     <p-toggleswitch [ngModel]="prefs().signal_weekly_report"
                                     (onChange)="save({ signal_weekly_report: $event.checked })"
@@ -216,6 +224,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 })
 export class NotificationsSettings implements OnInit {
     private i18n = inject(I18nService);
+    protected nav = inject(NavService);
     private feedback = inject(FeedbackService);
     private api = inject(ApiService);
     private swPush = inject(SwPush);

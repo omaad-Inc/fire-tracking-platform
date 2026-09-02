@@ -242,6 +242,34 @@ export interface BrvmTickerHistoryResponse { ticker: string; name: string; point
 export interface FcpVlHistoryPoint { as_of: string; vl_xof: number; }
 export interface FcpVlHistoryResponse { slug: string; name: string; points: FcpVlHistoryPoint[]; }
 
+// ── Weekly recap (P2-4): the bundle the Monday email renders, Pro-gated ──────
+// Every money value is PRE-FORMATTED by the backend in the user's display
+// currency (report_service.build_weekly_report), so the page does no money
+// math and must mask these strings itself under privacy mode.
+export interface WeeklyReportBundle {
+    meta: {
+        period: string;             // ISO week, e.g. '2026-W36'
+        period_label: string;       // localized "Semaine du 26/08 au 01/09/2026"
+        range_start: string;
+        range_end: string;
+        lang: string;
+        currency: string;
+        user_name: string;
+        generated_at: string;
+    };
+    summary: {
+        net_worth: string;
+        income: string;
+        expenses: string;
+        net_savings: string;
+        savings_rate: number;       // percent
+        fire_progress: number | null;
+    };
+    top_expenses: Array<{ category: string; amount: string }>;
+    goals: Array<{ name: string; current: string; target: string; pct: number }>;
+    has_content: boolean;
+}
+
 export interface TontineCycleView {
     cycle_number: number;
     due_date: string;
@@ -1363,6 +1391,14 @@ export class ApiService {
     /** Stored VL series for one fund; VLs publish weekly so the series is sparse. */
     getFcpVlHistory(slug: string): Observable<FcpVlHistoryResponse> {
         return this.http.get<FcpVlHistoryResponse>(`${this.apiUrl}/market/fcp/instruments/${encodeURIComponent(slug)}/history`);
+    }
+
+    // ========== WEEKLY RECAP (P2-4) ==========
+    /** The last completed 7 days (window ending yesterday), Pro-gated: a free
+     *  user gets 403 {code: 'PLAN_REQUIRED'}, which the page turns into an
+     *  upsell, never an error state. */
+    getWeeklyReport(): Observable<WeeklyReportBundle> {
+        return this.http.get<WeeklyReportBundle>(`${this.apiUrl}/reports/weekly`);
     }
 
     // ========== TONTINE CYCLES ==========

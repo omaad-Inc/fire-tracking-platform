@@ -17,7 +17,7 @@ import { cachedResource } from '../util/cached-resource';
  * (backend/app/services/notification_service.py), i.e. it holds FLUTTER
  * go_router paths: "/transactions", "/goals", "/reports/weekly". Those are not
  * web routes — the web equivalent of "/transactions" is "/pages/transaction"
- * (SINGULAR) and "/reports/weekly" has no web page at all yet. Navigating
+ * (SINGULAR) and of "/reports/weekly" is "/pages/reports/weekly". Navigating
  * `link` verbatim therefore lands the user on /notfound.
  *
  * So the web resolves its own destination from `kind`, never by string-matching
@@ -51,17 +51,15 @@ export interface NotifWebRoute {
  * real tab (`?view=budgets`, see transaction.ts), so the tap lands on the
  * actual budget the alert is about.
  *
- * `weekly_report` has no web surface until P2 ships `GET /reports/weekly` as a
- * page; until then it falls back to the dashboard (the closest summary the web
- * has) rather than a dead tap. When that page lands, this is the ONE line to
- * change.
+ * `weekly_report` lands on the in-app recap (P2-4, /pages/reports/weekly), the
+ * same bundle the Monday email renders.
  */
 export const NOTIF_WEB_ROUTES: Record<NotifKind, NotifWebRoute> = {
     budget:           { segments: ['pages', 'transaction'], queryParams: { view: 'budgets' } },
     tontine:          { segments: ['pages', 'patrimoine'] },
     milestone:        { segments: ['pages', 'goals'] },
     custom_rule:      { segments: [] },                       // dashboard
-    weekly_report:    { segments: [] },                       // P2: ['pages', 'reports', 'weekly']
+    weekly_report:    { segments: ['pages', 'reports', 'weekly'] },
     renewal_reminder: { segments: ['pages', 'settings', 'subscription'] },
 };
 

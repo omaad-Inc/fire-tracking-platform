@@ -2975,6 +2975,29 @@ export const FR = {
     appDesc: ': suis ton patrimoine et ton chemin vers FIRE.',
   },
 
+  // Bilan hebdomadaire (P2-4) : la vue in-app du récap du lundi. Voix "vous",
+  // comme l'email.
+  weeklyReport: {
+    title: 'Bilan hebdo',
+    subtitle: 'Votre semaine en chiffres',
+    netSavings: 'Épargne nette de la semaine',
+    savingsRate: 'Taux d\'épargne : {{pct}}',
+    income: 'Revenus',
+    expenses: 'Dépenses',
+    netWorth: 'Patrimoine net',
+    fireProgress: 'Progression FIRE : {{pct}}',
+    topExpenses: 'Principaux postes de dépense',
+    goals: 'Vos objectifs',
+    footnote: 'Les 7 derniers jours complets. Le patrimoine et la progression FIRE sont la photo du moment.',
+    emptyTitle: 'Votre premier bilan vous attend',
+    emptyBody: 'Ajoutez un actif ou une transaction et chaque lundi vous recevrez votre semaine en chiffres : épargne, dépenses, cap FIRE.',
+    addAsset: 'Ajouter un actif',
+    proTitle: 'Le bilan hebdomadaire est inclus avec Pro',
+    proBody: 'Chaque lundi, votre semaine en chiffres : épargne nette, dépenses, patrimoine et cap FIRE, dans l\'app et par email.',
+    proCta: 'Découvrir Pro',
+    open: 'Voir le dernier bilan',
+  },
+
   // Marchés (P2-3): BRVM, fonds UEMOA, devises. Chiffres de la place, en FCFA
   // ou en points, jamais convertis. Voix : "vous" implicite, factuelle.
   markets: {

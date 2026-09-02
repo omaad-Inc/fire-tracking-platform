@@ -76,8 +76,15 @@ async function login(page: Page): Promise<void> {
  * carries its own hint rather than the product being bent around it.
  */
 async function pinSession(page: Page): Promise<void> {
+    // The profile is persisted by the /auth/me follow-up, a beat after the
+    // redirect away from /auth/login, so wait for it rather than read once.
+    await expect
+        .poll(() => page.evaluate(() => localStorage.getItem('omaad_user')), {
+            message: 'login did not persist a profile, cannot sweep',
+            timeout: 15_000,
+        })
+        .toBeTruthy();
     const user = await page.evaluate(() => localStorage.getItem('omaad_user'));
-    expect(user, 'login did not persist a profile, cannot sweep').toBeTruthy();
     await page.addInitScript(
         ([u]) => {
             localStorage.setItem('omaad_privacy_hidden', 'true');
@@ -133,6 +140,9 @@ const PAGES = [
     ['goals', '/fr/pages/goals'],
     ['insights', '/fr/pages/insights'],
     ['debts', '/fr/pages/debts'],
+    // P2-4: money arrives PRE-FORMATTED from the backend here, so the page must
+    // mask it itself; this is exactly the bypass this sweep exists to catch.
+    ['weekly-report', '/fr/pages/reports/weekly'],
 ] as const;
 
 test.describe('privacy mode', () => {

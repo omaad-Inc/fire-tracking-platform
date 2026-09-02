@@ -39,6 +39,9 @@ export default [
     { path: 'marches/action/:id', data: { kind: 'stock' }, loadComponent: () => import('./marches/instrument-detail-page').then(m => m.InstrumentDetailPage) },
     { path: 'marches/fonds/:id', data: { kind: 'fund' }, loadComponent: () => import('./marches/instrument-detail-page').then(m => m.InstrumentDetailPage) },
     { path: 'marches/indice/:id', data: { kind: 'index' }, loadComponent: () => import('./marches/instrument-detail-page').then(m => m.InstrumentDetailPage) },
+    // Weekly recap (P2-4): the in-app view the Monday push and the inbox
+    // deep-link to (NOTIF_WEB_ROUTES.weekly_report).
+    { path: 'reports/weekly', loadComponent: () => import('./reports/weekly-report-page').then(m => m.WeeklyReportPage) },
     // S12: the ONE chat surface, dark-shipped behind featureFlags.aiChat.
     { path: 'assistant', canMatch: [aiChatGuard], loadComponent: () => import('./assistant/assistant-page').then(m => m.AssistantPage) },
     { path: 'settings', loadChildren: () => import('./settings/settings.routes') },
