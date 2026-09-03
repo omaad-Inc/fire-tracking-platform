@@ -12,9 +12,6 @@ export interface PatrimoineAssetItemDto {
     name: string;
     value: number;          // EUR base
     currency: string;       // native currency of the asset
-    /** As stored, in `currency`: the figure the user typed or the market gave.
-     *  Never converted; the desktop table shows it next to the display value. */
-    nativeValue: number;
     category: string;
     deltaAbs?: number;
     deltaPct?: number;
@@ -162,7 +159,6 @@ export class PatrimoineService {
             name: asset.name,
             value: valueEur,
             currency: asset.currency || 'EUR',
-            nativeValue: asset.current_value,
             category: asset.category,
             deltaAbs: Math.round(deltaAbs * 100) / 100,
             deltaPct: Math.round(deltaPct * 100) / 100,

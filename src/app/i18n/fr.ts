@@ -1551,18 +1551,6 @@ export const FR = {
       title: 'Actifs',
       addFirst: 'Ajoutez votre premier actif',
     },
-    table: {
-      category: 'Catégorie',
-      institution: 'Établissement',
-      native: 'Valeur d\'origine',
-      currency: 'Devise',
-      value: 'Valeur ({{cur}})',
-      change: 'Variation',
-      search: 'Rechercher un actif',
-      countOne: '{{n}} actif',
-      countMany: '{{n}} actifs',
-      noMatch: 'Aucun actif ne correspond',
-    },
     stats: {
       assetsCount: 'Nombre d\'actifs',
       globalSavingsRate: 'Taux d\'épargne global',

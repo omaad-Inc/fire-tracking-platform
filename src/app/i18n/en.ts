@@ -1553,18 +1553,6 @@ export const EN: Dict = {
       title: 'Assets',
       addFirst: 'Add your first asset',
     },
-    table: {
-      category: 'Category',
-      institution: 'Institution',
-      native: 'Original value',
-      currency: 'Currency',
-      value: 'Value ({{cur}})',
-      change: 'Change',
-      search: 'Search assets',
-      countOne: '{{n}} asset',
-      countMany: '{{n}} assets',
-      noMatch: 'No asset matches',
-    },
     stats: {
       assetsCount: 'Number of assets',
       globalSavingsRate: 'Global savings rate',

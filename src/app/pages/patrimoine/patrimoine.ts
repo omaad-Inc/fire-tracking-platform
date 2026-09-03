@@ -1,13 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { InputTextModule } from 'primeng/inputtext';
 import { Subscription } from 'rxjs';
 import { PatrimoineProgress } from './components/patrimoineprogress';
-import { AssetsTable, AssetTableRow } from './components/assets-table';
-import { LG, mediaQuery } from '../../core/util/breakpoint';
-import { downloadCsv, toCsv } from '../../core/util/csv';
 import { AllocationDonutComponent } from './components/allocation-donut';
 import { AllocationTicksComponent } from './components/allocation-ticks';
 import { TooltipModule } from 'primeng/tooltip';
@@ -32,11 +27,6 @@ interface CategoryGroupCard {
     totalDeltaAbs: number;
     totalDeltaPct: number;
     assetCount: number;
-}
-
-/** Lowercase, accent-stripped, for the table search ("epargne" finds "Épargne"). */
-function fold(s: string): string {
-    return (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 // All asset groups share the same solid brand navy, the icon glyph
@@ -77,8 +67,8 @@ const GROUPS = [
     selector: 'app-patrimoine',
     standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [CommonModule, RouterLink, FormsModule, InputTextModule, PatrimoineProgress, AllocationDonutComponent, AllocationTicksComponent, TooltipModule,
-              AppAmountComponent, LoadErrorComponent, SectionHeaderComponent, UiCardComponent, AssetsTable],
+    imports: [CommonModule, RouterLink, PatrimoineProgress, AllocationDonutComponent, AllocationTicksComponent, TooltipModule,
+              AppAmountComponent, LoadErrorComponent, SectionHeaderComponent, UiCardComponent],
     template: `
         <div class="flex flex-col gap-4 md:gap-6 lg:gap-8">
 
@@ -294,33 +284,6 @@ const GROUPS = [
                             <i class="pi pi-plus text-xs"></i>{{ i18n.t('patrimoine.addFirstAsset') }}
                         </button>
                     </div>
-                } @else if (isWide()) {
-                    <!-- Desktop power (P3-4): every asset as a sortable row, the
-                         category groups stay the phone's view. A signal gate, not a
-                         hidden/lg:block pair, so only one of the two is ever built. -->
-                    <div class="flex items-center gap-2 mb-3" data-testid="assets-toolbar">
-                        <div class="relative w-72 max-w-full">
-                            <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400 text-sm pointer-events-none" aria-hidden="true"></i>
-                            <input pInputText type="search" [ngModel]="assetSearch()" (ngModelChange)="assetSearch.set($event)"
-                                   [placeholder]="i18n.t('patrimoine.table.search')" [attr.aria-label]="i18n.t('patrimoine.table.search')"
-                                   data-testid="assets-search"
-                                   class="w-full !pl-9 !py-2 !rounded-xl !text-sm" />
-                        </div>
-                        <div class="flex-1"></div>
-                        <span class="text-xs text-surface-400 dark:text-surface-500 tabular-nums" data-testid="assets-count">
-                            {{ tableRows().length === 1
-                                ? i18n.t('patrimoine.table.countOne', { n: tableRows().length })
-                                : i18n.t('patrimoine.table.countMany', { n: tableRows().length }) }}
-                        </span>
-                        <button type="button" (click)="exportCsv()" [disabled]="!tableRows().length" data-testid="assets-export"
-                                class="px-3 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5
-                                       bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200
-                                       hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors
-                                       disabled:opacity-40 disabled:cursor-not-allowed">
-                            <i class="pi pi-download text-[10px]" aria-hidden="true"></i>{{ i18n.t('common.export') }}
-                        </button>
-                    </div>
-                    <app-assets-table [rows]="tableRows()" (open)="openAsset($event)" />
                 } @else {
                     <div class="space-y-3">
                         @for (group of categoryGroups(); track group.id) {
@@ -447,69 +410,6 @@ export class Patrimoine implements OnInit, OnDestroy {
     });
 
     totalAssets = computed(() => this.allAssets().reduce((s, a) => s + a.value, 0));
-
-    // ── Desktop power table (P3-4) ────────────────────────────────
-    /** ≥lg renders the assets table, below it the category groups. */
-    readonly isWide = mediaQuery(LG);
-    assetSearch = signal('');
-
-    /** Flat view-model rows: labels and icons resolved here (the table sorts
-     *  plain fields), filtered by the search box on name, category, institution. */
-    tableRows = computed<AssetTableRow[]>(() => {
-        const q = fold(this.assetSearch());
-        return this.allAssets()
-            .map(a => {
-                const group = GROUPS.find(g => g.categories.includes(a.category ?? ''));
-                return {
-                    dto: a,
-                    id: a.id,
-                    name: a.name,
-                    category: a.category,
-                    catLabel: this.assetCategoryLabel(a.category),
-                    icon: group?.icon ?? 'pi pi-box',
-                    institution: a.institution ?? '',
-                    currency: (a.currency || 'EUR').toUpperCase(),
-                    nativeValue: a.nativeValue,
-                    value: a.value,
-                    deltaAbs: a.deltaAbs ?? 0,
-                    deltaPct: a.deltaPct ?? 0,
-                } satisfies AssetTableRow;
-            })
-            .filter(r => !q || fold(r.name).includes(q) || fold(r.catLabel).includes(q) || fold(r.institution).includes(q));
-    });
-
-    private assetCategoryLabel(cat: string): string {
-        const key = 'assetCategories.' + cat;
-        const label = this.i18n.t(key);
-        return label === key ? cat : label;
-    }
-
-    openAsset(row: AssetTableRow): void {
-        this.nav.go('pages', 'patrimoine', 'assets', row.id);
-    }
-
-    /** Client-side export of the rows on screen (P1-2 rule: no backend params). */
-    exportCsv(): void {
-        const rows = this.tableRows();
-        if (!rows.length) return;
-        const cur = this.currencyService.currencyCode();
-        const head = [
-            this.i18n.t('common.name'),
-            this.i18n.t('patrimoine.table.category'),
-            this.i18n.t('patrimoine.table.institution'),
-            this.i18n.t('patrimoine.table.native'),
-            this.i18n.t('patrimoine.table.currency'),
-            `${this.i18n.t('common.amount')} (${cur})`,
-            `${this.i18n.t('patrimoine.table.change')} (%)`,
-        ];
-        const body = rows.map(r => [
-            r.name, r.catLabel, r.institution,
-            r.nativeValue.toFixed(2), r.currency,
-            this.currencyService.convert(r.value).toFixed(2),
-            r.deltaPct.toFixed(2),
-        ]);
-        downloadCsv(`omaad-actifs-${new Date().toISOString().slice(0, 10)}.csv`, toCsv([head, ...body]));
-    }
     // Debts are stored in their native currency, convert to EUR base to sum.
     totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe')
         .reduce((s, d) => s + this.currencyService.toEurFromNative(d.current_amount, d.currency), 0));
