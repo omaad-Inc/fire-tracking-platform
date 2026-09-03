@@ -53,6 +53,12 @@ describe('LanguageSyncService', () => {
         updateProfile = d => of({ ...demo, ...d } as User);
     });
 
+    // The real setLang() writes `omaad_lang` to localStorage. Karma runs every
+    // spec in ONE browser, so a leaked 'en' made a later spec's I18nService boot
+    // in EN with only the FR dictionary loaded (t() returned raw keys, the
+    // onboarding nudge spec failed depending on the random spec order).
+    afterEach(() => localStorage.removeItem('omaad_lang'));
+
     it('does not persist the language the app booted in', fakeAsync(() => {
         boot('en'); // localStorage / URL said EN while the profile says FR
         tick(LANGUAGE_SYNC_DEBOUNCE_MS + 1);
