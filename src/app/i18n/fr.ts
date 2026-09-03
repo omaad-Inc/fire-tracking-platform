@@ -1038,6 +1038,8 @@ export const FR = {
     notifs: {
       title: 'Notifications',
       subtitle: 'Choisissez ce que Omaad peut vous envoyer. Rien n\'est activé par défaut.',
+      inbox: 'Boîte de réception',
+      inboxDesc: 'Toutes vos alertes et rappels, même ceux que vous avez balayés',
       email: 'Alertes par email',
       emailDesc: 'Un récapitulatif par email quand quelque chose mérite votre attention',
       push: 'Notifications push',

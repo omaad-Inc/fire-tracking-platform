@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NavService } from '../../../core/services/nav.service';
 import { ApiService, NotificationPreferences, PushDevice } from '../../../core/services/api.service';
+import { NotificationCenterService } from '../../../core/services/notification-center.service';
 import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
@@ -28,6 +29,28 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
 
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.notifs.subtitle') }}</p>
+
+            <!-- Inbox entry (the topbar bell is gone). Same flat-row idiom as the
+                 channel rows below, with the unread count where the toggle sits. -->
+            <a [routerLink]="nav.link('pages', 'notifications')"
+               data-testid="notif-inbox-link"
+               class="flex items-center justify-between gap-4 py-4 -mt-2 mb-4 border-b border-surface-200 dark:border-surface-800 no-underline group">
+                <div class="min-w-0 flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-full grid place-items-center shrink-0 bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200">
+                        <i class="pi pi-inbox" aria-hidden="true"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.notifs.inbox') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.inboxDesc') }}</p>
+                    </div>
+                </div>
+                <span class="flex items-center gap-2 shrink-0">
+                    @if (inbox.unreadCount() > 0) {
+                        <span class="min-w-[1.25rem] h-5 px-1.5 rounded-full grid place-items-center bg-ochre-500 text-warm-900 text-[11px] font-bold leading-none">{{ inbox.unreadCount() > 9 ? '9+' : inbox.unreadCount() }}</span>
+                    }
+                    <i class="pi pi-chevron-right text-surface-400 group-hover:text-surface-600 dark:group-hover:text-surface-200 transition-colors" aria-hidden="true"></i>
+                </span>
+            </a>
 
             <!-- Cold start only (empty cache): show a shaped skeleton so we never
                  paint a toggle in the wrong position while the first fetch lands.
@@ -228,6 +251,9 @@ export class NotificationsSettings implements OnInit {
     private feedback = inject(FeedbackService);
     private api = inject(ApiService);
     private swPush = inject(SwPush);
+    /** The inbox lost its topbar bell (PWA topbar diet); on a phone this
+     *  section is the way in, with the unread count the bell used to carry. */
+    protected inbox = inject(NotificationCenterService);
 
     // Seed synchronously from the last-known cache so the real toggle states
     // paint on the first frame (flash-free). `loading` is the skeleton gate and
@@ -271,6 +297,8 @@ export class NotificationsSettings implements OnInit {
     });
 
     ngOnInit() {
+        // Unread count for the inbox row (cache-or-fetch, TTL-guarded).
+        this.inbox.ensureLoaded();
         // Revalidate in the background. Warm start: cached values are already on
         // screen, so this silently reconciles. Cold start: this fills the
         // skeleton. Either way, don't overwrite an edit the user just made.

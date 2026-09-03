@@ -1040,6 +1040,8 @@ export const EN: Dict = {
     notifs: {
       title: 'Notifications',
       subtitle: 'Choose what Omaad may send you. Nothing is enabled by default.',
+      inbox: 'Inbox',
+      inboxDesc: 'Every alert and reminder, including the ones you swiped away',
       email: 'Email alerts',
       emailDesc: 'An email digest when something needs your attention',
       push: 'Push notifications',

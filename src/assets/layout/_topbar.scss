@@ -81,8 +81,10 @@
         gap: 1rem;
     }
 
+    // Visibility belongs to the template (`hidden lg:flex`, desktop only).
+    // A `display: flex` here outranked Tailwind's `.hidden` and put the
+    // search + theme buttons on every phone (PWA topbar diet, step 2).
     .layout-config-menu {
-        display: flex;
         gap: 1rem;
     }
 }
