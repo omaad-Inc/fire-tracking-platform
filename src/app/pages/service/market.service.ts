@@ -106,10 +106,23 @@ export class MarketService {
      *  survive, fall back to the last two of the full series so the chart never
      *  goes blank. `days <= 0` returns everything. */
     slice(points: SeriesPoint[], days: number): SeriesPoint[] {
-        if (days <= 0) return points;
+        return this.sliceInfo(points, days).points;
+    }
+
+    /**
+     * The visible window, and whether it is really the one asked for (P3-7).
+     * When a window holds fewer than two points (a young series, or a quiet
+     * fund with sparse VLs) the chart still needs two points to draw, so the
+     * last two of the whole series stand in. That is right for the chart and
+     * wrong for a change line labelled "1 mois": the two dates may sit well
+     * outside the window. `fallback` lets the caller label the span it really
+     * compares instead of the period the user picked.
+     */
+    sliceInfo(points: SeriesPoint[], days: number): { points: SeriesPoint[]; fallback: boolean } {
+        if (days <= 0) return { points, fallback: false };
         const since = Date.now() - days * 86_400_000;
         const kept = points.filter(p => new Date(p.date).getTime() > since);
-        return kept.length >= 2 ? kept : points.slice(-2);
+        return kept.length >= 2 ? { points: kept, fallback: false } : { points: points.slice(-2), fallback: true };
     }
 
     /** Signed change over a visible slice, or null when there is nothing to compare. */

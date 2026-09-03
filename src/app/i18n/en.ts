@@ -3078,6 +3078,7 @@ export const EN: Dict = {
     pts: 'pts',
     period: { w1: '1W', m1: '1M', m6: '6M', y1: '1Y', max: 'Max' },
     periodLabel: 'Period',
+    sinceDate: 'since {{date}}',
     perf: 'Performance',
     perfYtd: 'since January',
     perf1y: '1 year',

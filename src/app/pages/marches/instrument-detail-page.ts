@@ -66,7 +66,7 @@ export type InstrumentKind = 'stock' | 'fund' | 'index';
                             {{ c.abs > 0 ? '+' : c.abs < 0 ? '−' : '' }}{{ fmt()(abs(c.abs)) }}
                         </span>
                         <app-market-change [percent]="c.pct" size="md" />
-                        <span class="text-surface-400 dark:text-surface-500">· {{ periodLabel() }}</span>
+                        <span class="text-surface-400 dark:text-surface-500" data-testid="mk-period">· {{ periodLabel() }}</span>
                     } @else {
                         <span class="text-surface-400 dark:text-surface-500">{{ caption() }}</span>
                     }
@@ -157,7 +157,8 @@ export class InstrumentDetailPage implements OnInit {
         this.kind() === 'index' ? (this.indices()?.indices ?? []).find(i => i.code === this.id()) ?? null : null);
     readonly name = signal('');
 
-    readonly visible = computed(() => this.market.slice(this.series() ?? [], this.days()));
+    readonly visibleInfo = computed(() => this.market.sliceInfo(this.series() ?? [], this.days()));
+    readonly visible = computed(() => this.visibleInfo().points);
     readonly change = computed(() => this.market.sliceChange(this.visible()));
     readonly tone = computed<'positive' | 'negative' | 'neutral'>(() => {
         const c = this.change();
@@ -195,7 +196,15 @@ export class InstrumentDetailPage implements OnInit {
         if (!last) return '';
         return this.t(this.kind() === 'fund' ? 'markets.vlOf' : 'markets.closeOf', { date: this.market.shortDate(last) });
     });
+    /** The span the change line really compares. When the window fell back to
+     *  the last two points (P3-7), name the first date instead of the period
+     *  the user picked: "+2,1 % · 1 mois" would be a lie about two sessions
+     *  weeks apart. */
     readonly periodLabel = computed(() => {
+        const { points, fallback } = this.visibleInfo();
+        if (fallback && points.length >= 2) {
+            return this.t('markets.sinceDate', { date: this.market.shortDate(points[0].date) });
+        }
         const d = this.days();
         const key = d === 7 ? 'w1' : d === 31 ? 'm1' : d === 183 ? 'm6' : d === 365 ? 'y1' : 'max';
         return this.t('markets.period.' + key);

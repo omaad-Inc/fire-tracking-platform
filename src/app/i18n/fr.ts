@@ -3079,6 +3079,7 @@ export const FR = {
     pts: 'pts',
     period: { w1: '1S', m1: '1M', m6: '6M', y1: '1A', max: 'Max' },
     periodLabel: 'Période',
+    sinceDate: 'depuis le {{date}}',
     perf: 'Performance',
     perfYtd: 'depuis janvier',
     perf1y: '1 an',
