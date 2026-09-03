@@ -5,7 +5,7 @@ import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
-import Aura from '@primeng/themes/aura';
+import { AuraLean } from './app/core/theme/aura-lean';
 import { definePreset } from '@primeng/themes';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
@@ -24,8 +24,11 @@ import { ERROR_REPORTER, EventsErrorReporter, GlobalErrorHandler } from './app/c
  * Defining the preset's primary palette is the only reliable way to make
  * every PrimeNG component (buttons, focus rings, links, sliders, the active
  * sidebar menu item) inherit our Midnight Navy.
+ *
+ * Built on AuraLean, not Aura: the same tokens, only for the components the
+ * app renders (P3-2, see core/theme/aura-lean.ts and `npm run theme:guard`).
  */
-const OmaadPreset = definePreset(Aura, {
+const OmaadPreset = definePreset(AuraLean, {
     semantic: {
         primary: {
             50:  '#EFF2F7',
