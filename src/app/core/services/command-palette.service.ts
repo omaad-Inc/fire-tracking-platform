@@ -10,12 +10,28 @@ import { Subject } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class CommandPaletteService {
     readonly open = signal(false);
+    /** Opened with `?`: the palette leads with the keyboard legend (P3-5). */
+    readonly legend = signal(false);
     /** Emitted when the user picks "add a transaction"; the shell owns the sheet. */
     readonly quickAddRequested = new Subject<void>();
 
-    show(): void { this.open.set(true); }
-    hide(): void { this.open.set(false); }
-    toggle(): void { this.open.update(v => !v); }
+    show(): void { this.legend.set(false); this.open.set(true); }
+    showHelp(): void { this.legend.set(true); this.open.set(true); }
+    hide(): void { this.open.set(false); this.legend.set(false); }
+    toggle(): void { if (this.open()) this.hide(); else this.show(); }
+
+    /**
+     * `?` outside an editable field opens the shortcut legend. Shift is part of
+     * typing `?` on most layouts, so only Ctrl/Alt/Meta disqualify; a field
+     * that takes text keeps its question marks.
+     */
+    static isHelpKey(ev: KeyboardEvent): boolean {
+        if (ev.key !== '?' || ev.ctrlKey || ev.altKey || ev.metaKey) return false;
+        const el = ev.target as HTMLElement | null;
+        if (!el) return true;
+        const tag = el.tagName;
+        return !(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable);
+    }
 
     /**
      * Cmd+K on Apple keyboards, Ctrl+K elsewhere: exactly that chord, nothing

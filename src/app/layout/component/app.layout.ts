@@ -54,11 +54,17 @@ import { CommandPaletteService } from '../../core/services/command-palette.servi
         @if (!share.active()) {
             @if (!immersive()) {
                 <app-fab (action)="onFabAction()"></app-fab>
-                <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
-                <!-- Command palette (P2-5): Cmd/Ctrl+K anywhere in the shell, or the
-                     topbar search button. Not in the share shell: it lists writes. -->
-                <app-command-palette />
-
+            }
+            <!-- Both are modals, so they render in immersive shells too (P3-5):
+                 Settings > Preferences opens the palette from a button, and the
+                 palette's "add a transaction" needs the sheet wherever it runs.
+                 The chord itself stays off in immersive routes (a wizard form
+                 owns the keyboard there); only the explicit openers work. -->
+            <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
+            <!-- Command palette (P2-5): Cmd/Ctrl+K anywhere in the shell, or the
+                 topbar search button. Not in the share shell: it lists writes. -->
+            <app-command-palette />
+            @if (!immersive()) {
                 <!-- S12: the teaser panel never renders once the real chat
                      surface (aiChat flag) is on; /assistant replaces it. -->
                 @if (!flags.aiChat()) {
@@ -225,10 +231,13 @@ export class AppLayout implements OnInit, OnDestroy {
      */
     @HostListener('document:keydown', ['$event'])
     onDocumentKeydown(ev: KeyboardEvent): void {
-        if (!CommandPaletteService.isChord(ev)) return;
+        const chord = CommandPaletteService.isChord(ev);
+        // `?` outside a field opens the palette on its keyboard legend (P3-5).
+        const help = !chord && !this.palette.open() && CommandPaletteService.isHelpKey(ev);
+        if (!chord && !help) return;
         if (this.share.active() || this.pinService.locked() || this.immersive()) return;
         ev.preventDefault();
-        this.palette.toggle();
+        if (help) this.palette.showHelp(); else this.palette.toggle();
     }
 
     /**

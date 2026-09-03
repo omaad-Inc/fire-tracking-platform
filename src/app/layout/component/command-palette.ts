@@ -13,8 +13,10 @@ import { PrivacyService } from '../../core/services/privacy.service';
 import { LayoutService } from '../service/layout.service';
 import { PatrimoineService } from '../../pages/service/patrimoine.service';
 import { SavingsService } from '../../pages/service/savings.service';
+import { TransactionsService } from '../../pages/service/transactions.service';
+import { CurrencyService } from '../../core/services/currency.service';
 
-type Group = 'recent' | 'navigation' | 'actions' | 'settings' | 'assets' | 'goals';
+type Group = 'legend' | 'recent' | 'navigation' | 'actions' | 'settings' | 'assets' | 'goals' | 'transactions';
 
 interface PaletteItem {
     id: string;
@@ -55,10 +57,14 @@ const RECENT_MAX = 5;
                   [style]="{ width: '95vw', maxWidth: '640px', marginTop: '8vh' }"
                   [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'"
                   styleClass="!rounded-2xl overflow-hidden omaad-palette" [showHeader]="false"
-                  (onShow)="onShow()" [attr.aria-label]="t('palette.title')">
+                  (onShow)="onShow()">
             <!-- The dialog body has no top padding once the header is hidden, so
-                 only the sides and the bottom are pulled back to the edge. -->
+                 only the sides and the bottom are pulled back to the edge.
+                 The visually hidden title is the first thing a screen reader meets;
+                 an aria-label on the p-dialog host (no role) was an
+                 aria-prohibited-attr violation on every serious-gated page. -->
             <div class="-mx-5 -mb-5 sm:-mx-6 sm:-mb-6" data-testid="palette">
+                <h2 id="palette-title" class="sr-only">{{ t('palette.title') }}</h2>
                 <!-- Search -->
                 <div class="flex items-center gap-3 px-4 h-14 border-b border-surface-200 dark:border-surface-800">
                     <i class="pi pi-search text-surface-400" aria-hidden="true"></i>
@@ -72,6 +78,23 @@ const RECENT_MAX = 5;
 
                 <!-- Results -->
                 <div id="palette-list" role="listbox" class="max-h-[60vh] overflow-y-auto py-2" data-testid="palette-list">
+                    @if (palette.legend() && !query()) {
+                        <!-- Opened with the question-mark key: the keyboard legend leads (P3-5).
+                             One chord and Enter, on purpose: letter chords fight typing in the box. -->
+                        <p class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 m-0">{{ t('palette.group.legend') }}</p>
+                        <ul class="px-4 pb-2 m-0 list-none" data-testid="palette-legend">
+                            @for (row of legendRows; track row.key) {
+                                <li class="flex items-center justify-between gap-3 py-1.5 text-sm text-surface-700 dark:text-surface-200">
+                                    <span>{{ t('palette.legend.' + row.key) }}</span>
+                                    <span class="flex items-center gap-1 shrink-0">
+                                        @for (k of row.keys; track k) {
+                                            <kbd class="px-1.5 py-0.5 rounded-md text-[11px] font-semibold text-surface-500 dark:text-surface-400 bg-surface-100 dark:bg-surface-800">{{ k }}</kbd>
+                                        }
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
                     @if (visible().length === 0) {
                         <p class="px-4 py-8 text-center text-sm text-surface-500 dark:text-surface-400">{{ t('palette.empty', { q: query() }) }}</p>
                     }
@@ -96,9 +119,25 @@ const RECENT_MAX = 5;
                         }
                     }
                 </div>
+
+                <!-- Footer legend, always there on a keyboard-sized screen: the per-row
+                     hint is the return key on the active row; the rest lives here. -->
+                <div class="hidden sm:flex items-center gap-4 px-4 h-9 border-t border-surface-200 dark:border-surface-800 text-[11px] text-surface-400 dark:text-surface-500"
+                     data-testid="palette-footer" aria-hidden="true">
+                    <span class="flex items-center gap-1"><kbd class="omaad-kbd">↑</kbd><kbd class="omaad-kbd">↓</kbd> {{ t('palette.legend.move') }}</span>
+                    <span class="flex items-center gap-1"><kbd class="omaad-kbd">↵</kbd> {{ t('palette.legend.run') }}</span>
+                    <span class="flex items-center gap-1"><kbd class="omaad-kbd">?</kbd> {{ t('palette.legend.help') }}</span>
+                    <span class="flex-1"></span>
+                    <span class="flex items-center gap-1"><kbd class="omaad-kbd">{{ shortcut }}</kbd> {{ t('palette.legend.open') }}</span>
+                </div>
             </div>
         </p-dialog>
     `,
+    styles: [`
+        .omaad-kbd { padding: 1px 5px; border-radius: 5px; font-size: 10px; font-weight: 600;
+                     background: var(--surface-100); color: var(--text-color-secondary); }
+        :host-context(.app-dark) .omaad-kbd { background: var(--surface-800); }
+    `],
 })
 export class CommandPalette {
     readonly palette = inject(CommandPaletteService);
@@ -110,6 +149,8 @@ export class CommandPalette {
     private layout = inject(LayoutService);
     private patrimoine = inject(PatrimoineService);
     private savings = inject(SavingsService);
+    private transactions = inject(TransactionsService);
+    private cs = inject(CurrencyService);
 
     @ViewChild('box') private box?: ElementRef<HTMLInputElement>;
     private opener: HTMLElement | null = null;
@@ -118,7 +159,18 @@ export class CommandPalette {
     readonly activeId = signal<string | null>(null);
     private readonly assets = signal<Array<{ id: number; name: string; category: string }>>([]);
     private readonly goals = signal<Array<{ id?: number; label: string }>>([]);
+    private readonly txs = signal<Array<{ id: string; name: string; date: string; category: string; account: string; amount: number; type: string }>>([]);
     private readonly recentIds = signal<string[]>(loadRecent());
+
+    readonly shortcut = CommandPaletteService.shortcutLabel();
+    /** The legend, keyed on palette.legend.*; one chord and Enter, no letter chords. */
+    readonly legendRows: ReadonlyArray<{ key: string; keys: string[] }> = [
+        { key: 'open', keys: [this.shortcut] },
+        { key: 'move', keys: ['↑', '↓'] },
+        { key: 'run', keys: ['↵'] },
+        { key: 'close', keys: ['Esc'] },
+        { key: 'help', keys: ['?'] },
+    ];
 
     t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
 
@@ -160,12 +212,31 @@ export class CommandPalette {
 
         // Search: assets and goals by name.
         for (const a of this.assets()) {
-            out.push({ id: 'asset:' + a.id, group: 'assets', label: a.name, hint: this.i18n.categoryLabel(a.category), icon: 'pi-box',
+            // Asset categories live in `assetCategories.*`, not the transaction
+            // `categories.*` dictionary: the latter returned raw keys here
+            // ("stocks_intl") and warned in dev on every open.
+            const catKey = 'assetCategories.' + a.category;
+            const catLabel = this.t(catKey);
+            out.push({ id: 'asset:' + a.id, group: 'assets', label: a.name, hint: catLabel === catKey ? a.category : catLabel, icon: 'pi-box',
                 keywords: a.category, run: () => this.go(['pages', 'patrimoine', 'assets', String(a.id)]) });
         }
         for (const g of this.goals()) {
             out.push({ id: 'goal:' + (g.id ?? g.label), group: 'goals', label: g.label, hint: this.t('menu.objectives'), icon: 'pi-bullseye',
                 run: () => g.id != null ? this.go(['pages', 'goals', String(g.id)]) : this.go(['pages', 'goals']) });
+        }
+        // Transactions (P3-5): from the SWR cache, matched on label, category and
+        // account. The hint carries the amount through cs.format(), which masks
+        // under privacy mode. Landing = the transactions page scoped to the
+        // month and pre-searched on the label (its own ?year&month&q params).
+        for (const x of this.txs()) {
+            const [y, m] = x.date.split('-');
+            const sign = x.type === 'Income' ? '+' : x.type === 'Expense' ? '-' : '';
+            out.push({
+                id: 'tx:' + x.id, group: 'transactions', label: x.name, icon: x.type === 'Income' ? 'pi-arrow-down-left' : x.type === 'Transfer' ? 'pi-arrow-right-arrow-left' : 'pi-arrow-up-right',
+                hint: `${x.date} · ${this.i18n.categoryLabel(x.category)} · ${sign}${this.cs.format(x.amount)}`,
+                keywords: `${x.category} ${this.i18n.categoryLabel(x.category)} ${x.account}`,
+                run: () => void this.router.navigate(this.nav.link('pages', 'transaction'), { queryParams: { year: Number(y), month: Number(m), q: x.name } }),
+            });
         }
         return out;
     });
@@ -179,21 +250,33 @@ export class CommandPalette {
             // twice would mark two rows active and break `track`.
             const recent = this.recentIds().map(id => items.find(i => i.id === id)).filter((i): i is PaletteItem => !!i)
                 .map(i => ({ ...i, id: 'recent:' + i.id, group: 'recent' as Group }));
-            // With no query: recents, then navigation and actions; assets and
-            // goals only appear once the user types (they can be many).
+            // With no query: recents, then navigation and actions; assets, goals
+            // and transactions only appear once the user types (they can be many).
             return [...recent, ...items.filter(i => i.group === 'navigation' || i.group === 'actions')];
         }
-        const scored = items.map(i => ({ i, s: score(fold(i.label + ' ' + (i.keywords ?? '') + ' ' + (i.hint ?? '')), q) }))
+        // Transactions match on label/category/account only: their hint holds a
+        // date and an amount, and "2026" or "500" must not surface every row.
+        const scored = items.map(i => ({ i, s: score(fold(i.label + ' ' + (i.keywords ?? '') + (i.group === 'transactions' ? '' : ' ' + (i.hint ?? ''))), q) }))
             .filter(x => x.s > 0).sort((a, b) => b.s - a.s);
+        // Transactions rank after everything else at equal score: a page or an
+        // asset called "Loyer" beats the 40 rent payments named the same.
+        const rank = (g: Group) => (g === 'transactions' ? 1 : 0);
+        scored.sort((a, b) => (b.s - a.s) || (rank(a.i.group) - rank(b.i.group)));
         return scored.slice(0, 40).map(x => x.i);
     });
 
     readonly sections = computed(() => {
-        const order: Group[] = ['recent', 'navigation', 'actions', 'settings', 'assets', 'goals'];
+        const order: Group[] = ['recent', 'navigation', 'actions', 'settings', 'assets', 'goals', 'transactions'];
         return order.map(group => ({ group, items: this.visible().filter(i => i.group === group) })).filter(s => s.items.length);
     });
 
     constructor() {
+        // Reset the box the moment the palette OPENS, not in onShow: onShow fires
+        // after the 320ms enter animation, and a user (or a test) who starts
+        // typing before that saw their first characters wiped.
+        effect(() => {
+            if (this.palette.open()) untracked(() => this.query.set(''));
+        });
         // Keep the active row valid whenever the list changes.
         effect(() => {
             const list = this.visible();
@@ -206,11 +289,16 @@ export class CommandPalette {
 
     onShow(): void {
         this.opener = (document.activeElement as HTMLElement | null);
-        this.query.set('');
         setTimeout(() => this.box?.nativeElement.focus(), 30);
         // Warm the searchable caches; both are SWR-cached, so a revisit is free.
         this.patrimoine.getAssets().then(rows => this.assets.set(rows.map(r => ({ id: r.id, name: r.name, category: String(r.category) })))).catch(() => {});
         this.savings.getGoals().then(rows => this.goals.set(rows.map(g => ({ id: g.id, label: g.label })))).catch(() => {});
+        // `name` on a record is the category's display name; what the user
+        // typed is `remarks`, the same fallback the transactions table uses.
+        this.transactions.getRecords().then(rows => this.txs.set(rows
+            .filter(r => r.id != null)
+            .map(r => ({ id: String(r.id), name: r.remarks || this.i18n.categoryLabel(r.category), date: r.date, category: r.category ?? '', account: r.accountName ?? '', amount: r.amount, type: r.type }))))
+            .catch(() => {});
     }
 
     setQuery(q: string): void { this.query.set(q); }
