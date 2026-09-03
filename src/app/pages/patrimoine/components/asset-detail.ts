@@ -4,8 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { firstValueFrom } from 'rxjs';
 import { ApiService, Asset, AssetHistory, BrvmHistory } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -27,13 +26,10 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
     selector: 'app-asset-detail',
     standalone: true,
     imports: [CommonModule, RouterModule, ButtonModule, TagModule, DividerModule,
-              ToastModule, AppAmountComponent, TontineCyclesComponent,
+              AppAmountComponent, TontineCyclesComponent,
               AssetEditDialogComponent],
-    providers: [MessageService],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <p-toast position="top-center" />
-
         @if (loading()) {
             <div class="animate-pulse space-y-6">
                 <div class="h-8 bg-surface-200 dark:bg-surface-700 rounded w-48"></div>
@@ -777,7 +773,6 @@ export class AssetDetailPage implements OnInit {
     private apiService = inject(ApiService);
     private stateService = inject(AssetsStateService);
     private feedback = inject(FeedbackService);
-    private messageService = inject(MessageService);
     readonly cs = inject(CurrencyService);
     readonly i18n = inject(I18nService);
     private privacy = inject(PrivacyService);
@@ -1379,7 +1374,7 @@ export class AssetDetailPage implements OnInit {
                 this.editDialog = false;
                 this.isSaving.set(false);
                 this.stateService.notifyAssetsUpdated();
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('assetDetail.updateSuccess'), life: 3000 });
+                this.feedback.success(this.t('assetDetail.updateSuccess'));
 
                 // Background re-fetch, keep locally-saved quantity if server hasn't propagated yet
                 this.apiService.getAsset(a.id).subscribe({
@@ -1393,7 +1388,7 @@ export class AssetDetailPage implements OnInit {
             },
             error: () => {
                 this.isSaving.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('assetDetail.updateError'), life: 4000 });
+                this.feedback.error(this.t('assetDetail.updateError'));
             }
         });
     }

@@ -17,7 +17,7 @@ import { NewsletterSignup } from './newsletter-signup';
                         <div class="col-span-12 lg:col-span-4">
                             <a [routerLink]="[currentLang, 'landing']" fragment="home" class="flex items-center gap-3 cursor-pointer mb-6 group no-underline">
                                 <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
-                                     class="w-12 h-12">
+                                     class="w-12 h-12" width="48" height="48" loading="lazy">
                                 <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad</span>
                             </a>
                             <p class="text-brand-300 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>

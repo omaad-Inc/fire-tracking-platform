@@ -5,7 +5,7 @@ import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
-import Aura from '@primeng/themes/aura';
+import { AuraLean } from './app/core/theme/aura-lean';
 import { definePreset } from '@primeng/themes';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
@@ -13,6 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { AuthService } from './app/core/services/auth.service';
 import { TokenService } from './app/core/services/token.service';
+import { LanguageSyncService } from './app/core/services/language-sync.service';
 import { ERROR_REPORTER, EventsErrorReporter, GlobalErrorHandler } from './app/core/services/error-reporter';
 
 /**
@@ -23,8 +24,11 @@ import { ERROR_REPORTER, EventsErrorReporter, GlobalErrorHandler } from './app/c
  * Defining the preset's primary palette is the only reliable way to make
  * every PrimeNG component (buttons, focus rings, links, sliders, the active
  * sidebar menu item) inherit our Midnight Navy.
+ *
+ * Built on AuraLean, not Aura: the same tokens, only for the components the
+ * app renders (P3-2, see core/theme/aura-lean.ts and `npm run theme:guard`).
  */
-const OmaadPreset = definePreset(Aura, {
+const OmaadPreset = definePreset(AuraLean, {
     semantic: {
         primary: {
             50:  '#EFF2F7',
@@ -137,6 +141,10 @@ export const appConfig: ApplicationConfig = {
             const i18n = inject(I18nService);
             return i18n.loadLang(i18n.lang());
         }),
+        // Persist in-app language switches on the profile (P3-1). Instantiated
+        // here so its effect watches the lang signal from the first render;
+        // it is a no-op during prerender and while signed out.
+        provideAppInitializer(() => { inject(LanguageSyncService); }),
         // Kick (do NOT await) the cookie session restore at bootstrap when the
         // device has a session hint, so the /auth/refresh round-trip overlaps
         // JS boot + route activation instead of serializing after them. The

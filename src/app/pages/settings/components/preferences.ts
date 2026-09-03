@@ -6,22 +6,21 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DividerModule } from 'primeng/divider';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { Observable } from 'rxjs';
 import { LayoutService } from '../../../layout/service/layout.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { ApiService } from '../../../core/services/api.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
+import { CommandPaletteService } from '../../../core/services/command-palette.service';
 
 @Component({
     selector: 'app-settings-preferences',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, ButtonModule, SelectModule, ToggleSwitchModule, DividerModule],
     template: `
-        <p-toast position="top-center" />
         <div class="max-w-2xl mx-auto pb-10">
             <!-- Language & region card -->
             <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5">
@@ -83,6 +82,28 @@ import { ApiService } from '../../../core/services/api.service';
                     </div>
                 </div>
                 <p class="text-xs text-surface-400 dark:text-surface-500 mt-3">{{ t('settings.preferences.fxReference') }}</p>
+            </section>
+
+            <!-- Quick search (command palette) card: the one place a phone user meets it. -->
+            <section class="rounded-2xl border border-surface-200/80 dark:border-surface-700/60 bg-surface-0 dark:bg-surface-900/50 shadow-sm p-6 md:p-7 mb-5"
+                     data-testid="pref-palette">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="min-w-0">
+                        <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.preferences.paletteTitle') }}</h2>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.preferences.paletteDesc') }}</p>
+                        <p class="text-xs text-surface-400 dark:text-surface-500 mt-2 flex items-center gap-1.5 flex-wrap">
+                            <span>{{ t('settings.preferences.paletteShortcut') }}</span>
+                            <kbd data-testid="pref-palette-hint"
+                                 class="px-1.5 py-0.5 rounded-md text-[11px] font-semibold text-surface-600 dark:text-surface-300 bg-surface-100 dark:bg-surface-800">{{ paletteShortcut }}</kbd>
+                            <span>{{ t('settings.preferences.paletteHelpKey') }}</span>
+                        </p>
+                    </div>
+                    <button type="button" (click)="palette.show()" data-testid="pref-palette-open"
+                            class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold omaad-press
+                                   bg-surface-100 dark:bg-surface-800 text-surface-800 dark:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
+                        <i class="pi pi-search text-xs" aria-hidden="true"></i>{{ t('settings.preferences.paletteOpen') }}
+                    </button>
+                </div>
             </section>
 
             <!-- Theme card -->
@@ -182,12 +203,16 @@ import { ApiService } from '../../../core/services/api.service';
 })
 export class PreferencesSettings implements OnInit {
     private layoutService = inject(LayoutService);
+    private feedback = inject(FeedbackService);
     private router = inject(Router);
     private i18n = inject(I18nService);
     private currencyService = inject(CurrencyService);
     private tokenService = inject(TokenService);
     private api = inject(ApiService);
-    private messageService = inject(MessageService);
+    /** The palette's topbar trigger is desktop-only; this page is where a phone
+     *  or a first-time keyboard user learns it exists (P3-5). */
+    protected palette = inject(CommandPaletteService);
+    readonly paletteShortcut = CommandPaletteService.shortcutLabel();
 
     exporting = signal(false);
 
@@ -215,7 +240,7 @@ export class PreferencesSettings implements OnInit {
             },
             error: () => {
                 this.exporting.set(false);
-                this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('settings.preferences.exportError'), life: 4000 });
+                this.feedback.error(this.t('settings.preferences.exportError'));
             }
         });
     }

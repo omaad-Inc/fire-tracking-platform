@@ -15,7 +15,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
         <!-- Logo (pulled flush-left, Finary-style) -->
         <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
             <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                     class="w-10 h-10 md:w-12 md:h-12">
+                     class="w-10 h-10 md:w-12 md:h-12" width="48" height="48">
             <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad</span>
         </a>
 

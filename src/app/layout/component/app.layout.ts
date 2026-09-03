@@ -1,4 +1,4 @@
-import { Component, Renderer2, ViewChild, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, HostListener, Renderer2, ViewChild, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -19,11 +19,13 @@ import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { applyChartDefaults } from '../../core/theme/chart-theme';
 import { FeedbackHostComponent } from '../../core/ui/feedback-host.component';
+import { CommandPalette } from './command-palette';
+import { CommandPaletteService } from '../../core/services/command-palette.service';
 
 @Component({
     selector: 'app-layout',
     standalone: true,
-    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, QuickAddSheet, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent, FeedbackHostComponent],
+    imports: [CommonModule, AppTopbar, AppSidebar, AppMobileNav, AppFab, QuickAddSheet, AppAiAssistantPanel, RouterModule, PwaPromptComponent, PinLockComponent, FeedbackHostComponent, CommandPalette],
     template: `<div class="layout-wrapper" [ngClass]="containerClass">
         <!-- Skip link: first focusable element; visually hidden until focused -->
         <a href="#main-content" (click)="focusMain($event)"
@@ -52,7 +54,17 @@ import { FeedbackHostComponent } from '../../core/ui/feedback-host.component';
         @if (!share.active()) {
             @if (!immersive()) {
                 <app-fab (action)="onFabAction()"></app-fab>
-                <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
+            }
+            <!-- Both are modals, so they render in immersive shells too (P3-5):
+                 Settings > Preferences opens the palette from a button, and the
+                 palette's "add a transaction" needs the sheet wherever it runs.
+                 The chord itself stays off in immersive routes (a wizard form
+                 owns the keyboard there); only the explicit openers work. -->
+            <app-quick-add-sheet [open]="quickAddOpen()" (close)="quickAddOpen.set(false)"></app-quick-add-sheet>
+            <!-- Command palette (P2-5): Cmd/Ctrl+K anywhere in the shell, or the
+                 topbar search button. Not in the share shell: it lists writes. -->
+            <app-command-palette />
+            @if (!immersive()) {
                 <!-- S12: the teaser panel never renders once the real chat
                      surface (aiChat flag) is on; /assistant replaces it. -->
                 @if (!flags.aiChat()) {
@@ -206,6 +218,27 @@ export class AppLayout implements OnInit, OnDestroy {
     }
 
     quickAddOpen = signal(false);
+
+    private palette = inject(CommandPaletteService);
+    private paletteQuickAdd = this.palette.quickAddRequested
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => this.quickAddOpen.set(true));
+
+    /**
+     * Cmd+K / Ctrl+K toggles the command palette from anywhere in the shell.
+     * Off in the share shell (it lists writes) and while the PIN lock is up;
+     * the chord itself is checked so no browser shortcut is overridden.
+     */
+    @HostListener('document:keydown', ['$event'])
+    onDocumentKeydown(ev: KeyboardEvent): void {
+        const chord = CommandPaletteService.isChord(ev);
+        // `?` outside a field opens the palette on its keyboard legend (P3-5).
+        const help = !chord && !this.palette.open() && CommandPaletteService.isHelpKey(ev);
+        if (!chord && !help) return;
+        if (this.share.active() || this.pinService.locked() || this.immersive()) return;
+        ev.preventDefault();
+        if (help) this.palette.showHelp(); else this.palette.toggle();
+    }
 
     /**
      * The FAB adds "the thing this page is about": on the portfolio screen it

@@ -15,9 +15,9 @@ import {
  * The one that matters most is the route map. `InboxItem.link` is written by
  * the backend from `_FCM_MOBILE_ROUTES`, so it holds FLUTTER paths. Using it
  * verbatim on the web sends the user to /notfound: the web equivalent of
- * "/transactions" is "/pages/transaction" (SINGULAR) and "/reports/weekly" has
- * no web page at all yet. That is an easy "simplification" for a later reader
- * to make, so the divergence is pinned here rather than left to a comment.
+ * "/transactions" is "/pages/transaction" (SINGULAR) and "/reports/weekly" is
+ * "/pages/reports/weekly" (P2-4). That is an easy "simplification" for a later
+ * reader to make, so the divergence is pinned here rather than left to a comment.
  */
 
 // Copied from backend/app/services/notification_service.py `_FCM_MOBILE_ROUTES`.
@@ -73,11 +73,11 @@ describe('NOTIF_WEB_ROUTES (the mobile-route trap)', () => {
         expect(NOTIF_WEB_ROUTES.budget.queryParams).toEqual({ view: 'budgets' });
     });
 
-    it('does not send weekly_report to a page the web does not have', () => {
-        // "/reports/weekly" exists on mobile only (web view is P2). Until then
-        // the tap must fall back to a real surface, not 404.
-        expect(NOTIF_WEB_ROUTES.weekly_report.segments).not.toContain('reports');
-        expect(NOTIF_WEB_ROUTES.weekly_report.segments).toEqual([]);
+    it('sends weekly_report to the in-app recap page (P2-4)', () => {
+        // Until P2-4 the web had no recap page and the tap fell back to the
+        // dashboard. Now the kind lands on the same bundle the email renders;
+        // a regression to the fallback would silently dead-end the Monday push.
+        expect(NOTIF_WEB_ROUTES.weekly_report.segments).toEqual(['pages', 'reports', 'weekly']);
     });
 
     it('never reuses the mobile link as the web path where the two differ', () => {

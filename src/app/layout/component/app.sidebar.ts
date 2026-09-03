@@ -25,7 +25,7 @@ import { environment } from '../../../environments/environment';
         <div class="layout-sidebar">
             <!-- Logo header, click to toggle sidebar; hover swaps logo for hamburger -->
             <button type="button" class="sidebar-logo" (click)="layoutService.onMenuToggle()" aria-label="Toggle sidebar">
-                <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="sidebar-logo-img" />
+                <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="sidebar-logo-img" width="36" height="36" />
                 <svg class="sidebar-logo-toggle" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="4" y1="7" x2="20" y2="7"/>
                     <line x1="4" y1="12" x2="20" y2="12"/>
@@ -64,7 +64,7 @@ import { environment } from '../../../environments/environment';
                         (click)="userMenuOpen.set(!userMenuOpen())">
                     <div class="sidebar-avatar">
                         @if (avatarUrl) {
-                            <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover rounded-full">
+                            <img [src]="avatarUrl" alt="Profile" class="w-full h-full object-cover rounded-full" width="40" height="40">
                         } @else {
                             <p-avatar [label]="userInitials" shape="circle"
                                 styleClass="bg-brand-700 text-white"

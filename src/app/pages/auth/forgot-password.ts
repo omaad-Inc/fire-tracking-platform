@@ -22,7 +22,7 @@ import { I18nService } from '../../i18n/i18n.service';
                 <div class="mb-10">
                     <a [routerLink]="[currentLang, 'landing']" class="flex items-center gap-3 cursor-pointer group">
                         <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                             class="w-10 h-10">
+                             class="w-10 h-10" width="40" height="40">
                         <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad</span>
                     </a>
                 </div>

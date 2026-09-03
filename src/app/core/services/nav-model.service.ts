@@ -70,6 +70,11 @@ const SECTIONS: NavSectionDef[] = [
             { key: 'transactions', labelKey: 'menu.transactions', glyph: 'pi-arrow-right-arrow-left', segments: ['pages', 'transaction'] },
             { key: 'myGoals', labelKey: 'menu.objectives', glyph: 'pi-bullseye', segments: ['pages', 'goals'] },
             { key: 'insights', labelKey: 'menu.insights', glyph: 'pi-chart-bar', segments: ['pages', 'insights'] },
+            // P2-3: market reference data (BRVM, funds, FX). Sidebar only: the
+            // bottom bar keeps its five hubs; on mobile the Patrimoine hero
+            // carries the entry, as in the app. Not a portfolio surface, so it
+            // stays out of the public share shell.
+            { key: 'markets', labelKey: 'menu.markets', glyph: 'pi-globe', segments: ['pages', 'marches'], hideInShare: true },
         ],
     },
     {

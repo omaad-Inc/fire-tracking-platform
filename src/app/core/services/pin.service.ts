@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { DESKTOP } from '../util/breakpoint';
 
 const STORAGE_PIN_HASH  = 'omaad_pin_hash';
 const STORAGE_PIN_SALT  = 'omaad_pin_salt';
@@ -129,9 +130,11 @@ export class PinService {
         this.locked.set(true);
     }
 
-    /** Returns true if the screen width is below the desktop breakpoint (992px) */
+    /** Phone shell? Same breakpoint as the layout (DESKTOP, 992px), read at
+     *  call time: lock decisions are one-shot events, not renderings. */
     private isMobile(): boolean {
-        return typeof window !== 'undefined' && window.innerWidth < 992;
+        return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+            && !window.matchMedia(DESKTOP).matches;
     }
 
     // ── Background/foreground handling ────────────────────────────────

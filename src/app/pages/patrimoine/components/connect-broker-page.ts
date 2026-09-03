@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { ApiService, BrokerProvider } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { HoldingsImportDialog } from './holdings-import-dialog';
@@ -27,10 +26,8 @@ type FlowStep = 'method' | 'institutions' | 'credentials';
 @Component({
     selector: 'app-connect-broker-page',
     standalone: true,
-    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, ToastModule, HoldingsImportDialog],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, HoldingsImportDialog],
     template: `
-        <p-toast position="top-center"></p-toast>
         <app-holdings-import-dialog #holdingsImport (imported)="onHoldingsImported()" />
 
         <div class="flex flex-col min-h-[calc(100vh-8rem)]">
@@ -214,7 +211,6 @@ export class ConnectBrokerPage implements OnInit {
     private route = inject(ActivatedRoute);
     private apiService = inject(ApiService);
     private i18n = inject(I18nService);
-    private messageService = inject(MessageService);
 
     @ViewChild('holdingsImport') holdingsImport!: HoldingsImportDialog;
 

@@ -151,12 +151,6 @@
             .layout-topbar-logo {
                 display: none !important;
             }
-
-            .layout-topbar-menu-content {
-                .layout-topbar-action:has(.pi-bell) {
-                    display: none;
-                }
-            }
         }
     }
 }

@@ -154,7 +154,10 @@ export class SavingsProgress implements OnInit, OnDestroy {
                     ...colorConfigs[index % colorConfigs.length]
                 }))
                 .sort((a, b) => b.percent - a.percent)
-                .slice(0, 4);
+                // Three rows, not four (owner call 2026-09-03): the card is a
+                // glance, the Goals page is the list; four made the rail taller
+                // than the health card it sits under.
+                .slice(0, 3);
 
             this.goals.set(mapped);
             this.loadError.set(false);

@@ -20,6 +20,7 @@ import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
 import { toLocalDateStr } from '../../../core/util/date';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
  * Tappable currency chip rendered inside an amount input's suffix slot (S7b
@@ -1173,6 +1174,8 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     readonly isTouch = isTouchDevice();
 
     private router = inject(Router);
+
+    private feedback = inject(FeedbackService);
     private route = inject(ActivatedRoute);
     private location = inject(Location);
     private patrimoineService = inject(PatrimoineService);
@@ -1435,12 +1438,16 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         this.resetForm();
 
         const cat = this.route.snapshot.queryParamMap.get('category');
+        // Marchés hand-off (P2-3): `ticker` names the BRVM ticker or the fund
+        // slug to preselect, so "Ajouter à mon patrimoine" lands on a form
+        // with the instrument already picked instead of the category chooser.
+        const pick = this.route.snapshot.queryParamMap.get('ticker');
         if (cat && this.categoryCards().some(c => c.value === cat)) {
             // Deep-link hand-off (e.g. connect-broker "add manually"): open the
             // form directly, passing deepLink explicitly (never re-read below).
             this.selectCategory(cat as AssetCategory, true);
-            if (this.assetForm.category === 'stocks_brvm') this.loadBrvmInstruments();
-            if (this.assetForm.category === 'fcp') this.loadFcpInstruments();
+            if (this.assetForm.category === 'stocks_brvm') this.loadBrvmInstruments(pick);
+            if (this.assetForm.category === 'fcp') this.loadFcpInstruments(pick);
             // Strip ?category so the URL bar is clean and going back / re-picking
             // a class behaves as a fresh choice (not a stale deep-link).
             this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
@@ -1514,11 +1521,16 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         this.currentStep.set(0);
     }
 
-    /** Fetch the BRVM catalog once (idempotent), when the BRVM form is in play. */
-    private loadBrvmInstruments(): void {
-        if (this.brvmInstruments().length) return;
+    /** Fetch the BRVM catalog once (idempotent), when the BRVM form is in play.
+     *  `pick` preselects that ticker once the catalog is known (Marchés hand-off). */
+    private loadBrvmInstruments(pick: string | null = null): void {
+        const preselect = (rows: BrvmInstrument[]) => {
+            const inst = pick ? rows.find(i => i.ticker === pick) : undefined;
+            if (inst) this.pickBrvmInstrument(inst);
+        };
+        if (this.brvmInstruments().length) { preselect(this.brvmInstruments()); return; }
         this.api.getBrvmInstruments().subscribe({
-            next: rows => this.brvmInstruments.set(rows),
+            next: rows => { this.brvmInstruments.set(rows); preselect(rows); },
             error: () => { /* picker degrades to free-text via the "Autre" path */ },
         });
     }
@@ -1569,11 +1581,16 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
 
     // ── FCP/OPCVM fund picker (mirrors the BRVM sheet flow) ──────────────
 
-    /** Fetch the FCP catalog once (idempotent), when the FCP form is in play. */
-    private loadFcpInstruments(): void {
-        if (this.fcpInstruments().length) return;
+    /** Fetch the FCP catalog once (idempotent), when the FCP form is in play.
+     *  `pick` preselects that fund slug once the catalog is known (Marchés hand-off). */
+    private loadFcpInstruments(pick: string | null = null): void {
+        const preselect = (rows: FcpInstrument[]) => {
+            const inst = pick ? rows.find(i => i.slug === pick) : undefined;
+            if (inst) this.pickFcpInstrument(inst);
+        };
+        if (this.fcpInstruments().length) { preselect(this.fcpInstruments()); return; }
         this.api.getFcpInstruments().subscribe({
-            next: rows => this.fcpInstruments.set(rows),
+            next: rows => { this.fcpInstruments.set(rows); preselect(rows); },
             error: () => { /* picker degrades to free-text via the "Autre" path */ },
         });
     }
@@ -1948,7 +1965,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             const detail = error?.error?.detail
                 ? (typeof error.error.detail === 'string' ? error.error.detail : JSON.stringify(error.error.detail).slice(0, 120))
                 : this.i18n.t('addAssets.wizard.addError');
-            this.messageService.add({ severity: 'error', summary: this.i18n.t('common.error'), detail, life: 6000 });
+            this.feedback.error(this.i18n.t('common.error'));
         } finally {
             this.isSubmitting.set(false);
         }

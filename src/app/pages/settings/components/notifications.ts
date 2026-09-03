@@ -1,15 +1,18 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { SwPush } from '@angular/service-worker';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { SelectModule } from 'primeng/select';
 import { DividerModule } from 'primeng/divider';
-import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+
 import { firstValueFrom } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
+import { NavService } from '../../../core/services/nav.service';
 import { ApiService, NotificationPreferences, PushDevice } from '../../../core/services/api.service';
+import { NotificationCenterService } from '../../../core/services/notification-center.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
  * Settings → Notifications (S9-B3): channel + signal opt-ins, quiet hours,
@@ -20,14 +23,34 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
 @Component({
     selector: 'app-settings-notifications',
     standalone: true,
-    imports: [CommonModule, FormsModule, ToggleSwitchModule, SelectModule, DividerModule, ToastModule],
-    providers: [MessageService],
+    imports: [CommonModule, FormsModule, RouterLink, ToggleSwitchModule, SelectModule, DividerModule],
     template: `
-        <p-toast position="top-center" />
         <div class="px-1">
 
             <h2 class="hidden lg:block text-2xl font-semibold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.title') }}</h2>
             <p class="text-sm text-surface-500 dark:text-surface-400 mb-6">{{ t('settings.notifs.subtitle') }}</p>
+
+            <!-- Inbox entry (the topbar bell is gone). Same flat-row idiom as the
+                 channel rows below, with the unread count where the toggle sits. -->
+            <a [routerLink]="nav.link('pages', 'notifications')"
+               data-testid="notif-inbox-link"
+               class="flex items-center justify-between gap-4 py-4 -mt-2 mb-4 border-b border-surface-200 dark:border-surface-800 no-underline group">
+                <div class="min-w-0 flex items-center gap-3">
+                    <span class="w-9 h-9 rounded-full grid place-items-center shrink-0 bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200">
+                        <i class="pi pi-inbox" aria-hidden="true"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.notifs.inbox') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.inboxDesc') }}</p>
+                    </div>
+                </div>
+                <span class="flex items-center gap-2 shrink-0">
+                    @if (inbox.unreadCount() > 0) {
+                        <span class="min-w-[1.25rem] h-5 px-1.5 rounded-full grid place-items-center bg-ochre-500 text-warm-900 text-[11px] font-bold leading-none">{{ inbox.unreadCount() > 9 ? '9+' : inbox.unreadCount() }}</span>
+                    }
+                    <i class="pi pi-chevron-right text-surface-400 group-hover:text-surface-600 dark:group-hover:text-surface-200 transition-colors" aria-hidden="true"></i>
+                </span>
+            </a>
 
             <!-- Cold start only (empty cache): show a shaped skeleton so we never
                  paint a toggle in the wrong position while the first fetch lands.
@@ -167,6 +190,12 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
                     <div class="min-w-0">
                         <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-weekly-label">{{ t('settings.notifs.weeklyReport') }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.weeklyReportDesc') }}</p>
+                        <!-- P2-4: the recap also lives in the app; the link is the
+                             discoverable path for someone who never opens the email. -->
+                        <a [routerLink]="nav.link('pages', 'reports', 'weekly')" data-testid="notif-weekly-open"
+                           class="inline-flex items-center gap-1 mt-1 text-sm font-semibold text-ochre-600 dark:text-ochre-300 hover:underline">
+                            {{ t('weeklyReport.open') }}<i class="pi pi-arrow-right text-[10px]" aria-hidden="true"></i>
+                        </a>
                     </div>
                     <p-toggleswitch [ngModel]="prefs().signal_weekly_report"
                                     (onChange)="save({ signal_weekly_report: $event.checked })"
@@ -218,9 +247,13 @@ import { ApiService, NotificationPreferences, PushDevice } from '../../../core/s
 })
 export class NotificationsSettings implements OnInit {
     private i18n = inject(I18nService);
+    protected nav = inject(NavService);
+    private feedback = inject(FeedbackService);
     private api = inject(ApiService);
     private swPush = inject(SwPush);
-    private messageService = inject(MessageService);
+    /** The inbox lost its topbar bell (PWA topbar diet); on a phone this
+     *  section is the way in, with the unread count the bell used to carry. */
+    protected inbox = inject(NotificationCenterService);
 
     // Seed synchronously from the last-known cache so the real toggle states
     // paint on the first frame (flash-free). `loading` is the skeleton gate and
@@ -264,6 +297,8 @@ export class NotificationsSettings implements OnInit {
     });
 
     ngOnInit() {
+        // Unread count for the inbox row (cache-or-fetch, TTL-guarded).
+        this.inbox.ensureLoaded();
         // Revalidate in the background. Warm start: cached values are already on
         // screen, so this silently reconciles. Cold start: this fills the
         // skeleton. Either way, don't overwrite an edit the user just made.
@@ -301,7 +336,7 @@ export class NotificationsSettings implements OnInit {
             await firstValueFrom(this.api.registerPushSubscription(subscription.toJSON() as object, label));
             this.save({ push_enabled: true });
             this.refreshDevices();
-            this.messageService.add({ severity: 'success', summary: this.t('settings.notifs.pushEnabled'), life: 3000 });
+            this.feedback.success(this.t('settings.notifs.pushEnabled'));
         } catch {
             // Permission denied, 503 (keys not configured), or subscribe failure.
             this.prefs.update(p => ({ ...p, push_enabled: false }));
@@ -366,7 +401,7 @@ export class NotificationsSettings implements OnInit {
     }
 
     private toastError(detail: string) {
-        this.messageService.add({ severity: 'error', summary: detail, life: 4000 });
+        this.feedback.error(detail);
     }
 
     t(key: string, params?: Record<string, string | number>): string {

@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 import { I18nService } from '../../../i18n/i18n.service';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 import {
     ApiService, AssetCategory, HoldingPreviewItem,
 } from '../../../core/services/api.service';
@@ -173,6 +174,7 @@ interface HoldingRow extends HoldingPreviewItem {
 })
 export class HoldingsImportDialog {
     private api = inject(ApiService);
+    private feedback = inject(FeedbackService);
     private i18n = inject(I18nService);
     private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
@@ -306,12 +308,12 @@ export class HoldingsImportDialog {
             next: (res) => {
                 this.committing.set(false);
                 this.visible.set(false);
-                this.toast.add({ severity: 'success', summary: this.t('addAssets.holdingsImport.done', { created: res.created }) });
+                this.feedback.success(this.t('addAssets.holdingsImport.done', { created: res.created }));
                 this.imported.emit(res.created);
             },
             error: () => {
                 this.committing.set(false);
-                this.toast.add({ severity: 'error', summary: this.t('addAssets.holdingsImport.commitError') });
+                this.feedback.error(this.t('addAssets.holdingsImport.commitError'));
             },
         });
     }

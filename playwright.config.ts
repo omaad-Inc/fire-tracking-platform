@@ -16,6 +16,12 @@ export default defineConfig({
     timeout: 60_000,
     expect: { timeout: 10_000 },
     fullyParallel: false,
+    // ONE worker (P3-6). `fullyParallel: false` only serialises tests within a
+    // file; spec FILES still ran in parallel workers, each signing in, and
+    // /auth/login is rate limited 10/minute: a plain `npx playwright test`
+    // throttled itself and failed with "no shell" / "login did not persist a
+    // profile", which read as product bugs. One worker = one login at a time.
+    workers: 1,
     retries: 0,
     reporter: [['list']],
     use: {

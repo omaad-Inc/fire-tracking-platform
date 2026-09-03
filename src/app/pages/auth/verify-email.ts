@@ -16,7 +16,7 @@ type VerifyState = 'verifying' | 'success' | 'error' | 'no-token';
         <div class="min-h-screen flex items-center justify-center px-6 py-12 bg-surface-0 dark:bg-surface-950">
             <div class="w-full max-w-md text-center">
                 <a [routerLink]="[currentLang, 'landing']" class="inline-flex items-center gap-3 mb-10">
-                    <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="w-10 h-10">
+                    <img src="assets/brand/omaad-icon.svg" alt="Omaad" class="w-10 h-10" width="40" height="40">
                     <span class="font-bold text-xl text-surface-900 dark:text-surface-0 tracking-tight">Omaad</span>
                 </a>
 

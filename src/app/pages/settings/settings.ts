@@ -35,7 +35,7 @@ import { environment } from '../../../environments/environment';
                 <div class="flex items-center gap-4 min-w-0">
                     <div class="w-14 h-14 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0">
                         @if (avatarUrl()) {
-                            <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover">
+                            <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover" width="40" height="40">
                         } @else {
                             <span class="text-xl font-bold text-surface-500">{{ userInitials() }}</span>
                         }
@@ -153,7 +153,7 @@ import { environment } from '../../../environments/environment';
                                 <div class="w-20 h-20 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center overflow-hidden shrink-0"
                                      [ngClass]="avatarRing()">
                                     @if (avatarUrl()) {
-                                        <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover">
+                                        <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover" width="40" height="40">
                                     } @else {
                                         <span class="text-3xl font-bold text-surface-500">{{ userInitials() }}</span>
                                     }

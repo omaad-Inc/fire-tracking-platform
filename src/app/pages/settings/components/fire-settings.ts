@@ -19,6 +19,7 @@ import { AssetsStateService } from '../../service/assets-state.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
+import { FeedbackService } from '../../../core/ui/feedback.service';
 
 @Component({
     selector: 'app-fire-settings',
@@ -198,6 +199,8 @@ export class FireSettings implements OnInit {
     readonly isTouch = isTouchDevice();
 
     private apiService       = inject(ApiService);
+
+    private feedback = inject(FeedbackService);
     private authService      = inject(AuthService);
     private tokenService     = inject(TokenService);
     private analytics        = inject(AnalyticsService);
@@ -301,24 +304,14 @@ export class FireSettings implements OnInit {
                 });
 
                 this.isSaving.set(false);
-                this.messageService.add({
-                    severity: 'success',
-                    summary: this.i18n.t('common.success'),
-                    detail: this.i18n.t('fireSettings.savedDetail'),
-                    life: 2000
-                });
+                this.feedback.success(this.i18n.t('fireSettings.savedDetail'));
                 setTimeout(() => {
                     this.router.navigate([`/${this.getLang()}`]);
                 }, 800);
             },
             error: (err) => {
                 this.isSaving.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: this.i18n.t('common.error'),
-                    detail: err.message || this.i18n.t('fireSettings.saveFailedDetail'),
-                    life: 5000
-                });
+                this.feedback.error(err.message || this.i18n.t('fireSettings.saveFailedDetail'));
             }
         });
     }
@@ -356,12 +349,7 @@ export class FireSettings implements OnInit {
             },
             error: (err) => {
                 this.isClearing.set(false);
-                this.messageService.add({
-                    severity: 'error',
-                    summary: this.i18n.t('common.error'),
-                    detail: err.message || this.i18n.t('fireSettings.deleteFailedDetail'),
-                    life: 5000
-                });
+                this.feedback.error(err.message || this.i18n.t('fireSettings.deleteFailedDetail'));
             }
         });
     }

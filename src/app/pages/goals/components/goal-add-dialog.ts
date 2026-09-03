@@ -74,7 +74,7 @@ export interface GoalSavePayload {
                                 [class.dark:border-surface-700]="form.templateKey !== tpl.key"
                             >
                                 <div class="relative h-20 bg-surface-100 dark:bg-surface-900 overflow-hidden">
-                                    <img [src]="tpl.image" [alt]="i18n.t(tpl.nameKey)" class="w-full h-full object-cover" loading="lazy" />
+                                    <img [src]="tpl.image" [alt]="i18n.t(tpl.nameKey)" class="w-full h-full object-cover" width="640" height="360" loading="lazy" />
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                     @if (form.templateKey === tpl.key) {
                                         <div class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-brand-700 dark:bg-brand-300 flex items-center justify-center shadow-md">
@@ -97,7 +97,7 @@ export interface GoalSavePayload {
 
                         <!-- Image preview banner with replace button -->
                         <div class="relative h-32 rounded-xl overflow-hidden bg-surface-100 dark:bg-surface-900">
-                            <img [src]="effectiveImage()" [alt]="form.name" class="w-full h-full object-cover" (error)="onImageError()" />
+                            <img [src]="effectiveImage()" [alt]="form.name" class="w-full h-full object-cover" width="640" height="360" loading="lazy" (error)="onImageError()" />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 
                             <div class="absolute top-2 left-2 flex gap-2">

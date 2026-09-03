@@ -32,19 +32,22 @@ async function login(page: Page) {
     await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
 }
 
-test('notification center: bell, list, deep link and mark-all', async ({ page }) => {
+test('notification center: palette entry, list, deep link and mark-all', async ({ page }) => {
     await login(page);
+    await expect(page.locator('.layout-topbar')).toBeVisible({ timeout: 20_000 });
 
-    // ── The bell is in the topbar on desktop AND mobile ────────────────────
-    const bell = page.getByTestId('notif-bell');
-    await expect(bell).toBeVisible({ timeout: 20_000 });
-
+    // ── The topbar bell is gone (PWA topbar diet), on desktop AND mobile ───
+    await expect(page.getByTestId('notif-bell')).toHaveCount(0);
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(bell).toBeVisible(); // mobile has no sidebar: the bell is the only way in
+    await expect(page.getByTestId('notif-bell')).toHaveCount(0);
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // ── The bell opens the center ──────────────────────────────────────────
-    await bell.click();
+    // ── The palette's "Notifications" entry opens the center ───────────────
+    await page.getByTestId('palette-trigger').click();
+    const input = page.getByTestId('palette-input');
+    await expect(input).toBeFocused();
+    await input.fill('notifications');
+    await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/fr\/pages\/notifications/, { timeout: 20_000 });
     await expect(page.getByTestId('notif-center')).toBeVisible();
 
@@ -62,8 +65,6 @@ test('notification center: bell, list, deep link and mark-all', async ({ page })
         );
         await markAll.click();
         await wrote;
-        // The badge is driven by the shared unread count, so it goes with it.
-        await expect(page.getByTestId('notif-badge')).toHaveCount(0);
         await expect(markAll).toHaveCount(0);
     }
 

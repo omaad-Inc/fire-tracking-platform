@@ -27,7 +27,7 @@ import { NavService } from '../../../core/services/nav.service';
                     [alt]="goal.name"
                     class="w-full h-full object-cover"
                     loading="lazy"
-                    (error)="image = ''"
+                    (error)="image = ''" width="640" height="360"
                 />
                 <div *ngIf="!image" class="w-full h-full bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center">
                     <i [class]="template().icon + ' text-3xl text-brand-700 dark:text-ochre-400'"></i>

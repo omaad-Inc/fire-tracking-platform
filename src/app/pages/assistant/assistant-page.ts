@@ -49,12 +49,14 @@ import { DashboardService } from '../service/dashboard.service';
         // S12 Phase 3 swap (the Phase 1 contract bet cashed in HERE, and only
         // here): the real SSE transport when aiChat is on, the mock otherwise
         // (dev-switch scenario demos). ChatSessionService and every component
-        // stay byte-identical.
+        // stay byte-identical. `aiMock` (P3-6, `?ff_aiMock=1`) forces the mock
+        // even with aiChat on: the route needs aiChat, so without it the
+        // scripted scenarios were unreachable once the SSE driver landed.
         {
             provide: CHAT_STREAM_DRIVER,
             useFactory: () => {
                 const flags = inject(FeatureFlagsService);
-                return flags.aiChat() ? inject(SseChatDriver) : inject(MockChatDriver);
+                return flags.aiChat() && !flags.isOn('aiMock') ? inject(SseChatDriver) : inject(MockChatDriver);
             },
         },
     ],

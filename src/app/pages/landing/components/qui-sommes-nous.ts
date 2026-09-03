@@ -46,7 +46,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                         <figure class="group">
                             <div class="aspect-[4/5] overflow-hidden rounded-3xl ring-1 ring-surface-200 dark:ring-surface-700 shadow-sm">
                                 <img src="assets/team/mbaye-omaad.webp" [alt]="t('landing.about.founderName')"
-                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width="640" height="640" />
                             </div>
                             <figcaption class="mt-3 text-center">
                                 <div class="text-sm font-bold text-surface-900 dark:text-white">{{ t('landing.about.founderName') }}</div>
@@ -56,7 +56,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                         <figure class="group sm:mt-10">
                             <div class="aspect-[4/5] overflow-hidden rounded-3xl ring-1 ring-surface-200 dark:ring-surface-700 shadow-sm">
                                 <img src="assets/team/bamba.jpeg" [alt]="t('landing.about.bambaName')"
-                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width="648" height="648" />
                             </div>
                             <figcaption class="mt-3 text-center">
                                 <div class="text-sm font-bold text-surface-900 dark:text-white">{{ t('landing.about.bambaName') }}</div>
@@ -226,7 +226,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                         <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-center">
                             <img src="assets/team/mbaye-omaad.webp" [alt]="t('landing.about.founderName')"
                                  class="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-brand-100 dark:ring-ochre-500/20"
-                                 loading="lazy" />
+                                 loading="lazy" width="128" height="128" />
                             <h3 class="text-xl font-bold text-surface-900 dark:text-white">{{ t('landing.about.founderName') }}</h3>
                             <p class="text-sm text-brand-700 dark:text-ochre-400 font-medium mb-3">{{ t('landing.about.founderRole') }}</p>
                             <p class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed mb-4">
@@ -242,7 +242,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                         <div class="p-6 rounded-2xl bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-center">
                             <img src="assets/team/bamba.jpeg" [alt]="t('landing.about.bambaName')"
                                  class="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-brand-100 dark:ring-ochre-500/20"
-                                 loading="lazy" />
+                                 loading="lazy" width="128" height="128" />
                             <h3 class="text-xl font-bold text-surface-900 dark:text-white">{{ t('landing.about.bambaName') }}</h3>
                             <p class="text-sm text-brand-700 dark:text-ochre-400 font-medium mb-3">{{ t('landing.about.bambaRole') }}</p>
                             <p class="text-sm text-surface-600 dark:text-surface-400 leading-relaxed mb-4">

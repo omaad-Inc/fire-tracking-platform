@@ -19,6 +19,12 @@ import { expect, Page, test } from '@playwright/test';
  * only, so a form built from plain <input>/<select> could not converge on it,
  * which is the drift P1-5 exists to remove.
  *
+ * RUNNING THIS: /auth/login is rate limited 10/minute. These specs log in per
+ * test (and the voices spec also logs in once via the API to seed), so running
+ * both P1-5 guard files back-to-back trips the limit and every test then fails
+ * on a screen that is actually the login page. That looks exactly like a real
+ * regression and is not one. Run one file at a time, or space them ~2 minutes.
+ *
  * Prereqs (local): ng serve :4200, backend :8000 on omaad_dev, demo user.
  */
 
@@ -121,6 +127,30 @@ test('omaad-form fields read as fields on an in-page surface, light and dark', a
         });
         expect(selectRadius, `[${label}] the p-select did not adopt the field radius`).toBeGreaterThan(4);
     }
+});
+
+test('omaad-form: a leading icon never sits under the value', async ({ page }) => {
+    // `omaad-form` sets `padding` with `!important`, which beats a
+    // template-level `!pl-10` of equal weight on later source order. On
+    // Settings -> Aide that drew the magnifier glyph on top of the placeholder.
+    // `omaad-field-lead` reserves the room; this asserts the clearance, because
+    // an icon overlapping text is invisible to tsc, to lint:dark and to a
+    // screenshot baseline that simply re-records it.
+    await login(page);
+    await page.setViewportSize({ width: 1280, height: 950 });
+    await page.goto('/fr/pages/settings/help');
+    const input = page.locator('input[placeholder*="Rechercher"]').first();
+    await expect(input).toBeVisible({ timeout: 30_000 });
+
+    const clearance = await input.evaluate(el => {
+        const cs = getComputedStyle(el);
+        const box = el.getBoundingClientRect();
+        const icon = el.parentElement!.querySelector('i');
+        if (!icon) return Number.POSITIVE_INFINITY;   // no leading icon: nothing to clear
+        const textStart = box.left + parseFloat(cs.paddingLeft);
+        return textStart - icon.getBoundingClientRect().right;
+    });
+    expect(clearance, 'the value starts under the leading icon').toBeGreaterThan(2);
 });
 
 test('the retired stat-card primitive is really gone', async ({ page }) => {

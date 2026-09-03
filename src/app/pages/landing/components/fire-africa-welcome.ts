@@ -77,7 +77,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
 
                 <!-- Brand footer -->
                 <div class="flex flex-col items-center gap-3 opacity-60">
-                    <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad" class="w-10 h-10">
+                    <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad" class="w-10 h-10" width="40" height="40">
                     <span class="text-sm font-semibold tracking-wide text-ochre-400">
                         Construis. Protège. Règne.
                     </span>

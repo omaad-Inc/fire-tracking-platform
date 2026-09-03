@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed, inject, effect, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, inject, effect, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -8,10 +8,8 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
-import { ToastModule } from 'primeng/toast';
 import { DatePickerModule } from 'primeng/datepicker';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { MessageService } from 'primeng/api';
+
 import {
     TransactionsService, TransactionRecord,
     CATEGORY_CONFIG, INCOME_CATEGORIES, EXPENSE_CATEGORIES
@@ -28,8 +26,6 @@ import { LayoutService } from '../../../layout/service/layout.service';
 import { CsvImportDialog } from './csv-import-dialog';
 import { isTouchDevice } from '../../../core/util/touch';
 import { FeedbackService } from '../../../core/ui/feedback.service';
-import { LG, mediaQuery } from '../../../core/util/breakpoint';
-import { TransactionsTable, TxTableRow } from './transactions-table';
 
 interface DayGroup {
     dateKey: string;
@@ -43,12 +39,10 @@ interface DayGroup {
     imports: [
         CommonModule, FormsModule, ButtonModule, DialogModule,
         InputTextModule, InputNumberModule, SelectModule,
-        ToastModule, DatePickerModule, AppAmountComponent,
-        LoadErrorComponent, CsvImportDialog, MultiSelectModule, TransactionsTable
+        DatePickerModule, AppAmountComponent,
+        LoadErrorComponent, CsvImportDialog
     ],
-    providers: [MessageService],
     template: `
-        <p-toast position="top-center" />
         <app-csv-import-dialog #csvImport (imported)="onImported()" />
 
         <!-- ── Top bar ───────────────────────────────────────────── -->
@@ -58,9 +52,6 @@ interface DayGroup {
                 <!-- Dimmed and inert while a custom range overrides it, so the
                      page never shows two competing period controls as equals. -->
                 <div class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 rounded-xl px-1 py-1 transition-opacity"
-                     [class.opacity-40]="rangeActive()"
-                     [class.pointer-events-none]="rangeActive()"
-                     [attr.aria-hidden]="rangeActive() ? 'true' : null"
                      data-testid="tx-month-nav">
                     <button pButton icon="pi pi-chevron-left" [text]="true" size="small"
                             class="!rounded-lg !w-8 !h-8" (click)="prevMonth()"></button>
@@ -79,80 +70,6 @@ interface DayGroup {
                         class="omaad-cta !rounded-xl !px-4 !py-2 !text-sm !font-semibold"
                         (click)="openNew()"></button>
             </div>
-            <!-- Row 1b, desktop only: period range + category/account filters +
-                 export. The month navigator above stays the everyday control;
-                 a range is the deliberate override and says so. -->
-            @if (isWide()) {
-                <div class="flex items-center gap-2 flex-wrap" data-testid="tx-filter-bar">
-                    @if (rangeActive()) {
-                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold
-                                     bg-ochre-500/15 text-ochre-700 dark:text-ochre-300 ring-1 ring-ochre-500/40"
-                              data-testid="tx-range-pill">
-                            <i class="pi pi-calendar text-[10px]" aria-hidden="true"></i>
-                            {{ periodLabel() }}
-                            <button type="button" (click)="clearRange()"
-                                    [attr.aria-label]="t('transactions.table.clearRange')"
-                                    class="ml-0.5 hover:opacity-70" data-testid="tx-range-clear">
-                                <i class="pi pi-times text-[10px]"></i>
-                            </button>
-                        </span>
-                    } @else {
-                        @for (p of rangePresets; track p.value) {
-                            <button type="button" (click)="applyPreset(p.value)"
-                                    class="px-2.5 py-1.5 rounded-xl text-xs font-medium transition-colors
-                                           bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-300
-                                           hover:bg-surface-200 dark:hover:bg-surface-700">
-                                {{ p.label }}
-                            </button>
-                        }
-                    }
-
-                    <p-multiSelect [ngModel]="catFilter()" (ngModelChange)="catFilter.set($event); onSelectionChange(selectedKeys())"
-                                   [options]="categoryOptions()" optionLabel="label" optionValue="value"
-                                   [placeholder]="t('transactions.table.category')"
-                                   [maxSelectedLabels]="1"
-                                   [selectedItemsLabel]="t('transactions.table.nCategories')"
-                                   [filter]="true" [showToggleAll]="false" [showClear]="true"
-                                   styleClass="!rounded-xl omaad-tx-ms" [style]="{ minWidth: '9.5rem' }"
-                                   data-testid="tx-cat-filter" />
-
-                    <p-multiSelect [ngModel]="accountFilter()" (ngModelChange)="accountFilter.set($event)"
-                                   [options]="accountFilterOptions()" optionLabel="label" optionValue="value"
-                                   [placeholder]="t('common.account')"
-                                   [maxSelectedLabels]="1"
-                                   [selectedItemsLabel]="t('transactions.table.nAccounts')"
-                                   [filter]="true" [showToggleAll]="false" [showClear]="true"
-                                   styleClass="!rounded-xl omaad-tx-ms" [style]="{ minWidth: '9.5rem' }"
-                                   data-testid="tx-account-filter" />
-
-                    @if (hasActiveFilters()) {
-                        <button type="button" (click)="clearFilters()" data-testid="tx-clear-filters"
-                                class="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-surface-500 dark:text-surface-400
-                                       hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
-                            <i class="pi pi-filter-slash text-[10px] mr-1"></i>{{ t('transactions.table.clearFilters') }}
-                        </button>
-                    }
-
-                    <div class="flex-1"></div>
-
-                    <span class="text-xs text-surface-400 dark:text-surface-500 tabular-nums" data-testid="tx-count">
-                        {{ filteredRecords().length === 1
-                            ? t('transactions.opCountOne', { n: filteredRecords().length })
-                            : t('transactions.opCountMany', { n: filteredRecords().length }) }}
-                    </span>
-
-                    <button type="button" (click)="exportCsv()"
-                            [disabled]="!filteredRecords().length"
-                            data-testid="tx-export"
-                            class="px-3 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5
-                                   bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200
-                                   hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors
-                                   disabled:opacity-40 disabled:cursor-not-allowed">
-                        <i class="pi pi-download text-[10px]"></i>{{ t('common.export') }}
-                    </button>
-                </div>
-            }
-
             <!-- Row 2: search + type filter -->
             <div class="flex items-center gap-2">
                 <div class="relative flex-1 min-w-0">
@@ -265,58 +182,6 @@ interface DayGroup {
                             [outlined]="true" class="!rounded-xl !text-sm" (click)="openNew()"></button>
                 }
             </div>
-        } @else if (isWide()) {
-            <!-- ── Desktop: bulk action bar + power table ────────── -->
-            @if (!share.active() && selectedKeys().length) {
-                <div class="flex items-center gap-3 flex-wrap mb-3 px-3 py-2.5 rounded-xl
-                            bg-brand-700 dark:bg-surface-800 text-white"
-                     data-testid="tx-bulk-bar">
-                    <span class="text-xs font-bold tabular-nums" data-testid="tx-bulk-count">
-                        {{ selectedKeys().length === 1
-                            ? t('transactions.table.nSelectedOne', { n: selectedKeys().length })
-                            : t('transactions.table.nSelectedMany', { n: selectedKeys().length }) }}
-                    </span>
-                    <div class="flex-1"></div>
-
-                    @if (bulkCategoryOptions().length) {
-                        <p-select [ngModel]="bulkCategory()" (ngModelChange)="bulkCategory.set($event)"
-                                  [options]="bulkCategoryOptions()" optionLabel="label" optionValue="value"
-                                  [placeholder]="t('transactions.table.recategorizeTo')"
-                                  [filter]="true" appendTo="body"
-                                  styleClass="!rounded-lg !text-xs" [style]="{ minWidth: '11rem' }"
-                                  data-testid="tx-bulk-category" />
-                        <button type="button" (click)="bulkRecategorize()"
-                                [disabled]="!bulkCategory() || isBulking()"
-                                data-testid="tx-bulk-apply"
-                                class="px-3 py-1.5 rounded-lg text-xs font-bold bg-ochre-500 text-warm-900
-                                       hover:bg-ochre-400 transition-colors
-                                       disabled:opacity-40 disabled:cursor-not-allowed">
-                            {{ t('transactions.table.apply') }}
-                        </button>
-                    } @else {
-                        <!-- Mixed types (or transfers): no category is valid for
-                             the whole selection, so say why instead of offering
-                             a picker that would mislabel rows. -->
-                        <span class="text-[11px] opacity-80" data-testid="tx-bulk-mixed">
-                            {{ t('transactions.table.mixedTypes') }}
-                        </span>
-                    }
-
-                    <button type="button" (click)="bulkDelete()" [disabled]="isBulking()"
-                            data-testid="tx-bulk-delete"
-                            class="px-3 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1.5
-                                   bg-white/15 hover:bg-white/25 transition-colors
-                                   disabled:opacity-40 disabled:cursor-not-allowed">
-                        <i class="pi pi-trash text-[10px]"></i>{{ t('common.delete') }}
-                    </button>
-                </div>
-            }
-            <app-transactions-table
-                [rows]="tableRows()"
-                [readonly]="share.active()"
-                (edit)="editRecord($event)"
-                (remove)="deleteRecord($event)"
-                (selectionChange)="onSelectionChange($event)" />
         } @else {
             <div class="space-y-6">
                 @for (group of dayGroups(); track group.dateKey) {
@@ -335,7 +200,7 @@ interface DayGroup {
 
                         <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 divide-y divide-surface-100 dark:divide-surface-800 overflow-hidden transition-shadow hover:shadow-sm">
                             @for (rec of group.records; track rec.id) {
-                                <div class="flex items-center gap-3 px-3 py-3.5 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors group">
+                                <div class="flex items-center gap-3 px-3 py-3.5 sm:px-4 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors group" data-testid="tx-card">
                                     <!-- Category icon -->
                                     <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0"
                                          [style.background]="categoryBg(rec)">
@@ -344,7 +209,7 @@ interface DayGroup {
                                     </div>
                                     <!-- Name + category -->
                                     <div class="flex-1 min-w-0">
-                                        <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate leading-tight">
+                                        <div class="text-sm font-medium text-surface-900 dark:text-surface-0 truncate leading-tight" data-testid="tx-card-label">
                                             {{ rec.remarks || categoryLabel(rec.category) }}
                                         </div>
                                         <span class="inline-flex items-center text-[11px] sm:text-xs mt-0.5 px-1.5 py-0.5 rounded-full"
@@ -579,7 +444,6 @@ export class TransactionLogs implements OnInit, OnDestroy {
     private transactionsService = inject(TransactionsService);
     private patrimoineService   = inject(PatrimoineService);
     private state               = inject(AssetsStateService);
-    private messageService      = inject(MessageService);
     private feedback            = inject(FeedbackService);
     private layoutService       = inject(LayoutService);
     cs = inject(CurrencyService);
@@ -597,12 +461,6 @@ export class TransactionLogs implements OnInit, OnDestroy {
             year: this._selectedYear(),
             type: this.typeFilter() === 'all' ? null : this.typeFilter(),
             q: this.search() || null,
-            // P1-2 desktop filters, so a filtered view is shareable and
-            // survives a refresh like the month/type/search already did.
-            cat: this.catFilter().length ? this.catFilter().join(',') : null,
-            acct: this.accountFilter().length ? this.accountFilter().join(',') : null,
-            from: this.dateFrom() ? this.toDateStr(this.dateFrom()!) : null,
-            to: this.dateTo() ? this.toDateStr(this.dateTo()!) : null,
         };
         if (!this.urlReady || this.share.active()) return;
         this.router.navigate([], { relativeTo: this.route, queryParams: params, queryParamsHandling: 'merge', replaceUrl: true });
@@ -626,48 +484,12 @@ export class TransactionLogs implements OnInit, OnDestroy {
     search     = signal('');
     typeFilter = signal<'all' | 'Income' | 'Expense' | 'Transfer'>('all');
 
-    // ── Desktop power table (P1-2) ────────────────────────────────
-    /** ≥lg renders the table, below it the card list. A signal, not a CSS
-     *  `hidden lg:block` pair, so only ONE of the two is ever built. */
-    readonly isWide = mediaQuery(LG);
-    @ViewChild(TransactionsTable) private table?: TransactionsTable;
-
-    /** Extra filters, desktop-only affordances (the card list keeps search + type). */
-    catFilter     = signal<string[]>([]);
-    accountFilter = signal<number[]>([]);
-    /** Custom date range. When set it OVERRIDES the month scope: the month
-     *  navigator is the everyday control, a range is the deliberate override,
-     *  and the KPIs, the table and the export all follow whichever is active. */
-    dateFrom = signal<Date | null>(null);
-    dateTo   = signal<Date | null>(null);
-    /**
-     * Gated on `isWide()` on purpose. The range pill (the only way to clear a
-     * range) lives in the desktop filter bar, so honouring `?from=&to=` on a
-     * phone dimmed the month navigator and left the user with NO period control
-     * at all, which is exactly what happens when a desktop filter URL gets
-     * shared. Narrow viewports stay month-only, as they were.
-     */
-    readonly rangeActive = computed(() => this.isWide() && !!this.dateFrom() && !!this.dateTo());
-
-    /** Keys of the rows the table has selected, for the bulk action bar. */
-    selectedKeys = signal<string[]>([]);
-    bulkCategory = signal<string | null>(null);
-    isBulking = signal(false);
-
     get typeFilters() {
         return [
             { label: this.t('transactions.filterAll'),      value: 'all'      as const },
             { label: this.t('transactions.kpi.income'),     value: 'Income'   as const },
             { label: this.t('transactions.kpi.expenses'),   value: 'Expense'  as const },
             { label: this.t('transactions.form.transfer'),  value: 'Transfer' as const },
-        ];
-    }
-
-    get rangePresets() {
-        return [
-            { label: this.t('transactions.table.last3m'),  value: '3m'  as const },
-            { label: this.t('transactions.table.last12m'), value: '12m' as const },
-            { label: this.t('transactions.table.ytd'),     value: 'ytd' as const },
         ];
     }
 
@@ -751,17 +573,9 @@ export class TransactionLogs implements OnInit, OnDestroy {
         return this._selectedYear() === now.getFullYear() && this._selectedMonth() === now.getMonth() + 1;
     });
 
-    /** The active period: an explicit range wins over the month navigator. */
+    /** The active period: the month navigator. */
     readonly periodRecords = computed(() => {
         const recs = this.allRecords();
-        if (this.rangeActive()) {
-            // toDateStr, not toISOString: a picker Date is local midnight and
-            // toISOString would shift it a day in a negative-offset zone.
-            const from = this.toDateStr(this.dateFrom()!);
-            const to   = this.toDateStr(this.dateTo()!);
-            const [lo, hi] = from <= to ? [from, to] : [to, from];
-            return recs.filter(r => r.date >= lo && r.date <= hi);
-        }
         const ym = this.selectedYearMonth();
         return recs.filter(r => r.date.startsWith(ym));
     });
@@ -769,14 +583,9 @@ export class TransactionLogs implements OnInit, OnDestroy {
     readonly filteredRecords = computed(() => {
         const filter = this.typeFilter();
         const q      = this.search().toLowerCase().trim();
-        const cats    = this.catFilter();
-        const accts   = this.accountFilter();
 
         return this.periodRecords()
             .filter(r => filter === 'all' || r.type === filter)
-            .filter(r => !cats.length || cats.includes(r.category ?? ''))
-            .filter(r => !accts.length || [r.accountId, r.fromAccountId, r.toAccountId]
-                .some(id => id != null && accts.includes(id)))
             .filter(r => !q ||
                 (r.name    || '').toLowerCase().includes(q) ||
                 (r.remarks || '').toLowerCase().includes(q));
@@ -785,71 +594,11 @@ export class TransactionLogs implements OnInit, OnDestroy {
     /** Any filter beyond the period is narrowing the list (drives the empty copy
      *  and whether "clear filters" is offered). */
     readonly hasActiveFilters = computed(() =>
-        !!this.search() || this.typeFilter() !== 'all'
-        || this.catFilter().length > 0 || this.accountFilter().length > 0);
-
-    /** Flat view-model for the table: every column a plain sortable field. */
-    readonly tableRows = computed((): TxTableRow[] =>
-        this.filteredRecords().map(r => ({
-            rec: r,
-            key: r.id ?? `${r.date}-${r.amount}-${r.category ?? ''}`,
-            date: r.date,
-            dateLabel: this.formatShortDate(r.date),
-            label: r.remarks || this.categoryLabel(r.category),
-            catLabel: this.categoryLabel(r.category),
-            catFg: this.categoryFg(r),
-            catBg: this.categoryBg(r),
-            icon: this.getCategoryConfig(r).icon,
-            account: this.accountLabel(r),
-            type: r.type,
-            amount: r.amount,
-            signed: r.type === 'Income' ? r.amount : -r.amount,
-        })),
-    );
-
-    /** Category filter options, built from what the PERIOD actually contains, so
-     *  the picker never offers a category with zero rows behind it. */
-    readonly categoryOptions = computed(() => {
-        const seen = new Set<string>();
-        for (const r of this.periodRecords()) if (r.category) seen.add(r.category);
-        return [...seen]
-            .map(c => ({ label: this.categoryLabel(c), value: c }))
-            .sort((a, b) => a.label.localeCompare(b.label));
-    });
-
-    /** Account filter options, likewise restricted to accounts in the period. */
-    readonly accountFilterOptions = computed(() => {
-        const seen = new Map<number, string>();
-        for (const r of this.periodRecords()) {
-            if (r.accountId != null && r.accountName) seen.set(r.accountId, r.accountName);
-            if (r.fromAccountId != null && r.fromAccountName) seen.set(r.fromAccountId, r.fromAccountName);
-            if (r.toAccountId != null && r.toAccountName) seen.set(r.toAccountId, r.toAccountName);
-        }
-        return [...seen.entries()]
-            .map(([value, label]) => ({ label, value }))
-            .sort((a, b) => a.label.localeCompare(b.label));
-    });
-
-    /** Categories offered for a bulk re-categorise, keyed off the types actually
-     *  selected: re-tagging an income row as "groceries" is never intended. */
-    readonly bulkCategoryOptions = computed(() => {
-        const keys = new Set(this.selectedKeys());
-        const picked = this.tableRows().filter(r => keys.has(r.key)).map(r => r.rec);
-        const types = new Set(picked.map(r => r.type));
-        if (types.size !== 1) return [];
-        const type = [...types][0];
-        if (type === 'Transfer') return [];
-        const builtin = type === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
-        const custom = this.customCat.forType(type).map(c => `custom:${c.id}`);
-        return [...builtin, ...custom]
-            .map(c => ({ label: this.categoryLabel(c), value: c }))
-            .sort((a, b) => a.label.localeCompare(b.label));
-    });
+        !!this.search() || this.typeFilter() !== 'all');
 
     readonly monthSummary = computed(() => {
-        // Follows the ACTIVE period, so a custom range never shows a month's
-        // KPIs over a range's rows. Type/category/account filters deliberately
-        // do NOT narrow it: these are the period's totals, not the selection's.
+        // The month's totals: type/search filters deliberately do NOT narrow
+        // it, these are the period's totals, not the selection's.
         const recs = this.periodRecords();
         const income   = recs.filter(r => r.type === 'Income') .reduce((s, r) => s + r.amount, 0);
         const expenses = recs.filter(r => r.type === 'Expense').reduce((s, r) => s + r.amount, 0);
@@ -892,19 +641,6 @@ export class TransactionLogs implements OnInit, OnDestroy {
         if (ty === 'Income' || ty === 'Expense' || ty === 'Transfer') this.typeFilter.set(ty);
         const q = qp.get('q');
         if (q) this.search.set(q);
-        const cat = qp.get('cat');
-        if (cat) this.catFilter.set(cat.split(',').filter(Boolean));
-        const acct = qp.get('acct');
-        if (acct) {
-            this.accountFilter.set(
-                acct.split(',').map(Number).filter(n => Number.isFinite(n)),
-            );
-        }
-        // Both ends or neither: a half-open range would silently show everything
-        // from one bound, which reads as the filter being broken.
-        const from = this.parseDateParam(qp.get('from'));
-        const to   = this.parseDateParam(qp.get('to'));
-        if (from && to) { this.dateFrom.set(from); this.dateTo.set(to); }
         this.urlReady = true;
 
         this.load();
@@ -1059,7 +795,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || this.editingRecord.name),
                 });
                 this.allRecords.update(rs => rs.map(r => r.id === updated.id ? updated : r));
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.updatedDetail'), life: 3000 });
+                this.feedback.success(this.t('transactions.toast.updatedDetail'));
             } else {
                 const created = await this.transactionsService.addRecord({
                     date:     dateStr,
@@ -1074,12 +810,11 @@ export class TransactionLogs implements OnInit, OnDestroy {
                     name:      this.form.remarks || (isTransfer ? transferName : CATEGORY_CONFIG[this.form.category]?.label || (this.formType() === 'Income' ? this.t('transactions.form.income') : this.t('transactions.form.expense'))),
                 });
                 this.allRecords.update(rs => [created, ...rs]);
-                this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.toast.savedDetail'), life: 3000 });
+                this.feedback.success(this.t('transactions.toast.savedDetail'));
             }
             this.dialogVisible = false;
         } catch (err: any) {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'),
-                detail: err?.message || this.t('transactions.toast.saveError'), life: 5000 });
+            this.feedback.error(err?.message || this.t('transactions.toast.saveError'));
         } finally {
             this.isSaving.set(false);
         }
@@ -1154,231 +889,5 @@ export class TransactionLogs implements OnInit, OnDestroy {
 
     private toDateStr(d: Date): string {
         return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    /** yyyy-mm-dd from the URL to a LOCAL midnight Date (never `new Date(str)`,
-     *  which parses a bare date as UTC and lands on the previous day west of
-     *  Greenwich). */
-    private parseDateParam(v: string | null): Date | null {
-        if (!v || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
-        const [y, m, d] = v.split('-').map(Number);
-        const dt = new Date(y, m - 1, d);
-        return Number.isNaN(dt.getTime()) ? null : dt;
-    }
-
-    /** Compact table date ("12 août" / "Aug 12"), noon-anchored so a DST shift
-     *  can't roll it back a day. */
-    private formatShortDate(dateStr: string): string {
-        return new Date(dateStr + 'T12:00:00')
-            .toLocaleDateString(this.dateLocale(), { day: 'numeric', month: 'short', year: '2-digit' });
-    }
-
-    // ── Desktop table: filters, bulk actions, export (P1-2) ───────
-
-    /** Quick range presets. Anchored on today rather than the selected month:
-     *  "last 3 months" means the last 3 from now, which is what it says. */
-    applyPreset(preset: '3m' | '12m' | 'ytd'): void {
-        const now = new Date();
-        const to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        let from: Date;
-        if (preset === 'ytd') from = new Date(now.getFullYear(), 0, 1);
-        else from = new Date(now.getFullYear(), now.getMonth() - (preset === '3m' ? 2 : 11), 1);
-        this.dateFrom.set(from);
-        this.dateTo.set(to);
-        this.clearSelection();
-    }
-
-    /** Back to the month navigator. */
-    clearRange(): void {
-        this.dateFrom.set(null);
-        this.dateTo.set(null);
-        this.clearSelection();
-    }
-
-    clearFilters(): void {
-        this.search.set('');
-        this.typeFilter.set('all');
-        this.catFilter.set([]);
-        this.accountFilter.set([]);
-        this.clearSelection();
-    }
-
-    /** Label for the active period, used by the range pill and the CSV name. */
-    readonly periodLabel = computed(() => {
-        if (!this.rangeActive()) return this.monthLabel();
-        const fmt = (d: Date) => d.toLocaleDateString(this.dateLocale(), { day: 'numeric', month: 'short', year: 'numeric' });
-        return `${fmt(this.dateFrom()!)} - ${fmt(this.dateTo()!)}`;
-    });
-
-    onSelectionChange(keys: string[]): void {
-        this.selectedKeys.set(keys);
-        // A category chosen for a previous selection must not carry over to a
-        // new one whose type no longer allows it.
-        if (!this.bulkCategoryOptions().some(o => o.value === this.bulkCategory())) {
-            this.bulkCategory.set(null);
-        }
-    }
-
-    private clearSelection(): void {
-        this.selectedKeys.set([]);
-        this.bulkCategory.set(null);
-        this.table?.clearSelection();
-    }
-
-    private selectedRecords(): TransactionRecord[] {
-        const keys = new Set(this.selectedKeys());
-        return this.tableRows().filter(r => keys.has(r.key)).map(r => r.rec);
-    }
-
-    async bulkDelete(): Promise<void> {
-        const recs = this.selectedRecords().filter(r => !!r.id);
-        if (!recs.length) return;
-        const ok = await this.feedback.confirm({
-            title: this.t('transactions.confirm.header'),
-            message: this.t('transactions.table.bulkDeleteConfirm', { n: recs.length }),
-            confirmLabel: this.t('transactions.confirm.accept'),
-            cancelLabel: this.t('transactions.confirm.reject'),
-        });
-        if (!ok) return;
-        const ids = recs.map(r => r.id!);
-        this.isBulking.set(true);
-        try {
-            await this.transactionsService.deleteRecords(ids);
-            const gone = new Set(ids);
-            this.allRecords.update(rs => rs.filter(r => !r.id || !gone.has(r.id)));
-            // Each delete moves an account balance (S11-TX-1), so the rest of
-            // the app has to hear about it.
-            this.state.notifyTransactionsUpdated();
-            this.feedback.success(this.t('transactions.table.bulkDeleted', { n: ids.length }));
-            this.clearSelection();
-        } catch {
-            this.feedback.error(this.t('transactions.toast.deleteError'));
-            // The server is the truth after a partial failure.
-            this.transactionsService.clearCache();
-            this.load();
-        } finally {
-            this.isBulking.set(false);
-        }
-    }
-
-    async bulkRecategorize(): Promise<void> {
-        const cat = this.bulkCategory();
-        const recs = this.selectedRecords().filter(r => !!r.id && r.category !== cat);
-        if (!cat || !recs.length) return;
-        this.isBulking.set(true);
-        let failed = 0;
-        for (const rec of recs) {
-            try {
-                // `updateRecord` sends `amount` as the NATIVE amount (paired
-                // with `currency`), but TransactionRecord.amount is EUR-base
-                // everywhere else in the app. Spreading the record unchanged
-                // therefore posts the EUR value as XOF and divides every
-                // amount by the 655.957 peg: a 1 000 XOF row was rewritten to
-                // 1.52 and the account balance moved with it. The edit dialog
-                // avoids this by sending the native form input, so a bulk edit
-                // has to do the same explicitly.
-                await this.transactionsService.updateRecord({
-                    ...rec,
-                    amount: rec.nativeAmount ?? rec.amount,
-                    category: cat,
-                });
-            } catch {
-                failed++;
-            }
-        }
-        this.isBulking.set(false);
-        if (failed) {
-            this.messageService.add({ severity: 'error', summary: this.t('common.error'), detail: this.t('transactions.table.bulkPartial', { n: failed }), life: 4000 });
-        } else {
-            this.messageService.add({ severity: 'success', summary: this.t('common.success'), detail: this.t('transactions.table.bulkRecategorized', { n: recs.length }), life: 3000 });
-        }
-        this.clearSelection();
-        // Re-read rather than patching locally: updateRecord can normalise
-        // fields server-side, and a partial failure leaves a mixed state.
-        this.transactionsService.clearCache();
-        this.state.notifyTransactionsUpdated();
-        this.load();
-    }
-
-    /**
-     * CSV of the CURRENT filter, built client-side.
-     *
-     * `GET /export/transactions.csv` takes no parameters (verified in the
-     * OpenAPI schema), so it can only ever return everything. Exporting the
-     * filtered view is the whole point of the filters, so the rows are
-     * serialised here from what the table is showing.
-     *
-     * Amounts are converted EUR-base to the display currency exactly once, then
-     * written as a raw machine-readable number (dot decimal, no grouping)
-     * rather than through a CurrencyService formatter. A formatted FR string is
-     * "1 234,56" with a narrow no-break space, which no spreadsheet parses back
-     * into a number, and the mask in format()/formatNumber() would export
-     * bullets whenever the privacy eye happened to be shut.
-     */
-    exportCsv(): void {
-        const rows = this.tableRows();
-        if (!rows.length) return;
-        const cur = this.cs.currencyCode();
-        const head = [
-            this.t('common.date'),
-            this.t('transactions.table.description'),
-            this.t('common.type'),
-            this.t('transactions.table.category'),
-            this.t('common.account'),
-            `${this.t('common.amount')} (${cur})`,
-        ];
-        const body = rows.map(r => [
-            r.date,
-            r.label,
-            r.type,
-            r.catLabel,
-            r.account,
-            this.cs.convert(r.signed).toFixed(2),
-        ]);
-        const csv = [head, ...body]
-            .map(cols => cols.map(c => this.csvCell(c)).join(','))
-            .join('\r\n');
-        // BOM so Excel opens the accented FR labels as UTF-8 instead of mojibake.
-        this.downloadCsv('﻿' + csv);
-    }
-
-    /**
-     * RFC 4180 quoting, plus the CSV-injection guard: a cell starting with
-     * = + - @ is run as a formula by Excel/Sheets on open, so it gets an
-     * apostrophe prefix that forces it to text.
-     *
-     * A plain negative number is EXEMPT. It trips the `-` rule but is not a
-     * formula, and prefixing it shipped `'-20000.00`, which imports as text and
-     * makes every expense unsummable, i.e. it broke the one thing the export is
-     * for. Only a leading `-` followed by something non-numeric is a risk.
-     */
-    private csvCell(value: string): string {
-        const s = String(value ?? '');
-        const plainNumber = /^-?\d+(\.\d+)?$/.test(s);
-        const risky = !plainNumber && /^[=+\-@\t\r]/.test(s);
-        const out = risky ? `'${s}` : s;
-        return `"${out.replace(/"/g, '""')}"`;
-    }
-
-    /** ISO period in the filename: sorts chronologically in a file listing, and
-     *  survives accents (a localised "1 août 2026" slugged to "1-ao-t-2026"). */
-    private periodSlug(): string {
-        if (this.rangeActive()) {
-            const from = this.toDateStr(this.dateFrom()!);
-            const to   = this.toDateStr(this.dateTo()!);
-            return from <= to ? `${from}_${to}` : `${to}_${from}`;
-        }
-        return this.selectedYearMonth();
-    }
-
-    private downloadCsv(content: string): void {
-        const slug = this.periodSlug();
-        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `omaad-transactions-${slug || 'export'}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
     }
 }
