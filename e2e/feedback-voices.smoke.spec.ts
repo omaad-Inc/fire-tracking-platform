@@ -125,18 +125,18 @@ test('feedback: confirm gates the mutation, success and failure are different su
     // rows" once the month was empty. A guard must not consume the fixture it
     // depends on.
     await page.goto('/fr/pages/transaction');
-    await expect(page.getByTestId('tx-filter-bar')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('tx-month-nav')).toBeVisible({ timeout: 30_000 });
     const seeded = 'ZZ voices seed ' + Date.now();
     await seedTransaction(page, seeded);
 
     await page.goto('/fr/pages/transaction?q=' + encodeURIComponent('ZZ voices seed'));
-    const rows = page.getByTestId('tx-row');
+    const rows = page.getByTestId('tx-card');
     await expect(rows.first()).toBeVisible({ timeout: 30_000 });
     const before = await rows.count();
     expect(before, 'seeding a throwaway transaction failed').toBeGreaterThan(0);
 
     // ── 1. Confirm is the ONE decision surface ────────────────────────────
-    await page.locator('[data-testid="tx-row"] button[aria-label="Supprimer"]').first().click();
+    await page.locator('[data-testid="tx-card"] button:has(i.pi-trash)').first().click();
     const sheet = page.getByTestId('confirm-sheet');
     await expect(sheet).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('confirm-title')).not.toBeEmpty();
@@ -150,7 +150,7 @@ test('feedback: confirm gates the mutation, success and failure are different su
     expect(await rows.count(), 'cancel deleted a row').toBe(before);
 
     // Dismissing by the mask counts as declining too, never as accepting.
-    await page.locator('[data-testid="tx-row"] button[aria-label="Supprimer"]').first().click();
+    await page.locator('[data-testid="tx-card"] button:has(i.pi-trash)').first().click();
     await expect(sheet).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(sheet).toHaveCount(0);
@@ -159,10 +159,10 @@ test('feedback: confirm gates the mutation, success and failure are different su
 
     // The mask must be released, or the app is unusable after every confirm.
     await expect(page.locator('.p-overlay-mask')).toHaveCount(0, { timeout: 5000 });
-    await expect(page.getByTestId('tx-export')).toBeEnabled();
+    await expect(page.getByTestId('tx-month-nav')).toBeVisible();
 
     // ── 3. Success is its own surface, and it leaves on its own ───────────
-    await page.locator('[data-testid="tx-row"] button[aria-label="Supprimer"]').first().click();
+    await page.locator('[data-testid="tx-card"] button:has(i.pi-trash)').first().click();
     await expect(sheet).toBeVisible();
     await page.getByTestId('confirm-accept').click();
     const success = page.getByTestId('success-sheet');

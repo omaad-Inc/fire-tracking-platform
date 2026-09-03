@@ -5,8 +5,8 @@ import { expect, Page, test } from '@playwright/test';
  *
  *  - Transactions are searchable: typing a transaction's label lists it under
  *    a "Transactions" group, Enter lands on the transactions page scoped to
- *    its month and pre-searched on that label (desktop, where the table gives
- *    us a label to read).
+ *    its month and pre-searched on that label (desktop, where the card list
+ *    gives us a label to read).
  *  - `?` outside a field opens the palette on its keyboard legend; typing
  *    hides the legend. The footer legend is on every keyboard-sized open.
  *  - Settings > Preferences surfaces the palette with the platform hint
@@ -108,7 +108,7 @@ test.describe('palette follow-ups', () => {
                 await search.fill('');
 
                 // Transactions search: read a real label from the table, find it, land scoped.
-                const firstLabel = (await page.getByTestId('tx-row').first().locator('td:nth-child(3)').innerText()).trim();
+                const firstLabel = (await page.getByTestId('tx-card-label').first().innerText()).trim();
                 expect(firstLabel.length, `${label} a transaction label to search for`).toBeGreaterThan(0);
                 await page.locator('#main-content').focus();
                 const apple = await page.evaluate(() => /Mac|iPhone|iPad/.test(navigator.platform));
@@ -122,8 +122,7 @@ test.describe('palette follow-ups', () => {
                 await expect(page.locator('[data-testid=palette-list] p', { hasText: /^transactions$/i })).toBeVisible();
                 await txRow.click();
                 await expect(page, `${label} lands on the month, pre-searched`).toHaveURL(/\/pages\/transaction\?.*year=\d{4}.*month=\d{1,2}.*q=/, { timeout: 20_000 });
-                await expect(page.getByTestId('tx-count')).toContainText(/\d/);
-                await expect(page.getByTestId('tx-row').first()).toContainText(firstLabel.slice(0, 24), { timeout: 20_000 });
+                await expect(page.getByTestId('tx-card-label').first()).toContainText(firstLabel.slice(0, 24), { timeout: 20_000 });
             } catch (e) {
                 // Keep the assertion detail (locator, expected/received), not only the custom label.
                 const lines = (e as Error).message.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 4);
