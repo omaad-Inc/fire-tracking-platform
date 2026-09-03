@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-09-01",
+  "updated_at": "2026-09-03",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -23,6 +23,17 @@
       "ticker": "SHEC",
       "nom": "Vivo Energy CI",
       "secteur": "Distribution"
+    },
+    {
+      "emetteur": "SODECI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-16",
+      "date_ex_dividende": "2026-09-15",
+      "montant_net_fcfa": 525.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260902_-_avis_ndeg259_brvmdg_-_paiement_de_dividendes_exercice_2025_-_sode_ci.pdf",
+      "ticker": "SDCC",
+      "nom": "Sodeci",
+      "secteur": "Utilities"
     },
     {
       "emetteur": "NEI-CEDA CI",
@@ -627,50 +638,6 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20240515_-_avis_ndeg107_brvmdg_-_paiement_de_dividendes_-_exercice_2024_-_ecobank_ci.pdf",
       "ticker": "ECEC",
       "nom": "Ecobank CI",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA NG",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 209.25,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg112_brvmdg_-_paiement_de_dividendes_exo_2024_-_boan.pdf",
-      "ticker": "BOAN",
-      "nom": "BOA Niger",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA ML",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 237.15,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250617_-_avis_ndeg137_brvmdg_-_paiement_de_dividendes_exo_2024_-_boam_modification_du_montant_du_dividence.pdf",
-      "ticker": "BOAM",
-      "nom": "BOA Mali",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA ML",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 237.5,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg111_brvmdg_-_paiement_de_dividendes_exo_2024_-_boam.pdf",
-      "ticker": "BOAM",
-      "nom": "BOA Mali",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA BN",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 468.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg113_brvmdg_-_paiement_de_dividendes_exo_2024_-_boab.pdf",
-      "ticker": "BOAB",
-      "nom": "BOA Bénin",
       "secteur": "Banque"
     }
   ]
