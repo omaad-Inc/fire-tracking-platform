@@ -52,6 +52,15 @@ test.describe('progression charts', () => {
         await expect(canvas(page)).toBeVisible({ timeout: 30_000 });
         await expect(activeChip(page), 'default range must be 1M').toHaveText('1M');
 
+        // 1M is a ROLLING month drawn day by day: the x-axis must span two
+        // different days (a month ago and today), not a single monthly point.
+        // With one point the start and end labels collapse to the same month.
+        const xLabels = card(page).locator('.relative.h-6 span');
+        await expect(xLabels.first()).not.toHaveText('', { timeout: 15_000 });
+        const [xStart, xEnd] = await Promise.all([xLabels.nth(0).innerText(), xLabels.nth(2).innerText()]);
+        expect(xStart.trim(), 'a day-granularity start label reads like "3 août"').toMatch(/^\d{1,2} /);
+        expect(xStart.trim(), 'the window must span more than one day').not.toBe(xEnd.trim());
+
         // ── SPA revisit: zero requests for THIS chart, skeleton never shown. ──
         // Leave via the sidebar first; the listener is armed only for the way
         // back, otherwise it counts the dashboard's own first-load fetches (the

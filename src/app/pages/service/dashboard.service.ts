@@ -8,6 +8,7 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
 import { AssetsStateService } from './assets-state.service';
 import { cachedResource, CachedResource } from '../../core/util/cached-resource';
+import { granularityFor } from '../../core/util/chart-range';
 
 export interface DashboardStats {
     netWorth: number;
@@ -439,12 +440,15 @@ export class DashboardService {
             // reported a value for every month that was never measured and
             // could not react to a transaction. months = 0 is the UI's "Max".
             try {
+                // A one-month window is drawn day by day (rolling, ending today);
+                // longer windows keep one point per month. See chart-range.ts.
+                const granularity = granularityFor(months);
                 const rows = await firstValueFrom(
-                    this.api.getWorthProgression(months === 0 ? 120 : months)
+                    this.api.getWorthProgression(months === 0 ? 120 : months, granularity)
                 );
                 if (rows?.length) {
                     return rows.map(r => ({
-                        label: this.formatDateLabel(r.date),
+                        label: granularity === 'day' ? this.formatDayLabel(r.date) : this.formatDateLabel(r.date),
                         value: Math.round(r.total_assets),
                     }));
                 }
@@ -477,11 +481,12 @@ export class DashboardService {
         // purchase_date — every livret and most assurance vie rows — so the
         // Épargne chart never moved however much money went through it.
         // months = 0 means "Max" in the UI; the API counts real months.
+        const granularity = granularityFor(months);
         const history = await firstValueFrom(
-            this.api.getCategoryHistory(categories, months === 0 ? 120 : months)
+            this.api.getCategoryHistory(categories, months === 0 ? 120 : months, granularity)
         );
         return history.points.map(p => ({
-            label: this.formatMonthLabel(p.date),
+            label: granularity === 'day' ? this.formatDayLabel(p.date) : this.formatMonthLabel(p.date),
             value: p.value,
         }));
     }
@@ -489,6 +494,14 @@ export class DashboardService {
     /** 'YYYY-MM-DD' -> 'Août 2026', matching the other charts' labels. Built
      *  from the parts: `new Date('2026-08-31')` parses as UTC and can render as
      *  the previous day (hence the previous month) west of GMT. */
+    /** "3 août" / "Aug 3": the label for a day-granularity point. */
+    private formatDayLabel(iso: string): string {
+        const [y, m, d] = iso.split('-').map(Number);
+        const names = this.monthNames();
+        if (!y || !m || !d) return iso;
+        return this.i18n.lang() === 'fr' ? `${d} ${names[m - 1].toLowerCase()}` : `${names[m - 1]} ${d}`;
+    }
+
     private formatMonthLabel(iso: string): string {
         const [y, m] = iso.split('-').map(Number);
         const names = this.monthNames();

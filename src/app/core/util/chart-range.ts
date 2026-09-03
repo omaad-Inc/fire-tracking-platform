@@ -32,3 +32,15 @@ export const CHART_RANGES: readonly ChartRange[] = [
  * constant is the single place to move the default.
  */
 export const DEFAULT_CHART_RANGE_MONTHS = 1;
+
+/**
+ * Windows this short (in months) are drawn DAY BY DAY, as a rolling window
+ * ending today: "1M" on 3 September runs from 3 August. Longer windows keep
+ * one point per month. Owner decision 2026-09-03, after the 1M default drew a
+ * single monthly point and an empty chart.
+ */
+export const DAILY_WINDOW_MAX_MONTHS = 1;
+
+export function granularityFor(months: number): 'month' | 'day' {
+    return months > 0 && months <= DAILY_WINDOW_MAX_MONTHS ? 'day' : 'month';
+}
