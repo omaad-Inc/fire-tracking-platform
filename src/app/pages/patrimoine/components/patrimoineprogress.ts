@@ -2,14 +2,14 @@ import { isPlatformBrowser, NgClass, DecimalPipe } from '@angular/common';
 import { prefersReducedMotion } from '../../../core/theme/chart-theme';
 import { Component, OnInit, OnDestroy, PLATFORM_ID, ChangeDetectorRef, computed, inject, effect, signal } from '@angular/core';
 import { ChartModule } from 'primeng/chart';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { I18nService } from '../../../i18n/i18n.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { AssetsStateService } from '../../service/assets-state.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
-import { ApiService } from '../../../core/services/api.service';
 import { LayoutService } from '../../../layout/service/layout.service';
+import { CHART_RANGES, DEFAULT_CHART_RANGE_MONTHS } from '../../../core/util/chart-range';
 
 @Component({
     selector: 'app-patrimoine-progress',
@@ -120,20 +120,58 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     private stateService = inject(AssetsStateService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
-    private api = inject(ApiService);
     private layoutService = inject(LayoutService);
     
     private subscription?: Subscription;
     
-    loading = signal(true);
-    dataPoints = signal<ChartDataPoint[]>([]);
-    currentValue = signal(0);
-    currentDate = signal('');
+    /**
+     * The progression for the selected range, as the live cached resource.
+     *
+     * Everything drawn is DERIVED from it rather than copied out of one awaited
+     * Promise, which is what fixes "the chart reloads on every visit": the
+     * resource paints from the device snapshot, then memory, and folds the
+     * background revalidation in when it lands. The old code flipped a
+     * `loading` flag to true before awaiting, so the skeleton covered the chart
+     * on every visit however warm the cache was, and it also awaited a raw,
+     * uncached fetch of up to 200 assets in the same Promise.all, so even a
+     * cached progression waited for that full round trip.
+     */
+    private readonly resource = computed(() =>
+        this.dashboardService.totalAssetsProgression(this.selectedMonths()));
 
-    /** Variation over the SELECTED range (first → last point, EUR base); the
+    dataPoints = computed<ChartDataPoint[]>(() => this.resource().data() ?? []);
+
+    /** Skeleton ONLY while there is nothing to draw yet. A range with a snapshot
+     *  or a warm cache never shows it; a cold error falls to the empty state
+     *  rather than spinning forever. */
+    loading = computed(() =>
+        this.resource().data() === null && this.resource().status() !== 'error');
+
+    /**
+     * Headline gross total. The persisted dashboard summary is the same number
+     * the home hero shows and costs no request here (loadDashboard dedups). It
+     * replaces a 200-asset fetch summed client-side, and it is still the REAL
+     * total, never the last chart point, which is what that fetch guarded.
+     */
+    currentValue = computed(() => {
+        const total = this.dashboardService.summaryData()?.total_assets;
+        if (total != null) return total;
+        const pts = this.dataPoints();
+        return pts.length ? pts[pts.length - 1].value : 0;
+    });
+    currentDate = computed(() => { this.i18n.lang(); return this.formatCurrentDate(); });
+
+    /** Variation over the SELECTED range (first point → real total, EUR base); the
      *  label follows the range (1M → "Variation sur 1 mois", Max → période). */
-    variationAbs = signal<number | null>(null);
-    variationPct = signal<number | null>(null);
+    variationAbs = computed<number | null>(() => {
+        const pts = this.dataPoints();
+        return pts.length ? this.currentValue() - pts[0].value : null;
+    });
+    variationPct = computed<number | null>(() => {
+        const first = this.dataPoints()[0]?.value;
+        const abs = this.variationAbs();
+        return abs !== null && first > 0 ? (abs / first) * 100 : null;
+    });
     absVariation(): number { return Math.abs(this.variationAbs() ?? 0); }
     absVariationPct(): number { return Math.abs(this.variationPct() ?? 0); }
 
@@ -158,21 +196,18 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
         return p.length > 1 ? p[p.length - 1].label : '';
     });
 
-    readonly ranges = [
-        { label: '1M', months: 1 },
-        { label: '3M', months: 3 },
-        { label: '6M', months: 6 },
-        { label: '1A', months: 12 },
-        { label: 'Max', months: 0 },
-    ];
+    /** Shared chips + shared default (core/util/chart-range.ts); EN reads 1Y. */
+    get ranges() {
+        return CHART_RANGES.map(r => ({ label: this.t(`common.chartRange.${r.key}`), months: r.months }));
+    }
 
-    selectedMonths = signal(0);
+    selectedMonths = signal(DEFAULT_CHART_RANGE_MONTHS);
 
     setRange(months: number) {
         this.selectedMonths.set(months);
-        this.loadData();
+        void this.resource().load();
     }
-    
+
     data: any;
     options: any;
 
@@ -188,12 +223,15 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
     });
 
     ngOnInit() {
-        this.loadData();
-        
-        // Subscribe to asset updates to refresh the chart (invalidate cache first)
+        void this.resource().load();
+        // The headline total reads the persisted summary; make sure it is loaded
+        // (dedups with the home page, and paints from its own snapshot).
+        void this.dashboardService.loadDashboard();
+
+        // Asset writes: drop freshness (keeps the drawn value, no flash) and refetch.
         this.subscription = this.stateService.assetsUpdated$.subscribe(() => {
             this.dashboardService.invalidateCache();
-            this.loadData();
+            void this.resource().load();
         });
     }
     
@@ -206,40 +244,6 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
         return `${this.i18n.t('patrimoine.grossWorth')}: ${this.cs.format(this.currentValue(), 0)}`;
     }
 
-    private async loadData() {
-        this.loading.set(true);
-        try {
-            // Fetch chart progression and actual assets in parallel.
-            const [progression, assets] = await Promise.all([
-                this.dashboardService.getTotalAssetsProgression(this.selectedMonths()),
-                firstValueFrom(this.api.getAssets(0, 200)),
-            ]);
-            this.dataPoints.set(progression);
-
-            if (progression.length > 0) {
-                // Always derive the displayed total from the real current_value of each asset,
-                // never from the last interpolated chart point which can be slightly off.
-                const realTotal = assets.reduce((sum, a) => sum + this.cs.toEurFromNative(a.current_value, a.currency), 0);
-                this.currentValue.set(realTotal);
-                this.currentDate.set(this.formatCurrentDate());
-
-                // Variation over the selected range: real total now vs the range's first point.
-                const first = progression[0].value;
-                const delta = realTotal - first;
-                this.variationAbs.set(delta);
-                this.variationPct.set(first > 0 ? (delta / first) * 100 : null);
-
-                // No direct initChart(): themeEffect fires on the dataPoints
-                // write above — a single build path for data AND theme changes.
-            }
-        } catch (error) {
-            console.error('Error loading total assets progression:', error);
-            this.dataPoints.set([]);
-        } finally {
-            this.loading.set(false);
-        }
-    }
-    
     private formatCurrentDate(): string {
         const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
         return new Date().toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });

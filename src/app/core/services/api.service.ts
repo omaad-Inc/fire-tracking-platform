@@ -1287,10 +1287,11 @@ export class ApiService {
     /** The combined REAL value series for a group of asset categories, in EUR
      *  base (a group can mix currencies, so the server converts once). Backs the
      *  patrimoine category chart. */
-    getCategoryHistory(categories: string[], months = 12): Observable<CategoryHistory> {
-        const params = new HttpParams()
+    getCategoryHistory(categories: string[], months = 12, granularity: 'month' | 'day' = 'month'): Observable<CategoryHistory> {
+        let params = new HttpParams()
             .set('categories', categories.join(','))
             .set('months', months.toString());
+        if (granularity === 'day') params = params.set('granularity', 'day');
         return this.http.get<CategoryHistory>(`${this.apiUrl}/assets/history/by-category`, { params });
     }
 
@@ -1664,10 +1665,15 @@ export class ApiService {
             ?? this.http.get<AssetDistribution[]>(`${this.apiUrl}/dashboard/expense-distribution`);
     }
 
-    getWorthProgression(months = 12): Observable<WorthProgression[]> {
+    /** `granularity: 'day'` draws a rolling window of one point per calendar
+     *  day (`months` back from today) instead of one snapshot per month. Only
+     *  sent when asked, so the default URL, and the frozen public-share payload
+     *  keyed on it, are unchanged. */
+    getWorthProgression(months = 12, granularity: 'month' | 'day' = 'month'): Observable<WorthProgression[]> {
         const s = this.shared<WorthProgression[]>(b => b.worth_progression);
         if (s) return s;
-        const params = new HttpParams().set('months', months.toString());
+        let params = new HttpParams().set('months', months.toString());
+        if (granularity === 'day') params = params.set('granularity', 'day');
         return this.http.get<WorthProgression[]>(`${this.apiUrl}/dashboard/worth-progression`, { params });
     }
 

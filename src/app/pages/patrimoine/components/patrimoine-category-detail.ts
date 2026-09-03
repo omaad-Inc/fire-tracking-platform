@@ -5,6 +5,7 @@ import { ChartModule } from 'primeng/chart';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { CHART_RANGES, DEFAULT_CHART_RANGE_MONTHS } from '../../../core/util/chart-range';
 import { NavService } from '../../../core/services/nav.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -338,13 +339,11 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     totalDeltaAbs = 0;
     totalDeltaPct = 0;
 
-    readonly ranges = [
-        { label: '3M', months: 3 },
-        { label: '6M', months: 6 },
-        { label: '1A', months: 12 },
-        { label: 'Max', months: 0 },
-    ];
-    selectedMonths = 0;
+    /** Shared chips + shared default (core/util/chart-range.ts); EN reads 1Y. */
+    get ranges() {
+        return CHART_RANGES.map(r => ({ label: this.i18n.t(`common.chartRange.${r.key}`), months: r.months }));
+    }
+    selectedMonths: number = DEFAULT_CHART_RANGE_MONTHS;
 
     get todayLabel(): string {
         const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';

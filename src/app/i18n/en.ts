@@ -2,6 +2,9 @@ import type { Dict } from './fr';
 
 export const EN: Dict = {
   common: {
+    // Range chips shared by every progression chart (Patrimoine, category
+    // detail, Objectifs). Only the year label differs by language.
+    chartRange: { m1: '1M', m3: '3M', m6: '6M', y1: '1Y', max: 'Max' },
     viewMore: 'View more',
     search: 'Search...',
     cancel: 'Cancel',

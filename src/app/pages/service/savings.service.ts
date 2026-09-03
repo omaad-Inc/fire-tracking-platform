@@ -72,7 +72,12 @@ export class SavingsService {
         )),
     );
     private progressResource = cachedResource<SavingsSeriesPoint[]>(
-        () => this.computeProgressClientSide(),
+        () => this.computeProgressClientSide('month'),
+    );
+    /** The same curve sampled once per day over the last month (the 1M chip).
+     *  A separate resource so the two windows never overwrite each other. */
+    private progressDailyResource = cachedResource<SavingsSeriesPoint[]>(
+        () => this.computeProgressClientSide('day'),
     );
 
     constructor() {
@@ -204,8 +209,8 @@ export class SavingsService {
     }
 
     /** Get savings progression series (cached, computed client-side). */
-    getProgressSeries(): Promise<SavingsSeriesPoint[]> {
-        return this.progressResource.load();
+    getProgressSeries(granularity: 'month' | 'day' = 'month'): Promise<SavingsSeriesPoint[]> {
+        return (granularity === 'day' ? this.progressDailyResource : this.progressResource).load();
     }
 
     /**
@@ -215,7 +220,7 @@ export class SavingsService {
      * accelerating growth curve (concave up) starting from its creation date or
      * 12 months ago, whichever is earlier.
      */
-    private async computeProgressClientSide(): Promise<SavingsSeriesPoint[]> {
+    private async computeProgressClientSide(granularity: 'month' | 'day'): Promise<SavingsSeriesPoint[]> {
         let goals: SavingGoal[];
         try {
             goals = await firstValueFrom(this.api.getSavingGoals(0, 200));
@@ -244,19 +249,30 @@ export class SavingsService {
 
         const startDate = earliestGoal < fixedStart ? earliestGoal : fixedStart;
 
-        // Build monthly points from startDate up to today
         const monthPoints: Date[] = [];
-        let cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-        while (cur <= now) {
-            monthPoints.push(new Date(cur));
-            cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
-        }
-        // Ensure today is always the last point so the final value = total current_amount
-        const lastMonth = monthPoints[monthPoints.length - 1];
-        if (lastMonth.getMonth() !== now.getMonth() || lastMonth.getFullYear() !== now.getFullYear()) {
-            monthPoints.push(new Date(now));
-        } else {
+        if (granularity === 'day') {
+            // Rolling month, one sample per calendar day, ending today (owner
+            // rule 2026-09-03: "1M" on 3 September runs from 3 August). Same
+            // curve as the monthly shape, only sampled finer.
+            const from = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate(), 12);
+            for (let d = new Date(from); d <= now; d.setDate(d.getDate() + 1)) {
+                monthPoints.push(new Date(d));
+            }
             monthPoints[monthPoints.length - 1] = new Date(now);
+        } else {
+            // Build monthly points from startDate up to today
+            let cur = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+            while (cur <= now) {
+                monthPoints.push(new Date(cur));
+                cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1);
+            }
+            // Ensure today is always the last point so the final value = total current_amount
+            const lastMonth = monthPoints[monthPoints.length - 1];
+            if (lastMonth.getMonth() !== now.getMonth() || lastMonth.getFullYear() !== now.getFullYear()) {
+                monthPoints.push(new Date(now));
+            } else {
+                monthPoints[monthPoints.length - 1] = new Date(now);
+            }
         }
 
         const MONTHS = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
@@ -284,7 +300,9 @@ export class SavingsService {
             const isLast = idx === monthPoints.length - 1;
             const label = isLast
                 ? 'Auj.'
-                : (showYear ? `${MONTHS[pt.getMonth()]} ${pt.getFullYear()}` : MONTHS[pt.getMonth()]);
+                : granularity === 'day'
+                    ? `${pt.getDate()} ${MONTHS[pt.getMonth()].toLowerCase()}`
+                    : (showYear ? `${MONTHS[pt.getMonth()]} ${pt.getFullYear()}` : MONTHS[pt.getMonth()]);
 
             return { label, value: Math.round(total) };
         });
@@ -342,6 +360,7 @@ export class SavingsService {
         this.goalsResource.invalidate();
         this.rawGoalsResource.invalidate();
         this.progressResource.invalidate();
+        this.progressDailyResource.invalidate();
     }
 
     private invalidateTransactionDerived(): void {
@@ -379,5 +398,6 @@ export class SavingsService {
         this.rawGoalsResource.reset();
         this.transactionsResource.reset();
         this.progressResource.reset();
+        this.progressDailyResource.reset();
     }
 }

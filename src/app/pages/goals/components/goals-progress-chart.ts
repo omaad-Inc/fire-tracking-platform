@@ -7,6 +7,7 @@ import { SavingsService, SavingsSeriesPoint } from '../../service/savings.servic
 import { AssetsStateService } from '../../service/assets-state.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { CHART_RANGES, DEFAULT_CHART_RANGE_MONTHS, granularityFor } from '../../../core/util/chart-range';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LayoutService } from '../../../layout/service/layout.service';
 
@@ -71,20 +72,17 @@ export class SavingsProgress implements OnInit, OnDestroy {
     allPoints = signal<SavingsSeriesPoint[]>([]);
     currentValue = signal(0);
     currentDate = signal('');
-    selectedMonths = signal(0);
+    selectedMonths = signal(DEFAULT_CHART_RANGE_MONTHS);
 
     data: any;
     options: any;
 
     private subscription?: Subscription;
 
-    readonly ranges = [
-        { label: '1M', months: 1 },
-        { label: '3M', months: 3 },
-        { label: '6M', months: 6 },
-        { label: '1A', months: 12 },
-        { label: 'Max', months: 0 },
-    ];
+    /** Shared chips + shared default (core/util/chart-range.ts); EN reads 1Y. */
+    get ranges() {
+        return CHART_RANGES.map(r => ({ label: this.i18n.t(`common.chartRange.${r.key}`), months: r.months }));
+    }
 
     themeEffect = effect(() => {
         this.layout.isDarkTheme();               // tracked: theme flips rebuild too
@@ -111,13 +109,17 @@ export class SavingsProgress implements OnInit, OnDestroy {
 
     setRange(months: number) {
         this.selectedMonths.set(months);
-        this.buildChart();
+        // The 1M chip is a differently sampled series (one point per day), not
+        // a slice of the monthly one, so a range change may need a load.
+        void this.loadData();
     }
 
     private async loadData() {
-        this.loading.set(true);
+        // Skeleton only when there is nothing drawn yet: a revisit with the
+        // series still in memory must not blank the chart for the round trip.
+        if (this.allPoints().length === 0) this.loading.set(true);
         try {
-            const series = await this.savingsService.getProgressSeries();
+            const series = await this.savingsService.getProgressSeries(granularityFor(this.selectedMonths()));
             this.allPoints.set(series);
             if (series.length > 0) {
                 const latest = series[series.length - 1];
@@ -136,7 +138,8 @@ export class SavingsProgress implements OnInit, OnDestroy {
     private getVisiblePoints(): SavingsSeriesPoint[] {
         const all = this.allPoints();
         const months = this.selectedMonths();
-        if (months === 0 || all.length <= months) return all;
+        // Day-granularity series are already windowed by the service.
+        if (months === 0 || granularityFor(months) === 'day' || all.length <= months) return all;
         return all.slice(all.length - months);
     }
 
