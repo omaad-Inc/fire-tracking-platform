@@ -100,7 +100,6 @@ import { I18nService } from '../../i18n/i18n.service';
 
             <!-- Band 3: debts (what you owe) -->
             <section class="omaad-enter omaad-d3 mt-8 md:mt-10 order-6" data-testid="home-debts">
-                <app-section-header [title]="t('home.sections.debts')" [subtitle]="t('home.sections.debtsSub')" />
                 <app-debts-overview />
             </section>
         </div>
