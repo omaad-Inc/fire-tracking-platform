@@ -71,9 +71,10 @@ import { I18nService } from '../../i18n/i18n.service';
                  does not see this stack of empty cards at all: the home is hero +
                  onboarding until they add their first data. -->
             @if (!showOnboarding()) {
-                <!-- Band 2: this month (activity) -->
-                <section class="omaad-enter omaad-d2 mt-8 md:mt-10 order-5" data-testid="home-month">
-                    <app-section-header [title]="t('home.sections.month')" [subtitle]="t('home.sections.monthSub')" />
+                <!-- Band 2: this month (activity). No band header here (owner call,
+                     2026-09-03): the widget titles itself and the extra "Ce mois-ci /
+                     Vos transactions recentes" line broke the visual rhythm. -->
+                <section class="omaad-enter omaad-d2 order-5" data-testid="home-month">
                     <app-recent-transactions-widget />
                 </section>
             }
@@ -83,9 +84,10 @@ import { I18nService } from '../../i18n/i18n.service';
         @if (!showOnboarding()) {
         <div class="contents xl:block xl:col-start-9 xl:col-span-4">
             <!-- Band 1: where you stand (health score + savings momentum).
-                 Two-up at md; the rail at xl stacks them again. -->
+                 Two-up at md; the rail at xl stacks them again. No band header
+                 (owner call, 2026-09-03): the cards title themselves and the
+                 header broke the alignment with the hero column. -->
             <section class="omaad-enter omaad-d1 order-4" data-testid="home-situation">
-                <app-section-header [title]="t('home.sections.situation')" [subtitle]="t('home.sections.situationSub')" />
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-4 md:gap-6 lg:gap-8">
                     <div data-testid="home-score">
                         <app-wealth-score-widget />
