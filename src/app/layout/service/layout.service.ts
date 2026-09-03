@@ -1,6 +1,7 @@
 import { Injectable, effect, signal, computed, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject } from 'rxjs';
+import { DESKTOP, mediaQuery } from '../../core/util/breakpoint';
 
 // Storage key for preferences
 const STORAGE_KEY = 'omaad-layout-config';
@@ -87,7 +88,26 @@ export class LayoutService {
     isDarkTheme = computed(() => this.layoutConfig()?.darkTheme ?? true);
     isOverlay = computed(() => this.layoutConfig()?.menuMode === 'overlay');
 
+    /**
+     * Desktop shell or phone shell, live (P3-3). A matchMedia signal on the
+     * shell's own breakpoint, so JS agrees with the CSS that swaps sidebar and
+     * bottom bar, and a window dragged across 991px updates without a reload.
+     * Was `window.innerWidth > 991` read once per call (and a throw during
+     * prerender); now a constant `false` there, like every mediaQuery().
+     */
+    readonly isDesktop = mediaQuery(DESKTOP);
+
     constructor() {
+        // Crossing INTO desktop drops phone-side drawer state: an open drawer or
+        // overlay has no desktop rendering and would otherwise pop back the next
+        // time the window shrinks. The desktop rail choice survives the trip.
+        effect(() => {
+            if (!this.isDesktop()) return;
+            const s = this.layoutState();
+            if (s.staticMenuMobileActive || s.overlayMenuActive) {
+                this.layoutState.update(prev => ({ ...prev, staticMenuMobileActive: false, overlayMenuActive: false, menuHoverActive: false }));
+            }
+        });
         // Apply dark mode immediately (this works without PrimeNG being fully ready)
         if (isPlatformBrowser(this.platformId)) {
             // Initialize theme mode if not set (for backward compatibility)
@@ -222,14 +242,6 @@ export class LayoutService {
                 this.overlayOpen.next(null);
             }
         }
-    }
-
-    isDesktop() {
-        return window.innerWidth > 991;
-    }
-
-    isMobile() {
-        return !this.isDesktop();
     }
 
     onConfigUpdate() {
