@@ -10,6 +10,7 @@ export const environment = {
     // flag stays wired as the kill switch — set false here (or per device via
     // the FeatureFlagsService override) to pull the chat without a rollback.
     featureFlags: {
-        aiChat: true
+        aiChat: true,
+        aiMock: false
     }
 };

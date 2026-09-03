@@ -14,9 +14,25 @@ import { expect, Page, test } from '@playwright/test';
 const LANG = 'fr';
 const EMAIL = process.env.E2E_EMAIL || 'demo@omaad.dev';
 const PASSWORD = process.env.E2E_PASSWORD || 'OmaadDemo2026!';
-// Defaults to the first seeded demo asset. The seed assigns ids 1..N, so '1'
-// is always present; override with E2E_ASSET_ID for a non-default dataset.
-const ASSET_ID = process.env.E2E_ASSET_ID || '1';
+// E2E_ASSET_ID pins an asset; otherwise the spec asks the API for the demo
+// user's first asset (P3-6). The old default '1' assumed the seed numbered
+// assets from 1, which no local database does any more (the demo user's assets
+// start at 3 here), so the edit flow was red on every machine without the env
+// var. The API, not the UI, so the lookup does not depend on render timing.
+const ASSET_ID_ENV = process.env.E2E_ASSET_ID;
+const API = process.env.E2E_API_URL || 'http://localhost:8000/api/v1';
+
+async function resolveAssetId(page: Page): Promise<string> {
+    if (ASSET_ID_ENV) return ASSET_ID_ENV;
+    const login = await page.request.post(`${API}/auth/login`, { form: { username: EMAIL, password: PASSWORD } });
+    expect(login.ok(), `API login for the asset lookup (${login.status()})`).toBe(true);
+    const token = ((await login.json()) as { access_token: string }).access_token;
+    const assets = await page.request.get(`${API}/assets`, { headers: { Authorization: `Bearer ${token}` } });
+    expect(assets.ok(), `GET /assets (${assets.status()})`).toBe(true);
+    const list = (await assets.json()) as Array<{ id: number }>;
+    expect(list.length, 'the demo user needs at least one asset').toBeGreaterThan(0);
+    return String(list[0].id);
+}
 
 async function login(page: Page) {
     await page.goto(`/${LANG}/auth/login`);
@@ -30,8 +46,9 @@ async function login(page: Page) {
 
 test('asset edit flow: open → change name → save → persists', async ({ page }) => {
     await login(page);
+    const assetId = await resolveAssetId(page);
 
-    await page.goto(`/${LANG}/pages/patrimoine/assets/${ASSET_ID}`);
+    await page.goto(`/${LANG}/pages/patrimoine/assets/${assetId}`);
 
     // Read-only render: the header name and at least one formatted amount show.
     await expect(page.locator('h1')).not.toBeEmpty();

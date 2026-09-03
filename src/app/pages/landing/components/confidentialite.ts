@@ -68,7 +68,9 @@ const PAGE_DESC =
                             (SASU) de droit sénégalais, qui est le responsable du traitement de vos données personnelles.
                         </p>
                         <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-5 text-sm leading-relaxed">
-                            <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">Entité légale</p>
+                            <!-- surface-500, not 400: 11px uppercase on the page ground needs 4.5:1
+                                 (400 measured 2.45:1, the one a11y red of the public sweep). -->
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-2">Entité légale</p>
                             <p class="font-semibold text-surface-900 dark:text-white">OMAAD, SASU</p>
                             <p class="text-surface-600 dark:text-surface-400">RCCM : SN.DKR.2026.B.32060 · NINEA : 013316006</p>
                             <p class="text-surface-600 dark:text-surface-400">VDN, Cité Sipres 2, Villa 271, Dakar, Sénégal</p>

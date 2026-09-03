@@ -27,7 +27,10 @@ async function openAssistant(page: Page, scenario?: string) {
     await grantAiConsent(page);
     // Fresh thread each test so assertions do not see prior runs.
     await page.evaluate(() => localStorage.removeItem('omaad_chat_thread_v1'));
-    await page.goto(`/fr/pages/assistant${scenario ? `?scenario=${scenario}` : ''}`);
+    // `ff_aiMock=1` forces the scripted mock driver (the route needs aiChat on,
+    // which since Phase 3 selects the real SSE transport); `scenario` pins the
+    // script instead of letting the mock guess it from the message.
+    await page.goto(`/fr/pages/assistant?ff_aiMock=1${scenario ? `&scenario=${scenario}` : ''}`);
     await expect(page.locator('app-assistant-page')).toBeVisible({ timeout: 20_000 });
 }
 
@@ -37,8 +40,10 @@ test('assistant: empty state teaches by example and a starter prompt streams an 
 
     const empty = page.locator('app-chat-empty-state');
     await expect(empty).toBeVisible();
+    // Four starters by design (chat-empty-state renders starter1..4); the spec
+    // pinned the Phase 1 count of three and went red when the fourth landed.
     const starters = empty.locator('button');
-    await expect(starters).toHaveCount(3);
+    await expect(starters).toHaveCount(4);
 
     await starters.nth(1).click();
     // User bubble appears, then the mock streams text into the thread.

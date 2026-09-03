@@ -1,4 +1,4 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Page, request as pwRequest, test } from '@playwright/test';
 
 /**
  * P0-2 guard: an installed PWA must still paint an app route with the network
@@ -62,6 +62,20 @@ async function swReady(page: Page): Promise<void> {
 
 test.describe('PWA offline shell', () => {
     test.use({ baseURL: PWA_URL });
+
+    // Skip, do not fail, when nothing serves the production build (P3-6): a plain
+    // `npx playwright test` against the dev stack must read green, and this file
+    // has its own two-step prerequisite (build + serve:pwa) that the others lack.
+    let pwaServed = false;
+    test.beforeAll(async () => {
+        const ctx = await pwRequest.newContext();
+        try { pwaServed = (await ctx.get(`${PWA_URL}/ngsw.json`, { timeout: 5_000 })).ok(); }
+        catch { pwaServed = false; }
+        finally { await ctx.dispose(); }
+    });
+    test.beforeEach(() => {
+        test.skip(!pwaServed, `no production build served at ${PWA_URL} (npm run build && npm run serve:pwa)`);
+    });
 
     test('an app route still renders its shell with the network gone', async ({ page, context }) => {
         // Land on the app once so the worker installs and prefetches.

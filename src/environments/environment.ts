@@ -11,6 +11,11 @@ export const environment = {
     // FeatureFlagsService (localStorage), so a flag can be flipped on a device
     // against a deployed preview without rebuilding.
     featureFlags: {
-        aiChat: true
+        aiChat: true,
+        // Force the scripted mock chat driver even with aiChat on (device
+        // override `?ff_aiMock=1`): owner demos without a backend, and the
+        // assistant smoke spec, which scripts scenarios the real agent cannot
+        // replay. Never on by default.
+        aiMock: false
     }
 };
