@@ -418,6 +418,20 @@ export class DashboardService {
      * series, charting total_assets instead of net worth.
      */
     async getTotalAssetsProgression(months: number = 12): Promise<ChartDataPoint[]> {
+        return this.totalAssetsProgression(months).load();
+    }
+
+    /**
+     * The gross-assets progression as a live resource, so a screen can paint
+     * from `data` (device snapshot, then in-memory) and fold the background
+     * revalidation in when it lands, instead of awaiting one Promise and
+     * blanking a skeleton over the chart on every visit.
+     *
+     * Persisted (like the hero's worth progression) on purpose: this is the
+     * Patrimoine page's headline chart, and without a snapshot every cold load
+     * of the PWA started it from nothing while the round trip ran.
+     */
+    totalAssetsProgression(months: number = 12): CachedResource<ChartDataPoint[]> {
         return this.progression(`assets_progression_${months}`, async () => {
             // Real gross assets per month: persisted snapshots where they exist,
             // otherwise rebuilt server-side from each asset's own source of
@@ -436,20 +450,23 @@ export class DashboardService {
                 }
             } catch { /* nothing true to draw: an empty chart, not an invented one */ }
             return [];
-        }).load();
+        }, true); // persist: the Patrimoine chart paints instantly on a cold load
     }
 
     /**
      * Get progression for a specific category group (filtered assets only)
      */
     async getCategoryProgression(categories: string[], months: number = 0): Promise<ChartDataPoint[]> {
+        // Persisted: the category page's chart used to rebuild from nothing on
+        // every cold load. With a snapshot, load() resolves in the time of an
+        // IndexedDB read and revalidates behind the drawn chart.
         return this.progression(`cat_progression_${categories.join('_')}_${months}`, async () => {
             try {
                 return await this.computeCategoryProgressionClientSide(categories, months);
             } catch {
                 return [];
             }
-        }).load();
+        }, true).load();
     }
 
     private async computeCategoryProgressionClientSide(categories: string[], months: number): Promise<ChartDataPoint[]> {

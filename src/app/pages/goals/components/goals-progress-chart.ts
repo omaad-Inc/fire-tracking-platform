@@ -7,6 +7,7 @@ import { SavingsService, SavingsSeriesPoint } from '../../service/savings.servic
 import { AssetsStateService } from '../../service/assets-state.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { CHART_RANGES, DEFAULT_CHART_RANGE_MONTHS } from '../../../core/util/chart-range';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LayoutService } from '../../../layout/service/layout.service';
 
@@ -71,20 +72,17 @@ export class SavingsProgress implements OnInit, OnDestroy {
     allPoints = signal<SavingsSeriesPoint[]>([]);
     currentValue = signal(0);
     currentDate = signal('');
-    selectedMonths = signal(0);
+    selectedMonths = signal(DEFAULT_CHART_RANGE_MONTHS);
 
     data: any;
     options: any;
 
     private subscription?: Subscription;
 
-    readonly ranges = [
-        { label: '1M', months: 1 },
-        { label: '3M', months: 3 },
-        { label: '6M', months: 6 },
-        { label: '1A', months: 12 },
-        { label: 'Max', months: 0 },
-    ];
+    /** Shared chips + shared default (core/util/chart-range.ts); EN reads 1Y. */
+    get ranges() {
+        return CHART_RANGES.map(r => ({ label: this.i18n.t(`common.chartRange.${r.key}`), months: r.months }));
+    }
 
     themeEffect = effect(() => {
         this.layout.isDarkTheme();               // tracked: theme flips rebuild too
@@ -115,7 +113,9 @@ export class SavingsProgress implements OnInit, OnDestroy {
     }
 
     private async loadData() {
-        this.loading.set(true);
+        // Skeleton only when there is nothing drawn yet: a revisit with the
+        // series still in memory must not blank the chart for the round trip.
+        if (this.allPoints().length === 0) this.loading.set(true);
         try {
             const series = await this.savingsService.getProgressSeries();
             this.allPoints.set(series);
