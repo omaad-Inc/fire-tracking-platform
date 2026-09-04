@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-09-03",
+  "updated_at": "2026-09-04",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -628,17 +628,6 @@
       "ticker": "ORAC",
       "nom": "Orange CI",
       "secteur": "Télécoms"
-    },
-    {
-      "emetteur": "ECOBANK CI",
-      "exercice": 2024,
-      "date_paiement": "2025-05-30",
-      "date_ex_dividende": "2025-05-31",
-      "montant_net_fcfa": 804.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20240515_-_avis_ndeg107_brvmdg_-_paiement_de_dividendes_-_exercice_2024_-_ecobank_ci.pdf",
-      "ticker": "ECEC",
-      "nom": "Ecobank CI",
-      "secteur": "Banque"
     }
   ]
 }
