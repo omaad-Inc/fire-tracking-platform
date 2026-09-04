@@ -60,11 +60,11 @@ interface AllocRow extends AllocationSegment {
                 <i class="pi pi-arrow-left text-surface-600 dark:text-surface-300" aria-hidden="true"></i>
             </button>
             <div class="flex items-center gap-4 min-w-0">
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm shrink-0 bg-brand-700">
+                <div class="hidden sm:flex w-14 h-14 rounded-2xl items-center justify-center shadow-sm shrink-0 bg-brand-700">
                     <i class="pi pi-chart-line text-white text-2xl" aria-hidden="true"></i>
                 </div>
                 <div class="min-w-0">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-surface-900 dark:text-surface-0 m-0 leading-tight">{{ i18n.t('patrimoine.brvmAnalysis.title') }}</h1>
+                    <h1 class="text-xl sm:text-3xl font-extrabold text-surface-900 dark:text-surface-0 m-0 leading-tight">{{ i18n.t('patrimoine.brvmAnalysis.title') }}</h1>
                     <p class="text-sm text-surface-500 dark:text-surface-400 m-0 mt-0.5">{{ scopeLabel }}</p>
                 </div>
             </div>
@@ -116,9 +116,9 @@ interface AllocRow extends AllocationSegment {
                 <!-- Valeur totale, with the range chips and the real series -->
                 <div class="relative overflow-hidden rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card
                             p-4 md:px-[26px] md:py-[22px] h-[340px] min-[861px]:h-[380px] flex flex-col" data-testid="analyse-brvm-value-card">
-                    <div class="relative flex items-center justify-between mb-2 gap-3">
+                    <div class="relative flex flex-wrap items-center justify-between mb-2 gap-x-3 gap-y-2">
                         <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.brvmAnalysis.totalValue') }}</span>
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center gap-1 ml-auto">
                             @for (r of ranges; track r.months) {
                                 <button (click)="changeRange(r.months)"
                                         class="px-2.5 py-1 text-xs rounded-lg transition-colors"
@@ -165,25 +165,26 @@ interface AllocRow extends AllocationSegment {
                     }
                 </div>
 
-                <!-- Performance + unrealized P&L, two stacked tiles -->
-                <div class="grid grid-rows-2 gap-5 h-full">
-                    <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card p-5 md:px-[26px] flex flex-col justify-center" data-testid="analyse-brvm-performance">
-                        <p class="text-sm text-surface-500 dark:text-surface-400 m-0 mb-1">{{ i18n.t('patrimoine.brvmAnalysis.performance') }}</p>
-                        <div class="text-3xl font-extrabold tabular-nums leading-tight"
+                <!-- Performance + unrealized P&L: the mobile app's side-by-side pair
+                     on phones and tablets; stacked beside the chart on desktop. -->
+                <div class="grid grid-cols-2 min-[1150px]:grid-cols-1 min-[1150px]:grid-rows-2 gap-3 sm:gap-5 h-full">
+                    <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card p-4 sm:p-5 md:px-[26px] flex flex-col justify-center min-w-0" data-testid="analyse-brvm-performance">
+                        <p class="text-xs sm:text-sm text-surface-500 dark:text-surface-400 m-0 mb-1">{{ i18n.t('patrimoine.brvmAnalysis.performance') }}</p>
+                        <div class="text-2xl sm:text-3xl font-extrabold tabular-nums leading-tight"
                              [ngClass]="windowPct === null ? 'text-surface-400' : windowPct > 0 ? 'text-positive' : windowPct < 0 ? 'text-negative' : 'text-surface-900 dark:text-surface-0'">
                             {{ windowPct === null ? '—' : (windowPct > 0 ? '+' : windowPct < 0 ? '−' : '') + market.pct(Math.abs(windowPct)) }}
                         </div>
                         <p class="text-xs text-surface-500 dark:text-surface-400 m-0 mt-1">{{ i18n.t('patrimoine.brvmAnalysis.performanceSub') }}</p>
                     </div>
-                    <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card p-5 md:px-[26px] flex flex-col justify-center" data-testid="analyse-brvm-unrealized">
-                        <p class="text-sm text-surface-500 dark:text-surface-400 m-0 mb-1">{{ i18n.t('patrimoine.brvmAnalysis.unrealized') }}</p>
+                    <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 shadow-card p-4 sm:p-5 md:px-[26px] flex flex-col justify-center min-w-0" data-testid="analyse-brvm-unrealized">
+                        <p class="text-xs sm:text-sm text-surface-500 dark:text-surface-400 m-0 mb-1">{{ i18n.t('patrimoine.brvmAnalysis.unrealized') }}</p>
                         @if (gainEur === null) {
-                            <div class="text-3xl font-extrabold text-surface-400 leading-tight">—</div>
+                            <div class="text-2xl sm:text-3xl font-extrabold text-surface-400 leading-tight">—</div>
                             <p class="text-xs text-surface-500 dark:text-surface-400 m-0 mt-1">{{ i18n.t('patrimoine.brvmAnalysis.costUnknown') }}</p>
                         } @else {
-                            <div class="flex items-center gap-3 flex-wrap">
+                            <div class="flex items-center gap-x-3 gap-y-0.5 flex-wrap">
                                 <app-amount [value]="Math.abs(gainEur)" [prefix]="gainEur < 0 ? '−' : '+'"
-                                            class="text-3xl font-extrabold tabular-nums leading-tight"
+                                            class="text-2xl sm:text-3xl font-extrabold tabular-nums leading-tight"
                                             [ngClass]="gainEur > 0 ? 'text-positive' : gainEur < 0 ? 'text-negative' : 'text-surface-900 dark:text-surface-0'" />
                                 <app-market-change [percent]="data.unrealized_gain_percent" size="md" />
                             </div>
@@ -202,9 +203,9 @@ interface AllocRow extends AllocationSegment {
                     <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.allocation') }}</span>
                     <span class="text-surface-500 dark:text-surface-400 text-sm">{{ titlesLabel(allocRows.length) }}</span>
                 </div>
-                <div class="grid grid-cols-1 min-[861px]:grid-cols-[220px_minmax(0,1fr)] gap-4 min-[861px]:gap-8 pt-2 items-center">
+                <div class="grid grid-cols-1 md:grid-cols-[200px_minmax(0,1fr)] min-[1150px]:grid-cols-[220px_minmax(0,1fr)] gap-4 md:gap-8 pt-2 items-center">
                     <app-allocation-donut [segments]="allocRows" [ariaLabel]="i18n.t('patrimoine.allocation')"
-                            class="w-[220px] mx-auto">
+                            class="w-[200px] sm:w-[220px] mx-auto">
                         @if (allocRows[0]; as top) {
                             <span class="text-[10px] text-surface-500 dark:text-surface-400">{{ i18n.t('patrimoine.brvmAnalysis.topHolding') }}</span>
                             <span class="text-[13px] font-bold text-surface-900 dark:text-surface-0 px-6 leading-tight line-clamp-2">{{ top.kind === 'fcp' ? top.label : top.ticker }}</span>

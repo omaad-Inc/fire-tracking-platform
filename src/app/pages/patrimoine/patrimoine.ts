@@ -90,7 +90,10 @@ const GROUPS = [
                             }
                         </div>
                     </div>
-                    <div class="flex items-center gap-6 sm:gap-8">
+                    <!-- Stats + the tab's two tool pills. flex-wrap: at 360px the four
+                         items do not fit one row, the pills drop to their own line
+                         instead of pushing the page into horizontal scroll. -->
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-3 sm:gap-x-8">
                         <div>
                             <div class="text-surface-500 dark:text-surface-400 text-xs mb-0.5">{{ i18n.t('patrimoine.assets.title') }}</div>
                             <div class="font-semibold text-surface-900 dark:text-surface-0"><app-amount [value]="totalAssets()" /></div>
@@ -104,20 +107,22 @@ const GROUPS = [
                         <!-- The tab's two power tools, same pair as the mobile Patrimoine
                              topbar: chart → Analyse BRVM (Pro, your side of the market),
                              globe → Marches hub. The analysis pill hides in share mode. -->
-                        @if (!share.active()) {
-                            <a [routerLink]="nav.link('pages', 'patrimoine', 'analyse-brvm')" data-testid="patrimoine-analyse-brvm-link"
-                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium omaad-press
+                        <div class="flex items-center gap-2">
+                            @if (!share.active()) {
+                                <a [routerLink]="nav.link('pages', 'patrimoine', 'analyse-brvm')" data-testid="patrimoine-analyse-brvm-link"
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium omaad-press whitespace-nowrap
+                                          bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
+                                    <i class="pi pi-chart-line text-xs" aria-hidden="true"></i>{{ i18n.t('patrimoine.brvmAnalysis.open') }}
+                                </a>
+                            }
+                            <!-- Markets hub (P2-3): the same globe the mobile app puts on this
+                                 tab; on mobile it is the only way to the market hub. -->
+                            <a [routerLink]="nav.link('pages', 'marches')" data-testid="patrimoine-markets-link"
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium omaad-press whitespace-nowrap
                                       bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
-                                <i class="pi pi-chart-line text-xs" aria-hidden="true"></i>{{ i18n.t('patrimoine.brvmAnalysis.open') }}
+                                <i class="pi pi-globe text-xs" aria-hidden="true"></i>{{ i18n.t('menu.markets') }}
                             </a>
-                        }
-                        <!-- Markets hub (P2-3): the same globe the mobile app puts on this
-                             tab; on mobile it is the only way to the market hub. -->
-                        <a [routerLink]="nav.link('pages', 'marches')" data-testid="patrimoine-markets-link"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium omaad-press
-                                  bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
-                            <i class="pi pi-globe text-xs" aria-hidden="true"></i>{{ i18n.t('menu.markets') }}
-                        </a>
+                        </div>
                     </div>
                 </div>
 
