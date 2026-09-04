@@ -24,6 +24,9 @@ export default [
     { path: 'wealth-score', redirectTo: () => inject(Router).createUrlTree(['/', langPrefix(), 'pages', 'insights'], { queryParams: { tab: 'score' } }) },
     { path: 'patrimoine/add-asset', loadComponent: () => import('./patrimoine/components/add-asset-page').then(m => m.AddAssetPage), canDeactivate: [unsavedChangesGuard] },
     { path: 'patrimoine/connect-broker', loadComponent: () => import('./patrimoine/components/connect-broker-page').then(m => m.ConnectBrokerPage) },
+    // Analyse BRVM: the whole sleeve (stocks + FCP), same surface as the mobile
+    // app's /analyse-brvm, reached from the chart pill in the Patrimoine hero.
+    { path: 'patrimoine/analyse-brvm', loadComponent: () => import('./patrimoine/components/analyse-brvm-page').then(m => m.AnalyseBrvmPage) },
     { path: 'patrimoine/category/:categoryId', loadComponent: () => import('./patrimoine/components/patrimoine-category-detail').then(m => m.PatrimoineCategoryDetailPage) },
     { path: 'patrimoine/assets/:id', loadComponent: () => import('./patrimoine/components/asset-detail').then(m => m.AssetDetailPage) },
     { path: 'debts', loadComponent: () => import('./debts/debtsdashboard').then(m => m.DebtsDashboard) },

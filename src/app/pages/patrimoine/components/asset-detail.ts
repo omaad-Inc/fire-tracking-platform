@@ -603,8 +603,10 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                 <div class="detail-surface mt-6">
                     <div class="flex items-center justify-between px-5 py-4 border-b border-surface-200 dark:border-surface-700">
                         <h3 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0">{{ t('assetDetail.brvmHistoryTitle') }}</h3>
+                        <!-- A stock's ticker is its handle; a fund's key is a long
+                             catalog slug, so funds wear a plain FCP badge. -->
                         <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-surface-100 dark:bg-surface-800 text-surface-500">
-                            {{ brvmHistory()!.ticker }}
+                            {{ brvmHistory()!.kind === 'fcp' ? 'FCP' : brvmHistory()!.ticker }}
                         </span>
                     </div>
                     <div class="px-5 py-4">
@@ -809,10 +811,11 @@ export class AssetDetailPage implements OnInit {
      *  non-BRVM assets, in share mode, or when the Pro gate closes. */
     brvmHistory = signal<BrvmHistory | null>(null);
 
-    /** A tickered BRVM title: the only asset kind with a live price series. */
+    /** A catalog-keyed BRVM stock or FCP: the asset kinds with a live price
+     *  series (session closes, or published VLs). */
     readonly isBrvmTitle = computed(() => {
         const a = this.asset();
-        return !!a && a.category === 'stocks_brvm' && !!a.ticker;
+        return !!a && (a.category === 'stocks_brvm' || a.category === 'fcp') && !!a.ticker;
     });
 
     /** Show the BRVM history panel once the series has loaded. */
@@ -1141,9 +1144,10 @@ export class AssetDetailPage implements OnInit {
                     this.history.set(await firstValueFrom(this.apiService.getAssetHistory(a.id)));
                 } catch { /* no series: the hero chart stays hidden */ }
             }
-            // PRO-3: pull the BRVM price series for tickered BRVM titles. Skip in
-            // share mode (unauthenticated bundle); tolerate the Pro gate/no-data.
-            if (a.category === 'stocks_brvm' && a.ticker && !this.share.active()) {
+            // PRO-3: pull the price series for catalog-keyed BRVM stocks and
+            // FCP. Skip in share mode (unauthenticated bundle); tolerate the
+            // Pro gate/no-data.
+            if ((a.category === 'stocks_brvm' || a.category === 'fcp') && a.ticker && !this.share.active()) {
                 try {
                     this.brvmHistory.set(await firstValueFrom(this.apiService.getAssetBrvmHistory(a.id)));
                 } catch { /* Pro gate closed or no history yet: panel stays hidden */ }

@@ -130,7 +130,16 @@ const CATEGORY_BGS: Record<string, string> = {
                         <i [class]="currentGroup?.icon" class="text-white text-2xl"></i>
                     </div>
                     <div class="min-w-0">
-                        <div class="text-sm font-medium text-surface-500 dark:text-surface-400">{{ currentGroup ? i18n.t('patrimoine.groups.' + currentGroup.id) : '' }}</div>
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <span class="text-sm font-medium text-surface-500 dark:text-surface-400">{{ currentGroup ? i18n.t('patrimoine.groups.' + currentGroup.id) : '' }}</span>
+                            @if (currentGroup?.id === 'stocks_bonds') {
+                                <!-- The BRVM sleeve (stocks + FCP) has its own Pro analysis page. -->
+                                <a [routerLink]="analyseBrvmLink()" data-testid="category-analyse-brvm-link"
+                                   class="inline-flex items-center gap-1 text-xs font-semibold text-ochre-700 dark:text-ochre-300 hover:underline no-underline">
+                                    <i class="pi pi-chart-line text-[10px]" aria-hidden="true"></i>{{ i18n.t('patrimoine.brvmAnalysis.seeAnalysis') }}
+                                </a>
+                            }
+                        </div>
                         <div class="flex items-center gap-3 mt-0.5 flex-wrap">
                             <app-amount [value]="totalValue" class="text-3xl font-bold text-surface-900 dark:text-surface-0" />
                             @if (totalDeltaAbs !== 0) {
@@ -338,6 +347,11 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     totalValue = 0;
     totalDeltaAbs = 0;
     totalDeltaPct = 0;
+
+    /** Route of the whole-sleeve BRVM analysis (stocks + FCP). */
+    analyseBrvmLink(): any[] {
+        return this.nav.link('pages', 'patrimoine', 'analyse-brvm');
+    }
 
     /** Shared chips + shared default (core/util/chart-range.ts); EN reads 1Y. */
     get ranges() {
