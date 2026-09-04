@@ -2,7 +2,7 @@ export const FR = {
   common: {
     // Range chips shared by every progression chart (Patrimoine, category
     // detail, Objectifs). Only the year label differs by language.
-    chartRange: { m1: '1M', m3: '3M', m6: '6M', y1: '1A', max: 'Max' },
+    chartRange: { w1: '1S', m1: '1M', m3: '3M', m6: '6M', y1: '1A', max: 'Max' },
     viewMore: 'Voir plus',
     search: 'Rechercher...',
     cancel: 'Annuler',

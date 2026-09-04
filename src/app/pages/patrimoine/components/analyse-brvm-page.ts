@@ -7,7 +7,19 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService, BrvmPortfolio, BrvmPortfolioAllocation, BrvmPortfolioPoint } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { NavService } from '../../../core/services/nav.service';
-import { CHART_RANGES, DEFAULT_CHART_RANGE_MONTHS } from '../../../core/util/chart-range';
+
+/** The sleeve's own range bar, the mobile Analyse bar verbatim: BRVM data is
+ *  DAILY (session closes), so a one-week window is real here, unlike the
+ *  snapshot-based progression charts that share CHART_RANGES (month steps).
+ *  `days: 0` is Max. Opens on 1M like every other chart (owner decision). */
+const SLEEVE_RANGES: readonly { key: 'w1' | 'm1' | 'm6' | 'y1' | 'max'; days: number }[] = [
+    { key: 'w1', days: 7 },
+    { key: 'm1', days: 31 },
+    { key: 'm6', days: 183 },
+    { key: 'y1', days: 365 },
+    { key: 'max', days: 0 },
+];
+const DEFAULT_SLEEVE_DAYS = 31;
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { chartTheme } from '../../../core/theme/chart-theme';
@@ -119,10 +131,10 @@ interface AllocRow extends AllocationSegment {
                     <div class="relative flex flex-wrap items-center justify-between mb-2 gap-x-3 gap-y-2">
                         <span class="text-base font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.brvmAnalysis.totalValue') }}</span>
                         <div class="flex items-center gap-1 ml-auto">
-                            @for (r of ranges; track r.months) {
-                                <button (click)="changeRange(r.months)"
+                            @for (r of ranges; track r.days) {
+                                <button (click)="changeRange(r.days)"
                                         class="px-2.5 py-1 text-xs rounded-lg transition-colors"
-                                        [ngClass]="selectedMonths === r.months
+                                        [ngClass]="selectedDays === r.days
                                             ? 'bg-brand-700 text-white dark:bg-surface-700 dark:text-surface-0'
                                             : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'">
                                     {{ r.label }}
@@ -262,7 +274,7 @@ export class AnalyseBrvmPage implements OnInit {
     loadError = false;
     gated = false;
     data: BrvmPortfolio | null = null;
-    selectedMonths = DEFAULT_CHART_RANGE_MONTHS;
+    selectedDays = DEFAULT_SLEEVE_DAYS;
 
     // ── Derived (rebuilt on data / range / theme) ──
     scopeLabel = '';
@@ -277,7 +289,7 @@ export class AnalyseBrvmPage implements OnInit {
     xStart = ''; xMid = ''; xEnd = '';
 
     get ranges() {
-        return CHART_RANGES.map(r => ({ label: this.i18n.t(`common.chartRange.${r.key}`), months: r.months }));
+        return SLEEVE_RANGES.map(r => ({ label: this.i18n.t(`common.chartRange.${r.key}`), days: r.days }));
     }
 
     async ngOnInit() {
@@ -287,8 +299,8 @@ export class AnalyseBrvmPage implements OnInit {
 
     async reload() { await this.load(); }
 
-    changeRange(months: number) {
-        this.selectedMonths = months;
+    changeRange(days: number) {
+        this.selectedDays = days;
         this.rebuild();
     }
 
@@ -337,7 +349,7 @@ export class AnalyseBrvmPage implements OnInit {
             : '';
         this.gainEur = d.unrealized_gain === null ? null : xof(d.unrealized_gain);
 
-        const points = this.slice(this.covered(d), this.selectedMonths);
+        const points = this.slice(this.covered(d), this.selectedDays);
         // Window performance from the sliced series (pure price move of the sleeve).
         if (points.length >= 2 && points[0].value !== 0) {
             const first = points[0].value, last = points[points.length - 1].value;
@@ -361,11 +373,11 @@ export class AnalyseBrvmPage implements OnInit {
     }
 
     /** Keep the sessions inside the window; a window older than the stored
-     *  history keeps the full series' last two sessions so the card never
-     *  goes blank (months 0 = Max = everything). */
-    private slice(points: BrvmPortfolioPoint[], months: number): BrvmPortfolioPoint[] {
-        if (months <= 0 || points.length === 0) return points;
-        const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - months);
+     *  history (or a 1S window on a weekly-VL fund) keeps the series' last two
+     *  sessions so the card never goes blank (days 0 = Max = everything). */
+    private slice(points: BrvmPortfolioPoint[], days: number): BrvmPortfolioPoint[] {
+        if (days <= 0 || points.length === 0) return points;
+        const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
         const kept = points.filter(p => new Date(p.as_of) > cutoff);
         return kept.length >= 2 ? kept : points.slice(-2);
     }
