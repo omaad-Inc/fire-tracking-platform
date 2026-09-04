@@ -180,6 +180,9 @@ export interface BrvmPortfolio {
     covered_from: string | null;
     points: BrvmPortfolioPoint[];
     allocation: BrvmPortfolioAllocation[];
+    /** Live BRVM/FCP rows the sleeve could not price (free-typed title, or no
+     *  unit count); listed so the user can fix the row. */
+    untracked: { id: number; name: string; category: string; reason: 'no_key' | 'no_quantity' }[];
 }
 
 export interface AssetCreate {
