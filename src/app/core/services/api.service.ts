@@ -126,6 +126,8 @@ export interface BrvmHistoryPoint {
  *  Money fields are in the asset's native currency. */
 export interface BrvmHistory {
     ticker: string;
+    /** Which catalog the series comes from: BRVM closes or FCP VLs. */
+    kind?: 'stock' | 'fcp';
     currency: string;
     quantity: number | null;
     quote_as_of: string | null;
@@ -139,6 +141,45 @@ export interface BrvmHistory {
     first_as_of: string | null;
     last_as_of: string | null;
     points: BrvmHistoryPoint[];
+}
+
+/** One session of the whole BRVM sleeve (stocks at close + FCP at VL), XOF. */
+export interface BrvmPortfolioPoint {
+    as_of: string;
+    value: number;
+}
+
+/** One title's share of the BRVM sleeve at the latest prices, XOF. `ticker`
+ *  is the catalog key (brvm.org ticker or fund slug); `kind` says which. */
+export interface BrvmPortfolioAllocation {
+    ticker: string;
+    name: string;
+    value: number;
+    weight_percent: number;
+    kind: 'stock' | 'fcp';
+}
+
+/** Whole-sleeve BRVM analytics (GET /assets/brvm-portfolio, Pro). Every money
+ *  field is XOF, the trading currency: convert to EUR base exactly once with
+ *  CurrencyService.toEurFromNative(v, 'XOF') before handing it to app-amount.
+ *  Only UNREALIZED P&L is reported (single lots, no sell ledger). */
+export interface BrvmPortfolio {
+    currency: 'XOF' | string;
+    holdings_count: number;
+    stocks_count: number;
+    fcp_count: number;
+    total_value: number;
+    quote_as_of: string | null;
+    costed_count: number;
+    cost_basis: number | null;
+    unrealized_gain: number | null;
+    unrealized_gain_percent: number | null;
+    window_return_percent: number | null;
+    /** First session where every instrument has a price; the honest start of
+     *  the curve (earlier sessions are understated). */
+    covered_from: string | null;
+    points: BrvmPortfolioPoint[];
+    allocation: BrvmPortfolioAllocation[];
 }
 
 export interface AssetCreate {
@@ -1295,13 +1336,22 @@ export class ApiService {
         return this.http.get<CategoryHistory>(`${this.apiUrl}/assets/history/by-category`, { params });
     }
 
-    /** PRO-3: BRVM price history + per-title performance for a tickered
-     *  STOCKS_BRVM asset. Pro-gated server-side. `days` optionally windows the
+    /** PRO-3: BRVM price history + per-title performance for a catalog-keyed
+     *  BRVM stock or FCP. Pro-gated server-side. `days` optionally windows the
      *  price series to the most recent N days. */
     getAssetBrvmHistory(id: number, days?: number): Observable<BrvmHistory> {
         let params = new HttpParams();
         if (days != null) params = params.set('days', days.toString());
         return this.http.get<BrvmHistory>(`${this.apiUrl}/assets/${id}/brvm-history`, { params });
+    }
+
+    /** Whole-sleeve BRVM analytics (stocks + FCP) for the Patrimoine "Analyse
+     *  BRVM" page. Pro-gated server-side (403 PLAN_REQUIRED). Fetched widest
+     *  once; the page slices the series per range chip client-side. */
+    getBrvmPortfolio(days?: number): Observable<BrvmPortfolio> {
+        let params = new HttpParams();
+        if (days != null) params = params.set('days', days.toString());
+        return this.http.get<BrvmPortfolio>(`${this.apiUrl}/assets/brvm-portfolio`, { params });
     }
 
     /** First-run gate (S12 Phase 6): true when the user has no assets and has not

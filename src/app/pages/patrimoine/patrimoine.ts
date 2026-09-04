@@ -11,6 +11,7 @@ import { PatrimoineService, PatrimoineAssetItemDto } from '../service/patrimoine
 import { AssetsStateService } from '../service/assets-state.service';
 import { Debt } from '../../core/services/api.service';
 import { NavService } from '../../core/services/nav.service';
+import { ShareContextService } from '../../core/services/share-context.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { CurrencyService } from '../../core/services/currency.service';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
@@ -100,6 +101,16 @@ const GROUPS = [
                                 <app-amount [value]="totalDebts()" [prefix]="totalDebts() > 0 ? '-' : ''" />
                             </div>
                         </div>
+                        <!-- The tab's two power tools, same pair as the mobile Patrimoine
+                             topbar: chart → Analyse BRVM (Pro, your side of the market),
+                             globe → Marches hub. The analysis pill hides in share mode. -->
+                        @if (!share.active()) {
+                            <a [routerLink]="nav.link('pages', 'patrimoine', 'analyse-brvm')" data-testid="patrimoine-analyse-brvm-link"
+                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium omaad-press
+                                      bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-200 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors">
+                                <i class="pi pi-chart-line text-xs" aria-hidden="true"></i>{{ i18n.t('patrimoine.brvmAnalysis.open') }}
+                            </a>
+                        }
                         <!-- Markets hub (P2-3): the same globe the mobile app puts on this
                              tab; on mobile it is the only way to the market hub. -->
                         <a [routerLink]="nav.link('pages', 'marches')" data-testid="patrimoine-markets-link"
@@ -375,6 +386,7 @@ const GROUPS = [
 export class Patrimoine implements OnInit, OnDestroy {
     private router = inject(Router);
     protected nav = inject(NavService);
+    protected share = inject(ShareContextService);
     i18n = inject(I18nService);
     private patrimoineService = inject(PatrimoineService);
     private currencyService = inject(CurrencyService);
