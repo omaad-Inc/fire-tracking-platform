@@ -111,6 +111,9 @@ interface AllocRow extends AllocationSegment {
             <app-load-error (retry)="reload()" />
 
         } @else if (data.holdings_count === 0) {
+            @if (data.untracked.length) {
+                <ng-container *ngTemplateOutlet="untrackedTpl" />
+            }
             <!-- Nothing in the sleeve yet: say what belongs here and where to add it. -->
             <div class="max-w-xl rounded-2xl bg-surface-0 dark:bg-surface-900 border border-dashed border-surface-300 dark:border-surface-700 p-6">
                 <h2 class="text-base font-bold text-surface-900 dark:text-surface-0 m-0 mb-2">{{ i18n.t('patrimoine.brvmAnalysis.emptyTitle') }}</h2>
@@ -122,6 +125,9 @@ interface AllocRow extends AllocationSegment {
             </div>
 
         } @else {
+            @if (data.untracked.length) {
+                <ng-container *ngTemplateOutlet="untrackedTpl" />
+            }
             <!-- ── Row 1: value curve | performance + P&L ── -->
             <div class="grid grid-cols-1 min-[1150px]:grid-cols-2 gap-5 items-stretch mb-5">
 
@@ -246,6 +252,35 @@ interface AllocRow extends AllocationSegment {
 
             <p class="text-xs text-surface-500 dark:text-surface-400 leading-relaxed mt-4 mb-0 max-w-3xl">{{ i18n.t('patrimoine.brvmAnalysis.note') }}</p>
         }
+
+        <!-- Holdings the sleeve had to leave out, each a link to its own page
+             where the quantity or the catalog title can be fixed. Honest by
+             design: a short total with no explanation reads as a bug. -->
+        <ng-template #untrackedTpl>
+            <div class="rounded-2xl border border-warning-300/60 dark:border-warning-700/50 bg-warning-50 dark:bg-warning-900/20 p-4 sm:px-5 mb-5" data-testid="analyse-brvm-untracked">
+                <div class="flex items-start gap-3">
+                    <i class="pi pi-exclamation-triangle text-warning-600 dark:text-warning-400 mt-0.5" aria-hidden="true"></i>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-semibold text-surface-900 dark:text-surface-0 m-0">{{ untrackedTitle() }}</p>
+                        <p class="text-xs text-surface-600 dark:text-surface-300 m-0 mt-0.5">{{ i18n.t('patrimoine.brvmAnalysis.untrackedDesc') }}</p>
+                        <ul class="m-0 mt-2 p-0 list-none flex flex-wrap gap-2">
+                            @for (u of data!.untracked; track u.id) {
+                                <li>
+                                    <a [routerLink]="nav.link('pages', 'patrimoine', 'assets', u.id)"
+                                       class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium no-underline
+                                              bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-surface-800 dark:text-surface-100 hover:border-ochre-400 transition-colors">
+                                        <span class="truncate max-w-[180px]">{{ u.name }}</span>
+                                        <span class="text-surface-400">·</span>
+                                        <span class="text-warning-700 dark:text-warning-300">{{ i18n.t(u.reason === 'no_key' ? 'patrimoine.brvmAnalysis.reasonNoKey' : 'patrimoine.brvmAnalysis.reasonNoQuantity') }}</span>
+                                        <i class="pi pi-arrow-right text-[9px] text-surface-400" aria-hidden="true"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
     `
 })
 export class AnalyseBrvmPage implements OnInit {
@@ -305,6 +340,13 @@ export class AnalyseBrvmPage implements OnInit {
     }
 
     goBack() { this.nav.go('pages', 'patrimoine'); }
+
+    untrackedTitle(): string {
+        const n = this.data?.untracked.length ?? 0;
+        return n === 1
+            ? this.i18n.t('patrimoine.brvmAnalysis.untrackedOne')
+            : this.i18n.t('patrimoine.brvmAnalysis.untrackedOther', { n });
+    }
 
     titlesLabel(n: number): string {
         return n === 1

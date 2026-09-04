@@ -44,6 +44,7 @@ interface HoldingRow extends HoldingPreviewItem {
         InputTextModule, InputNumberModule, CheckboxModule, ToastModule,
     ],
     providers: [MessageService],
+    styles: [`:host ::ng-deep .import-qty-missing input { box-shadow: inset 0 0 0 1px var(--p-warning-500, #d97706); }`],
     template: `
         <p-toast />
         <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="visible()" (visibleChange)="visible.set($event)" [modal]="true" [draggable]="false" [dismissableMask]="true"
@@ -126,7 +127,9 @@ interface HoldingRow extends HoldingPreviewItem {
                                         </td>
                                         <td class="p-2 text-right w-28">
                                             <p-inputnumber [(ngModel)]="row.quantity" [min]="0" [maxFractionDigits]="4"
-                                                           styleClass="w-full" inputStyleClass="w-full !py-1.5 !text-right !text-sm" />
+                                                           styleClass="w-full" inputStyleClass="w-full !py-1.5 !text-right !text-sm"
+                                                           [class.import-qty-missing]="row.include && needsQuantity(row.category) && !(row.quantity && row.quantity > 0)"
+                                                           data-testid="holdings-import-quantity" />
                                         </td>
                                         <td class="p-2 text-right w-36">
                                             <p-inputnumber [(ngModel)]="row.current_value" [min]="0" [maxFractionDigits]="2"
@@ -144,6 +147,11 @@ interface HoldingRow extends HoldingPreviewItem {
                             </tbody>
                         </table>
                     </div>
+                    @if (rowsMissingQuantity() > 0) {
+                        <p class="text-xs text-warning-700 dark:text-warning-300 mt-2 mb-0 flex items-center gap-1.5" data-testid="holdings-import-quantity-hint">
+                            <i class="pi pi-exclamation-triangle text-[11px]" aria-hidden="true"></i>{{ t('addAssets.holdingsImport.quantityRequired') }}
+                        </p>
+                    }
 
                     <!-- Raw extracted text: manual-entry fallback when parsing misses rows. -->
                     @if (rawText()) {
@@ -285,10 +293,21 @@ export class HoldingsImportDialog {
         return this.rows().filter(r => r.include && r.name.trim() && r.current_value >= 0).length;
     }
 
+    /** Stock/fund rows without a unit count: the API refuses them (422
+     *  QUANTITY_REQUIRED) because close × quantity is how they are priced. */
+    rowsMissingQuantity(): number {
+        return this.rows().filter(r => r.include && this.needsQuantity(r.category) && !(r.quantity && r.quantity > 0)).length;
+    }
+
+    needsQuantity(category: string): boolean {
+        return category === 'stocks_brvm' || category === 'fcp';
+    }
+
     canCommit(): boolean {
-        // Every included row needs a name; value defaults to 0 (allowed by the API).
+        // Every included row needs a name; value defaults to 0 (allowed by the
+        // API); a BRVM stock / FCP row also needs its quantity.
         const included = this.rows().filter(r => r.include);
-        return included.length > 0 && included.every(r => !!r.name.trim());
+        return included.length > 0 && included.every(r => !!r.name.trim()) && this.rowsMissingQuantity() === 0;
     }
 
     commit() {
