@@ -1,4 +1,5 @@
 import { Component, inject, computed } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { RippleModule } from 'primeng/ripple';
@@ -41,6 +42,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             </div>
                             <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.freeForever') }}</p>
                             <button pButton pRipple [rounded]="true" [outlined]="true" [routerLink]="[currentLang, 'auth', 'register']"
+                                (click)="trackCta('pricing_free')"
                                 class="w-full !py-3 !font-semibold !border-surface-300 dark:!border-surface-500 !text-surface-700 dark:!text-surface-100 hover:!bg-surface-100 dark:hover:!bg-surface-700 transition-all mb-8">
                                 {{ t('landing.pricing.freeCta') }}
                             </button>
@@ -77,6 +79,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                                 </div>
                                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.proSubprice') }}</p>
                                 <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
+                                    (click)="trackCta('pricing_pro')"
                                     class="w-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all mb-8">
                                     {{ t('plans.choose') }}
                                 </button>
@@ -118,6 +121,7 @@ import { I18nService } from '../../../i18n/i18n.service';
                             </div>
                             <p class="text-white/50 text-sm mb-6">{{ t('landing.pricing.premiumSubprice') }}</p>
                             <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
+                                (click)="trackCta('pricing_premium')"
                                 class="w-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all mb-8">
                                 {{ t('plans.choose') }}
                             </button>
@@ -167,6 +171,13 @@ import { I18nService } from '../../../i18n/i18n.service';
     `
 })
 export class PricingWidget {
+    private analytics = inject(AnalyticsService);
+
+    /** Public-funnel step between landing_view and the signup itself. */
+    trackCta(cta: string): void {
+        // currentLang is a router segment ('/fr'); the event wants the bare code.
+        this.analytics.trackPublic('cta_click', { cta, lang: this.currentLang.replace(/^\//, '') });
+    }
     private i18n   = inject(I18nService);
     private router = inject(Router);
 

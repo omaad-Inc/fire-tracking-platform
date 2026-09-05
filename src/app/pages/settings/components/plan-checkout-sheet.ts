@@ -1,4 +1,5 @@
 import { Component, inject, input, model, signal, computed, effect } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -160,6 +161,7 @@ const POPULAR_DURATION: DurationKey = 'm3';
     `
 })
 export class PlanCheckoutSheet {
+    private analytics = inject(AnalyticsService);
     private i18n = inject(I18nService);
     protected cs = inject(CurrencyService);
     private api = inject(ApiService);
@@ -257,6 +259,10 @@ export class PlanCheckoutSheet {
         if (!opt || this.paying()) return;
         this.paying.set(true);
         this.paymentPending.set(false);
+        // Sent BEFORE the checkout call on purpose: the hosted-PSP redirect that
+        // follows unloads the page, and the small event request needs the
+        // checkout round trip's worth of time to land.
+        this.analytics.track('subscribe_started', { plan: this.tier(), duration_key: opt.key, method: this.method() });
         this.api.createCheckout({ plan: this.tier(), duration_key: opt.key, method: this.method() })
             .subscribe({
                 next: (res) => { window.location.href = res.checkout_url; },

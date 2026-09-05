@@ -483,8 +483,24 @@ export class FireSimulator {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         const lang = (match ? match[1] : 'fr') as Lang;
         this.seo.applyLocalized({ lang, ...SEO_PAGES.fireSimulator });
+        this.toolLang = lang;
         this.analytics.trackPublic('tool_view', { tool: 'fire-simulator', lang });
     }
+
+    /** `simulator_run` = the visitor changed an input at least once: they used
+     *  the tool rather than only landing on it (tool_view). Once per visit; the
+     *  effect's first execution is the initial render and is skipped. */
+    private toolLang: Lang = 'fr';
+    private runArmed = false;
+    private runTracked = false;
+    private runEffect = effect(() => {
+        const _inputs = [this.currentWealth(), this.monthlyExpenses(), this.monthlySavings(), this.expectedReturn(),
+         this.inflationRate(), this.withdrawalRate(), this.horizon()];
+        if (!this.runArmed) { this.runArmed = true; return; }
+        if (this.runTracked) return;
+        this.runTracked = true;
+        this.analytics.trackPublic('simulator_run', { tool: 'fire-simulator', lang: this.toolLang });
+    });
 
     readonly Infinity = Infinity;
     readonly currentYear = new Date().getFullYear();

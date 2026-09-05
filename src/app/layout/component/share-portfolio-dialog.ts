@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, OnChanges, inject, signal } from '@angular/core';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -144,6 +145,7 @@ const ALL_CATEGORIES = [
     `,
 })
 export class SharePortfolioDialog implements OnChanges {
+    private analytics = inject(AnalyticsService);
     @Input() open = false;
     @Output() close = new EventEmitter<void>();
 
@@ -204,7 +206,16 @@ export class SharePortfolioDialog implements OnChanges {
             access_code: this.useCode && this.code ? this.code : null,
             expires_in_days: this.expiry(),
         }).subscribe({
-            next: s => { this.busy.set(false); this.current.set(s); this.link.set(this.urlFor(s)); this.copy(); },
+            next: s => {
+                this.busy.set(false); this.current.set(s); this.link.set(this.urlFor(s)); this.copy();
+                // Adoption signal only: which options people pick, never the link.
+                this.analytics.track('share', {
+                    categories: categories ? categories.length : 'all',
+                    hide_values: this.hideValues,
+                    with_code: !!(this.useCode && this.code),
+                    expires_in_days: this.expiry(),
+                });
+            },
             error: () => { this.busy.set(false); this.error.set(true); },
         });
     }

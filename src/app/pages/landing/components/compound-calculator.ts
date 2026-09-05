@@ -475,8 +475,23 @@ export class CompoundCalculator implements OnDestroy {
         const lang = (match ? match[1] : 'fr') as Lang;
         this.seo.applyLocalized({ lang, ...SEO_PAGES.compoundInterest });
         this.setStructuredData(lang);
+        this.toolLang = lang;
         this.analytics.trackPublic('tool_view', { tool: 'compound-interest', lang });
     }
+
+    /** `simulator_run` = the visitor changed an input at least once: they used
+     *  the tool rather than only landing on it (tool_view). Once per visit; the
+     *  effect's first execution is the initial render and is skipped. */
+    private toolLang: Lang = 'fr';
+    private runArmed = false;
+    private runTracked = false;
+    private runEffect = effect(() => {
+        const _inputs = [this.initialCapital(), this.monthlySavings(), this.horizon(), this.interestRate(), this.compoundFreq()];
+        if (!this.runArmed) { this.runArmed = true; return; }
+        if (this.runTracked) return;
+        this.runTracked = true;
+        this.analytics.trackPublic('simulator_run', { tool: 'compound-interest', lang: this.toolLang });
+    });
 
     /**
      * Structured data for rich results and AI answer engines. Built during

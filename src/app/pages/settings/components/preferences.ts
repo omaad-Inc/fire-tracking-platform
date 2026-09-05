@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -202,6 +203,7 @@ import { CommandPaletteService } from '../../../core/services/command-palette.se
     `
 })
 export class PreferencesSettings implements OnInit {
+    private analytics = inject(AnalyticsService);
     private layoutService = inject(LayoutService);
     private feedback = inject(FeedbackService);
     private router = inject(Router);
@@ -217,18 +219,19 @@ export class PreferencesSettings implements OnInit {
     exporting = signal(false);
 
     downloadJson(): void {
-        this.runExport(() => this.api.exportDataJson(), 'omaad-export.json');
+        this.runExport(() => this.api.exportDataJson(), 'omaad-export.json', 'json');
     }
 
     downloadCsv(): void {
-        this.runExport(() => this.api.exportTransactionsCsv(), 'omaad-transactions.csv');
+        this.runExport(() => this.api.exportTransactionsCsv(), 'omaad-transactions.csv', 'csv');
     }
 
-    private runExport(fetch: () => Observable<Blob>, filename: string): void {
+    private runExport(fetch: () => Observable<Blob>, filename: string, format: 'json' | 'csv'): void {
         this.exporting.set(true);
         fetch().subscribe({
             next: (blob) => {
                 this.exporting.set(false);
+                this.analytics.track('export', { format });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;

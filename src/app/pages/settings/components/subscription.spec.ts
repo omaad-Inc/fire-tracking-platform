@@ -5,6 +5,10 @@ import { of } from 'rxjs';
 import { SubscriptionSettings } from './subscription';
 import { ApiService, SubscriptionStatus, UsageStatus } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+
+/** Captures product events the page emits (subscribe_completed, subscription_cancelled). */
+let analyticsTrack: jasmine.Spy;
 
 /**
  * The Abonnement hero card, focused on the GRACE state.
@@ -84,6 +88,7 @@ function setup(sub: SubscriptionStatus, usage: UsageStatus | null = null,
             provideRouter([]),
             { provide: ApiService, useValue: api },
             { provide: CurrencyService, useValue: cs },
+            { provide: AnalyticsService, useValue: { track: (analyticsTrack = jasmine.createSpy('track')), trackPublic: () => undefined } },
             { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(queryParams) } } },
         ],
     });
@@ -149,11 +154,14 @@ describe('SubscriptionSettings payment return banner', () => {
         const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'success' });
         expect(c.paymentBanner()).toBe('success');
         expect(c.state()).toBe('active_prepaid');
+        // The funnel step is recorded on the way back; the grant itself stays webhook-only.
+        expect(analyticsTrack).toHaveBeenCalledWith('subscribe_completed', jasmine.objectContaining({ source: 'psp_return' }));
     });
 
     it('?payment=error shows the quiet failure note', () => {
         const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'error' });
         expect(c.paymentBanner()).toBe('error');
+        expect(analyticsTrack).not.toHaveBeenCalledWith('subscribe_completed', jasmine.anything());
     });
 
     it('an unknown outcome is ignored', () => {
