@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { PlansSettings } from './plans';
 import { ApiService, SubscriptionStatus, UsageStatus } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 
 /**
  * The plans page's context-aware CTA matrix (§3.4 of the Revolut redesign) and
@@ -61,6 +62,8 @@ function setup(sub: SubscriptionStatus, queryParams: Record<string, string> = {}
             provideRouter([]),
             { provide: ApiService, useValue: api },
             { provide: CurrencyService, useValue: cs },
+            // The checkout sheet tracks subscribe_started; the real service needs HttpClient.
+            { provide: AnalyticsService, useValue: { track: () => undefined, trackPublic: () => undefined } },
             { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(queryParams) } } },
         ],
     });

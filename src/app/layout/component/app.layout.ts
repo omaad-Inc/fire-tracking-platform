@@ -1,4 +1,5 @@
 import { Component, HostListener, Renderer2, ViewChild, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -87,6 +88,7 @@ import { CommandPaletteService } from '../../core/services/command-palette.servi
     </div> `
 })
 export class AppLayout implements OnInit, OnDestroy {
+    private analytics = inject(AnalyticsService);
     overlayMenuOpenSubscription: Subscription;
 
     menuOutsideClickListener: any;
@@ -206,6 +208,11 @@ export class AppLayout implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Public shared portfolio: no user, no PIN, no auto-lock/logout.
         if (this.share.active()) return;
+
+        // Authenticated session start, once per browser session (the web twin
+        // of the Flutter app's app_open). Lets the funnel count "opened the
+        // app" instead of inferring it from dashboard snapshots.
+        this.analytics.trackAppOpenOnce(this.i18n.lang());
 
         // Lock on startup if PIN is configured
         this.pinService.initLockOnStartup();

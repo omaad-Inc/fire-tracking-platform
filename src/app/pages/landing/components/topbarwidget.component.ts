@@ -1,4 +1,5 @@
 import { Component, inject, signal, computed } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
@@ -214,6 +215,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </button>
             <button pButton pRipple [label]="t('landing.nav.register')"
                     [routerLink]="[currentLang, 'auth', 'register']"
+                    (click)="trackCta('topbar_register')"
                     [rounded]="true"
                     class="!bg-ochre-500 hover:!bg-ochre-400 !text-warm-900 !border-0 !font-semibold
                            hover:!shadow-lg transition-all duration-300">
@@ -355,6 +357,7 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
                 </button>
                 <button pButton pRipple [label]="t('landing.nav.register')"
                         [routerLink]="[currentLang, 'auth', 'register']"
+                        (click)="trackCta('topbar_register_mobile')"
                         [rounded]="true"
                         class="!bg-ochre-500 hover:!bg-ochre-400 !text-warm-900 !border-0 !font-semibold
                                hover:!shadow-lg transition-all duration-300 w-full justify-center">
@@ -364,6 +367,13 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
     `
 })
 export class TopbarWidget {
+    private analytics = inject(AnalyticsService);
+
+    /** Public-funnel step between landing_view and the signup itself. */
+    trackCta(cta: string): void {
+        // currentLang is a router segment ('/fr'); the event wants the bare code.
+        this.analytics.trackPublic('cta_click', { cta, lang: this.currentLang.replace(/^\//, '') });
+    }
     layoutService = inject(LayoutService);
     private i18n  = inject(I18nService);
 

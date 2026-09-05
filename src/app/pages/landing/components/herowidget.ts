@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { RouterModule, Router } from '@angular/router';
@@ -58,6 +59,7 @@ import { I18nService } from '../../../i18n/i18n.service';
 
                         <div class="flex flex-wrap justify-center lg:justify-start gap-3">
                             <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
+                                (click)="trackCta('hero_register')"
                                 class="!text-lg !px-8 !py-3 !bg-ochre-500 hover:!bg-ochre-400 !border-0 !font-semibold !text-warm-900 hover:!shadow-lg transition-all duration-300">
                                 <i class="pi pi-chart-line mr-2"></i>
                                 {{ t('landing.hero.ctaDashboard') }}
@@ -176,6 +178,13 @@ import { I18nService } from '../../../i18n/i18n.service';
     `
 })
 export class HeroWidget {
+    private analytics = inject(AnalyticsService);
+
+    /** Public-funnel step between landing_view and the signup itself. */
+    trackCta(cta: string): void {
+        // currentLang is a router segment ('/fr'); the event wants the bare code.
+        this.analytics.trackPublic('cta_click', { cta, lang: this.currentLang.replace(/^\//, '') });
+    }
     private i18n = inject(I18nService);
     private router = inject(Router);
 

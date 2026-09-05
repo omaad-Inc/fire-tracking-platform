@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -368,6 +369,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
     `
 })
 export class SubscriptionSettings implements OnInit {
+    private analytics = inject(AnalyticsService);
     private i18n = inject(I18nService);
     private api = inject(ApiService);
     private router = inject(Router);
@@ -429,6 +431,9 @@ export class SubscriptionSettings implements OnInit {
             replaceUrl: true,
         }).catch(() => { /* URL cosmetics only */ });
         if (outcome === 'success') {
+            // The PSP said yes on the way back; the plan itself is granted by
+            // the signed webhook, so this is the funnel step, not the grant.
+            this.analytics.track('subscribe_completed', { source: 'psp_return', device: this.onMobile() ? 'mobile' : 'desktop' });
             setTimeout(() => this.billing.load(true), SubscriptionSettings.RETURN_RECHECK_MS);
         }
     }
@@ -601,6 +606,7 @@ export class SubscriptionSettings implements OnInit {
     private doCancel(): void {
         this.api.cancelSubscription().subscribe({
             next: () => {
+                this.analytics.track('subscription_cancelled', { plan: this.subscription()?.plan ?? null });
                 this.billing.refresh();
                 this.feedback.success(this.t('subscription.cancelConfirm.doneBody'));
             },

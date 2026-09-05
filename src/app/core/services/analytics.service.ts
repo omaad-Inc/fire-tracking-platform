@@ -4,14 +4,21 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { isMobileDevice } from '../util/app-link';
 
+// Authenticated product events. Mirrors the backend KNOWN_EVENT_NAMES allowlist
+// (app/schemas/event.py): add a name in BOTH places to introduce an event.
 export type AnalyticsEventName =
+    | 'app_open'
     | 'first_asset_added'
     | 'fire_calculated'
     | 'currency_switched'
     | 'export'
     | 'share'
-    | 'sync_interest';
+    | 'sync_interest'
+    | 'subscribe_started'
+    | 'subscribe_completed'
+    | 'subscription_cancelled';
 
 // Anonymous public-funnel events (POST /events/public, no auth). Mirrors the
 // backend KNOWN_PUBLIC_EVENT_NAMES allowlist.
@@ -28,6 +35,10 @@ interface EventPayload {
     event_name: string;
     event_properties?: Record<string, unknown> | null;
 }
+
+/** sessionStorage key: one `app_open` per browser session, the web analogue of
+ *  the Flutter app's "once per app process" (EventsClient.trackAppOpenOnce). */
+const APP_OPEN_SENT_KEY = 'omaad.analytics.app_open';
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsService {
@@ -47,6 +58,33 @@ export class AnalyticsService {
      */
     trackPublic(name: PublicAnalyticsEventName, properties?: Record<string, unknown>): void {
         this.post('/events/public', name, properties);
+    }
+
+    /**
+     * Authenticated session start on the web, once per browser session. Carries
+     * `surface: 'web'` so web and mobile funnels line up on the same event
+     * (the app sends surface: 'mobile'), plus the device class and whether the
+     * PWA runs installed. Nothing here identifies the person beyond the auth
+     * the request already carries.
+     */
+    trackAppOpenOnce(lang: string): void {
+        if (!this.isBrowser) return;
+        try {
+            if (window.sessionStorage.getItem(APP_OPEN_SENT_KEY)) return;
+            window.sessionStorage.setItem(APP_OPEN_SENT_KEY, '1');
+        } catch {
+            // Storage blocked (private mode, embedded view): at worst this
+            // fires once per page load instead of once per session.
+        }
+        const standalone =
+            (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches)
+            || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+        this.track('app_open', {
+            surface: 'web',
+            device: isMobileDevice() ? 'mobile' : 'desktop',
+            standalone,
+            lang,
+        });
     }
 
     private post(path: string, name: string, properties?: Record<string, unknown>): void {
