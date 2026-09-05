@@ -305,7 +305,7 @@ interface DayGroup {
                             <label for="tx-amount" class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ t('transactions.form.amount') }} <span class="text-surface-400 font-normal">({{ curSymbol() }})</span>
                             </label>
-                            <p-inputnumber [(ngModel)]="form.amount" mode="decimal" inputId="tx-amount"
+                            <p-inputnumber [locale]="curLocale()" [(ngModel)]="form.amount" mode="decimal" inputId="tx-amount"
                                            [minFractionDigits]="0" [maxFractionDigits]="curDecimals()"
                                            styleClass="w-full"
                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
@@ -528,6 +528,13 @@ export class TransactionLogs implements OnInit, OnDestroy {
      *  540 the next time its row was opened and saved. */
     curDecimals(): number {
         return this.cs.minorUnitsFor(this.form.currency);
+    }
+
+    /** The separator the amount field parses: the transaction's own currency
+     *  locale, the twin of curDecimals(). Without it PrimeNG falls back to the
+     *  BROWSER locale and a typed "1234,56" became 123 456 (2026-09-05). */
+    curLocale(): string {
+        return this.cs.localeFor(this.form.currency);
     }
 
     accountOptions = signal<{ label: string; value: number }[]>([]);

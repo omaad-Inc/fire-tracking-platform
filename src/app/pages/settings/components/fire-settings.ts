@@ -62,7 +62,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                         <label class="text-sm text-surface-500 dark:text-surface-400">
                             {{ i18n.t('fireSettings.annualExpenses') }} <span class="text-surface-400">({{ cs.config().symbol }})</span>
                         </label>
-                        <p-inputnumber
+                        <p-inputnumber [locale]="cs.inputLocale()"
                             [ngModel]="annualExpenses()" (ngModelChange)="annualExpenses.set($event); onCalcChange()"
                             [min]="0"
                             mode="decimal"
@@ -75,7 +75,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                     </div>
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('fireSettings.returnRate') }}</label>
-                        <p-inputnumber
+                        <p-inputnumber [locale]="cs.inputLocale()"
                             [ngModel]="withdrawalRate()" (ngModelChange)="withdrawalRate.set($event); onCalcChange()"
                             [min]="1"
                             [max]="10"
@@ -128,7 +128,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                 <p class="text-surface-500 dark:text-surface-400 text-sm mb-4">
                     {{ i18n.t('fireSettings.targetCapitalDesc') }}
                 </p>
-                <p-inputnumber
+                <p-inputnumber [locale]="cs.inputLocale()"
                     [(ngModel)]="fireTarget"
                     [min]="0"
                     mode="decimal"

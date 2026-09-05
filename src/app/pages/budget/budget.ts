@@ -115,13 +115,13 @@ type Model = 'envelope' | 'flexible';
                 @if (form.model === 'envelope') {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('budgets.form.limit') }}</label>
-                        <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="cs.minorUnits()" styleClass="w-full"
+                        <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="cs.minorUnits()" styleClass="w-full"
                                        inputStyleClass="w-full" data-testid="budget-amount" />
                     </div>
                 } @else {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('budgets.form.percent') }}</label>
-                        <p-inputnumber [(ngModel)]="form.percent" [min]="1" [max]="100" suffix=" %" styleClass="w-full" inputStyleClass="w-full" />
+                        <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="form.percent" [min]="1" [max]="100" suffix=" %" styleClass="w-full" inputStyleClass="w-full" />
                         <small class="text-xs text-surface-400">{{ t('budgets.form.percentHint') }}</small>
                     </div>
                 }

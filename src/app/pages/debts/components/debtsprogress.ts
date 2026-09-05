@@ -219,7 +219,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             {{ t('debts.fields.total') }} <span class="text-negative">*</span>
                             <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
-                        <p-inputnumber [(ngModel)]="record.total" mode="decimal"
+                        <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="record.total" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="formDecimals()"
                                        styleClass="w-full"
                                        inputStyleClass="w-full" />
@@ -234,7 +234,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             {{ record.type === 'Debt' ? t('debts.alreadyPaid') : t('debts.alreadyReceived') }}
                             <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
-                        <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
+                        <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="record.paid" mode="decimal"
                                        [minFractionDigits]="0" [maxFractionDigits]="formDecimals()"
                                        styleClass="w-full"
                                        inputStyleClass="w-full" />
@@ -243,7 +243,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                     <!-- Interest Rate -->
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.interestRate') }}</label>
-                        <p-inputnumber [(ngModel)]="record.interestRate" mode="decimal"
+                        <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="record.interestRate" mode="decimal"
                                        [minFractionDigits]="2" [maxFractionDigits]="2" suffix=" %"
                                        styleClass="w-full"
                                        inputStyleClass="w-full" />
@@ -328,7 +328,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ t('debts.addPayment.amount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
-                            <p-inputnumber [(ngModel)]="addPaymentAmount" mode="decimal"
+                            <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="addPaymentAmount" mode="decimal"
                                            [minFractionDigits]="0" [maxFractionDigits]="formDecimals()"
                                            [min]="1" [max]="paymentRecord.total - paymentRecord.paid"
                                            styleClass="w-full"

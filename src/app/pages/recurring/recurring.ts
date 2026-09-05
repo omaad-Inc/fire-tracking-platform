@@ -107,7 +107,7 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.amount') }}</label>
-                    <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="cs.minorUnits()" styleClass="w-full" inputStyleClass="w-full" data-testid="recurring-amount" />
+                    <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="cs.minorUnits()" styleClass="w-full" inputStyleClass="w-full" data-testid="recurring-amount" />
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.account') }}</label>

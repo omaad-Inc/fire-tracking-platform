@@ -144,7 +144,7 @@ export interface AllocatePayload {
                             {{ i18n.t('goals.fields.amount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             <span class="text-negative">*</span>
                         </label>
-                        <p-inputnumber
+                        <p-inputnumber [locale]="cs.inputLocale()"
                             [(ngModel)]="form.amount"
                             mode="decimal"
                             [minFractionDigits]="0" [maxFractionDigits]="cs.minorUnits()"

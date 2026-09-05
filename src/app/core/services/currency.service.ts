@@ -237,6 +237,23 @@ export class CurrencyService {
         }).format(displayValue));
     }
 
+    /** The locale a numeric INPUT must parse in: the same one the app PRINTS
+     *  money in. PrimeNG's p-inputnumber falls back to the BROWSER locale when
+     *  none is given, so on an en-US browser a French user typing "1234,56"
+     *  got 123 456 — the comma read as a thousands separator, the amount
+     *  stored a hundred times too big, silently (measured 2026-09-05).
+     *
+     *  Bind it on every p-inputnumber: `[locale]="cs.inputLocale()"`. It must
+     *  be a template binding, not a property set in code — PrimeNG only
+     *  re-parses on ngOnChanges, so a code-set value would go stale when the
+     *  display currency changes under an open form. */
+    localeFor(code: string | null | undefined): string {
+        return CURRENCIES[(code || 'EUR').toUpperCase()]?.locale ?? CURRENCIES['EUR'].locale;
+    }
+
+    /** The input locale of the ACTIVE display currency, as a signal. */
+    readonly inputLocale = computed<string>(() => this.config().locale);
+
     /** The decimal separator of the display locale ("," in fr-FR, "." in en-US).
      *  `<app-amount>` splits a hero amount on it to size the cents down. */
     decimalSeparator(): string {
