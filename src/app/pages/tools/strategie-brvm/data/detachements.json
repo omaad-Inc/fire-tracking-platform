@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-09-04",
+  "updated_at": "2026-09-05",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -23,6 +23,17 @@
       "ticker": "SHEC",
       "nom": "Vivo Energy CI",
       "secteur": "Distribution"
+    },
+    {
+      "emetteur": "SMB",
+      "exercice": 2025,
+      "date_paiement": "2026-09-18",
+      "date_ex_dividende": "2026-09-17",
+      "montant_net_fcfa": 800.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260904_-_avis_ndeg261_brvmdg_-_paiement_de_dividendes_exercice_2025_-_smb_ci.pdf",
+      "ticker": "SMBC",
+      "nom": "SMB CI",
+      "secteur": "Industrie"
     },
     {
       "emetteur": "SODECI",
