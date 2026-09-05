@@ -11,8 +11,8 @@ import { CurrencyService } from '../services/currency.service';
 export class AppCurrencyPipe implements PipeTransform {
     private cs = inject(CurrencyService);
 
-    transform(value: number | null | undefined, fractionDigits = 0): string {
-        if (value == null) return ', ';
+    transform(value: number | null | undefined, fractionDigits?: number): string {
+        if (value == null) return '';
         return this.cs.format(value, fractionDigits);
     }
 }

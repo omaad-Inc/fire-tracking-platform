@@ -542,7 +542,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
                     cornerRadius: 8,
                     padding: 10,
                     displayColors: false,
-                    callbacks: { label: (ctx: any) => cs.format(ctx.raw, 0) }
+                    callbacks: { label: (ctx: any) => cs.format(ctx.raw) }
                 }
             },
             scales: {
@@ -583,7 +583,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
                     color: colors[i % colors.length],
                     share,
                     pct: this.sharePctLabel(share),
-                    tooltip: `${item.name} · ${this.cs.format(item.value, 0)}`,
+                    tooltip: `${item.name} · ${this.cs.format(item.value)}`,
                 };
             });
     }

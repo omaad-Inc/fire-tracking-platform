@@ -330,7 +330,7 @@ export class PatrimoineProgress implements OnInit, OnDestroy {
                                 return context[0].label || '';
                             },
                             label: function(context: any) {
-                                return cs.format(context.raw, 0);
+                                return cs.format(context.raw);
                             }
                         }
                     }

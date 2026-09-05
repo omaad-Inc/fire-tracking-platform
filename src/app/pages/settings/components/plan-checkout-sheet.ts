@@ -220,7 +220,8 @@ export class PlanCheckoutSheet {
 
     /** Formats a display-currency value (no FX conversion) + the symbol. */
     price(value: number): string {
-        const digits = this.isEur() && !Number.isInteger(value) ? 2 : 0;
+        // Width from the currency the price is QUOTED in (EUR or XOF).
+        const digits = this.cs.decimalsFor(value, this.isEur() ? 'EUR' : 'XOF');
         return `${this.cs.formatDisplayNumber(value, digits)} ${this.cs.config().symbol}`;
     }
 

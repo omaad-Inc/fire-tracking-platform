@@ -998,9 +998,16 @@ export class AssetDetailPage implements OnInit {
      * `suffix` carries the "/m²" and "/month" qualifiers, which stay visible:
      * they say what the figure measures, not how much of it there is.
      */
-    private nativeMoney(value: number, currency: string, suffix = '', digits = 0): string {
+    private nativeMoney(value: number, currency: string, suffix = '', digits?: number): string {
         if (this.privacy.hidden()) return `••••• ${currency}${suffix}`;
-        const n = nbspSafe(value.toLocaleString(this.numLocale, { maximumFractionDigits: digits }));
+        // Derived from the asset's OWN currency, not the display one: this row
+        // is printed in `currency`, so a XOF holding never grows centimes even
+        // for a EUR user, and a EUR one keeps the cents it was bought with.
+        const d = digits ?? this.cs.decimalsFor(value, currency);
+        const n = nbspSafe(value.toLocaleString(this.numLocale, {
+            maximumFractionDigits: d,
+            minimumFractionDigits: d,
+        }));
         return `${n} ${currency}${suffix}`;
     }
 
@@ -1078,7 +1085,7 @@ export class AssetDetailPage implements OnInit {
             const sign = gain >= 0 ? '+' : '−';
             rows.push({
                 label: t('assetDetail.totalGainLoss'),
-                value: `${sign} ${this.nativeMoney(Math.abs(gain), a.currency, '', 2)}`,
+                value: `${sign} ${this.nativeMoney(Math.abs(gain), a.currency)}`,
                 icon: gain >= 0 ? 'pi-arrow-up' : 'pi-arrow-down',
                 valueClass: gain >= 0 ? 'text-positive' : 'text-negative',
             });

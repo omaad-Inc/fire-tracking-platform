@@ -30,6 +30,19 @@ const CURRENCIES: Record<string, CurrencyConfig> = {
     USD: { code: 'USD', symbol: '$',      rate: 1.08,    locale: 'en-US' },
 };
 
+/**
+ * How many decimals each currency actually HAS (its minor unit). Neither CFA
+ * franc has one, so a centime there is meaningless; the euro and the dollar
+ * have cents, and silently dropping them reports a number the user never said.
+ *
+ * A code missing from this table falls back to DEFAULT_MINOR_UNITS (2), which
+ * would invent a centime that does not exist, so every supported code belongs
+ * here. Twin of `CURRENCY_MINOR_UNITS` in backend/app/core/formatting.py and
+ * `MoneyFormatter._minorUnits` in the Flutter app — keep the three in step.
+ */
+const CURRENCY_MINOR_UNITS: Record<string, number> = { XOF: 0, XAF: 0, EUR: 2, USD: 2 };
+const DEFAULT_MINOR_UNITS = 2;
+
 const FX_CACHE_KEY = 'omaad_fx_rates';
 
 /**
@@ -95,6 +108,42 @@ export class CurrencyService {
      *  keeps every screen correct as codes are added. */
     symbolFor(code: string | null | undefined): string {
         return CURRENCIES[(code || 'EUR').toUpperCase()]?.symbol ?? code ?? '';
+    }
+
+    /** The minor unit of ANY currency code: how many decimals it actually has. */
+    minorUnitsFor(code: string | null | undefined): number {
+        return CURRENCY_MINOR_UNITS[(code || 'EUR').toUpperCase()] ?? DEFAULT_MINOR_UNITS;
+    }
+
+    /** The minor unit of the ACTIVE display currency, as a signal. Bind money
+     *  inputs to this (`[maxFractionDigits]="cs.minorUnits()"`) so a form can
+     *  never accept — nor silently truncate — a digit the currency lacks. */
+    readonly minorUnits = computed<number>(() => this.minorUnitsFor(this.currencyCode()));
+
+    /**
+     * Decimals to render for `value` in `code`: none when it is a whole amount,
+     * the currency's full minor unit as soon as it is not.
+     *
+     * "Exactly the amount the user gave, nothing more and nothing less" (owner
+     * directive): 35.19 EUR renders "35,19" and 14 EUR renders "14", never "35"
+     * (real precision dropped) and never "14,00" (precision invented). A
+     * trailing zero inside the minor unit is fact, not noise, so 518.90 renders
+     * "518,90" and not "518,9".
+     *
+     * `value` must already be in `code`'s currency: the width is derived from
+     * the digits the user will actually see, not from the EUR-base figure.
+     *
+     * Twin of `_money_decimals` (backend) and `MoneyFormatter.decimalsFor`
+     * (Flutter). Defaults to the active display currency when `code` is omitted.
+     */
+    decimalsFor(value: number | null | undefined, code?: string | null): number {
+        const minor = this.minorUnitsFor(code ?? this.currencyCode());
+        if (minor <= 0) return 0;
+        // Round to the minor unit BEFORE asking whether a fractional part
+        // survives: float noise (35.190000000000005, or a converted
+        // 249999997.97078) must not read as "needs more digits".
+        const rounded = Number((value ?? 0).toFixed(minor));
+        return Number.isInteger(rounded) ? 0 : minor;
     }
 
     /** Rate (units per EUR) for any currency code: live → hardcoded fallback → 1. */
@@ -164,27 +213,36 @@ export class CurrencyService {
      * instead puts it on the seam they already share, and inverts the failure
      * mode: forget to think about privacy and you now get masking, not a leak.
      */
-    format(eurValue: number, fractionDigits = 0): string {
-        const { symbol, locale } = this.config();
+    format(eurValue: number, fractionDigits?: number): string {
+        const { symbol } = this.config();
         if (this.privacy.hidden()) return `${MASK} ${symbol}`;
-        const displayValue = this.convert(eurValue);
-        const n = nbspSafe(new Intl.NumberFormat(locale, {
-            maximumFractionDigits: fractionDigits,
-            minimumFractionDigits: fractionDigits,
-        }).format(displayValue));
-        return `${n} ${symbol}`;
+        return `${this.formatNumber(eurValue, fractionDigits)} ${symbol}`;
     }
 
     /** Format a EUR value as a plain number string (no currency symbol) in the
-     *  display locale. Masks under privacy mode, same reasoning as format(). */
-    formatNumber(eurValue: number, fractionDigits = 0): string {
+     *  display locale. Masks under privacy mode, same reasoning as format().
+     *
+     *  `fractionDigits` omitted DERIVES the width from the converted amount
+     *  (see decimalsFor). Pass a number ONLY for a rollup whose cents are noise
+     *  rather than fact; a hardcoded 0 on a real amount is the bug this default
+     *  replaced — it rendered a 539,69 € rent as "540 €". */
+    formatNumber(eurValue: number, fractionDigits?: number): string {
         if (this.privacy.hidden()) return MASK;
         const displayValue = this.convert(eurValue);
         const { locale } = this.config();
+        const digits = fractionDigits ?? this.decimalsFor(displayValue);
         return nbspSafe(new Intl.NumberFormat(locale, {
-            maximumFractionDigits: fractionDigits,
-            minimumFractionDigits: fractionDigits,
+            maximumFractionDigits: digits,
+            minimumFractionDigits: digits,
         }).format(displayValue));
+    }
+
+    /** The decimal separator of the display locale ("," in fr-FR, "." in en-US).
+     *  `<app-amount>` splits a hero amount on it to size the cents down. */
+    decimalSeparator(): string {
+        return new Intl.NumberFormat(this.config().locale)
+            .formatToParts(1.1)
+            .find(p => p.type === 'decimal')?.value ?? ',';
     }
 
     /** Format a value ALREADY in the display currency, WITHOUT converting it again.
@@ -198,11 +256,12 @@ export class CurrencyService {
      *  `•••••`, and a plan price is not the user's money anyway) and the figure
      *  a user is currently TYPING into a form or the numpad. If a genuine user
      *  amount ever needs this, mask at that call site on PrivacyService. */
-    formatDisplayNumber(displayValue: number | null | undefined, fractionDigits = 0): string {
+    formatDisplayNumber(displayValue: number | null | undefined, fractionDigits?: number): string {
         const { locale } = this.config();
+        const digits = fractionDigits ?? this.decimalsFor(displayValue);
         return nbspSafe(new Intl.NumberFormat(locale, {
-            maximumFractionDigits: fractionDigits,
-            minimumFractionDigits: fractionDigits,
+            maximumFractionDigits: digits,
+            minimumFractionDigits: digits,
         }).format(displayValue ?? 0));
     }
 

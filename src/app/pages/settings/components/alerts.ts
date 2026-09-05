@@ -10,6 +10,7 @@ import { AlertRule, AlertRuleType, ApiService } from '../../../core/services/api
 import { EXPENSE_CATEGORIES } from '../../service/transactions.service';
 import { AlertsDataService } from './alerts-data.service';
 import { FeedbackService } from '../../../core/ui/feedback.service';
+import { isMonetaryCategory } from '../../../core/constants/accounts';
 
 type RuleForm = {
     rule_type: AlertRuleType;
@@ -98,7 +99,7 @@ type RuleForm = {
                                 <label class="block text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">{{ t('settings.alerts.account') }}</label>
                                 <select [(ngModel)]="form.account_id" [class]="selectClass">
                                     <option [ngValue]="null" disabled>{{ t('settings.alerts.pickAccount') }}</option>
-                                    @for (a of accounts(); track a.id) {
+                                    @for (a of accountOptions(); track a.id) {
                                         <option [ngValue]="a.id">{{ a.name }}</option>
                                     }
                                 </select>
@@ -206,6 +207,12 @@ export class AlertsSettings implements OnInit {
     // Cached, shared reads (P2-FE-1): instant on revisit, background revalidate.
     readonly rules = this.data.rules;
     readonly accounts = this.data.accounts;
+
+    /** What the balance_floor picker offers: only assets that can back a
+     *  transaction, so a floor is never set on a stock or a house whose balance
+     *  no transaction will ever move. `accounts` stays unfiltered above because
+     *  the rules list resolves names through it, including for older rules. */
+    readonly accountOptions = computed(() => this.accounts().filter(a => isMonetaryCategory(a.category)));
     readonly goals = this.data.goals;
     readonly rulesLoading = this.data.rulesLoading;
     editingId = signal<number | null>(null);

@@ -26,6 +26,7 @@ import { LayoutService } from '../../../layout/service/layout.service';
 import { CsvImportDialog } from './csv-import-dialog';
 import { isTouchDevice } from '../../../core/util/touch';
 import { FeedbackService } from '../../../core/ui/feedback.service';
+import { isMonetaryCategory } from '../../../core/constants/accounts';
 
 interface DayGroup {
     dateKey: string;
@@ -305,7 +306,7 @@ interface DayGroup {
                                 {{ t('transactions.form.amount') }} <span class="text-surface-400 font-normal">({{ curSymbol() }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="form.amount" mode="decimal" inputId="tx-amount"
-                                           [minFractionDigits]="0" [maxFractionDigits]="0"
+                                           [minFractionDigits]="0" [maxFractionDigits]="curDecimals()"
                                            styleClass="w-full"
                                            inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400 !text-lg !font-semibold" />
                             @if (submitted && !(form.amount > 0)) {
@@ -521,8 +522,14 @@ export class TransactionLogs implements OnInit, OnDestroy {
         return this.cs.symbolFor(c);
     }
 
-    // Monetary accounts (cash / savings / mobile money) for the account selector
-    private static readonly MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
+    /** Decimals the amount field accepts: the minor unit of the currency the
+     *  transaction is typed in (not the display currency — the form has its own
+     *  currency picker). A hardcoded 0 here silently rewrote a 539,69 € rent to
+     *  540 the next time its row was opened and saved. */
+    curDecimals(): number {
+        return this.cs.minorUnitsFor(this.form.currency);
+    }
+
     accountOptions = signal<{ label: string; value: number }[]>([]);
 
     // Built-ins for the type + the user's custom categories of that kind (PRO-4).
@@ -692,7 +699,7 @@ export class TransactionLogs implements OnInit, OnDestroy {
             const assets = await this.patrimoineService.getAssets();
             this.accountOptions.set(
                 assets
-                    .filter(a => TransactionLogs.MONETARY_CATEGORIES.includes(a.category))
+                    .filter(a => isMonetaryCategory(a.category))
                     // Balance in the label: the account moves with each
                     // transaction now (S11-TX-1), show the effect at entry time.
                     .map(a => ({ label: `${a.name} · ${this.cs.format(a.value)}`, value: a.id }))

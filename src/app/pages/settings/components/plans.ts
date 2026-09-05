@@ -528,7 +528,10 @@ export class PlansSettings {
         const m1 = this.billing.plans()?.plans.find(p => p.plan === tier)?.durations.find(d => d.duration_key === 'm1');
         if (!m1) return '—';
         const val = isEur ? m1.eur : m1.xof;
-        return this.cs.formatDisplayNumber(val, isEur && !Number.isInteger(val) ? 2 : 0);
+        // Width from the currency the price is QUOTED in (EUR or XOF), not the
+        // display currency: those diverge for a USD or XAF user, who is shown
+        // the XOF price and must not see centimes invented on it.
+        return this.cs.formatDisplayNumber(val, this.cs.decimalsFor(val, isEur ? 'EUR' : 'XOF'));
     }
 
     private heroBenefits(tier: TierKey): { icon: string; label: string }[] {
@@ -540,7 +543,7 @@ export class PlansSettings {
             key: 'free',
             name: this.t('plans.free'),
             tagline: this.t('plans.freeTagline'),
-            amount: this.cs.formatDisplayNumber(0, 0),
+            amount: this.cs.formatDisplayNumber(0),
             sub: this.t('plans.freeForever'),
             lead: null,
             benefits: this.heroBenefits('free'),

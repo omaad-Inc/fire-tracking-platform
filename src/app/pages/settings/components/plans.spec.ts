@@ -47,6 +47,11 @@ function setup(sub: SubscriptionStatus, queryParams: Record<string, string> = {}
         config: () => ({ symbol: 'FCFA' }),
         currencyCode: () => 'XOF',
         formatDisplayNumber: (v: number) => String(v),
+        // decimalsFor: the width now derives from the amount (money-decimal rule),
+        // so the double has to answer it. XOF has no minor unit -> always 0.
+        decimalsFor: (_v: number, code?: string) => ((code ?? 'XOF').toUpperCase() === 'EUR' ? 2 : 0),
+        minorUnitsFor: (code?: string) => ((code ?? 'XOF').toUpperCase() === 'EUR' ? 2 : 0),
+        minorUnits: () => 0,
     };
 
     TestBed.configureTestingModule({

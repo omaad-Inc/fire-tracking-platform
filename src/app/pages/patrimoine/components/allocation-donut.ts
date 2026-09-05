@@ -68,7 +68,7 @@ export class AllocationDonutComponent {
                 color: seg.color,
                 dasharray: `${len} ${C - len}`,
                 dashoffset: String(-offset - GAP / 2),
-                tooltip: `${seg.label} · ${this.cs.format(seg.amount, 0)}`,
+                tooltip: `${seg.label} · ${this.cs.format(seg.amount)}`,
             };
             offset += frac * C;
             return arc;
