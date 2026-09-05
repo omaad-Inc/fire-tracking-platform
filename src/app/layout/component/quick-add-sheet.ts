@@ -11,10 +11,8 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { FocusTrapDirective } from '../../core/a11y/focus-trap.directive';
 import { FeedbackService } from '../../core/ui/feedback.service';
+import { isMonetaryCategory } from '../../core/constants/accounts';
 
-/** Monetary asset categories usable as a transaction account. Mirrors
- *  TransactionLogs.MONETARY_CATEGORIES, keep the two in sync. */
-const MONETARY_CATEGORIES = ['cash', 'savings_account', 'mobile_money'];
 const LAST_ACCOUNT_KEY = 'omaad_quick_account';
 
 /**
@@ -229,7 +227,7 @@ export class QuickAddSheet {
                 this.txService.getRecords(),
             ]);
             const accts = assets
-                .filter(a => MONETARY_CATEGORIES.includes(a.category))
+                .filter(a => isMonetaryCategory(a.category))
                 .map(a => ({ label: a.name, value: a.id }));
             this.accounts.set(accts);
             this.records.set(recs);
@@ -263,13 +261,14 @@ export class QuickAddSheet {
             return;
         }
         if (k === '.') {
-            if (!cur.includes('.')) this.amountStr.set(cur + '.');
+            // A currency with no minor unit has no centime to type (XOF / XAF).
+            if (this.cs.minorUnits() > 0 && !cur.includes('.')) this.amountStr.set(cur + '.');
             return;
         }
         // digit
         if (cur === '0') { this.amountStr.set(k); return; }
         if (cur.replace('.', '').length >= 12) return;          // sane cap
-        if (cur.includes('.') && cur.split('.')[1].length >= 2) return; // max 2 decimals
+        if (cur.includes('.') && cur.split('.')[1].length >= this.cs.minorUnits()) return; // the currency's minor unit
         this.amountStr.set(cur + k);
     }
 

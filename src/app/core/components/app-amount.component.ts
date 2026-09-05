@@ -23,7 +23,7 @@ import { nbspSafe } from '../util/nbsp';
             @if (prefix()) {
                 <span>{{ prefix() }}</span>
             }
-            <span>{{ displayStr() }}</span><span class="text-[0.6em] font-semibold ml-0.5 opacity-60 dark:opacity-90 align-baseline">{{ symbol() }}</span>
+            <span>{{ parts().whole }}</span>@if (parts().minor; as minor) {<span class="text-[0.55em] font-bold align-baseline">{{ minor }}</span>}<span class="text-[0.6em] font-semibold ml-0.5 opacity-60 dark:opacity-90 align-baseline">{{ symbol() }}</span>
         }
     `,
     host: { class: 'inline-flex items-baseline gap-0' },
@@ -37,6 +37,21 @@ export class AppAmountComponent implements OnDestroy {
 
     /** Whether to animate the count-up. Defaults to true. */
     animate = input<boolean>(true);
+
+    /**
+     * Explicit decimal width. Omitted (the default) DERIVES it from the amount
+     * and the currency's minor unit — see CurrencyService.decimalsFor. Set it
+     * ONLY for a rollup whose cents are noise rather than fact; a hardcoded 0
+     * here is what rendered a 539,69 € rent as "540 €" on every screen.
+     */
+    decimals = input<number | undefined>(undefined);
+
+    /**
+     * Hero variant: render the minor unit smaller than the whole part, the way
+     * `HeroMoneyText` does on mobile. No decimal span is drawn at all when the
+     * amount is whole or the currency has no minor unit (XOF / XAF).
+     */
+    hero = input<boolean>(false);
 
     private cs = inject(CurrencyService);
     privacy    = inject(PrivacyService);
@@ -63,14 +78,38 @@ export class AppAmountComponent implements OnDestroy {
      */
     private static sessionRevealed = false;
 
+    /**
+     * The decimal width, derived from the TARGET rather than from the animated
+     * value. Deriving it from the latter would make the number change width
+     * mid-count-up, every time an intermediate frame happened to land on a
+     * whole unit.
+     */
+    private fractionDigits = computed(() =>
+        this.decimals() ?? this.cs.decimalsFor(this.targetDisplayValue()));
+
     // Formatted display string
     displayStr = computed(() => {
         const val = this.animatedValue();
         const { locale } = this.cs.config();
+        const digits = this.fractionDigits();
         return nbspSafe(new Intl.NumberFormat(locale, {
-            maximumFractionDigits: 0,
-            minimumFractionDigits: 0,
-        }).format(Math.round(val)));
+            maximumFractionDigits: digits,
+            minimumFractionDigits: digits,
+        }).format(val));
+    });
+
+    /**
+     * The number split into its whole part and its minor unit (separator
+     * included), so the hero can size the cents down. Outside hero mode — and
+     * whenever there is no minor unit to show — `minor` is null and `whole`
+     * carries the whole string, which renders exactly as it always did.
+     */
+    parts = computed<{ whole: string; minor: string | null }>(() => {
+        const text = this.displayStr();
+        if (!this.hero() || this.fractionDigits() === 0) return { whole: text, minor: null };
+        const at = text.lastIndexOf(this.cs.decimalSeparator());
+        if (at < 0) return { whole: text, minor: null };
+        return { whole: text.substring(0, at), minor: text.substring(at) };
     });
 
     constructor() {

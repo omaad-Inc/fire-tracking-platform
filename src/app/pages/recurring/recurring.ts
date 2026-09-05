@@ -10,9 +10,11 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { I18nService } from '../../i18n/i18n.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import {
-    ApiService, LiquidAsset, RecurringRule, RecurringRuleCreate, RecurringFrequency,
+    ApiService, RecurringRule, RecurringRuleCreate, RecurringFrequency,
     TransactionType, TransactionCategory,
 } from '../../core/services/api.service';
+import { isMonetaryCategory } from '../../core/constants/accounts';
+import { PatrimoineService } from '../service/patrimoine.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../core/components/load-error.component';
 import { PageHeaderComponent, UiCardComponent, EmptyStateComponent, ChipComponent } from '../../core/ui';
@@ -105,12 +107,13 @@ const EXPENSE_CATS: TransactionCategory[] = ['housing', 'family_support', 'tonti
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.amount') }}</label>
-                    <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="2" styleClass="w-full" inputStyleClass="w-full" data-testid="recurring-amount" />
+                    <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="cs.minorUnits()" styleClass="w-full" inputStyleClass="w-full" data-testid="recurring-amount" />
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('recurring.form.account') }}</label>
                     <p-select [(ngModel)]="form.account_id" [options]="accounts()" optionLabel="name" optionValue="id"
-                              styleClass="w-full" appendTo="body" />
+                              styleClass="w-full" appendTo="body" data-testid="recurring-account"
+                              [emptyMessage]="t('transactions.form.noMonetaryAccount')" />
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="flex flex-col gap-1.5">
@@ -141,6 +144,7 @@ export class RecurringPage implements OnInit {
     private feedback = inject(FeedbackService);
     readonly cs = inject(CurrencyService);
     private state = inject(AssetsStateService);
+    private patrimoine = inject(PatrimoineService);
     private i18n = inject(I18nService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
@@ -149,7 +153,10 @@ export class RecurringPage implements OnInit {
     @Input() embedded = false;
 
     rules = signal<RecurringRule[]>([]);
-    accounts = signal<LiquidAsset[]>([]);
+    /** Monetary accounts only. A rule debits the account it names, so the set is
+     *  the backend's ACCOUNT_CATEGORIES — offering a stock or an FCP here only
+     *  produced a 422 on save. */
+    accounts = signal<{ id: number; name: string }[]>([]);
     loading = signal(true);
     error = signal(false);
     saving = signal(false);
@@ -202,7 +209,25 @@ export class RecurringPage implements OnInit {
             next: (rules) => { this.rules.set(rules); this.loading.set(false); },
             error: () => { this.error.set(true); this.loading.set(false); },
         });
-        this.api.listLiquidAssets().subscribe({ next: (a) => this.accounts.set(a), error: () => {} });
+        this.loadAccounts();
+    }
+
+    /** Same source and filter as the transaction form and the quick-add sheet:
+     *  the cached asset list, narrowed to the categories that can back a
+     *  transaction. NOT /savings/liquid-assets — that is the goal-allocation
+     *  rule, which also returns tontines and anything merely flagged is_liquid
+     *  (stocks, FCP, real estate), all of which the backend then rejects. */
+    private async loadAccounts() {
+        try {
+            const assets = await this.patrimoine.getAssets();
+            this.accounts.set(
+                assets
+                    .filter(a => isMonetaryCategory(a.category))
+                    .map(a => ({ id: a.id, name: a.name })),
+            );
+        } catch {
+            this.accounts.set([]);
+        }
     }
 
     setType(type: TransactionType) {

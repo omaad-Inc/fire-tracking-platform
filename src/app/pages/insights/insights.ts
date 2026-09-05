@@ -348,7 +348,7 @@ export class InsightsPage implements OnInit {
                 tooltip: {
                     backgroundColor: 'rgba(20,19,15,0.95)', titleColor: '#FAF8F4', bodyColor: '#DEDAD0',
                     borderColor: 'rgba(199,123,60,0.30)', borderWidth: 1, cornerRadius: 8, padding: 12,
-                    callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${cs.format(ctx.raw, 0)}` },
+                    callbacks: { label: (ctx: any) => `${ctx.dataset.label}: ${cs.format(ctx.raw)}` },
                 },
             },
             scales: {

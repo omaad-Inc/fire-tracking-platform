@@ -64,7 +64,7 @@ import { SkeletonCardComponent } from '../../../core/components/skeleton-card.co
                         </div>
                         <div class="font-bold text-4xl md:text-5xl leading-none tracking-tight"
                              [ngClass]="realNetWorth() >= 0 ? 'text-surface-900 dark:text-surface-0' : 'text-negative'">
-                            <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" [animate]="!reducedMotion" />
+                            <app-amount [value]="absNetWorth()" [prefix]="realNetWorth() < 0 ? '−' : ''" [animate]="!reducedMotion" [hero]="true" />
                         </div>
                         <div class="flex items-center gap-2 mt-2">
                             @if (trendPct() === 0) {

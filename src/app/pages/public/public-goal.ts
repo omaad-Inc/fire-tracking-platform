@@ -7,11 +7,15 @@ import { I18nService } from '../../i18n/i18n.service';
 import { templateOf } from '../goals/goal-templates';
 import { nbspSafe } from '../../core/util/nbsp';
 
-/** EUR-base → display, matching CurrencyService/app-amount rates. */
-const RATES: Record<string, { rate: number; locale: string }> = {
-    EUR: { rate: 1, locale: 'fr-FR' },
-    XOF: { rate: 655.957, locale: 'fr-FR' },
-    USD: { rate: 1.08, locale: 'en-US' },
+/** EUR-base → display, matching CurrencyService/app-amount rates. `minor` is
+ *  the currency's minor unit, mirroring CURRENCY_MINOR_UNITS: this page is
+ *  public and unauthenticated, so it cannot inject CurrencyService and keeps
+ *  its own copy. Keep the two in step. */
+const RATES: Record<string, { rate: number; locale: string; minor: number }> = {
+    EUR: { rate: 1, locale: 'fr-FR', minor: 2 },
+    XOF: { rate: 655.957, locale: 'fr-FR', minor: 0 },
+    XAF: { rate: 655.957, locale: 'fr-FR', minor: 0 },
+    USD: { rate: 1.08, locale: 'en-US', minor: 2 },
 };
 
 /**
@@ -121,8 +125,11 @@ export class PublicGoalPage implements OnInit {
     money(eur: number): string {
         const g = this.goal();
         const cfg = RATES[g?.currency ?? 'EUR'] ?? RATES['EUR'];
-        const val = Math.round((eur ?? 0) * cfg.rate);
-        return `${nbspSafe(new Intl.NumberFormat(cfg.locale, { maximumFractionDigits: 0 }).format(val))} ${g?.currency_symbol ?? ''}`.trim();
+        const val = (eur ?? 0) * cfg.rate;
+        // Same rule as CurrencyService.decimalsFor: whole amounts stay whole,
+        // anything else carries the currency's full minor unit.
+        const d = cfg.minor > 0 && !Number.isInteger(Number(val.toFixed(cfg.minor))) ? cfg.minor : 0;
+        return `${nbspSafe(new Intl.NumberFormat(cfg.locale, { maximumFractionDigits: d, minimumFractionDigits: d }).format(val))} ${g?.currency_symbol ?? ''}`.trim();
     }
 
     prettyDate(iso: string): string {

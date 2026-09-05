@@ -115,7 +115,7 @@ type Model = 'envelope' | 'flexible';
                 @if (form.model === 'envelope') {
                     <div class="flex flex-col gap-1.5">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('budgets.form.limit') }}</label>
-                        <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="2" styleClass="w-full"
+                        <p-inputnumber [(ngModel)]="form.amount" [min]="0" [maxFractionDigits]="cs.minorUnits()" styleClass="w-full"
                                        inputStyleClass="w-full" data-testid="budget-amount" />
                     </div>
                 } @else {
@@ -140,7 +140,7 @@ export class BudgetPage implements OnInit {
     private budgetData = inject(BudgetDataService);
     private i18n = inject(I18nService);
     private customCat = inject(CustomCategoryService);
-    private cs = inject(CurrencyService);
+    readonly cs = inject(CurrencyService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
     @Input() embedded = false;

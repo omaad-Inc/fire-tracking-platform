@@ -433,7 +433,7 @@ export class AnalyseBrvmPage implements OnInit {
                 ticker: a.ticker, kind: a.kind, label: a.name, amount,
                 color: colors[i % colors.length], share,
                 pct: share > 0 && share < 0.5 ? '<1' : Math.round(share).toString(),
-                tooltip: `${a.name} · ${this.cs.format(amount, 0)}`,
+                tooltip: `${a.name} · ${this.cs.format(amount)}`,
             } satisfies AllocRow;
         });
     }
@@ -520,7 +520,7 @@ export class AnalyseBrvmPage implements OnInit {
                     cornerRadius: 8,
                     padding: 10,
                     displayColors: false,
-                    callbacks: { label: (ctx: any) => cs.format(ctx.raw, 0) }
+                    callbacks: { label: (ctx: any) => cs.format(ctx.raw) }
                 }
             },
             scales: {

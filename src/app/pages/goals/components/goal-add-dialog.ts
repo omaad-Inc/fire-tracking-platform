@@ -177,7 +177,7 @@ export interface GoalSavePayload {
                             <p-inputnumber
                                 [(ngModel)]="form.target_amount"
                                 mode="decimal"
-                                [minFractionDigits]="0" [maxFractionDigits]="0"
+                                [minFractionDigits]="0" [maxFractionDigits]="cs.minorUnits()"
                                 styleClass="w-full"
                                 inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />
@@ -191,7 +191,7 @@ export interface GoalSavePayload {
                             <p-inputnumber
                                 [(ngModel)]="form.current_amount"
                                 mode="decimal"
-                                [minFractionDigits]="0" [maxFractionDigits]="0"
+                                [minFractionDigits]="0" [maxFractionDigits]="cs.minorUnits()"
                                 styleClass="w-full"
                                 inputStyleClass="w-full !py-3 !bg-transparent !border-0 !border-b !border-surface-300 dark:!border-surface-600 !rounded-none focus:!border-brand-700 dark:focus:!border-ochre-400"
                             />

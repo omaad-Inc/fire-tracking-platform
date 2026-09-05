@@ -220,7 +220,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.total" mode="decimal"
-                                       [minFractionDigits]="0" [maxFractionDigits]="0"
+                                       [minFractionDigits]="0" [maxFractionDigits]="formDecimals()"
                                        styleClass="w-full"
                                        inputStyleClass="w-full" />
                         @if (submitted && !(record.total > 0)) {
@@ -235,7 +235,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             <span class="text-surface-400 font-normal ml-1">({{ formCurrencyLabel() }})</span>
                         </label>
                         <p-inputnumber [(ngModel)]="record.paid" mode="decimal"
-                                       [minFractionDigits]="0" [maxFractionDigits]="0"
+                                       [minFractionDigits]="0" [maxFractionDigits]="formDecimals()"
                                        styleClass="w-full"
                                        inputStyleClass="w-full" />
                     </div>
@@ -329,7 +329,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                                 {{ t('debts.addPayment.amount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
                             <p-inputnumber [(ngModel)]="addPaymentAmount" mode="decimal"
-                                           [minFractionDigits]="0" [maxFractionDigits]="0"
+                                           [minFractionDigits]="0" [maxFractionDigits]="formDecimals()"
                                            [min]="1" [max]="paymentRecord.total - paymentRecord.paid"
                                            styleClass="w-full"
                                            inputStyleClass="w-full !text-lg !font-semibold" />
@@ -450,6 +450,15 @@ export class DebtsProgress implements OnInit {
         const displayCode = this.cs.config().code;
         const code = this.isEdit ? (this.record.currency || 'EUR') : displayCode;
         return code === displayCode ? this.cs.config().symbol : code;
+    }
+
+    /** Decimals the amount inputs accept, from the same currency the label
+     *  above names: the debt's own when editing, the display currency when new.
+     *  Kept in step with formCurrencyLabel — a field must never accept fewer
+     *  digits than the symbol beside it implies. */
+    formDecimals(): number {
+        const code = this.isEdit ? (this.record.currency || 'EUR') : this.cs.config().code;
+        return this.cs.minorUnitsFor(code);
     }
 
     editRecord(record: DebtRecord) {

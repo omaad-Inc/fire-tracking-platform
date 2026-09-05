@@ -79,7 +79,7 @@ const GROUPS = [
                     <div class="min-w-0">
                         <span class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ i18n.t('patrimoine.netWorth') }}</span>
                         <div class="flex items-center gap-3 mt-1 flex-wrap">
-                            <app-amount [value]="netWorth()" class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-0" />
+                            <app-amount [value]="netWorth()" [hero]="true" class="text-3xl sm:text-4xl font-bold text-surface-900 dark:text-surface-0" />
                             @if (assetDeltaAbs() !== 0) {
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-sm font-semibold"
                                       [ngClass]="assetDeltaAbs() >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'">
@@ -487,7 +487,7 @@ export class Patrimoine implements OnInit, OnDestroy {
                     ...seg,
                     share,
                     pct: this.sharePctLabel(share),
-                    tooltip: `${seg.label} · ${this.currencyService.format(seg.amount, 0)}`,
+                    tooltip: `${seg.label} · ${this.currencyService.format(seg.amount)}`,
                 };
             });
     });

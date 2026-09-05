@@ -565,7 +565,8 @@ export class SubscriptionSettings implements OnInit {
      *  currency): reuse the app number formatter, append the payment's symbol. */
     fmtMoney(amount: number, currency: string): string {
         const symbol = this.cs.symbolFor(currency);
-        const digits = currency === 'EUR' && !Number.isInteger(amount) ? 2 : 0;
+        // The payment's OWN currency drives the width, not the display one.
+        const digits = this.cs.decimalsFor(amount, currency);
         return `${this.cs.formatDisplayNumber(amount, digits)} ${symbol}`;
     }
 

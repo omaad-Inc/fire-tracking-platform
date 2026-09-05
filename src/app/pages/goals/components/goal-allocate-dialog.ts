@@ -147,7 +147,7 @@ export interface AllocatePayload {
                         <p-inputnumber
                             [(ngModel)]="form.amount"
                             mode="decimal"
-                            [minFractionDigits]="0" [maxFractionDigits]="0"
+                            [minFractionDigits]="0" [maxFractionDigits]="cs.minorUnits()"
                             [min]="0"
                             [max]="mode() === 'deallocate' && goal ? goal.current_amount : undefined"
                             styleClass="w-full"
@@ -290,6 +290,7 @@ export class GoalAllocateDialogComponent {
     formatCurrency(v: number): string {
         const sym = this.cs.config().symbol;
         if (this.privacy.hidden()) return `${sym}•••••`;
-        return `${sym}${nbspSafe(v.toLocaleString(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US', { maximumFractionDigits: 0 }))}`;
+        const d = this.cs.decimalsFor(v);
+        return `${sym}${nbspSafe(v.toLocaleString(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US', { maximumFractionDigits: d, minimumFractionDigits: d }))}`;
     }
 }

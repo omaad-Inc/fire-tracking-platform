@@ -20,6 +20,7 @@ import {
 import { CurrencyService } from '../../../core/services/currency.service';
 import { ChipComponent } from '../../../core/ui';
 import { FeedbackService } from '../../../core/ui/feedback.service';
+import { isMonetaryCategory } from '../../../core/constants/accounts';
 
 // Category choices per direction (single source: the i18n `categories.*` dict).
 const INCOME_CATS: TransactionCategory[] = [
@@ -301,8 +302,11 @@ export class CsvImportDialog implements OnInit {
     mapping: ColumnMapping = this.blankMapping();
 
     ngOnInit() {
+        // Imported rows become transactions, so the account must be one the
+        // backend accepts (ACCOUNT_CATEGORIES). The liquid-assets endpoint is
+        // the wider goal-allocation rule, hence the narrowing here.
         this.api.listLiquidAssets().subscribe({
-            next: (a) => this.accounts.set(a),
+            next: (a) => this.accounts.set(a.filter(x => isMonetaryCategory(x.category))),
             error: () => this.accounts.set([]),
         });
     }

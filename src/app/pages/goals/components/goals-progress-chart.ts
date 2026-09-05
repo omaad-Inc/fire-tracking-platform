@@ -213,7 +213,7 @@ export class SavingsProgress implements OnInit, OnDestroy {
                     displayColors: false,
                     callbacks: {
                         title: function(context: any) { return context[0].label || ''; },
-                        label: function(context: any) { return cs.format(context.raw, 0); }
+                        label: function(context: any) { return cs.format(context.raw); }
                     }
                 }
             },

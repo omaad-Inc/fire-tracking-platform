@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService, TontineSchedule } from '../../../core/services/api.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { PrivacyService } from '../../../core/services/privacy.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { nbspSafe } from '../../../core/util/nbsp';
 
 /**
@@ -140,6 +141,7 @@ export class TontineCyclesComponent implements OnInit {
     private api = inject(ApiService);
     readonly i18n = inject(I18nService);
     private privacy = inject(PrivacyService);
+    private cs = inject(CurrencyService);
 
     loading = signal(true);
     error = signal(false);
@@ -185,7 +187,8 @@ export class TontineCyclesComponent implements OnInit {
     money(v: number): string {
         if (this.privacy.hidden()) return `••••• ${this.currency}`;
         const locale = this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR';
-        return `${nbspSafe(v.toLocaleString(locale, { maximumFractionDigits: 0 }))} ${this.currency}`;
+        const d = this.cs.decimalsFor(v, this.currency);
+        return `${nbspSafe(v.toLocaleString(locale, { maximumFractionDigits: d, minimumFractionDigits: d }))} ${this.currency}`;
     }
 
     fmtDate(iso: string): string {

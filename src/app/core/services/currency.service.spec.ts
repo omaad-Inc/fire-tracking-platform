@@ -136,3 +136,99 @@ describe('CurrencyService (privacy mode)', () => {
         expect(svc.formatNumber(1000)).toBe('655\u00a0957');
     });
 });
+
+/**
+ * The decimal-width rule: "exactly the amount the user gave, nothing more and
+ * nothing less". Decimals are DERIVED from the amount and the currency's minor
+ * unit, never hardcoded — a fixed 0 rendered a 539,69 € rent as "540 €" on
+ * every screen, and fed that rounded number back into the edit form.
+ *
+ * This table is the TypeScript twin of the Flutter suite
+ * (omaad-mobile-app/test/money_formatter_test.dart) and of the server's
+ * `_money_decimals` (backend/app/core/formatting.py). The three must agree.
+ */
+describe('CurrencyService (decimal width)', () => {
+    /** A service whose display currency is `code`, with no live rates. */
+    function make(code: string): CurrencyService {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+            providers: [
+                CurrencyService,
+                { provide: ApiService, useValue: { getFxRates: () => of({ rates: {}, as_of: '' }), updateProfile: () => of({}) } },
+                { provide: TokenService, useValue: { user: () => ({ preferred_currency: code }), setUser: () => {} } },
+                { provide: AnalyticsService, useValue: { track: () => {} } },
+                { provide: ShareContextService, useValue: { active: () => false, currency: () => 'EUR' } },
+            ],
+        });
+        return TestBed.inject(CurrencyService);
+    }
+
+    it('knows each currency minor unit, and gives an unlisted code cents', () => {
+        const eur = make('EUR');
+        expect(eur.minorUnitsFor('EUR')).toBe(2);
+        expect(eur.minorUnitsFor('USD')).toBe(2);
+        expect(eur.minorUnitsFor('XOF')).toBe(0);
+        expect(eur.minorUnitsFor('XAF')).toBe(0);
+        expect(eur.minorUnitsFor('xof')).toBe(0);      // case-insensitive
+        expect(eur.minorUnitsFor('ZZZ')).toBe(2);      // unlisted => cents, not silence
+        expect(eur.minorUnitsFor(null)).toBe(2);       // null => EUR
+    });
+
+    it('keeps the cents an amount really has, and invents none it has not', () => {
+        const eur = make('EUR');
+        expect(eur.format(35.19)).toBe('35,19 €');
+        expect(eur.format(14)).toBe('14 €');            // never "14,00"
+        expect(eur.format(518.90)).toBe('518,90 €');    // never "518,9"
+        expect(eur.format(1234.56)).toBe('1 234,56 €');
+        // The reported bug, pinned:
+        expect(eur.format(539.69)).toBe('539,69 €');
+    });
+
+    it('never grows a centime on a currency that has none', () => {
+        const xof = make('XOF');
+        // 100 EUR = 65 595.7 FCFA: the fraction is dropped, not rendered.
+        expect(xof.format(100)).toBe('65 596 FCFA');
+        expect(xof.formatDisplayNumber(250000000)).toBe('250 000 000');
+        expect(xof.decimalsFor(1234.56)).toBe(0);
+    });
+
+    it('formats in the display locale (USD groups and points)', () => {
+        const usd = make('USD');
+        expect(usd.formatDisplayNumber(35.19)).toBe('35.19');
+        expect(usd.formatDisplayNumber(35)).toBe('35');
+    });
+
+    it('does not read float noise as extra precision', () => {
+        const eur = make('EUR');
+        expect(eur.decimalsFor(35.19 + 0.0000000000001, 'EUR')).toBe(2);
+        expect(eur.decimalsFor(14.000000000000002, 'EUR')).toBe(0);
+        // A converted FCFA figure carries a long tail; it must still read whole.
+        expect(eur.decimalsFor(249999997.97078, 'XOF')).toBe(0);
+    });
+
+    it('derives from the CONVERTED value, not the EUR-base one', () => {
+        // 1 EUR is a whole euro but 655.957 FCFA is not a whole franc — and the
+        // franc is what the user reads, so the width follows the display value.
+        const xof = make('XOF');
+        expect(xof.format(1)).toBe('656 FCFA');
+    });
+
+    it('still honors an explicit width, for a rollup whose cents are noise', () => {
+        const eur = make('EUR');
+        expect(eur.format(35.19, 0)).toBe('35 €');
+        expect(eur.formatDisplayNumber(35, 2)).toBe('35,00');
+    });
+
+    it('exposes the active currency minor unit for money inputs to bind to', () => {
+        expect(make('EUR').minorUnits()).toBe(2);
+        expect(make('XOF').minorUnits()).toBe(0);
+    });
+
+    it('never emits U+202F, whatever the width', () => {
+        const eur = make('EUR');
+        for (const s of [eur.format(1234.56), eur.formatNumber(1234.56), eur.formatDisplayNumber(1234.56)]) {
+            expect(s).not.toContain(' ');
+            expect(s).toContain(' ');
+        }
+    });
+});
