@@ -174,7 +174,7 @@ export interface GoalSavePayload {
                             <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.targetAmount') }} <span class="text-surface-400 font-normal">({{ cs.config().symbol }})</span>
                             </label>
-                            <p-inputnumber
+                            <p-inputnumber [locale]="cs.inputLocale()"
                                 [(ngModel)]="form.target_amount"
                                 mode="decimal"
                                 [minFractionDigits]="0" [maxFractionDigits]="cs.minorUnits()"
@@ -188,7 +188,7 @@ export interface GoalSavePayload {
                             <label class="text-sm text-surface-500 dark:text-surface-400">
                                 {{ i18n.t('goals.fields.currentAmount') }} <span class="text-surface-400 font-normal">({{ i18n.t('common.optional') }} · {{ cs.config().symbol }})</span>
                             </label>
-                            <p-inputnumber
+                            <p-inputnumber [locale]="cs.inputLocale()"
                                 [(ngModel)]="form.current_amount"
                                 mode="decimal"
                                 [minFractionDigits]="0" [maxFractionDigits]="cs.minorUnits()"

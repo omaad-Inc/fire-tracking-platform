@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 import { I18nService } from '../../../i18n/i18n.service';
+import { CurrencyService } from '../../../core/services/currency.service';
 import { FeedbackService } from '../../../core/ui/feedback.service';
 import {
     ApiService, AssetCategory, HoldingPreviewItem,
@@ -126,13 +127,13 @@ interface HoldingRow extends HoldingPreviewItem {
                                                       styleClass="w-full" appendTo="body" data-testid="holdings-import-category" />
                                         </td>
                                         <td class="p-2 text-right w-28">
-                                            <p-inputnumber [(ngModel)]="row.quantity" [min]="0" [maxFractionDigits]="4"
+                                            <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="row.quantity" [min]="0" [maxFractionDigits]="4"
                                                            styleClass="w-full" inputStyleClass="w-full !py-1.5 !text-right !text-sm"
                                                            [class.import-qty-missing]="row.include && needsQuantity(row.category) && !(row.quantity && row.quantity > 0)"
                                                            data-testid="holdings-import-quantity" />
                                         </td>
                                         <td class="p-2 text-right w-36">
-                                            <p-inputnumber [(ngModel)]="row.current_value" [min]="0" [maxFractionDigits]="2"
+                                            <p-inputnumber [locale]="cs.inputLocale()" [(ngModel)]="row.current_value" [min]="0" [maxFractionDigits]="2"
                                                            styleClass="w-full" inputStyleClass="w-full !py-1.5 !text-right !text-sm" />
                                         </td>
                                         <td class="p-2 text-center">
@@ -184,6 +185,7 @@ export class HoldingsImportDialog {
     private api = inject(ApiService);
     private feedback = inject(FeedbackService);
     private i18n = inject(I18nService);
+    protected cs = inject(CurrencyService);   // template: [locale]
     private toast = inject(MessageService);
     t(k: string, p?: Record<string, string | number>): string { return this.i18n.t(k, p); }
 
