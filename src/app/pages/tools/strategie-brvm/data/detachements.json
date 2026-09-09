@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-09-05",
+  "updated_at": "2026-09-09",
   "entries": [
     {
       "emetteur": "SERVAIR ABIDJAN CI",
@@ -628,17 +628,6 @@
       "ticker": "CBIBF",
       "nom": "Coris Bank International",
       "secteur": "Banque"
-    },
-    {
-      "emetteur": "ORANGE CI",
-      "exercice": 2024,
-      "date_paiement": "2025-06-11",
-      "date_ex_dividende": "2025-06-05",
-      "montant_net_fcfa": 750.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250522_-_avis_ndeg118_brvmdg_-_paiement_de_dividendes_-_exercice_2024_-_orange_ci.pdf",
-      "ticker": "ORAC",
-      "nom": "Orange CI",
-      "secteur": "Télécoms"
     }
   ]
 }
