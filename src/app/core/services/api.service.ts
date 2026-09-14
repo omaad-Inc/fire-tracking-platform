@@ -879,7 +879,13 @@ export interface HoldingPreviewItem {
 
 export interface HoldingsPreviewResponse {
     holdings: HoldingPreviewItem[];
-    text: string;                      // raw extracted text (truncated) for manual review
+    text: string;                      // raw extracted text (truncated) for manual review; '' = no text layer (scan / locked)
+    /** Summary-block totals the parser saw but could not detail into rows
+     *  ("opcvm" | "bonds" | "cash" | "stocks"). SGI statements list OPCVM
+     *  (FCP) as one total only: the user adds those funds by hand. */
+    unparsed_totals: Record<string, number>;
+    institution_guess: string | null;  // from the statement footer (e.g. "FGI")
+    statement_date: string | null;     // ISO date
 }
 
 export interface HoldingCommitItem {
