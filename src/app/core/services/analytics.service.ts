@@ -18,7 +18,9 @@ export type AnalyticsEventName =
     | 'sync_interest'
     | 'subscribe_started'
     | 'subscribe_completed'
-    | 'subscription_cancelled';
+    | 'subscription_cancelled'
+    | 'holdings_import_parsed'
+    | 'holdings_import_committed';
 
 // Anonymous public-funnel events (POST /events/public, no auth). Mirrors the
 // backend KNOWN_PUBLIC_EVENT_NAMES allowlist.

@@ -1222,6 +1222,12 @@ export const EN: Dict = {
       commit: 'Import {{n}}',
       done: 'Imported {{created}} holding(s)',
       commitError: 'Could not import the holdings.',
+      fcpManualNote: 'Broker statements detail your stocks; your funds (FCP / OPCVM) only appear as a total. You will add them by hand on the next step.',
+      fcpManualHint: 'Your statement carries {{amount}} of funds without a per-fund breakdown: add each FCP with its number of units.',
+      addFcpRow: 'Add a fund',
+      statementDate: 'statement as of {{d}}',
+      emptyScan: 'This PDF has no readable text (scanned or password-protected statement). Add your holdings by hand.',
+      emptyScanHint: 'This PDF has no readable text: scanned or password-protected statement.',
     },
     brvm: {
       pickLabel: 'BRVM stock',

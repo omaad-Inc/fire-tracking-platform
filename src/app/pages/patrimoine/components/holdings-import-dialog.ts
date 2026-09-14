@@ -15,6 +15,7 @@ import { MessageService } from 'primeng/api';
 import { I18nService } from '../../../i18n/i18n.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { FeedbackService } from '../../../core/ui/feedback.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import {
     ApiService, AssetCategory, HoldingPreviewItem,
 } from '../../../core/services/api.service';
@@ -83,8 +84,14 @@ interface HoldingRow extends HoldingPreviewItem {
                                    (change)="onFile($event)" data-testid="holdings-import-file" />
                         </label>
                     </div>
+                    <!-- Said up front, not discovered after: SGI statements detail stocks
+                         only and print funds (OPCVM / FCP) as one total. -->
+                    <p class="m-0 flex items-start gap-2 text-xs text-surface-500 dark:text-surface-400" data-testid="holdings-import-fcp-note">
+                        <i class="pi pi-info-circle text-[12px] mt-0.5 text-ochre-600 dark:text-ochre-400" aria-hidden="true"></i>
+                        <span>{{ t('addAssets.holdingsImport.fcpManualNote') }}</span>
+                    </p>
                     @if (parseError()) {
-                        <div class="text-sm text-negative bg-negative-50 dark:bg-negative-500/10 rounded-lg px-3 py-2">{{ parseError() }}</div>
+                        <div class="text-sm text-negative bg-negative-50 dark:bg-negative-500/10 rounded-lg px-3 py-2" data-testid="holdings-import-error">{{ parseError() }}</div>
                     }
                 </div>
             }
@@ -94,10 +101,25 @@ interface HoldingRow extends HoldingPreviewItem {
                 <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2 text-sm">
                         <span class="text-surface-500 dark:text-surface-400">{{ t('addAssets.holdingsImport.willImport', { n: includedCount() }) }}</span>
+                        @if (statementDate()) {
+                            <span class="text-surface-400 text-xs">· {{ t('addAssets.holdingsImport.statementDate', { d: statementDate()! }) }}</span>
+                        }
                         <span class="flex-1"></span>
                         <button pButton size="small" [outlined]="true" icon="pi pi-plus"
                                 [label]="t('addAssets.holdingsImport.addRow')" (click)="addRow()" data-testid="holdings-import-add-row"></button>
                     </div>
+
+                    @if (fcpTotal() !== null) {
+                        <!-- The statement carries funds we could not detail: say how much and offer a pre-filled fcp line. -->
+                        <div class="flex items-start gap-2.5 rounded-xl px-3 py-2.5 text-sm bg-ochre-50 dark:bg-ochre-500/10 text-surface-700 dark:text-surface-200"
+                             data-testid="holdings-import-fcp-hint">
+                            <i class="pi pi-exclamation-circle text-ochre-600 dark:text-ochre-400 mt-0.5" aria-hidden="true"></i>
+                            <span class="flex-1">{{ t('addAssets.holdingsImport.fcpManualHint', { amount: fcpAmountLabel() }) }}</span>
+                            <button pButton size="small" [text]="true" icon="pi pi-plus"
+                                    [label]="t('addAssets.holdingsImport.addFcpRow')" (click)="addRow('fcp')"
+                                    data-testid="holdings-import-add-fcp"></button>
+                        </div>
+                    }
 
                     <div class="overflow-auto max-h-[42vh] rounded-xl border border-surface-200 dark:border-surface-800">
                         <table class="w-full text-sm">
@@ -143,7 +165,9 @@ interface HoldingRow extends HoldingPreviewItem {
                                     </tr>
                                 }
                                 @if (rows().length === 0) {
-                                    <tr><td colspan="6" class="p-6 text-center text-surface-400">{{ t('addAssets.holdingsImport.emptyParse') }}</td></tr>
+                                    <tr><td colspan="6" class="p-6 text-center text-surface-400" data-testid="holdings-import-empty">
+                                        {{ t(rawText() ? 'addAssets.holdingsImport.emptyParse' : 'addAssets.holdingsImport.emptyScan') }}
+                                    </td></tr>
                                 }
                             </tbody>
                         </table>
@@ -184,6 +208,7 @@ interface HoldingRow extends HoldingPreviewItem {
 export class HoldingsImportDialog {
     private api = inject(ApiService);
     private feedback = inject(FeedbackService);
+    private analytics = inject(AnalyticsService);
     private i18n = inject(I18nService);
     protected cs = inject(CurrencyService);   // template: [locale]
     private toast = inject(MessageService);
@@ -214,6 +239,9 @@ export class HoldingsImportDialog {
     parseError = signal<string | null>(null);
     rawText = signal('');
     rows = signal<HoldingRow[]>([]);
+    /** OPCVM / FCP total printed on the statement without per-fund lines. */
+    fcpTotal = signal<number | null>(null);
+    statementDate = signal<string | null>(null);
 
     /** Public entry point: called by the parent to open the wizard fresh. */
     open(currency = 'XOF', institution?: string | null) {
@@ -228,6 +256,8 @@ export class HoldingsImportDialog {
         this.file.set(null);
         this.rows.set([]);
         this.rawText.set('');
+        this.fcpTotal.set(null);
+        this.statementDate.set(null);
         this.parseError.set(null);
         this.parsing.set(false);
         this.committing.set(false);
@@ -265,26 +295,68 @@ export class HoldingsImportDialog {
         this.parseError.set(null);
         this.api.parseImportHoldings(f, this.currency, this.institution).subscribe({
             next: (res) => {
+                // The footer names the SGI: fill the field the user left blank.
+                if (!this.institution?.trim() && res.institution_guess) this.institution = res.institution_guess;
                 this.rows.set(res.holdings.map(h => ({ ...h, include: true })));
                 this.rawText.set(res.text ?? '');
+                const fcp = res.unparsed_totals?.['opcvm'];
+                this.fcpTotal.set(typeof fcp === 'number' && fcp > 0 ? fcp : null);
+                this.statementDate.set(res.statement_date ? this.formatDate(res.statement_date) : null);
                 this.parsing.set(false);
                 this.step.set('review');
+                // Counts and the guessed SGI only: no text, amounts or names.
+                this.analytics.track('holdings_import_parsed', {
+                    rows: res.holdings.length,
+                    has_text: !!res.text,
+                    has_fcp_total: this.fcpTotal() !== null,
+                    institution_guess: res.institution_guess ?? null,
+                    currency: this.currency,
+                });
                 if (res.holdings.length === 0) {
-                    this.toast.add({ severity: 'info', summary: this.t('addAssets.holdingsImport.emptyParseHint') });
+                    this.toast.add({
+                        severity: 'info',
+                        summary: this.t(res.text ? 'addAssets.holdingsImport.emptyParseHint' : 'addAssets.holdingsImport.emptyScanHint'),
+                    });
                 }
             },
             error: (e) => {
                 this.parsing.set(false);
-                this.parseError.set(e?.error?.detail ?? this.t('common.error'));
+                this.parseError.set(this.errorText(e));
             },
         });
     }
 
-    addRow() {
+    addRow(category: AssetCategory = 'stocks_brvm') {
         this.rows.update(rs => [...rs, {
-            name: '', category: 'stocks_brvm', current_value: 0, currency: this.currency,
+            name: '', category, current_value: 0, currency: this.currency,
             quantity: null, purchase_value: null, institution: this.institution, include: true,
         }]);
+    }
+
+    /** A 422 detail may be a string, a {code,message} object or a pydantic
+     *  error list: never let "[object Object]" reach the screen. */
+    private errorText(e: unknown): string {
+        const detail = (e as { error?: { detail?: unknown } })?.error?.detail;
+        if (typeof detail === 'string' && detail.trim()) return detail;
+        if (detail && typeof detail === 'object') {
+            const msg = (detail as { message?: unknown }).message;
+            if (typeof msg === 'string' && msg.trim()) return msg;
+        }
+        return this.t('common.error');
+    }
+
+    /** The statement total is a RAW amount in the statement's currency: format
+     *  it as-is (no EUR-base conversion) with the currency label. */
+    fcpAmountLabel(): string {
+        const v = this.fcpTotal();
+        if (v === null) return '';
+        const symbol = ({ XOF: 'FCFA', EUR: '€', USD: '$' } as Record<string, string>)[this.currency] ?? this.currency;
+        return `${this.cs.formatDisplayNumber(v, 0)} ${symbol}`;
+    }
+
+    private formatDate(iso: string): string {
+        const d = new Date(iso + 'T00:00:00');
+        return isNaN(d.getTime()) ? iso : d.toLocaleDateString(this.i18n.lang() === 'en' ? 'en-GB' : 'fr-FR');
     }
 
     removeRow(i: number) {
@@ -323,12 +395,19 @@ export class HoldingsImportDialog {
                 current_value: r.current_value || 0,
                 currency: this.currency,
                 quantity: r.quantity ?? null,
+                purchase_value: r.purchase_value && r.purchase_value > 0 ? r.purchase_value : null,
                 institution: this.institution ?? undefined,
             })),
         }).subscribe({
             next: (res) => {
                 this.committing.set(false);
                 this.visible.set(false);
+                this.analytics.track('holdings_import_committed', {
+                    created: res.created,
+                    skipped: res.skipped ?? 0,
+                    fcp_rows: included.filter(r => r.category === 'fcp').length,
+                    institution_guess: this.institution ?? null,
+                });
                 this.feedback.success(this.t('addAssets.holdingsImport.done', { created: res.created }));
                 this.imported.emit(res.created);
             },

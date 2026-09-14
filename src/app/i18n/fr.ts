@@ -1220,6 +1220,12 @@ export const FR = {
       commit: 'Importer {{n}}',
       done: '{{created}} position(s) importée(s)',
       commitError: 'Impossible d\'importer les positions.',
+      fcpManualNote: 'Les relevés SGI détaillent vos actions ; vos FCP / OPCVM n\'apparaissent qu\'en total. Vous les ajouterez à la main à l\'étape suivante.',
+      fcpManualHint: 'Votre relevé mentionne {{amount}} d\'OPCVM sans le détail par fonds : ajoutez chaque FCP avec son nombre de parts.',
+      addFcpRow: 'Ajouter un FCP',
+      statementDate: 'relevé au {{d}}',
+      emptyScan: 'Ce PDF ne contient pas de texte lisible (relevé scanné ou protégé). Ajoutez vos positions à la main.',
+      emptyScanHint: 'Ce PDF ne contient pas de texte lisible : relevé scanné ou protégé par mot de passe.',
     },
     brvm: {
       pickLabel: 'Action BRVM',
