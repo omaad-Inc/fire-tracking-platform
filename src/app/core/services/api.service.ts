@@ -1105,7 +1105,11 @@ export interface NotificationPreferences {
     signal_tontine: boolean;
     signal_milestone: boolean;   // S13 AI-72: FIRE-milestone alerts
     signal_weekly_report: boolean;  // S13 PRO-2: weekly Pro recap email (opt-out)
+    signal_brvm_digest: boolean;    // Saturday BRVM/FCP digest (opt-out), exposed since LC-0
     signal_custom_rules: boolean;   // S13 PRO-1: master switch for custom alert rules
+    signal_lifecycle: boolean;      // LC-0 "Rappels et conseils" lifecycle emails (opt-out)
+    signal_commitments: boolean;    // LC-0 "Suivi de vos engagements" emails (opt-out)
+    signal_monthly_statement: boolean; // LC-2 monthly net-worth statement (opt-out)
     quiet_hours_start: string;   // "HH:MM" local time
     quiet_hours_end: string;
     timezone: string;            // IANA name

@@ -203,6 +203,24 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                 </div>
                 <div class="flex items-center justify-between gap-4 py-4">
                     <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-brvm-digest-label">{{ t('settings.notifs.brvmDigest') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.brvmDigestDesc') }}</p>
+                    </div>
+                    <p-toggleswitch [ngModel]="prefs().signal_brvm_digest"
+                                    (onChange)="save({ signal_brvm_digest: $event.checked })"
+                                    ariaLabelledBy="notif-brvm-digest-label" />
+                </div>
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-monthly-label">{{ t('settings.notifs.monthlyStatement') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.monthlyStatementDesc') }}</p>
+                    </div>
+                    <p-toggleswitch [ngModel]="prefs().signal_monthly_statement"
+                                    (onChange)="save({ signal_monthly_statement: $event.checked })"
+                                    ariaLabelledBy="notif-monthly-label" />
+                </div>
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
                         <p class="font-medium text-surface-900 dark:text-surface-0">{{ t('settings.notifs.reportMonthly') }}</p>
                         <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.reportMonthlyDesc') }}</p>
                     </div>
@@ -213,6 +231,31 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                         <i class="pi shrink-0" [ngClass]="reportBusy() ? 'pi-spin pi-spinner' : 'pi-download'" style="font-size: 12px" aria-hidden="true"></i>
                         {{ t('settings.notifs.reportDownload') }}
                     </button>
+                </div>
+            </div>
+
+            <!-- Group: lifecycle emails (LC-0). Opt-OUT, one toggle per group; each
+                 email also carries a one-click unsubscribe for its own group. -->
+            <div class="mt-4 pt-8 border-t border-surface-200 dark:border-surface-800">
+                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('settings.notifs.lifecycleTitle') }}</h3>
+                <p class="text-sm text-surface-500 dark:text-surface-400 mb-2">{{ t('settings.notifs.lifecycleIntro') }}</p>
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-lifecycle-label">{{ t('settings.notifs.lifecycle') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.lifecycleDesc') }}</p>
+                    </div>
+                    <p-toggleswitch [ngModel]="prefs().signal_lifecycle"
+                                    (onChange)="save({ signal_lifecycle: $event.checked })"
+                                    ariaLabelledBy="notif-lifecycle-label" />
+                </div>
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="min-w-0">
+                        <p class="font-medium text-surface-900 dark:text-surface-0" id="notif-commitments-label">{{ t('settings.notifs.commitments') }}</p>
+                        <p class="text-sm text-surface-500 dark:text-surface-400">{{ t('settings.notifs.commitmentsDesc') }}</p>
+                    </div>
+                    <p-toggleswitch [ngModel]="prefs().signal_commitments"
+                                    (onChange)="save({ signal_commitments: $event.checked })"
+                                    ariaLabelledBy="notif-commitments-label" />
                 </div>
             </div>
 
@@ -268,7 +311,8 @@ export class NotificationsSettings implements OnInit {
     prefs = signal<NotificationPreferences>(this.cachedPrefs ?? {
         email_enabled: false, push_enabled: false,
         signal_budget: false, signal_tontine: false, signal_milestone: false,
-        signal_weekly_report: true, signal_custom_rules: true,
+        signal_weekly_report: true, signal_brvm_digest: true, signal_custom_rules: true,
+        signal_lifecycle: true, signal_commitments: true, signal_monthly_statement: true,
         quiet_hours_start: '21:00', quiet_hours_end: '08:00',
         timezone: 'Africa/Dakar',
     });
