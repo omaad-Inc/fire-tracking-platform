@@ -32,6 +32,8 @@ export type NotifKind =
     | 'milestone'
     | 'custom_rule'
     | 'weekly_report'
+    | 'brvm_digest'
+    | 'brvm_move'
     | 'renewal_reminder';
 
 export interface NotifWebRoute {
@@ -60,6 +62,8 @@ export const NOTIF_WEB_ROUTES: Record<NotifKind, NotifWebRoute> = {
     milestone:        { segments: ['pages', 'goals'] },
     custom_rule:      { segments: [] },                       // dashboard
     weekly_report:    { segments: ['pages', 'reports', 'weekly'] },
+    brvm_digest:      { segments: ['pages', 'patrimoine', 'analyse-brvm'] },
+    brvm_move:        { segments: ['pages', 'patrimoine', 'analyse-brvm'] },   // LC-3
     renewal_reminder: { segments: ['pages', 'settings', 'subscription'] },
 };
 
@@ -71,6 +75,8 @@ export const NOTIF_KIND_ICONS: Record<NotifKind, string> = {
     milestone:        'pi-flag',
     custom_rule:      'pi-bell',
     weekly_report:    'pi-chart-bar',
+    brvm_digest:      'pi-chart-line',
+    brvm_move:        'pi-arrow-right-arrow-left',
     renewal_reminder: 'pi-credit-card',
 };
 
