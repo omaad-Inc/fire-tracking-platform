@@ -1,15 +1,17 @@
 {
   "edition": "009",
   "slug": "regle-4-pourcent",
-  "title": "La règle des 4% fonctionne-t-elle en FCFA ?",
-  "subtitle": "Édition #009, FIRE Africa par Omaad",
+  "title": "La règle des 4 % fonctionne-t-elle en FCFA ?",
+  "subtitle": "Édition #009 · FIRE Africa par Omaad",
   "tags": [
+    "règle des 4 %",
     "FIRE",
+    "retraite",
     "FCFA",
     "BRVM",
-    "investissement"
+    "×171"
   ],
-  "readingMinutes": 3,
+  "readingMinutes": 5,
   "blocks": [
     {
       "kind": "section",
@@ -17,31 +19,47 @@
     },
     {
       "kind": "h2",
-      "text": "La règle des 4% a été pensée pour le S&P 500. Pas pour la BRVM."
+      "text": "La règle des 4 % a été pensée pour le S&P 500. Pas pour la BRVM."
     },
     {
       "kind": "paragraph",
-      "text": "En 1994, William Bengen publie son étude sur les retraités américains : si tu retires 4% de ton portefeuille chaque année, tu ne seras jamais à sec sur 30 ans. Cette règle est devenue le pilier du mouvement FIRE dans le monde entier."
+      "text": "En 1994, William Bengen publie son étude sur les retraités américains : si tu retires 4 % de ton portefeuille la première année, puis le même montant ajusté de l'inflation, tu ne seras jamais à sec sur 30 ans. Cette règle est devenue le pilier du mouvement FIRE dans le monde entier."
     },
     {
       "kind": "paragraph",
-      "text": "Mais elle repose sur trois hypothèses très américaines : un rendement annualisé du S&P 500 autour de 7% après inflation, une inflation maîtrisée en USD, et un accès à des ETFs à frais quasi nuls."
+      "text": "Mais elle repose sur trois hypothèses très américaines : un portefeuille actions et obligations US, un rendement réel du S&P 500 autour de 7 % par an après inflation sur le siècle passé, et un accès à des fonds indiciels à frais quasi nuls."
     },
     {
       "kind": "paragraph",
-      "text": "Quand tu vis entre Dakar, Abidjan et Paris, la donne change. Le FCFA est arrimé à l'euro, ton inflation suit celle de la zone euro, pas celle des États-Unis. C'est un avantage que beaucoup sous-estiment : pas de dévaluation sauvage, pas de spirale monétaire. Ta monnaie est stable par design."
+      "text": "Quand tu vis entre Dakar, Abidjan et Paris, la donne change. **Le FCFA est arrimé à l'euro à taux fixe** (1 € = 655,957 FCFA) : ça te protège d'une dévaluation brutale et d'une spirale monétaire. Mais attention au raccourci : le change est fixe, pas l'inflation. Ton coût de la vie reste celui de ta zone, et la BCEAO vise une inflation comprise entre 1 et 3 % par an. C'est ce chiffre-là, pas celui des États-Unis, qui doit entrer dans ton calcul."
     },
     {
       "kind": "paragraph",
-      "text": "Côté rendements, la BRVM (Bourse Régionale des Valeurs Mobilières) a délivré environ 6 à 8 % par an dividendes inclus sur 2015-2025, avec de bonnes années nettement au-dessus (+9,4 % en 2025), mais avec une volatilité et une liquidité bien différentes du marché américain. Et si tu investis via un PEA depuis la France, tu accèdes au marché européen avec une fiscalité avantageuse."
+      "text": "Côté rendements, la BRVM a délivré environ 6 à 8 % par an dividendes inclus sur 2015-2025, avec de très bonnes années nettement au-dessus (le BRVM Composite a clôturé 2025 à **+25,26 %**, source Sikafinance) et des années de correction. La volatilité et la liquidité n'ont rien à voir avec le marché américain. Et si tu investis via un PEA depuis la France, tu accèdes au marché européen avec une fiscalité avantageuse."
     },
     {
       "kind": "paragraph",
-      "text": "Le vrai calcul FIRE en FCFA, c'est un mix : actions BRVM pour la croissance, immobilier en Afrique pour le rendement locatif, épargne en FCFA pour la liquidité quotidienne. Le 4% devient alors un 3,5%, plus conservateur, mais adapté à ta réalité multi-devises."
+      "text": "**Le vrai calcul FIRE en FCFA, c'est un mix** : actions BRVM pour le revenu et la croissance, immobilier au pays pour le loyer en FCFA, épargne en FCFA pour la liquidité quotidienne. Le 4 % devient alors un 3,5 % : plus conservateur, mais adapté à ta réalité multi-devises."
     },
     {
       "kind": "paragraph",
-      "text": "Le FIRE number en FCFA : si tu vises 800 000 FCFA/mois de dépenses (≈1 220 €), ton objectif est de 274 millions FCFA (≈418 000 €) à un taux de retrait de 3,5%. C'est ambitieux mais concret, et c'est exactement ce qu'Omaad Wealth t'aide à traquer."
+      "text": "**Ton chiffre FIRE en FCFA :** si tu vises 800 000 FCFA par mois de dépenses (environ 1 220 €), ton objectif est de **274 millions FCFA** (environ 418 000 €) à un taux de retrait de 3,5 %. À 4 %, ce serait 240 millions. C'est ambitieux, mais concret : c'est exactement le genre d'objectif que tu peux suivre dans Omaad."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Et la version BRVM de la règle ?** La BRVM est un marché de dividendes. Avec des actions qui versent 6 à 8 % par an, tu ne vends pas tes parts pour vivre : le revenu tombe chaque année. La règle des 25 fois tes dépenses annuelles devient alors « revenu mensuel visé × 171 » (hypothèse 7 % net, jamais garantie). C'est le calcul complet de la vidéo ci-dessous."
+    },
+    {
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "video",
+      "title": "Ton complément de retraite avec la BRVM : le calcul que personne ne fait (×171)",
+      "episode": "",
+      "url": "https://www.youtube.com/@fire_africa",
+      "videoId": null,
+      "text": "Pourquoi 10 millions en bourse ne font que 33 000 F par mois avec la règle des 4 %, la grille × 171 ligne par ligne (50 000 → 300 000 F/mois), et les 3 scénarios d'accumulation chiffrés. Hypothèses affichées à l'écran, jamais une promesse."
     },
     {
       "kind": "section",
@@ -49,22 +67,47 @@
     },
     {
       "kind": "paragraph",
-      "text": "On a lancé le simulateur FIRE Africa, un outil gratuit, accessible sans inscription, qui te permet de calculer ton objectif d'indépendance financière adapté au contexte FCFA. Tu entres tes dépenses mensuelles, ton patrimoine actuel, ton taux d'épargne et ton rendement attendu, et le simulateur te montre année par année comment ton patrimoine évolue et quand tu atteins la liberté financière."
-    },
-    {
-      "kind": "cta",
-      "label": "Essaie le simulateur FIRE",
-      "url": "https://omaad.africa/fr/tools/fire-simulator"
+      "text": "**Un objectif FIRE, ça se suit chaque mois, pas une fois par an.**"
     },
     {
       "kind": "paragraph",
-      "text": "C'est exactement pour ça qu'on construit Omaad, des outils qui comprennent ta réalité, pas celle d'un américain à San Francisco."
+      "text": "Le calcul de ton chiffre FIRE prend cinq minutes. Le tenir prend quinze ans. C'est là que l'outillage compte."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**1. Le plan qui mène au chiffre.** L'outil Stratégie BRVM (https://omaad.africa/outils/strategie-brvm/), gratuit et sans inscription : tu entres ton versement mensuel, il te sort le plan d'exécution (combien sur chaque ligne, quel mois acheter quoi) et le calendrier des détachements de dividendes."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**2. Le compte qui porte le plan.** Le comparateur des 41 SGI (https://omaad.africa/outils/comparateur-sgi-brvm), grilles homologuées : courtage, minimum par ordre, tenue de compte. Sur 15 ans, la tenue de compte est la ligne qui fait la différence."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**3. L'écart entre toi et ta cible.** Dans l'application Omaad (https://omaad.africa), tu crées ton objectif (ton chiffre FIRE, ou ton revenu mensuel visé) et tu suis l'écart mois après mois, avec ton patrimoine complet en FCFA : BRVM, immobilier, tontine, mobile money. Le score de santé financière te dit où tu en es sans tableur."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Planifier mon DCA (gratuit)",
+          "url": "https://omaad.africa/outils/strategie-brvm/"
+        },
+        {
+          "label": "Créer mon compte Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "+9,4%",
-      "label": "Rendement de l'indice BRVM Composite en 2025",
-      "source": "BRVM, Rapport annuel 2025"
+      "value": "+25,26 %",
+      "label": "La performance du BRVM Composite sur l'année 2025.",
+      "source": "Sikafinance, clôture BRVM 2025 · moyenne long terme = calcul FIRE Africa sur données BRVM",
+      "text": "Une bonne année, pas une moyenne : sur 2015-2025, l'ordre de grandeur reste 6 à 8 % par an dividendes inclus."
     },
     {
       "kind": "section",
@@ -75,8 +118,42 @@
       "emoji": "📖",
       "title": "The Simple Path to Wealth",
       "meta": "JL Collins",
-      "text": "Le livre qui a démocratisé FIRE aux États-Unis. Le chapitre sur les index funds est un must, même si tu dois adapter la stratégie à la zone UEMOA. Disponible en anglais, résumés FR facilement trouvables.",
+      "text": "Le livre qui a démocratisé FIRE aux États-Unis. Le chapitre sur les fonds indiciels est un must, même si tu dois adapter la stratégie à la zone UEMOA, où l'indice ne s'achète pas encore en un clic. Disponible en anglais, résumés en français faciles à trouver.",
       "url": null
+    },
+    {
+      "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Calcule ton chiffre : tes dépenses mensuelles × 12, divisées par 3,5 % (ou plus simple : × 343). Écris-le quelque part où tu le verras chaque mois. Ce n'est pas une promesse, c'est ta cible."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
     },
     {
       "kind": "section",
@@ -85,9 +162,9 @@
     {
       "kind": "summary",
       "items": [
-        "The 4% rule was built on US market assumptions. For FCFA-based investors, a 3.5% withdrawal rate is safer, accounting for BRVM volatility, EUR-pegged stability, and a diversified portfolio mixing BRVM stocks, African real estate, and local savings.",
-        "Omaad has launched a free FIRE simulator, no login required. Enter your monthly expenses, current wealth, savings rate, and expected return to see your path to financial independence year by year.",
-        "The BRVM Composite returned +9.4% in 2025, proof that West African markets deserve a seat at the FIRE table."
+        "The 4% rule (Bengen, 1994) was built on US market assumptions: US stocks and bonds, ~7% real returns, near-zero-fee index funds. The FCFA is pegged to the euro at a fixed rate, which shields you from a brutal devaluation, but your inflation is still your zone's (the BCEAO targets 1-3%), not America's.",
+        "The BRVM returned roughly 6-8% a year including dividends over 2015-2025, with strong years like 2025 (+25.26% for the Composite, Sikafinance) and corrections. For FCFA-based investors a 3.5% withdrawal rate is safer: 800,000 FCFA a month of spending means a target of about 274 million FCFA. On a dividend market like the BRVM, the rule becomes \"target monthly income × 171\" (7% net assumption), the calculation of the ×171 video.",
+        "Omaad's free tools (DCA planner with execution calendar, comparator of the 41 SGI) and the free app (goals, health score, whole net worth in FCFA) are built to track the gap between you and your number month after month. Join the WhatsApp channel and Facebook page for sourced, hype-free updates between editions."
       ]
     }
   ]

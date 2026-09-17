@@ -21,9 +21,15 @@ type Block =
     | { kind: 'subheading'; text: string }
     | { kind: 'paragraph'; text: string }
     | { kind: 'deflist'; items: { emoji: string; term: string; desc: string }[] }
-    | { kind: 'stat'; value: string; label: string; source: string }
-    | { kind: 'resource'; emoji: string; title: string; meta: string; text: string; url: string | null }
-    | { kind: 'cta'; label: string; url: string }
+    | { kind: 'list'; items: string[] }
+    | { kind: 'stat'; value: string; label: string; source: string; text?: string }
+    | { kind: 'resource'; emoji: string; title: string; meta: string; text: string; url: string | null; linkLabel?: string }
+    // 🎬 La vidéo à voir: the YouTube episode each edition rides on. Rendered as
+    // a card that links out (no iframe: the CSP has no frame-src for YouTube,
+    // and a click-to-YouTube card is lighter and privacy-clean). `videoId` is
+    // null when the source only points at the channel (episode not out yet).
+    | { kind: 'video'; title: string; episode: string; url: string; videoId: string | null; text: string }
+    | { kind: 'ctas'; items: { label: string; url: string }[] }
     | { kind: 'summary'; items: string[] }
     | { kind: 'callout'; text: string; label?: string; url?: string };
 
@@ -34,8 +40,10 @@ interface RBlock {
     kind: Block['kind'];
     text?: string;
     value?: string; label?: string; source?: string;
-    emoji?: string; title?: string; meta?: string; url?: string | null;
+    emoji?: string; title?: string; meta?: string; url?: string | null; linkLabel?: string;
+    episode?: string; videoId?: string | null;
     items?: { emoji: string; term: string; desc: string }[];
+    ctaItems?: { label: string; url: string }[];
     safe?: SafeHtml;
     safeItems?: SafeHtml[];
     drop?: boolean;
@@ -151,12 +159,58 @@ interface RBlock {
                                             }
                                         </div>
                                     }
+                                    @case ('list') {
+                                        <ul class="article-body text-surface-800 dark:text-surface-200 mb-6 space-y-2.5 list-none">
+                                            @for (it of b.safeItems; track $index) {
+                                                <li class="flex gap-3">
+                                                    <span class="mt-[0.72em] w-1.5 h-1.5 rounded-full bg-ochre-500 shrink-0"></span>
+                                                    <span [innerHTML]="it"></span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
                                     @case ('stat') {
                                         <figure class="my-10 rounded-2xl border border-ochre-500/25 bg-ochre-500/[0.06] dark:bg-ochre-500/[0.08] px-6 py-8 text-center">
                                             <div class="text-5xl md:text-6xl font-extrabold text-ochre-600 dark:text-ochre-400 leading-none tracking-tight tnum">{{ b.value }}</div>
                                             @if (b.label) { <figcaption class="mt-3 text-base font-semibold text-surface-800 dark:text-surface-200 max-w-[36ch] mx-auto leading-snug">{{ b.label }}</figcaption> }
-                                            @if (b.source) { <div class="mt-2 text-xs italic text-surface-400 dark:text-surface-500">{{ b.source }}</div> }
+                                            @if (b.text) { <p class="mt-3 text-[15px] text-surface-600 dark:text-surface-400 max-w-[48ch] mx-auto leading-relaxed" [innerHTML]="b.safe"></p> }
+                                            @if (b.source) { <div class="mt-3 text-xs italic text-surface-400 dark:text-surface-500">Source : {{ b.source }}</div> }
                                         </figure>
+                                    }
+                                    @case ('video') {
+                                        <a [href]="b.url" target="_blank" rel="noopener" (click)="trackVideo(b)"
+                                           class="group block my-8 rounded-2xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900 hover:border-ochre-500/60 hover:shadow-lg hover:shadow-brand-100/40 dark:hover:shadow-black/40 transition-all no-underline">
+                                            <div class="relative aspect-video overflow-hidden bg-brand-900">
+                                                @if (b.videoId) {
+                                                    <!-- YouTube's own poster (img-src allows https:). If it cannot load, the
+                                                         navy plate + play button below is the card, never a broken image. -->
+                                                    <img [src]="'https://i.ytimg.com/vi/' + b.videoId + '/hqdefault.jpg'" alt=""
+                                                         width="480" height="360" loading="lazy" decoding="async"
+                                                         class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                                                         (error)="hideBrokenImage($event)" />
+                                                }
+                                                <div class="absolute inset-0 bg-gradient-to-t from-brand-950/85 via-brand-950/15 to-transparent"></div>
+                                                <div class="absolute inset-0 flex items-center justify-center">
+                                                    <span class="w-16 h-16 rounded-full bg-ochre-500 text-warm-900 flex items-center justify-center shadow-xl group-hover:scale-105 transition-transform">
+                                                        <i class="pi pi-play text-xl ml-1"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="absolute left-5 bottom-4 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white/90">
+                                                    <span>🎬</span>
+                                                    <span>{{ b.episode || 'FIRE Africa' }}</span>
+                                                    <span class="w-1 h-1 rounded-full bg-white/50"></span>
+                                                    <span>YouTube</span>
+                                                </div>
+                                            </div>
+                                            <div class="p-5">
+                                                <div class="text-lg font-bold text-surface-900 dark:text-white leading-snug group-hover:text-brand-700 dark:group-hover:text-ochre-400 transition-colors">{{ b.title }}</div>
+                                                @if (b.text) { <p class="mt-2 text-[15px] text-surface-600 dark:text-surface-400 leading-relaxed" [innerHTML]="b.safe"></p> }
+                                                <span class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 dark:text-ochre-400">
+                                                    {{ b.videoId ? (isFr() ? 'Regarder la vidéo' : 'Watch the video') : (isFr() ? 'Voir la chaîne' : 'Visit the channel') }}
+                                                    <i class="pi pi-external-link text-[10px]"></i>
+                                                </span>
+                                            </div>
+                                        </a>
                                     }
                                     @case ('resource') {
                                         <div class="my-6 rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-50/60 dark:bg-surface-900 p-5">
@@ -169,17 +223,23 @@ interface RBlock {
                                             @if (b.url) {
                                                 <a [href]="b.url" target="_blank" rel="noopener"
                                                    class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 dark:text-ochre-400 hover:underline">
-                                                    {{ isFr() ? 'Ouvrir la ressource' : 'Open resource' }} <i class="pi pi-external-link text-[10px]"></i>
+                                                    {{ b.linkLabel || (isFr() ? 'Ouvrir la ressource' : 'Open resource') }} <i class="pi pi-external-link text-[10px]"></i>
                                                 </a>
                                             }
                                         </div>
                                     }
-                                    @case ('cta') {
-                                        <div class="my-8">
-                                            <a [href]="b.url" target="_blank" rel="noopener" pRipple
-                                               class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-ochre-500 hover:bg-ochre-400 text-warm-900 font-semibold text-sm transition-colors no-underline">
-                                                {{ b.label }} <i class="pi pi-arrow-right text-xs"></i>
-                                            </a>
+                                    @case ('ctas') {
+                                        <!-- First action is primary (ochre + dark text, WCAG), the rest outlined. -->
+                                        <div class="my-8 flex flex-wrap gap-3">
+                                            @for (c of b.ctaItems; track c.url; let first = $first) {
+                                                <a [href]="c.url" target="_blank" rel="noopener" pRipple
+                                                   class="inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-sm transition-colors no-underline"
+                                                   [ngClass]="first
+                                                       ? 'bg-ochre-500 hover:bg-ochre-400 text-warm-900'
+                                                       : 'border border-surface-300 dark:border-surface-700 text-surface-800 dark:text-surface-100 hover:border-ochre-500 hover:text-ochre-700 dark:hover:text-ochre-400'">
+                                                    {{ c.label }} <i class="pi pi-arrow-right text-xs"></i>
+                                                </a>
+                                            }
                                         </div>
                                     }
                                     @case ('summary') {
@@ -392,14 +452,21 @@ export class BlogArticle implements OnInit, OnDestroy {
     }
 
     /** Escape HTML, then render inline markdown bold (**x**) and bare URLs.
-     *  Content is first-party (authored in the newsletter), so this is safe. */
+     *  Content is first-party (authored in the newsletter), so this is safe.
+     *  A URL stops before trailing sentence punctuation or a closing bracket
+     *  ("… (https://x.y/) ." must not link to "x.y/)."), and is displayed
+     *  without its scheme so prose stays readable. */
     private linkify(text: string): SafeHtml {
         let html = (text || '')
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        html = html.replace(/(https?:\/\/[^\s<]+)/g,
-            '<a href="$1" target="_blank" rel="noopener">$1</a>');
+        html = html.replace(/(https?:\/\/[^\s<]*[^\s<.,;:!?)»])/g,
+            (url) => `<a href="${url}" target="_blank" rel="noopener">${this.displayUrl(url)}</a>`);
         return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+
+    private displayUrl(url: string): string {
+        return url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
     }
 
     private toRenderable(raw: Block[]): RBlock[] {
@@ -412,15 +479,34 @@ export class BlogArticle implements OnInit, OnDestroy {
                     return { kind: 'paragraph', safe: this.linkify(b.text), drop };
                 }
                 case 'summary':
-                    return { kind: 'summary', safeItems: b.items.map(i => this.linkify(i)) };
+                case 'list':
+                    return { kind: b.kind, safeItems: b.items.map(i => this.linkify(i)) };
+                case 'ctas':
+                    return { kind: 'ctas', ctaItems: b.items };
                 case 'resource':
-                    return { ...b, safe: this.linkify(b.text) };
                 case 'callout':
+                case 'video':
                     return { ...b, safe: this.linkify(b.text) };
+                case 'stat':
+                    return { ...b, safe: b.text ? this.linkify(b.text) : undefined };
                 default:
                     return { ...b } as RBlock;
             }
         });
+    }
+
+    /** The video card is the edition's YouTube hook; count the hand-offs.
+     *  Rides the existing `cta_click` public event (the backend allowlists
+     *  event names), distinguished by `cta: 'blog_video'`. */
+    trackVideo(b: RBlock): void {
+        this.analytics.trackPublic('cta_click', {
+            cta: 'blog_video', slug: this.post()?.slug ?? '', videoId: b.videoId ?? '', lang: this.lang,
+        });
+    }
+
+    /** A poster that fails to load leaves the navy plate + play button, never a broken icon. */
+    hideBrokenImage(event: Event): void {
+        (event.target as HTMLImageElement).style.display = 'none';
     }
 
     /** A cover that fails to load falls back to the brand plate, never an empty box. */

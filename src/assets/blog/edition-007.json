@@ -1,16 +1,18 @@
 {
   "edition": "007",
-  "slug": "special-dakar-immo",
-  "title": "Spécial Dakar : investir dans l'immobilier depuis l'Europe",
-  "subtitle": "Édition #007, FIRE Africa par Omaad",
+  "slug": "trading-vs-dca",
+  "title": "Trading ou DCA : faut-il jouer le timing ou la discipline ?",
+  "subtitle": "Édition #007 · FIRE Africa par Omaad",
   "tags": [
-    "immobilier",
-    "Dakar",
-    "diaspora",
-    "foncier",
-    "Sénégal"
+    "trading",
+    "DCA",
+    "frais BRVM",
+    "investissement",
+    "long terme",
+    "discipline",
+    "BRVM"
   ],
-  "readingMinutes": 3,
+  "readingMinutes": 9,
   "blocks": [
     {
       "kind": "section",
@@ -18,27 +20,55 @@
     },
     {
       "kind": "h2",
-      "text": "L'immobilier au Sénégal, c'est le pilier FIRE que la diaspora connaît le mieux, et maîtrise le moins."
+      "text": "Le trader cherche le bon moment. L'investisseur FIRE cherche le bon nombre d'années."
     },
     {
       "kind": "paragraph",
-      "text": "Acheter un terrain au pays. C'est le rêve numéro un de la diaspora sénégalaise. Avant le PEA, avant la crypto, avant tout, il y a le terrain. À Mboro, Diamniadio, Thiès, Saly. Le foncier est culturellement sacré : c'est la preuve tangible que tu as réussi."
+      "text": "Chaque semaine, tu vois passer des captures d'écran de gains spectaculaires : +40 % en une journée sur une action, des groupes Telegram ou WhatsApp qui promettent des « signaux » infaillibles. Le trading court terme fascine, et dans la diaspora comme au pays, il attire de plus en plus de monde. Je comprends l'attrait. Mais je veux te montrer les chiffres qu'on ne met jamais dans les captures d'écran."
     },
     {
       "kind": "paragraph",
-      "text": "Mais entre le rêve et l'investissement rationnel, il y a un gouffre. La plupart des achats de la diaspora se font sur la confiance : un cousin qui connaît un terrain, un démarcheur sur WhatsApp, des papiers qu'on ne vérifie pas assez. Le résultat ? Des litiges fonciers qui traînent des années, des terrains « vendus » à trois personnes différentes, des titres de propriété fantômes."
+      "text": "**Commençons par une statistique réglementaire, pas une opinion.** L'Autorité des Marchés Financiers (AMF), le régulateur français, a étudié les comptes réels de près de 15 000 particuliers actifs sur CFD et Forex sur quatre ans : **environ 89 % d'entre eux ont perdu de l'argent**, avec une perte moyenne de l'ordre de 7 millions FCFA (10 900 €) par client (source : AMF, étude 2014, https://www.amf-france.org/fr/actualites-publications/publications/rapports-etudes-et-analyses/etude-des-resultats-des-investisseurs-particuliers-sur-le-trading-de-cfd-et-de-forex-en-france). Ce sont des produits à effet de levier, pas des actions BRVM. Mais le mécanisme est le même partout : plus tu multiplies les ordres pour battre le marché, plus les frais et les erreurs s'accumulent."
     },
     {
       "kind": "paragraph",
-      "text": "Investir dans l'immobilier sénégalais depuis l'Europe, c'est possible, et potentiellement très rentable. Les prix à Dakar ont augmenté de 15-20% par an dans certains quartiers sur la dernière décennie. Un terrain à Diamniadio acheté 5 millions FCFA en 2018 vaut 12-15 millions aujourd'hui. Mais il faut traiter ça comme un investissement, pas comme un acte de foi."
+      "text": "**À la BRVM, le trading a un deuxième problème, très concret : les frais.** Sur mon avis d'opéré du 1er juin 2026, un achat de 77 010 FCFA m'a coûté 1 134 FCFA de frais, soit 1,47 % (0,3 % de commission de bourse, 1 % de courtage, et une taxe de 17 % sur le courtage). Un aller-retour, acheter puis revendre, c'est de l'ordre de 3 % qui partent avant même que tu aies gagné un franc. Un trader qui fait dix allers-retours dans l'année doit d'abord gagner plus de 25 % rien que pour couvrir ses frais. L'investisseur en DCA, lui, paie ces frais une fois à l'achat, puis plus rien pendant des années."
     },
     {
       "kind": "paragraph",
-      "text": "Les règles d'or :, Ne jamais acheter sans titre foncier (TF) ou bail emphytéotique vérifié auprès de la Conservation Foncière., Toujours passer par un notaire sénégalais pour l'acte de vente., Calculer le rendement réel : prix d'achat + frais de notaire (8-10%) + clôture + viabilisation. Le terrain nu n'est que le début., Penser rendement locatif si tu construis : un studio meublé à Dakar peut rapporter 150 000-250 000 FCFA/mois, soit 6-8% de rendement brut annuel."
+      "text": "Et il y a la liquidité. Certaines valeurs de la BRVM ne s'échangent que quelques dizaines de titres par jour. Entrer et sortir vite, au prix que tu veux, ce n'est tout simplement pas toujours possible. Ce marché n'est pas construit pour le trading rapide. Il est construit pour ceux qui restent."
     },
     {
       "kind": "paragraph",
-      "text": "Dans la stratégie FIRE, l'immobilier sénégalais est ton actif « revenu passif en FCFA », celui qui couvre tes dépenses locales quand tu atteins l'indépendance financière. Le PEA couvre la partie européenne. L'immobilier au pays couvre la partie africaine. Les deux ensemble, c'est la souveraineté financière bi-continentale."
+      "text": "**Le DCA (Dollar Cost Averaging), c'est l'exact opposé.** Tu investis un montant fixe, à intervalle régulier, sans te soucier du cours. Pas de signaux, pas de graphiques en chandeliers japonais, pas de stress. Juste une règle écrite et de la discipline."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Prenons un exemple, au conditionnel.** 100 000 FCFA par mois pendant 20 ans, ce sont 24 millions FCFA versés. Avec une hypothèse de 8 % par an dividendes réinvestis (le haut de la fourchette historique de la BRVM, 6 à 8 % par an sur 2015-2025), tu arriverais autour de **57 millions FCFA**, soit environ 33 millions de gains. À 6 %, ce serait plutôt 45 millions. Ce n'est pas une promesse, c'est un ordre de grandeur. Et tu l'obtiens sans avoir passé une seule nuit devant un écran."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Parce que le trading a un **coût invisible** que personne ne mesure : le temps. Les heures passées à analyser les graphiques, à vérifier les cours, à gérer le stress d'une position ouverte, c'est du temps que tu ne passes pas à construire ta carrière, ton entreprise, ou à vivre tout simplement. Pour la plupart des gens qui ont un emploi à temps plein, le trading est un deuxième job non rémunéré."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Il existe un juste milieu.** Certains investisseurs placent 90 % de leur capital en DCA long terme (le cœur) et gardent 10 % dans une poche « satellite » pour apprendre et expérimenter, sans mettre en danger leur stratégie patrimoniale. C'est l'architecture Core / Satellite, celle que je te montrais dans l'Ép. 04. La règle qui la rend sûre : la poche satellite a un plafond écrit à l'avance, et on ne la recharge jamais avec l'argent du cœur."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Le verdict est clair :** si tu vises l'indépendance financière, le DCA est ta fondation. Le trading peut être un terrain d'apprentissage avec une petite part de ton capital, jamais ta stratégie principale."
+    },
+    {
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "video",
+      "title": "25 000 F par mois à la BRVM : 178 000 F de frais en 10 ans (mes relevés)",
+      "episode": "Ép. 08",
+      "url": "https://youtu.be/si2WIpML3HQ",
+      "videoId": "si2WIpML3HQ",
+      "text": "Mes vrais documents à l'écran : le dépôt qui coûte déjà avant d'acheter (01:10), mon avis d'opéré ligne par ligne (02:29), 1 ordre ou 10 ordres, même prix (05:23), et la simulation sur 10 ans : 178 000 F de frais, et où ils partent (06:34). Si tu veux comprendre pourquoi multiplier les ordres est le pire ennemi de ton rendement à la BRVM, tout est là."
     },
     {
       "kind": "section",
@@ -46,17 +76,59 @@
     },
     {
       "kind": "paragraph",
-      "text": "En septembre, on sera à Dakar pour un voyage terrain. On va documenter le processus d'achat immobilier étape par étape, de la visite du terrain jusqu'à la signature chez le notaire. L'objectif : créer un guide pratique « Acheter au Sénégal depuis l'Europe » basé sur une expérience réelle, pas sur de la théorie."
+      "text": "**Le trading vit de tes émotions. Omaad est construit pour les sortir de l'équation.**"
     },
     {
       "kind": "paragraph",
-      "text": "Dans Omaad Wealth, le module immobilier permet déjà de suivre la valeur de tes biens au Sénégal en FCFA avec estimation de plus-value. On travaille sur l'ajout du suivi locatif, loyers perçus, charges, rendement net automatique."
+      "text": "Transparence d'abord : Omaad, c'est mon produit. Je te le présente parce que c'est l'outil que j'utilise moi-même, pas parce que je te le vends. Tout ce qui suit est gratuit aujourd'hui."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Le trader perd sur trois terrains : il décide dans l'émotion, il paie des frais à chaque ordre, et il ne sait jamais vraiment où il en est. On a construit une réponse à chacun."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**1. Le « quand » est décidé à l'avance.** L'outil Stratégie BRVM (https://omaad.africa/outils/strategie-brvm/), sans inscription : tu entres ton montant mensuel, même 10 000 FCFA, il te sort ton plan d'exécution (combien sur chaque ligne, quel mois acheter quoi) et le calendrier des détachements de dividendes. Le jour J, il n'y a plus rien à deviner, donc plus rien à ressentir."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**2. Les frais sont choisis une fois, pas subis à chaque ordre.** Le comparateur des 41 SGI (https://omaad.africa/outils/comparateur-sgi-brvm), à partir des grilles homologuées : courtage, minimum par ordre, tenue de compte. Tu repères en deux minutes celles qui ne facturent pas la tenue de compte, la vraie ligne qui grignote un petit DCA."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**3. Tu sais où tu en es, sans regarder les cours tous les jours.** L'application Omaad (https://omaad.africa) rassemble tout ton patrimoine au même endroit : actions BRVM, Wave et Orange Money, tontine, immobilier, en FCFA par défaut. Ton prix moyen d'achat ligne par ligne, tes dividendes, ton score de santé financière et tes objectifs. Les cours BRVM affichent leur date de clôture, aucun faux temps réel. Et deux agents IA, en beta ouverte : le premier enregistre ce que tu lui dis en langage normal, le second répond à partir de tes vraies données, et quand il n'a pas un chiffre, il est conçu pour te le dire plutôt que l'inventer."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Ce qu'aucune de ces trois briques ne fait, et ne fera jamais : te dire quelle action acheter, ni quand. Omaad n'est pas une SGI, ne passe aucun ordre pour toi, et n'a donc aucun intérêt à ce que tu bouges plus souvent. C'est exactement l'inverse d'une application de trading."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Planifier mon DCA (gratuit)",
+          "url": "https://omaad.africa/outils/strategie-brvm/"
+        },
+        {
+          "label": "Créer mon compte Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "Tu veux voir l'app tourner avant de t'inscrire ? La démo en direct sur mon téléphone (Ép. 07) : https://youtu.be/Z4XowpnLJCo. Pas besoin de store : depuis ton navigateur, tu l'ajoutes à ton écran d'accueil."
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "+18%",
-      "label": "Hausse moyenne des prix du foncier à Diamniadio sur 12 mois",
-      "source": "Observatoire du foncier sénégalais, T1 2026"
+      "value": "1,47 %",
+      "label": "Les frais réels payés sur un seul achat d'actions à la BRVM (1 134 FCFA sur 77 010 FCFA).",
+      "source": "mon avis d'opéré du 01/06/2026 (0,3 % commission de bourse + 1 % courtage + TAF 17 % sur le courtage) · Ép. 08",
+      "text": "Un aller-retour, c'est le double."
     },
     {
       "kind": "section",
@@ -65,10 +137,44 @@
     {
       "kind": "resource",
       "emoji": "📖",
-      "title": "L'investissement immobilier locatif intelligent",
-      "meta": "Julien Delagrandanne",
-      "text": "Écrit pour le marché français, mais les principes de calcul de rendement locatif sont universels. Applique ses grilles d'analyse à un bien à Dakar et tu verras ton projet immobilier sous un angle complètement différent.",
+      "title": "Thinking, Fast and Slow",
+      "meta": "Daniel Kahneman",
+      "text": "Le prix Nobel d'économie explique pourquoi notre cerveau est câblé pour prendre de mauvaises décisions financières : le biais de surconfiance, l'aversion à la perte, l'illusion de contrôle. Tout ce qui rend le trading si dangereux pour le commun des mortels, et tout ce que le DCA neutralise en te retirant la décision. Un livre qui change ta façon de penser l'argent (traduction française : « Système 1 / Système 2 »).",
       "url": null
+    },
+    {
+      "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Écris ta règle d'investissement sur une seule ligne : « Je verse X FCFA le N de chaque mois, j'achète tous les 3 mois, 3 à 5 valeurs. » Colle-la dans les notes de ton téléphone. Puis quitte, ou mets en sourdine, le groupe de « signaux » qui te fait douter le plus. Une règle écrite bat un signal, à chaque fois."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
     },
     {
       "kind": "section",
@@ -77,9 +183,9 @@
     {
       "kind": "summary",
       "items": [
-        "Senegalese real estate is the diaspora's most popular asset class, but most purchases lack proper due diligence. Always verify the titre foncier, use a notary, and calculate true costs (land + 8-10% fees + fencing + utilities). A furnished studio in Dakar can yield 6-8% gross annually.",
-        "This September, the Omaad team heads to Dakar to document a real estate purchase step by step, from land visit to notary signing. A practical guide for diaspora investors is coming.",
-        "Land prices in Diamniadio rose 18% in the past 12 months. The new city is becoming Senegal's most dynamic real estate market."
+        "A regulatory statistic, not an opinion: the French market regulator (AMF) studied the real accounts of close to 15,000 retail CFD and forex traders over four years. Around 89% lost money, with an average loss of roughly 10,900 EUR (about 7 million FCFA) per client (AMF, 2014). Leveraged products are not BRVM shares, but the mechanism is universal: the more orders you place to beat the market, the more fees and mistakes pile up.",
+        "On the BRVM, trading has a very concrete second problem: fees. My own contract note shows 1.47% in fees on a single 77,010 FCFA purchase (0.3% market commission, 1% brokerage, plus a 17% tax on the brokerage). A round trip costs around 3%, so ten round trips a year means earning over 25% just to break even. Add thin liquidity on many listings and the market is simply not built for fast trading. It is built for people who stay.",
+        "DCA is the opposite: a fixed amount, at a fixed interval, whatever the price. 100,000 FCFA a month for 20 years is 24 million FCFA invested; at an assumed 8% a year with dividends reinvested (the top of the BRVM's 6-8% historical range) that would grow to around 57 million FCFA, or about 45 million at 6%. An order of magnitude, never a promise. If you want to experiment, keep a capped \"satellite\" pocket of around 10% and never refill it from the core. Omaad, my own product, is built to take emotion out of the process: a free DCA planner with an execution calendar, a free comparator of the 41 SGI, and a free app that tracks your whole net worth (BRVM, mobile money, tontine, real estate) with two beta AI agents. It is not a broker and never tells you what or when to buy. Watch Ep. 08 for the full fee breakdown, and join the WhatsApp channel and Facebook page for sourced, hype-free BRVM updates between editions."
       ]
     }
   ]

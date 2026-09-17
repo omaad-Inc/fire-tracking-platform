@@ -1,18 +1,17 @@
 {
   "edition": "016",
   "slug": "brvm-securisee-mythe",
-  "title": "« La BRVM plus sécurisée que l'immo et Wall Street », vraiment ?",
-  "subtitle": "Édition #016, FIRE Africa par Omaad",
+  "title": "« La BRVM plus sécurisée que l'immo et Wall Street » : vraiment ?",
+  "subtitle": "Édition #016 · FIRE Africa par Omaad",
   "tags": [
+    "risque",
+    "sécurité",
+    "diversification",
     "BRVM",
     "immobilier",
-    "Wall Street",
-    "risque",
-    "rendement",
-    "sécurité",
-    "volatilité"
+    "S&P 500"
   ],
-  "readingMinutes": 5,
+  "readingMinutes": 6,
   "blocks": [
     {
       "kind": "section",
@@ -24,87 +23,64 @@
     },
     {
       "kind": "paragraph",
-      "text": "Une vidéo circule en ce moment avec un titre qui fait réagir : « La BRVM plus sécurisée que l'immo et Wall Street » (source : YouTube, https://youtu.be/HmJRjR5sIsc). Le propos mérite qu'on s'y arrête, pas pour le démolir, mais pour le disséquer. Parce que derrière ce titre accrocheur se cache un piège classique en finance : confondre sécurité et rentabilité."
+      "text": "Une vidéo circule avec un titre qui fait réagir : « La BRVM plus sécurisée que l'immo et Wall Street (https://youtu.be/HmJRjR5sIsc) ». Le propos mérite qu'on s'y arrête, pas pour le démolir, mais pour le disséquer. Parce que derrière ce titre accrocheur se cache un piège classique en finance : **confondre sécurité et rentabilité**."
     },
     {
       "kind": "paragraph",
-      "text": "Commençons par poser un principe fondamental que tout investisseur doit graver dans sa tête : en finance, le rendement est la rémunération du risque. Plus un placement est « sûr », moins il rapporte. Plus il est risqué, plus le potentiel de gain (et de perte) est élevé. C'est ce qu'on appelle le couple rendement/risque, et aucun actif au monde n'y échappe."
+      "text": "Commençons par un principe que tout investisseur doit graver dans sa tête : **le rendement est la rémunération du risque**. Plus un placement est « sûr », moins il rapporte. Plus il est risqué, plus le potentiel de gain (et de perte) est élevé. C'est le couple rendement / risque, et aucun actif au monde n'y échappe."
     },
     {
-      "kind": "subheading",
-      "text": "Disséquons la BRVM :"
-    },
-    {
-      "kind": "paragraph",
-      "text": "La BRVM a effectivement des caractéristiques qui peuvent donner une impression de sécurité :"
-    },
-    {
-      "kind": "paragraph",
-      "text": ", La volatilité est plus faible que sur les marchés occidentaux. Le BRVM Composite bouge moins en une journée que le S&P 500 ou le CAC 40. Mais attention : faible volatilité ne veut pas dire absence de risque. Ça veut dire que le marché est moins liquide, il y a moins d'acheteurs et de vendeurs, donc les prix bougent moins vite. Le jour où tu veux vendre en urgence, cette faible liquidité devient un piège : tu ne trouves pas d'acheteur au prix souhaité."
+      "kind": "list",
+      "items": [
+        "Un **compte épargne classique** au Sénégal : rendement de l'ordre de 3 à 4 % par an, capital garanti. Sûr, mais après inflation (cible BCEAO 1 à 3 %), ton argent grandit à peine.",
+        "Des **obligations d'État UEMOA** : rendement de l'ordre de 5 à 6 %, risque faible. Mieux, mais pas spectaculaire.",
+        "Des **grandes valeurs BRVM** : rendement total de l'ordre de 6 à 8 %, mais ton capital peut baisser de 10 à 20 % en un an.",
+        "Le **S&P 500** : rendement historique d'environ 10 %, mais il a perdu 50 % entre 2007 et 2009, et 34 % en un seul mois en mars 2020."
+      ]
     },
     {
       "kind": "paragraph",
-      "text": ", Les blue chips BRVM versent des dividendes généreux (5-8%). C'est vrai, et c'est un avantage réel. Mais le dividende n'est jamais garanti. Une entreprise qui verse 7% aujourd'hui peut couper son dividende demain si ses résultats se dégradent. Sonatel a ajusté son dividende par le passé. Ça arrive."
+      "text": "Tu vois le schéma ? Plus ça rapporte, plus ça peut te faire mal. C'est la loi fondamentale de la finance."
     },
     {
       "kind": "paragraph",
-      "text": ", Le marché est régulé par l'AMF-UMOA et encadré par la BCEAO. Vrai aussi. Mais régulation ne protège pas contre la baisse des cours. Le S&P 500 est l'un des marchés les plus régulés au monde, et il a perdu 34% en un mois en mars 2020."
-    },
-    {
-      "kind": "subheading",
-      "text": "Disséquons l'immobilier :"
+      "text": "**Disséquons la BRVM.** Elle a des caractéristiques qui peuvent donner une impression de sécurité. **La volatilité est plus faible** que sur les marchés occidentaux. Mais faible volatilité ne veut pas dire absence de risque : ça veut dire que le marché est **moins liquide**. Le jour où tu veux vendre en urgence, cette faible liquidité devient un piège. **Les dividendes sont généreux** (5 à 8 %) : vrai, et c'est un avantage réel, mais un dividende n'est jamais garanti. **Le marché est régulé** par l'AMF-UMOA : vrai aussi, mais la régulation ne protège pas contre la baisse des cours. Le S&P 500 est l'un des marchés les plus régulés au monde, et il a perdu 34 % en un mois."
     },
     {
       "kind": "paragraph",
-      "text": "L'immobilier est souvent perçu comme « le placement le plus sûr ». En Afrique de l'Ouest, c'est presque une religion. Mais la réalité est plus nuancée :"
+      "text": "**Disséquons l'immobilier.** Souvent perçu comme « le placement le plus sûr ». En Afrique de l'Ouest, c'est presque une religion. Mais l'immobilier est **illiquide** (des mois, voire des années pour vendre), ses **frais cachés sont énormes** (notaire, entretien, taxes, gestion, impayés : un brut de 8 % devient vite 3 à 4 % net), et **il peut perdre de la valeur**. En revanche, il offre un **effet de levier** unique : tu peux emprunter pour acheter, ce qui n'est pas possible à la BRVM."
     },
     {
       "kind": "paragraph",
-      "text": ", L'immobilier est illiquide. Tu ne vends pas un terrain ou un appartement en une journée. Ça peut prendre des mois, voire des années. Si tu as besoin d'argent rapidement, tu es coincé ou tu brades."
+      "text": "**Disséquons Wall Street.** Le S&P 500 est le marché le plus profond, le plus liquide, le plus diversifié au monde. Sur 30 ans, environ 10 % annualisé (source : S&P Dow Jones Indices (https://www.spglobal.com/spdji)). Mais la volatilité est réelle, chaque décennie apporte son krach, sur certaines périodes de 10 ans le rendement réel a été proche de zéro, et pour un investisseur en zone FCFA, le **risque de change** s'ajoute."
     },
     {
       "kind": "paragraph",
-      "text": ", Les frais cachés sont énormes : notaire, entretien, taxes foncières, gestion locative, impayés, dégradation. Un rendement brut de 8% peut facilement devenir 3-4% net après tous les frais."
+      "text": "**Le vrai tableau :**"
+    },
+    {
+      "kind": "list",
+      "items": [
+        "**BRVM :** 6 à 8 % dividendes inclus, volatilité faible mais liquidité limitée, 47 titres seulement.",
+        "**Immobilier Afrique de l'Ouest :** 3 à 5 % net après frais, très illiquide, effet de levier possible.",
+        "**S&P 500 :** environ 10 % annualisé, volatilité élevée, liquidité maximale, risque de change."
+      ]
     },
     {
       "kind": "paragraph",
-      "text": ", L'immobilier peut perdre de la valeur. Les prix de l'immobilier à Dakar ont connu des corrections. Aux États-Unis, la crise de 2008 a montré que les prix immobiliers peuvent chuter de 30 à 50% dans certaines zones."
+      "text": "Dire que l'un est « plus sécurisé » que l'autre sans préciser le contexte, l'horizon et la définition de « sécurité », c'est simplifier dangereusement. **Le message FIRE Africa :** la vraie sécurité, ce n'est pas un actif miraculeux. C'est la **diversification**. Un patrimoine qui combine BRVM (dividendes), immobilier (tangible) et épargne de sécurité (liquidité) est plus solide que n'importe lequel de ces actifs pris isolément. Ne mets jamais tout au même endroit, même si on te dit que c'est « sécurisé »."
     },
     {
-      "kind": "paragraph",
-      "text": ", En revanche, l'immobilier offre un effet de levier unique : tu peux emprunter pour acheter (crédit immobilier), ce qui n'est pas possible à la BRVM."
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
     },
     {
-      "kind": "subheading",
-      "text": "Disséquons Wall Street :"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Wall Street (S&P 500) est le marché le plus profond, le plus liquide, le plus diversifié au monde. Sur les 30 dernières années, le rendement annualisé est d'environ 10% (source : S&P Dow Jones Indices, https://www.spglobal.com/spdji). Mais :"
-    },
-    {
-      "kind": "paragraph",
-      "text": ", La volatilité est réelle. Le S&P 500 a perdu 50% entre 2007 et 2009, 34% en mars 2020. Chaque décennie apporte son krach. Si tu paniques et vends au plus bas, tu transformes une perte temporaire en perte définitive."
-    },
-    {
-      "kind": "paragraph",
-      "text": ", Le rendement de 10% est une moyenne sur le long terme. Sur certaines périodes de 10 ans, le rendement réel a été proche de 0%."
-    },
-    {
-      "kind": "subheading",
-      "text": "Le vrai tableau comparatif :"
-    },
-    {
-      "kind": "paragraph",
-      "text": ", BRVM : rendement annualisé ~6-8% (dividendes inclus), volatilité faible mais liquidité limitée, risque de concentration (47 titres seulement, économies dépendantes des matières premières), Immobilier Afrique de l'Ouest : rendement net ~3-5% après frais, très illiquide, effet de levier possible, risque de vacance et d'impayés, S&P 500 : rendement annualisé ~10%, volatilité élevée, liquidité maximale, risque de change FCFA/USD"
-    },
-    {
-      "kind": "paragraph",
-      "text": "Chaque actif a ses forces et ses faiblesses. Dire que l'un est « plus sécurisé » que l'autre sans préciser le contexte, l'horizon, et la définition de « sécurité », c'est simplifier dangereusement."
-    },
-    {
-      "kind": "paragraph",
-      "text": "**Le message FIRE Africa :** la vraie sécurité, ce n'est pas un actif miraculeux. C'est la diversification. Un portefeuille qui combine BRVM (dividendes), immobilier (tangible), et épargne de sécurité (liquidité) est plus solide que n'importe lequel de ces actifs pris isolément. Ne mets jamais tout au même endroit, même si on te dit que c'est « sécurisé »."
+      "kind": "video",
+      "title": "10 000 FCFA par mois à la BRVM : est-ce que ça vaut vraiment le coup ?",
+      "episode": "Ép. 06",
+      "url": "https://youtu.be/AHIX77Ls4cI",
+      "videoId": "AHIX77Ls4cI",
+      "text": "La question honnête, avec ses hypothèses affichées : ce que peut devenir un petit versement à la BRVM sur 10, 15 et 20 ans, et ce que « simulation » veut dire. Rien n'est garanti, et c'est dit à l'écran."
     },
     {
       "kind": "section",
@@ -112,13 +88,26 @@
     },
     {
       "kind": "paragraph",
-      "text": "Omaad Wealth a vocation à te montrer ton patrimoine dans sa globalité : actions BRVM, immobilier, épargne, tontine. L'objectif, c'est que tu voies d'un coup d'œil comment ton patrimoine est réparti, et que tu identifies si tu es trop concentré sur un seul type d'actif. Parce que la diversification ne se décrète pas, elle se mesure."
+      "text": "**Omaad** a vocation à te montrer ton patrimoine dans sa globalité : actions BRVM, immobilier, épargne, tontine, mobile money, en FCFA. L'objectif, c'est que tu voies d'un coup d'œil comment ton patrimoine est réparti, et que tu identifies si tu es trop concentré sur un seul type d'actif. Le second agent IA répond déjà à la question « est-ce que je suis bien diversifié ? » à partir de ta répartition réelle. Parce que la diversification ne se décrète pas, elle se mesure."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Créer mon compte Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "-34%",
-      "label": "chute du S&P 500 en mars 2020, le marché « le plus sûr du monde »",
-      "source": "S&P Dow Jones Indices, 2020"
+      "value": "-34 %",
+      "label": "La chute du S&P 500 en mars 2020, le marché « le plus sûr du monde ».",
+      "source": "S&P Dow Jones Indices (https://www.spglobal.com/spdji), 2020"
     },
     {
       "kind": "section",
@@ -134,14 +123,48 @@
     },
     {
       "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Fais la liste de tes actifs et le pourcentage de chacun dans ton patrimoine total : BRVM, immobilier, épargne, tontine, mobile money. Si un seul dépasse 70 %, tu sais où est ton vrai risque, quel que soit le nom qu'on lui donne."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
+    },
+    {
+      "kind": "section",
       "text": "🇬🇧 ENGLISH SUMMARY"
     },
     {
       "kind": "summary",
       "items": [
-        "A viral claim says the BRVM is \"more secure than real estate and Wall Street.\" While the BRVM does have lower volatility than Western markets and pays generous dividends (5-8%), low volatility is not the same as low risk, it often means low liquidity. When you need to sell urgently, that \"stability\" becomes a trap.",
-        "The fundamental rule of finance: return is compensation for risk. Livret A (0-3%) is safe but barely beats inflation. S&P 500 averages 10% but crashed 34% in March 2020. Real estate feels tangible but is illiquid with hidden costs. No asset is simultaneously highly secure AND highly profitable, anyone claiming otherwise is selling you something.",
-        "True security is not found in a single \"safe\" asset. It's built through diversification: BRVM stocks for dividends, real estate for tangibility, and cash savings for liquidity. Never put everything in one basket, especially when someone tells you that basket is \"the safest.\""
+        "A viral claim says the BRVM is \"more secure than real estate and Wall Street\". The BRVM does have lower volatility than Western markets and pays generous dividends (5-8%), but low volatility is not low risk: it often means low liquidity. When you need to sell urgently, that \"stability\" becomes a trap.",
+        "The fundamental rule of finance: return is compensation for risk. A savings account (3-4%) barely beats inflation. BRVM blue chips yield 6-8% but can drop 10-20% in a year. The S&P 500 averages 10% but fell 34% in March 2020. Real estate feels tangible but is illiquid with hidden costs. No asset is both highly secure and highly profitable.",
+        "True security is diversification: BRVM stocks for dividends, real estate for tangibility, cash for liquidity. Omaad shows your whole allocation in FCFA and its AI agent answers \"am I diversified?\" from your real data. Join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]

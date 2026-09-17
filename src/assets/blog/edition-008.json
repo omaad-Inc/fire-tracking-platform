@@ -1,17 +1,17 @@
 {
   "edition": "008",
-  "slug": "trading-vs-dca",
-  "title": "Trading ou DCA : faut-il jouer le timing ou la discipline ?",
-  "subtitle": "Édition #008, FIRE Africa par Omaad",
+  "slug": "special-dakar-immo",
+  "title": "Spécial Dakar : investir dans l'immobilier depuis l'Europe",
+  "subtitle": "Édition #008 · FIRE Africa par Omaad",
   "tags": [
-    "trading",
-    "DCA",
-    "investissement",
-    "long terme",
-    "discipline",
-    "BRVM"
+    "immobilier",
+    "Dakar",
+    "Sénégal",
+    "diaspora",
+    "titre foncier",
+    "FIRE"
   ],
-  "readingMinutes": 3,
+  "readingMinutes": 4,
   "blocks": [
     {
       "kind": "section",
@@ -19,35 +19,48 @@
     },
     {
       "kind": "h2",
-      "text": "Le trader cherche le bon moment. L'investisseur FIRE cherche le bon nombre d'années."
+      "text": "L'immobilier au Sénégal, c'est le pilier FIRE que la diaspora connaît le mieux, et maîtrise le moins."
     },
     {
       "kind": "paragraph",
-      "text": "Chaque semaine, on voit passer des captures d'écran de gains spectaculaires sur les réseaux. +40% en une journée sur une action. Des groupes Telegram qui promettent des « signaux » infaillibles. Le trading court terme fascine, et dans la diaspora, il attire de plus en plus."
+      "text": "Acheter un terrain au pays. C'est le rêve numéro un de la diaspora sénégalaise. Avant le PEA, avant la crypto, avant tout, il y a le terrain. À Mboro, Diamniadio, Thiès, Saly. Le foncier est culturellement sacré : c'est la preuve tangible que tu as réussi."
     },
     {
       "kind": "paragraph",
-      "text": "Mais remettons les choses en perspective. Les études sont unanimes, et elles ne datent pas d'hier : selon une recherche de l'AMF (Autorité des Marchés Financiers) publiée en 2014 et confirmée par des études ultérieures, environ 89 % des particuliers actifs sur CFD et Forex perdent de l'argent sur une période de 4 ans (source : AMF, « Étude des résultats des investisseurs particuliers sur le trading de CFD et de Forex en France », 2014, https://www.amf-france.org). Ce chiffre n'est pas une opinion. C'est une statistique réglementaire."
+      "text": "Mais entre le rêve et l'investissement rationnel, il y a un gouffre. La plupart des achats de la diaspora se font sur la confiance : un cousin qui connaît un terrain, un démarcheur sur WhatsApp, des papiers qu'on ne vérifie pas assez. Le résultat ? Des litiges fonciers qui traînent des années, des terrains « vendus » à trois personnes différentes, des titres de propriété fantômes."
     },
     {
       "kind": "paragraph",
-      "text": "Le DCA (Dollar Cost Averaging), c'est l'exact opposé. Tu investis un montant fixe, à intervalle régulier, sans te soucier du cours. Pas de signaux, pas de graphiques en chandelier japonais, pas de stress. Juste de la discipline."
+      "text": "Investir dans l'immobilier sénégalais depuis l'Europe, c'est possible, et potentiellement rentable. Les prix ont fortement augmenté dans certains quartiers de Dakar et de sa périphérie sur la dernière décennie. Mais il faut traiter ça comme un investissement, pas comme un acte de foi."
     },
     {
       "kind": "paragraph",
-      "text": "Prenons un exemple concret. Si tu investis 100 000 FCFA par mois à la BRVM dans des actions solides avec un rendement annualisé de 8% (dividendes réinvestis), au bout de 20 ans tu te retrouves avec environ 59 millions FCFA, dont 35 millions de gains nets. Sans avoir passé une seule nuit à surveiller un écran."
+      "text": "**Les règles d'or :**"
+    },
+    {
+      "kind": "list",
+      "items": [
+        "Ne jamais acheter sans titre foncier (TF) ou bail emphytéotique vérifié auprès de la Conservation foncière.",
+        "Toujours passer par un notaire sénégalais pour l'acte de vente.",
+        "Calculer le coût réel : prix d'achat + frais de notaire et d'enregistrement + clôture + viabilisation. Le terrain nu n'est que le début.",
+        "Penser rendement locatif si tu construis : loyers réels du quartier, charges, vacance, impayés. Le brut n'est jamais le net."
+      ]
     },
     {
       "kind": "paragraph",
-      "text": "Le trading a un coût invisible que personne ne mesure : le temps. Les heures passées à analyser les graphiques, à vérifier les cours, à gérer le stress d'une position ouverte, c'est du temps que tu ne passes pas à construire ta carrière, ton entreprise, ou à vivre tout simplement. Pour la plupart des gens dans la diaspora qui ont un emploi à temps plein, le trading est un deuxième job non rémunéré."
+      "text": "**Dans la stratégie FIRE**, l'immobilier sénégalais est ton actif « revenu en FCFA » : celui qui couvre tes dépenses locales quand tu atteins l'indépendance financière. Le PEA couvre la partie européenne. L'immobilier au pays couvre la partie africaine. Les deux ensemble, c'est la souveraineté financière bi-continentale."
     },
     {
-      "kind": "paragraph",
-      "text": "Il existe un juste milieu. Certains investisseurs allouent 90% de leur capital en DCA long terme et 10% en « satellite », une poche de trading pour ceux qui veulent apprendre et expérimenter, sans mettre en danger leur stratégie patrimoniale. C'est ce qu'on appelle la stratégie Core-Satellite (source : Investopedia, « Core-Satellite Investing », https://www.investopedia.com/terms/c/core-satellite-investing.asp)."
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
     },
     {
-      "kind": "paragraph",
-      "text": "Le verdict est clair : si tu vises l'indépendance financière, le DCA est ta fondation. Le trading peut être un hobby avec 10% de ton capital, jamais ta stratégie principale."
+      "kind": "video",
+      "title": "BRVM, mobile money, tontine, immobilier : tout ton patrimoine dans une seule app",
+      "episode": "Ép. 07",
+      "url": "https://youtu.be/Z4XowpnLJCo",
+      "videoId": "Z4XowpnLJCo",
+      "text": "Un terrain à Diamniadio, une tontine, des actions BRVM, du Wave : la démo en direct sur mon téléphone de l'app qui met tout ça au même endroit, en FCFA, avec le module immobilier à l'écran (06:44). Deux agents IA en beta, aucun montage qui triche."
     },
     {
       "kind": "section",
@@ -55,13 +68,30 @@
     },
     {
       "kind": "paragraph",
-      "text": "Omaad Wealth, c'est la plateforme qu'on construit pour aider la diaspora et les investisseurs de la zone UEMOA à gérer leur patrimoine. L'objectif : te donner une vision claire de ton portefeuille BRVM, suivre tes dividendes, et t'accompagner dans ta stratégie d'investissement régulier. On veut rendre l'investissement à la BRVM aussi simple que possible, parce que la discipline, ça commence par la clarté."
+      "text": "En octobre, je suis à **Dakar** pour un voyage terrain. On va documenter le processus d'achat immobilier étape par étape, de la visite du terrain jusqu'à la signature chez le notaire. L'objectif : un guide pratique « Acheter au Sénégal depuis l'Europe » basé sur une expérience réelle, pas sur de la théorie."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Dans Omaad (https://omaad.africa), le module **immobilier** permet déjà de suivre la valeur de tes biens au Sénégal en FCFA, à côté de tes actions BRVM, de ta tontine et de ton mobile money. On travaille sur l'ajout du **suivi locatif** : loyers perçus, charges, rendement net automatique."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Suivre mon patrimoine dans Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "89%",
-      "label": "des particuliers sur CFD/Forex perdent de l'argent sur 4 ans",
-      "source": "AMF, Étude sur les résultats des particuliers sur CFD et Forex en France, 2014"
+      "value": "+18 %",
+      "label": "Hausse moyenne des prix du foncier à Diamniadio sur 12 mois",
+      "source": "Observatoire du foncier sénégalais, T1 2026 (à confirmer)"
     },
     {
       "kind": "section",
@@ -70,10 +100,44 @@
     {
       "kind": "resource",
       "emoji": "📖",
-      "title": "Thinking, Fast and Slow",
-      "meta": "Daniel Kahneman",
-      "text": "Le prix Nobel d'économie explique pourquoi notre cerveau est câblé pour prendre de mauvaises décisions financières. Le biais de surconfiance, l'aversion à la perte, l'illusion de contrôle, tout ce qui rend le trading si dangereux pour le commun des mortels. Un livre qui change ta façon de penser l'argent.",
+      "title": "L'investissement immobilier locatif intelligent",
+      "meta": "Julien Delagrandanne",
+      "text": "Écrit pour le marché français, mais les principes de calcul de rendement locatif sont universels. Applique ses grilles d'analyse à un bien à Dakar et tu verras ton projet immobilier sous un angle complètement différent. Disponible en français.",
       "url": null
+    },
+    {
+      "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Avant de verser le moindre franc pour un terrain, demande le numéro du titre foncier et fais-le vérifier à la Conservation foncière, ou par un notaire. Pas de TF vérifié, pas de versement. C'est la seule règle qui n'a pas d'exception."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
     },
     {
       "kind": "section",
@@ -82,9 +146,9 @@
     {
       "kind": "summary",
       "items": [
-        "Around 89% of retail CFD/forex traders lose money over 4 years (AMF, 2014). Day trading is a full-time job disguised as a shortcut. For diaspora investors with careers, the time cost alone makes it unsustainable.",
-        "DCA of 100,000 FCFA/month invested in solid BRVM stocks at 8% annualized over 20 years yields approximately 59 million FCFA. No charts, no signals, no stress, just discipline and compound interest.",
-        "The Core-Satellite approach offers a middle ground: 90% in disciplined DCA for wealth building, 10% in a trading pocket for learning. Never risk your FIRE strategy on short-term bets."
+        "Senegalese real estate is the diaspora's most popular asset class, but most purchases lack proper due diligence. Always verify the titre foncier, use a notary, and compute the true cost (land + notary and registration fees + fencing + utilities). Gross rental yield is never net yield.",
+        "In October I am in Dakar to document a real estate purchase step by step, from land visit to notary signing. A practical guide for diaspora investors follows. Omaad already tracks your Senegalese property in FCFA next to your BRVM shares, tontine and mobile money; rental tracking is in the works.",
+        "Real estate is your FCFA-income pillar in a FIRE plan; a PEA covers the European side. Watch Ep. 07 for the live demo of the app, and join the WhatsApp channel and Facebook page for sourced, hype-free updates between editions."
       ]
     }
   ]
