@@ -1,5 +1,22 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ApiService, PaymentHistoryItem, PlansResponse, SubscriptionStatus, UsageStatus } from './api.service';
+
+/** The checkout this browser started and has not seen resolved yet. Written
+ *  right before the redirect to the hosted PSP page, read back on the
+ *  Abonnement page so the plan can be confirmed by polling instead of hoping
+ *  the webhook beat the redirect. Per-browser convenience only: the grant is
+ *  server-side, and a lost entry just means the next reload shows the plan. */
+export interface PendingPayment {
+    reference: string;
+    tier: 'pro' | 'premium';
+    startedAt: number;
+}
+const PENDING_KEY = 'omaad_pending_payment';
+/** A hosted checkout expires on the PSP side well before this. */
+const PENDING_MAX_AGE_MS = 30 * 60 * 1000;
+
+export type PendingOutcome = 'succeeded' | 'failed' | 'pending';
 
 /**
  * Subscription + AI-usage state for the Abonnement settings page (S11 Phase 2).
@@ -95,6 +112,63 @@ export class BillingService {
 
     refresh(): void {
         this.load(true);
+    }
+
+    // ── Pending checkout round trip ─────────────────────────────────────────
+
+    rememberPendingPayment(reference: string, tier: 'pro' | 'premium'): void {
+        const entry: PendingPayment = { reference, tier, startedAt: Date.now() };
+        try { localStorage.setItem(PENDING_KEY, JSON.stringify(entry)); } catch { /* storage unavailable */ }
+    }
+
+    /** The unresolved checkout started on this browser, or null (too old
+     *  entries are dropped: the PSP has expired them anyway). */
+    readPendingPayment(): PendingPayment | null {
+        try {
+            const raw = localStorage.getItem(PENDING_KEY);
+            if (!raw) return null;
+            const entry = JSON.parse(raw) as PendingPayment;
+            if (!entry?.reference || Date.now() - (entry.startedAt ?? 0) > PENDING_MAX_AGE_MS) {
+                this.clearPendingPayment();
+                return null;
+            }
+            return entry;
+        } catch {
+            return null;
+        }
+    }
+
+    clearPendingPayment(): void {
+        try { localStorage.removeItem(PENDING_KEY); } catch { /* ignore */ }
+    }
+
+    /** Poll the pending payment's live status until it is terminal or the
+     *  budget runs out. Each poll makes the server ask the PSP, so a payment
+     *  the webhook has not reported yet (lost IPN, local stack) still lands
+     *  within seconds. Terminal outcomes clear the entry and refresh billing;
+     *  an unknown reference (404) is dropped. Returns null when nothing was
+     *  pending. */
+    async confirmPendingPayment(maxTicks = 15, intervalMs = 2000): Promise<PendingOutcome | null> {
+        const pending = this.readPendingPayment();
+        if (!pending) return null;
+        for (let tick = 0; tick < maxTicks; tick++) {
+            try {
+                const res = await firstValueFrom(this.api.getPaymentStatus(pending.reference));
+                if (res.status === 'succeeded' || res.status === 'failed') {
+                    this.clearPendingPayment();
+                    this.load(true);
+                    return res.status;
+                }
+            } catch (err: unknown) {
+                if ((err as { status?: number })?.status === 404) {
+                    this.clearPendingPayment();
+                    return null;
+                }
+                // Transient failure: keep polling within the budget.
+            }
+            await new Promise<void>(resolve => setTimeout(resolve, intervalMs));
+        }
+        return 'pending';
     }
 
     /** Fetch the pricing ladder once per session (prices are static within a

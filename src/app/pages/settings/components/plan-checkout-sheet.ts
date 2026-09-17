@@ -111,20 +111,36 @@ const POPULAR_DURATION: DurationKey = 'm3';
                                     <span class="px-1.5 py-0.5 rounded bg-sky-400 text-white text-[9px] font-bold">Wave</span>
                                 </div>
                             </button>
-                            <!-- Card rail parked until Bictorys. PayDunya's account carries no
-                                 card channel, so an invoice scoped to it renders a hosted page
-                                 with nothing payable — and we would already have written the
-                                 pending row, leaving a phantom "En attente" in the history. -->
-                            <button type="button" disabled
-                                    class="rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5
-                                           border-surface-200 dark:border-surface-700 opacity-60 cursor-not-allowed">
-                                <i class="pi pi-credit-card text-surface-400 dark:text-surface-500" aria-hidden="true"></i>
-                                <span class="font-semibold text-surface-500 dark:text-surface-400 text-sm">{{ t('plans.checkout.card') }}</span>
-                                <span class="px-1.5 py-0.5 rounded bg-surface-200 dark:bg-surface-700
-                                             text-surface-600 dark:text-surface-300 text-[9px] font-bold uppercase tracking-wide">
-                                    {{ t('plans.comingSoon') }}
-                                </span>
-                            </button>
+                            <!-- Card rail: offered only when the server reports a configured
+                                 card PSP (GET /billing/plans, methods.card), so this button and
+                                 the checkout 503 can never disagree. Parked look otherwise: a
+                                 rail with no PSP would still write the pending row and leave a
+                                 phantom "En attente" in the history. -->
+                            @if (cardAvailable()) {
+                                <button type="button" (click)="method.set('card')"
+                                        class="omaad-press rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5 transition-all"
+                                        [ngClass]="method() === 'card'
+                                            ? 'border-ochre-500 border-2 bg-ochre-50 dark:bg-ochre-900/20'
+                                            : 'border-surface-200 dark:border-surface-700'">
+                                    <i class="pi pi-credit-card text-ochre-500" aria-hidden="true"></i>
+                                    <span class="font-semibold text-surface-900 dark:text-surface-0 text-sm">{{ t('plans.checkout.card') }}</span>
+                                    <div class="flex gap-1">
+                                        <span class="px-1.5 py-0.5 rounded bg-brand-700 text-white text-[9px] font-bold">Visa</span>
+                                        <span class="px-1.5 py-0.5 rounded bg-surface-800 dark:bg-surface-600 text-white text-[9px] font-bold">Mastercard</span>
+                                    </div>
+                                </button>
+                            } @else {
+                                <button type="button" disabled
+                                        class="rounded-xl border px-3 py-3 flex flex-col items-center gap-1.5
+                                               border-surface-200 dark:border-surface-700 opacity-60 cursor-not-allowed">
+                                    <i class="pi pi-credit-card text-surface-400 dark:text-surface-500" aria-hidden="true"></i>
+                                    <span class="font-semibold text-surface-500 dark:text-surface-400 text-sm">{{ t('plans.checkout.card') }}</span>
+                                    <span class="px-1.5 py-0.5 rounded bg-surface-200 dark:bg-surface-700
+                                                 text-surface-600 dark:text-surface-300 text-[9px] font-bold uppercase tracking-wide">
+                                        {{ t('plans.comingSoon') }}
+                                    </span>
+                                </button>
+                            }
                         </div>
                         <!-- Renewal semantics differ by rail (S11 decision) -->
                         <p class="text-[11px] text-surface-500 dark:text-surface-400 mt-2 text-center flex items-center justify-center gap-1.5">
@@ -150,9 +166,9 @@ const POPULAR_DURATION: DurationKey = 'm3';
                             [label]="paying() ? t('plans.checkout.redirecting') : t('plans.checkout.cta', { plan: planName() })"
                             [icon]="paying() ? 'pi pi-spin pi-spinner' : 'pi pi-crown'"
                             class="omaad-press w-full !rounded-full !py-3.5 !font-bold !bg-ochre-500 !bg-gradient-to-r !from-ochre-400 !to-ochre-500 !border-0 !text-warm-900 hover:!from-ochre-500 hover:!to-ochre-600 shadow-lifted transition-all disabled:!opacity-70"></button>
-                    @if (paymentPending()) {
-                        <p class="text-[11px] text-ochre-600 dark:text-ochre-400 mt-3 text-center">
-                            {{ t('plans.checkout.comingSoon') }}
+                    @if (checkoutError(); as err) {
+                        <p role="status" class="text-[11px] text-ochre-600 dark:text-ochre-400 mt-3 text-center">
+                            {{ t(err === 'psp' ? 'plans.checkout.pspUnavailable' : 'plans.checkout.comingSoon') }}
                         </p>
                     }
                 </div>
@@ -173,10 +189,15 @@ export class PlanCheckoutSheet {
 
     selected = signal<DurationOption | null>(null);
     method = signal<Method>('momo');
-    paymentPending = signal(false);
+    /** 'unavailable' = server 503 (no PSP configured, honest "coming soon");
+     *  'psp' = the PSP is configured but the call failed (502 or anything
+     *  else): a retry-in-a-moment message, never "not built yet". */
+    checkoutError = signal<'unavailable' | 'psp' | null>(null);
     paying = signal(false);
 
     private isEur = computed(() => this.cs.currencyCode() === 'EUR');
+    /** Server-declared rail availability (see PaymentMethodsAvailability). */
+    cardAvailable = computed(() => this.billing.plans()?.methods?.card ?? false);
 
     /** Duration ladder for the current tier, sourced from GET /billing/plans
      *  (empty until it loads). `months` is derived from the server's `days` for
@@ -198,14 +219,13 @@ export class PlanCheckoutSheet {
     constructor() {
         this.billing.loadPlans();
         // Default the highlighted (popular) pass whenever the sheet opens, the
-        // tier changes, or the prices finish loading. Mobile money is the only
-        // live rail while card is parked, so it is also the only default —
-        // EUR-preference users used to land on card, i.e. on an unpayable page.
-        // Restore `this.isEur() ? 'card' : 'momo'` when Bictorys carries cards.
+        // tier changes, or the prices finish loading. Default rail: card for
+        // EUR-preference (diaspora) users when the server offers it, mobile
+        // money otherwise. Never default to a rail the server cannot run.
         effect(() => {
             const opts = this.options();
-            this.method.set('momo');
-            this.paymentPending.set(false);
+            this.method.set(this.cardAvailable() && this.isEur() ? 'card' : 'momo');
+            this.checkoutError.set(null);
             if (opts.length) {
                 this.selected.set(opts.find(o => o.popular) ?? opts[0]);
             }
@@ -258,15 +278,26 @@ export class PlanCheckoutSheet {
         const opt = this.selected();
         if (!opt || this.paying()) return;
         this.paying.set(true);
-        this.paymentPending.set(false);
+        this.checkoutError.set(null);
         // Sent BEFORE the checkout call on purpose: the hosted-PSP redirect that
         // follows unloads the page, and the small event request needs the
         // checkout round trip's worth of time to land.
-        this.analytics.track('subscribe_started', { plan: this.tier(), duration_key: opt.key, method: this.method() });
+        this.analytics.track('subscribe_started', {
+            plan: this.tier(), duration_key: opt.key, method: this.method(),
+            currency: this.isEur() ? 'EUR' : 'XOF',
+        });
         this.api.createCheckout({ plan: this.tier(), duration_key: opt.key, method: this.method() })
             .subscribe({
-                next: (res) => { window.location.href = res.checkout_url; },
-                error: () => { this.paying.set(false); this.paymentPending.set(true); },
+                next: (res) => {
+                    // Remembered per browser so the Abonnement page can confirm
+                    // the payment by polling when the user comes back.
+                    this.billing.rememberPendingPayment(res.reference, this.tier());
+                    window.location.href = res.checkout_url;
+                },
+                error: (err: { status?: number }) => {
+                    this.paying.set(false);
+                    this.checkoutError.set(err?.status === 503 ? 'unavailable' : 'psp');
+                },
             });
     }
 }
