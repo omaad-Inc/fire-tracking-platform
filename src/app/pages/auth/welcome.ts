@@ -301,7 +301,8 @@ export class Welcome implements OnInit {
             this.router.navigate(['/', lang, 'onboarding'], { replaceUrl: true });
             return;
         }
-        this.router.navigate([this.returnUrl], { replaceUrl: true });
+        // Full URL, possibly with a query string (PSP return): navigateByUrl.
+        this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
     }
 
     private deviceLabel(): string {

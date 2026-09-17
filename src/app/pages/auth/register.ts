@@ -393,8 +393,9 @@ export class Register {
                 this.isLoading.set(false);
                 // Legacy backend (pre S10-SEC-1): a session is minted at register.
                 if (res?.access_token) {
+                    // Full URL, possibly with a query string (PSP return): navigateByUrl.
                     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                    this.router.navigate([returnUrl], { replaceUrl: true });
+                    this.router.navigateByUrl(returnUrl, { replaceUrl: true });
                     this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
                     return;
                 }

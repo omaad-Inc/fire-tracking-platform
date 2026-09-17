@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+import { stashOAuthReturnUrl } from '../../core/util/oauth-return';
 import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
@@ -413,14 +414,21 @@ export class Login {
     /** Shared post-login navigation (used by both email and OTP flows). */
     private finishLogin(): void {
         this.isLoading.set(false);
+        // navigateByUrl, not navigate([...]): returnUrl is a full URL that may
+        // carry a query string (?payment=success from the PSP return page); as
+        // an array segment the "?" gets encoded, matches no route and the
+        // wildcard drops the user on the landing page.
         const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-        this.router.navigate([returnUrl], { replaceUrl: true });
+        this.router.navigateByUrl(returnUrl, { replaceUrl: true });
         this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
     }
 
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+        // The Google button is a plain link to the backend, so returnUrl would
+        // not survive the OAuth round trip: stash it for /auth/callback.
+        stashOAuthReturnUrl(this.route.snapshot.queryParams['returnUrl']);
     }
 
     onSubmit(): void {
@@ -471,8 +479,9 @@ export class Login {
                     // Navigate immediately - don't wait for getCurrentUser
                     // The dashboard will fetch user data if needed
                     this.isLoading.set(false);
+                    // Full URL, possibly with a query string: see finishLogin().
                     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
-                    this.router.navigate([returnUrl], { replaceUrl: true });
+                    this.router.navigateByUrl(returnUrl, { replaceUrl: true });
                     
                     // Fetch user info in background (optional)
                     this.authService.getCurrentUser().subscribe({

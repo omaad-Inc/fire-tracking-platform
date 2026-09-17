@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TokenService } from '../../core/services/token.service';
 import { AuthService } from '../../core/services/auth.service';
+import { takeOAuthReturnUrl } from '../../core/util/oauth-return';
 
 @Component({
     selector: 'app-oauth-callback',
@@ -87,12 +88,24 @@ export class OAuthCallback implements OnInit {
             next: () => {
                 this.message = 'Success! Redirecting...';
                 const lang = this.getLang();
+                // Where the visitor was headed before the guard sent them to
+                // login (stashed by the login page, e.g. the Abonnement page
+                // after a PSP return). Null when they came straight to login.
+                const returnUrl = takeOAuthReturnUrl();
                 // First-time Google users go through the onboarding sequence
                 // (account-created -> push); their name comes from Google, so the
-                // name step is auto-skipped. Returning users go straight in.
-                const target = isNewUser ? [`/${lang}/welcome`] : [`/${lang}`];
+                // name step is auto-skipped, and welcome forwards returnUrl.
+                // Returning users go straight to their target (navigateByUrl:
+                // the target may carry a query string).
                 setTimeout(() => {
-                    this.router.navigate(target, { replaceUrl: true });
+                    if (isNewUser) {
+                        this.router.navigate([`/${lang}/welcome`], {
+                            replaceUrl: true,
+                            queryParams: returnUrl ? { returnUrl } : undefined,
+                        });
+                    } else {
+                        this.router.navigateByUrl(returnUrl ?? `/${lang}`, { replaceUrl: true });
+                    }
                 }, 500);
             },
             error: (err) => {
