@@ -34,6 +34,7 @@ export type NotifKind =
     | 'weekly_report'
     | 'brvm_digest'
     | 'brvm_move'
+    | 'debt'
     | 'renewal_reminder';
 
 export interface NotifWebRoute {
@@ -64,6 +65,7 @@ export const NOTIF_WEB_ROUTES: Record<NotifKind, NotifWebRoute> = {
     weekly_report:    { segments: ['pages', 'reports', 'weekly'] },
     brvm_digest:      { segments: ['pages', 'patrimoine', 'analyse-brvm'] },
     brvm_move:        { segments: ['pages', 'patrimoine', 'analyse-brvm'] },   // LC-3
+    debt:             { segments: ['pages', 'debts'] },                         // LC-8
     renewal_reminder: { segments: ['pages', 'settings', 'subscription'] },
 };
 
@@ -77,6 +79,7 @@ export const NOTIF_KIND_ICONS: Record<NotifKind, string> = {
     weekly_report:    'pi-chart-bar',
     brvm_digest:      'pi-chart-line',
     brvm_move:        'pi-arrow-right-arrow-left',
+    debt:             'pi-wallet',
     renewal_reminder: 'pi-credit-card',
 };
 
