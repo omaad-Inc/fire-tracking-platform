@@ -1064,6 +1064,8 @@ export const FR = {
       weeklyReportDesc: 'Un récap de votre semaine par email chaque lundi (inclus avec Pro)',
       brvmDigest: 'Point BRVM du samedi',
       brvmDigestDesc: 'Chaque samedi, les cours de la semaine sur vos titres BRVM et FCP',
+      monthlyStatement: 'Relevé mensuel de patrimoine',
+      monthlyStatementDesc: 'Le 1er du mois, votre patrimoine et son évolution par email (inclus pour tous)',
       lifecycleTitle: 'Emails Omaad',
       lifecycleIntro: 'Des emails rares et personnels sur votre argent. Chacun se désactive en un clic.',
       lifecycle: 'Rappels et conseils',

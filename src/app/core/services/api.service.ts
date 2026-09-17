@@ -1109,6 +1109,7 @@ export interface NotificationPreferences {
     signal_custom_rules: boolean;   // S13 PRO-1: master switch for custom alert rules
     signal_lifecycle: boolean;      // LC-0 "Rappels et conseils" lifecycle emails (opt-out)
     signal_commitments: boolean;    // LC-0 "Suivi de vos engagements" emails (opt-out)
+    signal_monthly_statement: boolean; // LC-2 monthly net-worth statement (opt-out)
     quiet_hours_start: string;   // "HH:MM" local time
     quiet_hours_end: string;
     timezone: string;            // IANA name

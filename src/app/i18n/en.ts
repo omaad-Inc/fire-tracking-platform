@@ -1066,6 +1066,8 @@ export const EN: Dict = {
       weeklyReportDesc: 'A recap of your week by email every Monday (included with Pro)',
       brvmDigest: 'Saturday BRVM digest',
       brvmDigestDesc: 'Every Saturday, the week\'s prices on your BRVM and FCP holdings',
+      monthlyStatement: 'Monthly net worth statement',
+      monthlyStatementDesc: 'On the 1st, your net worth and how it moved, by email (included for everyone)',
       lifecycleTitle: 'Omaad emails',
       lifecycleIntro: 'Rare, personal emails about your money. Each one can be stopped in one click.',
       lifecycle: 'Reminders and tips',
