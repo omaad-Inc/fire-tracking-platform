@@ -81,11 +81,26 @@ export class AnalyticsService {
         const standalone =
             (typeof window.matchMedia === 'function' && window.matchMedia('(display-mode: standalone)').matches)
             || (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+        // LC-0.3: a session that starts from a lifecycle email link carries
+        // the campaign (utm_campaign = template name) so the funnel can read
+        // email -> app_open -> action. Only the two utm values, nothing else.
+        let referrer: string | undefined;
+        let campaign: string | undefined;
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('utm_source') === 'email') {
+                referrer = 'email';
+                campaign = params.get('utm_campaign') ?? undefined;
+            }
+        } catch {
+            // URLSearchParams unavailable: fall through without attribution.
+        }
         this.track('app_open', {
             surface: 'web',
             device: isMobileDevice() ? 'mobile' : 'desktop',
             standalone,
             lang,
+            ...(referrer ? { referrer, campaign } : {}),
         });
     }
 
