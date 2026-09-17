@@ -2,15 +2,16 @@
   "edition": "014",
   "slug": "brvm-vs-sp500",
   "title": "BRVM vs S&P 500 : le match des rendements",
-  "subtitle": "Édition #014, FIRE Africa par Omaad",
+  "subtitle": "Édition #014 · FIRE Africa par Omaad",
   "tags": [
     "BRVM",
     "S&P 500",
-    "performance",
-    "comparaison",
-    "rendements"
+    "rendement",
+    "dividendes",
+    "risque de change",
+    "diaspora"
   ],
-  "readingMinutes": 3,
+  "readingMinutes": 4,
   "blocks": [
     {
       "kind": "section",
@@ -22,11 +23,11 @@
     },
     {
       "kind": "paragraph",
-      "text": "Dans le mouvement FIRE, le S&P 500 est la référence absolue. 10% de rendement annualisé sur 30 ans, des frais d'ETF à 0,03%, une liquidité totale. Quand tu lis les blogs FIRE américains, tout tourne autour de Vanguard et du marché US. Mais si tu vis entre Dakar et Paris, est-ce que la BRVM peut rivaliser ?"
+      "text": "Dans le mouvement FIRE, le S&P 500 est la référence absolue. Environ 10 % de rendement annualisé sur 30 ans, des frais d'ETF à 0,03 %, une liquidité totale. Quand tu lis les blogs FIRE américains, tout tourne autour de Vanguard et du marché US. Mais si tu vis entre Dakar et Paris, est-ce que la BRVM peut rivaliser ?"
     },
     {
       "kind": "paragraph",
-      "text": "Les chiffres bruts d'abord. Sur la période 2015-2025, le S&P 500 a affiché un rendement annualisé d'environ 10-12% en USD. La BRVM Composite, elle, a oscillé entre -15% (2016-2018, la grande correction) et +25% (2021, le rebond post-Covid). Sur 10 ans, le rendement annualisé de la BRVM tourne autour de 5-7%, inférieur au S&P 500 en apparence."
+      "text": "**Les chiffres bruts d'abord.** Sur 2015-2025, le S&P 500 a affiché un rendement annualisé d'environ 10 à 12 % en dollars. La BRVM Composite, elle, a alterné correction sévère (2016-2018) et fortes années de rebond (2021, 2025). Sur 10 ans, hors dividendes, l'indice tourne autour de 5 à 7 % par an : inférieur au S&P 500 en apparence."
     },
     {
       "kind": "paragraph",
@@ -34,19 +35,31 @@
     },
     {
       "kind": "paragraph",
-      "text": "Premièrement, les dividendes. La BRVM est un marché de dividendes. Le rendement moyen des dividendes sur la BRVM tourne autour de 5-7% par an, contre 1,5% pour le S&P 500. Quand tu réintègres les dividendes, l'écart de performance totale se réduit considérablement. Sonatel, par exemple, verse régulièrement 6-8% de dividendes."
+      "text": "**Premièrement, les dividendes.** La BRVM est un marché de dividendes. Le rendement moyen des grandes valeurs tourne autour de 5 à 7 % par an, contre environ 1,5 % pour le S&P 500. Quand tu réintègres les dividendes, l'écart de performance totale se réduit considérablement."
     },
     {
       "kind": "paragraph",
-      "text": "Deuxièmement, la devise. Le S&P 500 performe en USD. Si tu rapatries tes gains en FCFA, tu subis le risque de change EUR/USD (le FCFA étant arrimé à l'euro). Sur les 5 dernières années, le dollar s'est apprécié puis déprécié face à l'euro, ce yoyo peut manger 2-3% de rendement réel certaines années."
+      "text": "**Deuxièmement, la devise.** Le S&P 500 performe en dollars. Si tu rapatries tes gains en FCFA, tu subis le change EUR/USD (le FCFA étant arrimé à l'euro). Sur les cinq dernières années, le dollar s'est apprécié puis déprécié face à l'euro : ce yoyo peut manger 2 à 3 % de rendement réel certaines années."
     },
     {
       "kind": "paragraph",
-      "text": "Troisièmement, l'accessibilité. Investir sur le S&P 500 depuis la zone UEMOA nécessite un courtier international, des frais de transfert, et souvent une fiscalité complexe. La BRVM, tu y accèdes via ta SGI locale avec un compte en FCFA."
+      "text": "**Troisièmement, l'accessibilité.** Investir sur le S&P 500 depuis la zone UEMOA nécessite un courtier international, des frais de transfert, et souvent une fiscalité complexe. La BRVM, tu y accèdes via ta SGI locale avec un compte en FCFA."
     },
     {
       "kind": "paragraph",
-      "text": "Le verdict ? Le S&P 500 reste supérieur en rendement total et en liquidité. Mais la BRVM offre un rendement en dividendes imbattable, zéro risque de change pour un résident UEMOA, et une accessibilité directe. La vraie stratégie FIRE pour la diaspora, c'est les deux : ETF monde via un PEA pour la croissance long terme, actions BRVM pour le revenu en dividendes en FCFA."
+      "text": "**Le verdict ?** Le S&P 500 reste supérieur en rendement total et en liquidité. Mais la BRVM offre un rendement en dividendes très élevé, zéro risque de change pour un résident UEMOA, et une accessibilité directe. La vraie stratégie FIRE pour la diaspora, c'est les deux : ETF monde via un PEA pour la croissance long terme, actions BRVM pour le revenu en dividendes en FCFA."
+    },
+    {
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "video",
+      "title": "200 000 FCFA/mois pendant 30 ans → 375 millions FCFA (la bourse mondiale)",
+      "episode": "Ép. 02",
+      "url": "https://youtu.be/y3erc2bmJqQ",
+      "videoId": "y3erc2bmJqQ",
+      "text": "Le versant « bourse mondiale » du match : une famille de la diaspora, 300 € par mois pendant 30 ans, MSCI World, S&P 500, Core / Satellite et PEA. Le point de départ de toute comparaison avec la BRVM."
     },
     {
       "kind": "section",
@@ -54,13 +67,26 @@
     },
     {
       "kind": "paragraph",
-      "text": "On travaille sur un module de comparaison de portefeuilles dans Omaad Wealth. L'idée : tu entres ton allocation (par exemple 60% ETF monde via PEA, 30% actions BRVM, 10% immobilier Sénégal) et l'app te simule la performance historique de ce mix sur 5, 10 et 15 ans, avec les dividendes réinvestis et la conversion FCFA/EUR en temps réel. L'objectif est de te montrer que la diversification géographique, c'est pas juste un concept théorique, c'est mesurable."
+      "text": "On travaille sur un module de comparaison de portefeuilles dans **Omaad**. L'idée : tu entres ton allocation (par exemple 60 % ETF monde via PEA, 30 % actions BRVM, 10 % immobilier au Sénégal) et l'app te simule la performance historique de ce mix sur 5, 10 et 15 ans, dividendes réinvestis et conversion FCFA/EUR incluse. L'objectif : te montrer que la diversification géographique n'est pas un concept théorique, c'est mesurable. En attendant, l'app suit déjà tout ton patrimoine, BRVM et PEA compris, au même endroit et en FCFA."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Créer mon compte Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "5,8%",
-      "label": "Rendement moyen en dividendes des 10 premières capitalisations BRVM (2025)",
-      "source": "BRVM, Statistiques annuelles 2025"
+      "value": "5,8 %",
+      "label": "Rendement moyen en dividendes des 10 premières capitalisations de la BRVM (2025)",
+      "source": "BRVM, statistiques annuelles 2025 (à confirmer)"
     },
     {
       "kind": "section",
@@ -76,14 +102,48 @@
     },
     {
       "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Écris ta répartition cible entre marché mondial et BRVM, en deux pourcentages. Il n'y a pas de bon chiffre universel, il n'y a que le tien, écrit, que tu pourras relire dans un an."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
+    },
+    {
+      "kind": "section",
       "text": "🇬🇧 ENGLISH SUMMARY"
     },
     {
       "kind": "summary",
       "items": [
-        "The S&P 500 beats the BRVM on total returns (10-12% vs 5-7% annualized over 10 years), but the comparison is misleading. The BRVM's 5-7% average dividend yield crushes the S&P 500's 1.5%, narrowing the total return gap significantly when dividends are reinvested.",
-        "Currency risk matters: investing in the S&P 500 from the FCFA zone means exposure to EUR/USD fluctuations, which can erode 2-3% of real returns in volatile years. BRVM investments carry zero currency risk for UEMOA residents.",
-        "The smart FIRE strategy combines both: ETF world via PEA for long-term growth, BRVM stocks for dividend income in FCFA. Omaad Wealth is building a portfolio comparison tool to simulate this exact multi-market strategy."
+        "The S&P 500 beats the BRVM on total returns (about 10-12% vs 5-7% annualized over 10 years, before dividends), but the comparison is misleading. The BRVM's 5-7% average dividend yield dwarfs the S&P 500's 1.5%, narrowing the total return gap significantly when dividends are reinvested.",
+        "Currency risk matters: investing in the S&P 500 from the FCFA zone means exposure to EUR/USD swings, which can erode 2-3% of real returns in volatile years. BRVM investments carry no currency risk for UEMOA residents, and are accessible through a local SGI in FCFA.",
+        "The smart FIRE strategy combines both: a world ETF via PEA for long-term growth, BRVM stocks for dividend income in FCFA. Omaad is building a portfolio comparison module for exactly this mix. Join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]

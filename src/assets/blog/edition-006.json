@@ -2,15 +2,16 @@
   "edition": "006",
   "slug": "dca-brvm",
   "title": "Comment appliquer le DCA à la BRVM",
-  "subtitle": "Édition #006, FIRE Africa par Omaad",
+  "subtitle": "Édition #006 · FIRE Africa par Omaad",
   "tags": [
     "DCA",
     "BRVM",
     "investissement programmé",
-    "stratégie",
-    "discipline"
+    "10 000 FCFA",
+    "discipline",
+    "débutant"
   ],
-  "readingMinutes": 4,
+  "readingMinutes": 7,
   "blocks": [
     {
       "kind": "section",
@@ -18,43 +19,66 @@
     },
     {
       "kind": "h2",
-      "text": "Le DCA est la stratégie FIRE la plus puissante. À la BRVM, elle demande juste un peu d'adaptation."
+      "text": "Le DCA, c'est investir le même montant à date fixe. Tu peux commencer à 10 000 FCFA par mois."
     },
     {
       "kind": "paragraph",
-      "text": "Le Dollar Cost Averaging (DCA), ou investissement programmé, est le pilier de toute stratégie FIRE. Le principe est simple : tu investis un montant fixe à intervalle régulier, quel que soit le cours du marché. Quand le marché est haut, tu achètes moins d'unités. Quand il est bas, tu en achètes plus. Sur le long terme, tu lisses ton prix d'entrée et tu élimines le stress du timing."
+      "text": "Le DCA (Dollar Cost Averaging), ou investissement programmé, c'est la méthode la plus simple qui existe : tu investis le même montant, à date fixe, sans jamais regarder si le marché est haut ou bas. Quand les prix montent, ton montant achète moins d'actions. Quand ils baissent, il en achète plus. Au bout de quelques années, tu as payé un prix moyen, et tu n'as jamais eu à deviner le bon moment."
     },
     {
       "kind": "paragraph",
-      "text": "Aux États-Unis, le DCA est trivial : tu programmes un virement automatique vers ton compte Vanguard, tu achètes un ETF S&P 500 chaque mois pour 500$, et c'est fait. Zéro friction."
+      "text": "**La bonne nouvelle : le montant n'est pas le sujet.** 10 000 FCFA par mois, c'est un point de départ parfaitement valable. Ce qui fait le travail, c'est le nombre de fois où tu répètes le geste. 10 000 FCFA par mois pendant 20 ans, ce sont 240 versements. C'est ça, la vraie force du DCA : pas le montant du premier mois, mais le temps que tu lui donnes."
     },
     {
       "kind": "paragraph",
-      "text": "À la BRVM, c'est plus compliqué. Et voici pourquoi, et comment contourner chaque obstacle."
+      "text": "La mauvaise nouvelle : à la BRVM, personne ne le fait à ta place. Voici les quatre obstacles concrets, et comment passer à travers chacun."
     },
     {
       "kind": "paragraph",
-      "text": "Premier obstacle : le ticket d'entrée. Beaucoup de SGI appliquent un minimum forfaitaire de courtage par ordre (plusieurs milliers de FCFA quel que soit le montant). Sur un petit ordre mensuel de 50 000 FCFA, ce forfait pèse proportionnellement très lourd. Solution : accumule ta mise mensuelle et passe un ordre tous les 2 ou 3 mois. Un DCA trimestriel est presque aussi efficace qu'un DCA mensuel sur le long terme."
+      "text": "**Premier obstacle : une action ne se découpe pas.** Tu achètes des actions entières, jamais une moitié. Fin août 2026, les prix à la BRVM vont de 67 FCFA pour la moins chère à plus de 50 000 FCFA pour la plus élevée, et beaucoup de grandes valeurs se situent entre 2 000 et 40 000 FCFA l'unité (source : BRVM, cours du 28 août 2026). Avec 10 000 FCFA par mois, certaines actions sont donc accessibles dès le premier mois, d'autres demandent d'attendre. Solution : tu mets tes 10 000 FCFA de côté chaque mois, et tu passes ton ordre quand la somme accumulée paye au moins une action entière. Trois mois, ça fait 30 000 FCFA. Quatre mois, 40 000 FCFA. Tu vises, tu attends, tu achètes."
     },
     {
       "kind": "paragraph",
-      "text": "Deuxième obstacle : les frais de courtage. Chaque transaction via ta SGI coûte entre 0,2 % et 1 % en frais de courtage selon la SGI (tarifs homologués), plus la commission de bourse fixe de 0,3 %. Si tu passes 12 ordres par an, ça chiffre. Solution : regroupe tes achats. Un ordre trimestriel de 300 000 FCFA au lieu de trois ordres mensuels de 100 000 FCFA réduit tes frais de transaction de deux tiers."
+      "text": "**Deuxième obstacle : les frais.** Chaque achat coûte entre 0,2 % et 1 % de courtage selon la SGI (tarifs homologués), plus 0,3 % de commission de bourse, identique partout. Sur un ordre de 30 000 FCFA, ça représente quelques centaines de francs : ce n'est pas ça qui va te ruiner. Le vrai piège est ailleurs : les frais de tenue de compte, que certaines SGI facturent chaque année même si tu ne passes aucun ordre, de 0 à 25 000 FCFA. Si tu investis 120 000 FCFA dans l'année, 25 000 FCFA de frais fixes, c'est plus de 20 % de ton effort qui part en fumée. Solution : choisis dès le départ une SGI qui ne facture pas la tenue de compte. Sur les 41 SGI du comparateur, 8 l'offrent."
     },
     {
       "kind": "paragraph",
-      "text": "Troisième obstacle : la liquidité. Certaines actions BRVM ne s'échangent que quelques dizaines de lots par jour. Si tu veux acheter pour 500 000 FCFA de Nestlé CI un mardi, il se peut que ton ordre ne soit exécuté que partiellement. Solution : concentre-toi sur les blue chips les plus liquides (Sonatel, Société Générale CI, Orange CI, BOA) et passe tes ordres au prix du marché (ordre « au mieux ») pour maximiser l'exécution."
+      "text": "**Troisième obstacle : toutes les actions ne s'achètent pas facilement.** Certaines valeurs de la BRVM ne s'échangent que quelques dizaines de titres par jour. Si personne ne vend le jour où tu veux acheter, ton ordre reste en attente, ou n'est exécuté qu'en partie. Solution : reste sur les valeurs les plus échangées du marché. Ce sont celles qu'on appelle les « blue chips », autrement dit les grandes entreprises bien installées, connues de tous, qui versent des dividendes depuis des années et dont l'action s'échange tous les jours. Concrètement : il y a toujours quelqu'un en face pour te vendre aujourd'hui, et il y aura toujours quelqu'un pour te racheter le jour où tu voudras sortir. Tu les repères en une minute sur brvm.org, dans les volumes échangés du jour."
     },
     {
       "kind": "paragraph",
-      "text": "Quatrième obstacle : l'absence d'automatisation. Aucune SGI à la BRVM ne propose de plan d'investissement automatique comme Vanguard ou Boursorama. Tu dois passer chaque ordre manuellement. Solution : fixe un jour précis dans ton agenda (le 1er de chaque trimestre, par exemple) et traite-le comme un rendez-vous non négociable. La discipline remplace l'automatisation."
+      "text": "**Quatrième obstacle : rien n'est automatique.** Aucune SGI de la BRVM ne propose aujourd'hui de plan d'investissement automatique. Tu passes chaque ordre à la main. Solution : sépare les deux gestes. Le virement de 10 000 FCFA, lui, tu peux l'automatiser depuis ta banque ou ton mobile money, vers un compte que tu ne touches pas. L'ordre en bourse, tu le poses dans ton agenda, trois ou quatre fois par an, comme un rendez-vous qu'on ne déplace pas. La discipline remplace l'automatisation."
     },
     {
       "kind": "paragraph",
-      "text": "Le DCA adapté à la BRVM :, Montant fixe : 200 000 à 500 000 FCFA par trimestre, Fréquence : trimestrielle (réduit les frais vs mensuel), Cible : 5-8 blue chips liquides, pondérées par capitalisation, Dividendes : réinvestis systématiquement au trimestre suivant, Durée : 10 ans minimum, idéalement 15-20 ans"
+      "text": "**Ton plan DCA, en clair :**"
+    },
+    {
+      "kind": "list",
+      "items": [
+        "Combien : 10 000 FCFA par mois pour commencer. C'est un plancher, pas un plafond. Tu montes le jour où tu peux.",
+        "Où : sur un compte que tu ne touches pas, alimenté par virement automatique.",
+        "Quand tu achètes : tous les 3 ou 6 mois, quand la somme accumulée paye au moins une action entière.",
+        "Quoi : 3 à 5 grandes valeurs solides et très échangées, pas 20 lignes que tu ne suivras jamais.",
+        "Les dividendes : ils retournent dans le pot du prochain achat. Jamais dans les dépenses.",
+        "Combien de temps : 10 ans au minimum, idéalement 15 à 20 ans. C'est la durée qui fait le résultat, pas le montant du départ."
+      ]
     },
     {
       "kind": "paragraph",
-      "text": "C'est moins élégant qu'un virement automatique vers un ETF, mais sur 15 ans, le résultat est le même : un patrimoine construit brique par brique, sans timing, sans émotion."
+      "text": "Ce n'est pas élégant. Il n'y a pas de bouton, pas d'application qui investit à ta place, et tu vas devoir tenir tout seul. Mais un patrimoine ne se construit pas autrement : une brique, puis une autre, sans timing et sans émotion."
+    },
+    {
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "video",
+      "title": "Voici comment j'investis 75 000 FCFA chaque mois à la BRVM",
+      "episode": "Ép. 04",
+      "url": "https://youtu.be/-eDsldbv3SE",
+      "videoId": "-eDsldbv3SE",
+      "text": "Le DCA en vrai, mon portefeuille à l'écran : pourquoi le même montant chaque mois (01:30), mon architecture Core / Satellite (03:54), le plan mois par mois (05:34) et les dividendes réinvestis (06:50). Le montant, lui, t'appartient : la méthode est exactement la même à 10 000 FCFA qu'à 75 000 FCFA."
     },
     {
       "kind": "section",
@@ -62,13 +86,30 @@
     },
     {
       "kind": "paragraph",
-      "text": "On lance un module DCA Tracker dans Omaad Wealth. Tu définis ton plan (montant, fréquence, actions cibles), et l'app te rappelle quand passer ton ordre, calcule ton prix moyen pondéré en temps réel, et te montre la performance de ta stratégie DCA vs un investissement en une seule fois (lump sum). L'automatisation viendra un jour côté SGI, en attendant, Omaad est ton copilote DCA."
+      "text": "On l'a construit, et il est en ligne, gratuit, sans inscription : l'outil **Stratégie BRVM** (omaad.africa/outils/strategie-brvm (https://omaad.africa/outils/strategie-brvm/)). Tu entres ton montant mensuel, même 10 000 FCFA, et il te sort ton plan : combien mettre sur chaque ligne, quel mois acheter quoi, et le calendrier des détachements de dividendes pour ne pas acheter juste après coup. Ensuite, dans Omaad, tu suis ton prix moyen d'achat ligne par ligne, sans tableur."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Planifier mon DCA (gratuit)",
+          "url": "https://omaad.africa/outils/strategie-brvm/"
+        },
+        {
+          "label": "Créer mon compte Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "47 titres",
-      "label": "Nombre de sociétés cotées à la BRVM en 2026",
-      "source": "BRVM, Liste officielle des valeurs cotées, T1 2026"
+      "value": "0 FCFA",
+      "label": "Le dépôt minimum exigé pour ouvrir un compte-titres chez plusieurs SGI agréées de la BRVM",
+      "source": "Comparateur FIRE Africa des 41 SGI (grilles homologuées AMF-UMOA), 2026 · retour d'expérience Ép. 03"
     },
     {
       "kind": "section",
@@ -76,11 +117,45 @@
     },
     {
       "kind": "resource",
-      "emoji": "📖",
-      "title": "The Bogleheads' Guide to Investing",
-      "meta": "Larimore, Lindauer & LeBoeuf",
-      "text": "La bible de l'investissement passif et du DCA. Les Bogleheads démontrent avec des décennies de données que la régularité bat le timing dans 100% des cas. Leur mantra « stay the course » est exactement ce dont un investisseur BRVM a besoin face à la volatilité du marché régional.",
-      "url": null
+      "emoji": "🔗",
+      "title": "Le cours des actions, en direct sur brvm.org",
+      "meta": "",
+      "text": "La page officielle de la BRVM, gratuite et sans compte : le prix de chaque action, mis à jour chaque jour de bourse, avec les volumes échangés. C'est là que tu vérifies toi-même ce que ton budget peut déjà payer, et quelles valeurs s'échangent vraiment tous les jours. Beaucoup de gens découvrent à ce moment-là que la bourse coûte moins cher qu'ils ne le croyaient.",
+      "url": "https://www.brvm.org/fr/cours-actions/0"
+    },
+    {
+      "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Programme un virement automatique de **10 000 FCFA** vers un compte que tu ne touches pas. Aujourd'hui, avant même d'avoir choisi la moindre action. L'habitude d'abord, le titre ensuite : c'est dans cet ordre que ça tient."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
     },
     {
       "kind": "section",
@@ -89,9 +164,9 @@
     {
       "kind": "summary",
       "items": [
-        "Dollar Cost Averaging (DCA) works at the BRVM, but requires adaptation: quarterly frequency (to reduce brokerage fees), focus on liquid blue chips, and manual order placement since no SGI offers automated investment plans.",
-        "The four main obstacles, per-order minimum fees, brokerage fees, low liquidity, and no automation, all have practical workarounds. A quarterly DCA of 200,000-500,000 FCFA into 5-8 blue chips is the optimal setup for most BRVM investors.",
-        "Omaad Wealth is launching a DCA Tracker module: set your plan, get reminders, track your weighted average price, and compare DCA vs lump sum performance over time."
+        "Dollar Cost Averaging (DCA) means investing the same amount on a fixed date, whatever the market is doing. You can start at 10,000 FCFA a month. What builds the wealth is not the size of the first payment, it is the number of times you repeat it: 10,000 FCFA a month for 20 years is 240 payments.",
+        "Four practical obstacles on the BRVM, and how to get past each one. Shares cannot be split, so save your monthly amount and place an order every 3 to 6 months, once you can pay for at least one whole share (prices ranged from 67 to over 50,000 FCFA in late August 2026). Trading fees are small (0.2-1% brokerage plus a flat 0.3% market commission), but annual account maintenance fees of up to 25,000 FCFA would eat over 20% of a 120,000 FCFA yearly effort, so pick one of the 8 SGI out of 41 that charge nothing for it. Liquidity is thin on some listings, so stay on the most actively traded blue chips. And since no SGI offers automated investing, automate the bank transfer and diarise the order.",
+        "Omaad's free Stratégie BRVM tool turns your monthly amount, even 10,000 FCFA, into a plan: allocation per line, what to buy in which month, and the 2026 dividend ex-date calendar. Then track your average purchase price line by line inside Omaad. Watch Ep. 04 for DCA on a real portfolio, and join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]

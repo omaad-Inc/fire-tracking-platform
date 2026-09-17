@@ -2,16 +2,16 @@
   "edition": "001",
   "slug": "tontine-et-brvm",
   "title": "Tontine ou BRVM : et si la vraie force, c'était de combiner les deux ?",
-  "subtitle": "Édition #001, FIRE Africa par Omaad",
+  "subtitle": "Édition #001 · FIRE Africa par Omaad",
   "tags": [
     "tontine",
     "BRVM",
-    "culture",
     "épargne",
     "diaspora",
-    "investissement"
+    "mobile money",
+    "discipline"
   ],
-  "readingMinutes": 5,
+  "readingMinutes": 6,
   "blocks": [
     {
       "kind": "section",
@@ -23,7 +23,7 @@
     },
     {
       "kind": "paragraph",
-      "text": "Avant les banques, avant le mobile money, avant la BRVM, il y avait la tontine. En Afrique de l'Ouest, la tontine est bien plus qu'un système d'épargne. C'est un pilier social. C'est la confiance transformée en système financier. Des générations entières ont construit des maisons, financé des mariages, lancé des commerces et payé des scolarités grâce à ce mécanisme. Au Sénégal, en Côte d'Ivoire, au Mali, au Cameroun, la tontine est partout. Elle traverse les classes sociales, les générations et les frontières."
+      "text": "Avant les banques, avant le mobile money, avant la BRVM, il y avait la tontine. En Afrique de l'Ouest, la tontine est bien plus qu'un système d'épargne. C'est un **pilier social**. C'est la confiance transformée en système financier. Des générations entières ont construit des maisons, financé des mariages, lancé des commerces et payé des scolarités grâce à ce mécanisme. Au Sénégal, en Côte d'Ivoire, au Mali, au Cameroun, la tontine est partout. Elle traverse les classes sociales, les générations et les frontières."
     },
     {
       "kind": "paragraph",
@@ -35,39 +35,31 @@
     },
     {
       "kind": "paragraph",
-      "text": "Et c'est là que réside sa force invisible. La tontine enseigne trois choses que la finance moderne peine à inculquer :"
+      "text": "Et c'est là que réside sa **force invisible**. La tontine enseigne trois choses que la finance moderne peine à inculquer :"
     },
     {
-      "kind": "paragraph",
-      "text": "1. **La discipline d'épargne.** Tu cotises chaque mois, sans exception. Pas « quand tu peux », pas « si le mois est bon ». Chaque mois. C'est exactement le même principe que l'investissement régulier à la BRVM, sauf que la tontine, on le fait naturellement depuis toujours."
-    },
-    {
-      "kind": "paragraph",
-      "text": "2. **La pression sociale positive.** Tu ne lâches pas parce que le groupe compte sur toi. C'est un engagement collectif. Dans l'investissement en bourse, c'est souvent la solitude qui fait abandonner. La tontine résout ce problème par le lien humain."
-    },
-    {
-      "kind": "paragraph",
-      "text": "3. **L'accès à un capital ponctuel.** Quand c'est ton tour, tu reçois une somme importante d'un coup. C'est un levier puissant, et c'est exactement là que la BRVM entre en jeu."
+      "kind": "list",
+      "items": [
+        "**La discipline d'épargne.** Tu cotises chaque mois, sans exception. Pas « quand tu peux », pas « si le mois est bon ». Chaque mois. C'est exactement le même principe que l'investissement régulier à la BRVM, sauf que la tontine, on le fait naturellement depuis toujours.",
+        "**La pression sociale positive.** Tu ne lâches pas parce que le groupe compte sur toi. C'est un engagement collectif. Dans l'investissement en bourse, c'est souvent la solitude qui fait abandonner. La tontine résout ce problème par le lien humain.",
+        "**L'accès à un capital ponctuel.** Quand c'est ton tour, tu reçois une somme importante d'un coup. C'est un levier puissant, et c'est exactement là que la BRVM entre en jeu."
+      ]
     },
     {
       "kind": "paragraph",
       "text": "Voilà l'idée centrale : **quand c'est ton tour de tontine, au lieu de dépenser la totalité, investis une partie à la BRVM.**"
     },
     {
-      "kind": "subheading",
-      "text": "Profil · Fatou, 34 ans, Lyon"
+      "kind": "paragraph",
+      "text": "**Profil · Fatou, 34 ans, Lyon.** Fatou est dans une tontine de 8 personnes à 40 000 FCFA par mois, organisée sur WhatsApp, les versements via Wave. Quand c'est son tour, elle reçoit 320 000 FCFA. Depuis janvier, elle en investit 150 000 FCFA en actions BRVM à chaque tour. Elle n'a pas l'impression de « se priver » : elle utilise un système qu'elle pratiquait déjà. La différence : une partie de ce capital travaille maintenant pour son futur, depuis Dakar jusqu'à Lyon."
     },
     {
       "kind": "paragraph",
-      "text": "Fatou est dans une tontine de 8 personnes à 40 000 FCFA par mois, organisée sur WhatsApp, les versements via Wave. Quand c'est son tour, elle reçoit 320 000 FCFA. Depuis janvier, elle en investit 150 000 FCFA en actions BRVM à chaque tour. Elle n'a pas l'impression de « se priver », elle utilise un système qu'elle pratiquait déjà. La différence : une partie de ce capital travaille maintenant pour son futur, depuis Dakar jusqu'à Lyon."
+      "text": "**Exemple chiffré.** Tu participes à une tontine de 12 personnes à 50 000 FCFA par mois. Quand c'est ton tour, tu récupères 600 000 FCFA. Si tu en investis 300 000 FCFA en actions BRVM (grandes valeurs solides qui versent des dividendes), et que tu fais ça chaque année pendant 10 ans, tu te retrouves avec un portefeuille construit entièrement grâce à la tontine, sans avoir eu l'impression de « sacrifier » ton épargne."
     },
     {
       "kind": "paragraph",
-      "text": "Exemple chiffré. Tu participes à une tontine de 12 personnes à 50 000 FCFA par mois. Quand c'est ton tour, tu récupères 600 000 FCFA. Si tu en investis 300 000 FCFA en actions BRVM (blue chips solides qui versent des dividendes), et que tu fais ça chaque année pendant 10 ans, tu te retrouves avec un portefeuille construit entièrement grâce à la tontine, sans avoir eu l'impression de « sacrifier » ton épargne."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Sur la BRVM, il n'y a pas de ticket d'entrée prohibitif. On peut démarrer avec quelques dizaines de milliers de FCFA via un intermédiaire agréé. L'accès à la bourse n'est pas réservé aux « gens riches », c'est l'un des mythes qu'on est là pour déconstruire."
+      "text": "Sur la BRVM, il n'y a pas de ticket d'entrée prohibitif. On peut démarrer avec quelques dizaines de milliers de FCFA via un intermédiaire agréé. L'accès à la bourse n'est pas réservé aux « gens riches » : c'est l'un des mythes qu'on est là pour déconstruire."
     },
     {
       "kind": "paragraph",
@@ -75,7 +67,19 @@
     },
     {
       "kind": "paragraph",
-      "text": "Ne laisse personne te dire que la tontine est « pas assez moderne ». Elle est notre avantage culturel. La question n'est pas tontine OU BRVM. C'est tontine ET BRVM."
+      "text": "Ne laisse personne te dire que la tontine est « pas assez moderne ». Elle est notre avantage culturel. La question n'est pas tontine OU BRVM. C'est **tontine ET BRVM**."
+    },
+    {
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "video",
+      "title": "Le meilleur moment pour acheter tes actions à la BRVM",
+      "episode": "Ép. 05",
+      "url": "https://youtu.be/zCemnT1P5pY",
+      "videoId": "zCemnT1P5pY",
+      "text": "Ton tour de tontine arrive, tu as la somme : voici comment se passe un premier ordre, écran par écran. Le déroulé d'une séance BRVM (00:30), le passage des ordres d'achat (02:30), la pré-ouverture (09:05) et pourquoi toujours poser un ordre à cours limité (09:43). 50 000 FCFA, 3 actions, en vrai."
     },
     {
       "kind": "section",
@@ -83,13 +87,27 @@
     },
     {
       "kind": "paragraph",
-      "text": "C'est d'ailleurs exactement pour ça qu'on construit Omaad, une plateforme de gestion patrimoniale pensée pour notre réalité. Pas celle des livres européens. La tontine, l'immobilier au pays, les envois d'argent, le portefeuille BRVM : tout dans un même endroit, avec une vision claire de où tu en es et où tu vas. Parce que construire un patrimoine depuis Dakar ou depuis Lyon, ça mérite des outils à la hauteur."
+      "text": "C'est d'ailleurs exactement pour ça qu'on construit **Omaad** : une plateforme de gestion patrimoniale pensée pour notre réalité. Pas celle des livres européens. La tontine, l'immobilier au pays, les envois d'argent, le portefeuille BRVM : tout dans un même endroit, avec une vision claire de où tu en es et où tu vas. Parce que construire un patrimoine depuis Dakar ou depuis Lyon, ça mérite des outils à la hauteur."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Découvrir Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
       "value": "1 800 Mds",
-      "label": "FCFA de transactions mobile money au Sénégal en 2024",
-      "source": "BCEAO, Rapport sur les services financiers numériques dans l'UEMOA, 2024"
+      "label": "FCFA de transactions mobile money au Sénégal en 2024.",
+      "source": "BCEAO (https://www.bceao.int), Rapport sur les services financiers numériques dans l'UEMOA, 2024",
+      "text": "La preuve que l'infrastructure financière africaine existe déjà, elle est juste différente : c'est grâce à Wave, Orange Money et Free Money que la tontine transnationale fonctionne. L'étape suivante, c'est de la connecter à des véhicules d'investissement long terme."
     },
     {
       "kind": "section",
@@ -105,14 +123,48 @@
     },
     {
       "kind": "section",
+      "text": "✅ LE GESTE DU MOIS"
+    },
+    {
+      "kind": "callout",
+      "text": "À ton prochain tour de tontine, décide à l'avance le pourcentage que tu investis, avant de recevoir l'argent. Écris-le aujourd'hui. Une décision prise avant vaut dix décisions prises devant la somme."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
+    },
+    {
+      "kind": "section",
       "text": "🇬🇧 ENGLISH SUMMARY"
     },
     {
       "kind": "summary",
       "items": [
-        "The tontine isn't just a savings mechanism, it's a living financial institution that works across borders. Thousands of diaspora members run tontines from Paris, Lyon, or Montreal via WhatsApp and Wave. The geography changes; the trust doesn't. That's the real infrastructure.",
-        "The strategy: when it's your turn, invest a portion at the BRVM instead of spending it all. The BRVM doesn't require large sums to start, a few tens of thousands of FCFA is enough to begin. The \"it's for rich people\" myth is exactly that, a myth.",
-        "The question is not tontine OR BRVM. It's tontine AND BRVM. Our cultural savings traditions aren't obstacles to modern investing, they're the foundation. And that's precisely what Omaad is being built around."
+        "The tontine is not just a savings mechanism, it is a living financial institution that works across borders. Thousands of diaspora members run tontines from Paris, Lyon or Montreal via WhatsApp and Wave. The geography changes, the trust does not. That is the real infrastructure.",
+        "The strategy: when it is your turn, invest a portion at the BRVM instead of spending it all. The BRVM does not require large sums to start, a few tens of thousands of FCFA is enough. The \"it's for rich people\" myth is exactly that, a myth. Ep. 05 shows a real first order, screen by screen.",
+        "The question is not tontine OR BRVM. It is tontine AND BRVM. Our cultural savings traditions are not obstacles to modern investing, they are the foundation, and that is precisely what Omaad is built around. Join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]

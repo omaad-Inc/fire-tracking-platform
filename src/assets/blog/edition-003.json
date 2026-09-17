@@ -2,17 +2,16 @@
   "edition": "003",
   "slug": "preparer-retraite-brvm",
   "title": "Ta retraite, personne ne la prépare à ta place, surtout pas l'État",
-  "subtitle": "Édition #003, FIRE Africa par Omaad",
+  "subtitle": "Édition #003 · FIRE Africa par Omaad",
   "tags": [
     "retraite",
+    "dividendes",
     "BRVM",
     "IPRES",
-    "CSS",
-    "dividendes",
-    "patrimoine",
+    "diaspora",
     "long terme"
   ],
-  "readingMinutes": 4,
+  "readingMinutes": 5,
   "blocks": [
     {
       "kind": "section",
@@ -24,15 +23,11 @@
     },
     {
       "kind": "paragraph",
-      "text": "Parlons d'un sujet que personne n'aime aborder : la retraite. En Afrique de l'Ouest, le mot même fait sourire. « La retraite ? C'est mes enfants qui vont s'occuper de moi. » Ou alors : « Je suis fonctionnaire, j'ai l'IPRES. » Ou encore : « Je penserai à ça plus tard. »"
+      "text": "Parlons d'un sujet que personne n'aime aborder : la retraite. En Afrique de l'Ouest, le mot même fait sourire. « La retraite ? C'est mes enfants qui vont s'occuper de moi. » Ou alors : « Je suis fonctionnaire, j'ai l'IPRES. » Ou encore : « Je penserai à ça plus tard. » Mais regardons les chiffres en face."
     },
     {
       "kind": "paragraph",
-      "text": "Mais regardons les chiffres en face."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Au Sénégal, le système de retraite repose principalement sur l'IPRES (Institution de Prévoyance Retraite du Sénégal) et la CSS (Caisse de Sécurité Sociale). Le taux de remplacement, c'est-à-dire le pourcentage de ton dernier salaire que tu touches en pension, tourne en moyenne autour de 30 à 40% (source : IPRES, Rapport d'activité, https://www.ipres.sn). Concrètement, si tu gagnais 500 000 FCFA par mois, ta pension sera d'environ 150 000 à 200 000 FCFA. Essaie de vivre avec ça."
+      "text": "Au Sénégal, le système de retraite repose principalement sur l'IPRES (https://www.ipres.sn) (Institution de Prévoyance Retraite du Sénégal) et la CSS (Caisse de Sécurité Sociale). Le taux de remplacement, c'est-à-dire le pourcentage de ton dernier salaire que tu touches en pension, tourne en moyenne autour de **30 à 40 %**. Concrètement, si tu gagnais 500 000 FCFA par mois, ta pension sera d'environ 150 000 à 200 000 FCFA. Essaie de vivre avec ça."
     },
     {
       "kind": "paragraph",
@@ -40,35 +35,27 @@
     },
     {
       "kind": "paragraph",
-      "text": "La BRVM offre une solution concrète pour préparer ta retraite : les dividendes."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Les blue chips de la BRVM sont connues pour verser des dividendes réguliers et généreux. Sonatel, Orange CI, BOA, Société Générale CI, ces entreprises distribuent souvent entre 5% et 8% de rendement en dividendes par an (source : BRVM, Historique des dividendes, https://www.brvm.org). C'est du revenu récurrent, sans toucher à ton capital."
+      "text": "La BRVM offre une solution concrète pour préparer ta retraite : **les dividendes**. Les grandes valeurs de la BRVM sont connues pour verser des dividendes réguliers et généreux. Sonatel, Orange CI, BOA, Société Générale CI : ces entreprises distribuent souvent entre 5 % et 8 % de rendement en dividendes par an (source : BRVM (https://www.brvm.org), historique des dividendes). C'est du revenu récurrent, sans toucher à ton capital. Ce sont des exemples, pas des recommandations."
     },
     {
       "kind": "subheading",
       "text": "Voici la stratégie en 3 phases :"
     },
     {
-      "kind": "paragraph",
-      "text": "**Phase 1, Accumulation (30-50 ans).** Tu investis régulièrement à la BRVM. Chaque mois, tu achètes des actions de sociétés solides qui versent des dividendes. Tu réinvestis systématiquement les dividendes reçus pour maximiser l'effet composé. C'est la phase où tu construis."
+      "kind": "list",
+      "items": [
+        "**Phase 1 · Accumulation (30-50 ans).** Tu investis régulièrement à la BRVM. Chaque mois, tu achètes des actions de sociétés solides qui versent des dividendes. Tu réinvestis systématiquement les dividendes reçus pour maximiser l'effet composé. C'est la phase où tu construis.",
+        "**Phase 2 · Consolidation (50-60 ans).** Tu arrêtes progressivement de prendre des risques. Tu te concentres sur les valeurs les plus stables, celles qui ont un historique de dividende régulier sur 10 à 15 ans. Tu commences à diversifier : un peu d'immobilier locatif, un peu d'obligations si disponibles. L'objectif : un portefeuille qui génère des revenus sans que tu aies besoin de vendre tes actions.",
+        "**Phase 3 · Distribution (60 ans et plus).** Tu vis de tes dividendes. Si tu as construit un portefeuille de 30 millions FCFA en actions à dividendes (6 % de rendement moyen), tu touches environ **1 800 000 FCFA par an**, soit 150 000 FCFA par mois. En complément de ta pension IPRES ou de toute autre source, c'est un matelas qui change tout."
+      ]
     },
     {
       "kind": "paragraph",
-      "text": "**Phase 2, Consolidation (50-60 ans).** Tu arrêtes progressivement de prendre des risques. Tu te concentres sur les valeurs les plus stables, celles qui ont un historique de dividende régulier sur 10-15 ans. Tu commences à diversifier : un peu d'immobilier locatif, un peu d'obligations si disponibles. L'objectif : un portefeuille qui peut générer des revenus sans que tu aies besoin de vendre tes actions."
+      "text": "Et 30 millions, c'est atteignable. Si tu investis 100 000 FCFA par mois pendant 15 ans avec un rendement total de 8 % (dividendes réinvestis + appréciation du capital), tu arrives à environ 34 millions FCFA. Hypothèse de calcul, jamais une promesse."
     },
     {
       "kind": "paragraph",
-      "text": "**Phase 3, Distribution (60 ans+).** Tu vis de tes dividendes. Si tu as construit un portefeuille de 30 millions FCFA en actions à dividendes (6% de rendement moyen), tu touches environ 1 800 000 FCFA par an, soit 150 000 FCFA par mois. En complément de ta pension IPRES ou de toute autre source, c'est un matelas qui change tout."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Et 30 millions, c'est atteignable. Si tu investis 100 000 FCFA par mois pendant 15 ans avec un rendement total de 8% (dividendes réinvestis + appréciation du capital), tu arrives à environ 34 millions FCFA."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Le vrai ennemi de la retraite, ce n'est pas le manque d'argent. C'est le manque de temps. Chaque année que tu attends pour commencer, c'est une année de moins pour l'effet composé. À 30 ans, tu as 30 ans devant toi. À 45 ans, il te reste 15 ans, et le montant mensuel nécessaire double."
+      "text": "Le vrai ennemi de la retraite, ce n'est pas le manque d'argent. **C'est le manque de temps.** Chaque année que tu attends pour commencer, c'est une année de moins pour l'effet composé. À 30 ans, tu as 30 ans devant toi. À 45 ans, il te reste 15 ans, et le montant mensuel nécessaire double."
     },
     {
       "kind": "paragraph",
@@ -76,17 +63,42 @@
     },
     {
       "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
+    },
+    {
+      "kind": "video",
+      "title": "Voici comment j'investis 75 000 FCFA chaque mois à la BRVM",
+      "episode": "Ép. 04",
+      "url": "https://youtu.be/-eDsldbv3SE",
+      "videoId": "-eDsldbv3SE",
+      "text": "La phase d'accumulation en vrai, mon portefeuille à l'écran : le même montant chaque mois (01:30), l'architecture Core / Satellite (03:54), le plan mois par mois (05:34) et les dividendes réinvestis (06:50). La méthode est la même à 100 000 FCFA qu'à 75 000."
+    },
+    {
+      "kind": "section",
       "text": "CE QU'ON CONSTRUIT CHEZ OMAAD"
     },
     {
       "kind": "paragraph",
-      "text": "Omaad Wealth veut t'aider à visualiser ta trajectoire vers la retraite. L'idée : tu entres ton âge, ton investissement mensuel, et l'app te projette dans le temps, combien tu auras à 50, 55, 60 ans, combien de dividendes tu pourrais toucher par mois. Pas de promesses, juste des projections basées sur des hypothèses réalistes. Parce que voir l'objectif, c'est le premier pas pour l'atteindre."
+      "text": "**Omaad** veut t'aider à visualiser ta trajectoire vers la retraite. L'idée : tu entres ton âge, ton investissement mensuel, et l'app te projette dans le temps, combien tu aurais à 50, 55, 60 ans, combien de dividendes tu pourrais toucher par mois. Pas de promesses, juste des projections basées sur des hypothèses affichées. Parce que voir l'objectif, c'est le premier pas pour l'atteindre."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Découvrir Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "~35%",
+      "value": "≈ 35 %",
       "label": "taux de remplacement moyen à la retraite au Sénégal (IPRES)",
-      "source": "IPRES, Rapport d'activité"
+      "source": "IPRES (https://www.ipres.sn), rapport d'activité"
     },
     {
       "kind": "section",
@@ -102,14 +114,48 @@
     },
     {
       "kind": "section",
+      "text": "✅ LE GESTE DU MOIS"
+    },
+    {
+      "kind": "callout",
+      "text": "Écris le revenu mensuel que tu veux à la retraite et divise-le par 0,5 % (6 % par an, divisé par 12). C'est le capital en actions à dividendes qu'il te faudrait : 150 000 F par mois, c'est 30 millions. Hypothèse, pas promesse, mais c'est ta cible."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
+    },
+    {
+      "kind": "section",
       "text": "🇬🇧 ENGLISH SUMMARY"
     },
     {
       "kind": "summary",
       "items": [
-        "Retirement pensions in West Africa replace only about 30-40% of your last salary (IPRES, Senegal). For the diaspora, the situation is even murkier, split contributions, incomplete quarters, and no formal savings structure. You cannot rely on the state alone.",
-        "The BRVM offers a concrete retirement strategy through dividends. Blue chips like Sonatel and Orange CI yield 5-8% annually. A 3-phase plan: accumulate and reinvest dividends (age 30-50), consolidate into stable dividend payers (50-60), then live off the income (60+). A portfolio of 30M FCFA at 6% yield generates 150,000 FCFA/month.",
-        "30 million FCFA is achievable: 100,000 FCFA/month invested over 15 years at 8% total return gets you there. The real enemy of retirement is not money, it's time. Every year you wait, the required monthly investment doubles."
+        "Retirement pensions in West Africa replace only about 30-40% of your last salary (IPRES, Senegal). For the diaspora, the situation is even murkier: split contributions, incomplete quarters, and no formal savings structure. You cannot rely on the state alone.",
+        "The BRVM offers a concrete retirement strategy through dividends: large caps often yield 5-8% a year. A 3-phase plan: accumulate and reinvest dividends (age 30-50), consolidate into stable dividend payers (50-60), then live off the income (60+). A portfolio of 30M FCFA at 6% yield generates 150,000 FCFA a month.",
+        "30 million FCFA is achievable: 100,000 FCFA a month over 15 years at 8% total return gets you there, as an assumption. The real enemy of retirement is not money, it is time. Watch Ep. 04 for the accumulation phase on a real portfolio, and join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]

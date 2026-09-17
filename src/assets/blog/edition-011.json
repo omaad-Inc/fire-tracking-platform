@@ -2,16 +2,16 @@
   "edition": "011",
   "slug": "fcp-vs-actions-directes",
   "title": "FCP ou actions en direct : l'enjeu des frais sur le long terme",
-  "subtitle": "Édition #011, FIRE Africa par Omaad",
+  "subtitle": "Édition #011 · FIRE Africa par Omaad",
   "tags": [
     "FCP",
-    "actions",
+    "actions en direct",
     "frais",
-    "stratégie",
+    "DCA",
     "BRVM",
-    "stock-picking"
+    "long terme"
   ],
-  "readingMinutes": 3,
+  "readingMinutes": 6,
   "blocks": [
     {
       "kind": "section",
@@ -19,43 +19,47 @@
     },
     {
       "kind": "h2",
-      "text": "Sur 20 ans, choisir tes propres actions à la BRVM peut te faire gagner des dizaines de millions FCFA, si tu sais ce que tu fais."
+      "text": "Sur 20 ans, tenir tes propres actions à la BRVM peut te faire économiser des dizaines de millions FCFA de frais. À une condition : que tu tiennes."
     },
     {
       "kind": "paragraph",
-      "text": "Dans l'édition précédente, on a disséqué les frais des FCP à la BRVM. La question logique qui suit : ne vaut-il pas mieux construire son propre portefeuille d'actions ?"
+      "text": "Dans l'édition précédente, on a ouvert le DICI d'un FCP : 2,58 % par an déjà retirés de la valeur des parts. La question logique qui suit : ne vaut-il pas mieux construire son propre portefeuille d'actions ?"
     },
     {
       "kind": "paragraph",
-      "text": "Faisons parler les chiffres. Un FCP actions BRVM avec un TER de 3% sur un investissement de 500 000 FCFA par mois pendant 20 ans :, Performance brute du marché : 9% par an, Performance nette (après 3% de frais) : 6% par an, Capital final : environ 231 millions FCFA"
+      "text": "**Faisons parler les chiffres, au conditionnel.** 500 000 FCFA par mois pendant 20 ans, soit 120 millions versés, avec une hypothèse de marché à 9 % brut par an. Dans un FCP à 2,58 % de frais courants, la performance nette tombe à 6,42 % : capital final autour de **238 millions FCFA**. En direct via ta SGI, tu paies environ 1,47 % à chaque achat (mon avis d'opéré : 0,3 % de commission de bourse, 1 % de courtage, TAF 17 % sur le courtage) et des droits de garde annuels de 0,05 à 0,5 % selon la grille, soit environ 8,5 % net : capital final autour de **301 millions FCFA**."
     },
     {
       "kind": "paragraph",
-      "text": "Le même investissement en actions directes via ta SGI, avec des frais de courtage de 1% à l'achat (pas de frais de gestion annuels) :, Performance brute : 9% par an, Performance nette (après frais de transaction ponctuels) : environ 8,5% par an, Capital final : environ 320 millions FCFA"
+      "text": "La différence ? Autour de **64 millions FCFA**. C'est le prix de la délégation sur 20 ans, sous ces hypothèses. Ce n'est pas une promesse, c'est un ordre de grandeur, et il est énorme."
     },
     {
       "kind": "paragraph",
-      "text": "La différence ? 89 millions FCFA. C'est le prix de la « tranquillité » du FCP sur 20 ans."
+      "text": "**Mais je te dois une honnêteté.** Sur mon relevé courtier du 27 août 2026, mon portefeuille en direct affichait +35,2 % et mon FCP, gelé depuis avril et gardé comme point de comparaison, +29,3 %. 5,9 points d'écart en faveur du direct. Et ça ne prouve rien : la fenêtre est courte, l'écart est du bruit, et la BRVM monte fort cette année, ce n'est ni mon talent ni celui du gérant. Ce que je regarde vraiment : le fonds obtient son résultat sans que j'y passe une seule minute."
     },
     {
       "kind": "paragraph",
-      "text": "Mais attention, cette comparaison n'est honnête que si tu es capable de gérer ton portefeuille toi-même. Et c'est là que ça se complique."
+      "text": "Parce que gérer un portefeuille BRVM en direct, ça veut dire : passer chaque ordre à la main (aucune SGI ne propose de plan automatique), lire un avis d'opéré, suivre les publications des sociétés, encaisser et réinvestir les dividendes, et surtout résister à la panique quand le marché corrige. **Le FCP te protège de toi-même.** Un gérant ne vend pas dans la panique, il rééquilibre méthodiquement. Ce service a un coût, 2,58 % par an dans mon cas, et pour beaucoup de gens, il vaut chaque franc."
     },
     {
       "kind": "paragraph",
-      "text": "Gérer un portefeuille d'actions BRVM en direct, ça veut dire : suivre les publications financières des sociétés cotées, analyser les bilans annuels, comprendre les ratios (P/E, rendement dividende, ROE), décider quand acheter et quand vendre, et surtout résister à la panique quand le marché corrige."
+      "text": "**La stratégie intermédiaire ? Le portefeuille « paresseux » BRVM.** Tu choisis 5 à 8 grandes valeurs très échangées, sur des critères et pas sur des noms : des dividendes versés depuis des années, un volume quotidien réel (tu le lis sur brvm.org), une entreprise que tu comprends. Tu investis le même montant à date fixe, tu réinvestis les dividendes, et tu ne touches à rien pendant 10 ans. Pas besoin d'être analyste financier. Juste discipliné. Je ne te donnerai pas de liste : mon portefeuille n'est pas une recommandation, et la méthode pour construire le tien est dans mes deux guides."
     },
     {
       "kind": "paragraph",
-      "text": "Le FCP te protège de toi-même. Un bon gestionnaire ne vend pas dans la panique. Il rééquilibre méthodiquement. Il a accès à des analyses et des contacts que tu n'as pas. Ce service a un coût, 3% par an, et pour beaucoup d'investisseurs, il vaut chaque franc."
+      "text": "C'est exactement ce que les investisseurs FIRE américains font avec un fonds indiciel sur le S&P 500. Sauf qu'à la BRVM, il n'existe pas encore d'ETF à bas coûts : le portefeuille paresseux en actions directes, c'est ton substitut."
     },
     {
-      "kind": "paragraph",
-      "text": "La stratégie intermédiaire ? Le portefeuille « lazy BRVM ». Tu choisis 5 à 8 blue chips de la BRVM (Sonatel, Société Générale CI, Ecobank, BOA, Total CI, NSIA...), tu investis à montant fixe chaque mois, tu réinvestis les dividendes, et tu ne touches à rien pendant 10 ans. Pas besoin d'être analyste financier. Juste discipliné."
+      "kind": "section",
+      "text": "🎬 LA VIDÉO À VOIR"
     },
     {
-      "kind": "paragraph",
-      "text": "C'est exactement ce que les investisseurs FIRE américains font avec le S&P 500, sauf qu'à la BRVM, tu n'as pas d'ETF indiciel à bas coûts. Le portefeuille lazy en stock-picking, c'est ton substitut."
+      "kind": "video",
+      "title": "Voici comment j'investis 75 000 FCFA chaque mois à la BRVM",
+      "episode": "Ép. 04",
+      "url": "https://youtu.be/-eDsldbv3SE",
+      "videoId": "-eDsldbv3SE",
+      "text": "Le portefeuille en direct, en vrai : pourquoi le même montant chaque mois (01:30), l'architecture Core / Satellite (03:54), le plan mois par mois (05:34) et les dividendes réinvestis (06:50). Le « paresseux » BRVM, à l'écran."
     },
     {
       "kind": "section",
@@ -63,13 +67,42 @@
     },
     {
       "kind": "paragraph",
-      "text": "On développe un simulateur FCP vs Actions Directes dans Omaad Wealth. Tu entres ton montant mensuel, ta durée d'investissement, et le TER de ton FCP, et l'app te montre l'écart de capital final entre les deux stratégies. On intègre aussi un modèle de portefeuille « lazy BRVM » pré-construit avec les blue chips les plus liquides et les meilleurs dividendes. Pour ceux qui veulent se lancer sans passer des heures sur les bilans."
+      "text": "**Direct ou fonds, la question n'est pas « lequel est meilleur », c'est « lequel tu tiendras 10 ans ». Omaad te montre les deux côte à côte.**"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Transparence : Omaad, c'est mon produit, et c'est avec lui que je suis le relevé direct vs fonds que je te montre plus haut."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Si tu passes au direct :** l'outil Stratégie BRVM (https://omaad.africa/outils/strategie-brvm/), gratuit et sans inscription, transforme ton versement mensuel en plan d'exécution : combien sur chaque ligne, quel mois acheter quoi, et le calendrier des détachements de dividendes. Les lignes, c'est toi qui les choisis. L'outil ne recommande aucune action."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Si tu gardes un fonds, ou les deux :** dans l'application Omaad (https://omaad.africa), tes parts de FCP et tes actions en direct vivent au même endroit, chacune avec son prix moyen d'achat, ses dividendes et sa performance en pourcentage. C'est ce qui te permet de comparer honnêtement, sur des années, ce que le fonds te coûte et ce que le direct te demande."
+    },
+    {
+      "kind": "ctas",
+      "items": [
+        {
+          "label": "Planifier mon DCA (gratuit)",
+          "url": "https://omaad.africa/outils/strategie-brvm/"
+        },
+        {
+          "label": "Créer mon compte Omaad",
+          "url": "https://omaad.africa"
+        }
+      ]
+    },
+    {
+      "kind": "section",
+      "text": "LE CHIFFRE AFRICAIN"
     },
     {
       "kind": "stat",
-      "value": "89 M",
-      "label": "FCFA perdus en frais de FCP vs actions directes sur 20 ans (500 000 FCFA/mois)",
-      "source": "Simulation Omaad, hypothèse 9% brut, TER 3%"
+      "value": "64 M",
+      "label": "FCFA d'écart, au conditionnel, entre un fonds à 2,58 % de frais et un portefeuille en direct, pour 500 000 FCFA par mois pendant 20 ans (hypothèse 9 % brut).",
+      "source": "simulation FIRE Africa · frais du fonds = DICI BAM WURUS · frais du direct = avis d'opéré du 01/06/2026 (Ép. 08) + droits de garde"
     },
     {
       "kind": "section",
@@ -80,8 +113,42 @@
       "emoji": "📖",
       "title": "Stocks for the Long Run",
       "meta": "Jeremy Siegel",
-      "text": "Siegel démontre avec 200 ans de données que les actions sont la classe d'actifs la plus performante sur le long terme, à condition de rester investi. Son analyse des dividendes réinvestis est directement applicable aux blue chips BRVM, qui sont avant tout des machines à dividendes.",
+      "text": "Siegel démontre avec deux siècles de données que les actions sont la classe d'actifs la plus performante sur le long terme, à condition de rester investi. Son analyse des dividendes réinvestis est directement applicable aux grandes valeurs de la BRVM, qui sont avant tout des machines à dividendes.",
       "url": null
+    },
+    {
+      "kind": "section",
+      "text": "✅ LE GESTE DE LA QUINZAINE"
+    },
+    {
+      "kind": "callout",
+      "text": "Mets face à face, pour toi, deux coûts : le coût en frais du fonds (la ligne « frais courants » de son DICI) et le coût en temps du direct (au minimum une heure par trimestre, pendant 10 ans). Écris les deux. Le bon choix, c'est celui que tu tiendras."
+    },
+    {
+      "kind": "section",
+      "text": "📢 REJOINS LA COMMUNAUTÉ"
+    },
+    {
+      "kind": "paragraph",
+      "text": "Entre deux éditions, la conversation continue à deux endroits. Zéro signal, zéro recommandation d'action : des chiffres sourcés et de la pédagogie, dans le même esprit que cette newsletter."
+    },
+    {
+      "kind": "resource",
+      "emoji": "📢",
+      "title": "Le canal WhatsApp « BRVM en clair »",
+      "meta": "",
+      "text": "les chiffres de la semaine à la BRVM, une notion expliquée simplement, le radar des dividendes, et chaque vidéo en avant-première.",
+      "url": "https://whatsapp.com/channel/0029VbCDskuICVfsnVXh5V0T",
+      "linkLabel": "Rejoindre le canal WhatsApp"
+    },
+    {
+      "kind": "resource",
+      "emoji": "👍",
+      "title": "La page Facebook FIRE Africa",
+      "meta": "",
+      "text": "les extraits des vidéos, les cartes pédagogiques, et les échanges avec la diaspora et le pays.",
+      "url": "https://www.facebook.com/profile.php?id=61593368832130",
+      "linkLabel": "Suivre la page Facebook"
     },
     {
       "kind": "section",
@@ -90,9 +157,9 @@
     {
       "kind": "summary",
       "items": [
-        "Over 20 years, investing 500,000 FCFA/month directly in BRVM stocks (instead of through an FCP) saves approximately 89 million FCFA in fees, assuming 9% gross market returns and a 3% FCP expense ratio.",
-        "However, FCPs provide behavioral protection: professional managers don't panic-sell during corrections. For investors who lack the discipline or time for stock-picking, the 3% annual fee can be worth it.",
-        "The middle ground is a \"lazy BRVM portfolio\", 5-8 blue chip stocks (Sonatel, SGB CI, Ecobank, BOA, Total CI), bought at fixed monthly amounts with dividends reinvested. No active management needed. Omaad Wealth is building this model portfolio as a template."
+        "Run the numbers as a hypothesis: 500,000 FCFA a month for 20 years (120 million invested) at 9% gross. Through a fund charging 2.58% a year (6.42% net) you would end around 238 million FCFA; holding shares directly, paying about 1.47% per purchase plus small annual custody fees (about 8.5% net), around 301 million. The gap, roughly 64 million, is the price of delegation over 20 years.",
+        "Honesty check: on my broker statement of 27 August 2026 my direct portfolio showed +35.2% and my fund, frozen since April and kept as a benchmark, +29.3%. That proves nothing: short window, a market rising strongly for everyone. The fund gets its result without a minute of my time. Direct investing means placing every order by hand, reading contract notes, reinvesting dividends and not panicking in corrections. The fund protects you from yourself, and for many people that is worth the fee.",
+        "The middle path is a lazy BRVM portfolio: 5 to 8 large, actively traded dividend payers chosen on criteria, not names, bought with the same amount each month, dividends reinvested, untouched for 10 years. No stock list here: my portfolio is not a recommendation. Omaad's free planner turns your monthly amount into an execution calendar, and the app tracks fund and direct holdings side by side. Join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]
