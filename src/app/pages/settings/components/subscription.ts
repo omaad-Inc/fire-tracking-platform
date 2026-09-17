@@ -38,17 +38,21 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                 <div role="status" class="flex items-start gap-3 rounded-2xl px-4 py-3.5 mb-5 border"
                      [ngClass]="banner === 'success'
                         ? 'bg-positive/10 border-positive/25 text-surface-900 dark:text-surface-0'
-                        : 'bg-surface-0 dark:bg-surface-900/50 border-surface-200 dark:border-surface-800 text-surface-900 dark:text-surface-0'">
+                        : banner === 'pending'
+                            ? 'bg-ochre-50 dark:bg-ochre-900/20 border-ochre-200 dark:border-ochre-500/30 text-surface-900 dark:text-surface-0'
+                            : 'bg-surface-0 dark:bg-surface-900/50 border-surface-200 dark:border-surface-800 text-surface-900 dark:text-surface-0'">
                     <span class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                          [ngClass]="banner === 'success' ? 'bg-positive/15 text-positive' : 'bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400'">
-                        <i class="pi !text-sm" [ngClass]="banner === 'success' ? 'pi-check' : 'pi-info-circle'" aria-hidden="true"></i>
+                          [ngClass]="banner === 'success' ? 'bg-positive/15 text-positive'
+                                     : banner === 'pending' ? 'bg-ochre-100 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400'
+                                     : 'bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400'">
+                        <i class="pi !text-sm" [ngClass]="banner === 'success' ? 'pi-check' : banner === 'pending' ? 'pi-spin pi-spinner' : 'pi-info-circle'" aria-hidden="true"></i>
                     </span>
                     <div class="flex-1 min-w-0">
                         <div class="text-[14.5px] font-semibold leading-snug">
-                            {{ t(banner === 'success' ? 'subscription.payment.successTitle' : 'subscription.payment.errorTitle') }}
+                            {{ t('subscription.payment.' + banner + 'Title') }}
                         </div>
                         <div class="text-[12.5px] text-surface-600 dark:text-surface-300 mt-0.5 leading-relaxed">
-                            {{ t(banner === 'success' ? 'subscription.payment.successBody' : 'subscription.payment.errorBody') }}
+                            {{ t('subscription.payment.' + banner + 'Body') }}
                         </div>
                         <!-- On a phone the browser can hand back to the app (omaad://
                              scheme); a custom scheme cannot detect the app, so a
@@ -383,8 +387,9 @@ export class SubscriptionSettings implements OnInit {
     sheetTier = signal<'pro' | 'premium'>('premium');
 
     /** The PSP return banner (?payment=success|error), dismissible. Null = no
-     *  round trip landed on this open. */
-    paymentBanner = signal<'success' | 'error' | null>(null);
+     *  round trip landed on this open. 'pending' = a checkout started on this
+     *  browser is being confirmed by polling (see resumePendingPayment). */
+    paymentBanner = signal<'success' | 'error' | 'pending' | null>(null);
     readonly onMobile = signal(false);
     readonly openingApp = signal(false);
     readonly openAppFailed = signal(false);
@@ -415,6 +420,28 @@ export class SubscriptionSettings implements OnInit {
         // cache would misreport the plan. Cheap, and correct.
         this.billing.load(true);
         this.readPaymentReturn();
+        void this.resumePendingPayment();
+    }
+
+    /** A checkout started on this browser stored its reference before the
+     *  redirect (BillingService.rememberPendingPayment). Whatever brought the
+     *  user back here (the PSP redirect, a closed tab, a manual return), poll
+     *  the owner-scoped status endpoint: the server asks the PSP itself, so
+     *  the grant lands in seconds even when the webhook is late or cannot
+     *  reach this stack. The redirect param still decides nothing. */
+    private async resumePendingPayment(): Promise<void> {
+        if (!this.billing.readPendingPayment()) return;
+        if (this.paymentBanner() !== 'success') this.paymentBanner.set('pending');
+        const outcome = await this.billing.confirmPendingPayment();
+        if (outcome === 'succeeded') {
+            this.paymentBanner.set('success');
+        } else if (outcome === 'failed') {
+            this.paymentBanner.set('error');
+        } else if (this.paymentBanner() === 'pending') {
+            // Still pending after the budget: stay quiet, the entry survives
+            // for the next visit and the reconciliation cron covers the rest.
+            this.paymentBanner.set(null);
+        }
     }
 
     /** PayDunya/Bictorys redirect back to this page with ?payment=…; the

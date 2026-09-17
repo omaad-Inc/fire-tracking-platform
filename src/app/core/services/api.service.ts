@@ -1140,8 +1140,27 @@ export interface PlanPricing {
     plan: 'pro' | 'premium';
     durations: PlanDurationPrice[];
 }
+/** Which checkout rails the server can actually run right now (derived from
+ *  its provider registry). The sheet offers a rail only when its flag is true,
+ *  so the button and the checkout 503 can never disagree, and turning a rail on
+ *  or off is a backend env change, never a frontend release. */
+export interface PaymentMethodsAvailability {
+    momo: boolean;
+    card: boolean;
+}
 export interface PlansResponse {
     plans: PlanPricing[];
+    methods: PaymentMethodsAvailability;
+}
+
+/** GET /billing/payments/{reference}/status: owner-scoped live status. A
+ *  pending payment gets one provider query server-side, so polling this after
+ *  the hosted checkout lands the grant in seconds instead of waiting for the
+ *  reconciliation cron (redirects still decide nothing). */
+export interface PaymentStatusResponse {
+    reference: string;
+    status: 'pending' | 'succeeded' | 'failed';
+    effective_plan: PlanTierName;
 }
 
 /** Current entitlement + the paid-subscription row when one exists.
@@ -2061,6 +2080,12 @@ export class ApiService {
     /** The owner's payment history (newest first). Empty until a payment exists. */
     getPayments(): Observable<PaymentHistoryItem[]> {
         return this.http.get<PaymentHistoryItem[]>(`${this.apiUrl}/billing/payments`);
+    }
+
+    /** Live status of one of the owner's payments (post-checkout polling). */
+    getPaymentStatus(reference: string): Observable<PaymentStatusResponse> {
+        return this.http.get<PaymentStatusResponse>(
+            `${this.apiUrl}/billing/payments/${encodeURIComponent(reference)}/status`);
     }
 
     /** Start a hosted checkout for a duration Pass. Access is granted ONLY by the
