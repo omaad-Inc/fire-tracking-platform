@@ -181,6 +181,30 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/comparer-sgi-brvm/"/>
         <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/comparer-sgi-brvm/"/>
     </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/dca-brvm/</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/dca-brvm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/dca-brvm/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/dca-brvm/"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/dca-brvm/</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/dca-brvm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/dca-brvm/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/dca-brvm/"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/fr/blog/special-dakar-immo/</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/special-dakar-immo/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/special-dakar-immo/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/special-dakar-immo/"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/blog/special-dakar-immo/</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/special-dakar-immo/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/special-dakar-immo/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/blog/special-dakar-immo/"/>
+    </url>
     <url><loc>https://omaad.africa/outils/comparateur-sgi-brvm/</loc></url>
     <url><loc>https://omaad.africa/outils/comparateur-sgi-brvm/sgi/bsic-capital-sa/</loc></url>
     <url><loc>https://omaad.africa/outils/comparateur-sgi-brvm/sgi/societe-africaine-dingenierie-et-dintermediation-financiere-sa2if/</loc></url>

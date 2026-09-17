@@ -29,6 +29,10 @@
 /en/blog/compte-titres-parcours-reel
 /fr/blog/comparer-sgi-brvm
 /en/blog/comparer-sgi-brvm
+/fr/blog/dca-brvm
+/en/blog/dca-brvm
+/fr/blog/special-dakar-immo
+/en/blog/special-dakar-immo
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm
