@@ -144,9 +144,12 @@ export class PaiementRetourPage implements OnInit, OnDestroy {
     }
 
     /** Web destination: the plan page after a failure, the Abonnement page
-     *  otherwise (the auth guard takes over when there is no web session). */
+     *  otherwise (the auth guard takes over when there is no web session and
+     *  brings the user back here through returnUrl). Settings live under
+     *  /:lang/pages/settings: the bare /settings path matched nothing and
+     *  fell through the wildcard onto the landing page (owner, 2026-09-17). */
     webLink(): string {
-        return this.outcome() === 'error' ? '/fr/pages/plans' : '/fr/settings/subscription';
+        return this.outcome() === 'error' ? '/fr/pages/plans' : '/fr/pages/settings/subscription';
     }
 
     webQuery(): Record<string, string> | null {
