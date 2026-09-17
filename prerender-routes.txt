@@ -31,8 +31,8 @@
 /en/blog/comparer-sgi-brvm
 /fr/blog/dca-brvm
 /en/blog/dca-brvm
-/fr/blog/special-dakar-immo
-/en/blog/special-dakar-immo
+/fr/blog/trading-vs-dca
+/en/blog/trading-vs-dca
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm
