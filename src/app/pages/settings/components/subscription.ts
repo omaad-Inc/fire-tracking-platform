@@ -106,7 +106,11 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             }
                             @case ('active_prepaid') {
                                 <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold" [ngClass]="hPill()">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{{ t('subscription.pills.active') }}
+                                    @if (isGift()) {
+                                        <i class="pi pi-gift !text-[11px]" aria-hidden="true"></i>{{ t('subscription.pills.gift') }}
+                                    } @else {
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>{{ t('subscription.pills.active') }}
+                                    }
                                 </span>
                             }
                             @case ('active_auto') {
@@ -149,8 +153,16 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                     @switch (state()) {
                         @case ('beta') {
                             <p class="relative mt-3.5 text-sm leading-relaxed max-w-[38ch]" [ngClass]="hBody()">{{ t('subscription.body.beta') }}</p>
-                            <p class="relative mt-3 text-[12.5px]" [ngClass]="hMuted()">{{ t('subscription.body.betaNoPayment') }}</p>
-                            <button pButton (click)="openSheet('premium')" [label]="t('subscription.cta.discoverPremium')"
+                            <!-- Once the courtesy window has an announced end, the card has to
+                                 say so: "Aucun paiement pour l'instant" under a gift that stops
+                                 on Thursday would be the app contradicting the email. -->
+                            @if (courtesyEndsDate(); as endsOn) {
+                                <p class="relative mt-3 text-[12.5px] max-w-[38ch]" [ngClass]="hMuted()">{{ t('subscription.body.betaEndsOn', { date: endsOn }) }}</p>
+                            } @else {
+                                <p class="relative mt-3 text-[12.5px]" [ngClass]="hMuted()">{{ t('subscription.body.betaNoPayment') }}</p>
+                            }
+                            <button pButton (click)="openSheet(courtesyEndsDate() ? 'pro' : 'premium')"
+                                    [label]="courtesyEndsDate() ? t('subscription.cta.keepPro') : t('subscription.cta.discoverPremium')"
                                     icon="pi pi-crown" class="omaad-press mt-5 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
                         }
                         @case ('free') {
@@ -162,6 +174,9 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                             <div class="relative mt-4 pt-4 border-t" [ngClass]="hBorder()">
                                 <div class="text-[15px] font-semibold">{{ t('subscription.expiresInDays', { n: daysLeft() }) }}</div>
                                 <div class="text-[12.5px] mt-1 tabular-nums" [ngClass]="hMuted()">{{ periodEndLabel() }}</div>
+                                @if (isGift()) {
+                                    <p class="text-[12.5px] mt-2 max-w-[38ch]" [ngClass]="hMuted()">{{ t('subscription.body.giftMonth') }}</p>
+                                }
                             </div>
                             <button pButton (click)="openSheet(currentTier())" [label]="t('subscription.cta.renewOneClick')"
                                     icon="pi pi-refresh" class="omaad-press mt-4 !rounded-full !py-2.5 !px-5 !font-bold !border-0 !text-warm-900 !bg-gradient-to-r !from-ochre-400 !to-ochre-500"></button>
@@ -580,6 +595,18 @@ export class SubscriptionSettings implements OnInit {
 
     graceEndsDate(): string {
         return this.fmtDate(this.subscription()?.grace_ends_at);
+    }
+
+    /** The announced end of the beta courtesy, formatted, or '' when the window
+     *  is open-ended. Drives both the dated body line and the CTA: a deadline
+     *  makes "keep Pro" the useful action, not "discover Premium". */
+    courtesyEndsDate(): string {
+        return this.fmtDate(this.billing.courtesyEndsAt());
+    }
+
+    /** This plan was given, not bought (beta thank-you month, founder comp). */
+    isGift(): boolean {
+        return this.billing.isGift();
     }
 
     fmtDate(iso: string | null | undefined): string {

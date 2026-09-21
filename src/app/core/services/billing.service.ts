@@ -58,6 +58,10 @@ export class BillingService {
 
     readonly effectivePlan = computed(() => this.subscription()?.effective_plan ?? 'free');
     readonly betaCourtesy = computed(() => this.subscription()?.beta_courtesy ?? false);
+    /** The announced end of the courtesy window, or null when open-ended. */
+    readonly courtesyEndsAt = computed(() => this.subscription()?.beta_courtesy_ends_at ?? null);
+    /** The current plan was given, not bought. */
+    readonly isGift = computed(() => this.subscription()?.is_gift ?? false);
 
     /** Hero state machine key, derived once from the subscription row. */
     readonly state = computed<SubscriptionUiState>(() => {

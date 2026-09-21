@@ -331,7 +331,11 @@ describe('ChatSessionService (event reducer)', () => {
         driver.emit({ type: 'text_delta', text: 'Voici mon analyse.' });
         driver.emit({ type: 'notice', kind: 'disclaimer_cima' });
         const blocks = lastAssistant().blocks!;
-        expect(blocks[1]).toEqual({ kind: 'notice', notice: { kind: 'disclaimer_cima', message: undefined } });
+        // `bucket` rides along on every notice since the two-bucket quota split.
+        expect(blocks[1]).toEqual({
+            kind: 'notice',
+            notice: { kind: 'disclaimer_cima', message: undefined, bucket: undefined },
+        });
     });
 });
 

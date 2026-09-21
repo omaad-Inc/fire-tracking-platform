@@ -412,6 +412,7 @@ export const EN: Dict = {
       beta: 'Free during the beta',
       active: 'Active',
       ending: 'Ending soon',
+      gift: 'On the house',
       lapsed: 'Past due date',
       pastDue: 'Payment pending',
       expired: 'Expired',
@@ -419,6 +420,8 @@ export const EN: Dict = {
     body: {
       beta: 'You have every Pro feature, free, for the duration of the beta.',
       betaNoPayment: 'No payment for now.',
+      giftMonth: 'This month of Pro is on us. When it ends your account moves to Free, with nothing to pay.',
+      betaEndsOn: 'Your free Pro access ends on {{date}} at 23:59 (GMT). Your account then moves to Free, and you keep all your data.',
       free: 'Unlock the AI assistant and full wealth tracking.',
       cancelling: 'Your access stays active until {{date}}, then it stops.',
       pastDue: 'Your last payment failed. Update your payment method to keep access.',
@@ -428,6 +431,7 @@ export const EN: Dict = {
     cta: {
       discoverPremium: 'Go Premium',
       goPro: 'Go Pro',
+      keepPro: 'Keep Pro',
       renewOneClick: 'Renew in one tap',
       renewNow: 'Renew now',
       reactivate: 'Reactivate',

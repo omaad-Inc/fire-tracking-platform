@@ -15,13 +15,13 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
  */
 
 const SUB_FREE: SubscriptionStatus = {
-    effective_plan: 'free', beta_courtesy: false, plan: null,
+    effective_plan: 'free', beta_courtesy: false, beta_courtesy_ends_at: null, is_gift: false, plan: null,
     status: null, renewal_type: null, current_period_end: null, cancel_at: null,
     in_grace: false, grace_ends_at: null,
 };
 const SUB_BETA: SubscriptionStatus = { ...SUB_FREE, beta_courtesy: true };
 const SUB_PRO_PREPAID: SubscriptionStatus = {
-    effective_plan: 'pro', beta_courtesy: false, plan: 'pro',
+    effective_plan: 'pro', beta_courtesy: false, beta_courtesy_ends_at: null, is_gift: false, plan: 'pro',
     status: 'active', renewal_type: 'prepaid',
     current_period_end: '2099-01-01T00:00:00Z', cancel_at: null,
     in_grace: false, grace_ends_at: null,
@@ -42,6 +42,7 @@ function setup(sub: SubscriptionStatus, queryParams: Record<string, string> = {}
             { plan: 'pro' as const, durations: [{ duration_key: 'm1' as const, label: '1 mois', days: 30, xof: 4000, eur: 5.0 }] },
             { plan: 'premium' as const, durations: [{ duration_key: 'm1' as const, label: '1 mois', days: 30, xof: 10000, eur: 12.0 }] },
         ],
+        methods: { momo: true, card: true },
     }));
 
     const cs = {

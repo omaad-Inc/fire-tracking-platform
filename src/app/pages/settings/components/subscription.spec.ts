@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -9,6 +9,9 @@ import { AnalyticsService } from '../../../core/services/analytics.service';
 
 /** Captures product events the page emits (subscribe_completed, subscription_cancelled). */
 let analyticsTrack: jasmine.Spy;
+/** The last fixture `setup` built, for the tests that assert rendered copy
+ *  rather than component state (the end-of-courtesy card is about words). */
+let lastFixture: ComponentFixture<SubscriptionSettings>;
 
 /**
  * The Abonnement hero card, focused on the GRACE state.
@@ -25,7 +28,7 @@ const LAPSED_AT = '2026-08-23T17:19:14Z';   // period end, in the past
 const GRACE_END = '2026-08-28T17:19:14Z';   // + SUBSCRIPTION_GRACE_DAYS
 
 const SUB_PREMIUM_GRACE: SubscriptionStatus = {
-    effective_plan: 'premium', beta_courtesy: false, plan: 'premium',
+    effective_plan: 'premium', beta_courtesy: false, beta_courtesy_ends_at: null, is_gift: false, plan: 'premium',
     status: 'active',            // still ACTIVE: the expiry cron has not run yet
     renewal_type: 'prepaid',
     current_period_end: LAPSED_AT, cancel_at: null,
@@ -68,6 +71,7 @@ function setup(sub: SubscriptionStatus, usage: UsageStatus | null = null,
             { plan: 'pro' as const, durations: [{ duration_key: 'm1' as const, label: '1 mois', days: 30, xof: 4000, eur: 5.0 }] },
             { plan: 'premium' as const, durations: [{ duration_key: 'm1' as const, label: '1 mois', days: 30, xof: 10000, eur: 12.0 }] },
         ],
+        methods: { momo: true, card: true },
     }));
 
     const cs = {
@@ -96,6 +100,7 @@ function setup(sub: SubscriptionStatus, usage: UsageStatus | null = null,
     fixture.detectChanges();
     TestBed.flushEffects();
     fixture.detectChanges();
+    lastFixture = fixture;
     return fixture.componentInstance;
 }
 
@@ -173,5 +178,78 @@ describe('SubscriptionSettings payment return banner', () => {
         const c = setup(SUB_PREMIUM_LIVE, null, { payment: 'success' });
         c.paymentBanner.set(null);
         expect(c.paymentBanner()).toBeNull();
+    });
+});
+
+
+/**
+ * End of the beta courtesy (cutover 2026-09-24 23:59 GMT).
+ *
+ * Two promises the card must never get wrong that week: while the courtesy
+ * window has an announced end, the hero has to name it instead of saying
+ * "aucun paiement pour l'instant" under a gift that stops on Thursday; and
+ * once the thank-you month is granted, a plan nobody paid for must not read
+ * like a bill is coming.
+ */
+const CUTOVER = '2026-09-24T23:59:00Z';
+
+const SUB_COURTESY_DATED: SubscriptionStatus = {
+    effective_plan: 'free', beta_courtesy: true, beta_courtesy_ends_at: CUTOVER,
+    is_gift: false, plan: null, status: null, renewal_type: null,
+    current_period_end: null, cancel_at: null, in_grace: false, grace_ends_at: null,
+};
+const SUB_COURTESY_OPEN_ENDED: SubscriptionStatus = {
+    ...SUB_COURTESY_DATED, beta_courtesy_ends_at: null,
+};
+const SUB_GIFT_MONTH: SubscriptionStatus = {
+    effective_plan: 'pro', beta_courtesy: false, beta_courtesy_ends_at: null,
+    is_gift: true, plan: 'pro', status: 'active', renewal_type: 'prepaid',
+    current_period_end: '2026-10-24T23:59:00Z', cancel_at: null,
+    in_grace: false, grace_ends_at: null,
+};
+
+describe('SubscriptionSettings end of beta courtesy', () => {
+    afterEach(() => TestBed.resetTestingModule());
+
+    // The TestBed has no translation layer, so the template renders i18n KEYS.
+    // That is what these assert: which copy the card chooses per state (the
+    // wording itself lives in fr.ts/en.ts and is guarded by i18n:guard).
+    const rendered = () => lastFixture.nativeElement.textContent as string;
+
+    it('names the day the free Pro access stops', () => {
+        const c = setup(SUB_COURTESY_DATED);
+        expect(c.state()).toBe('beta');
+        expect(c.courtesyEndsDate()).toBe('24 septembre 2026');
+        expect(rendered()).toContain('subscription.body.betaEndsOn');
+        expect(rendered()).not.toContain('subscription.body.betaNoPayment');
+    });
+
+    it('a deadline makes "garder Pro" the offer, not "passer à Premium"', () => {
+        setup(SUB_COURTESY_DATED);
+        expect(rendered()).toContain('subscription.cta.keepPro');
+        expect(rendered()).not.toContain('subscription.cta.discoverPremium');
+    });
+
+    it('an open-ended courtesy window is untouched (pre-cutover behaviour)', () => {
+        const c = setup(SUB_COURTESY_OPEN_ENDED);
+        expect(c.courtesyEndsDate()).toBe('');
+        expect(rendered()).toContain('subscription.body.betaNoPayment');
+        expect(rendered()).toContain('subscription.cta.discoverPremium');
+    });
+
+    it('the thank-you month reads as a gift, never as a bill coming due', () => {
+        const c = setup(SUB_GIFT_MONTH);
+        expect(c.state()).toBe('active_prepaid');
+        expect(c.isGift()).toBeTrue();
+        expect(rendered()).toContain('subscription.pills.gift');
+        expect(rendered()).toContain('subscription.body.giftMonth');
+        expect(rendered()).not.toContain('subscription.pills.active');
+    });
+
+    it('a PAID plan keeps the plain active pill and no gift line', () => {
+        const c = setup(SUB_PREMIUM_LIVE);
+        expect(c.isGift()).toBeFalse();
+        expect(rendered()).toContain('subscription.pills.active');
+        expect(rendered()).not.toContain('subscription.body.giftMonth');
     });
 });
