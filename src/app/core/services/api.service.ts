@@ -1173,6 +1173,13 @@ export interface PaymentStatusResponse {
 export interface SubscriptionStatus {
     effective_plan: PlanTierName;
     beta_courtesy: boolean;
+    /** When the courtesy window closes (ISO), or null when it is open-ended.
+     *  The server gates on this exact instant, so the countdown the UI shows
+     *  and the moment access changes can never drift apart. */
+    beta_courtesy_ends_at: string | null;
+    /** This plan was GIVEN, not bought (beta thank-you month, founder comp).
+     *  Drives the "offert" wording so an unpaid plan never reads like a bill. */
+    is_gift: boolean;
     plan: PlanTierName | null;
     status: SubscriptionStatusName | null;
     renewal_type: RenewalTypeName | null;

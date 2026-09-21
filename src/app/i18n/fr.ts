@@ -408,6 +408,7 @@ export const FR = {
     graceAccessUntil: 'Accès maintenu jusqu\'au {{date}}',
     pills: {
       beta: 'Offert pendant la beta',
+      gift: 'Offert',
       active: 'Actif',
       ending: 'Se termine bientôt',
       lapsed: 'Échéance dépassée',
@@ -417,6 +418,8 @@ export const FR = {
     body: {
       beta: 'Tu profites de toutes les fonctionnalités Pro, gratuitement, pendant la beta.',
       betaNoPayment: 'Aucun paiement pour l\'instant.',
+      giftMonth: 'Ce mois de Pro t\'est offert. À la fin, ton compte passe en Gratuit, sans aucun paiement.',
+      betaEndsOn: 'Ton accès Pro offert s\'arrête le {{date}} à 23h59 (GMT). Ton compte passe ensuite en Gratuit, sans rien perdre de tes données.',
       free: 'Débloque l\'assistant IA et tout le suivi de ton patrimoine.',
       cancelling: 'Ton accès reste actif jusqu\'au {{date}}, puis il s\'arrête.',
       pastDue: 'Ton dernier paiement a échoué. Mets à jour ton moyen de paiement pour garder l\'accès.',
@@ -426,6 +429,7 @@ export const FR = {
     cta: {
       discoverPremium: 'Passer à Premium',
       goPro: 'Passer à Pro',
+      keepPro: 'Garder Pro',
       renewOneClick: 'Renouveler en 1 clic',
       renewNow: 'Renouveler maintenant',
       reactivate: 'Réactiver',
