@@ -29,6 +29,9 @@ const MOBILE_LINKS: Record<NotifKind, string> = {
     milestone: '/goals',
     custom_rule: '/',
     weekly_report: '/reports/weekly',
+    brvm_digest: '/analyse-brvm',
+    brvm_move: '/analyse-brvm',
+    debt: '/debts',
     renewal_reminder: '/settings/subscription',
 };
 

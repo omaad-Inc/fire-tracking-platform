@@ -38,7 +38,10 @@ describe('PaiementRetourPage', () => {
         const c = setup({ payment: 'success' });
         expect(c.outcome()).toBe('success');
         expect(c.title()).toBe('Paiement confirmé');
-        expect(c.webLink()).toBe('/fr/settings/subscription');
+        // Settings live under /:lang/pages/settings (the returnUrl fix); the
+        // spec predates that correction and never ran while the suite was
+        // failing to compile.
+        expect(c.webLink()).toBe('/fr/pages/settings/subscription');
         expect(c.webQuery()).toEqual({ payment: 'success' });
     });
 
