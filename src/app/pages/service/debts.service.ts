@@ -1,41 +1,65 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom, map } from 'rxjs';
-import { ApiService, Debt, DebtCreate, DebtUpdate, DebtCategory } from '../../core/services/api.service';
+import {
+    ApiService, Debt, DebtCategory, DebtCreate, DebtDetail, DebtPaymentFrequency, DebtPaymentRow,
+    DebtUpdate, DebtsDashboardSummary,
+} from '../../core/services/api.service';
 import { AssetsStateService } from './assets-state.service';
 import { CurrencyService } from '../../core/services/currency.service';
 import { CACHE_RESET } from '../../core/services/cache-reset.token';
 import { cachedResource } from '../../core/util/cached-resource';
 import { toLocalDateStr } from '../../core/util/date';
 
+/**
+ * A debt as the web app reasons about it (P0 premium debts).
+ *
+ * `total` / `paid` are EUR base (lists, sums, net worth); every `native*`
+ * field is the debt's own currency (forms, the payment sheet, the ledger).
+ * Time facts come straight from the API: the server owns due/overdue.
+ */
 export interface DebtRecord {
     id?: string;
-    date: string; // YYYY-MM-DD
+    date: string;                       // YYYY-MM-DD start date
     type: 'Debt' | 'Receivable';
     category: DebtCategory;
     name: string;
-    total: number;        // EUR base, for lists/sums/net-worth math
-    paid: number;         // EUR base, paid (for Debt) or received (for Receivable)
-    /** The debt's own currency + amounts in it, used by the edit form. */
-    currency?: string;
-    nativeTotal?: number;
-    nativePaid?: number;
-    interestRate: number; // %
-    monthlyPayment?: number;
-    frequency: 'Mensuel' | 'Unique' | 'Libre';
+    total: number;                      // EUR base
+    paid: number;                       // EUR base, paid (Debt) or received (Receivable)
+    currency: string;
+    nativeTotal: number;
+    nativePaid: number;
+    nativeRemaining: number;
+    interestRate: number;               // %
+    monthlyPayment?: number;            // native instalment amount
+    frequency: DebtPaymentFrequency;    // monthly | weekly | once | free
+    nextPaymentDate?: string | null;    // YYYY-MM-DD
+    isOverdue: boolean;
+    daysOverdue: number;
     note?: string;
     creditor?: string;
-    isPaidOff?: boolean;
+    isPaidOff: boolean;
+    paidOffDate?: string | null;
+    closedReason?: string | null;
+    lastPaymentDate?: string | null;
+    lastPaymentAmount?: number | null;  // native
 }
 
-export interface DebtsStatsSummary {
-    totalDebt: number;         // Sum of all debts I owe (current amount remaining)
-    paidAmount: number;        // Last payment made (not cumulative)
-    receivables: number;       // Sum of all receivables (money owed to me)
-    totalDebtChange?: number;
-    paidAmountChange?: number;
-    receivablesChange?: number;
-    lastPaymentDate?: string;  // Date of last payment
+export interface DebtDetailRecord extends DebtRecord {
+    payments: DebtPaymentRow[];
 }
+
+/** Numbers for the page hero, EUR base except where noted. */
+export interface DebtsHero {
+    iOwe: number;
+    owedToMe: number;
+    net: number;                        // owedToMe − iOwe
+    overdueCount: number;
+    dueWithin30Days: number;            // instalments I owe in the next 30 days
+    expectedWithin30Days: number;       // receivables due in the next 30 days
+    nextDue: { debtId: number; name: string; type: 'Debt' | 'Receivable'; date: string; amountEur: number; isOverdue: boolean } | null;
+}
+
+export interface OverpaymentError { code: 'OVERPAYMENT'; remaining: number; currency: string; }
 
 @Injectable({ providedIn: 'root' })
 export class DebtsService {
@@ -43,19 +67,24 @@ export class DebtsService {
     private stateService    = inject(AssetsStateService);
     private currencyService = inject(CurrencyService);
 
-    /** Single source of truth for the debt list (shared cachedResource, P2-FE-1). */
+    /** Single source of truth for the debt list (shared cachedResource, P2-FE-1).
+     *  Settled debts are included so the "Soldées" segment has something to show. */
     private recordsResource = cachedResource<DebtRecord[]>(
-        () => firstValueFrom(this.api.getDebts().pipe(
+        () => firstValueFrom(this.api.getDebts(0, 200, false).pipe(
             map(debts => debts.map(d => this.mapDebtToRecord(d))),
         )),
+    );
+    private heroResource = cachedResource<DebtsDashboardSummary | null>(
+        () => firstValueFrom(this.api.getDebtsDashboard()),
     );
 
     constructor() {
         // Invalidate when debts change through the state bus rather than this
-        // service's own writes, e.g. an AI Config create (S12 P4). Without this
-        // the list reloads on the event but reads the stale cachedResource.
-        this.stateService.debtsUpdated$.subscribe(() => this.recordsResource.invalidate());
-        // Clear cached user data on logout/login (see CACHE_RESET).
+        // service's own writes, e.g. an AI Config create (S12 P4).
+        this.stateService.debtsUpdated$.subscribe(() => {
+            this.recordsResource.invalidate();
+            this.heroResource.invalidate();
+        });
         inject(CACHE_RESET).subscribe(() => this.clearCache());
     }
 
@@ -64,162 +93,142 @@ export class DebtsService {
         return this.recordsResource.load();
     }
 
-    /** Get a single debt by ID (direct, uncached). */
-    async getRecord(id: number): Promise<DebtRecord | null> {
+    /** A debt with its ledger (direct, uncached). Null when it no longer exists. */
+    async getDetail(id: number): Promise<DebtDetailRecord | null> {
         try {
-            const debt = await firstValueFrom(this.api.getDebt(id));
-            return this.mapDebtToRecord(debt);
-        } catch (error) {
-            console.error('Error fetching debt:', error);
-            return null;
-        }
-    }
-
-    /** Create a new debt. */
-    async addRecord(record: DebtRecord): Promise<DebtRecord> {
-        try {
-            // Debts are stored NATIVE (like assets/transactions): the amounts the
-            // user typed in their display currency go through unconverted, tagged
-            // with that currency code, FX happens at read time.
-            const debtData: DebtCreate = {
-                name: record.name,
-                type: record.type === 'Debt' ? 'i_owe' : 'owed_to_me',
-                category: record.category || this.inferCategory(record.name),
-                initial_amount: record.total,
-                current_amount: record.total - record.paid,
-                currency: this.currencyService.config().code,
-                interest_rate: record.interestRate || 0,
-                monthly_payment: record.monthlyPayment || 0,
-                creditor_name: record.creditor,
-                description: record.note,
-                start_date: record.date
-            };
-
-            const debt = await firstValueFrom(this.api.createDebt(debtData));
-            const mapped = this.mapDebtToRecord(debt);
-            this.markDebtsChanged();
-            return mapped;
-        } catch (error) {
-            console.error('Error creating debt:', error);
+            const d = await firstValueFrom(this.api.getDebtDetail(id));
+            if (!d) return null;
+            return { ...this.mapDebtToRecord(d), payments: d.payments ?? [] };
+        } catch (error: any) {
+            if (error?.status === 404) return null;
             throw error;
         }
     }
 
-    /** Update a debt. */
+    /** Create a new debt. Amounts typed in the display currency travel
+     *  unconverted, tagged with that currency (native storage). */
+    async addRecord(record: DebtRecord): Promise<DebtRecord> {
+        const debtData: DebtCreate = {
+            name: record.name,
+            type: record.type === 'Debt' ? 'i_owe' : 'owed_to_me',
+            category: record.category || 'other',
+            initial_amount: record.nativeTotal,
+            current_amount: Math.max(0, record.nativeTotal - (record.nativePaid || 0)),
+            currency: record.currency || this.currencyService.config().code,
+            interest_rate: record.interestRate || 0,
+            monthly_payment: record.monthlyPayment || undefined,
+            payment_frequency: record.frequency || null,
+            next_payment_date: record.nextPaymentDate || null,
+            creditor_name: record.creditor,
+            description: record.note,
+            start_date: record.date,
+        };
+        const debt = await firstValueFrom(this.api.createDebt(debtData));
+        const mapped = this.mapDebtToRecord(debt);
+        this.markDebtsChanged();
+        return mapped;
+    }
+
+    /** Update a debt. The balance is NOT sent: the ledger owns it (a payment
+     *  or an explicit correction changes it, never the edit form). */
     async updateRecord(record: DebtRecord): Promise<DebtRecord> {
         if (!record.id) throw new Error('Missing id');
-
-        try {
-            // The edit form is prefilled with the debt's NATIVE amounts
-            // (nativeTotal/nativePaid), so what comes back is native too, // no conversion; the debt keeps its original currency.
-            const debtData: DebtUpdate = {
-                name: record.name,
-                initial_amount: record.total,
-                current_amount: record.total - record.paid,
-                interest_rate: record.interestRate,
-                monthly_payment: record.monthlyPayment || undefined,
-                creditor_name: record.creditor,
-                description: record.note
-            };
-
-            const debt = await firstValueFrom(this.api.updateDebt(parseInt(record.id), debtData));
-            const mapped = this.mapDebtToRecord(debt);
-            this.markDebtsChanged();
-            return mapped;
-        } catch (error) {
-            console.error('Error updating debt:', error);
-            throw error;
-        }
+        const debtData: DebtUpdate = {
+            name: record.name,
+            type: record.type === 'Debt' ? 'i_owe' : 'owed_to_me',
+            category: record.category,
+            initial_amount: record.nativeTotal,
+            interest_rate: record.interestRate,
+            monthly_payment: record.monthlyPayment ?? null,
+            payment_frequency: record.frequency || null,
+            next_payment_date: record.nextPaymentDate || null,
+            start_date: record.date || null,
+            creditor_name: record.creditor,
+            description: record.note,
+        };
+        const debt = await firstValueFrom(this.api.updateDebt(parseInt(record.id), debtData));
+        const mapped = this.mapDebtToRecord(debt);
+        this.markDebtsChanged();
+        return mapped;
     }
 
     /** Delete debts by IDs. */
     async deleteRecords(ids: string[]): Promise<void> {
-        try {
-            await Promise.all(ids.map(id =>
-                firstValueFrom(this.api.deleteDebt(parseInt(id)))
-            ));
-            this.markDebtsChanged();
-        } catch (error) {
-            console.error('Error deleting debts:', error);
-            throw error;
-        }
-    }
-
-    /** Add a payment to a debt. */
-    async addPayment(id: string, amount: number): Promise<DebtRecord> {
-        try {
-            // amount is entered in the DISPLAY currency; the backend subtracts it
-            // from current_amount, which is in the DEBT's native currency, // convert display -> EUR -> debt-native.
-            const debtCurrency = this.recordsResource.peek()?.find(r => r.id === id)?.currency || 'EUR';
-            const eur = this.currencyService.toBaseAmount(amount);
-            const nativeAmount = eur * this.currencyService.rateOf(debtCurrency);
-            const debt = await firstValueFrom(this.api.makePayment(parseInt(id), nativeAmount));
-            const mapped = this.mapDebtToRecord(debt);
-            this.markDebtsChanged();
-            return mapped;
-        } catch (error) {
-            console.error('Error making payment:', error);
-            throw error;
-        }
+        await Promise.all(ids.map(id => firstValueFrom(this.api.deleteDebt(parseInt(id)))));
+        this.markDebtsChanged();
     }
 
     /**
-     * Debt statistics, a pure derivation of the cached list (no second cache).
-     * - totalDebt: remaining amount across active "Debt" rows (what I still owe)
-     * - paidAmount: the most recent payment made
-     * - receivables: remaining amount across active "Receivable" rows (owed to me)
-     * Errors surface through the resource (cold failure rejects → widget retries).
+     * Record a payment in the DEBT's own currency (no display → EUR → native
+     * round trip). `strict` asks the server for a 409 OVERPAYMENT instead of
+     * the default clamp, so the sheet can offer "settle for the remaining?".
      */
-    async getStats(): Promise<DebtsStatsSummary> {
-        const debts = await this.recordsResource.load();
+    async addPayment(id: string, nativeAmount: number, opts: { date?: string | null; note?: string | null; strict?: boolean } = {}): Promise<DebtRecord> {
+        const debt = await firstValueFrom(this.api.makePayment(parseInt(id), {
+            amount: nativeAmount,
+            date: opts.date ?? toLocalDateStr(new Date()),
+            note: opts.note ?? null,
+            strict: opts.strict ?? true,
+        }));
+        const mapped = this.mapDebtToRecord(debt);
+        this.markDebtsChanged();
+        return mapped;
+    }
 
-        const totalDebt = debts
-            .filter(d => d.type === 'Debt' && !d.isPaidOff)
-            .reduce((sum, d) => sum + (d.total - d.paid), 0);
+    /** The 409 payload when the server refused an overpayment, else null. */
+    overpaymentOf(error: any): OverpaymentError | null {
+        const d = error?.error?.detail;
+        return d && d.code === 'OVERPAYMENT' ? d as OverpaymentError : null;
+    }
 
-        const receivables = debts
-            .filter(d => d.type === 'Receivable' && !d.isPaidOff)
-            .reduce((sum, d) => sum + (d.total - d.paid), 0);
+    async deletePayment(debtId: number, paymentId: number): Promise<DebtDetailRecord> {
+        const d = await firstValueFrom(this.api.deleteDebtPayment(debtId, paymentId));
+        this.markDebtsChanged();
+        return { ...this.mapDebtToRecord(d), payments: d.payments ?? [] };
+    }
 
-        const debtsWithPayments = debts
-            .filter(d => d.type === 'Debt' && d.paid > 0)
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    async writeOff(debtId: number, reason: 'written_off' | 'cancelled', note?: string | null): Promise<DebtRecord> {
+        const d = await firstValueFrom(this.api.writeOffDebt(debtId, { reason, note: note ?? null }));
+        this.markDebtsChanged();
+        return this.mapDebtToRecord(d);
+    }
 
-        let lastPaymentAmount = 0;
-        let lastPaymentDate = '';
-        if (debtsWithPayments.length > 0) {
-            const mostRecentDebt = debtsWithPayments[0];
-            // monthlyPayment is stored native (edit-form value); paid is already
-            // EUR base, convert the former before displaying.
-            lastPaymentAmount = mostRecentDebt.monthlyPayment
-                ? this.currencyService.toEurFromNative(mostRecentDebt.monthlyPayment, mostRecentDebt.currency)
-                : mostRecentDebt.paid;
-            lastPaymentDate = mostRecentDebt.date;
-        }
-
+    /** Hero numbers: totals from the cached list, time facts from the server. */
+    async getHero(): Promise<DebtsHero> {
+        const [debts, dash] = await Promise.all([this.recordsResource.load(), this.heroResource.load()]);
+        const open = debts.filter(d => !d.isPaidOff);
+        const iOwe = open.filter(d => d.type === 'Debt').reduce((s, d) => s + (d.total - d.paid), 0);
+        const owedToMe = open.filter(d => d.type === 'Receivable').reduce((s, d) => s + (d.total - d.paid), 0);
         return {
-            totalDebt,
-            paidAmount: lastPaymentAmount,
-            receivables,
-            totalDebtChange: 0,
-            paidAmountChange: lastPaymentAmount,
-            receivablesChange: receivables,
-            lastPaymentDate,
+            iOwe,
+            owedToMe,
+            net: owedToMe - iOwe,
+            overdueCount: dash?.overdue_count ?? open.filter(d => d.isOverdue).length,
+            dueWithin30Days: dash?.due_within_30_days_eur ?? 0,
+            expectedWithin30Days: dash?.expected_within_30_days_eur ?? 0,
+            nextDue: dash?.next_due ? {
+                debtId: dash.next_due.debt_id,
+                name: dash.next_due.name,
+                type: dash.next_due.type === 'i_owe' ? 'Debt' : 'Receivable',
+                date: dash.next_due.due_date,
+                amountEur: dash.next_due.amount_eur,
+                isOverdue: dash.next_due.is_overdue,
+            } : null,
         };
     }
 
     /** A write happened: drop cache freshness and notify subscribers. */
     private markDebtsChanged(): void {
         this.recordsResource.invalidate();
+        this.heroResource.invalidate();
         this.stateService.notifyDebtsUpdated();
     }
 
     // ==================== PRIVATE HELPERS ====================
 
-    private mapDebtToRecord(debt: Debt): DebtRecord {
-        const paidAmount = debt.initial_amount - debt.current_amount;
-        // Native → EUR base at the API boundary (same as assets/transactions);
-        // keep native values for the edit form.
+    mapDebtToRecord(debt: Debt): DebtRecord {
+        const paidNative = Math.max(0, debt.initial_amount - debt.current_amount);
+        // Native → EUR base at the API boundary (same as assets/transactions).
         const toEur = (v: number) => this.currencyService.toEurFromNative(v, debt.currency);
         return {
             id: debt.id.toString(),
@@ -228,44 +237,30 @@ export class DebtsService {
             category: debt.category,
             name: debt.name,
             total: toEur(debt.initial_amount),
-            paid: toEur(paidAmount > 0 ? paidAmount : 0),
+            paid: toEur(paidNative),
             currency: debt.currency || 'EUR',
             nativeTotal: debt.initial_amount,
-            nativePaid: paidAmount > 0 ? paidAmount : 0,
+            nativePaid: paidNative,
+            nativeRemaining: debt.current_amount,
             interestRate: debt.interest_rate || 0,
             monthlyPayment: debt.monthly_payment || undefined,
-            frequency: debt.monthly_payment ? 'Mensuel' : 'Libre',
+            frequency: debt.payment_frequency ?? (debt.monthly_payment ? 'monthly' : 'free'),
+            nextPaymentDate: debt.next_payment_date,
+            isOverdue: !!debt.is_overdue,
+            daysOverdue: debt.days_overdue ?? 0,
             note: debt.description ?? undefined,
             creditor: debt.creditor_name ?? undefined,
-            isPaidOff: debt.is_paid_off
+            isPaidOff: debt.is_paid_off,
+            paidOffDate: debt.paid_off_date,
+            closedReason: debt.closed_reason,
+            lastPaymentDate: debt.last_payment_date,
+            lastPaymentAmount: debt.last_payment_amount,
         };
-    }
-
-    private inferCategory(name: string): DebtCategory {
-        const nameLower = name.toLowerCase();
-        if (nameLower.includes('immobilier') || nameLower.includes('mortgage') || nameLower.includes('house') || nameLower.includes('maison')) {
-            return 'mortgage';
-        }
-        if (nameLower.includes('auto') || nameLower.includes('car') || nameLower.includes('voiture')) {
-            return 'car_loan';
-        }
-        if (nameLower.includes('etudiant') || nameLower.includes('student') || nameLower.includes('education')) {
-            return 'student_loan';
-        }
-        if (nameLower.includes('carte') || nameLower.includes('credit card')) {
-            return 'credit_card';
-        }
-        if (nameLower.includes('personnel') || nameLower.includes('personal')) {
-            return 'personal_loan';
-        }
-        if (nameLower.includes('famille') || nameLower.includes('ami') || nameLower.includes('friend') || nameLower.includes('family')) {
-            return 'family_friend';
-        }
-        return 'other';
     }
 
     /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
         this.recordsResource.reset();
+        this.heroResource.reset();
     }
 }

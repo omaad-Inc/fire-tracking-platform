@@ -30,6 +30,8 @@ export default [
     { path: 'patrimoine/category/:categoryId', loadComponent: () => import('./patrimoine/components/patrimoine-category-detail').then(m => m.PatrimoineCategoryDetailPage) },
     { path: 'patrimoine/assets/:id', loadComponent: () => import('./patrimoine/components/asset-detail').then(m => m.AssetDetailPage) },
     { path: 'debts', loadComponent: () => import('./debts/debtsdashboard').then(m => m.DebtsDashboard) },
+    // P0 premium debts: one debt with its payment ledger (parity with the mobile /debts/:id).
+    { path: 'debts/:id', loadComponent: () => import('./debts/debt-detail').then(m => m.DebtDetailPage) },
     { path: 'insights', loadComponent: () => import('./insights/insights').then(m => m.InsightsPage) },
     // Notification center (P1-1). Reached from the topbar bell, not from the
     // nav model: like Settings, it is a utility surface, not a sixth hub.
