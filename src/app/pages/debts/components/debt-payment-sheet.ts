@@ -6,7 +6,11 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 import { DebtsService, DebtRecord } from '../../service/debts.service';
+import { PatrimoineService } from '../../service/patrimoine.service';
+import { AssetsStateService } from '../../service/assets-state.service';
+import { isMonetaryCategory } from '../../../core/constants/accounts';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PrivacyService } from '../../../core/services/privacy.service';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -24,7 +28,7 @@ import { nbspSafe } from '../../../core/util/nbsp';
 @Component({
     selector: 'app-debt-payment-sheet',
     standalone: true,
-    imports: [CommonModule, FormsModule, DialogModule, InputNumberModule, DatePickerModule, InputTextModule, ButtonModule],
+    imports: [CommonModule, FormsModule, DialogModule, InputNumberModule, DatePickerModule, InputTextModule, ButtonModule, SelectModule],
     template: `
         <p-dialog [transitionOptions]="'320ms cubic-bezier(0.34, 1.30, 0.64, 1)'" [visible]="visible" (visibleChange)="setVisible($event)"
                   [style]="{ width: '95vw', maxWidth: '420px' }" [modal]="true" [draggable]="false" [resizable]="false"
@@ -81,6 +85,16 @@ import { nbspSafe } from '../../../core/util/nbsp';
                             <p-datepicker appendTo="body" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="date" [showIcon]="true"
                                           [maxDate]="today" dateFormat="dd/mm/yy" styleClass="w-full" inputStyleClass="w-full" />
                         </div>
+                        @if (accountOptions().length > 0) {
+                            <div class="flex flex-col gap-1">
+                                <label class="text-sm text-surface-500 dark:text-surface-400">{{ t(isReceivable ? 'debts.pay.accountReceivable' : 'debts.pay.account') }}</label>
+                                <p-select appendTo="body" [(ngModel)]="accountId" [options]="accountOptions()" optionLabel="label" optionValue="value"
+                                          [showClear]="true" [placeholder]="t('debts.pay.accountNone')" styleClass="w-full" />
+                                @if (accountId != null) {
+                                    <small class="text-surface-500 dark:text-surface-400 text-xs mt-1">{{ t('debts.pay.accountHint') }}</small>
+                                }
+                            </div>
+                        }
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.pay.note') }}</label>
                             <input pInputText [(ngModel)]="note" class="w-full" maxlength="500" />
@@ -106,6 +120,8 @@ export class DebtPaymentSheetComponent {
     @Output() saved = new EventEmitter<DebtRecord>();
 
     private debts = inject(DebtsService);
+    private patrimoine = inject(PatrimoineService);
+    private state = inject(AssetsStateService);
     readonly cs = inject(CurrencyService);
     private privacy = inject(PrivacyService);
     private i18n = inject(I18nService);
@@ -118,6 +134,9 @@ export class DebtPaymentSheetComponent {
     amount: number | null = null;
     date: Date | null = new Date();
     note = '';
+    /** Optional account the money leaves (debt) or lands in (receivable). */
+    accountId: number | null = null;
+    accountOptions = signal<{ label: string; value: number }[]>([]);
 
     get isReceivable(): boolean { return this.record?.type === 'Receivable'; }
     t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
@@ -129,7 +148,20 @@ export class DebtPaymentSheetComponent {
         this.amount = Math.min(inst, record.nativeRemaining);
         this.date = new Date();
         this.note = '';
+        this.accountId = null;
         this.submitted = false;
+        this.loadAccounts();
+    }
+
+    private async loadAccounts() {
+        try {
+            const assets = await this.patrimoine.getAssets();
+            this.accountOptions.set(
+                assets.filter(a => isMonetaryCategory(a.category)).map(a => ({ label: a.name, value: a.id })),
+            );
+        } catch {
+            this.accountOptions.set([]);
+        }
     }
 
     setVisible(v: boolean) {
@@ -149,7 +181,9 @@ export class DebtPaymentSheetComponent {
         try {
             const updated = await this.debts.addPayment(r.id!, amount, {
                 date: toLocalDateStr(this.date ?? new Date()), note: this.note.trim() || null, strict,
+                accountId: this.accountId,
             });
+            if (this.accountId != null) this.state.notifyTransactionsUpdated();
             this.feedback.success(this.t(this.isReceivable ? 'debts.pay.savedReceivable' : 'debts.pay.saved'));
             this.saved.emit(updated);
             this.setVisible(false);

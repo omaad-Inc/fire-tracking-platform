@@ -333,6 +333,10 @@ export interface TontineCycleView {
     state: TontineCycleState;
     paid_amount: number | null;  // actual amount when it differs from `amount`
     late_paid: boolean;
+    /** P1-1 account linkage: the mirrored transaction, when the turn named an account. */
+    transaction_id?: number | null;
+    account_id?: number | null;
+    account_name?: string | null;
 }
 
 export interface TontineSchedule {
@@ -365,6 +369,10 @@ export interface TontineSchedule {
     orphan_cycles: number;
     has_log: boolean;
     due_window_days: number;
+    /** P1-1 account linkage: where the pot landed, when recorded with an account. */
+    payout_transaction_id?: number | null;
+    payout_account_id?: number | null;
+    payout_account_name?: string | null;
 }
 
 export interface TontineCyclePay {
@@ -372,11 +380,15 @@ export interface TontineCyclePay {
     paid_date?: string | null;
     paid_amount?: number | null;
     notes?: string | null;
+    /** The monetary account the contribution left (opt-in; null unlinks). */
+    account_id?: number | null;
 }
 
 export interface TontinePayoutBody {
     received_date?: string | null;
     amount?: number | null;
+    /** The monetary account the pot landed in (opt-in). */
+    account_id?: number | null;
 }
 
 export interface AssetUpdate {
@@ -418,7 +430,7 @@ export type TransactionType = 'income' | 'expense' | 'transfer' | 'investment';
 export type TransactionCategory =
     // Income
     | 'salary' | 'freelance' | 'dividends' | 'rental_income' | 'interest' | 'gift_received'
-    | 'family_support_received' | 'tontine_payout' | 'other_income'
+    | 'family_support_received' | 'tontine_payout' | 'debt_collected' | 'other_income'
     // Expense
     | 'housing' | 'utilities' | 'groceries' | 'transport' | 'health' | 'insurance'
     | 'entertainment' | 'dining' | 'shopping' | 'education' | 'subscriptions'
@@ -985,6 +997,10 @@ export interface DebtPaymentRow {
     date: string;
     note: string | null;
     created_at: string;
+    /** P1-1 account linkage (payment rows only). */
+    transaction_id?: number | null;
+    account_id?: number | null;
+    account_name?: string | null;
 }
 
 export interface DebtDetail extends Debt {
@@ -1035,6 +1051,8 @@ export interface DebtPaymentBody {
     note?: string | null;
     /** true: an overpayment answers 409 OVERPAYMENT {remaining, currency} instead of clamping. */
     strict?: boolean;
+    /** The monetary account the money left (debt) or landed in (receivable); opt-in. */
+    account_id?: number | null;
 }
 
 export interface DebtWriteOffBody {

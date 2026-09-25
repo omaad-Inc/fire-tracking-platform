@@ -71,6 +71,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     gift_received: { label: 'Cadeau reçu',    icon: 'pi pi-gift',                   color: '#9C988C', bg: 'bg-warm-100 dark:bg-warm-800' },
     family_support_received: { label: 'Soutien reçu', icon: 'pi pi-users',          color: '#3E7C6A', bg: 'bg-warm-100 dark:bg-warm-800' },
     tontine_payout: { label: 'Tour de tontine', icon: 'pi pi-sync',                 color: '#2F8F6E', bg: 'bg-warm-100 dark:bg-warm-800' },
+    debt_collected: { label: 'Remboursement reçu', icon: 'pi pi-arrow-down-left', color: '#3E7C6A', bg: 'bg-warm-100 dark:bg-warm-800' },
     other_income:  { label: 'Autres revenus', icon: 'pi pi-plus-circle',            color: '#C2BDB1', bg: 'bg-warm-100 dark:bg-warm-800' },
     // ── Expenses: warm spectrum (Finary style) ────────────────────
     housing:       { label: 'Logement',       icon: 'pi pi-home',                   color: '#71421C', bg: 'bg-warm-100 dark:bg-warm-800' },
@@ -99,7 +100,7 @@ export const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
     transfer:      { label: 'Transfert',      icon: 'pi pi-arrow-right-arrow-left', color: '#8A98AE', bg: 'bg-warm-100 dark:bg-warm-800' },
 };
 
-export const INCOME_CATEGORIES  = ['salary','freelance','dividends','rental_income','interest','gift_received','family_support_received','tontine_payout','other_income'] as const;
+export const INCOME_CATEGORIES  = ['salary','freelance','dividends','rental_income','interest','gift_received','family_support_received','tontine_payout','debt_collected','other_income'] as const;
 export const EXPENSE_CATEGORIES = ['housing','utilities','groceries','transport','health','insurance','entertainment','dining','shopping','education','subscriptions','travel','family_support','religious','ceremony','airtime','tontine','gift_given','taxes','investment','debt_payment','other_expense'] as const;
 
 // Category to display name mapping

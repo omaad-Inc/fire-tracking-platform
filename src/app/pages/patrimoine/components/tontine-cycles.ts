@@ -6,8 +6,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
+import { SelectModule } from 'primeng/select';
 import { firstValueFrom } from 'rxjs';
 import { ApiService, TontineSchedule, TontineCycleView } from '../../../core/services/api.service';
+import { PatrimoineService } from '../../service/patrimoine.service';
+import { AssetsStateService } from '../../service/assets-state.service';
+import { isMonetaryCategory } from '../../../core/constants/accounts';
 import { I18nService } from '../../../i18n/i18n.service';
 import { PrivacyService } from '../../../core/services/privacy.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -32,7 +36,7 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
     selector: 'app-tontine-cycles',
     standalone: true,
     imports: [CommonModule, FormsModule, DialogModule, InputNumberModule, DatePickerModule,
-              InputTextModule, ButtonModule, ChipComponent, LoadErrorComponent],
+              InputTextModule, ButtonModule, SelectModule, ChipComponent, LoadErrorComponent],
     template: `
         <div class="bg-surface-0 dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800">
             <div class="px-5 py-4 border-b border-surface-200 dark:border-surface-700 flex items-center justify-between gap-3">
@@ -96,7 +100,7 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                                 <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ i18n.t('tontine.yourPayout') }}</p>
                                 @if (s.payout_received_date) {
                                     <p class="text-sm font-semibold text-positive">{{ i18n.t('tontine.receivedOn', { date: fmtDate(s.payout_received_date) }) }}</p>
-                                    <p class="text-xs text-surface-500 dark:text-surface-400">{{ money(s.received_amount) }}</p>
+                                    <p class="text-xs text-surface-500 dark:text-surface-400">{{ money(s.received_amount) }}@if (s.payout_account_name) { · {{ i18n.t('tontine.via', { name: s.payout_account_name }) }}}</p>
                                 } @else if (s.payout_date) {
                                     <p class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ fmtDate(s.payout_date) }}</p>
                                     <p class="text-xs text-surface-500 dark:text-surface-400">{{ money(s.pot_size) }}</p>
@@ -173,6 +177,7 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                                                 <span>{{ money(c.amount) }}</span>
                                             }
                                             @if (c.paid_date) { <span class="text-surface-400">· {{ fmtDate(c.paid_date) }}</span> }
+                                            @if (c.account_name) { <span class="text-surface-400">· {{ i18n.t('tontine.via', { name: c.account_name }) }}</span> }
                                             @if (c.late_paid) { <span class="text-ochre-600 dark:text-ochre-400">· {{ i18n.t('tontine.paidLate') }}</span> }
                                         } @else {
                                             <span>{{ money(c.amount) }}</span>
@@ -233,6 +238,16 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                             }
                         }
                     </div>
+                    @if (accountOptions().length > 0) {
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('tontine.account') }}</label>
+                            <p-select appendTo="body" [(ngModel)]="payAccountId" [options]="accountOptions()" optionLabel="label" optionValue="value"
+                                      [showClear]="true" [placeholder]="i18n.t('tontine.accountNone')" styleClass="w-full" />
+                            @if (payAccountId != null) {
+                                <small class="text-surface-500 dark:text-surface-400 text-xs mt-1">{{ i18n.t('tontine.accountHint') }}</small>
+                            }
+                        </div>
+                    }
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('tontine.note') }}</label>
                         <input pInputText [(ngModel)]="payNote" class="w-full" maxlength="500" />
@@ -278,6 +293,16 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                                        inputStyleClass="w-full !text-lg !font-semibold" />
                         <small class="text-surface-500 dark:text-surface-400 text-xs mt-1">{{ i18n.t('tontine.receiveHint') }}</small>
                     </div>
+                    @if (accountOptions().length > 0) {
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('tontine.accountReceive') }}</label>
+                            <p-select appendTo="body" [(ngModel)]="payoutAccountId" [options]="accountOptions()" optionLabel="label" optionValue="value"
+                                      [showClear]="true" [placeholder]="i18n.t('tontine.accountNone')" styleClass="w-full" />
+                            @if (payoutAccountId != null) {
+                                <small class="text-surface-500 dark:text-surface-400 text-xs mt-1">{{ i18n.t('tontine.accountHint') }}</small>
+                            }
+                        </div>
+                    }
                 </div>
             </ng-template>
             <ng-template #footer>
@@ -298,6 +323,8 @@ export class TontineCyclesComponent implements OnInit {
     @Output() scheduleChange = new EventEmitter<TontineSchedule>();
 
     private api = inject(ApiService);
+    private patrimoine = inject(PatrimoineService);
+    private state = inject(AssetsStateService);
     readonly i18n = inject(I18nService);
     private privacy = inject(PrivacyService);
     readonly cs = inject(CurrencyService);
@@ -313,6 +340,8 @@ export class TontineCyclesComponent implements OnInit {
     sheetSaving = signal(false);
     schedule = signal<TontineSchedule | null>(null);
     showPaid = signal(false);
+    /** Monetary accounts for the optional pickers (the MONETARY_CATEGORIES contract). */
+    accountOptions = signal<{ label: string; value: number }[]>([]);
 
     // Pay sheet
     payOpen = false;
@@ -320,10 +349,12 @@ export class TontineCyclesComponent implements OnInit {
     payDate: Date | null = null;
     payAmount: number | null = null;
     payNote = '';
+    payAccountId: number | null = null;
     // Payout sheet
     payoutOpen = false;
     payoutDate: Date | null = null;
     payoutAmount: number | null = null;
+    payoutAccountId: number | null = null;
 
     progressPct = computed(() => {
         const s = this.schedule();
@@ -346,7 +377,28 @@ export class TontineCyclesComponent implements OnInit {
         return !!d && d.getTime() <= this.today.getTime();
     });
 
-    ngOnInit() { this.load(); }
+    ngOnInit() {
+        this.load();
+        this.loadAccounts();
+    }
+
+    private async loadAccounts() {
+        if (this.share.active()) return;
+        try {
+            const assets = await this.patrimoine.getAssets();
+            this.accountOptions.set(
+                assets.filter(a => isMonetaryCategory(a.category)).map(a => ({ label: a.name, value: a.id })),
+            );
+        } catch {
+            this.accountOptions.set([]);
+        }
+    }
+
+    /** The account of the latest linked turn: the natural default for the next one (still one tap to clear). */
+    private lastAccountId(): number | null {
+        const linked = this.paidCycles().filter(c => c.account_id != null);
+        return linked.length ? (linked[linked.length - 1].account_id ?? null) : null;
+    }
 
     async load() {
         this.loading.set(true);
@@ -373,6 +425,7 @@ export class TontineCyclesComponent implements OnInit {
         this.payDate = new Date();
         this.payAmount = c.amount;
         this.payNote = c.notes ?? '';
+        this.payAccountId = c.account_id ?? this.lastAccountId();
         this.payOpen = true;
     }
 
@@ -391,8 +444,10 @@ export class TontineCyclesComponent implements OnInit {
                 paid_date: toLocalDateStr(this.payDate ?? new Date()),
                 paid_amount: this.payAmount === c.amount ? null : this.payAmount,
                 notes: this.payNote.trim() || null,
+                account_id: this.payAccountId ?? null,
             }));
             this.apply(s);
+            if (this.payAccountId != null) this.state.notifyTransactionsUpdated();
             this.payOpen = false;
             this.feedback.success(this.i18n.t('tontine.saved'));
         } catch {
@@ -416,6 +471,7 @@ export class TontineCyclesComponent implements OnInit {
         this.saving.set(c.cycle_number);
         try {
             this.apply(await firstValueFrom(this.api.setTontineCycle(this.assetId, c.cycle_number, { paid: false })));
+            if (c.account_id != null) this.state.notifyTransactionsUpdated();
             this.feedback.success(this.i18n.t('tontine.unmarked'));
         } catch {
             // Keep the list on screen; a failed write is a toast, not a blank card.
@@ -430,6 +486,7 @@ export class TontineCyclesComponent implements OnInit {
         this.payoutDate = parseLocalDate(s?.payout_date) ?? new Date();
         if (this.payoutDate.getTime() > this.today.getTime()) this.payoutDate = new Date();
         this.payoutAmount = s?.pot_size ?? null;
+        this.payoutAccountId = this.lastAccountId();
         this.payoutOpen = true;
     }
 
@@ -444,7 +501,9 @@ export class TontineCyclesComponent implements OnInit {
             this.apply(await firstValueFrom(this.api.setTontinePayout(this.assetId, {
                 received_date: toLocalDateStr(this.payoutDate ?? new Date()),
                 amount: this.payoutAmount,
+                account_id: this.payoutAccountId ?? null,
             })));
+            if (this.payoutAccountId != null) this.state.notifyTransactionsUpdated();
             this.payoutOpen = false;
             this.feedback.success(this.i18n.t('tontine.payoutSaved'));
         } catch {
@@ -465,6 +524,7 @@ export class TontineCyclesComponent implements OnInit {
         if (!ok) return;
         try {
             this.apply(await firstValueFrom(this.api.clearTontinePayout(this.assetId)));
+            this.state.notifyTransactionsUpdated();
             this.feedback.success(this.i18n.t('tontine.payoutCleared'));
         } catch {
             this.feedback.error(this.i18n.t('tontine.saveError'));
