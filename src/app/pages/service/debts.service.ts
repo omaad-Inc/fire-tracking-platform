@@ -57,6 +57,8 @@ export interface DebtsHero {
     dueWithin30Days: number;            // instalments I owe in the next 30 days
     expectedWithin30Days: number;       // receivables due in the next 30 days
     nextDue: { debtId: number; name: string; type: 'Debt' | 'Receivable'; date: string; amountEur: number; isOverdue: boolean } | null;
+    /** P1-3: the open debt with the highest interest rate (avalanche order); null when no rate is known. */
+    priority: { debtId: number; name: string; rate: number } | null;
 }
 
 export interface OverpaymentError { code: 'OVERPAYMENT'; remaining: number; currency: string; }
@@ -203,10 +205,16 @@ export class DebtsService {
         const open = debts.filter(d => !d.isPaidOff);
         const iOwe = open.filter(d => d.type === 'Debt').reduce((s, d) => s + (d.total - d.paid), 0);
         const owedToMe = open.filter(d => d.type === 'Receivable').reduce((s, d) => s + (d.total - d.paid), 0);
+        // Highest rate first (ties: the larger remaining balance), only among
+        // debts carrying a rate: no rate, no hint (never a guess).
+        const priority = open
+            .filter(d => d.type === 'Debt' && d.interestRate > 0 && d.nativeRemaining > 0)
+            .sort((a, b) => (b.interestRate - a.interestRate) || ((b.total - b.paid) - (a.total - a.paid)))[0];
         return {
             iOwe,
             owedToMe,
             net: owedToMe - iOwe,
+            priority: priority?.id ? { debtId: Number(priority.id), name: priority.name, rate: priority.interestRate } : null,
             overdueCount: dash?.overdue_count ?? open.filter(d => d.isOverdue).length,
             dueWithin30Days: dash?.due_within_30_days_eur ?? 0,
             expectedWithin30Days: dash?.expected_within_30_days_eur ?? 0,

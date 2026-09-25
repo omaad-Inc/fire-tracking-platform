@@ -2316,6 +2316,7 @@ export const FR = {
       none: 'Aucune échéance planifiée',
     },
     pay: {
+      priority: 'Priorité : rembourser d\'abord {{name}} ({{rate}} % / an)',
       title: 'Rembourser',
       titleReceivable: 'Encaisser',
       amount: 'Montant',
@@ -2355,6 +2356,8 @@ export const FR = {
       payoffHint: 'au rythme de la mensualité, hors intérêts',
       initial: 'Montant initial',
       counterparty: 'Créancier',
+      payoffInterest: 'avec intérêts ({{rate}} % / an) : {{date}} · estimation',
+      payoffNever: 'la mensualité ne couvre pas les intérêts ({{rate}} % / an)',
       debtor: 'Débiteur',
       progress: 'Remboursement',
       edit: 'Modifier',

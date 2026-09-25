@@ -82,6 +82,13 @@ import { parseLocalDate } from '../../../core/util/date';
                             <div class="text-lg font-bold text-positive tabular-nums"><app-amount [value]="h.expectedWithin30Days" /></div>
                         </div>
                     </div>
+                    @if (h.priority; as p) {
+                        <a [routerLink]="nav.link('pages', 'debts', p.debtId)"
+                           class="no-underline mt-4 flex items-center gap-2 text-xs font-medium text-ochre-700 dark:text-ochre-400">
+                            <i class="pi pi-bolt text-[11px]" aria-hidden="true"></i>
+                            <span>{{ t('debts.hero.priority', { name: p.name, rate: p.rate }) }}</span>
+                        </a>
+                    }
                 </div>
             </div>
           }

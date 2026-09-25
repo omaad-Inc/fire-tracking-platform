@@ -2317,6 +2317,7 @@ export const EN: Dict = {
       none: 'No due date scheduled',
     },
     pay: {
+      priority: 'Priority: repay {{name}} first ({{rate}} % / yr)',
       title: 'Repay',
       titleReceivable: 'Collect',
       amount: 'Amount',
@@ -2356,6 +2357,8 @@ export const EN: Dict = {
       payoffHint: 'at the instalment pace, before interest',
       initial: 'Initial amount',
       counterparty: 'Creditor',
+      payoffInterest: 'with interest ({{rate}} % / yr): {{date}} · estimate',
+      payoffNever: 'the instalment does not cover the interest ({{rate}} % / yr)',
       debtor: 'Debtor',
       progress: 'Repayment',
       edit: 'Edit',
