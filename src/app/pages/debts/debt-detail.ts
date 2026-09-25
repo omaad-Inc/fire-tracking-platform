@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, computed, inject, signal } from '@angular
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { AssetsStateService } from '../service/assets-state.service';
 import { DebtsService, DebtDetailRecord, DebtRecord } from '../service/debts.service';
 import { DebtPaymentRow } from '../../core/services/api.service';
 import { AppAmountComponent } from '../../core/components/app-amount.component';
@@ -150,7 +151,7 @@ import { DebtPaymentSheetComponent } from './components/debt-payment-sheet';
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-semibold text-surface-900 dark:text-surface-0 m-0 truncate">{{ kindLabel(p) }}</p>
                                             <p class="text-xs text-surface-500 dark:text-surface-400 m-0 truncate">
-                                                {{ fmtDate(p.date) }}@if (p.note) { · {{ p.note }} }
+                                                {{ fmtDate(p.date) }}@if (p.account_name) { · {{ t('debts.detail.via', { name: p.account_name }) }} }@if (p.note) { · {{ p.note }} }
                                             </p>
                                         </div>
                                         <span class="text-sm font-semibold tabular-nums shrink-0" [ngClass]="p.direction === 'up' ? 'text-negative' : 'text-surface-900 dark:text-surface-0'">
@@ -201,6 +202,7 @@ export class DebtDetailPage implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private debts = inject(DebtsService);
+    private state = inject(AssetsStateService);
     private feedback = inject(FeedbackService);
     private i18n = inject(I18nService);
     private cs = inject(CurrencyService);
@@ -319,6 +321,7 @@ export class DebtDetailPage implements OnInit {
         if (!ok) return;
         try {
             this.debt.set(await this.debts.deletePayment(this.id, p.id));
+            if (p.account_id != null) this.state.notifyTransactionsUpdated();
             this.feedback.success(this.t('debts.detail.deleted'));
         } catch {
             this.feedback.error(this.t('debts.toast.saveError'));

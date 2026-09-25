@@ -163,12 +163,16 @@ export class DebtsService {
      * round trip). `strict` asks the server for a 409 OVERPAYMENT instead of
      * the default clamp, so the sheet can offer "settle for the remaining?".
      */
-    async addPayment(id: string, nativeAmount: number, opts: { date?: string | null; note?: string | null; strict?: boolean } = {}): Promise<DebtRecord> {
+    async addPayment(
+        id: string, nativeAmount: number,
+        opts: { date?: string | null; note?: string | null; strict?: boolean; accountId?: number | null } = {},
+    ): Promise<DebtRecord> {
         const debt = await firstValueFrom(this.api.makePayment(parseInt(id), {
             amount: nativeAmount,
             date: opts.date ?? toLocalDateStr(new Date()),
             note: opts.note ?? null,
             strict: opts.strict ?? true,
+            account_id: opts.accountId ?? null,
         }));
         const mapped = this.mapDebtToRecord(debt);
         this.markDebtsChanged();

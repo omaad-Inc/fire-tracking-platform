@@ -25,7 +25,7 @@ import { isMonetaryCategory } from '../../../core/constants/accounts';
 // Category choices per direction (single source: the i18n `categories.*` dict).
 const INCOME_CATS: TransactionCategory[] = [
     'salary', 'freelance', 'dividends', 'rental_income', 'interest',
-    'gift_received', 'family_support_received', 'tontine_payout', 'other_income',
+    'gift_received', 'family_support_received', 'tontine_payout', 'debt_collected', 'other_income',
 ];
 const EXPENSE_CATS: TransactionCategory[] = [
     'housing', 'utilities', 'groceries', 'transport', 'health', 'insurance',
