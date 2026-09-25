@@ -337,6 +337,8 @@ export interface TontineCycleView {
     transaction_id?: number | null;
     account_id?: number | null;
     account_name?: string | null;
+    /** P1-5: who collected the pot that turn, when the user said. */
+    collector_name?: string | null;
 }
 
 export interface TontineSchedule {
@@ -382,6 +384,8 @@ export interface TontineCyclePay {
     notes?: string | null;
     /** The monetary account the contribution left (opt-in; null unlinks). */
     account_id?: number | null;
+    /** P1-5: who collected the pot that turn. Omitted = unchanged, "" clears. */
+    collector_name?: string | null;
 }
 
 export interface TontinePayoutBody {

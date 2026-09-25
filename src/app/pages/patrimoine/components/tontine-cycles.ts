@@ -168,6 +168,7 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                                     <p class="text-sm font-semibold text-surface-900 dark:text-surface-0 truncate flex items-center gap-2">
                                         {{ fmtDate(c.due_date) }}
                                         @if (c.is_payout) { <span class="text-[10px] font-bold text-ochre-600 dark:text-ochre-400 uppercase">{{ i18n.t('tontine.payout') }}</span> }
+                                        @else if (c.collector_name) { <span class="font-normal text-surface-500 dark:text-surface-400">· {{ c.collector_name }}</span> }
                                     </p>
                                     <p class="text-xs text-surface-500 dark:text-surface-400 flex items-center gap-1.5 flex-wrap">
                                         @if (c.paid) {
@@ -246,6 +247,12 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                             @if (payAccountId != null) {
                                 <small class="text-surface-500 dark:text-surface-400 text-xs mt-1">{{ i18n.t('tontine.accountHint') }}</small>
                             }
+                        </div>
+                    }
+                    @if (!payTarget()?.is_payout) {
+                        <div class="flex flex-col gap-1">
+                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('tontine.collector') }}</label>
+                            <input pInputText [(ngModel)]="payCollector" class="w-full" maxlength="120" [placeholder]="i18n.t('tontine.collectorPlaceholder')" />
                         </div>
                     }
                     <div class="flex flex-col gap-1">
@@ -349,6 +356,7 @@ export class TontineCyclesComponent implements OnInit {
     payDate: Date | null = null;
     payAmount: number | null = null;
     payNote = '';
+    payCollector = '';
     payAccountId: number | null = null;
     // Payout sheet
     payoutOpen = false;
@@ -425,6 +433,7 @@ export class TontineCyclesComponent implements OnInit {
         this.payDate = new Date();
         this.payAmount = c.amount;
         this.payNote = c.notes ?? '';
+        this.payCollector = c.collector_name ?? '';
         this.payAccountId = c.account_id ?? this.lastAccountId();
         this.payOpen = true;
     }
@@ -445,6 +454,8 @@ export class TontineCyclesComponent implements OnInit {
                 paid_amount: this.payAmount === c.amount ? null : this.payAmount,
                 notes: this.payNote.trim() || null,
                 account_id: this.payAccountId ?? null,
+                // "" clears a name the user erased; the payout turn never sends one.
+                collector_name: c.is_payout ? undefined : this.payCollector.trim(),
             }));
             this.apply(s);
             if (this.payAccountId != null) this.state.notifyTransactionsUpdated();
