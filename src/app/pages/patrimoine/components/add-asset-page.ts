@@ -19,7 +19,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { TokenService } from '../../../core/services/token.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { isTouchDevice } from '../../../core/util/touch';
-import { toLocalDateStr } from '../../../core/util/date';
+import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
 import { FeedbackService } from '../../../core/ui/feedback.service';
 
 /**
@@ -107,6 +107,8 @@ interface AssetFormData {
     tontineCollectionDate: string;
     tontineStatus: 'en_cours' | 'mise_recue' | 'termine';
     tontineFrequency: 'monthly' | 'weekly';
+    /** Turns already paid at creation (P0): seeds the cycle log server-side. */
+    tontineCyclesPaid: number | null;
     mobileMoneyProvider: string;
     surfaceM2: number;
     region: string;
@@ -429,14 +431,22 @@ interface CategoryCard {
                                                     styleClass="w-full" />
                                             </div>
                                             @if (assetForm.tontineStartDate && assetForm.tontineMonthlyContribution > 0) {
+                                                <!-- P0: the value follows the cycle log; the wizard asks how many
+                                                     turns are already paid and the server seeds them. -->
+                                                <div class="flex flex-col gap-2">
+                                                    <label for="aa-t-paid" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.turnsAlreadyPaid') }}</label>
+                                                    <p-inputnumber [locale]="cs.inputLocale()" inputId="aa-t-paid" styleClass="w-full" [ngModel]="tontineCyclesPaidValue()" (ngModelChange)="assetForm.tontineCyclesPaid = $event"
+                                                        [min]="0" [max]="assetForm.tontineParticipants || 100" [showButtons]="true" inputStyleClass="w-full" />
+                                                </div>
                                                 <div class="md:col-span-2 p-3 rounded-xl bg-brand-50 dark:bg-brand-900/40 border border-brand-100 dark:border-brand-800 flex items-center gap-3">
                                                     <i class="pi pi-calculator text-brand-700 dark:text-brand-300"></i>
                                                     <div>
-                                                        <p class="text-xs text-surface-600 dark:text-surface-400 mb-0.5">{{ t('addAssets.wizard.estimatedAccumulated') }}</p>
+                                                        <p class="text-xs text-surface-600 dark:text-surface-400 mb-0.5">{{ t('addAssets.wizard.valueFollowsLog') }}</p>
                                                         <p class="font-bold text-brand-700 dark:text-brand-300">
                                                             {{ tontineCurrentValue() | number:'1.0-0' }} {{ curSymbol() }}
-                                                            <span class="text-xs font-normal text-surface-600 dark:text-surface-400">({{ tontineMonthsElapsed() }} {{ t('addAssets.wizard.moShort') }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
+                                                            <span class="text-xs font-normal text-surface-600 dark:text-surface-400">({{ tontineCyclesPaidValue() }} × {{ assetForm.tontineMonthlyContribution | number:'1.0-0' }})</span>
                                                         </p>
+                                                        <p class="text-[11px] text-surface-500 dark:text-surface-400 mt-1 mb-0">{{ t('addAssets.wizard.turnsAlreadyPaidHint') }}</p>
                                                     </div>
                                                 </div>
                                             }
@@ -630,11 +640,6 @@ interface CategoryCard {
                                                             <p-datepicker inputId="aa-t-payout" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="tontineCollectionDateObj" [showIcon]="true" [showButtonBar]="true"
                                                                    dateFormat="yy-mm-dd" styleClass="w-full"
                                                                    inputStyleClass="w-full" />
-                                                        </div>
-                                                        <div class="flex flex-col gap-2">
-                                                            <label for="aa-t-status" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.wizard.status') }}</label>
-                                                            <p-select inputId="aa-t-status" [(ngModel)]="assetForm.tontineStatus" [options]="tontineStatusOptions" optionLabel="label" optionValue="value"
-                                                                styleClass="w-full" />
                                                         </div>
                                                     }
 
@@ -1298,7 +1303,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         name: '', description: '', category: '', quantity: 1, ticker: '', purchasePrice: 0, currentPrice: 0,
         purchaseDate: '', institution: '', owners: [],
         tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
-        tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
+        tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', tontineCyclesPaid: null, mobileMoneyProvider: '',
         surfaceM2: 0, region: '', currency: this.cs.config().code,
         reType: '', reUsage: '', reRooms: null, reMonthlyRent: 0, reConstructionDate: '', reAgencyFees: 0, reNotaryFees: 0, reRenovationFees: 0, reFurnishingCosts: 0, loanAmount: 0, loanRate: 0, loanMonthly: 0
     };
@@ -1500,7 +1505,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             purchaseDate: '', institution: '',
             owners: [{ name: this.userName, initials: this.userInitials, percentage: 100 }],
             tontineMonthlyContribution: 0, tontineParticipants: 2, tontineStartDate: '',
-            tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', mobileMoneyProvider: '',
+            tontineCollectionDate: '', tontineStatus: 'en_cours', tontineFrequency: 'monthly', tontineCyclesPaid: null, mobileMoneyProvider: '',
             surfaceM2: 0, region: '', currency: this.cs.config().code,
             reType: '', reUsage: '', reRooms: null, reMonthlyRent: 0, reConstructionDate: '', reAgencyFees: 0, reNotaryFees: 0, reRenovationFees: 0, reFurnishingCosts: 0, loanAmount: 0, loanRate: 0, loanMonthly: 0
         };
@@ -1834,13 +1839,32 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return f.currentPrice > 0;
     }
 
-    tontineMonthsElapsed(): number {
-        if (!this.assetForm.tontineStartDate) return 0;
-        return Math.max(0, Math.floor((Date.now() - new Date(this.assetForm.tontineStartDate).getTime()) / (30.44 * 24 * 60 * 60 * 1000)));
+    /** Turns whose due date is already past (the default for "tours déjà payés"). */
+    tontineElapsedTurns(): number {
+        const f = this.assetForm;
+        const start = parseLocalDate(f.tontineStartDate);
+        if (!start) return 0;
+        const today = new Date();
+        let n = 0;
+        for (let i = 0; i < (f.tontineParticipants || 0); i++) {
+            const due = new Date(start);
+            if (f.tontineFrequency === 'weekly') due.setDate(start.getDate() + i * 7);
+            else due.setMonth(start.getMonth() + i);
+            if (due.getTime() <= today.getTime()) n++; else break;
+        }
+        return n;
+    }
+
+    /** What the user says is paid, defaulting to the elapsed turns. */
+    tontineCyclesPaidValue(): number {
+        const f = this.assetForm;
+        const max = f.tontineParticipants || 0;
+        const v = f.tontineCyclesPaid ?? this.tontineElapsedTurns();
+        return Math.max(0, Math.min(max, v));
     }
 
     tontineCurrentValue(): number {
-        return this.assetForm.tontineMonthlyContribution * this.tontineMonthsElapsed();
+        return this.assetForm.tontineMonthlyContribution * this.tontineCyclesPaidValue();
     }
 
     /** Convert an amount entered in the selected asset currency to EUR (preview only). */
@@ -1896,17 +1920,19 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
             const cur = f.currency;
 
             if (f.category === 'tontine') {
-                const months = Math.max(1, this.tontineMonthsElapsed());
+                // P0: no browser heuristic. The server seeds the paid turns and
+                // derives the value from the log; 0 turns paid = 0 contributed.
+                const paid = this.tontineCyclesPaidValue();
                 assetData = {
                     name: f.name, category: 'tontine', currency: cur,
-                    current_value: f.tontineMonthlyContribution * months,
-                    // New dedicated tontine columns, no more overloading purchase_*.
+                    current_value: f.tontineMonthlyContribution * paid,
                     tontine_monthly_contribution: f.tontineMonthlyContribution,
                     tontine_participants: f.tontineParticipants,
                     tontine_frequency: f.tontineFrequency,
                     tontine_start_date: f.tontineStartDate || this.toDateStr(new Date()),
                     tontine_collection_date: f.tontineCollectionDate || null,
-                    tontine_status: f.tontineStatus,
+                    tontine_status: 'en_cours',
+                    tontine_cycles_paid: paid,
                 };
             } else if (f.category === 'mobile_money') {
                 assetData = {

@@ -3,6 +3,10 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
+import { ApiService, CommitmentItem, CommitmentsFeed, TontineSchedule } from '../../../core/services/api.service';
+import { ChipComponent, ChipTone } from '../../../core/ui/chip.component';
+import { firstValueFrom } from 'rxjs';
+import { parseLocalDate } from '../../../core/util/date';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CHART_RANGES, DEFAULT_CHART_RANGE_MONTHS } from '../../../core/util/chart-range';
@@ -74,7 +78,7 @@ const CATEGORY_BGS: Record<string, string> = {
     selector: 'app-patrimoine-category-detail',
     standalone: true,
     imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent, LoadErrorComponent,
-              AllocationDonutComponent, AllocationTicksComponent, TooltipModule],
+              AllocationDonutComponent, AllocationTicksComponent, TooltipModule, ChipComponent],
     styles: [`
         /* Same fix as patrimoineprogress: PrimeNG p-chart has no styleClass and
            wraps the canvas in an unstyled div; complete the height chain so the
@@ -154,6 +158,41 @@ const CATEGORY_BGS: Record<string, string> = {
                     </div>
                 </div>
             </div>
+
+            <!-- ── Tontine strip (P0): what the tontines ask of me over 30 days ── -->
+            @if (currentGroup?.id === 'tontine' && commitments) {
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8" data-testid="tontine-strip">
+                    <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 px-4 py-3">
+                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-1">{{ i18n.t('tontine.strip.engagement') }}</p>
+                        <app-amount [value]="tontineEngagementEur" class="text-lg font-bold text-surface-900 dark:text-surface-0" />
+                    </div>
+                    <div class="rounded-2xl border px-4 py-3"
+                         [ngClass]="tontineLate > 0 ? 'bg-negative-50 dark:bg-negative-500/10 border-negative-100 dark:border-negative-500/20' : 'bg-surface-0 dark:bg-surface-900 border-surface-200 dark:border-surface-800'">
+                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-1">{{ i18n.t('tontine.strip.nextDue') }}</p>
+                        @if (tontineNextDue; as d) {
+                            <p class="text-lg font-bold m-0 truncate" [ngClass]="d.is_late ? 'text-negative' : 'text-surface-900 dark:text-surface-0'">
+                                {{ stripDate(d.date) }} <span class="text-sm font-medium text-surface-500 dark:text-surface-400">· {{ d.label }}</span>
+                            </p>
+                            @if (tontineLate > 0) {
+                                <p class="text-xs text-negative m-0">{{ tontineLate }} {{ i18n.t('tontine.strip.late') }}</p>
+                            }
+                        } @else {
+                            <p class="text-sm text-surface-500 dark:text-surface-400 m-0">{{ i18n.t('tontine.strip.none') }}</p>
+                        }
+                    </div>
+                    <div class="rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 px-4 py-3">
+                        <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-1">{{ i18n.t('tontine.strip.nextPayout') }}</p>
+                        @if (tontineNextPayout; as p) {
+                            <p class="text-lg font-bold text-surface-900 dark:text-surface-0 m-0 truncate">
+                                {{ stripDate(p.date) }} <span class="text-sm font-medium text-surface-500 dark:text-surface-400">· {{ p.label }}</span>
+                            </p>
+                            <app-amount [value]="p.amount_eur" class="text-xs text-positive" />
+                        } @else {
+                            <p class="text-sm text-surface-500 dark:text-surface-400 m-0">{{ i18n.t('tontine.strip.none') }}</p>
+                        }
+                    </div>
+                </div>
+            }
 
             <!-- ── Charts row: strict 50/50, equal heights (reference layout) ── -->
             <div class="grid grid-cols-1 min-[1150px]:grid-cols-2 gap-5 items-stretch mb-8">
@@ -293,7 +332,17 @@ const CATEGORY_BGS: Record<string, string> = {
                                 <div class="flex items-center gap-3 shrink-0 ml-4">
                                     <div class="text-right">
                                         <div class="font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="item.value" /></div>
-                                        @if (item.deltaPct != null) {
+                                        @if (item.category === 'tontine') {
+                                            <!-- P0: a tontine's progress is its turns, not a gain vs purchase. -->
+                                            @if (tontineSchedules[item.id]; as s) {
+                                                <div class="flex items-center justify-end gap-2 mt-1">
+                                                    <span class="text-sm font-medium text-surface-600 dark:text-surface-300 tabular-nums">
+                                                        {{ s.contributions_made }}/{{ s.contributions_total }} {{ i18n.t('tontine.contributions') }} · {{ tontinePct(s) }} %
+                                                    </span>
+                                                    <app-chip [label]="i18n.t('tontine.status.' + s.status)" [tone]="tontineTone(s.status)" />
+                                                </div>
+                                            }
+                                        } @else if (item.deltaPct != null) {
                                             <div class="flex items-center justify-end gap-1 mt-0.5">
                                                 <i class="pi text-xs" [ngClass]="(item.deltaPct) >= 0 ? 'pi-arrow-up text-positive' : 'pi-arrow-down text-negative'"></i>
                                                 <span class="text-sm font-medium" [ngClass]="item.deltaPct >= 0 ? 'text-positive' : 'text-negative'">
@@ -394,9 +443,67 @@ export class PatrimoineCategoryDetailPage implements OnInit {
     /** Last loaded series, kept so a theme flip can rebuild without refetching. */
     private lastPoints: ChartDataPoint[] = [];
 
+    // ── Tontine strip (P0): the next 30 days across every tontine ──
+    private api = inject(ApiService);
+    commitments: CommitmentsFeed | null = null;
+    tontineNextDue: CommitmentItem | null = null;
+    tontineNextPayout: CommitmentItem | null = null;
+    tontineLate = 0;
+    /** Σ of the upcoming (not late) turns over 30 days, EUR base for app-amount. */
+    tontineEngagementEur = 0;
+
+    private async loadTontineStrip() {
+        try {
+            const feed = await firstValueFrom(this.api.getUpcomingCommitments(30));
+            if (!feed) return;
+            this.commitments = feed;
+            const dues = feed.items.filter(i => i.kind === 'tontine_due' || i.kind === 'tontine_late');
+            this.tontineNextDue = dues.find(i => !i.is_late) ?? dues[0] ?? null;
+            this.tontineNextPayout = feed.items.find(i => i.kind === 'tontine_payout') ?? null;
+            this.tontineLate = dues.filter(i => i.is_late).reduce((s, i) => s + i.count, 0);
+            this.tontineEngagementEur = dues.filter(i => !i.is_late).reduce((s, i) => s + i.amount_eur, 0);
+            this.cd.markForCheck();
+        } catch {
+            // The strip is a bonus; the page never fails because of it.
+        }
+    }
+
+    /** Per-tontine derived schedule (P0): the row shows turns paid, not a gain. */
+    tontineSchedules: Record<number, TontineSchedule> = {};
+
+    private async loadTontineSchedules() {
+        await Promise.all(this.items.map(async item => {
+            try {
+                const s = await firstValueFrom(this.api.getTontineSchedule(item.id));
+                if (s) this.tontineSchedules[item.id] = s;
+            } catch { /* the row falls back to amount only */ }
+        }));
+        this.cd.markForCheck();
+    }
+
+    tontinePct(s: TontineSchedule): number {
+        return s.contributions_total > 0 ? Math.round((s.contributions_made / s.contributions_total) * 100) : 0;
+    }
+
+    tontineTone(status: string): ChipTone {
+        switch (status) {
+            case 'en_retard': return 'negative';
+            case 'mise_recue': return 'positive';
+            case 'termine': return 'neutral';
+            default: return 'brand';
+        }
+    }
+
+    stripDate(iso: string): string {
+        const d = parseLocalDate(iso);
+        if (!d) return '';
+        return d.toLocaleDateString(this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short' });
+    }
+
     async ngOnInit() {
         const categoryId = this.route.snapshot.paramMap.get('categoryId') ?? '';
         this.currentGroup = GROUPS.find(g => g.id === categoryId) ?? null;
+        if (categoryId === 'tontine') void this.loadTontineStrip();
 
         // Load assets, surface failures as an error+retry card, never as an
         // empty category (fake-empty money pages read as data loss).
@@ -414,6 +521,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         this.items = this.currentGroup
             ? all.filter(a => this.currentGroup!.categories.includes(a.category ?? ''))
             : all;
+        if (categoryId === 'tontine' && this.items.length > 0) void this.loadTontineSchedules();
 
         // Compute totals
         this.totalValue    = this.items.reduce((s, i) => s + i.value, 0);

@@ -78,12 +78,11 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.status') }}</label>
-                            <p-select [(ngModel)]="form.tontineStatus"
-                                      [options]="tontineStatusOptions"
-                                      optionLabel="label" optionValue="value"
-                                      styleClass="w-full" />
+                        <div class="flex flex-col gap-1.5 justify-end">
+                            <!-- P0: status and value are derived from the cycle log, no manual pick. -->
+                            <p class="text-xs text-surface-500 dark:text-surface-400 m-0 flex items-start gap-1.5">
+                                <i class="pi pi-info-circle text-[11px] mt-0.5"></i>{{ t('assetDetail.tontineValueNote') }}
+                            </p>
                         </div>
                         <div class="flex flex-col gap-1.5">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('assetDetail.frequency') }}</label>

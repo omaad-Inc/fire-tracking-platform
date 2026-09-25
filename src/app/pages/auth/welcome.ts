@@ -64,7 +64,7 @@ type Step = 'created' | 'name' | 'notifications';
                         <p class="text-surface-600 dark:text-surface-400">{{ t('welcome.name.subtitle') }}</p>
                     </div>
                     <label for="wfirst" class="block text-surface-600 dark:text-surface-400 text-sm mb-2">{{ t('welcome.name.label') }}</label>
-                    <input pInputText id="wfirst" type="text" autocomplete="given-name" autocapitalize="words" autofocus
+                    <input pInputText id="wfirst" type="text" autocomplete="given-name" autocapitalize="words"
                            [placeholder]="t('welcome.name.placeholder')"
                            class="omaad-name-input w-full"
                            [ngModel]="firstName()" (ngModelChange)="firstName.set($event)" name="wfirst"

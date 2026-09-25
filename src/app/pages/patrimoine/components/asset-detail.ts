@@ -6,7 +6,7 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 
 import { firstValueFrom } from 'rxjs';
-import { ApiService, Asset, AssetHistory, BrvmHistory } from '../../../core/services/api.service';
+import { ApiService, Asset, AssetHistory, BrvmHistory, TontineSchedule } from '../../../core/services/api.service';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { PrivacyService } from '../../../core/services/privacy.service';
 import { NavService } from '../../../core/services/nav.service';
@@ -158,7 +158,7 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                                   [ngClass]="tontineStatusClass()">
                                 {{ tontineStatusLabel() }}
                             </span>
-                            <p class="kpi-sub mt-1.5">cycle en cours</p>
+                            <p class="kpi-sub mt-1.5">{{ t('assetDetail.tontineTracked') }}</p>
                         </div>
                     }
                     @case ('MOBILE_MONEY') {
@@ -435,7 +435,8 @@ import { FeedbackService } from '../../../core/ui/feedback.service';
                                 }
                             </div>
                         </div>
-                        <app-tontine-cycles class="block mt-4" [assetId]="asset()!.id" [currency]="asset()!.currency" />
+                        <app-tontine-cycles class="block mt-4" [assetId]="asset()!.id" [currency]="asset()!.currency"
+                                            (scheduleChange)="tontineSchedule.set($event)" />
                     }
                     @case ('MOBILE_MONEY') {
                         <div class="detail-surface">
@@ -961,21 +962,30 @@ export class AssetDetailPage implements OnInit {
     });
 
     // ─── Tontine status helpers ─────────────────────────────────────────
+    /** The derived schedule the cycles card emits (P0): its four-state status
+     *  beats the asset's three-value column once loaded. */
+    tontineSchedule = signal<TontineSchedule | null>(null);
+
+    private tontineStatusKey = computed<string>(() =>
+        this.tontineSchedule()?.status ?? this.asset()?.tontine_status ?? '');
+
     tontineStatusLabel = computed(() => {
-        const s = this.asset()?.tontine_status;
+        const s = this.tontineStatusKey();
         switch (s) {
-            case 'mise_recue': return this.t('assetDetail.tontineStatusReceived') + ' ✓';
-            case 'termine':    return this.t('assetDetail.tontineStatusCompleted');
-            case 'en_cours':   return this.t('assetDetail.tontineStatusInProgress');
-            default:           return ', ';
+            case 'mise_recue': return this.t('tontine.status.mise_recue') + ' ✓';
+            case 'termine':    return this.t('tontine.status.termine');
+            case 'en_retard':  return this.t('tontine.status.en_retard');
+            case 'en_cours':   return this.t('tontine.status.en_cours');
+            default:           return '—';
         }
     });
 
     tontineStatusClass = computed(() => {
-        const s = this.asset()?.tontine_status;
+        const s = this.tontineStatusKey();
         switch (s) {
             case 'mise_recue': return 'bg-positive/10 text-positive';
             case 'termine':    return 'bg-surface-500/10 text-surface-500';
+            case 'en_retard':  return 'bg-negative/10 text-negative';
             default:           return 'bg-brand-700/10 text-brand-700 dark:bg-brand-300/15 dark:text-brand-300';
         }
     });

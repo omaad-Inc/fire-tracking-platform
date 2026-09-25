@@ -1,6 +1,6 @@
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { prefersReducedMotion } from '../../core/theme/chart-theme';
-import { ChangeDetectorRef, Component, OnInit, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -158,7 +158,7 @@ type HubTab = 'analyses' | 'score' | 'conseils';
         }
     `,
 })
-export class InsightsPage implements OnInit {
+export class InsightsPage {
     private platformId = inject(PLATFORM_ID);
     private cd = inject(ChangeDetectorRef);
     private api = inject(ApiService);
@@ -260,8 +260,6 @@ export class InsightsPage implements OnInit {
         this.months();
         this.load();
     });
-
-    ngOnInit() { /* the period effect performs the initial load */ }
 
     load() {
         const months = this.months();

@@ -13,6 +13,7 @@ export default [
     { path: 'goals/:id', loadComponent: () => import('./goals/goal-detail-page').then(m => m.GoalDetailPage) },
     { path: 'wealth-score', loadComponent: () => import('./wealth-score/wealth-score').then(m => m.WealthScorePage) },
     { path: 'debts', loadComponent: () => import('./debts/debtsdashboard').then(m => m.DebtsDashboard) },
+    { path: 'debts/:id', loadComponent: () => import('./debts/debt-detail').then(m => m.DebtDetailPage) },
     {
         path: '**',
         redirectTo: () => {

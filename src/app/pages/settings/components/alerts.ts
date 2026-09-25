@@ -328,7 +328,7 @@ export class AlertsSettings implements OnInit {
         const amt = (v: number | null, cur: string | null) =>
             this.privacy.hidden()
                 ? `••••• ${cur || ''}`.trim()
-                : `${(v ?? 0).toLocaleString('fr-FR').replace(/ /g, ' ')} ${cur || ''}`.trim();
+                : `${(v ?? 0).toLocaleString('fr-FR').replace(/\u202f/g, ' ')} ${cur || ''}`.trim();
         if (r.rule_type === 'category_spend') {
             return this.t('settings.alerts.summarySpend', { cat: this.cats.resolve(r.category).label, amount: amt(r.threshold, r.threshold_currency) });
         }
