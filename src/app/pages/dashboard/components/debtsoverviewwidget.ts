@@ -9,6 +9,8 @@ import { AssetsStateService } from '../../service/assets-state.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { LoadErrorComponent } from '../../../core/components/load-error.component';
 import { UiCardComponent } from '../../../core/ui';
+import { ChipComponent, ChipTone } from '../../../core/ui/chip.component';
+import { parseLocalDate } from '../../../core/util/date';
 
 interface DebtDisplay {
     id: string;
@@ -21,12 +23,15 @@ interface DebtDisplay {
     iconClass: string;
     progressClass: string;
     textClass: string;
+    /** P0 premium debts: time on the row (due on / late / no due date). */
+    timeLabel: string;
+    timeTone: ChipTone;
 }
 
 @Component({
     standalone: true,
     selector: 'app-debts-overview',
-    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent, UiCardComponent],
+    imports: [CommonModule, RouterModule, AppAmountComponent, LoadErrorComponent, UiCardComponent, ChipComponent],
     template: `
         <app-ui-card [flush]="true" padding="md" innerClass="relative overflow-hidden h-full flex flex-col">
             <div class="relative flex justify-between items-center mb-6">
@@ -71,7 +76,8 @@ interface DebtDisplay {
             } @else {
                 <ul class="relative list-none p-0 m-0 space-y-4">
                     @for (debt of debts(); track debt.id) {
-                        <li class="flex items-center gap-4 p-2 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
+                        <li class="flex items-center gap-4 p-2 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors cursor-pointer"
+                            [routerLink]="link('pages', 'debts', debt.id)">
                             <!-- Circular ring -->
                             <div class="relative w-12 h-12 shrink-0">
                                 <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
@@ -92,6 +98,7 @@ interface DebtDisplay {
                             <div class="flex-1 min-w-0">
                                 <span class="text-surface-900 dark:text-surface-0 font-medium text-sm block truncate">{{ debt.label }}</span>
                                 <span class="text-surface-500 dark:text-surface-400 text-xs"><app-amount [value]="debt.paid" /> / <app-amount [value]="debt.total" /></span>
+                                <div class="mt-1"><app-chip [label]="debt.timeLabel" [tone]="debt.timeTone" /></div>
                             </div>
                             <!-- Icon -->
                             <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" [ngClass]="debt.bgClass">
@@ -144,18 +151,23 @@ export class DebtsOverview implements OnInit, OnDestroy {
                     progressClass: 'bg-brand-700 dark:bg-ochre-400',
                     textClass: 'text-brand-700 dark:text-ochre-400',
                 };
-                const colorConfigs = [
-                    { icon: 'pi pi-home',        ...sharedChrome },
-                    { icon: 'pi pi-users',       ...sharedChrome },
-                    { icon: 'pi pi-car',         ...sharedChrome },
-                    { icon: 'pi pi-credit-card', ...sharedChrome },
-                    { icon: 'pi pi-book',        ...sharedChrome }
-                ];
+                // The glyph follows the debt's category (it used to cycle by index).
+                const icons: Record<string, string> = {
+                    mortgage: 'pi pi-home', car_loan: 'pi pi-car', student_loan: 'pi pi-book',
+                    personal_loan: 'pi pi-wallet', credit_card: 'pi pi-credit-card',
+                    family_friend: 'pi pi-users', business: 'pi pi-briefcase', other: 'pi pi-wallet',
+                };
 
-                // Filter only active debts and sort by remaining amount
+                // Open debts I owe, most urgent first: overdue, then next due
+                // date, then the largest remaining (same order as the page).
                 const activeDebts = records
-                    .filter(d => d.type === 'Debt' && d.paid < d.total)
-                    .sort((a, b) => (b.total - b.paid) - (a.total - a.paid))
+                    .filter(d => d.type === 'Debt' && !d.isPaidOff && d.paid < d.total)
+                    .sort((a, b) => {
+                        if (a.isOverdue !== b.isOverdue) return a.isOverdue ? -1 : 1;
+                        const ad = a.nextPaymentDate || '9999', bd = b.nextPaymentDate || '9999';
+                        if (ad !== bd) return ad.localeCompare(bd);
+                        return (b.total - b.paid) - (a.total - a.paid);
+                    })
                     .slice(0, 5);
 
                 const mapped = activeDebts.map((d, index) => ({
@@ -164,7 +176,10 @@ export class DebtsOverview implements OnInit, OnDestroy {
                     paid: d.paid,
                     total: d.total,
                     percent: Math.min(100, Math.max(0, Math.round((d.paid / (d.total || 1)) * 100))),
-                    ...colorConfigs[index % colorConfigs.length]
+                    icon: icons[d.category] ?? 'pi pi-wallet',
+                    ...sharedChrome,
+                    timeLabel: this.timeLabel(d),
+                    timeTone: this.timeTone(d),
                 }));
                 
                 this.debts.set(mapped);
@@ -178,6 +193,21 @@ export class DebtsOverview implements OnInit, OnDestroy {
         }
     }
     
+    private timeLabel(d: DebtRecord): string {
+        if (d.isOverdue) return this.i18n.t('debts.overdueDays', { n: d.daysOverdue });
+        if (!d.nextPaymentDate) return this.i18n.t('debts.noDueDate');
+        const dt = parseLocalDate(d.nextPaymentDate);
+        const date = dt ? dt.toLocaleDateString(this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short' }) : '';
+        return this.i18n.t('debts.dueOn', { date });
+    }
+
+    private timeTone(d: DebtRecord): ChipTone {
+        if (d.isOverdue) return 'negative';
+        const dt = parseLocalDate(d.nextPaymentDate);
+        const days = dt ? Math.round((dt.getTime() - Date.now()) / 86_400_000) : 99;
+        return days <= 7 ? 'ochre' : 'neutral';
+    }
+
     ringDash(percent: number): string {
         const circumference = 2 * Math.PI * 15.5;
         const filled = (Math.min(100, percent) / 100) * circumference;
