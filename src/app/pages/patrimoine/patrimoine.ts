@@ -361,6 +361,8 @@ const GROUPS = [
                         {{ i18n.t('patrimoine.noDebtsRecorded') }}
                     </div>
                 } @else {
+                  <div class="flex flex-col gap-3">
+                    @if (loanTotal() > 0) {
                     <button (click)="navigateToDebts()"
                             class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-800 hover:border-negative/30 text-left hover:shadow-sm">
                         <div class="flex items-center gap-4">
@@ -377,11 +379,34 @@ const GROUPS = [
                         </div>
                         <div class="flex items-center gap-3 shrink-0">
                             <div class="font-bold text-negative text-base">
-                                <app-amount [value]="totalDebts()" prefix="-" />
+                                <app-amount [value]="loanTotal()" prefix="-" />
                             </div>
                             <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-negative transition-colors"></i>
                         </div>
                     </button>
+                    }
+                    @if (tontineCommitments() > 0) {
+                    <!-- P1-4: what is still owed to the group after the pot was received. -->
+                    <button (click)="navigateToCategory('tontine')"
+                            class="w-full flex items-center justify-between p-3 sm:p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer group border border-surface-200 dark:border-surface-800 hover:border-negative/30 text-left hover:shadow-sm">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-ochre-500">
+                                <i class="pi pi-sync text-warm-900 text-lg"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-surface-900 dark:text-surface-0">{{ i18n.t('patrimoine.tontineCommitments') }}</div>
+                                <div class="text-surface-500 dark:text-surface-400 text-sm">{{ i18n.t('patrimoine.tontineCommitmentsHint') }}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <div class="font-bold text-negative text-base">
+                                <app-amount [value]="tontineCommitments()" prefix="-" />
+                            </div>
+                            <i class="pi pi-chevron-right text-surface-400 text-sm group-hover:text-negative transition-colors"></i>
+                        </div>
+                    </button>
+                    }
+                  </div>
                 }
             </div>
 
@@ -428,8 +453,11 @@ export class Patrimoine implements OnInit, OnDestroy {
 
     totalAssets = computed(() => this.allAssets().reduce((s, a) => s + a.value, 0));
     // Debts are stored in their native currency, convert to EUR base to sum.
-    totalDebts = computed(() => this.debts().filter(d => d.type === 'i_owe')
+    loanTotal = computed(() => this.debts().filter(d => d.type === 'i_owe')
         .reduce((s, d) => s + this.currencyService.toEurFromNative(d.current_amount, d.currency), 0));
+    /** P1-4: unpaid turns of tontines whose pot was received (owed to the group). */
+    tontineCommitments = computed(() => this.allAssets().reduce((s, a) => s + (a.tontineCommitment ?? 0), 0));
+    totalDebts = computed(() => this.loanTotal() + this.tontineCommitments());
     debtsCount = computed(() => this.debts().filter(d => d.type === 'i_owe').length);
 
     // ── Currency exposure, how net worth splits across currencies ──

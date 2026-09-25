@@ -68,6 +68,8 @@ export interface Asset {
     /** The pot actually received (P0 premium tontine); null until recorded. */
     tontine_payout_received_date?: string | null;
     tontine_payout_amount?: number | null;
+    /** P1-4: still owed to the group after the pot (native, Σ unpaid turns); null otherwise. */
+    tontine_commitment?: number | null;
     // Mobile Money specific
     mobile_money_operator: string | null;
     created_at: string;

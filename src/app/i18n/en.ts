@@ -1617,6 +1617,8 @@ export const EN: Dict = {
     emptyStateDesc: 'Add your first asset, real estate, savings, stocks, crypto, to see your wealth take shape.',
     addFirstAsset: 'Add your first asset',
     noDebtsRecorded: 'No debts recorded',
+    tontineCommitments: 'Tontine commitments',
+    tontineCommitmentsHint: 'rounds still due after the pot',
     aiPending: 'Being added by the assistant…',
     aiPendingLabel: 'New asset',
     noDataYet: 'No data yet',

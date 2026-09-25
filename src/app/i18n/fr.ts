@@ -1615,6 +1615,8 @@ export const FR = {
     emptyStateDesc: 'Ajoutez votre premier actif, immobilier, épargne, actions, crypto, pour voir votre patrimoine prendre forme.',
     addFirstAsset: 'Ajouter votre premier actif',
     noDebtsRecorded: 'Aucune dette enregistrée',
+    tontineCommitments: 'Engagements tontine',
+    tontineCommitmentsHint: 'tours restants après la mise reçue',
     aiPending: 'Ajout en cours par l’assistant…',
     aiPendingLabel: 'Nouvel actif',
     noDataYet: 'Pas encore de données',
