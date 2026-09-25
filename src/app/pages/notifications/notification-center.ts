@@ -184,7 +184,7 @@ export class NotificationCenterPage implements OnInit {
     /** Mark read and follow the deep link. The write is optimistic and not
      *  awaited, so navigation is instant (the badge settles from cache). */
     async open(item: InboxItem): Promise<void> {
-        const route = this.center.webRouteFor(item.kind);
+        const route = this.center.webRouteFor(item.kind, item.link);
         void this.center.markRead([item.id]);
         await this.router.navigate(this.nav.link(...route.segments), {
             queryParams: route.queryParams ?? {},

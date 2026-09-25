@@ -65,6 +65,9 @@ export interface Asset {
     tontine_collection_date: string | null;
     tontine_status: string | null;
     tontine_frequency: string | null;
+    /** The pot actually received (P0 premium tontine); null until recorded. */
+    tontine_payout_received_date?: string | null;
+    tontine_payout_amount?: number | null;
     // Mobile Money specific
     mobile_money_operator: string | null;
     created_at: string;
@@ -216,6 +219,8 @@ export interface AssetCreate {
     tontine_collection_date?: string | null;
     tontine_status?: string | null;
     tontine_frequency?: string | null;
+    /** Create-time only: turns already paid, seeds the cycle log (P0). */
+    tontine_cycles_paid?: number | null;
     // Mobile Money specific
     mobile_money_operator?: string | null;
 }
@@ -314,14 +319,20 @@ export interface WeeklyReportBundle {
     has_content: boolean;
 }
 
+export type TontineCycleState = 'paid' | 'late' | 'due' | 'upcoming';
+export type TontineStatus = 'en_cours' | 'en_retard' | 'mise_recue' | 'termine';
+
 export interface TontineCycleView {
     cycle_number: number;
     due_date: string;
-    amount: number;
+    amount: number;              // expected contribution (snapshot once logged)
     paid: boolean;
     paid_date: string | null;
     is_payout: boolean;
     notes: string | null;
+    state: TontineCycleState;
+    paid_amount: number | null;  // actual amount when it differs from `amount`
+    late_paid: boolean;
 }
 
 export interface TontineSchedule {
@@ -341,13 +352,31 @@ export interface TontineSchedule {
     next_due_date: string | null;
     payout_cycle_number: number | null;
     payout_date: string | null;
+    /** The pot was received (legacy fallback: the payout turn is ticked). */
     payout_collected: boolean;
+    // Position (P0 premium tontine)
+    remaining_due: number;
+    received_amount: number;
+    payout_received_date: string | null;
+    payout_amount: number | null;
+    position: number;
+    status: TontineStatus;
+    late_count: number;
+    orphan_cycles: number;
+    has_log: boolean;
+    due_window_days: number;
 }
 
 export interface TontineCyclePay {
     paid: boolean;
     paid_date?: string | null;
+    paid_amount?: number | null;
     notes?: string | null;
+}
+
+export interface TontinePayoutBody {
+    received_date?: string | null;
+    amount?: number | null;
 }
 
 export interface AssetUpdate {
@@ -907,6 +936,9 @@ export interface HoldingCommitRequest {
 // ============================================
 export type DebtType = 'i_owe' | 'owed_to_me';
 export type DebtCategory = 'mortgage' | 'car_loan' | 'student_loan' | 'personal_loan' | 'credit_card' | 'family_friend' | 'business' | 'other';
+export type DebtPaymentFrequency = 'monthly' | 'weekly' | 'once' | 'free';
+export type DebtPaymentKind = 'opening' | 'payment' | 'adjustment' | 'write_off';
+export type DebtClosedReason = 'paid' | 'written_off' | 'cancelled';
 
 export interface Debt {
     id: number;
@@ -916,11 +948,14 @@ export interface Debt {
     category: DebtCategory;
     description: string | null;
     initial_amount: number;
+    /** Remaining balance: a cache of initial − Σ ledger (debt_payments). */
     current_amount: number;
     /** ISO 4217 code the amounts are denominated in (native currency). */
     currency: string;
     interest_rate: number | null;
+    /** Instalment amount, whatever the cadence (name kept for the mobile app). */
     monthly_payment: number | null;
+    payment_frequency: DebtPaymentFrequency | null;
     next_payment_date: string | null;
     start_date: string | null;
     end_date: string | null;
@@ -931,6 +966,29 @@ export interface Debt {
     amount_paid: number;
     created_at: string;
     updated_at: string;
+    // P0 premium debts
+    paid_off_date: string | null;
+    closed_reason: DebtClosedReason | null;
+    is_overdue: boolean;
+    days_overdue: number;
+    last_payment_date: string | null;
+    last_payment_amount: number | null;
+}
+
+/** One ledger row (native currency of the debt). */
+export interface DebtPaymentRow {
+    id: number;
+    debt_id: number;
+    kind: DebtPaymentKind;
+    direction: 'up' | 'down';
+    amount: number;
+    date: string;
+    note: string | null;
+    created_at: string;
+}
+
+export interface DebtDetail extends Debt {
+    payments: DebtPaymentRow[];
 }
 
 export interface DebtCreate {
@@ -943,7 +1001,8 @@ export interface DebtCreate {
     currency?: string;
     interest_rate?: number;
     monthly_payment?: number;
-    next_payment_date?: string;
+    payment_frequency?: DebtPaymentFrequency | null;
+    next_payment_date?: string | null;
     start_date?: string;
     end_date?: string;
     creditor_name?: string;
@@ -955,15 +1014,86 @@ export interface DebtUpdate {
     category?: DebtCategory;
     description?: string;
     initial_amount?: number;
+    /** Older clients only: the server turns a change into an adjustment row. */
     current_amount?: number;
     currency?: string;
     interest_rate?: number;
-    monthly_payment?: number;
-    next_payment_date?: string;
-    end_date?: string;
+    monthly_payment?: number | null;
+    payment_frequency?: DebtPaymentFrequency | null;
+    next_payment_date?: string | null;
+    start_date?: string | null;
+    end_date?: string | null;
     creditor_name?: string;
     is_paid_off?: boolean;
     is_active?: boolean;
+}
+
+export interface DebtPaymentBody {
+    /** In the DEBT's own currency. */
+    amount: number;
+    date?: string | null;
+    note?: string | null;
+    /** true: an overpayment answers 409 OVERPAYMENT {remaining, currency} instead of clamping. */
+    strict?: boolean;
+}
+
+export interface DebtWriteOffBody {
+    reason?: 'written_off' | 'cancelled';
+    date?: string | null;
+    note?: string | null;
+}
+
+export interface DebtNextDue {
+    debt_id: number;
+    name: string;
+    type: DebtType;
+    due_date: string;
+    amount: number;
+    amount_eur: number;
+    currency: string;
+    is_overdue: boolean;
+}
+
+export interface DebtsDashboardSummary {
+    total_debt_owed: number;
+    total_debt_owed_to_me: number;
+    net_debt: number;
+    monthly_payments_due: number;
+    overdue_count: number;
+    due_within_30_days_eur: number;
+    expected_within_30_days_eur: number;
+    next_due: DebtNextDue | null;
+}
+
+// ============================================
+// COMMITMENTS FEED
+// ============================================
+export type CommitmentKind =
+    | 'tontine_due' | 'tontine_late' | 'tontine_payout'
+    | 'debt_due' | 'debt_late' | 'receivable_due' | 'receivable_late';
+
+export interface CommitmentItem {
+    kind: CommitmentKind;
+    date: string;
+    amount: number;          // native
+    currency: string;
+    amount_eur: number;
+    label: string;
+    direction: 'in' | 'out';
+    is_late: boolean;
+    days: number;            // signed days from today (negative = late)
+    asset_id: number | null;
+    debt_id: number | null;
+    link: string;            // app path without /:lang
+    count: number;           // late tontine turns fold into one item
+}
+
+export interface CommitmentsFeed {
+    days: number;
+    outflows_eur: number;
+    inflows_eur: number;
+    late_count: number;
+    items: CommitmentItem[];
 }
 
 // ============================================
@@ -1506,6 +1636,26 @@ export class ApiService {
             `${this.apiUrl}/assets/${assetId}/tontine/cycles/${cycleNumber}`, body);
     }
 
+    /** Record the pot as received (409 when already recorded). */
+    setTontinePayout(assetId: number, body: TontinePayoutBody): Observable<TontineSchedule> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<TontineSchedule>(`${this.apiUrl}/assets/${assetId}/tontine/payout`, body);
+    }
+
+    /** Undo a recorded payout (409 when none). */
+    clearTontinePayout(assetId: number): Observable<TontineSchedule> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.delete<TontineSchedule>(`${this.apiUrl}/assets/${assetId}/tontine/payout`);
+    }
+
+    // ========== COMMITMENTS (P0: tontine turns + debt instalments in one feed) ==========
+    getUpcomingCommitments(days = 30): Observable<CommitmentsFeed | null> {
+        if (this.share.active()) return of(null);
+        return this.http.get<CommitmentsFeed>(`${this.apiUrl}/commitments/upcoming`, {
+            params: new HttpParams().set('days', String(days)),
+        });
+    }
+
     // ========== TRANSACTIONS ==========
     getTransactions(
         skip = 0,
@@ -1699,12 +1849,13 @@ export class ApiService {
     }
 
     // ========== DEBTS ==========
-    getDebts(skip = 0, limit = 100): Observable<Debt[]> {
+    getDebts(skip = 0, limit = 100, activeOnly = true): Observable<Debt[]> {
         const s = this.shared<Debt[]>(b => b.debts);
         if (s) return s;
         const params = new HttpParams()
             .set('skip', skip.toString())
-            .set('limit', limit.toString());
+            .set('limit', limit.toString())
+            .set('active_only', String(activeOnly));
         return this.http.get<Debt[]>(`${this.apiUrl}/debts`, { params });
     }
 
@@ -1728,9 +1879,31 @@ export class ApiService {
         return this.http.delete<void>(`${this.apiUrl}/debts/${id}`);
     }
 
-    makePayment(debtId: number, amount: number): Observable<Debt> {
+    /** Record a payment in the debt's OWN currency (no conversion here). */
+    makePayment(debtId: number, body: DebtPaymentBody): Observable<Debt> {
         if (this.share.active()) return this.readonlyBlock;
-        return this.http.post<Debt>(`${this.apiUrl}/debts/${debtId}/payment`, { amount });
+        return this.http.post<Debt>(`${this.apiUrl}/debts/${debtId}/payment`, body);
+    }
+
+    getDebtDetail(id: number): Observable<DebtDetail | null> {
+        const s = this.shared<Debt>(b => b.debts.find(d => d.id === id));
+        if (s) return s.pipe(map(d => ({ ...d, payments: [] } as DebtDetail)));
+        return this.http.get<DebtDetail>(`${this.apiUrl}/debts/${id}/detail`);
+    }
+
+    deleteDebtPayment(debtId: number, paymentId: number): Observable<DebtDetail> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.delete<DebtDetail>(`${this.apiUrl}/debts/${debtId}/payments/${paymentId}`);
+    }
+
+    writeOffDebt(debtId: number, body: DebtWriteOffBody): Observable<Debt> {
+        if (this.share.active()) return this.readonlyBlock;
+        return this.http.post<Debt>(`${this.apiUrl}/debts/${debtId}/write-off`, body);
+    }
+
+    getDebtsDashboard(): Observable<DebtsDashboardSummary | null> {
+        if (this.share.active()) return of(null);
+        return this.http.get<DebtsDashboardSummary>(`${this.apiUrl}/debts/dashboard`);
     }
 
     // ========== DASHBOARD ==========

@@ -171,7 +171,14 @@ export class NotificationCenterService {
 
     /** Where a tap on this entry goes ON THE WEB. Driven by `kind`; the item's
      *  own `link` (a mobile route) is intentionally ignored. */
-    webRouteFor(kind: string): NotifWebRoute {
+    webRouteFor(kind: string, link?: string | null): NotifWebRoute {
+        // P0 tontine: a reminder about ONE tontine lands on that asset. The
+        // mobile link is only trusted for its trailing numeric id, and only
+        // for this kind; every other kind stays keyed on `kind`.
+        if (kind === 'tontine' && link) {
+            const m = /\/patrimoine\/assets\/(\d+)\/?$/.exec(link);
+            if (m) return { segments: ['pages', 'patrimoine', 'assets', m[1]] };
+        }
         return NOTIF_WEB_ROUTES[kind as NotifKind] ?? FALLBACK_ROUTE;
     }
 
