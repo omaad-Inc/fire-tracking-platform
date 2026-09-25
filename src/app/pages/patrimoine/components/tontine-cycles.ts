@@ -219,7 +219,7 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                 <div class="flex flex-col gap-5 pt-3 omaad-form">
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('tontine.paidDate') }}</label>
-                        <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="payDate" [showIcon]="true"
+                        <p-datepicker appendTo="body" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="payDate" [showIcon]="true"
                                       [maxDate]="today" dateFormat="dd/mm/yy" styleClass="w-full" inputStyleClass="w-full" />
                     </div>
                     <div class="flex flex-col gap-1">
@@ -268,7 +268,7 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                 <div class="flex flex-col gap-5 pt-3 omaad-form">
                     <div class="flex flex-col gap-1">
                         <label class="text-sm text-surface-500 dark:text-surface-400">{{ i18n.t('tontine.receiveDate') }}</label>
-                        <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="payoutDate" [showIcon]="true"
+                        <p-datepicker appendTo="body" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="payoutDate" [showIcon]="true"
                                       [maxDate]="today" dateFormat="dd/mm/yy" styleClass="w-full" inputStyleClass="w-full" />
                     </div>
                     <div class="flex flex-col gap-1">

@@ -78,7 +78,7 @@ import { nbspSafe } from '../../../core/util/nbsp';
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.pay.date') }}</label>
-                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="date" [showIcon]="true"
+                            <p-datepicker appendTo="body" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="date" [showIcon]="true"
                                           [maxDate]="today" dateFormat="dd/mm/yy" styleClass="w-full" inputStyleClass="w-full" />
                         </div>
                         <div class="flex flex-col gap-1">

@@ -288,12 +288,12 @@ const FREQUENCIES: DebtPaymentFrequency[] = ['monthly', 'weekly', 'once', 'free'
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.nextDue') }}</label>
-                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="nextDueDate" [showIcon]="true" [showButtonBar]="true"
+                            <p-datepicker appendTo="body" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="nextDueDate" [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy" styleClass="w-full" inputStyleClass="w-full" />
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-sm text-surface-500 dark:text-surface-400">{{ t('debts.fields.startDate') }}</label>
-                            <p-datepicker [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
+                            <p-datepicker appendTo="body" [touchUI]="isTouch" [readonlyInput]="isTouch" [(ngModel)]="editDate" [showIcon]="true" [showButtonBar]="true"
                                           dateFormat="dd/mm/yy" styleClass="w-full" inputStyleClass="w-full" />
                         </div>
                         <div class="flex flex-col gap-1">

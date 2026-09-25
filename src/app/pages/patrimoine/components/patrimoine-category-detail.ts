@@ -3,7 +3,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ChartModule } from 'primeng/chart';
 import { PatrimoineService, PatrimoineAssetItemDto } from '../../service/patrimoine.service';
-import { ApiService, CommitmentItem, CommitmentsFeed } from '../../../core/services/api.service';
+import { ApiService, CommitmentItem, CommitmentsFeed, TontineSchedule } from '../../../core/services/api.service';
+import { ChipComponent, ChipTone } from '../../../core/ui/chip.component';
 import { firstValueFrom } from 'rxjs';
 import { parseLocalDate } from '../../../core/util/date';
 import { DashboardService, ChartDataPoint } from '../../service/dashboard.service';
@@ -77,7 +78,7 @@ const CATEGORY_BGS: Record<string, string> = {
     selector: 'app-patrimoine-category-detail',
     standalone: true,
     imports: [CommonModule, RouterModule, ChartModule, AppAmountComponent, LoadErrorComponent,
-              AllocationDonutComponent, AllocationTicksComponent, TooltipModule],
+              AllocationDonutComponent, AllocationTicksComponent, TooltipModule, ChipComponent],
     styles: [`
         /* Same fix as patrimoineprogress: PrimeNG p-chart has no styleClass and
            wraps the canvas in an unstyled div; complete the height chain so the
@@ -331,7 +332,17 @@ const CATEGORY_BGS: Record<string, string> = {
                                 <div class="flex items-center gap-3 shrink-0 ml-4">
                                     <div class="text-right">
                                         <div class="font-bold text-surface-900 dark:text-surface-0"><app-amount [value]="item.value" /></div>
-                                        @if (item.deltaPct != null) {
+                                        @if (item.category === 'tontine') {
+                                            <!-- P0: a tontine's progress is its turns, not a gain vs purchase. -->
+                                            @if (tontineSchedules[item.id]; as s) {
+                                                <div class="flex items-center justify-end gap-2 mt-1">
+                                                    <span class="text-sm font-medium text-surface-600 dark:text-surface-300 tabular-nums">
+                                                        {{ s.contributions_made }}/{{ s.contributions_total }} {{ i18n.t('tontine.contributions') }} · {{ tontinePct(s) }} %
+                                                    </span>
+                                                    <app-chip [label]="i18n.t('tontine.status.' + s.status)" [tone]="tontineTone(s.status)" />
+                                                </div>
+                                            }
+                                        } @else if (item.deltaPct != null) {
                                             <div class="flex items-center justify-end gap-1 mt-0.5">
                                                 <i class="pi text-xs" [ngClass]="(item.deltaPct) >= 0 ? 'pi-arrow-up text-positive' : 'pi-arrow-down text-negative'"></i>
                                                 <span class="text-sm font-medium" [ngClass]="item.deltaPct >= 0 ? 'text-positive' : 'text-negative'">
@@ -457,6 +468,32 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         }
     }
 
+    /** Per-tontine derived schedule (P0): the row shows turns paid, not a gain. */
+    tontineSchedules: Record<number, TontineSchedule> = {};
+
+    private async loadTontineSchedules() {
+        await Promise.all(this.items.map(async item => {
+            try {
+                const s = await firstValueFrom(this.api.getTontineSchedule(item.id));
+                if (s) this.tontineSchedules[item.id] = s;
+            } catch { /* the row falls back to amount only */ }
+        }));
+        this.cd.markForCheck();
+    }
+
+    tontinePct(s: TontineSchedule): number {
+        return s.contributions_total > 0 ? Math.round((s.contributions_made / s.contributions_total) * 100) : 0;
+    }
+
+    tontineTone(status: string): ChipTone {
+        switch (status) {
+            case 'en_retard': return 'negative';
+            case 'mise_recue': return 'positive';
+            case 'termine': return 'neutral';
+            default: return 'brand';
+        }
+    }
+
     stripDate(iso: string): string {
         const d = parseLocalDate(iso);
         if (!d) return '';
@@ -484,6 +521,7 @@ export class PatrimoineCategoryDetailPage implements OnInit {
         this.items = this.currentGroup
             ? all.filter(a => this.currentGroup!.categories.includes(a.category ?? ''))
             : all;
+        if (categoryId === 'tontine' && this.items.length > 0) void this.loadTontineSchedules();
 
         // Compute totals
         this.totalValue    = this.items.reduce((s, i) => s + i.value, 0);
