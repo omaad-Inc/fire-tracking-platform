@@ -2191,6 +2191,7 @@ export const EN: Dict = {
     accountNone: 'None, no account movement',
     accountHint: 'A transaction is created and the account balance follows.',
     via: 'via {{name}}',
+    receiveNoAccountHint: 'Without an account, the pot you received is not added to your accounts.',
     collector: 'Who collected the pot this round (optional)',
     collectorPlaceholder: 'Member first name',
     strip: {

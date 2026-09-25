@@ -2189,6 +2189,7 @@ export const FR = {
     accountNone: 'Aucun, sans mouvement de compte',
     accountHint: 'Une transaction sera créée et le solde du compte suivra.',
     via: 'via {{name}}',
+    receiveNoAccountHint: 'Sans compte, la mise reçue ne sera pas ajoutée à vos comptes.',
     collector: 'Qui a reçu la mise ce tour (facultatif)',
     collectorPlaceholder: 'Prénom du membre',
     strip: {

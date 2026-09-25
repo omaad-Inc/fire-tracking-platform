@@ -307,6 +307,8 @@ import { parseLocalDate, toLocalDateStr } from '../../../core/util/date';
                                       [showClear]="true" [placeholder]="i18n.t('tontine.accountNone')" styleClass="w-full" />
                             @if (payoutAccountId != null) {
                                 <small class="text-surface-500 dark:text-surface-400 text-xs mt-1">{{ i18n.t('tontine.accountHint') }}</small>
+                            } @else {
+                                <small class="text-ochre-700 dark:text-ochre-400 text-xs mt-1">{{ i18n.t('tontine.receiveNoAccountHint') }}</small>
                             }
                         </div>
                     }
