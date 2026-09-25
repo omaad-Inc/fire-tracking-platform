@@ -4,6 +4,7 @@ import { HomeHero } from './components/homehero';
 import { RecentTransactionsWidget } from './components/recenttransactionswidget';
 import { SavingsProgress } from './components/savingsprogresswidget';
 import { DebtsOverview } from './components/debtsoverviewwidget';
+import { UpcomingCommitmentsWidget } from './components/upcomingcommitmentswidget';
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
 import { MarketGlanceWidget } from './components/marketglancewidget';
@@ -19,7 +20,7 @@ import { I18nService } from '../../i18n/i18n.service';
     selector: 'app-dashboard',
     standalone: true,
     imports: [
-        CommonModule, HomeHero, SavingsProgress, DebtsOverview,
+        CommonModule, HomeHero, SavingsProgress, DebtsOverview, UpcomingCommitmentsWidget,
         RecentTransactionsWidget, WealthScoreDashboardWidget, OnboardingComponent,
         MarketGlanceWidget, SectionHeaderComponent
     ],
@@ -96,6 +97,11 @@ import { I18nService } from '../../i18n/i18n.service';
                         <app-savings-progress />
                     </div>
                 </div>
+            </section>
+
+            <!-- Band 2b: what is coming (tontine turns, debt instalments, receivables, the pot) -->
+            <section class="omaad-enter omaad-d2 mt-8 md:mt-10 order-5" data-testid="home-upcoming">
+                <app-upcoming-commitments />
             </section>
 
             <!-- Band 3: debts (what you owe) -->
