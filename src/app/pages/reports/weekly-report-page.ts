@@ -163,7 +163,7 @@ export class WeeklyReportPage implements OnInit {
 
     pct(v: number | null | undefined): string {
         const n = new Intl.NumberFormat(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US', { maximumFractionDigits: 0 }).format(v ?? 0);
-        return this.i18n.lang() === 'fr' ? `${n} %` : `${n}%`;
+        return this.i18n.lang() === 'fr' ? `${n}\u00a0%` : `${n}%`;
     }
     clamp(v: number | null | undefined): number { return Math.min(100, Math.max(0, v ?? 0)); }
 

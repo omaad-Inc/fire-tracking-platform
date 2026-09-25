@@ -141,7 +141,7 @@ export class MarketService {
     xof(v: number | null | undefined): string {
         if (v == null) return '—';
         const n = nbspSafe(new Intl.NumberFormat(this.locale, { maximumFractionDigits: 0 }).format(Math.round(Math.abs(v))));
-        return `${v < 0 ? '-' : ''}${n} FCFA`;
+        return `${v < 0 ? '-' : ''}${n}\u00a0FCFA`;
     }
 
     /** Plain grouped integer, no unit (volumes). */
@@ -153,13 +153,13 @@ export class MarketService {
     /** "537,25 pts": index levels are points, not money. */
     pts(v: number): string {
         const n = nbspSafe(new Intl.NumberFormat(this.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v));
-        return `${n} ${this.i18n.t('markets.pts')}`;
+        return `${n}\u00a0${this.i18n.t('markets.pts')}`;
     }
 
     /** Unsigned percent with exactly one decimal; the caller draws the arrow. */
     pct(p: number): string {
         const n = nbspSafe(new Intl.NumberFormat(this.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Math.abs(p)));
-        return this.i18n.lang() === 'fr' ? `${n} %` : `${n}%`;
+        return this.i18n.lang() === 'fr' ? `${n}\u00a0%` : `${n}%`;
     }
 
     /** "1 sept." / "Sep 1": the short session date under a level or a price. */
