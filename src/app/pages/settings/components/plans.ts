@@ -42,7 +42,7 @@ const TIER_RANK: Record<TierKey, number> = { free: 0, pro: 1, premium: 2 };
 const HERO_ICONS: Record<TierKey, string[]> = {
     free: ['pi-wallet', 'pi-chart-line', 'pi-comments', 'pi-download'],
     pro: ['pi-comments', 'pi-bell', 'pi-chart-line', 'pi-envelope', 'pi-share-alt'],
-    premium: ['pi-comments', 'pi-bolt', 'pi-briefcase', 'pi-users', 'pi-code'],
+    premium: ['pi-comments', 'pi-bolt', 'pi-briefcase', 'pi-code'],
 };
 
 @Component({
@@ -675,7 +675,6 @@ export class PlansSettings {
             { group: 'ai',         label: t('plans.compare.aiAdvisor'),          free: false, pro: false, premium: true  },
             { group: 'ai',         label: t('plans.compare.aiOpus'),             free: false, pro: false, premium: true  },
             { group: 'premium',    label: t('plans.compare.multiPortfolios'),    free: false, pro: false, premium: true  },
-            { group: 'premium',    label: t('plans.compare.groupTontine'),       free: false, pro: false, premium: true  },
             { group: 'premium',    label: t('plans.compare.apiIntegrations'),    free: false, pro: false, premium: true  },
         ];
     });
