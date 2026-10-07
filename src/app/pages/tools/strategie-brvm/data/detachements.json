@@ -1,7 +1,18 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-09-09",
+  "updated_at": "2026-10-07",
   "entries": [
+    {
+      "emetteur": "TRACTAFRIC CI",
+      "exercice": 2025,
+      "date_paiement": "2026-10-23",
+      "date_ex_dividende": "2026-10-22",
+      "montant_net_fcfa": 209.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20261006_-_avis_ndeg294_brvmdg_-_paiement_de_dividendes_exo_2025_-_tractafric_motors_ci.pdf",
+      "ticker": "TMCI",
+      "nom": "Tractafric Motors CI",
+      "secteur": "Distribution"
+    },
     {
       "emetteur": "SERVAIR ABIDJAN CI",
       "exercice": 2025,
@@ -616,17 +627,6 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20250624_-_avis_ndeg141_brvmdg_-_paiement_de_dividendes_exercice_2024_-_nsia_banque_ci.pdf",
       "ticker": "NSBC",
       "nom": "NSIA Banque CI",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "CORIS BANK INTERNATIONAL",
-      "exercice": 2024,
-      "date_paiement": "2025-07-07",
-      "date_ex_dividende": "2025-07-03",
-      "montant_net_fcfa": 555.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250619_-_avis_ndeg140_brvmdg_-_paiement_de_dividendes_exo_2024_-_cbibf.pdf",
-      "ticker": "CBIBF",
-      "nom": "Coris Bank International",
       "secteur": "Banque"
     }
   ]
