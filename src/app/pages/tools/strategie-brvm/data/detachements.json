@@ -1,7 +1,18 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-10-07",
+  "updated_at": "2026-10-10",
   "entries": [
+    {
+      "emetteur": "BOLLORE TRANSPORT & LOGISTICS",
+      "exercice": 2025,
+      "date_paiement": "2026-10-27",
+      "date_ex_dividende": "2026-10-26",
+      "montant_net_fcfa": 92.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20261009_-_avis_ndeg297_brvmdg_-_paiement_de_dividendes_exo_2025_-_agl_ci.pdf",
+      "ticker": "SDSC",
+      "nom": "Bolloré Transport & Logistics CI",
+      "secteur": "Transport"
+    },
     {
       "emetteur": "TRACTAFRIC CI",
       "exercice": 2025,
