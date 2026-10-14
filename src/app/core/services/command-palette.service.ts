@@ -40,7 +40,9 @@ export class CommandPaletteService {
      * something to the field itself.
      */
     static isChord(ev: KeyboardEvent): boolean {
-        if (ev.key.toLowerCase() !== 'k' || ev.shiftKey || ev.altKey) return false;
+        // Some keydown events reach `document` with no `key` at all (synthetic
+        // events on Android and desktop Chrome): never a chord, never a throw.
+        if (typeof ev.key !== 'string' || ev.key.toLowerCase() !== 'k' || ev.shiftKey || ev.altKey) return false;
         const apple = /Mac|iPhone|iPad/.test(navigator.platform) || /Mac OS/.test(navigator.userAgent);
         return apple ? ev.metaKey && !ev.ctrlKey : ev.ctrlKey && !ev.metaKey;
     }
