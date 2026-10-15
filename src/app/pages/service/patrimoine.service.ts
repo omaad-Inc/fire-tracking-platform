@@ -13,6 +13,8 @@ export interface PatrimoineAssetItemDto {
     value: number;          // EUR base
     currency: string;       // native currency of the asset
     category: string;
+    /** P1-4: post-payout tontine obligation, EUR base (undefined for everything else). */
+    tontineCommitment?: number;
     deltaAbs?: number;
     deltaPct?: number;
     institution?: string;
@@ -160,6 +162,8 @@ export class PatrimoineService {
             value: valueEur,
             currency: asset.currency || 'EUR',
             category: asset.category,
+            tontineCommitment: asset.tontine_commitment
+                ? this.currency.toEurFromNative(asset.tontine_commitment, asset.currency) : undefined,
             deltaAbs: Math.round(deltaAbs * 100) / 100,
             deltaPct: Math.round(deltaPct * 100) / 100,
             institution: asset.institution ?? undefined,

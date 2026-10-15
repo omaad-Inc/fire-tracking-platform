@@ -127,6 +127,13 @@ import { DebtPaymentSheetComponent } from './components/debt-payment-sheet';
                                     <p class="text-[11px] font-medium uppercase tracking-wider text-surface-400 mb-0.5">{{ t('debts.detail.payoff') }}</p>
                                     <div class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ p }}</div>
                                     <p class="text-[11px] text-surface-400 m-0">{{ t('debts.detail.payoffHint') }}</p>
+                                    @if (payoffWithInterest(); as w) {
+                                        @if (w.date) {
+                                            <p class="text-[11px] text-ochre-700 dark:text-ochre-400 m-0 mt-0.5">{{ t('debts.detail.payoffInterest', { date: w.date, rate: w.rate }) }}</p>
+                                        } @else {
+                                            <p class="text-[11px] text-negative m-0 mt-0.5">{{ t('debts.detail.payoffNever', { rate: w.rate }) }}</p>
+                                        }
+                                    }
                                 </div>
                             }
                         </div>
@@ -238,6 +245,28 @@ export class DebtDetailPage implements OnInit {
         if (d.frequency === 'weekly') end.setDate(end.getDate() + (periods - 1) * 7);
         else end.setMonth(end.getMonth() + (periods - 1));
         return end.toLocaleDateString(this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR', { month: 'long', year: 'numeric' });
+    });
+
+    /** P1-3: the same estimate with interest, when a rate is known. Simple
+     *  periodic amortisation (rate / 12 or / 52), labelled an estimate; no
+     *  table. `date` is null when the instalment does not even cover the
+     *  interest, so the balance never falls. */
+    payoffWithInterest = computed<{ date: string | null; rate: number } | null>(() => {
+        const d = this.debt();
+        if (!d || !this.payoff() || !(d.interestRate > 0) || !d.monthlyPayment) return null;
+        const r = d.interestRate / 100 / (d.frequency === 'weekly' ? 52 : 12);
+        const balance = d.nativeRemaining;
+        const instalment = d.monthlyPayment;
+        if (instalment <= balance * r) return { date: null, rate: d.interestRate };
+        const periods = Math.ceil(-Math.log(1 - (r * balance) / instalment) / Math.log(1 + r));
+        const start = parseLocalDate(d.nextPaymentDate) ?? new Date();
+        const end = new Date(start);
+        if (d.frequency === 'weekly') end.setDate(end.getDate() + (periods - 1) * 7);
+        else end.setMonth(end.getMonth() + (periods - 1));
+        return {
+            date: end.toLocaleDateString(this.i18n.lang() === 'en' ? 'en-US' : 'fr-FR', { month: 'long', year: 'numeric' }),
+            rate: d.interestRate,
+        };
     });
 
     facts = computed<{ label: string; value: string; icon: string }[]>(() => {

@@ -200,7 +200,7 @@ export class PricingWidget {
     }
 
     premiumFeatures() {
-        return [1, 2, 3, 4, 5, 6, 7].map(i => this.t(`plans.premiumFeatures.f${i}`));
+        return [1, 2, 3, 4, 5, 6].map(i => this.t(`plans.premiumFeatures.f${i}`));
     }
 
     faqItems() {
