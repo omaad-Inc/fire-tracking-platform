@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-10-13",
+  "updated_at": "2026-10-15",
   "entries": [
     {
       "emetteur": "BOLLORE TRANSPORT & LOGISTICS",
@@ -605,17 +605,6 @@
       "avis_url": "https://www.brvm.org/sites/default/files/20250703_-_avis_ndeg150_brvmdg_-_paiement_de_dividendes_exo_2024_-_saph_ci.pdf",
       "ticker": "SPHC",
       "nom": "SAPH",
-      "secteur": "Agro-industrie"
-    },
-    {
-      "emetteur": "SOGB",
-      "exercice": 2024,
-      "date_paiement": "2025-07-15",
-      "date_ex_dividende": "2025-07-11",
-      "montant_net_fcfa": 600.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250701_-_avis_ndeg146_brvmdg_-_paiement_de_dividendes_exercice_2024_-_sogb_ci.pdf",
-      "ticker": "SOGC",
-      "nom": "SOGB CI",
       "secteur": "Agro-industrie"
     }
   ]
