@@ -31,7 +31,7 @@ import { trackLandingCta } from './landing-shared';
 
                 <nav class="lp-desktop-only flex items-center gap-0.5 mx-auto" [attr.aria-label]="t('landing.nav.mainAria')">
                     <a class="lp-nav-link" [routerLink]="homeLink" fragment="features">{{ t('landing.nav.features') }}</a>
-                    <a class="lp-nav-link" [routerLink]="homeLink" fragment="pricing">{{ t('landing.nav.pricing') }}</a>
+                    <a class="lp-nav-link" [routerLink]="[currentLang, 'tarifs']">{{ t('landing.nav.pricing') }}</a>
                     <div class="relative" (mouseenter)="hoverTools(true)" (mouseleave)="hoverTools(false)"
                          (keydown.escape)="closeTools()" (focusout)="onToolsFocusOut($event)">
                         <button type="button" class="lp-nav-link gap-1" aria-haspopup="true" aria-controls="lp-mega-tools"
@@ -108,7 +108,7 @@ import { trackLandingCta } from './landing-shared';
                 </div>
                 <nav class="mt-2" [attr.aria-label]="t('landing.nav.mainAria')">
                     <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="homeLink" fragment="features" (click)="closeSheet()">{{ t('landing.nav.features') }}</a>
-                    <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="homeLink" fragment="pricing" (click)="closeSheet()">{{ t('landing.nav.pricing') }}</a>
+                    <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="[currentLang, 'tarifs']" (click)="closeSheet()">{{ t('landing.nav.pricing') }}</a>
                     <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="[currentLang, aboutSlug]" (click)="closeSheet()">{{ t('landing.nav.about') }}</a>
                     <span class="lp-sheet-group">{{ t('landing.nav.tools') }}</span>
                     @for (item of tools; track item.key) {

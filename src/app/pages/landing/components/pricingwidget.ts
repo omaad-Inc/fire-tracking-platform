@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -55,7 +55,11 @@ export const LANDING_FAQ_KEYS = [5, 2, 1, 8, 3, 6, 7] as const;
             <div class="lp-container">
                 <div class="max-w-[42rem] mx-auto text-center" lpReveal>
                     <span class="lp-eyebrow">{{ t('landing.pricing.badge') }}</span>
-                    <h2 id="pricing-title" class="lp-h2 mt-3">{{ t('landing.pricing.h2a') }} {{ t('landing.pricing.h2b') }}</h2>
+                    @if (standalone()) {
+                        <h1 id="pricing-title" class="lp-h1 mt-3">{{ t('landing.pricing.h2a') }} {{ t('landing.pricing.h2b') }}</h1>
+                    } @else {
+                        <h2 id="pricing-title" class="lp-h2 mt-3">{{ t('landing.pricing.h2a') }} {{ t('landing.pricing.h2b') }}</h2>
+                    }
                     <p class="lp-lead mt-4">{{ t('landing.pricing.description') }}</p>
                 </div>
 
@@ -147,6 +151,8 @@ export class PricingWidget {
     private i18n = inject(I18nService);
     private router = inject(Router);
 
+    /** On /tarifs the section is the page: its title is the H1. */
+    readonly standalone = input(false);
     readonly passKeys = PASS_KEYS;
     readonly faqKeys = LANDING_FAQ_KEYS;
     /** The selected pass length, shared by Pro and Premium. 1 month is the anchor. */

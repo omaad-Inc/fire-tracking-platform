@@ -34,7 +34,7 @@ if (!html.includes(inline)) {
 }
 // Sanity: the rule must match the landing and must NOT match the app or auth.
 const re = new RegExp(source);
-const mustMatch = ['/', '/fr/landing', '/fr/landing/', '/en/blog/x', '/outils/comparateur-sgi-brvm', '/confidentialite', '/support/', '/fr/tools/fire-simulator', '/g/abc'];
+const mustMatch = ['/', '/fr/landing', '/fr/landing/', '/fr/tarifs/', '/en/blog/x', '/outils/comparateur-sgi-brvm', '/confidentialite', '/support/', '/fr/tools/fire-simulator', '/g/abc'];
 const mustNot = ['/fr', '/fr/', '/fr/pages/patrimoine', '/fr/auth/login', '/share/abc', '/auth/callback', '/en/onboarding'];
 const bad = [...mustMatch.filter((p) => !re.test(p)).map((p) => `should match ${p}`), ...mustNot.filter((p) => re.test(p)).map((p) => `must not match ${p}`)];
 if (bad.length) {

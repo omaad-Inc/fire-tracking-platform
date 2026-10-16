@@ -86,6 +86,7 @@ export const appRoutes: Routes = [
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },
     { path: ':lang/faq', loadComponent: () => import('./app/pages/landing/components/faq').then(m => m.FaqPage) },
+    { path: ':lang/tarifs', loadComponent: () => import('./app/pages/landing/components/tarifs').then(m => m.TarifsPage) },
     { path: ':lang/legal/mentions', loadComponent: () => import('./app/pages/landing/components/legal-mentions').then(m => m.LegalMentionsPage) },
     // L'ancienne politique bilingue /:lang/legal/privacy est remplacée par
     // /confidentialite (Netlify 301 dans public/_redirects pour les URLs déjà

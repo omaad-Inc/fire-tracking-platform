@@ -80,7 +80,7 @@
          frame on the landing and the saved preference is left untouched. -->
     <script>
         (function () {
-            var PUBLIC_LIGHT = /^\/(?:$|(?:fr|en)\/(?:landing|blog|faq|legal|qui-sommes-nous|about|tools|fire-africa)(?:\/|$)|outils(?:\/|$)|confidentialite(?:\/|$)|supprimer-mon-compte(?:\/|$)|support(?:\/|$)|paiement\/|g\/)/;
+            var PUBLIC_LIGHT = /^\/(?:$|(?:fr|en)\/(?:landing|tarifs|blog|faq|legal|qui-sommes-nous|about|tools|fire-africa)(?:\/|$)|outils(?:\/|$)|confidentialite(?:\/|$)|supprimer-mon-compte(?:\/|$)|support(?:\/|$)|paiement\/|g\/)/;
             try {
                 var publicLight = PUBLIC_LIGHT.test(location.pathname);
                 var raw = localStorage.getItem('omaad-layout-config');

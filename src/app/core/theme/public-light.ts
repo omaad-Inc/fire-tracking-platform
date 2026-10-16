@@ -17,7 +17,7 @@
  * Angular) so a dark-mode user never sees a dark first frame on a public page.
  * `tools/public-light-guard.mjs` fails the build if the two copies diverge.
  */
-export const PUBLIC_LIGHT_PATH_SOURCE = String.raw`^\/(?:$|(?:fr|en)\/(?:landing|blog|faq|legal|qui-sommes-nous|about|tools|fire-africa)(?:\/|$)|outils(?:\/|$)|confidentialite(?:\/|$)|supprimer-mon-compte(?:\/|$)|support(?:\/|$)|paiement\/|g\/)`;
+export const PUBLIC_LIGHT_PATH_SOURCE = String.raw`^\/(?:$|(?:fr|en)\/(?:landing|tarifs|blog|faq|legal|qui-sommes-nous|about|tools|fire-africa)(?:\/|$)|outils(?:\/|$)|confidentialite(?:\/|$)|supprimer-mon-compte(?:\/|$)|support(?:\/|$)|paiement\/|g\/)`;
 
 export const PUBLIC_LIGHT_PATH = new RegExp(PUBLIC_LIGHT_PATH_SOURCE);
 

@@ -84,7 +84,7 @@ export class FooterWidget {
                 { label: 'landing.nav.features', link: [L, 'landing'], fragment: 'features' },
                 { label: 'landing.footer.productTour', link: [L, 'landing'], fragment: 'tour' },
                 { label: 'landing.footer.productProjection', link: [L, 'landing'], fragment: 'projection' },
-                { label: 'landing.nav.pricing', link: [L, 'landing'], fragment: 'pricing' },
+                { label: 'landing.nav.pricing', link: [L, 'tarifs'] },
                 { label: 'landing.footer.resourcesFaq', link: [L, 'landing'], fragment: 'faq' },
             ] },
             { title: 'landing.nav.tools', links: [

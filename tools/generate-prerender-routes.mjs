@@ -67,6 +67,7 @@ const blogSlugs = [...postsSrc.matchAll(/slug:\s*'([^']+)'[\s\S]*?date:\s*'(\d{4
 // ── Bilingual (FR/EN) public marketing pages. Path is the lang-less suffix. ──
 const LANG_PATHS = [
     '/landing',
+    '/tarifs',
     '/blog',
     '/faq',
     '/qui-sommes-nous',
