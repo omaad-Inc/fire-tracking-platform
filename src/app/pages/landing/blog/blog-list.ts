@@ -2,8 +2,9 @@ import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
-import { BlogTopbar } from './blog-topbar';
+import { TopbarWidget } from '../components/topbarwidget.component';
 import { FooterWidget } from '../components/footerwidget';
+import { frenchTypo } from '../components/landing-shared';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN, withTrailingSlash } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
@@ -13,25 +14,25 @@ import { BlogPost, COVER_FALLBACK, absoluteCoverUrl, publishedPosts } from './po
 @Component({
     selector: 'app-blog-list',
     standalone: true,
-    imports: [CommonModule, NgOptimizedImage, RouterModule, RippleModule, BlogTopbar, FooterWidget],
+    imports: [CommonModule, NgOptimizedImage, RouterModule, RippleModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
+        <div class="lp min-h-screen">
             <!-- Resource topbar (same pattern as the BRVM tools) -->
-            <app-blog-topbar />
+            <topbar-widget />
 
             <!-- Content -->
-            <main class="pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-7xl mx-auto">
 
                 <!-- Hero -->
                 <header class="mb-12 max-w-3xl">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wider mb-4">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-ochre-500"></span>
                         {{ isFr() ? 'Le blog FIRE Africa' : 'The FIRE Africa blog' }}
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-white mb-4 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         {{ isFr() ? 'Construis. Protège. Règne.' : 'Build. Protect. Reign.' }}
                     </h1>
-                    <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
+                    <p class="lp-lead">
                         {{ isFr()
                             ? 'Toutes les éditions de la newsletter FIRE Africa : analyses BRVM, stratégies patrimoine et chiffres de la diaspora.'
                             : 'Every edition of the FIRE Africa newsletter, BRVM analyses, wealth strategies, and numbers from the diaspora.' }}
@@ -90,8 +91,8 @@ import { BlogPost, COVER_FALLBACK, absoluteCoverUrl, publishedPosts } from './po
                                 </div>
 
                                 <!-- Title -->
-                                <h2 class="text-lg font-bold text-surface-900 dark:text-white mb-2 leading-snug group-hover:text-brand-700 dark:group-hover:text-ochre-400 transition-colors">
-                                    {{ post.title }}
+                                <h2 class="lp-h3 text-[19px] mb-2 group-hover:text-[color:var(--lp-ochre-ink)] transition-colors">
+                                    {{ typo(post.title) }}
                                 </h2>
 
                                 <!-- Excerpt -->
@@ -218,4 +219,6 @@ export class BlogList implements OnDestroy {
         const locale = this.isFr() ? 'fr-FR' : 'en-US';
         return d.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
     }
+
+    typo(text: string): string { return frenchTypo(text); }
 }

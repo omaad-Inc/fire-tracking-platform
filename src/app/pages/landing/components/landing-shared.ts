@@ -2,6 +2,15 @@ import { Router } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import type { Lang } from '../../../i18n/i18n.service';
 
+/**
+ * French typography at render time: a no-break space before %, ?, !, : and ;
+ * so a title never wraps as "4 / % fonctionne" on a phone. Titles come from
+ * generated data (blog/posts.ts) that must not be edited by hand.
+ */
+export function frenchTypo(text: string): string {
+    return text.replace(/ ([%?!:;])/g, ' $1');
+}
+
 /** The `/fr` or `/en` router prefix of the current URL ("/" has none: FR). */
 export function landingLangPrefix(router: Router): string {
     const match = router.url.match(/^\/(fr|en)(?:\/|$)/);

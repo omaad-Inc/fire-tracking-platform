@@ -31,15 +31,15 @@ const MAILTO =
             <topbar-widget />
 
             <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
-                <header class="mb-10">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
+                <header class="mb-10 text-center md:text-left">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <i class="pi pi-user-minus text-[10px]"></i>
                         Votre compte vous appartient
                     </span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         Supprimer mon compte
                     </h1>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                    <p class="lp-lead">
                         Vous pouvez supprimer votre compte Omaad et toutes vos données à tout moment,
                         gratuitement, sans avoir à nous contacter. La suppression est immédiate et définitive.
                     </p>
@@ -48,10 +48,10 @@ const MAILTO =
                 <article class="space-y-10">
                     <!-- Les deux chemins en libre-service -->
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Depuis l'application, en moins d'une minute</h2>
+                        <h2 class="lp-h3 mb-4">Depuis l'application, en moins d'une minute</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @for (path of paths; track path.title) {
-                                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-5">
+                                <div class="lp-card p-5">
                                     <div class="flex items-center gap-3 mb-4">
                                         <span class="w-9 h-9 shrink-0 rounded-xl bg-ochre-100 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 flex items-center justify-center">
                                             <i [class]="'pi ' + path.icon + ' text-sm'"></i>
@@ -77,7 +77,7 @@ const MAILTO =
 
                     <!-- Ce qui est supprimé -->
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">Ce qui est supprimé</h2>
+                        <h2 class="lp-h3 mb-3">Ce qui est supprimé</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-3">
                             La suppression efface votre compte et l'intégralité des données qui y sont rattachées :
                         </p>
@@ -85,7 +85,7 @@ const MAILTO =
                             @for (item of deleted; track item) {
                                 <li class="flex items-start gap-3">
                                     <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                    <p class="text-surface-700 dark:text-surface-300 leading-relaxed">{{ item }}</p>
+                                    <p class="lp-body">{{ item }}</p>
                                 </li>
                             }
                         </ul>
@@ -103,8 +103,8 @@ const MAILTO =
 
                     <!-- Export avant suppression -->
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">Avant de partir : emportez vos données</h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <h2 class="lp-h3 mb-3">Avant de partir : emportez vos données</h2>
+                        <p class="lp-body">
                             Vous pouvez exporter gratuitement toutes vos données avant de supprimer votre compte :
                             sur le web, Paramètres, puis Préférences, puis « Exporter mes données » (export complet
                             en JSON, transactions en CSV). L'export n'est plus possible une fois le compte supprimé.
@@ -113,7 +113,7 @@ const MAILTO =
 
                     <!-- Fallback email -->
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">Vous n'avez plus accès à votre compte ?</h2>
+                        <h2 class="lp-h3 mb-3">Vous n'avez plus accès à votre compte ?</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-4">
                             Si vous ne pouvez plus vous connecter (email perdu, appareil changé), envoyez-nous une
                             demande de suppression depuis l'adresse email associée à votre compte, ou en nous donnant
@@ -133,7 +133,7 @@ const MAILTO =
                         </p>
                     </section>
 
-                    <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-5">
+                    <div class="lp-card p-5">
                         <p class="text-sm font-semibold text-surface-900 dark:text-white mb-1">Pour aller plus loin</p>
                         <p class="text-[13px] text-surface-600 dark:text-surface-400 leading-relaxed">
                             Le détail des données collectées, de leur usage et de vos droits se trouve dans notre

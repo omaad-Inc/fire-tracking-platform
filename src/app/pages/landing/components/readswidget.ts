@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { I18nService } from '../../../i18n/i18n.service';
 import { BlogPost, COVER_FALLBACK, publishedPosts } from '../blog/posts';
-import { landingLangPrefix } from './landing-shared';
+import { frenchTypo, landingLangPrefix } from './landing-shared';
 import { RevealDirective } from './reveal.directive';
 
 /**
@@ -40,7 +40,7 @@ import { RevealDirective } from './reveal.directive';
                                 <span class="block mt-4 text-[12px] font-semibold uppercase tracking-[0.08em] lp-muted">
                                     {{ t('landing.reads.edition') }} {{ p.edition }} · {{ p.readingMinutes }} {{ t('landing.reads.minutes') }}
                                 </span>
-                                <span class="block mt-2 lp-h3 text-[20px] group-hover:text-[color:var(--lp-ochre-ink)] transition-colors">{{ p.title }}</span>
+                                <span class="block mt-2 lp-h3 text-[20px] group-hover:text-[color:var(--lp-ochre-ink)] transition-colors">{{ typo(p.title) }}</span>
                                 <span class="block mt-2 lp-body text-[15px] lp-clamp-3">{{ p.excerpt }}</span>
                             </a>
                         }
@@ -87,4 +87,6 @@ export class ReadsWidget {
         if (img.src.includes('/w720/')) img.src = img.src.replace('/w720/', '/').replace(/\.webp$/, '.jpg');
         else img.src = COVER_FALLBACK;
     }
+
+    typo(text: string): string { return frenchTypo(text); }
 }

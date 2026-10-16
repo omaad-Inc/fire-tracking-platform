@@ -5,8 +5,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RippleModule } from 'primeng/ripple';
 import { firstValueFrom } from 'rxjs';
-import { BlogTopbar } from './blog-topbar';
+import { TopbarWidget } from '../components/topbarwidget.component';
 import { FooterWidget } from '../components/footerwidget';
+import { frenchTypo } from '../components/landing-shared';
 import { NewsletterSignup } from '../components/newsletter-signup';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
@@ -52,18 +53,18 @@ interface RBlock {
 @Component({
     selector: 'app-blog-article',
     standalone: true,
-    imports: [CommonModule, NgOptimizedImage, RouterModule, RippleModule, BlogTopbar, FooterWidget, NewsletterSignup],
+    imports: [CommonModule, NgOptimizedImage, RouterModule, RippleModule, TopbarWidget, FooterWidget, NewsletterSignup],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
+        <div class="lp min-h-screen">
             <!-- Reading progress -->
             <div class="fixed top-0 left-0 right-0 z-[60] h-1 bg-transparent">
                 <div class="h-full bg-ochre-500 transition-[width] duration-150 ease-out" [style.width.%]="progress()"></div>
             </div>
 
             <!-- Resource topbar (same pattern as the BRVM tools) -->
-            <app-blog-topbar />
+            <topbar-widget />
 
-            <main class="pt-12 md:pt-16 pb-24 px-6">
+            <main class="pt-8 md:pt-12 pb-24 px-6">
                 @if (post(); as p) {
                     <!-- Back link -->
                     <div class="max-w-[680px] mx-auto mb-8">
@@ -85,10 +86,10 @@ interface RBlock {
                             }
                         </div>
 
-                        <h1 class="text-3xl md:text-[2.7rem] font-bold text-surface-900 dark:text-white mb-5 leading-[1.12] tracking-tight max-w-[20ch] mx-auto">
-                            {{ p.title }}
+                        <h1 class="lp-h2 text-[30px] md:text-[42px] mb-5 max-w-[28ch] mx-auto">
+                            {{ typo(p.title) }}
                         </h1>
-                        <p class="text-lg md:text-xl text-surface-500 dark:text-surface-400 leading-relaxed max-w-[46ch] mx-auto mb-7">
+                        <p class="lp-lead max-w-[46ch] mx-auto mb-7">
                             {{ p.excerpt }}
                         </p>
 
@@ -546,4 +547,6 @@ export class BlogArticle implements OnInit, OnDestroy {
         const locale = this.isFr() ? 'fr-FR' : 'en-US';
         return d.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
     }
+
+    typo(text: string): string { return frenchTypo(text); }
 }

@@ -16,60 +16,60 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
             <topbar-widget />
 
             <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
-                <header class="mb-10">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
+                <header class="mb-10 text-center md:text-left">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <i class="pi pi-info-circle text-[10px]"></i>
                         {{ isFr() ? 'Informations légales' : 'Legal information' }}
                     </span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         {{ isFr() ? 'Mentions légales' : 'Legal notice' }}
                     </h1>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm">
+                    <p class="lp-lead">
                         {{ isFr() ? 'Dernière mise à jour : ' : 'Last updated: ' }}{{ updated }}
                     </p>
                 </header>
 
                 <article class="prose-omaad space-y-8">
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
+                        <h2 class="lp-h3 mb-3">
                             {{ isFr() ? 'Éditeur du site' : 'Site publisher' }}
                         </h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed whitespace-pre-line">{{ blocks().publisher }}</p>
+                        <p class="lp-body whitespace-pre-line">{{ blocks().publisher }}</p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
+                        <h2 class="lp-h3 mb-3">
                             {{ isFr() ? 'Directeur de la publication' : 'Publication director' }}
                         </h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">{{ blocks().director }}</p>
+                        <p class="lp-body">{{ blocks().director }}</p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
+                        <h2 class="lp-h3 mb-3">
                             {{ isFr() ? 'Hébergement' : 'Hosting' }}
                         </h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed whitespace-pre-line">{{ blocks().hosting }}</p>
+                        <p class="lp-body whitespace-pre-line">{{ blocks().hosting }}</p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
+                        <h2 class="lp-h3 mb-3">
                             {{ isFr() ? 'Propriété intellectuelle' : 'Intellectual property' }}
                         </h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">{{ blocks().ip }}</p>
+                        <p class="lp-body">{{ blocks().ip }}</p>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
+                        <h2 class="lp-h3 mb-3">
                             {{ isFr() ? 'Contact' : 'Contact' }}
                         </h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <p class="lp-body">
                             {{ blocks().contactPre }}
                             <a href="mailto:contact@omaad.africa" class="text-brand-700 dark:text-ochre-400 font-semibold hover:underline">contact&#64;omaad.africa</a>.
                         </p>
                     </section>
 
                     <!-- Draft banner -->
-                    <div class="mt-10 p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                    <div class="mt-10 p-4 lp-card text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
                         {{ isFr() ? 'Dernière mise à jour : 19 juillet 2026.' : 'Last updated: 19 July 2026.' }}
                     </div>
                 </article>

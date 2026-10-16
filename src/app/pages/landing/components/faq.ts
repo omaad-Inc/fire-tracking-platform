@@ -33,14 +33,14 @@ interface FaqCategory {
 
                 <!-- Hero -->
                 <header class="mb-12 text-center max-w-2xl mx-auto">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ochre-100 dark:bg-ochre-900/20 border border-ochre-200 dark:border-ochre-700/40 text-ochre-700 dark:text-ochre-400 text-xs font-semibold uppercase tracking-wider mb-4">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <i class="pi pi-question-circle text-[10px]"></i>
                         {{ isFr() ? 'Aide & FAQ' : 'Help & FAQ' }}
                     </span>
-                    <h1 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-white mb-4 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         {{ isFr() ? 'Questions fréquentes' : 'Frequently asked questions' }}
                     </h1>
-                    <p class="text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
+                    <p class="lp-lead">
                         {{ isFr()
                             ? 'Tout ce qu\\'il faut savoir sur Omaad, la BRVM, FIRE Africa et la sécurité de vos données.'
                             : 'Everything you need to know about Omaad, the BRVM, FIRE Africa, and your data security.' }}
@@ -70,10 +70,10 @@ interface FaqCategory {
                 <!-- Categories with entries -->
                 @for (cat of visibleCategories(); track cat.id) {
                     <section class="mb-10">
-                        <h2 class="text-2xl font-bold text-surface-900 dark:text-white mb-5">{{ cat.label }}</h2>
+                        <h2 class="lp-h3 mb-5">{{ cat.label }}</h2>
                         <div class="space-y-3">
                             @for (q of cat.entries; track q.id) {
-                                <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-surface-0 dark:bg-surface-900 overflow-hidden transition-all"
+                                <div class="lp-card overflow-hidden transition-all"
                                      [ngClass]="{ 'shadow-md': isOpen(q.id) }">
                                     <button (click)="toggle(q.id)" pRipple
                                             class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
@@ -82,7 +82,7 @@ interface FaqCategory {
                                            [class.rotate-180]="isOpen(q.id)"></i>
                                     </button>
                                     @if (isOpen(q.id)) {
-                                        <div class="px-5 pb-5 pt-1 text-surface-700 dark:text-surface-300 leading-relaxed whitespace-pre-line">{{ q.answer }}</div>
+                                        <div class="px-5 pb-5 pt-1 lp-body whitespace-pre-line">{{ q.answer }}</div>
                                     }
                                 </div>
                             }
