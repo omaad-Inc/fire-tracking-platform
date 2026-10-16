@@ -2816,7 +2816,7 @@ export const FR = {
     },
     hero: {
       eyebrow: 'Construis. Protège. Règne.',
-      h1: 'Tout votre patrimoine, ici et au pays.',
+      h1: 'Tout votre patrimoine, au pays comme à l\'étranger.',
       lead: 'Immobilier, actions BRVM, tontines, mobile money, épargne en euros : Omaad réunit tout, en FCFA et en euros, et vous montre où vous en êtes vers votre indépendance financière.',
       ctaPrimary: 'Créer mon compte gratuit',
       ctaSecondary: 'Voir l\'application',
@@ -2828,7 +2828,7 @@ export const FR = {
     reads: {
       eyebrow: 'Blog FIRE Africa',
       h2: 'Lectures utiles',
-      lead: 'Articles et méthodes pour tirer le meilleur de votre argent, entre ici et le pays.',
+      lead: 'Articles et méthodes pour tirer le meilleur de votre argent, au pays comme à l\'étranger.',
       all: 'Tous les articles',
       edition: 'Édition',
       minutes: 'min',
@@ -2855,7 +2855,7 @@ export const FR = {
     benefits: {
       eyebrow: 'Pourquoi Omaad',
       h2: 'Pensé pour une vie financière sur deux continents.',
-      b1Title: 'Ici et au pays',
+      b1Title: 'Au pays comme à l\'étranger',
       b1Desc: 'Un studio en Europe, un terrain au village, une tontine familiale et un compte mobile money : un seul patrimoine, dans la devise que vous choisissez.',
       b2Title: 'La BRVM en direct',
       b2Desc: 'Cours de clôture des actions et des FCP, import de vos relevés SGI, historique par titre.',

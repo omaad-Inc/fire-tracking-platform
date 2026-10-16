@@ -2818,7 +2818,7 @@ export const EN: Dict = {
     },
     hero: {
       eyebrow: 'Build. Protect. Reign.',
-      h1: 'All your wealth, here and back home.',
+      h1: 'All your wealth, back home and abroad.',
       lead: 'Real estate, BRVM stocks, tontines, mobile money, euro savings: Omaad brings everything together, in CFA francs and in euros, and shows you how far you are from financial independence.',
       ctaPrimary: 'Create my free account',
       ctaSecondary: 'See the app',
@@ -2830,7 +2830,7 @@ export const EN: Dict = {
     reads: {
       eyebrow: 'FIRE Africa blog',
       h2: 'Noteworthy reads',
-      lead: 'Articles and methods to make the most of your money, here and back home.',
+      lead: 'Articles and methods to make the most of your money, back home and abroad.',
       all: 'All articles',
       edition: 'Edition',
       minutes: 'min',
@@ -2857,7 +2857,7 @@ export const EN: Dict = {
     benefits: {
       eyebrow: 'Why Omaad',
       h2: 'Built for a financial life on two continents.',
-      b1Title: 'Here and back home',
+      b1Title: 'Back home and abroad',
       b1Desc: 'A studio in Europe, a plot in the village, a family tontine and a mobile money account: one wealth, in the currency you choose.',
       b2Title: 'The BRVM, live',
       b2Desc: 'Closing prices for stocks and funds, import of your broker statements, history per holding.',

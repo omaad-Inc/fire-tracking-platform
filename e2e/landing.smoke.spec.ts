@@ -64,7 +64,7 @@ test.describe('landing: first screen, nav sheet, structure', () => {
 
     test('english landing is English (prerender parity)', async ({ page }) => {
         await page.goto('/en/landing', { waitUntil: 'networkidle' });
-        await expect(page.locator('h1')).toHaveText('All your wealth, here and back home.');
+        await expect(page.locator('h1')).toHaveText('All your wealth, back home and abroad.');
         await expect(page.locator('html')).toHaveAttribute('lang', 'en');
         const faq = await page.locator('script[type="application/ld+json"]').allTextContents();
         expect(faq.join('')).toContain('"FAQPage"');
