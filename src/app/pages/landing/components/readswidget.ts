@@ -54,8 +54,24 @@ export class ReadsWidget {
     private i18n = inject(I18nService);
     private router = inject(Router);
 
-    /** Three most recent sent editions, newest first. */
-    readonly posts: BlogPost[] = publishedPosts().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+    /**
+     * Editorial pick (owner, 2026-10-16), in display order. A slug that is not
+     * published yet is skipped and the slot is filled with the most recent
+     * sent edition not already shown, so the block never has fewer than three.
+     */
+    static readonly FEATURED_SLUGS = ['regle-4-pourcent', 'dca-brvm', 'trading-vs-dca'];
+
+    readonly posts: BlogPost[] = ReadsWidget.pick(publishedPosts());
+
+    private static pick(published: BlogPost[]): BlogPost[] {
+        const picked = ReadsWidget.FEATURED_SLUGS
+            .map((slug) => published.find((p) => p.slug === slug))
+            .filter((p): p is BlogPost => !!p);
+        const fill = published
+            .filter((p) => !picked.includes(p))
+            .sort((a, b) => b.date.localeCompare(a.date));
+        return [...picked, ...fill].slice(0, 3);
+    }
 
     get currentLang(): string { return landingLangPrefix(this.router); }
 
