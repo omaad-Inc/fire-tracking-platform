@@ -9,6 +9,7 @@ import { FireProjectionWidget } from './components/fireprojectionwidget';
 import { TrustWidget } from './components/trustwidget';
 import { PricingWidget, LANDING_FAQ_KEYS } from './components/pricingwidget';
 import { ClosingBandWidget } from './components/closingbandwidget';
+import { ReadsWidget } from './components/readswidget';
 import { FooterWidget } from './components/footerwidget';
 import { I18nService, Lang } from '../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
@@ -25,7 +26,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [TopbarWidget, HeroWidget, ProductTourWidget, BenefitsWidget, ShowcaseWidget, FireProjectionWidget, TrustWidget, PricingWidget, ClosingBandWidget, FooterWidget],
+    imports: [TopbarWidget, HeroWidget, ProductTourWidget, BenefitsWidget, ShowcaseWidget, FireProjectionWidget, TrustWidget, PricingWidget, ClosingBandWidget, ReadsWidget, FooterWidget],
     template: `
         <div class="lp min-h-screen">
             <topbar-widget />
@@ -38,6 +39,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
                 <trust-widget />
                 <pricing-widget />
                 <closing-band-widget />
+                <reads-widget />
             </main>
             <footer-widget />
         </div>

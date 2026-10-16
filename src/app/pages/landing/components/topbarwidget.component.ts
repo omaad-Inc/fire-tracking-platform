@@ -32,23 +32,48 @@ import { trackLandingCta } from './landing-shared';
                 <nav class="lp-desktop-only flex items-center gap-0.5 mx-auto" [attr.aria-label]="t('landing.nav.mainAria')">
                     <a class="lp-nav-link" [routerLink]="homeLink" fragment="features">{{ t('landing.nav.features') }}</a>
                     <a class="lp-nav-link" [routerLink]="homeLink" fragment="pricing">{{ t('landing.nav.pricing') }}</a>
-                    <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)" (keydown.escape)="toolsOpen.set(false)">
-                        <button type="button" class="lp-nav-link gap-1" aria-haspopup="true" [attr.aria-expanded]="toolsOpen()"
-                                (click)="toolsOpen.set(!toolsOpen())">
+                    <div class="relative" (mouseenter)="hoverTools(true)" (mouseleave)="hoverTools(false)"
+                         (keydown.escape)="closeTools()" (focusout)="onToolsFocusOut($event)">
+                        <button type="button" class="lp-nav-link gap-1" aria-haspopup="true" aria-controls="lp-mega-tools"
+                                [attr.aria-expanded]="toolsOpen()" (click)="toggleTools()">
                             {{ t('landing.nav.tools') }}
                             <i class="pi pi-chevron-down text-[10px] transition-transform" [class.rotate-180]="toolsOpen()" aria-hidden="true"></i>
                         </button>
                         @if (toolsOpen()) {
-                            <div class="lp-menu-panel" role="menu">
-                                @for (item of tools; track item.key) {
-                                    <a class="lp-menu-item" role="menuitem" [routerLink]="item.link" (click)="toolsOpen.set(false)">
-                                        <span class="lp-icon-tile !w-9 !h-9 !rounded-[10px] text-[15px]"><i class="pi" [class]="item.icon" aria-hidden="true"></i></span>
-                                        <span class="flex flex-col">
-                                            <span class="text-[15px] font-semibold leading-tight">{{ t('landing.nav.' + item.key) }}</span>
-                                            <span class="text-[13px] leading-snug lp-muted">{{ t('landing.nav.' + item.key + 'Desc') }}</span>
-                                        </span>
-                                    </a>
-                                }
+                            <div id="lp-mega-tools" class="lp-mega">
+                                <div class="lp-mega-card">
+                                    <div>
+                                        <span class="lp-mega-group">{{ t('landing.nav.toolsHighlights') }}</span>
+                                        @for (h of highlights; track h.key) {
+                                            <a class="lp-mega-highlight" [routerLink]="h.link" (click)="closeTools()">
+                                                <span><img [src]="h.image" alt="" width="96" height="72" loading="lazy"></span>
+                                                <span class="flex flex-col min-w-0">
+                                                    <span class="text-[15px] font-semibold leading-tight">{{ t('landing.nav.' + h.key) }}</span>
+                                                    <span class="mt-1 text-[13px] leading-snug lp-muted">{{ t('landing.nav.' + h.key + 'Teaser') }}</span>
+                                                </span>
+                                            </a>
+                                        }
+                                    </div>
+                                    <div>
+                                        <span class="lp-mega-group">{{ t('landing.nav.toolsAll') }}</span>
+                                        @for (item of tools; track item.key) {
+                                            <a class="lp-menu-item !min-h-[44px] !py-1.5" [routerLink]="item.link" (click)="closeTools()">
+                                                <span class="lp-icon-tile !w-8 !h-8 !rounded-[9px] text-[14px]"><i class="pi" [class]="item.icon" aria-hidden="true"></i></span>
+                                                <span class="flex flex-col min-w-0">
+                                                    <span class="text-[14px] font-semibold leading-tight">{{ t('landing.nav.' + item.key) }}</span>
+                                                    <span class="text-[12px] leading-snug lp-muted">{{ t('landing.nav.' + item.key + 'Desc') }}</span>
+                                                </span>
+                                            </a>
+                                        }
+                                    </div>
+                                    <div class="lp-mega-foot">
+                                        <span>{{ t('landing.nav.toolsFoot') }}</span>
+                                        <a class="lp-link !min-h-0 text-[14px]" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('nav_tools_register'); closeTools()">
+                                            {{ t('landing.nav.toolsFootCta') }}
+                                            <i class="pi pi-arrow-right text-[11px]" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         }
                     </div>
@@ -128,13 +153,20 @@ export class TopbarWidget {
         { key: 'toolStrategy', icon: 'pi-compass', link: ['/outils/strategie-brvm'] },
         { key: 'toolBlog', icon: 'pi-book', link: ['/fr', 'blog'] },
     ];
+    /** Mega-panel highlights: the two tools that convert best, with a real product visual. */
+    readonly highlights = [
+        { key: 'toolFire', image: 'assets/marketing/objectifs.webp', link: ['/fr', 'tools', 'fire-simulator'] as (string | string[])[] },
+        { key: 'toolSgi', image: 'assets/marketing/marches.webp', link: ['/outils/comparateur-sgi-brvm'] },
+    ];
+    private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+    private openedByHoverAt = 0;
 
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.lang = (match ? match[1] : 'fr') as Lang;
         this.currentLang = '/' + this.lang;
         this.i18n.setLang(this.lang);
-        for (const item of this.tools) if (item.link[0] === '/fr') item.link[0] = this.currentLang;
+        for (const item of [...this.tools, ...this.highlights]) if (item.link[0] === '/fr') item.link[0] = this.currentLang;
         afterNextRender(() => { this.scrolled.set(window.scrollY > 8); });
         // The sheet may be open when a navigation destroys the header (back
         // button, auth redirect): never leave the page scroll locked behind.
@@ -155,6 +187,34 @@ export class TopbarWidget {
 
     @HostListener('window:scroll')
     onScroll(): void { if (isPlatformBrowser(this.platformId)) this.scrolled.set(window.scrollY > 8); }
+
+    // ── Outils mega panel: hover intent + click, never "hover opens, click closes" ──
+    hoverTools(enter: boolean): void {
+        if (this.hoverTimer) clearTimeout(this.hoverTimer);
+        this.hoverTimer = setTimeout(() => {
+            if (enter && !this.toolsOpen()) { this.toolsOpen.set(true); this.openedByHoverAt = Date.now(); }
+            if (!enter) this.toolsOpen.set(false);
+        }, enter ? 80 : 180);
+    }
+
+    toggleTools(): void {
+        if (this.hoverTimer) clearTimeout(this.hoverTimer);
+        // A click right after a hover-open is the same intent as the hover: keep it open.
+        if (this.toolsOpen() && Date.now() - this.openedByHoverAt < 600) return;
+        this.toolsOpen.set(!this.toolsOpen());
+    }
+
+    closeTools(): void {
+        if (this.hoverTimer) clearTimeout(this.hoverTimer);
+        this.toolsOpen.set(false);
+    }
+
+    /** Keyboard users tabbing out of the panel close it (no stale open panel behind the page). */
+    onToolsFocusOut(ev: FocusEvent): void {
+        const root = ev.currentTarget as HTMLElement;
+        const next = ev.relatedTarget as Node | null;
+        if (!next || !root.contains(next)) this.closeTools();
+    }
 
     openSheet(): void {
         this.sheetOpen.set(true);
@@ -193,7 +253,7 @@ export class TopbarWidget {
         this.i18n.setLang(next);
         this.lang = next;
         this.currentLang = '/' + next;
-        for (const item of this.tools) if (/^\/(fr|en)$/.test(item.link[0] as string)) item.link[0] = this.currentLang;
+        for (const item of [...this.tools, ...this.highlights]) if (/^\/(fr|en)$/.test(item.link[0] as string)) item.link[0] = this.currentLang;
         this.closeSheet();
         const url = this.router.url;
         const path = url.split(/[?#]/)[0];

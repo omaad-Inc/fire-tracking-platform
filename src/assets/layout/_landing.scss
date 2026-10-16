@@ -239,6 +239,36 @@
         > * { flex-basis: auto; }
     }
 }
+.lp-snap-3 {
+    @media (min-width: 1024px) { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+}
+.lp-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// ── Reads (blog) cards: the whole card is one link ──
+.lp-read {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 16px;
+    &:focus-visible { outline: 2px solid var(--lp-ochre); outline-offset: 4px; }
+}
+.lp-read-cover {
+    display: block;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #EFF2F7;
+    box-shadow: var(--omaad-shadow-rest);
+    > img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 500ms var(--ease-decelerate); }
+    .lp-read:hover & > img { transform: scale(1.03); }
+    @media (prefers-reduced-motion: reduce) { > img { transition: none; } .lp-read:hover & > img { transform: none; } }
+}
+
 .lp-dot {
     width: 24px;
     height: 24px;
@@ -328,17 +358,56 @@
     &:hover { background: rgba(15, 26, 46, 0.05); }
     &:focus-visible { outline: 2px solid var(--lp-ochre); outline-offset: 2px; }
 }
-.lp-menu-panel {
+// ── Desktop "Outils" mega panel (N26-style: highlights with a visual + the full list) ──
+.lp-mega {
     position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    min-width: 280px;
-    padding: 8px;
-    border-radius: 16px;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(760px, calc(100vw - 48px));
+    // The transparent top strip bridges the gap between the trigger and the
+    // panel so a diagonal mouse move never closes it.
+    padding-top: 12px;
+    z-index: 40;
+    animation: lp-fade var(--motion-base) var(--ease-standard);
+}
+.lp-mega-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+    border-radius: 20px;
     background: var(--lp-card);
     border: 1px solid var(--lp-line);
     box-shadow: var(--omaad-shadow-elevated);
-    z-index: 40;
+}
+.lp-mega-group {
+    display: block;
+    padding: 10px 12px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lp-muted);
+}
+.lp-mega-highlight {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 14px;
+    color: var(--lp-ink);
+    text-decoration: none;
+    &:hover { background: rgba(15, 26, 46, 0.04); }
+    &:focus-visible { outline: 2px solid var(--lp-ochre); outline-offset: -2px; }
+    > span:first-child {
+        flex: 0 0 96px;
+        height: 72px;
+        overflow: hidden;
+        border-radius: 12px;
+        background: #EFF2F7;
+        > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+    }
 }
 .lp-menu-item {
     display: flex;
@@ -351,6 +420,18 @@
     text-decoration: none;
     &:hover { background: rgba(15, 26, 46, 0.05); }
     &:focus-visible { outline: 2px solid var(--lp-ochre); outline-offset: -2px; }
+}
+.lp-mega-foot {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 4px;
+    padding: 12px 12px 4px;
+    border-top: 1px solid var(--lp-line);
+    font-size: 14px;
+    color: var(--lp-muted);
 }
 
 // ── Mobile navigation sheet (bottom, focus-trapped, scroll-locked) ──

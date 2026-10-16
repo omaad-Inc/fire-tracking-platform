@@ -2803,6 +2803,12 @@ export const EN: Dict = {
       toolStrategyDesc: 'Core / Satellite plan and ex-dividend dates',
       toolBlog: 'FIRE Africa blog',
       toolBlogDesc: 'Every edition of the newsletter',
+      toolsHighlights: 'Highlights',
+      toolsAll: 'All tools',
+      toolsFoot: 'Free, no account needed.',
+      toolsFootCta: 'Create my account',
+      toolFireTeaser: 'Your FIRE number in 2 minutes',
+      toolSgiTeaser: 'Pick a broker without overpaying',
     },
     lang: {
       switchTo: 'Français',
@@ -2820,6 +2826,14 @@ export const EN: Dict = {
       trust2: 'XOF, XAF, EUR, USD',
       trust3: 'Open beta, no card required',
       phoneAlt: 'Omaad Overview screen: net worth in CFA francs, monthly change, income and spending, financial goal and BRVM indices',
+    },
+    reads: {
+      eyebrow: 'FIRE Africa blog',
+      h2: 'Noteworthy reads',
+      lead: 'Articles and methods to make the most of your money, here and back home.',
+      all: 'All articles',
+      edition: 'Edition',
+      minutes: 'min',
     },
     tour: {
       eyebrow: 'The app',

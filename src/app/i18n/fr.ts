@@ -2801,6 +2801,12 @@ export const FR = {
       toolStrategyDesc: 'Plan Core / Satellite et détachements de dividendes',
       toolBlog: 'Blog FIRE Africa',
       toolBlogDesc: 'Toutes les éditions de la newsletter',
+      toolsHighlights: 'À la une',
+      toolsAll: 'Tous les outils',
+      toolsFoot: 'Gratuits, sans compte.',
+      toolsFootCta: 'Créer mon compte',
+      toolFireTeaser: 'Votre nombre FIRE en 2 minutes',
+      toolSgiTeaser: 'Choisir sa SGI sans surpayer',
     },
     lang: {
       switchTo: 'English',
@@ -2818,6 +2824,14 @@ export const FR = {
       trust2: 'FCFA, XAF, EUR, USD',
       trust3: 'Bêta ouverte, sans carte bancaire',
       phoneAlt: 'Écran Synthèse d\'Omaad : patrimoine net en FCFA, variation du mois, revenus et dépenses, objectif financier et indices BRVM',
+    },
+    reads: {
+      eyebrow: 'Blog FIRE Africa',
+      h2: 'Lectures utiles',
+      lead: 'Articles et méthodes pour tirer le meilleur de votre argent, entre ici et le pays.',
+      all: 'Tous les articles',
+      edition: 'Édition',
+      minutes: 'min',
     },
     tour: {
       eyebrow: 'L\'application',
