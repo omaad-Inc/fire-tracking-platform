@@ -140,7 +140,7 @@
     &:hover { background: rgba(15, 26, 46, 0.04); }
 }
 .lp-btn-sm { min-height: 44px; padding: 0 18px; font-size: 15px; }
-.lp-btn-block { width: 100%; }
+.lp-btn-block { width: 100%; white-space: normal; text-align: center; line-height: 1.2; padding-block: 12px; }
 .lp-link {
     display: inline-flex;
     align-items: center;

@@ -71,6 +71,23 @@ test.describe('landing: first screen, nav sheet, structure', () => {
         expect(faq.join('')).toContain('"operatingSystem":"Web"');
     });
 
+    test('pricing passes mirror the backend ladder (GET /billing/plans)', async ({ page, request }) => {
+        const api = process.env.E2E_API_URL || 'http://localhost:8000/api/v1';
+        const res = await request.get(`${api}/billing/plans`);
+        expect(res.ok()).toBe(true);
+        const ladder = (await res.json()) as { plans: Array<{ plan: string; durations: Array<{ duration_key: string; xof: number; eur: number }> }> };
+        await page.goto('/fr/landing', { waitUntil: 'networkidle' });
+        for (const key of ['d15', 'm1', 'm3', 'm6']) {
+            await page.locator(`#pricing button[data-pass="${key}"]`).click();
+            for (const tier of ['pro', 'premium']) {
+                const rung = ladder.plans.find((p) => p.plan === tier)!.durations.find((d) => d.duration_key === key)!;
+                const el = page.locator(`#pricing [data-tier="${tier}"]`);
+                await expect(el).toHaveAttribute('data-xof', String(rung.xof));
+                await expect(el).toHaveAttribute('data-eur', String(rung.eur));
+            }
+        }
+    });
+
     test('stale copy is gone', async ({ page }) => {
         await page.goto('/fr/landing', { waitUntil: 'networkidle' });
         const text = await page.locator('body').innerText();
