@@ -153,10 +153,10 @@ export class TopbarWidget {
         { key: 'toolStrategy', icon: 'pi-compass', link: ['/outils/strategie-brvm'] },
         { key: 'toolBlog', icon: 'pi-book', link: ['/fr', 'blog'] },
     ];
-    /** Mega-panel highlights: the two tools that convert best, with a real product visual. */
+    /** Mega-panel highlights: the two tools that convert best, each with a dedicated 96x72 visual (tools/render-highlight-visuals.mjs). */
     readonly highlights = [
-        { key: 'toolFire', image: 'assets/marketing/objectifs.webp', link: ['/fr', 'tools', 'fire-simulator'] as (string | string[])[] },
-        { key: 'toolSgi', image: 'assets/marketing/marches.webp', link: ['/outils/comparateur-sgi-brvm'] },
+        { key: 'toolFire', image: 'assets/marketing/highlight-fire.webp', link: ['/fr', 'tools', 'fire-simulator'] as (string | string[])[] },
+        { key: 'toolSgi', image: 'assets/marketing/highlight-sgi.webp', link: ['/outils/comparateur-sgi-brvm'] },
     ];
     private hoverTimer: ReturnType<typeof setTimeout> | null = null;
     private openedByHoverAt = 0;
