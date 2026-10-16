@@ -1,185 +1,112 @@
-import { Component, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
-import { ButtonModule } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
-import { RippleModule } from 'primeng/ripple';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
 import { I18nService } from '../../../i18n/i18n.service';
+import { nbspSafe } from '../../../core/util/nbsp';
+import { RevealDirective } from './reveal.directive';
 
+/**
+ * Monthly list prices shown on the marketing page, in FCFA. The billing
+ * source of truth is the backend plan catalog (what /pages/plans renders
+ * after sign-in); these two numbers must follow it. They are deliberately
+ * NOT fetched at runtime: the landing is prerendered for crawlers and must
+ * not depend on an API call to show a price.
+ */
+export const LANDING_PLAN_PRICES_XOF = { pro: 4000, premium: 10000 } as const;
+
+/** FAQ order: the cautious visitor's questions first (bank? money? data?), then cost, countries, mobile. */
+export const LANDING_FAQ_KEYS = [5, 2, 1, 3, 6, 7] as const;
+
+/**
+ * Pricing + FAQ (landing redesign): three compact tiers (five bullets each,
+ * from the same plans.* keys as /pages/plans), one action per tier that
+ * always opens the free account (the plan is chosen in-app), and six FAQ
+ * accordions built on native details/summary.
+ */
 @Component({
     selector: 'pricing-widget',
     standalone: true,
-    imports: [DividerModule, ButtonModule, RippleModule, CommonModule, RouterModule],
+    imports: [RouterModule, RevealDirective],
+    changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div id="pricing" class="py-20 px-6 lg:px-20 bg-surface-0 dark:bg-surface-950">
-            <div class="max-w-7xl mx-auto">
-                <div class="text-center mb-16">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-700/10 dark:bg-ochre-400/15 border border-brand-200 dark:border-ochre-700/40 mb-6">
-                        <i class="pi pi-tag text-brand-700 dark:text-ochre-400"></i>
-                        <span class="text-brand-700 dark:text-ochre-400 text-sm font-medium">{{ t('landing.pricing.badge') }}</span>
-                    </div>
-                    <h2 class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-0 mb-4">
-                        {{ t('landing.pricing.h2a') }}
-                        <span class="text-brand-700 dark:text-ochre-400">{{ t('landing.pricing.h2b') }}</span>
-                    </h2>
-                    <p class="text-xl text-surface-600 dark:text-surface-300 max-w-2xl mx-auto">{{ t('landing.pricing.description') }}</p>
+        <section id="pricing" class="lp-section scroll-mt-16" [attr.aria-labelledby]="'pricing-title'">
+            <div class="lp-container">
+                <div class="max-w-[40rem] mx-auto text-center" lpReveal>
+                    <span class="lp-eyebrow">{{ t('landing.pricing.badge') }}</span>
+                    <h2 id="pricing-title" class="lp-h2 mt-3">{{ t('landing.pricing.h2a') }} {{ t('landing.pricing.h2b') }}</h2>
+                    <p class="lp-lead mt-4">{{ t('landing.pricing.description') }}</p>
                 </div>
 
-                <div class="grid grid-cols-12 gap-6 max-w-6xl mx-auto mb-16">
-                    <!-- Free Plan -->
-                    <div class="col-span-12 md:col-span-4">
-                        <div class="h-full bg-surface-50 dark:bg-surface-800 rounded-2xl p-8 border border-surface-200 dark:border-surface-700">
-                            <div class="mb-6">
-                                <div class="w-12 h-12 rounded-xl bg-surface-200 dark:bg-surface-700 flex items-center justify-center mb-4">
-                                    <i class="pi pi-chart-line text-surface-600 dark:text-surface-300 text-xl"></i>
-                                </div>
-                                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('landing.pricing.freeName') }}</h3>
-                                <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.freeTagline') }}</p>
-                            </div>
-                            <div class="flex items-baseline gap-2 mb-2">
-                                <span class="text-4xl font-bold text-surface-900 dark:text-surface-0">0</span>
-                            </div>
-                            <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.freeForever') }}</p>
-                            <button pButton pRipple [rounded]="true" [outlined]="true" [routerLink]="[currentLang, 'auth', 'register']"
-                                (click)="trackCta('pricing_free')"
-                                class="w-full !py-3 !font-semibold !border-surface-300 dark:!border-surface-500 !text-surface-700 dark:!text-surface-100 hover:!bg-surface-100 dark:hover:!bg-surface-700 transition-all mb-8">
-                                {{ t('landing.pricing.freeCta') }}
-                            </button>
-                            <p-divider />
-                            <ul class="space-y-3 mt-6">
-                                @for (f of freeFeatures(); track f) {
-                                    <li class="flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center flex-shrink-0">
-                                            <i class="pi pi-check text-surface-600 dark:text-surface-300 text-xs"></i>
-                                        </div>
-                                        <span class="text-surface-700 dark:text-surface-300 text-sm">{{ f }}</span>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                <div class="mt-10 lg:mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 items-stretch">
+                    <!-- Free -->
+                    <div class="lp-card p-6 lg:p-8 flex flex-col" lpReveal>
+                        <h3 class="lp-h3">{{ t('landing.pricing.freeName') }}</h3>
+                        <p class="lp-body mt-1 text-[15px]">{{ t('landing.pricing.freeTagline') }}</p>
+                        <div class="mt-5 flex items-baseline gap-2"><span class="text-[40px] font-extrabold leading-none tracking-[-0.02em] lp-num">0</span><span class="lp-muted text-[14px]">{{ t('landing.pricing.freeForever') }}</span></div>
+                        <a class="lp-btn lp-btn-secondary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('pricing_free')">{{ t('landing.pricing.freeCta') }}</a>
+                        <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0">
+                            @for (f of freeFeatures(); track f) {
+                                <li class="flex items-start gap-3 text-[15px] lp-body"><span class="lp-check mt-0.5"><i class="pi pi-check" aria-hidden="true"></i></span><span>{{ f }}</span></li>
+                            }
+                        </ul>
                     </div>
 
-                    <!-- Pro Plan (Popular) -->
-                    <div class="col-span-12 md:col-span-4">
-                        <div class="relative h-full">
-                            <div class="absolute -inset-4 bg-ochre-500/10 blur-2xl rounded-2xl"></div>
-                            <div class="relative h-full bg-surface-0 dark:bg-surface-800 rounded-2xl p-8 border-2 border-ochre-500 shadow-sm">
-                                <!-- "Populaire" badge removed until it's true (no paid users pre-launch), P0-7 -->
-                                <div class="mb-6 pt-2">
-                                    <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center mb-4">
-                                        <i class="pi pi-crown text-brand-700 dark:text-ochre-400 text-xl"></i>
-                                    </div>
-                                    <h3 class="text-xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('landing.pricing.proName') }}</h3>
-                                    <p class="text-surface-500 dark:text-surface-400 text-sm">{{ t('landing.pricing.proTagline') }}</p>
-                                </div>
-                                <div class="flex items-baseline gap-1 mb-2">
-                                    <span class="text-4xl font-bold text-ochre-500 dark:text-ochre-400">4 000</span>
-                                    <span class="text-surface-500 dark:text-surface-400 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
-                                </div>
-                                <p class="text-surface-500 dark:text-surface-400 text-sm mb-6">{{ t('landing.pricing.proSubprice') }}</p>
-                                <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
-                                    (click)="trackCta('pricing_pro')"
-                                    class="w-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all mb-8">
-                                    {{ t('plans.choose') }}
-                                </button>
-                                <p-divider />
-                                <ul class="space-y-3 mt-6">
-                                    <li class="flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-ochre-100 dark:bg-ochre-700/30 flex items-center justify-center flex-shrink-0">
-                                            <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs"></i>
-                                        </div>
-                                        <span class="text-surface-700 dark:text-surface-300 text-sm font-medium">{{ t('plans.everythingFree') }}</span>
-                                    </li>
-                                    @for (f of proFeatures(); track f) {
-                                        <li class="flex items-center gap-3">
-                                            <div class="w-5 h-5 rounded-full bg-ochre-100 dark:bg-ochre-700/30 flex items-center justify-center flex-shrink-0">
-                                                <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs"></i>
-                                            </div>
-                                            <span class="text-surface-700 dark:text-surface-300 text-sm">{{ f }}</span>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
+                    <!-- Pro (recommended) -->
+                    <div class="lp-card p-6 lg:p-8 flex flex-col !border-[color:var(--lp-ochre)] !border-2 md:-mt-3 md:mb-3" lpReveal>
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="lp-h3">{{ t('landing.pricing.proName') }}</h3>
+                            <span class="text-[12px] font-semibold uppercase tracking-[0.06em] text-[color:var(--lp-ochre-ink)]">{{ t('landing.pricing.recommended') }}</span>
                         </div>
+                        <p class="lp-body mt-1 text-[15px]">{{ t('landing.pricing.proTagline') }}</p>
+                        <div class="mt-5 flex items-baseline gap-2"><span class="text-[40px] font-extrabold leading-none tracking-[-0.02em] lp-num">{{ fmt(prices.pro) }}</span><span class="lp-muted text-[14px]">FCFA / {{ t('landing.pricing.month') }}</span></div>
+                        <a class="lp-btn lp-btn-primary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" [queryParams]="{ tier: 'pro' }" (click)="trackCta('pricing_pro')">{{ t('landing.pricing.proCta') }}</a>
+                        <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0">
+                            <li class="text-[14px] font-semibold">{{ t('plans.everythingFree') }}</li>
+                            @for (f of proFeatures(); track f) {
+                                <li class="flex items-start gap-3 text-[15px] lp-body"><span class="lp-check mt-0.5"><i class="pi pi-check" aria-hidden="true"></i></span><span>{{ f }}</span></li>
+                            }
+                        </ul>
                     </div>
 
-                    <!-- Premium Plan (dark, flagship) -->
-                    <div class="col-span-12 md:col-span-4">
-                        <div class="relative h-full bg-brand-800 dark:bg-brand-950 rounded-2xl p-8 border border-brand-700 shadow-lifted overflow-hidden">
-                            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ochre-400 via-ochre-500 to-ochre-400"></div>
-                            <div class="mb-6">
-                                <div class="w-12 h-12 rounded-xl bg-ochre-500/20 flex items-center justify-center mb-4">
-                                    <i class="pi pi-bolt text-ochre-400 text-xl"></i>
-                                </div>
-                                <h3 class="text-xl font-bold text-white mb-1">{{ t('landing.pricing.premiumName') }}</h3>
-                                <p class="text-white/60 text-sm">{{ t('landing.pricing.premiumTagline') }}</p>
-                            </div>
-                            <div class="flex items-baseline gap-1 mb-2">
-                                <span class="text-4xl font-bold text-white">10 000</span>
-                                <span class="text-white/50 text-sm">FCFA/{{ t('landing.pricing.month') }}</span>
-                            </div>
-                            <p class="text-white/50 text-sm mb-6">{{ t('landing.pricing.premiumSubprice') }}</p>
-                            <button pButton pRipple [rounded]="true" [routerLink]="[currentLang, 'auth', 'register']"
-                                (click)="trackCta('pricing_premium')"
-                                class="w-full !py-3 !font-semibold !bg-ochre-500 !border-0 !text-warm-900 hover:!bg-ochre-400 transition-all mb-8">
-                                {{ t('plans.choose') }}
-                            </button>
-                            <div class="h-px bg-white/10 my-2"></div>
-                            <ul class="space-y-3 mt-6">
-                                <li class="flex items-center gap-3">
-                                    <div class="w-5 h-5 rounded-full bg-ochre-500/20 flex items-center justify-center flex-shrink-0">
-                                        <i class="pi pi-check text-ochre-400 text-xs"></i>
-                                    </div>
-                                    <span class="text-white text-sm font-medium">{{ t('plans.everythingPro') }}</span>
-                                </li>
-                                @for (f of premiumFeatures(); track f) {
-                                    <li class="flex items-center gap-3">
-                                        <div class="w-5 h-5 rounded-full bg-ochre-500/20 flex items-center justify-center flex-shrink-0">
-                                            <i class="pi pi-check text-ochre-400 text-xs"></i>
-                                        </div>
-                                        <span class="text-white/80 text-sm">{{ f }}</span>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                    <!-- Premium -->
+                    <div class="lp-card lp-dark p-6 lg:p-8 flex flex-col !border-transparent" lpReveal>
+                        <h3 class="lp-h3 !text-white">{{ t('landing.pricing.premiumName') }}</h3>
+                        <p class="mt-1 text-[15px] text-white/70">{{ t('landing.pricing.premiumTagline') }}</p>
+                        <div class="mt-5 flex items-baseline gap-2"><span class="text-[40px] font-extrabold leading-none tracking-[-0.02em] lp-num text-white">{{ fmt(prices.premium) }}</span><span class="text-white/60 text-[14px]">FCFA / {{ t('landing.pricing.month') }}</span></div>
+                        <a class="lp-btn lp-btn-primary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" [queryParams]="{ tier: 'premium' }" (click)="trackCta('pricing_premium')">{{ t('landing.pricing.premiumCta') }}</a>
+                        <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0">
+                            <li class="text-[14px] font-semibold text-white">{{ t('plans.everythingPro') }}</li>
+                            @for (f of premiumFeatures(); track f) {
+                                <li class="flex items-start gap-3 text-[15px] text-white/85"><span class="lp-check mt-0.5 !bg-white/15 !text-white"><i class="pi pi-check" aria-hidden="true"></i></span><span>{{ f }}</span></li>
+                            }
+                        </ul>
                     </div>
                 </div>
-
-                <div class="max-w-2xl mx-auto text-center mb-16">
-                    <p class="text-surface-500 dark:text-surface-400 text-sm">
-                        <i class="pi pi-lock text-brand-700 dark:text-ochre-400 mr-1"></i>{{ t('landing.pricing.trustNote') }}
-                    </p>
-                </div>
+                <p class="mt-6 text-center text-[14px] lp-muted">{{ t('landing.pricing.trustNote') }}</p>
 
                 <!-- FAQ -->
-                <div class="max-w-3xl mx-auto">
-                    <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-0 text-center mb-8">{{ t('landing.pricing.faqTitle') }}</h3>
-                    <div class="space-y-4">
-                        @for (q of faqItems(); track q.q) {
-                            <div class="bg-surface-50 dark:bg-surface-800 rounded-xl p-6 border border-surface-200 dark:border-surface-700">
-                                <h4 class="text-subheading font-semibold text-surface-900 dark:text-surface-0 mb-2 flex items-center gap-2">
-                                    <i class="pi pi-question-circle text-brand-700 dark:text-ochre-400"></i>{{ q.q }}
-                                </h4>
-                                <p class="text-surface-600 dark:text-surface-300">{{ q.a }}</p>
-                            </div>
+                <div id="faq" class="mt-16 lg:mt-24 max-w-[44rem] mx-auto scroll-mt-16" lpReveal>
+                    <h2 class="lp-h2 text-center">{{ t('landing.pricing.faqTitle') }}</h2>
+                    <div class="mt-8 border-b border-[color:var(--lp-line)]">
+                        @for (n of faqKeys; track n) {
+                            <details class="lp-faq">
+                                <summary><h3 class="m-0 text-[17px] font-semibold leading-snug">{{ t('landing.pricing.faq' + n + 'Q') }}</h3></summary>
+                                <p class="lp-body pb-5 m-0">{{ t('landing.pricing.faq' + n + 'A') }}</p>
+                            </details>
                         }
                     </div>
                 </div>
             </div>
-        </div>
-    `
+        </section>
+    `,
 })
 export class PricingWidget {
     private analytics = inject(AnalyticsService);
-
-    /** Public-funnel step between landing_view and the signup itself. */
-    trackCta(cta: string): void {
-        // currentLang is a router segment ('/fr'); the event wants the bare code.
-        this.analytics.trackPublic('cta_click', { cta, lang: this.currentLang.replace(/^\//, '') });
-    }
-    private i18n   = inject(I18nService);
+    private i18n = inject(I18nService);
     private router = inject(Router);
+
+    readonly prices = LANDING_PLAN_PRICES_XOF;
+    readonly faqKeys = LANDING_FAQ_KEYS;
 
     get currentLang(): string {
         const m = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -188,25 +115,17 @@ export class PricingWidget {
 
     t(key: string): string { return this.i18n.t(key); }
 
-    // Single source of truth: the SAME plans.* feature keys the /pages/plans
-    // page renders, so the landing pricing can never drift from the plans page
-    // again (it had its own stale copy until 2026-08-07).
-    freeFeatures() {
-        return [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => this.t(`plans.freeFeatures.f${i}`));
+    fmt(n: number): string {
+        return nbspSafe(new Intl.NumberFormat(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US').format(n));
     }
 
-    proFeatures() {
-        return [1, 2, 3, 4, 5, 6].map(i => this.t(`plans.proFeatures.f${i}`));
+    trackCta(placement: string): void {
+        this.analytics.trackPublic('cta_click', { cta: placement, placement, lang: this.currentLang.replace(/^\//, '') });
     }
 
-    premiumFeatures() {
-        return [1, 2, 3, 4, 5, 6].map(i => this.t(`plans.premiumFeatures.f${i}`));
-    }
-
-    faqItems() {
-        return [1,2,3,4].map(i => ({
-            q: this.t(`landing.pricing.faq${i}Q`),
-            a: this.t(`landing.pricing.faq${i}A`),
-        }));
-    }
+    // Same plans.* feature keys as /pages/plans (single source of truth);
+    // five per tier on the marketing page, the full list lives in-app.
+    freeFeatures() { return [1, 2, 3, 4, 5].map(i => this.t(`plans.freeFeatures.f${i}`)); }
+    proFeatures() { return [1, 2, 3, 4, 5].map(i => this.t(`plans.proFeatures.f${i}`)); }
+    premiumFeatures() { return [1, 2, 3, 4, 5].map(i => this.t(`plans.premiumFeatures.f${i}`)); }
 }

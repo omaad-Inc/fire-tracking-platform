@@ -1,4 +1,5 @@
-import { Injectable, isDevMode, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Injectable, inject, isDevMode, signal } from '@angular/core';
 import type { Dict } from './fr';
 
 export type Lang = 'fr' | 'en';
@@ -14,6 +15,7 @@ export class I18nService {
     private dicts: Partial<Record<Lang, Dict>> = {};
     private loading: Partial<Record<Lang, Promise<void>>> = {};
     private warned = new Set<string>();
+    private document = inject(DOCUMENT);
 
     lang = signal<Lang>(this.detectLang());
 
@@ -33,14 +35,19 @@ export class I18nService {
     }
 
     private detectLang(): Lang {
-        // 1. localStorage
+        // 1. localStorage (browser only)
         if (typeof window !== 'undefined') {
             const stored = localStorage.getItem(LANG_KEY);
             if (stored === 'en' || stored === 'fr') return stored;
-            // 2. URL prefix
-            const match = window.location.pathname.match(/^\/(fr|en)(\/|$)/);
-            if (match) return match[1] as Lang;
         }
+        // 2. URL prefix. On the server (prerender) there is no window, but the
+        //    DOCUMENT's location carries the route being rendered: without this
+        //    the APP_INITIALIZER awaited FR for every route and /en/landing was
+        //    prerendered in French (the page's own setLang('en') resolves only
+        //    after the snapshot is taken).
+        const path = this.document?.location?.pathname ?? '';
+        const match = path.match(/^\/(fr|en)(\/|$)/);
+        if (match) return match[1] as Lang;
         return 'fr';
     }
 

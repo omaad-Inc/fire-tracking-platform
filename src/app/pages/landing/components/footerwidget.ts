@@ -1,115 +1,67 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { I18nService } from '../../../i18n/i18n.service';
 import { NewsletterSignup } from './newsletter-signup';
 
+/**
+ * Public footer (landing redesign): four columns, newsletter, 44 px targets
+ * everywhere, and the publisher line with no city and no registration code
+ * (the legal pages keep the full entity). No "Disponible" chip: there is no
+ * store listing yet.
+ */
 @Component({
     selector: 'footer-widget',
     standalone: true,
-    imports: [RouterModule, CommonModule, NewsletterSignup],
+    imports: [RouterModule, NewsletterSignup],
     template: `
-        <footer class="relative bg-brand-950 dark:bg-surface-950 dark:border-t dark:border-white/[0.06] text-white overflow-hidden">
-            <div class="relative py-16 px-6 lg:px-20">
-                <div class="max-w-7xl mx-auto">
-                    <div class="grid grid-cols-12 gap-8 lg:gap-12">
-                        <!-- Brand -->
-                        <div class="col-span-12 lg:col-span-4">
-                            <a [routerLink]="[currentLang, 'landing']" fragment="home" class="flex items-center gap-3 cursor-pointer mb-6 group no-underline">
-                                <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad Logo"
-                                     class="w-12 h-12" width="48" height="48" loading="lazy">
-                                <span class="font-bold text-2xl tracking-tight whitespace-nowrap">Omaad</span>
+        <footer class="lp-dark">
+            <div class="lp-container py-14 lg:py-20">
+                <div class="grid grid-cols-2 md:grid-cols-12 gap-x-6 gap-y-10">
+                    <div class="col-span-2 md:col-span-12 lg:col-span-4">
+                        <a [routerLink]="[currentLang, 'landing']" class="inline-flex items-center gap-2 no-underline text-white rounded-full focus-visible:outline-2 focus-visible:outline-ochre-500">
+                            <img src="assets/brand/omaad-icon-inverse.svg" alt="" class="w-10 h-10" width="40" height="40" loading="lazy">
+                            <span class="font-bold text-[22px] tracking-tight">Omaad</span>
+                        </a>
+                        <p class="mt-4 text-[15px] leading-relaxed text-white/70 max-w-[22rem]">{{ t('landing.footer.tagline') }}</p>
+                        <div class="mt-5 flex gap-2">
+                            <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                               class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+                                <i class="pi pi-linkedin text-[18px]" aria-hidden="true"></i>
                             </a>
-                            <p class="text-brand-300 leading-relaxed mb-6">{{ t('landing.footer.tagline') }}</p>
-                            <div class="flex gap-3">
-                                <a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                                   class="w-10 h-10 rounded-xl bg-white/10 hover:bg-brand-700 flex items-center justify-center transition-all duration-300">
-                                    <i class="pi pi-linkedin text-lg"></i>
-                                </a>
-                                <a href="https://www.youtube.com/@fire_africa" target="_blank" rel="noopener noreferrer" aria-label="YouTube FIRE Africa"
-                                   class="w-10 h-10 rounded-xl bg-white/10 hover:bg-negative flex items-center justify-center transition-all duration-300">
-                                    <i class="pi pi-youtube text-lg"></i>
-                                </a>
-                            </div>
-
-                            <!-- Newsletter capture (first-party -> Beehiiv) -->
-                            <div class="mt-8">
-                                <h4 class="font-semibold text-sm mb-3 text-white">{{ _('Newsletter FIRE Africa', 'FIRE Africa newsletter') }}</h4>
-                                <p class="text-brand-300 text-sm mb-3 max-w-xs">{{ _('La méthode + le guide pour investir à la BRVM. Gratuit.', 'The method + the guide to invest on the BRVM. Free.') }}</p>
-                                <app-newsletter-signup source="site-footer" [compact]="true" />
-                            </div>
+                            <a href="https://www.youtube.com/@fire_africa" target="_blank" rel="noopener noreferrer" aria-label="YouTube FIRE Africa"
+                               class="w-11 h-11 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+                                <i class="pi pi-youtube text-[18px]" aria-hidden="true"></i>
+                            </a>
                         </div>
-
-                        <!-- Product -->
-                        <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.productTitle') }}</h4>
-                            <ul class="space-y-3">
-                                <li><a [routerLink]="[currentLang, 'landing']" fragment="features" class="text-brand-300 hover:text-white transition-colors cursor-pointer no-underline">{{ t('landing.footer.productFeatures') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'landing']" fragment="highlights" class="text-brand-300 hover:text-white transition-colors cursor-pointer no-underline">{{ t('landing.footer.productDashboard') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'landing']" fragment="projection" class="text-brand-300 hover:text-white transition-colors cursor-pointer no-underline">{{ _('Projection patrimoniale', 'Wealth projection') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'landing']" fragment="pricing" class="text-brand-300 hover:text-white transition-colors cursor-pointer no-underline">{{ _('Tarifs', 'Pricing') }}</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Resources -->
-                        <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.resourcesTitle') }}</h4>
-                            <ul class="space-y-3">
-                                <li><a [routerLink]="[currentLang, 'blog']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesBlog') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'faq']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.resourcesFaq') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'tools', 'fire-simulator']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'tools', 'compound-interest']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Intérêts composés', 'Compound Interest') }}</a></li>
-                                <li><a routerLink="/outils/comparateur-sgi-brvm" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</a></li>
-                                <li><a routerLink="/outils/strategie-brvm" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</a></li>
-                                <li><a routerLink="/support" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Support', 'Support') }}</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Company -->
-                        <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-white">{{ _('Entreprise', 'Company') }}</h4>
-                            <ul class="space-y-3">
-                                <li><a [routerLink]="[currentLang, aboutSlug]" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.nav.about') }}</a></li>
-                                <li><a href="https://www.linkedin.com/company/omaad/" target="_blank" rel="noopener noreferrer" class="text-brand-300 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1">LinkedIn<i class="pi pi-external-link text-[9px]"></i></a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Legal -->
-                        <div class="col-span-6 md:col-span-3 lg:col-span-2">
-                            <h4 class="font-semibold text-lg mb-6 text-white">{{ t('landing.footer.legalTitle') }}</h4>
-                            <ul class="space-y-3">
-                                <li><a routerLink="/confidentialite" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalPrivacy') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'legal', 'terms']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalTerms') }}</a></li>
-                                <li><a [routerLink]="[currentLang, 'legal', 'mentions']" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ t('landing.footer.legalMentions') }}</a></li>
-                                <li><a routerLink="/supprimer-mon-compte" class="text-brand-300 hover:text-white transition-colors cursor-pointer">{{ _('Supprimer mon compte', 'Delete my account') }}</a></li>
-                            </ul>
+                        <div class="mt-8">
+                            <h2 class="text-[14px] font-semibold text-white m-0">{{ t('landing.footer.newsletterTitle') }}</h2>
+                            <p class="mt-1 mb-3 text-[14px] text-white/70 max-w-[20rem]">{{ t('landing.footer.newsletterDesc') }}</p>
+                            <app-newsletter-signup source="site-footer" [compact]="true" />
                         </div>
                     </div>
+
+                    @for (col of columns; track col.title) {
+                        <nav class="col-span-1 md:col-span-3 lg:col-span-2" [attr.aria-label]="t(col.title)">
+                            <h2 class="text-[13px] font-semibold uppercase tracking-[0.08em] text-white/60 m-0 mb-3">{{ t(col.title) }}</h2>
+                            <ul class="list-none p-0 m-0">
+                                @for (l of col.links; track l.label) {
+                                    <li>
+                                        @if (l.external) {
+                                            <a [href]="l.href" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 min-h-11 text-[15px] text-white/80 hover:text-white no-underline">{{ t(l.label) }}<i class="pi pi-external-link text-[9px]" aria-hidden="true"></i></a>
+                                        } @else {
+                                            <a [routerLink]="l.link" [fragment]="l.fragment" class="inline-flex items-center min-h-11 text-[15px] text-white/80 hover:text-white no-underline">{{ t(l.label) }}</a>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    }
                 </div>
             </div>
-
-            <!-- Bottom Bar -->
-            <div class="relative border-t border-white/10">
-                <div class="max-w-7xl mx-auto px-6 lg:px-20 py-6">
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div class="text-brand-300 text-sm text-center md:text-left">
-                            © {{ currentYear }} Omaad. {{ t('landing.footer.copyright') }}
-                            <span class="text-brand-300">{{ t('landing.footer.madeWith') }}</span>
-                            <i class="pi pi-heart-fill text-negative mx-1"></i>
-                            <span class="text-brand-300">{{ t('landing.footer.forFreedom') }}</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-2 text-brand-300 text-sm">
-                                <span class="inline-flex rounded-full h-2 w-2 bg-positive-500"></span>
-                                <span>{{ t('landing.footer.available') }}</span>
-                            </div>
-                            <span class="text-warm-700">•</span>
-                            <div class="flex items-center gap-2 text-brand-300 text-sm">
-                                <i class="pi pi-shield text-brand-700 dark:text-brand-300"></i>
-                                <span>{{ t('landing.footer.secure') }}</span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="border-t border-white/10">
+                <div class="lp-container py-6 flex flex-col md:flex-row md:items-center justify-between gap-3 text-[13px] text-white/60">
+                    <span>© {{ currentYear }} {{ t('landing.footer.legalLine') }}</span>
+                    <span>{{ t('landing.footer.disclaimer') }}</span>
                 </div>
             </div>
         </footer>
@@ -117,15 +69,46 @@ import { NewsletterSignup } from './newsletter-signup';
 })
 export class FooterWidget {
     private i18n = inject(I18nService);
-    currentLang  = '/fr';
-    currentYear  = new Date().getFullYear();
+    currentLang = '/fr';
+    currentYear = new Date().getFullYear();
+
+    columns: Array<{ title: string; links: Array<{ label: string; link?: string[]; fragment?: string; href?: string; external?: boolean }> }> = [];
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+        const L = this.currentLang;
+        const about = this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about';
+        this.columns = [
+            { title: 'landing.footer.productTitle', links: [
+                { label: 'landing.nav.features', link: [L, 'landing'], fragment: 'features' },
+                { label: 'landing.footer.productTour', link: [L, 'landing'], fragment: 'tour' },
+                { label: 'landing.footer.productProjection', link: [L, 'landing'], fragment: 'projection' },
+                { label: 'landing.nav.pricing', link: [L, 'landing'], fragment: 'pricing' },
+                { label: 'landing.footer.resourcesFaq', link: [L, 'landing'], fragment: 'faq' },
+            ] },
+            { title: 'landing.nav.tools', links: [
+                { label: 'landing.nav.toolFire', link: [L, 'tools', 'fire-simulator'] },
+                { label: 'landing.nav.toolCompound', link: [L, 'tools', 'compound-interest'] },
+                { label: 'landing.nav.toolSgi', link: ['/outils/comparateur-sgi-brvm'] },
+                { label: 'landing.nav.toolStrategy', link: ['/outils/strategie-brvm'] },
+                { label: 'landing.nav.toolBlog', link: [L, 'blog'] },
+            ] },
+            { title: 'landing.footer.companyTitle', links: [
+                { label: 'landing.nav.about', link: [L, about] },
+                { label: 'landing.nav.aboutSecurity', link: [L, about], fragment: 'securite' },
+                { label: 'landing.nav.aboutContact', link: [L, about], fragment: 'contact' },
+                { label: 'landing.footer.support', link: ['/support'] },
+                { label: 'LinkedIn', href: 'https://www.linkedin.com/company/omaad/', external: true },
+            ] },
+            { title: 'landing.footer.legalTitle', links: [
+                { label: 'landing.footer.legalPrivacy', link: ['/confidentialite'] },
+                { label: 'landing.footer.legalTerms', link: [L, 'legal', 'terms'] },
+                { label: 'landing.footer.legalMentions', link: [L, 'legal', 'mentions'] },
+                { label: 'landing.footer.deleteAccount', link: ['/supprimer-mon-compte'] },
+            ] },
+        ];
     }
 
-    t(key: string): string { return this.i18n.t(key); }
-    _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
-    get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
+    t(key: string): string { return key.includes('.') ? this.i18n.t(key) : key; }
 }

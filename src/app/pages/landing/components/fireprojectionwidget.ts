@@ -1,11 +1,10 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { nbspSafe } from '../../../core/util/nbsp';
+import { RevealDirective } from './reveal.directive';
 
 interface ScenarioPoint {
     pessimistic: number;
@@ -16,159 +15,88 @@ interface ScenarioPoint {
 const HORIZONS = [10, 20, 30] as const;
 const RATES = { pess: 0.04, median: 0.07, opti: 0.10 };
 
+/**
+ * The ONE interactive tool on the landing (landing redesign): value before
+ * sign-up, like Wise's live quote. Same deterministic 4 / 7 / 10 % future
+ * value as before; the "cost of waiting" twin calculator and the wealth
+ * score mock are gone (same inputs, same lesson). Risk line stays inline.
+ */
 @Component({
     selector: 'fire-projection-widget',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule, ButtonModule, RippleModule],
+    imports: [FormsModule, RouterModule, RevealDirective],
     template: `
-        <section id="projection" class="relative py-20 md:py-28 px-6 lg:px-20 bg-surface-50 dark:bg-surface-950 overflow-hidden">
-            <div class="relative max-w-6xl mx-auto">
-                <!-- Header -->
-                <div class="text-center max-w-3xl mx-auto mb-12">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-ochre-500/30 dark:border-ochre-400/40 bg-ochre-500/10 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-300 text-sm font-medium mb-6">
-                        <i class="pi pi-chart-line text-xs"></i>
-                        <span>{{ t('landing.fireProjection.eyebrow') }}</span>
-                    </div>
-                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-surface-900 dark:text-white leading-tight mb-4">
-                        {{ t('landing.fireProjection.h2a') }}<br>
-                        <span class="text-brand-700 dark:text-ochre-400">
-                            {{ t('landing.fireProjection.h2b') }}
-                        </span>
-                    </h2>
-                    <p class="text-base md:text-lg text-surface-600 dark:text-surface-400 leading-relaxed">
-                        {{ t('landing.fireProjection.description') }}
-                    </p>
+        <section id="projection" class="lp-section-tight scroll-mt-16" [attr.aria-labelledby]="'projection-title'">
+            <div class="lp-container">
+                <div class="max-w-[40rem] mx-auto text-center" lpReveal>
+                    <span class="lp-eyebrow">{{ t('landing.fireProjection.eyebrow') }}</span>
+                    <h2 id="projection-title" class="lp-h2 mt-3">{{ t('landing.fireProjection.h2a') }} {{ t('landing.fireProjection.h2b') }}</h2>
+                    <p class="lp-lead mt-4">{{ t('landing.fireProjection.description') }}</p>
                 </div>
 
-                <!-- Inputs -->
-                <div class="grid md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
-                    <div class="p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                        <div class="flex items-baseline justify-between mb-3">
-                            <label for="fire-monthly" class="text-sm font-medium text-surface-700 dark:text-surface-300">
-                                {{ t('landing.fireProjection.monthlyLabel') }}
-                            </label>
-                            <span class="text-lg font-bold text-brand-700 dark:text-ochre-400 tabular-nums">
-                                {{ formatNumber(monthlySavings()) }}
-                                <span class="text-xs font-normal text-surface-500 ml-1">{{ t('landing.fireProjection.monthlyUnit') }}</span>
-                            </span>
+                <div class="lp-card mt-8 lg:mt-12 p-5 sm:p-8 lg:p-10" lpReveal>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-8">
+                        <div>
+                            <div class="flex items-baseline justify-between gap-3 mb-1">
+                                <label for="fire-monthly" class="text-[15px] font-medium">{{ t('landing.fireProjection.monthlyLabel') }}</label>
+                                <span class="text-[18px] font-bold lp-num text-[color:var(--lp-ochre-ink)]">
+                                    {{ formatNumber(monthlySavings()) }}
+                                    <span class="text-[12px] font-normal lp-muted ml-1">{{ t('landing.fireProjection.monthlyUnit') }}</span>
+                                </span>
+                            </div>
+                            <input id="fire-monthly" class="lp-range" type="range" min="25000" max="500000" step="25000"
+                                   [ngModel]="monthlySavings()" (ngModelChange)="monthlySavings.set($event)" (change)="trackRun()"
+                                   [attr.aria-valuetext]="formatNumber(monthlySavings()) + ' FCFA'" />
                         </div>
-                        <input id="fire-monthly" type="range" min="25000" max="500000" step="25000"
-                               [ngModel]="monthlySavings()"
-                               (ngModelChange)="monthlySavings.set($event)"
-                               [attr.aria-valuetext]="formatNumber(monthlySavings()) + ' FCFA'"
-                               class="w-full h-2 rounded-full bg-surface-200 dark:bg-surface-700 appearance-none cursor-pointer accent-ochre-500" />
+                        <div>
+                            <div class="flex items-baseline justify-between gap-3 mb-1">
+                                <label for="fire-initial" class="text-[15px] font-medium">{{ t('landing.fireProjection.initialLabel') }}</label>
+                                <span class="text-[18px] font-bold lp-num text-[color:var(--lp-ochre-ink)]">
+                                    {{ formatNumber(initialCapital()) }}
+                                    <span class="text-[12px] font-normal lp-muted ml-1">{{ t('landing.fireProjection.initialUnit') }}</span>
+                                </span>
+                            </div>
+                            <input id="fire-initial" class="lp-range" type="range" min="0" max="50000000" step="500000"
+                                   [ngModel]="initialCapital()" (ngModelChange)="initialCapital.set($event)" (change)="trackRun()"
+                                   [attr.aria-valuetext]="formatNumber(initialCapital()) + ' FCFA'" />
+                        </div>
                     </div>
-                    <div class="p-5 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                        <div class="flex items-baseline justify-between mb-3">
-                            <label for="fire-initial" class="text-sm font-medium text-surface-700 dark:text-surface-300">
-                                {{ t('landing.fireProjection.initialLabel') }}
-                            </label>
-                            <span class="text-lg font-bold text-brand-700 dark:text-ochre-400 tabular-nums">
-                                {{ formatNumber(initialCapital()) }}
-                                <span class="text-xs font-normal text-surface-500 ml-1">{{ t('landing.fireProjection.initialUnit') }}</span>
-                            </span>
-                        </div>
-                        <input id="fire-initial" type="range" min="0" max="50000000" step="500000"
-                               [ngModel]="initialCapital()"
-                               (ngModelChange)="initialCapital.set($event)"
-                               [attr.aria-valuetext]="formatNumber(initialCapital()) + ' FCFA'"
-                               class="w-full h-2 rounded-full bg-surface-200 dark:bg-surface-700 appearance-none cursor-pointer accent-ochre-500" />
+
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4" aria-live="polite">
+                        @for (h of horizons(); track h.years) {
+                            <div class="rounded-2xl border border-[color:var(--lp-line)] p-5">
+                                <span class="lp-eyebrow !text-[color:var(--lp-muted)]">{{ h.years }} {{ t('landing.fireProjection.yearsSuffix') }}</span>
+                                <div class="mt-3 text-[34px] lg:text-[40px] font-extrabold leading-none tracking-[-0.02em] lp-num">{{ formatCompact(h.scenarios.median) }}</div>
+                                <div class="mt-1 text-[12px] font-medium uppercase tracking-[0.06em] lp-muted">{{ t('landing.fireProjection.medianLabel') }}</div>
+                                <div class="relative mt-4 h-1.5 rounded-full bg-[rgba(15,26,46,0.08)]">
+                                    <div class="absolute inset-y-0 left-0 rounded-full bg-[color:var(--lp-ochre)] opacity-60" style="width: 100%"></div>
+                                    <div class="absolute top-1/2 -translate-y-1/2 w-1 h-3 rounded-full bg-[color:var(--lp-ink)]" [style.left.%]="medianPosition(h.scenarios)"></div>
+                                </div>
+                                <dl class="mt-4 flex flex-col gap-1.5 text-[14px] m-0">
+                                    <div class="flex items-center justify-between"><dt class="lp-muted">{{ t('landing.fireProjection.pessLabel') }}</dt><dd class="m-0 font-semibold lp-num">{{ formatCompact(h.scenarios.pessimistic) }}</dd></div>
+                                    <div class="flex items-center justify-between"><dt class="lp-muted">{{ t('landing.fireProjection.optiLabel') }}</dt><dd class="m-0 font-semibold lp-num">{{ formatCompact(h.scenarios.optimistic) }}</dd></div>
+                                </dl>
+                            </div>
+                        }
                     </div>
-                </div>
 
-                <!-- 3 horizon cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                    @for (h of horizons(); track h.years) {
-                        <div class="relative p-6 md:p-7 rounded-2xl bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-ochre-500/40 hover:shadow-lg transition-all duration-300">
-                            <!-- Ribbon -->
-                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-700/20 text-brand-700 dark:text-brand-300 text-xs font-bold tracking-wider uppercase mb-4">
-                                <i class="pi pi-clock text-[9px]"></i>
-                                {{ h.years }} {{ t('landing.fireProjection.yearsSuffix') }}
-                            </div>
-
-                            <!-- Median (hero number) -->
-                            <div class="mb-5">
-                                <div class="text-4xl md:text-5xl font-bold text-surface-900 dark:text-white tabular-nums leading-none">
-                                    {{ formatCompact(h.scenarios.median) }}
-                                </div>
-                                <div class="mt-1 text-xs text-surface-500 dark:text-surface-400 font-medium uppercase tracking-wider">
-                                    {{ t('landing.fireProjection.medianLabel') }}
-                                </div>
-                            </div>
-
-                            <!-- Visual bar of pess→opti range -->
-                            <div class="mb-5">
-                                <div class="relative h-2 rounded-full bg-surface-200 dark:bg-surface-800 overflow-hidden">
-                                    <div class="absolute inset-y-0 left-0 rounded-full bg-ochre-500/60"
-                                         [style.width.%]="100"></div>
-                                    <!-- Median tick -->
-                                    <div class="absolute top-1/2 -translate-y-1/2 w-1 h-3 bg-surface-900 dark:bg-white rounded-full"
-                                         [style.left.%]="medianPosition(h.scenarios)"></div>
-                                </div>
-                            </div>
-
-                            <!-- Pess / Opti rows -->
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="flex items-center gap-2 text-surface-500 dark:text-surface-400">
-                                        <span class="w-2 h-2 rounded-full bg-negative/60"></span>
-                                        {{ t('landing.fireProjection.pessLabel') }}
-                                    </span>
-                                    <span class="font-semibold text-surface-700 dark:text-surface-300 tabular-nums">{{ formatCompact(h.scenarios.pessimistic) }}</span>
-                                </div>
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="flex items-center gap-2 text-surface-500 dark:text-surface-400">
-                                        <span class="w-2 h-2 rounded-full bg-positive/70"></span>
-                                        {{ t('landing.fireProjection.optiLabel') }}
-                                    </span>
-                                    <span class="font-semibold text-surface-700 dark:text-surface-300 tabular-nums">{{ formatCompact(h.scenarios.optimistic) }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-
-                <!-- Disclaimer + CTA -->
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 max-w-4xl mx-auto">
-                    <p class="text-xs text-surface-500 dark:text-surface-500 leading-relaxed flex-1">
-                        ⚠ {{ t('landing.fireProjection.disclaimer') }}
-                    </p>
-                    <button pButton pRipple [label]="t('landing.fireProjection.ctaSimulate')"
-                            [routerLink]="[currentLang, 'tools', 'fire-simulator']"
-                            class="!bg-ochre-500 hover:!bg-ochre-400 !border-0 !font-semibold
-                                   !text-warm-900 !rounded-full !px-6 !py-2.5 !text-sm shrink-0
-                                   transition-all duration-300">
-                    </button>
+                    <div class="mt-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <p class="text-[13px] lp-muted m-0 max-w-[40rem]">{{ t('landing.fireProjection.disclaimer') }}</p>
+                        <a class="lp-link shrink-0" [routerLink]="[currentLang, 'tools', 'fire-simulator']" (click)="trackCta('projection_tool')">
+                            {{ t('landing.fireProjection.ctaSimulate') }}
+                            <i class="pi pi-arrow-right text-[12px]" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>
     `,
-    styles: [`
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 9999px;
-            background: #C77B3C;
-            cursor: pointer;
-            border: 3px solid var(--surface-0, white);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 9999px;
-            background: #C77B3C;
-            cursor: pointer;
-            border: 3px solid var(--surface-0, white);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-    `]
 })
 export class FireProjectionWidget {
     private i18n = inject(I18nService);
     private router = inject(Router);
+    private analytics = inject(AnalyticsService);
+    private runTracked = false;
 
     monthlySavings = signal(75_000);
     initialCapital = signal(0);
@@ -191,14 +119,23 @@ export class FireProjectionWidget {
 
     t(key: string): string { return this.i18n.t(key); }
 
+    trackCta(placement: string): void {
+        this.analytics.trackPublic('cta_click', { cta: placement, placement, lang: this.currentLang.replace(/^\//, '') });
+    }
+
+    /** One `simulator_run` per visit, on the first slider release (not per tick). */
+    trackRun(): void {
+        if (this.runTracked) return;
+        this.runTracked = true;
+        this.analytics.trackPublic('simulator_run', { simulator: 'landing_projection', lang: this.currentLang.replace(/^\//, '') });
+    }
+
     /** Future value of an annuity-due-style monthly investment with starting capital. */
     private fv(initial: number, monthly: number, annualRate: number, years: number): number {
         const r = annualRate / 12;
         const n = years * 12;
         const growth = Math.pow(1 + r, n);
-        const principalGrowth = initial * growth;
-        const annuityGrowth = monthly * ((growth - 1) / r);
-        return principalGrowth + annuityGrowth;
+        return initial * growth + monthly * ((growth - 1) / r);
     }
 
     medianPosition(s: ScenarioPoint): number {
