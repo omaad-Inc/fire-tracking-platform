@@ -24,6 +24,10 @@ import { createServer } from 'node:http';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve } from 'node:path';
+import { createBrotliCompress, createGzip, constants as zlibConstants } from 'node:zlib';
+
+/** Text types Netlify compresses on the edge; binaries (images, fonts) ship as is. */
+const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.json', '.webmanifest', '.svg', '.txt', '.xml']);
 
 const ROOT = resolve(process.argv[2] || 'dist/omaad-wealth/browser');
 const PORT = Number(process.env.PORT || 8080);
@@ -78,16 +82,25 @@ async function resolveFile(urlPath) {
     return null;
 }
 
-function send(res, status, file) {
+function send(res, status, file, acceptEncoding = '') {
+    const ext = extname(file);
+    // Netlify serves text with brotli (gzip fallback). Without this a local
+    // Lighthouse run reports multi-MB "text compression" savings that do not
+    // exist in production and under-scores every other metric.
+    const encoding = !COMPRESSIBLE.has(ext) ? null : /\bbr\b/.test(acceptEncoding) ? 'br' : /\bgzip\b/.test(acceptEncoding) ? 'gzip' : null;
     res.writeHead(status, {
-        'Content-Type': TYPES[extname(file)] || 'application/octet-stream',
+        'Content-Type': TYPES[ext] || 'application/octet-stream',
         // No caching, so an edit + rebuild is visible on reload and the service
         // worker's own update cycle is what gets exercised, not the HTTP cache.
         'Cache-Control': 'no-store',
         // ngsw-worker.js must be allowed to control the whole origin.
         'Service-Worker-Allowed': '/',
+        ...(encoding ? { 'Content-Encoding': encoding, Vary: 'Accept-Encoding' } : {}),
     });
-    createReadStream(file).pipe(res);
+    const stream = createReadStream(file);
+    if (encoding === 'br') stream.pipe(createBrotliCompress({ params: { [zlibConstants.BROTLI_PARAM_QUALITY]: 5 } })).pipe(res);
+    else if (encoding === 'gzip') stream.pipe(createGzip({ level: 6 })).pipe(res);
+    else stream.pipe(res);
 }
 
 const server = createServer(async (req, res) => {
@@ -102,7 +115,7 @@ const server = createServer(async (req, res) => {
 
     const file = await resolveFile(pathname);
     if (file) {
-        send(res, 200, file);
+        send(res, 200, file, req.headers['accept-encoding']);
         return;
     }
 
@@ -113,7 +126,7 @@ const server = createServer(async (req, res) => {
         res.end(`${SHELL} is missing from ${ROOT}. Run: npm run build`);
         return;
     }
-    send(res, 200, shell);
+    send(res, 200, shell, req.headers['accept-encoding']);
 });
 
 server.listen(PORT, () => {

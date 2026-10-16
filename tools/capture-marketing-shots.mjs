@@ -87,8 +87,12 @@ for (const s of SHOTS) {
     await page.screenshot({ path: png, type: 'png' });
     const webp = join(OUT, `${s.name}.webp`);
     execFileSync('cwebp', ['-quiet', '-q', '82', '-m', '6', '-sharp_yuv', png, '-o', webp]);
+    // 460 px twin for phones (srcset in phoneframe.ts): a 76 vw frame on a
+    // 390 px screen needs ~300 CSS px, 460 covers DPR 1.5 without the 780 payload.
+    const small = join(OUT, `${s.name}-460.webp`);
+    execFileSync('cwebp', ['-quiet', '-q', '80', '-m', '6', '-sharp_yuv', '-resize', '460', '0', png, '-o', small]);
     if (s.pwa) copyFileSync(png, join(PWA_OUT, `${s.name}.png`));
-    console.log(`${s.name.padEnd(16)} ${Math.round(statSync(webp).size / 1024)} kB webp`);
+    console.log(`${s.name.padEnd(16)} ${Math.round(statSync(webp).size / 1024)} kB webp, ${Math.round(statSync(small).size / 1024)} kB at 460`);
 }
 await browser.close();
 if (!process.argv.includes('--keep-png') && existsSync(TMP)) rmSync(TMP, { recursive: true, force: true });

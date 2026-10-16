@@ -33,7 +33,7 @@ import { RevealDirective } from './reveal.directive';
                     </div>
                     <div class="lg:col-span-5 hidden sm:block">
                         <div class="relative mx-auto w-[min(60%,260px)] lg:w-[280px]">
-                            <lp-phone [src]="'assets/marketing/securite.webp'" [alt]="t('landing.trust.phoneAlt')" />
+                            <lp-phone [src]="'assets/marketing/securite.webp'" [alt]="t('landing.trust.phoneAlt')" sizes="(min-width: 1024px) 280px, 260px" />
                         </div>
                     </div>
                 </div>

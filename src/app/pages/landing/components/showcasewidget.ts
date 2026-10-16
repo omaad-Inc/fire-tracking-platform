@@ -45,7 +45,7 @@ import { RevealDirective } from './reveal.directive';
                         <div class="lg:col-span-6" [class.lg:order-1]="odd">
                             <div class="relative mx-auto w-[min(62%,280px)] lg:w-[320px]">
                                 <div class="lp-glow opacity-70" aria-hidden="true"></div>
-                                <lp-phone [src]="'assets/marketing/' + f.file" [alt]="t('landing.showcase.' + f.key + 'Alt')" />
+                                <lp-phone [src]="'assets/marketing/' + f.file" [alt]="t('landing.showcase.' + f.key + 'Alt')" sizes="(min-width: 1024px) 320px, (min-width: 640px) 280px, 62vw" />
                             </div>
                         </div>
                     </article>

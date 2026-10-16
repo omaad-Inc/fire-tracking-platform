@@ -40,7 +40,8 @@ const localeResolver = () => {
 
 export const appRoutes: Routes = [
     // OAuth callback route without lang prefix (must be before root route to catch /auth/callback)
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
+    // `preload: 'public'`: the only chunks fetched ahead of time from a marketing page (the next step is signing up).
+    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes'), data: { preload: 'public' } },
     
     // Landing page as the first route (home) - but check for OAuth token first
     {
@@ -144,6 +145,6 @@ export const appRoutes: Routes = [
 
     // Other standalone routes
     { path: ':lang/notfound', loadComponent: () => import('./app/pages/notfound/notfound').then(m => m.Notfound) },
-    { path: ':lang/auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
+    { path: ':lang/auth', loadChildren: () => import('./app/pages/auth/auth.routes'), data: { preload: 'public' } },
     { path: '**', redirectTo: '' }
 ];
