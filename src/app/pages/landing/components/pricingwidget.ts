@@ -15,10 +15,13 @@ export const PASS_KEYS: PassKey[] = ['d15', 'm1', 'm3', 'm6'];
  * Money or card, and expires at the end with no automatic renewal. XOF and
  * EUR are set independently (never an FX conversion).
  *
- * MIRROR of backend/app/services/billing_service.py (PLAN_PRICES), the
+ * MIRROR of backend/app/services/billing_service.py (PRICING), the
  * server-authoritative grid the in-app plans page fetches at runtime. The
- * landing is prerendered for crawlers and cannot fetch, so this copy exists;
- * e2e/landing.smoke.spec.ts compares it to GET /billing/plans on every run.
+ * landing is prerendered for crawlers and cannot fetch, so this copy exists.
+ * Two checks keep it honest: e2e/landing.smoke.spec.ts compares it to the
+ * local GET /billing/plans, and tools/pricing-guard.mjs (in every build)
+ * compares it to the committed export src/assets/pricing/plans.json
+ * (refresh with `npm run pricing:refresh`).
  */
 export const LANDING_PASS_LADDER: Record<'pro' | 'premium', Record<PassKey, { days: number; xof: number; eur: number }>> = {
     pro: {
