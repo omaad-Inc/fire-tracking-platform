@@ -22,11 +22,11 @@ import { RevealDirective } from './reveal.directive';
             <div class="lp-container flex flex-col gap-16 lg:gap-28">
                 @for (f of items; track f.key; let odd = $odd) {
                     <article class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center" lpReveal>
-                        <div class="lg:col-span-6" [class.lg:order-2]="odd">
+                        <div class="lg:col-span-6 text-center lg:text-left" [class.lg:order-2]="odd">
                             <span class="lp-eyebrow">{{ t('landing.showcase.' + f.key + 'Eyebrow') }}</span>
                             <h3 class="lp-h2 text-[26px] lg:text-[36px] mt-3">{{ t('landing.showcase.' + f.key + 'Title') }}</h3>
                             <p class="lp-lead mt-4">{{ t('landing.showcase.' + f.key + 'Desc') }}</p>
-                            <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0">
+                            <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0 text-left max-w-[26rem] mx-auto lg:mx-0 lg:max-w-none">
                                 @for (n of [1, 2, 3]; track n) {
                                     <li class="flex items-start gap-3 lp-body">
                                         <span class="lp-check mt-0.5"><i class="pi pi-check" aria-hidden="true"></i></span>

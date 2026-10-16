@@ -11,7 +11,7 @@ import { RevealDirective } from './reveal.directive';
     template: `
         <section id="features" class="lp-section-tight scroll-mt-16" [attr.aria-labelledby]="'benefits-title'">
             <div class="lp-container">
-                <div class="max-w-[40rem]" lpReveal>
+                <div class="max-w-[40rem] text-center lg:text-left mx-auto lg:mx-0" lpReveal>
                     <span class="lp-eyebrow">{{ t('landing.benefits.eyebrow') }}</span>
                     <h2 id="benefits-title" class="lp-h2 mt-3">{{ t('landing.benefits.h2') }}</h2>
                 </div>
