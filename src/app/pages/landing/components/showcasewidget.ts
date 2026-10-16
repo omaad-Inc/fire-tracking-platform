@@ -37,7 +37,7 @@ import { RevealDirective } from './reveal.directive';
                             @if (f.note) {
                                 <p class="mt-4 text-[13px] lp-muted">{{ t('landing.showcase.' + f.key + 'Note') }}</p>
                             }
-                            <a class="lp-link mt-5" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('feature_' + f.intent)">
+                            <a class="lp-link mt-5" [routerLink]="[currentLang, 'auth', 'register']" [queryParams]="{ intent: f.intent }" (click)="trackCta('feature_' + f.intent)">
                                 {{ t('landing.showcase.' + f.key + 'Cta') }}
                                 <i class="pi pi-arrow-right text-[12px]" aria-hidden="true"></i>
                             </a>

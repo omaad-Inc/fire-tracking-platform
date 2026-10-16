@@ -13,6 +13,7 @@ import { ApiService } from '../../core/services/api.service';
 import { TokenService } from '../../core/services/token.service';
 import { I18nService } from '../../i18n/i18n.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
+import { takeRegisterIntentUrl } from '../../core/util/register-intent';
 
 type Step = 'created' | 'name' | 'notifications';
 
@@ -302,7 +303,11 @@ export class Welcome implements OnInit {
             return;
         }
         // Full URL, possibly with a query string (PSP return): navigateByUrl.
-        this.router.navigateByUrl(this.returnUrl, { replaceUrl: true });
+        // An explicit returnUrl wins; otherwise the landing CTA's intent (F8)
+        // picks the first screen, and the concierge is off so no assistant.
+        const lang = this.currentLang.replace('/', '') || 'fr';
+        const target = this.returnUrl !== this.currentLang ? this.returnUrl : takeRegisterIntentUrl(lang, this.returnUrl, { aiChat: false });
+        this.router.navigateByUrl(target, { replaceUrl: true });
     }
 
     private deviceLabel(): string {

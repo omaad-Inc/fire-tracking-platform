@@ -60,6 +60,9 @@ test.describe('landing: first screen, nav sheet, structure', () => {
         const hrefs = await page.locator('a.lp-btn-primary').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
         expect(hrefs.length).toBeGreaterThanOrEqual(4);
         hrefs.forEach((h) => expect(h).toMatch(/\/fr\/auth\/register/));
+        // Feature CTAs say what the visitor came for (F8): register consumes it after onboarding.
+        const intents = await page.locator('main a.lp-link[href*="/auth/register?intent="]').evaluateAll((as) => as.map((a) => new URL(a.getAttribute('href')!, location.origin).searchParams.get('intent')));
+        expect(intents).toEqual(['brvm', 'budget', 'goal', 'assistant']);
     });
 
     test('english landing is English (prerender parity)', async ({ page }) => {
