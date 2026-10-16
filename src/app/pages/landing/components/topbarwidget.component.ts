@@ -1,11 +1,10 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { StyleClassModule } from 'primeng/styleclass';
 import { Router, RouterModule } from '@angular/router';
 import { RippleModule } from 'primeng/ripple';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { LayoutService } from '../../../layout/service/layout.service';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
 
 @Component({
@@ -191,14 +190,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
 
         <!-- Desktop CTA -->
         <div class="hidden lg:flex items-center gap-3 shrink-0">
-            <!-- Theme toggle -->
-            <button (click)="toggleDarkMode()" pRipple
-                    class="flex items-center justify-center w-9 h-9 rounded-full border border-surface-300 dark:border-surface-600
-                           text-surface-700 dark:text-surface-200
-                           hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200"
-                    [title]="isDark() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode')">
-                <i class="pi text-sm" [ngClass]="isDark() ? 'pi-sun' : 'pi-moon'"></i>
-            </button>
             <!-- Language toggle -->
             <button (click)="switchLang()" pRipple
                     class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-surface-300 dark:border-surface-600
@@ -336,13 +327,6 @@ import { I18nService, Lang } from '../../../i18n/i18n.service';
             </ul>
             <div class="flex flex-col gap-2 border-t border-surface-200 dark:border-surface-700 pt-4 mt-4">
                 <!-- Language toggle (mobile) -->
-                <button (click)="toggleDarkMode()" pRipple
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
-                               text-surface-700 dark:text-surface-200
-                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                    <i class="pi" [ngClass]="isDark() ? 'pi-sun' : 'pi-moon'"></i>
-                    <span class="font-medium text-base">{{ isDark() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode') }}</span>
-                </button>
                 <button (click)="switchLang()" pRipple
                         class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
                                text-surface-700 dark:text-surface-200
@@ -374,7 +358,6 @@ export class TopbarWidget {
         // currentLang is a router segment ('/fr'); the event wants the bare code.
         this.analytics.trackPublic('cta_click', { cta, lang: this.currentLang.replace(/^\//, '') });
     }
-    layoutService = inject(LayoutService);
     private i18n  = inject(I18nService);
 
     currentLang = '/fr';
@@ -382,7 +365,6 @@ export class TopbarWidget {
     mobileMenuOpen = signal(false);
     toolsOpen = signal(false);
     aboutOpen = signal(false);
-    isDark = computed(() => this.layoutService.layoutConfig()?.darkTheme ?? false);
 
     constructor(public router: Router) {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -390,22 +372,12 @@ export class TopbarWidget {
         this.currentLang = '/' + this.lang;
         // Ensure service lang matches URL (in case localStorage differs)
         this.i18n.setLang(this.lang);
-        // Theme is no longer forced here, the navbar light/dark toggle controls it,
-        // and the saved preference (localStorage via LayoutService) applies on load.
+        // Public pages are light only (core/theme/public-light.ts); no theme toggle here.
     }
 
     t(key: string): string { return this.i18n.t(key); }
     _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
     get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
-
-    toggleDarkMode() {
-        const next = !this.layoutService.layoutConfig().darkTheme;
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            darkTheme: next,
-            themeMode: next ? 'dark' : 'light',
-        }));
-    }
 
     switchLang() {
         this.mobileMenuOpen.set(false);

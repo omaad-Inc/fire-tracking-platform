@@ -30,8 +30,14 @@ const STEPS = {
     // surface-* comes from tailwindcss-primeui (0..950), always valid.
 };
 
+// Public marketing pages are LIGHT ONLY (core/theme/public-light.ts gates the
+// `.app-dark` class on those routes), so a light solid there is correct by
+// design and needs no dark twin. Everything in-app is still checked.
+const LIGHT_ONLY_DIRS = [join(SRC, 'pages', 'landing'), join(SRC, 'pages', 'tools'), join(SRC, 'pages', 'public')];
+
 const files = [];
 (function walk(dir) {
+    if (LIGHT_ONLY_DIRS.some((d) => dir === d || dir.startsWith(d + '/'))) return;
     for (const name of readdirSync(dir)) {
         const p = join(dir, name);
         const st = statSync(p);

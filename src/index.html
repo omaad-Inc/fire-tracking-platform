@@ -10,9 +10,11 @@
     <link rel="dns-prefetch" href="https://api.omaad.africa"/>
 
     <!-- Viewport & Mobile -->
-    <!-- Zoom verrouillé (feel d'app native, demande produit 2026-07-25) : bloque le
-         pinch/double-tap zoom ET l'auto-zoom iOS au focus des inputs < 16px. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <!-- Zoom is allowed (WCAG 1.4.4; iOS ignores user-scalable=no anyway). The
+         native feel the 2026-07-25 lock aimed for comes from
+         `touch-action: manipulation` on interactive elements (styles.scss): no
+         double-tap zoom, no 300 ms tap delay, pinch zoom still works. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     
     <!-- SEO & Description -->
@@ -70,10 +72,16 @@
 
     <!-- Apply the saved theme BEFORE first paint so there is no white/theme
          flash on cold load. Mirrors LayoutService (localStorage 'omaad-layout-config',
-         '.app-dark' on <html>). Browser-only; a no-op during prerender. -->
+         '.app-dark' on <html>). Browser-only; a no-op during prerender.
+         Public marketing pages are LIGHT ONLY: PUBLIC_LIGHT below is the same
+         regex as src/app/core/theme/public-light.ts (tools/public-light-guard.mjs
+         keeps the two identical), so a dark-mode user never gets a dark first
+         frame on the landing and the saved preference is left untouched. -->
     <script>
         (function () {
+            var PUBLIC_LIGHT = /^\/(?:$|(?:fr|en)\/(?:landing|blog|faq|legal|qui-sommes-nous|about|tools|fire-africa)(?:\/|$)|outils(?:\/|$)|confidentialite(?:\/|$)|supprimer-mon-compte(?:\/|$)|support(?:\/|$)|paiement\/|g\/)/;
             try {
+                var publicLight = PUBLIC_LIGHT.test(location.pathname);
                 var raw = localStorage.getItem('omaad-layout-config');
                 var dark = false;
                 if (raw) {
@@ -83,7 +91,10 @@
                     else if (c.themeMode === 'system') dark = matchMedia('(prefers-color-scheme: dark)').matches;
                     else dark = !!c.darkTheme;
                 }
-                if (dark) document.documentElement.classList.add('app-dark');
+                if (dark && !publicLight) document.documentElement.classList.add('app-dark');
+                var color = (dark && !publicLight) ? '#0F1A2E' : (publicLight ? '#FAF8F4' : '#ffffff');
+                var metas = document.querySelectorAll('meta[name="theme-color"]');
+                for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', color);
             } catch (e) { /* first visit / storage blocked: default light */ }
         })();
     </script>
