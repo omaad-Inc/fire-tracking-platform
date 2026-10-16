@@ -25,11 +25,11 @@ interface FaqCategory {
     standalone: true,
     imports: [CommonModule, RouterModule, RippleModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
+        <div class="lp min-h-screen">
             <!-- Topbar -->
             <topbar-widget />
 
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-5xl mx-auto">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-5xl mx-auto">
 
                 <!-- Hero -->
                 <header class="mb-12 text-center max-w-2xl mx-auto">

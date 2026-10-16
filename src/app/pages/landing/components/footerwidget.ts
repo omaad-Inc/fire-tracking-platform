@@ -69,17 +69,17 @@ import { NewsletterSignup } from './newsletter-signup';
 })
 export class FooterWidget {
     private i18n = inject(I18nService);
-    currentLang = '/fr';
+    private router = inject(Router);
     currentYear = new Date().getFullYear();
 
-    columns: Array<{ title: string; links: Array<{ label: string; link?: string[]; fragment?: string; href?: string; external?: boolean }> }> = [];
+    /** Live: a FR -> EN switch on /:lang/landing reuses this instance (route param change). */
+    get currentLang(): string { return '/' + this.i18n.lang(); }
 
-    constructor(public router: Router) {
-        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        this.currentLang = '/' + (match ? match[1] : 'fr');
+    /** Rebuilt from the live language so every link follows a language switch. */
+    get columns(): Array<{ title: string; links: Array<{ label: string; link?: string[]; fragment?: string; href?: string; external?: boolean }> }> {
         const L = this.currentLang;
         const about = this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about';
-        this.columns = [
+        return [
             { title: 'landing.footer.productTitle', links: [
                 { label: 'landing.nav.features', link: [L, 'landing'], fragment: 'features' },
                 { label: 'landing.footer.productTour', link: [L, 'landing'], fragment: 'tour' },

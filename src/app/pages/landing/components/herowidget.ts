@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { landingLangPrefix, trackLandingCta } from './landing-shared';
 import { PhoneFrame } from './phoneframe';
 
 /**
@@ -54,16 +55,11 @@ export class HeroWidget {
     private i18n = inject(I18nService);
     private router = inject(Router);
 
-    get currentLang(): string {
-        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        return '/' + (match ? match[1] : 'fr');
-    }
+    get currentLang(): string { return landingLangPrefix(this.router); }
 
     t(key: string): string { return this.i18n.t(key); }
 
-    trackCta(placement: string): void {
-        this.analytics.trackPublic('cta_click', { cta: placement, placement, lang: this.currentLang.replace(/^\//, '') });
-    }
+    trackCta(placement: string): void { trackLandingCta(this.analytics, this.router, placement); }
 
     scrollTo(ev: Event, id: string): void {
         const el = document.getElementById(id);

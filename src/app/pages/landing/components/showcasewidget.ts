@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { landingLangPrefix, trackLandingCta } from './landing-shared';
 import { PhoneFrame } from './phoneframe';
 import { RevealDirective } from './reveal.directive';
 
@@ -36,7 +37,7 @@ import { RevealDirective } from './reveal.directive';
                             @if (f.note) {
                                 <p class="mt-4 text-[13px] lp-muted">{{ t('landing.showcase.' + f.key + 'Note') }}</p>
                             }
-                            <a class="lp-link mt-5" [routerLink]="[currentLang, 'auth', 'register']" [queryParams]="{ intent: f.intent }" (click)="trackCta('feature_' + f.intent)">
+                            <a class="lp-link mt-5" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('feature_' + f.intent)">
                                 {{ t('landing.showcase.' + f.key + 'Cta') }}
                                 <i class="pi pi-arrow-right text-[12px]" aria-hidden="true"></i>
                             </a>
@@ -65,14 +66,9 @@ export class ShowcaseWidget {
         { key: 'f4', file: 'assistant.webp', intent: 'assistant', note: true },
     ];
 
-    get currentLang(): string {
-        const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        return '/' + (match ? match[1] : 'fr');
-    }
+    get currentLang(): string { return landingLangPrefix(this.router); }
 
     t(key: string): string { return this.i18n.t(key); }
 
-    trackCta(placement: string): void {
-        this.analytics.trackPublic('cta_click', { cta: placement, placement, lang: this.currentLang.replace(/^\//, '') });
-    }
+    trackCta(placement: string): void { trackLandingCta(this.analytics, this.router, placement); }
 }

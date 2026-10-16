@@ -14,7 +14,9 @@
 // mobile app (identity decision 2026-08-26).
 // ─────────────────────────────────────────────────────────────────────
 
-.lp {
+// Tokens on :root (not only .lp): the public header, footer and sheet are
+// also rendered by the FAQ, legal, support and about pages.
+:root {
     --lp-canvas: #FAF8F4;
     --lp-card: #FFFFFF;
     --lp-ink: #0F1A2E;
@@ -25,7 +27,9 @@
     --lp-ochre: #C77B3C;
     --lp-ochre-ink: #A1602D;   // AA on cream and white (4.5:1)
     --lp-navy: #0F1A2E;
+}
 
+.lp {
     background: var(--lp-canvas);
     color: var(--lp-ink);
     font-size: 16px;

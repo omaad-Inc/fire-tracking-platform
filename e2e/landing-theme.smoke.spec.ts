@@ -17,6 +17,10 @@ async function isDark(page: Page): Promise<boolean> {
     return page.evaluate(() => document.documentElement.classList.contains('app-dark'));
 }
 
+async function viewport(page: Page): Promise<string> {
+    return page.evaluate(() => document.querySelector('meta[name="viewport"]')?.getAttribute('content') || '');
+}
+
 async function bodyIsLight(page: Page): Promise<boolean> {
     return page.evaluate(() => {
         const [r, g, b] = getComputedStyle(document.body).backgroundColor.match(/\d+/g)!.map(Number);
@@ -60,13 +64,17 @@ test.describe('public pages are light only', () => {
         await ctx.addInitScript((saved) => localStorage.setItem('omaad-layout-config', saved), SAVED_DARK);
         const page = await ctx.newPage();
 
-        // Auth pages are not in the public-light list: they follow the user.
+        // Auth pages are not in the public-light list: they follow the user,
+        // and keep the app's viewport zoom lock (native feel, no iOS focus zoom).
         await page.goto('/fr/auth/login', { waitUntil: 'networkidle' });
         expect(await isDark(page)).toBe(true);
+        expect(await viewport(page)).toContain('user-scalable=no');
 
-        // Client-side to the landing (the auth page links back to it).
+        // Client-side to the landing (the auth page links back to it). Public
+        // pages allow zoom (WCAG 1.4.4).
         await page.goto('/fr/landing', { waitUntil: 'networkidle' });
         expect(await isDark(page)).toBe(false);
+        expect(await viewport(page)).not.toContain('user-scalable=no');
         await page.getByText(/se connecter/i).first().click();
         await expect(page).toHaveURL(/\/auth\/login/);
         await page.waitForTimeout(300);

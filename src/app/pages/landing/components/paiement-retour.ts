@@ -31,10 +31,10 @@ type Outcome = 'success' | 'error' | 'unknown';
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, RouterModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
+        <div class="lp min-h-screen">
             <topbar-widget />
 
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-xl mx-auto">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-xl mx-auto">
                 <section class="rounded-3xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-7 md:p-9 text-center">
                     <span class="mx-auto w-16 h-16 rounded-full flex items-center justify-center mb-5"
                           [ngClass]="outcome() === 'success' ? 'bg-positive/12 text-positive'

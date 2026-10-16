@@ -10,11 +10,12 @@
     <link rel="dns-prefetch" href="https://api.omaad.africa"/>
 
     <!-- Viewport & Mobile -->
-    <!-- Zoom is allowed (WCAG 1.4.4; iOS ignores user-scalable=no anyway). The
-         native feel the 2026-07-25 lock aimed for comes from
-         `touch-action: manipulation` on interactive elements (styles.scss): no
-         double-tap zoom, no 300 ms tap delay, pinch zoom still works. -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <!-- Two policies, switched at runtime on the route (inline script below +
+         LayoutService): PUBLIC marketing pages allow zoom (WCAG 1.4.4, axe
+         meta-viewport gate); the APP keeps the 2026-07-25 lock (native feel,
+         no iOS auto-zoom on 14 px inputs). `touch-action: manipulation`
+         (styles.scss) removes double-tap zoom and the tap delay everywhere. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
     <meta name="mobile-web-app-capable" content="yes"/>
     
     <!-- SEO & Description -->
@@ -95,6 +96,8 @@
                 var color = (dark && !publicLight) ? '#0F1A2E' : (publicLight ? '#FAF8F4' : '#ffffff');
                 var metas = document.querySelectorAll('meta[name="theme-color"]');
                 for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', color);
+                var vp = document.querySelector('meta[name="viewport"]');
+                if (vp && publicLight) vp.setAttribute('content', 'width=device-width, initial-scale=1, viewport-fit=cover');
             } catch (e) { /* first visit / storage blocked: default light */ }
         })();
     </script>

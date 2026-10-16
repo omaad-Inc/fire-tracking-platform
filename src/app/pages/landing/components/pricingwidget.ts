@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService } from '../../../i18n/i18n.service';
+import { landingLangPrefix, trackLandingCta } from './landing-shared';
 import { nbspSafe } from '../../../core/util/nbsp';
 import { RevealDirective } from './reveal.directive';
 
@@ -59,7 +60,7 @@ export const LANDING_FAQ_KEYS = [5, 2, 1, 3, 6, 7] as const;
                         </div>
                         <p class="lp-body mt-1 text-[15px]">{{ t('landing.pricing.proTagline') }}</p>
                         <div class="mt-5 flex items-baseline gap-2"><span class="text-[40px] font-extrabold leading-none tracking-[-0.02em] lp-num">{{ fmt(prices.pro) }}</span><span class="lp-muted text-[14px]">FCFA / {{ t('landing.pricing.month') }}</span></div>
-                        <a class="lp-btn lp-btn-primary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" [queryParams]="{ tier: 'pro' }" (click)="trackCta('pricing_pro')">{{ t('landing.pricing.proCta') }}</a>
+                        <a class="lp-btn lp-btn-primary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('pricing_pro')">{{ t('landing.pricing.proCta') }}</a>
                         <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0">
                             <li class="text-[14px] font-semibold">{{ t('plans.everythingFree') }}</li>
                             @for (f of proFeatures(); track f) {
@@ -73,7 +74,7 @@ export const LANDING_FAQ_KEYS = [5, 2, 1, 3, 6, 7] as const;
                         <h3 class="lp-h3 !text-white">{{ t('landing.pricing.premiumName') }}</h3>
                         <p class="mt-1 text-[15px] text-white/70">{{ t('landing.pricing.premiumTagline') }}</p>
                         <div class="mt-5 flex items-baseline gap-2"><span class="text-[40px] font-extrabold leading-none tracking-[-0.02em] lp-num text-white">{{ fmt(prices.premium) }}</span><span class="text-white/60 text-[14px]">FCFA / {{ t('landing.pricing.month') }}</span></div>
-                        <a class="lp-btn lp-btn-primary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" [queryParams]="{ tier: 'premium' }" (click)="trackCta('pricing_premium')">{{ t('landing.pricing.premiumCta') }}</a>
+                        <a class="lp-btn lp-btn-primary lp-btn-block mt-6" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('pricing_premium')">{{ t('landing.pricing.premiumCta') }}</a>
                         <ul class="mt-6 flex flex-col gap-3 list-none p-0 m-0">
                             <li class="text-[14px] font-semibold text-white">{{ t('plans.everythingPro') }}</li>
                             @for (f of premiumFeatures(); track f) {
@@ -108,10 +109,7 @@ export class PricingWidget {
     readonly prices = LANDING_PLAN_PRICES_XOF;
     readonly faqKeys = LANDING_FAQ_KEYS;
 
-    get currentLang(): string {
-        const m = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        return '/' + (m ? m[1] : 'fr');
-    }
+    get currentLang(): string { return landingLangPrefix(this.router); }
 
     t(key: string): string { return this.i18n.t(key); }
 
@@ -119,9 +117,7 @@ export class PricingWidget {
         return nbspSafe(new Intl.NumberFormat(this.i18n.lang() === 'fr' ? 'fr-FR' : 'en-US').format(n));
     }
 
-    trackCta(placement: string): void {
-        this.analytics.trackPublic('cta_click', { cta: placement, placement, lang: this.currentLang.replace(/^\//, '') });
-    }
+    trackCta(placement: string): void { trackLandingCta(this.analytics, this.router, placement); }
 
     // Same plans.* feature keys as /pages/plans (single source of truth);
     // five per tier on the marketing page, the full list lives in-app.

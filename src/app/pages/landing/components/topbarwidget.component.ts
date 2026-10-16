@@ -1,8 +1,9 @@
-import { Component, ElementRef, HostListener, PLATFORM_ID, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, PLATFORM_ID, afterNextRender, inject, signal, viewChild } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { trackLandingCta } from './landing-shared';
 
 /**
  * Public header (landing redesign 2026-10). Shared by the landing, FAQ,
@@ -135,6 +136,9 @@ export class TopbarWidget {
         this.i18n.setLang(this.lang);
         for (const item of this.tools) if (item.link[0] === '/fr') item.link[0] = this.currentLang;
         afterNextRender(() => { this.scrolled.set(window.scrollY > 8); });
+        // The sheet may be open when a navigation destroys the header (back
+        // button, auth redirect): never leave the page scroll locked behind.
+        inject(DestroyRef).onDestroy(() => { if (isPlatformBrowser(this.platformId)) document.body.classList.remove('lp-scroll-lock'); });
     }
 
     /** Anchors stay on the current route when it IS the landing (so "/" never jumps to /fr/landing). */
@@ -147,9 +151,7 @@ export class TopbarWidget {
 
     t(key: string): string { return this.i18n.t(key); }
 
-    trackCta(placement: string): void {
-        this.analytics.trackPublic('cta_click', { cta: placement, placement, lang: this.lang });
-    }
+    trackCta(placement: string): void { trackLandingCta(this.analytics, this.router, placement); }
 
     @HostListener('window:scroll')
     onScroll(): void { if (isPlatformBrowser(this.platformId)) this.scrolled.set(window.scrollY > 8); }
@@ -194,8 +196,14 @@ export class TopbarWidget {
         for (const item of this.tools) if (/^\/(fr|en)$/.test(item.link[0] as string)) item.link[0] = this.currentLang;
         this.closeSheet();
         const url = this.router.url;
-        // "/" has no prefix: the other language lives at /<lang>/landing.
-        const target = /^\/(fr|en)(\/|$)/.test(url) ? url.replace(/^\/(fr|en)/, '/' + next) : `/${next}/landing`;
-        this.router.navigateByUrl(target);
+        const path = url.split(/[?#]/)[0];
+        if (/^\/(fr|en)(\/|$)/.test(url)) {
+            this.router.navigateByUrl(url.replace(/^\/(fr|en)/, '/' + next));
+        } else if (path === '/' || path === '') {
+            // "/" has no prefix: the other language lives at /<lang>/landing.
+            this.router.navigateByUrl(`/${next}/landing`);
+        }
+        // Other prefix-less public pages (/support, /confidentialite, /paiement/retour...)
+        // stay where they are: only the copy switches.
     }
 }

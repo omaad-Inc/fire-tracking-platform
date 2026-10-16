@@ -34,15 +34,17 @@ const STEPS = {
 // `.app-dark` class on those routes), so a light solid there is correct by
 // design and needs no dark twin. Everything in-app is still checked.
 const LIGHT_ONLY_DIRS = [join(SRC, 'pages', 'landing'), join(SRC, 'pages', 'tools'), join(SRC, 'pages', 'public')];
+// Files under a light-only dir that the dark-capable APP also renders: still checked.
+const SHARED_WITH_APP = new Set([join(SRC, 'pages', 'landing', 'components', 'newsletter-signup.ts')]);
 
 const files = [];
 (function walk(dir) {
-    if (LIGHT_ONLY_DIRS.some((d) => dir === d || dir.startsWith(d + '/'))) return;
+    const lightOnly = LIGHT_ONLY_DIRS.some((d) => dir === d || dir.startsWith(d + '/'));
     for (const name of readdirSync(dir)) {
         const p = join(dir, name);
         const st = statSync(p);
         if (st.isDirectory()) walk(p);
-        else if (/\.(ts|html)$/.test(name) && !/\.spec\.ts$/.test(name)) files.push(p);
+        else if (/\.(ts|html)$/.test(name) && !/\.spec\.ts$/.test(name) && (!lightOnly || SHARED_WITH_APP.has(p))) files.push(p);
     }
 })(SRC);
 

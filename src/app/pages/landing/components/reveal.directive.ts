@@ -1,4 +1,4 @@
-import { Directive, ElementRef, PLATFORM_ID, afterNextRender, inject } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, PLATFORM_ID, afterNextRender, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 /**
@@ -30,13 +30,16 @@ export class RevealDirective {
     private platformId = inject(PLATFORM_ID);
 
     constructor() {
+        const node = this.el.nativeElement;
         afterNextRender(() => {
             if (!isPlatformBrowser(this.platformId)) return;
-            const node = this.el.nativeElement;
             const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
             if (reduced || typeof IntersectionObserver === 'undefined') { node.classList.add('is-in'); return; }
             node.classList.add('lp-reveal');
             getObserver().observe(node);
         });
+        // A node that never scrolled into view must not be retained by the
+        // shared observer after its component is destroyed (landing <-> app).
+        inject(DestroyRef).onDestroy(() => observer?.unobserve(node));
     }
 }

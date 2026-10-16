@@ -246,6 +246,12 @@ export class LayoutService {
         // white in the light app (index.html seeds the same values).
         const color = dark ? '#0F1A2E' : (this.publicLight() ? '#FAF8F4' : '#ffffff');
         document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', color));
+        // Viewport policy follows the surface too: public pages allow zoom
+        // (WCAG 1.4.4), the app keeps its zoom lock (native feel, no iOS
+        // auto-zoom on focus of 14 px inputs). Browsers re-read the meta live.
+        document.querySelector('meta[name="viewport"]')?.setAttribute('content', this.publicLight()
+            ? 'width=device-width, initial-scale=1, viewport-fit=cover'
+            : 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
 
     private onTransitionEnd() {

@@ -24,10 +24,10 @@ const PAGE_DESC =
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, RouterModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
+        <div class="lp min-h-screen">
             <topbar-widget />
 
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
                 <header class="mb-10">
                     <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
                         <i class="pi pi-shield text-[10px]"></i>

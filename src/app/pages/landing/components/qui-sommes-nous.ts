@@ -14,7 +14,7 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
     standalone: true,
     imports: [CommonModule, RouterModule, ButtonModule, RippleModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
+        <div class="lp min-h-screen">
             <!-- Fixed topbar -->
             <topbar-widget />
 
