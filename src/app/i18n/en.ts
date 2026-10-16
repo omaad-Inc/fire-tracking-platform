@@ -2834,6 +2834,9 @@ export const EN: Dict = {
       all: 'All articles',
       edition: 'Edition',
       minutes: 'min',
+      prevAria: 'Previous articles',
+      nextAria: 'Next articles',
+      carouselAria: 'Scroll through the articles',
     },
     tour: {
       eyebrow: 'The app',

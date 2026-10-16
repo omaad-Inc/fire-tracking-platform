@@ -2832,6 +2832,9 @@ export const FR = {
       all: 'Tous les articles',
       edition: 'Édition',
       minutes: 'min',
+      prevAria: 'Articles précédents',
+      nextAria: 'Articles suivants',
+      carouselAria: 'Faire défiler les articles',
     },
     tour: {
       eyebrow: 'L\'application',
