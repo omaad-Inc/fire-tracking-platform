@@ -32,8 +32,12 @@ import { isPlatformBrowser } from '@angular/common';
             @if (playVideo()) {
                 <!-- [muted] as a PROPERTY: the attribute alone does not mute an element created
                      after parse, and an unmuted autoplay is blocked on phones. -->
+                <!-- Visible ONLY while actually playing: a paused video drops back under the
+                     capture, so Safari's centered play glyph (Low Power Mode, a blocked
+                     autoplay, a tab coming back) is never shown on the hero. -->
                 <video class="lp-phone-video" [class.is-ready]="ready()" autoplay [muted]="true" loop playsinline
-                       preload="auto" aria-hidden="true" tabindex="-1" (canplay)="onCanPlay($event)" (playing)="ready.set(true)">
+                       preload="auto" aria-hidden="true" tabindex="-1" disablepictureinpicture disableremoteplayback
+                       (canplay)="onCanPlay($event)" (playing)="ready.set(true)" (pause)="ready.set(false)" (ended)="ready.set(false)" (error)="ready.set(false)">
                     <source [src]="video()" type="video/webm">
                     <source [src]="mp4()" type="video/mp4">
                 </video>

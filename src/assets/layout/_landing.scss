@@ -218,6 +218,12 @@
     pointer-events: none;
     &.is-ready { opacity: 1; }
     @media (prefers-reduced-motion: reduce) { display: none; }
+    // Belt and braces: WebKit paints a start-playback button on a paused
+    // inline video even without `controls`; never on the hero.
+    &::-webkit-media-controls, &::-webkit-media-controls-start-playback-button, &::-webkit-media-controls-overlay-play-button {
+        display: none !important;
+        -webkit-appearance: none;
+    }
 }
 .lp-glow {
     position: absolute;
