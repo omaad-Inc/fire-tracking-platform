@@ -382,6 +382,7 @@ export const EN_PUBLIC: PublicDict = {
       t3: 'Encryption in transit (TLS 1.3), Google or password sign-in, two-factor authentication available.',
       t4: 'Your data is never sold or shared. In-house audience metrics, no cookies, no third-party trackers.',
       t5: 'Export and delete your account at any time, from the settings.',
+      t6: 'Your data is stored in the European Union (Ireland), on a PostgreSQL database hosted by Supabase.',
       company: 'Omaad is published by OMAAD SASU.',
       phoneAlt: 'Security screen: password, two-factor authentication and sessions',
     },

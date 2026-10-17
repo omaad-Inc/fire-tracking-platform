@@ -22,7 +22,7 @@ import { RevealDirective } from './reveal.directive';
                         <h2 id="trust-title" class="lp-h2 mt-3">{{ t('landing.trust.h2') }}</h2>
                         <p class="lp-lead mt-3">{{ t('landing.trust.lead') }}</p>
                         <ul class="mt-7 flex flex-col gap-4 list-none p-0 m-0 text-left">
-                            @for (n of [1, 2, 3, 4, 5]; track n) {
+                            @for (n of [1, 2, 3, 4, 5, 6]; track n) {
                                 <li class="flex items-start gap-3">
                                     <span class="lp-icon-tile !w-10 !h-10 !rounded-xl text-[15px]"><i class="pi" [class]="icons[n - 1]" aria-hidden="true"></i></span>
                                     <span class="lp-body pt-2">{{ t('landing.trust.t' + n) }}</span>
@@ -43,6 +43,7 @@ import { RevealDirective } from './reveal.directive';
 })
 export class TrustWidget {
     private i18n = inject(I18nService);
-    readonly icons = ['pi-ban', 'pi-key', 'pi-lock', 'pi-eye-slash', 'pi-download'];
+    /** One icon per fact; t6 (F5) is the storage location: Supabase EU West, Ireland (analytics/README.md, aws-0-eu-west-1). */
+    readonly icons = ['pi-ban', 'pi-key', 'pi-lock', 'pi-eye-slash', 'pi-download', 'pi-server'];
     t(key: string): string { return this.i18n.t(key); }
 }

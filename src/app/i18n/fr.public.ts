@@ -389,6 +389,7 @@ export const FR_PUBLIC = {
       t3: 'Chiffrement en transit (TLS 1.3), connexion Google ou mot de passe, double authentification disponible.',
       t4: 'Vos données ne sont ni vendues ni partagées. Mesures d\'audience internes, sans cookie ni traceur tiers.',
       t5: 'Export et suppression de votre compte à tout moment, depuis les réglages.',
+      t6: 'Vos données sont stockées dans l\'Union européenne (Irlande), sur une base PostgreSQL hébergée chez Supabase.',
       company: 'Omaad est édité par OMAAD SASU.',
       phoneAlt: 'Écran Sécurité : mot de passe, double authentification et sessions',
     },
