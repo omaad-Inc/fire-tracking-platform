@@ -5,12 +5,17 @@ import { TokenService } from '../services/token.service';
 import { AuthService } from '../services/auth.service';
 import { CACHE_RESET } from '../services/cache-reset.token';
 import { ShareContextService } from '../services/share-context.service';
+import { FeatureFlagsService } from '../services/feature-flags.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
     const tokenService = inject(TokenService);
     const authService = inject(AuthService);
     const router = inject(Router);
     const cacheReset = inject(CACHE_RESET);
+    // Premium early access (PREM-4): kick the subscription read now, in
+    // parallel with the session restore, so flag reads see the plan early.
+    // Non-blocking: the optimistic shell below is untouched.
+    inject(FeatureFlagsService).prime();
 
     // Entering the real app clears any public-share mode left over from viewing
     // a /share/:token link in this tab (so a logged-in user's own app is live,

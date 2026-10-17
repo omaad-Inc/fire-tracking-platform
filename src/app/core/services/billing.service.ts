@@ -96,16 +96,20 @@ export class BillingService {
         const cold = !this.loaded();
         if (cold) this.loading.set(true);
 
+        let settle: () => void = () => {};
+        this.inflight = new Promise<void>((resolve) => { settle = resolve; });
         this.api.getSubscription().subscribe({
             next: (sub) => {
                 this.subscription.set(sub);
                 this.loaded.set(true);
                 this.loading.set(false);
+                settle();
             },
             error: () => {
                 // The hero depends on this read: don't wedge the cache, allow retry.
                 this.lastFetch = null;
                 this.loading.set(false);
+                settle();
             },
         });
         // Secondary sections: stream in independently, never block the hero and
@@ -116,6 +120,21 @@ export class BillingService {
 
     refresh(): void {
         this.load(true);
+    }
+
+    /** The subscription read in flight, settled on success AND on error (never wedges a caller). */
+    private inflight: Promise<void> | null = null;
+
+    /**
+     * Resolve once the subscription has been read at least once (PREM-4):
+     * route guards await this so a Premium early-access flag is known at
+     * route-match time instead of reading 'free' before the lazy load lands.
+     * Signed-out callers resolve immediately (nothing to read).
+     */
+    ensureLoaded(): Promise<void> {
+        if (this.loaded()) return Promise.resolve();
+        this.load();
+        return this.inflight ?? Promise.resolve();
     }
 
     // ── Pending checkout round trip ─────────────────────────────────────────
