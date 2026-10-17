@@ -9,7 +9,9 @@ import { PhoneFrame } from './phoneframe';
  * Hero (landing redesign 2026-10). On a 390x844 phone the H1, the lead, the
  * primary action and the top of a REAL Synthèse screen are all inside the
  * first 700 px: no empty gradient, no fake dashboard card. One ochre action,
- * one quiet secondary link, three trust facts that are all true.
+ * one quiet secondary link, three trust facts that are all true. The phone
+ * plays a 6 s loop of the same screen once the page is idle (F9); the
+ * capture underneath stays the LCP image and the reduced-motion fallback.
  */
 @Component({
     selector: 'hero-widget',
@@ -42,7 +44,7 @@ import { PhoneFrame } from './phoneframe';
                     <div class="lp-glow" aria-hidden="true"></div>
                     <!-- Phone: cropped to its top ~60% on phones (the tour below shows it in full), full on desktop -->
                     <div class="relative mx-auto w-[min(76%,320px)] lg:w-[360px] lg:ml-auto lg:mr-6 max-h-[64vw] sm:max-h-[420px] lg:max-h-none overflow-hidden lg:overflow-visible lg:-rotate-3">
-                        <lp-phone [src]="'assets/marketing/synthese.webp'" [alt]="t('landing.hero.phoneAlt')" [eager]="true" />
+                        <lp-phone [src]="'assets/marketing/synthese.webp'" [video]="'assets/marketing/synthese-loop.webm'" [alt]="t('landing.hero.phoneAlt')" [eager]="true" />
                         <div class="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#FAF8F4] lg:hidden" aria-hidden="true"></div>
                     </div>
                 </div>

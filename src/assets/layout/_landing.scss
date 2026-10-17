@@ -204,6 +204,21 @@
     border-radius: 11% / 5%;
     background: #FAF8F4;
 }
+.lp-phone-video {
+    // Overlays the capture exactly (same aspect, same inner radius) and fades
+    // in once it plays, so a slow or failed load leaves the image in place.
+    position: absolute;
+    inset: 11px;
+    width: calc(100% - 22px);
+    height: calc(100% - 22px);
+    border-radius: 11% / 5%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 500ms var(--ease-decelerate);
+    pointer-events: none;
+    &.is-ready { opacity: 1; }
+    @media (prefers-reduced-motion: reduce) { display: none; }
+}
 .lp-glow {
     position: absolute;
     inset: -10% -20%;
