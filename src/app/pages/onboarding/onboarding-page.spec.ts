@@ -31,7 +31,7 @@ describe('OnboardingPage (concierge)', () => {
     const NB = '\u00A0';
 
     async function setup() {
-        navigate = jasmine.createSpy('navigate');
+        navigate = jasmine.createSpy('navigateByUrl');
         failTool = null;
         throwTool = null;
         action = jasmine.createSpy('onboardingAction').and.callFake((tool: string) => {
@@ -43,7 +43,8 @@ describe('OnboardingPage (concierge)', () => {
             imports: [OnboardingPage],
             providers: [
                 { provide: TokenService, useValue: { user: () => ({ first_name: 'Luffy' }) } },
-                { provide: Router, useValue: { url: '/fr/onboarding', navigate } },
+                // F8: the handoff leaves through navigateByUrl (the landing intent may carry a query string).
+                { provide: Router, useValue: { url: '/fr/onboarding', navigateByUrl: navigate } },
                 {
                     provide: CurrencyService, useValue: {
                         convert: (e: number) => e,
@@ -120,7 +121,7 @@ describe('OnboardingPage (concierge)', () => {
         await tick(); // objective write + handoff (mark_complete) + navigate
         expect(action).toHaveBeenCalledWith('update_user_ai_profile', { objective: 'financial_freedom' });
         expect(action).toHaveBeenCalledWith('mark_onboarding_complete', {});
-        expect(navigate).toHaveBeenCalledWith(['/', 'fr'], { replaceUrl: true });
+        expect(navigate).toHaveBeenCalledWith('/fr', { replaceUrl: true });
     });
 
     it('surfaces a gentle error (with retry) when the asset write fails, without dead-ending', async () => {
@@ -220,6 +221,6 @@ describe('OnboardingPage (concierge)', () => {
         cmp.beat.set('objective');
         cmp.finishNoObjective();
         await tick();
-        expect(navigate).toHaveBeenCalledWith(['/', 'fr'], { replaceUrl: true });
+        expect(navigate).toHaveBeenCalledWith('/fr', { replaceUrl: true });
     });
 });

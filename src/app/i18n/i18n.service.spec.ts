@@ -1,14 +1,19 @@
+import { TestBed } from '@angular/core/testing';
 import { I18nService } from './i18n.service';
 
 /**
- * Pure-logic unit tests for the i18n resolver (P4-TEST-1). No TestBed / DI:
- * I18nService has no injected deps, so we drive t() directly with a stub dict.
+ * Pure-logic unit tests for the i18n resolver (P4-TEST-1). The service reads
+ * DOCUMENT through inject(), so it is built inside an injection context; the
+ * dictionaries are still stubbed directly (no lazy import, no tiers).
  */
 describe('I18nService.t', () => {
     let svc: I18nService;
 
     beforeEach(() => {
-        svc = new I18nService();
+        svc = TestBed.runInInjectionContext(() => new I18nService());
+        // The stub holds every key the tests read: mark both tiers loaded so a
+        // miss is a real miss (not a pending app-tier load).
+        (svc as unknown as { loaded: Record<string, Set<string>> }).loaded = { fr: new Set(['public', 'app']), en: new Set(['public', 'app']) };
         // Inject stub dictionaries directly (bypass the lazy dynamic import).
         (svc as unknown as { dicts: Record<string, unknown> }).dicts = {
             fr: { greeting: { hi: 'Bonjour {{name}}' }, plain: 'Salut', categories: { salary: 'Salaire' } },
@@ -51,7 +56,7 @@ describe('I18nService.categoryLabel', () => {
     let svc: I18nService;
 
     beforeEach(() => {
-        svc = new I18nService();
+        svc = TestBed.runInInjectionContext(() => new I18nService());
         (svc as unknown as { dicts: Record<string, unknown> }).dicts = {
             fr: { categories: { salary: 'Salaire', housing: 'Logement', other_expense: 'Autres' } },
         };

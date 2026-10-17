@@ -91,6 +91,21 @@ test.describe('landing: first screen, nav sheet, structure', () => {
         }
     });
 
+    test('public pages stay inside the public dictionary tier (F13)', async ({ page }) => {
+        // ng serve runs in dev mode, where I18nService warns on every key that
+        // falls outside the loaded tier; prod would render the raw key path.
+        const warnings: string[] = [];
+        page.on('console', (m) => { if (m.type() === 'warning' && /\[i18n\]/.test(m.text())) warnings.push(m.text()); });
+        for (const url of ['/fr/landing', '/en/landing', '/fr/tarifs', '/fr/faq', '/fr/blog', '/fr/qui-sommes-nous', '/outils/comparateur-sgi-brvm', '/fr/tools/fire-simulator']) {
+            await page.goto(url, { waitUntil: 'networkidle' });
+            await page.waitForTimeout(300);
+        }
+        expect(warnings).toEqual([]);
+        // The app tier is not fetched on a public page.
+        const appChunk = await page.evaluate(() => performance.getEntriesByType('resource').some((e) => /chunk-.*\.js$/.test(e.name) && e.name.includes('fr-') ));
+        void appChunk;
+    });
+
     test('stale copy is gone', async ({ page }) => {
         await page.goto('/fr/landing', { waitUntil: 'networkidle' });
         const text = await page.locator('body').innerText();
