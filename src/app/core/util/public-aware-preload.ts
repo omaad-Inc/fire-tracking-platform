@@ -44,7 +44,11 @@ export class PublicAwarePreload implements PreloadingStrategy {
     }
 
     private constrained(): boolean {
-        if (typeof navigator === 'undefined') return true; // prerender: nothing to preload
+        // Prerender: nothing to preload. Keyed on window/document, not on
+        // navigator: Node 21+ defines a global `navigator`, so the old check
+        // let the server reach whenIdle() and throw "document is not defined"
+        // on every prerendered route (96 times per build, harmless but noisy).
+        if (typeof window === 'undefined' || typeof document === 'undefined') return true;
         const c = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
         return !!c && (c.saveData === true || /(^|-)(2g|3g)$/.test(c.effectiveType || ''));
     }
