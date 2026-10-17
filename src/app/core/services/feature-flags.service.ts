@@ -1,4 +1,4 @@
-import { Injectable, InjectionToken, inject, signal } from '@angular/core';
+import { Injectable, InjectionToken, Injector, inject, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { BillingService } from './billing.service';
 import { TokenService } from './token.service';
@@ -44,9 +44,21 @@ export const EARLY_ACCESS_FLAGS = new InjectionToken<readonly FeatureFlag[]>('EA
 @Injectable({ providedIn: 'root' })
 export class FeatureFlagsService {
     private state = signal<Record<FeatureFlag, boolean>>(this.resolveAll());
-    private billing = inject(BillingService);
+    private injector = inject(Injector);
     private tokens = inject(TokenService);
     private earlyAccess = new Set<FeatureFlag>(inject(EARLY_ACCESS_FLAGS));
+
+    /**
+     * BillingService (-> ApiService -> HttpClient) is resolved LAZILY and only
+     * for a registry flag: with the registry empty this service never pulls
+     * HttpClient into the graph, so component specs that read a flag keep
+     * working without provideHttpClient(). Once a flag is registered, specs
+     * of components that read it stub BillingService or provide HttpClient
+     * (see docs/FEATURE_FLAGS.md).
+     */
+    private get billing(): BillingService {
+        return this.injector.get(BillingService);
+    }
 
     constructor() {
         this.applyUrlOverrides();

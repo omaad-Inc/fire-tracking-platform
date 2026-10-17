@@ -47,3 +47,8 @@ absorb. `aiChat` and `aiMock` are therefore never listed.
 
 Specs: `feature-flags.service.spec.ts` covers Premium on, free and courtesy-Pro
 unaffected, `aiChat` never granted, the badge helper and the guard wait.
+`BillingService` is resolved lazily and only for registry flags, so with the
+registry empty no spec needs HttpClient for reading a flag. Once a flag is
+registered, the specs of components that read it must stub `BillingService`
+(`{ effectivePlan: signal('free'), ensureLoaded: () => Promise.resolve(), load: () => {} }`)
+or add `provideHttpClient()`.
