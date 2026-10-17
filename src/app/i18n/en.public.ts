@@ -294,7 +294,7 @@ export const EN_PUBLIC: PublicDict = {
       ctaSecondary: 'See the app',
       trust1: 'Free to start, no card required',
       trust2: 'XOF, XAF, EUR, USD',
-      trust3: '150+ members in beta',
+      trust3: '150+ members',
       phoneAlt: 'Omaad Overview screen: net worth in CFA francs, monthly change, income and spending, financial goal and BRVM indices',
     },
     reads: {
@@ -588,7 +588,7 @@ export const EN_PUBLIC: PublicDict = {
       historyTitle: 'Our story',
       historyP1: 'The FIRE movement, Financial Independence, Retire Early, born in the U.S. in the 90s, has become a north star for millions in the West. Except it was designed for a single-currency, single-country American investor with a 401(k) and a Vanguard ETF. For the African diaspora, the 4% rule doesn\'t hold. Savings discipline runs into tontines, BRVM liquidity, broker fees, the XOF/euro peg. The whole playbook needs rewriting.',
       historyP2Lead: 'We started by writing.',
-      historyP2: ' FIRE Africa, our monthly newsletter, was born in 2026 on Beehiiv: the 4% rule in XOF, tontines + BRVM, fund fees, retirement through dividends. Then we had to build the tool the newsletter could not replace: Omaad. A bilingual, multi-currency, multi-asset wealth dashboard for people who live with two continents in mind. Omaad is in open beta today: you sign up, you have it.',
+      historyP2: ' FIRE Africa, our monthly newsletter, was born in 2026 on Beehiiv: the 4% rule in XOF, tontines + BRVM, fund fees, retirement through dividends. Then we had to build the tool the newsletter could not replace: Omaad. A bilingual, multi-currency, multi-asset wealth dashboard for people who live with two continents in mind. Omaad is open to everyone today: you sign up, you have it.',
       historyAmbitionPre: 'Our ambition is clear:',
       historyAmbition: 'become the wealth dashboard of the African diaspora.',
       historySignature: 'Mbaye & Bamba, co-founders',

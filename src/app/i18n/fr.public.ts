@@ -303,7 +303,7 @@ export const FR_PUBLIC = {
       trust2: 'FCFA, XAF, EUR, USD',
       // F6: 166 verified external accounts in the warehouse on 2026-10-14 (analytics stg_users,
       // founder accounts excluded). Refresh or drop at the store launch; never round up.
-      trust3: 'Plus de 150 membres en bêta',
+      trust3: 'Plus de 150 membres',
       phoneAlt: 'Écran Synthèse d\'Omaad : patrimoine net en FCFA, variation du mois, revenus et dépenses, objectif financier et indices BRVM',
     },
     reads: {
@@ -599,7 +599,7 @@ export const FR_PUBLIC = {
       historyTitle: 'Notre histoire',
       historyP1: 'Le mouvement FIRE, Financial Independence, Retire Early, né aux États-Unis dans les années 90, est devenu un repère pour des millions de personnes en Occident. Sauf qu\'il a été pensé pour un investisseur américain mono-devise, mono-pays, avec un 401(k) et un ETF Vanguard. Pour la diaspora africaine, la règle des 4 % ne tient pas. La discipline d\'épargne se heurte à la tontine, à la liquidité BRVM, aux frais des SGI, à l\'arrimage FCFA / euro. Tout est à réécrire.',
       historyP2Lead: 'Nous avons commencé par écrire.',
-      historyP2: ' FIRE Africa, notre newsletter mensuelle, est née en 2026 sur Beehiiv, règle des 4 % en FCFA, tontine + BRVM, frais des FCP, retraite par dividendes. Et puis il a fallu construire l\'outil que la newsletter ne suffisait pas à remplacer : Omaad. Un tableau de bord patrimonial bilingue, multi-devises, multi-actifs, pensé pour qui vit avec deux continents en tête. Omaad est aujourd\'hui en bêta ouverte : vous vous inscrivez, vous l\'avez.',
+      historyP2: ' FIRE Africa, notre newsletter mensuelle, est née en 2026 sur Beehiiv, règle des 4 % en FCFA, tontine + BRVM, frais des FCP, retraite par dividendes. Et puis il a fallu construire l\'outil que la newsletter ne suffisait pas à remplacer : Omaad. Un tableau de bord patrimonial bilingue, multi-devises, multi-actifs, pensé pour qui vit avec deux continents en tête. Omaad est aujourd\'hui ouvert à tous : vous vous inscrivez, vous l\'avez.',
       historyAmbitionPre: 'Notre ambition est claire :',
       historyAmbition: 'devenir le tableau de bord patrimonial de la diaspora africaine.',
       historySignature: 'Mbaye & Bamba, co-fondateurs',
