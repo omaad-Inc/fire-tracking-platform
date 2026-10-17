@@ -292,9 +292,9 @@ export const EN_PUBLIC: PublicDict = {
       lead: 'Real estate, BRVM stocks, tontines, mobile money, euro savings: Omaad brings everything together, in CFA francs and in euros, and shows you how far you are from financial independence.',
       ctaPrimary: 'Create my free account',
       ctaSecondary: 'See the app',
-      trust1: 'Free to start',
+      trust1: 'Free to start, no card required',
       trust2: 'XOF, XAF, EUR, USD',
-      trust3: 'Open beta, no card required',
+      trust3: '150+ members in beta',
       phoneAlt: 'Omaad Overview screen: net worth in CFA francs, monthly change, income and spending, financial goal and BRVM indices',
     },
     reads: {

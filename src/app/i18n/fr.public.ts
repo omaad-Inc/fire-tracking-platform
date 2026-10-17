@@ -299,9 +299,11 @@ export const FR_PUBLIC = {
       lead: 'Immobilier, actions BRVM, tontines, mobile money, épargne en euros : Omaad réunit tout, en FCFA et en euros, et vous montre où vous en êtes vers votre indépendance financière.',
       ctaPrimary: 'Créer mon compte gratuit',
       ctaSecondary: 'Voir l\'application',
-      trust1: 'Gratuit pour commencer',
+      trust1: 'Gratuit pour commencer, sans carte bancaire',
       trust2: 'FCFA, XAF, EUR, USD',
-      trust3: 'Bêta ouverte, sans carte bancaire',
+      // F6: 166 verified external accounts in the warehouse on 2026-10-14 (analytics stg_users,
+      // founder accounts excluded). Refresh or drop at the store launch; never round up.
+      trust3: 'Plus de 150 membres en bêta',
       phoneAlt: 'Écran Synthèse d\'Omaad : patrimoine net en FCFA, variation du mois, revenus et dépenses, objectif financier et indices BRVM',
     },
     reads: {
