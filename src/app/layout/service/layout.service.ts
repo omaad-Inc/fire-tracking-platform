@@ -1,7 +1,9 @@
 import { Injectable, effect, signal, computed, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Subject } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subject, filter } from 'rxjs';
 import { DESKTOP, mediaQuery } from '../../core/util/breakpoint';
+import { isPublicLightPath } from '../../core/theme/public-light';
 
 // Storage key for preferences
 const STORAGE_KEY = 'omaad-layout-config';
@@ -89,6 +91,17 @@ export class LayoutService {
     isOverlay = computed(() => this.layoutConfig()?.menuMode === 'overlay');
 
     /**
+     * True while the current route is a public marketing page (landing, blog,
+     * tools, legal...). Those pages are light only: the saved preference is
+     * kept as is, but the painted `.app-dark` class is gated on this signal
+     * (core/theme/public-light.ts holds the path rule, mirrored in index.html).
+     */
+    readonly publicLight = signal(false);
+
+    /** The theme actually painted on <html>: the saved preference, except on public pages. */
+    readonly isEffectiveDark = computed(() => !!this.layoutConfig()?.darkTheme && !this.publicLight());
+
+    /**
      * Desktop shell or phone shell, live (P3-3). A matchMedia signal on the
      * shell's own breakpoint, so JS agrees with the CSS that swaps sidebar and
      * bottom bar, and a window dragged across 991px updates without a reload.
@@ -110,6 +123,18 @@ export class LayoutService {
         });
         // Apply dark mode immediately (this works without PrimeNG being fully ready)
         if (isPlatformBrowser(this.platformId)) {
+            // Public pages paint light before the router has resolved anything;
+            // then follow every navigation so landing -> app -> landing flips
+            // the class without touching the saved preference.
+            this.publicLight.set(isPublicLightPath(window.location.pathname));
+            inject(Router).events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
+                const next = isPublicLightPath(e.urlAfterRedirects);
+                if (next !== this.publicLight()) {
+                    this.publicLight.set(next);
+                    this.toggleDarkMode();
+                }
+            });
+
             // Initialize theme mode if not set (for backward compatibility)
             if (!this._config.themeMode) {
                 // If darkTheme is explicitly set, infer theme mode
@@ -208,13 +233,25 @@ export class LayoutService {
             .catch(() => {});
     }
 
+    /**
+     * Paint the EFFECTIVE theme: the saved preference, gated by publicLight().
+     * This is the only place that writes `.app-dark`; it never persists.
+     */
     toggleDarkMode(config?: layoutConfig): void {
         const _config = config || this.layoutConfig();
-        if (_config.darkTheme) {
-            document.documentElement.classList.add('app-dark');
-        } else {
-            document.documentElement.classList.remove('app-dark');
-        }
+        const dark = !!_config.darkTheme && !this.publicLight();
+        document.documentElement.classList.toggle('app-dark', dark);
+        // Browser chrome (Android address bar, iOS PWA status bar) follows the
+        // painted theme, not the OS: navy in dark, cream on public pages,
+        // white in the light app (index.html seeds the same values).
+        const color = dark ? '#0F1A2E' : (this.publicLight() ? '#FAF8F4' : '#ffffff');
+        document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', color));
+        // Viewport policy follows the surface too: public pages allow zoom
+        // (WCAG 1.4.4), the app keeps its zoom lock (native feel, no iOS
+        // auto-zoom on focus of 14 px inputs). Browsers re-read the meta live.
+        document.querySelector('meta[name="viewport"]')?.setAttribute('content', this.publicLight()
+            ? 'width=device-width, initial-scale=1, viewport-fit=cover'
+            : 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
     }
 
     private onTransitionEnd() {

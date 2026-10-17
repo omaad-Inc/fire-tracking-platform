@@ -41,6 +41,17 @@ export const SEO_PAGES = {
             description: "Omaad's mission, helping West Africa and its diaspora build, protect and grow their wealth.",
         },
     },
+    pricing: {
+        path: '/tarifs',
+        fr: {
+            title: 'Tarifs — Omaad, gratuit pour commencer, un pass quand vous en avez besoin',
+            description: "Le plan Gratuit est complet. Les passes Pro et Premium se prennent pour 15 jours, 1, 3 ou 6 mois, par Mobile Money ou carte, prépayés, sans renouvellement automatique. Prix en FCFA et en euros.",
+        },
+        en: {
+            title: 'Pricing — Omaad, free to start, a pass when you need one',
+            description: 'The Free plan is complete. Pro and Premium passes run 15 days, 1, 3 or 6 months, paid by Mobile Money or card, prepaid, no automatic renewal. Prices in CFA francs and euros.',
+        },
+    },
     faq: {
         path: '/faq',
         fr: {

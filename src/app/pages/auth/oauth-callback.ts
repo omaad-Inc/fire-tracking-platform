@@ -5,6 +5,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TokenService } from '../../core/services/token.service';
 import { AuthService } from '../../core/services/auth.service';
 import { takeOAuthReturnUrl } from '../../core/util/oauth-return';
+import { takeRegisterIntentUrl } from '../../core/util/register-intent';
 
 @Component({
     selector: 'app-oauth-callback',
@@ -104,7 +105,8 @@ export class OAuthCallback implements OnInit {
                             queryParams: returnUrl ? { returnUrl } : undefined,
                         });
                     } else {
-                        this.router.navigateByUrl(returnUrl ?? `/${lang}`, { replaceUrl: true });
+                        // New users keep the stashed landing intent for the concierge (F8).
+                        this.router.navigateByUrl(returnUrl ?? takeRegisterIntentUrl(lang, `/${lang}`), { replaceUrl: true });
                     }
                 }, 500);
             },

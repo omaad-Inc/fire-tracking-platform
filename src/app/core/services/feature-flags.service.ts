@@ -1,5 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, InjectionToken, Injector, inject, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { BillingService } from './billing.service';
+import { TokenService } from './token.service';
 
 /**
  * Feature flags (S12 Phase 1).
@@ -16,22 +18,89 @@ import { environment } from '../../../environments/environment';
  *
  * Flags are exposed as signals so guards/templates react if an override is
  * applied at runtime (setOverride triggers the update without a reload).
+ *
+ * Early access (PREM-4, Premium promise M6 "Accès anticipé aux nouveautés"):
+ * a flag listed in EARLY_ACCESS_FLAGS is ON for a real Premium user
+ * (`BillingService.effectivePlan() === 'premium'`, never the beta courtesy,
+ * which grants Pro) before its general flip, with no override needed. The
+ * registry is EXPLICIT: `aiChat` is an infra kill-switch (ENT-1), not an
+ * entitlement, so it is never early-access; `aiMock` is a test driver. Every
+ * genuinely new feature opts in by adding its flag to the registry. See
+ * docs/FEATURE_FLAGS.md.
  */
 export type FeatureFlag = keyof typeof environment.featureFlags;
 
 const STORAGE_PREFIX = 'omaad_ff_';
 
+/**
+ * Flags Premium users get before everyone else. Empty today: the two existing
+ * flags are a kill-switch and a test driver. Specs override the token.
+ */
+export const EARLY_ACCESS_FLAGS = new InjectionToken<readonly FeatureFlag[]>('EARLY_ACCESS_FLAGS', {
+    providedIn: 'root',
+    factory: () => [],
+});
+
 @Injectable({ providedIn: 'root' })
 export class FeatureFlagsService {
     private state = signal<Record<FeatureFlag, boolean>>(this.resolveAll());
+    private injector = inject(Injector);
+    private tokens = inject(TokenService);
+    private earlyAccess = new Set<FeatureFlag>(inject(EARLY_ACCESS_FLAGS));
+
+    /**
+     * BillingService (-> ApiService -> HttpClient) is resolved LAZILY and only
+     * for a registry flag: with the registry empty this service never pulls
+     * HttpClient into the graph, so component specs that read a flag keep
+     * working without provideHttpClient(). Once a flag is registered, specs
+     * of components that read it stub BillingService or provide HttpClient
+     * (see docs/FEATURE_FLAGS.md).
+     */
+    private get billing(): BillingService {
+        return this.injector.get(BillingService);
+    }
 
     constructor() {
         this.applyUrlOverrides();
     }
 
-    /** Current value of a flag (override-aware). */
+    /** Current value of a flag (override-aware; ON for Premium when early-access eligible). */
     isOn(flag: FeatureFlag): boolean {
+        if (this.isEarlyAccess(flag)) return true;
         return this.state()[flag];
+    }
+
+    /**
+     * True when the flag is on ONLY because the user is Premium and the flag
+     * is in the early-access registry (for an "Accès anticipé" badge, if the
+     * owner wants one). Reactive: reads the billing signal.
+     */
+    isEarlyAccess(flag: FeatureFlag): boolean {
+        return this.earlyAccess.has(flag) && this.billing.effectivePlan() === 'premium' && !this.state()[flag];
+    }
+
+    /**
+     * Start the subscription read as early as the session allows (PREM-4
+     * caveat 1): called by authGuard on every in-app entry, so by the time a
+     * component reads an early-access flag the plan is usually known, and
+     * resolve() never waits long. A no-op while the registry is empty.
+     */
+    prime(): void {
+        if (this.earlyAccess.size === 0 || !this.tokens.getUser()) return;
+        this.billing.load();
+    }
+
+    /**
+     * Route-guard read: like isOn(), but for an early-access flag with a
+     * signed-in user it first waits for the subscription read, so the first
+     * navigation of a Premium session does not see 'free' (PREM-4 caveat 1).
+     * Flags outside the registry resolve synchronously.
+     */
+    async resolve(flag: FeatureFlag): Promise<boolean> {
+        if (this.earlyAccess.has(flag) && !this.state()[flag] && this.tokens.user()) {
+            await this.billing.ensureLoaded();
+        }
+        return this.isOn(flag);
     }
 
     /** Reactive read for templates/computed. */

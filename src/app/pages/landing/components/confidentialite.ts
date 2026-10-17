@@ -24,22 +24,19 @@ const PAGE_DESC =
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, RouterModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
-                 style="padding-top: env(safe-area-inset-top, 0px)">
-                <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
-            </div>
+        <div class="lp min-h-screen">
+            <topbar-widget />
 
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
-                <header class="mb-10">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
+                <header class="mb-10 text-center md:text-left">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <i class="pi pi-shield text-[10px]"></i>
                         Vie privée
                     </span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         Politique de confidentialité
                     </h1>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                    <p class="lp-lead">
                         Dernière mise à jour : {{ updated }}. Cette politique s'applique au site omaad.africa,
                         à l'application web et à l'application mobile Omaad.
                     </p>
@@ -48,7 +45,7 @@ const PAGE_DESC =
                 <!-- L'essentiel : les quatre engagements, avant le texte long. -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-12">
                     @for (pledge of pledges; track pledge.title) {
-                        <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-4 flex items-start gap-3">
+                        <div class="lp-card p-4 flex items-start gap-3">
                             <span class="w-9 h-9 shrink-0 rounded-xl bg-ochre-100 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 flex items-center justify-center">
                                 <i [class]="'pi ' + pledge.icon + ' text-sm'"></i>
                             </span>
@@ -62,12 +59,12 @@ const PAGE_DESC =
 
                 <article class="space-y-10">
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">1. Qui est responsable de vos données</h2>
+                        <h2 class="lp-h3 mb-3">1. Qui est responsable de vos données</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-4">
                             Le service Omaad est édité par <strong>OMAAD</strong>, société par actions simplifiée unipersonnelle
                             (SASU) de droit sénégalais, qui est le responsable du traitement de vos données personnelles.
                         </p>
-                        <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-5 text-sm leading-relaxed">
+                        <div class="lp-card p-5 text-sm leading-relaxed">
                             <!-- surface-500, not 400: 11px uppercase on the page ground needs 4.5:1
                                  (400 measured 2.45:1, the one a11y red of the public sweep). -->
                             <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-2">Entité légale</p>
@@ -81,7 +78,7 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">2. Les données que nous collectons</h2>
+                        <h2 class="lp-h3 mb-3">2. Les données que nous collectons</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-3">
                             Nous collectons uniquement ce dont le service a besoin pour fonctionner :
                         </p>
@@ -89,7 +86,7 @@ const PAGE_DESC =
                             @for (item of collected; track item.label) {
                                 <li class="flex items-start gap-3">
                                     <i class="pi pi-circle-fill text-[6px] text-ochre-500 mt-2 shrink-0"></i>
-                                    <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                                    <p class="lp-body">
                                         <strong class="text-surface-900 dark:text-white">{{ item.label }}</strong> : {{ item.body }}
                                     </p>
                                 </li>
@@ -102,8 +99,8 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">3. Ce que nous ne collectons pas</h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <h2 class="lp-h3 mb-3">3. Ce que nous ne collectons pas</h2>
+                        <p class="lp-body">
                             Pas de localisation, pas d'accès à vos contacts, à vos SMS, à vos appels, à vos fichiers
                             (au delà de la photo de profil que vous choisissez) ni à votre historique de navigation.
                             Aucun cookie publicitaire, aucun traceur tiers, aucune régie publicitaire : Omaad ne
@@ -113,19 +110,19 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">4. Pourquoi nous les utilisons</h2>
+                        <h2 class="lp-h3 mb-3">4. Pourquoi nous les utilisons</h2>
                         <ul class="space-y-2">
                             @for (purpose of purposes; track purpose) {
                                 <li class="flex items-start gap-3">
                                     <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                    <p class="text-surface-700 dark:text-surface-300 leading-relaxed">{{ purpose }}</p>
+                                    <p class="lp-body">{{ purpose }}</p>
                                 </li>
                             }
                         </ul>
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">5. Avec qui vos données sont partagées</h2>
+                        <h2 class="lp-h3 mb-3">5. Avec qui vos données sont partagées</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-4">
                             <strong class="text-surface-900 dark:text-white">Nous ne vendons ni ne louons jamais vos données</strong>,
                             et nous ne les partageons avec personne à des fins publicitaires ou commerciales.
@@ -133,7 +130,7 @@ const PAGE_DESC =
                         </p>
                         <div class="space-y-3 mb-4">
                             @for (proc of processors; track proc.name) {
-                                <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-4">
+                                <div class="lp-card p-4">
                                     <div class="flex items-center justify-between gap-3 mb-1">
                                         <p class="text-sm font-semibold text-surface-900 dark:text-white">{{ proc.name }}</p>
                                         <span class="text-[11px] font-semibold uppercase tracking-wider text-ochre-700 dark:text-ochre-400">{{ proc.role }}</span>
@@ -142,7 +139,7 @@ const PAGE_DESC =
                                 </div>
                             }
                         </div>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <p class="lp-body">
                             Pour faire fonctionner le service, nous utilisons aussi des prestataires techniques :
                             hébergement du site, de l'application et de la base de données (Netlify, Render, Supabase),
                             envoi des emails transactionnels (Resend), envoi du code de connexion par SMS si vous
@@ -153,8 +150,8 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">6. Sécurité</h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <h2 class="lp-h3 mb-3">6. Sécurité</h2>
+                        <p class="lp-body">
                             Toutes les communications entre votre appareil et nos serveurs sont chiffrées en transit
                             (TLS). Les mots de passe sont stockés hachés, jamais en clair. L'accès aux données de
                             production est strictement restreint. L'application mobile propose en plus un verrouillage
@@ -163,7 +160,7 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">7. Vos droits</h2>
+                        <h2 class="lp-h3 mb-3">7. Vos droits</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-3">
                             Conformément à la loi sénégalaise n° 2008-12 sur la protection des données à caractère
                             personnel et, le cas échéant, au RGPD pour les utilisateurs situés dans l'Union européenne,
@@ -173,7 +170,7 @@ const PAGE_DESC =
                         <ul class="space-y-2 mb-4">
                             <li class="flex items-start gap-3">
                                 <i class="pi pi-download text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                                <p class="lp-body">
                                     <strong class="text-surface-900 dark:text-white">Exporter vos données</strong> :
                                     Paramètres, puis Préférences, puis « Exporter mes données » (toutes vos données en JSON,
                                     vos transactions en CSV). Gratuit, sans condition.
@@ -181,14 +178,14 @@ const PAGE_DESC =
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="pi pi-trash text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                                <p class="lp-body">
                                     <strong class="text-surface-900 dark:text-white">Supprimer votre compte</strong> :
                                     suppression immédiate et définitive de toutes vos données, depuis l'application ou
                                     depuis la page <a routerLink="/supprimer-mon-compte" class="text-brand-700 dark:text-ochre-400 font-semibold hover:underline">Supprimer mon compte</a>.
                                 </p>
                             </li>
                         </ul>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <p class="lp-body">
                             Pour toute autre demande, écrivez à
                             <a href="mailto:contact@omaad.africa" class="text-brand-700 dark:text-ochre-400 font-semibold hover:underline">contact&#64;omaad.africa</a>.
                             Nous répondons sous 30 jours au plus tard.
@@ -196,8 +193,8 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">8. Durée de conservation</h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <h2 class="lp-h3 mb-3">8. Durée de conservation</h2>
+                        <p class="lp-body">
                             Vos données sont conservées tant que votre compte est actif. Quand vous supprimez votre
                             compte, l'ensemble de vos données est effacé immédiatement et définitivement de notre base
                             de données de production ; les copies présentes dans les sauvegardes techniques disparaissent
@@ -207,15 +204,15 @@ const PAGE_DESC =
                     </section>
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">9. Évolution de cette politique</h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <h2 class="lp-h3 mb-3">9. Évolution de cette politique</h2>
+                        <p class="lp-body">
                             Si cette politique évolue de façon significative, nous vous en informerons dans
                             l'application ou par email avant l'entrée en vigueur des changements. La date de dernière
                             mise à jour figure en haut de cette page.
                         </p>
                     </section>
 
-                    <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-5">
+                    <div class="lp-card p-5">
                         <p class="text-sm font-semibold text-surface-900 dark:text-white mb-1">Une question sur vos données ?</p>
                         <p class="text-[13px] text-surface-600 dark:text-surface-400 leading-relaxed">
                             Écrivez-nous à

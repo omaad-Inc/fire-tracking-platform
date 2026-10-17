@@ -11,8 +11,11 @@
     "css:guard": "node tools/css-dead-selectors-guard.mjs",
     "img:guard": "node tools/img-guard.mjs",
     "theme:guard": "node tools/theme-guard.mjs",
-    "build": "npm run i18n:guard && npm run lint:dark && npm run routes:guard && npm run css:guard && npm run img:guard && npm run theme:guard && npm run prerender:routes && ng build",
-    "build:pwa": "npm run i18n:guard && npm run routes:guard && npm run css:guard && npm run img:guard && npm run prerender:routes && ng build --configuration production",
+    "pricing:guard": "node tools/pricing-guard.mjs",
+    "i18n:tier-guard": "node tools/i18n-tier-guard.mjs",
+    "pricing:refresh": "node tools/pricing-refresh.mjs",
+    "build": "npm run i18n:guard && npm run i18n:tier-guard && npm run lint:dark && npm run routes:guard && npm run css:guard && npm run img:guard && npm run theme:guard && npm run public-light:guard && npm run pricing:guard && npm run prerender:routes && ng build",
+    "build:pwa": "npm run i18n:guard && npm run i18n:tier-guard && npm run routes:guard && npm run css:guard && npm run img:guard && npm run public-light:guard && npm run pricing:guard && npm run prerender:routes && ng build --configuration production",
     "serve:pwa": "node tools/serve-pwa.mjs",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write \"**/*.{js,mjs,ts,mts,d.ts,html}\" --cache",
@@ -20,7 +23,8 @@
     "icons": "node ./tools/generate-icons.mjs",
     "lint": "eslint src",
     "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox",
-    "e2e:smoke": "playwright test"
+    "e2e:smoke": "playwright test",
+    "public-light:guard": "node tools/public-light-guard.mjs"
   },
   "private": true,
   "dependencies": {

@@ -1,0 +1,74 @@
+{
+  "plans": [
+    {
+      "plan": "pro",
+      "durations": [
+        {
+          "duration_key": "d15",
+          "label": "15 jours",
+          "days": 15,
+          "xof": 2500,
+          "eur": 3
+        },
+        {
+          "duration_key": "m1",
+          "label": "1 mois",
+          "days": 30,
+          "xof": 4000,
+          "eur": 5
+        },
+        {
+          "duration_key": "m3",
+          "label": "3 mois",
+          "days": 90,
+          "xof": 10800,
+          "eur": 13.5
+        },
+        {
+          "duration_key": "m6",
+          "label": "6 mois",
+          "days": 180,
+          "xof": 19200,
+          "eur": 24
+        }
+      ]
+    },
+    {
+      "plan": "premium",
+      "durations": [
+        {
+          "duration_key": "d15",
+          "label": "15 jours",
+          "days": 15,
+          "xof": 6000,
+          "eur": 7
+        },
+        {
+          "duration_key": "m1",
+          "label": "1 mois",
+          "days": 30,
+          "xof": 10000,
+          "eur": 12
+        },
+        {
+          "duration_key": "m3",
+          "label": "3 mois",
+          "days": 90,
+          "xof": 27000,
+          "eur": 32
+        },
+        {
+          "duration_key": "m6",
+          "label": "6 mois",
+          "days": 180,
+          "xof": 48000,
+          "eur": 58
+        }
+      ]
+    }
+  ],
+  "methods": {
+    "momo": true,
+    "card": true
+  }
+}

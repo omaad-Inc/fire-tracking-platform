@@ -6,7 +6,6 @@ import { ChartModule } from 'primeng/chart';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { isDarkMode, applyChartDefaults } from '../../../core/theme/chart-theme';
-import { LayoutService } from '../../../layout/service/layout.service';
 import type { Lang } from '../../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
@@ -61,13 +60,6 @@ interface YearPoint {
                                        bg-ochre-50 dark:bg-ochre-700/10
                                        hover:bg-ochre-100 dark:hover:bg-ochre-700/20">
                             {{ currency() }}
-                        </button>
-                        <button (click)="toggleDarkMode()"
-                                class="w-9 h-9 rounded-full flex items-center justify-center
-                                       text-surface-600 dark:text-surface-300
-                                       hover:bg-surface-100 dark:hover:bg-surface-800
-                                       transition-all duration-200">
-                            <i [class]="layoutService.isDarkTheme() ? 'pi pi-sun text-base' : 'pi pi-moon text-base'"></i>
                         </button>
                         <a [routerLink]="[currentLang, 'landing']"
                            class="text-sm text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
@@ -467,7 +459,6 @@ export class CompoundCalculator implements OnDestroy {
     private seo = inject(SeoService);
     private platformId = inject(PLATFORM_ID);
     private analytics = inject(AnalyticsService);
-    layoutService = inject(LayoutService);
 
     constructor() {
         applyChartDefaults(); // Chart.js defaults on demand (P2-FE-4)
@@ -636,15 +627,6 @@ export class CompoundCalculator implements OnDestroy {
     isDark(): boolean {
         if (!isPlatformBrowser(this.platformId)) return true;
         return isDarkMode();
-    }
-
-    toggleDarkMode() {
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            themeMode: state.darkTheme ? 'light' : 'dark',
-            darkTheme: !state.darkTheme
-        }));
-        setTimeout(() => this.buildChart(), 50);
     }
 
     toggleCurrency() {

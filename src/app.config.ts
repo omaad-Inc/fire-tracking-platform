@@ -4,7 +4,8 @@ import { registerLocaleData } from '@angular/common';
 import { I18nService } from './app/i18n/i18n.service';
 import localeFr from '@angular/common/locales/fr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
+import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling, withPreloading } from '@angular/router';
+import { PublicAwarePreload } from './app/core/util/public-aware-preload';
 import { AuraLean } from './app/core/theme/aura-lean';
 import { definePreset } from '@primeng/themes';
 import { providePrimeNG } from 'primeng/config';
@@ -120,11 +121,12 @@ export const appConfig: ApplicationConfig = {
             appRoutes,
             withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
             withEnabledBlockingInitialNavigation(),
-            // Preload every lazy chunk after the first navigation settles, so
-            // switching hubs never waits on a chunk download (perf S-boot). The
-            // chunks are small (~10-60 kB gz each) and the service worker then
-            // keeps them for repeat visits.
-            withPreloading(PreloadAllModules),
+            // Inside the app: preload every lazy chunk after the first
+            // navigation settles, so switching hubs never waits on a chunk
+            // download (perf S-boot); the service worker keeps them for repeat
+            // visits. On the public marketing pages: only the sign-up and
+            // sign-in chunks (landing redesign, Lighthouse F1), see the strategy.
+            withPreloading(PublicAwarePreload),
         ),
         provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
         // S8 groundwork: uncaught errors flow to /events (bounded, throttled)

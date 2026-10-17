@@ -40,6 +40,8 @@ describe('LanguageSyncService', () => {
         });
         i18n = TestBed.inject(I18nService);
         (i18n as unknown as { dicts: Record<string, unknown> }).dicts = { fr: {}, en: {} };
+        // Both tiers marked loaded (F13): setLang must flip without a dictionary import.
+        (i18n as unknown as { loaded: Record<string, Set<string>> }).loaded = { fr: new Set(['public', 'app']), en: new Set(['public', 'app']) };
         i18n.lang.set(lang);
         TestBed.inject(LanguageSyncService);
         TestBed.flushEffects(); // the boot run

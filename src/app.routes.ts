@@ -8,6 +8,7 @@ import { authGuard } from './app/core/guards/auth.guard';
 import { shareBootstrapGuard } from './app/core/guards/share.guard';
 import { aiChatGuard } from './app/core/guards/feature-flag.guard';
 import { onboardingRedirectGuard } from './app/core/guards/onboarding-redirect.guard';
+import { i18nAppTierGuard } from './app/core/guards/i18n-tier.guard';
 
 // Everything except the app shell (AppLayout) is lazy-loaded so a returning
 // logged-in user never downloads the marketing site, and a first-time visitor
@@ -40,7 +41,8 @@ const localeResolver = () => {
 
 export const appRoutes: Routes = [
     // OAuth callback route without lang prefix (must be before root route to catch /auth/callback)
-    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
+    // `preload: 'public'`: the only chunks fetched ahead of time from a marketing page (the next step is signing up).
+    { path: 'auth', loadChildren: () => import('./app/pages/auth/auth.routes'), canActivate: [i18nAppTierGuard], data: { preload: 'public' } },
     
     // Landing page as the first route (home) - but check for OAuth token first
     {
@@ -85,6 +87,7 @@ export const appRoutes: Routes = [
     { path: ':lang/blog', loadComponent: () => import('./app/pages/landing/blog/blog-list').then(m => m.BlogList) },
     { path: ':lang/blog/:slug', loadComponent: () => import('./app/pages/landing/blog/blog-article').then(m => m.BlogArticle) },
     { path: ':lang/faq', loadComponent: () => import('./app/pages/landing/components/faq').then(m => m.FaqPage) },
+    { path: ':lang/tarifs', loadComponent: () => import('./app/pages/landing/components/tarifs').then(m => m.TarifsPage) },
     { path: ':lang/legal/mentions', loadComponent: () => import('./app/pages/landing/components/legal-mentions').then(m => m.LegalMentionsPage) },
     // L'ancienne politique bilingue /:lang/legal/privacy est remplacée par
     // /confidentialite (Netlify 301 dans public/_redirects pour les URLs déjà
@@ -103,12 +106,12 @@ export const appRoutes: Routes = [
     // Gate/unavailable are shell-less siblings; the main entry puts the guard
     // DIRECTLY on the AppLayout route (token param is on this route — avoids the
     // empty-child-of-componentless-parent guard fragility).
-    { path: 'share/:token/protected', loadComponent: () => import('./app/pages/share/share-code-gate').then(m => m.ShareCodeGate) },
-    { path: 'share/:token/unavailable', loadComponent: () => import('./app/pages/share/share-unavailable').then(m => m.ShareUnavailable) },
+    { path: 'share/:token/protected', canActivate: [i18nAppTierGuard], loadComponent: () => import('./app/pages/share/share-code-gate').then(m => m.ShareCodeGate) },
+    { path: 'share/:token/unavailable', canActivate: [i18nAppTierGuard], loadComponent: () => import('./app/pages/share/share-unavailable').then(m => m.ShareUnavailable) },
     {
         path: 'share/:token',
         loadComponent: () => import('./app/layout/component/app.layout').then(m => m.AppLayout),
-        canActivate: [shareBootstrapGuard],
+        canActivate: [i18nAppTierGuard, shareBootstrapGuard],
         children: [
             { path: '', loadComponent: () => import('./app/pages/dashboard/dashboard').then(m => m.Dashboard) },
             { path: 'pages', loadChildren: () => import('./app/pages/share-pages.routes') },
@@ -118,18 +121,18 @@ export const appRoutes: Routes = [
     // Post-registration onboarding (full-screen, no app shell). Behind authGuard
     // because the user is already signed in (token minted at verify-code / OAuth).
     // Reached only at account creation; returning users never land here.
-    { path: ':lang/welcome', loadComponent: () => import('./app/pages/auth/welcome').then(m => m.Welcome), canActivate: [authGuard] },
+    { path: ':lang/welcome', loadComponent: () => import('./app/pages/auth/welcome').then(m => m.Welcome), canActivate: [i18nAppTierGuard, authGuard] },
 
     // First-run concierge (S12 Phase 6, full-screen, no app shell). Auto-launched
     // from Welcome.finish for a brand-new user; behind ff_aiChat (aiChatGuard
     // bounces to the dashboard when the flag is off, never notfound).
-    { path: ':lang/onboarding', canMatch: [aiChatGuard], canActivate: [authGuard], loadComponent: () => import('./app/pages/onboarding/onboarding-page').then(m => m.OnboardingPage) },
+    { path: ':lang/onboarding', canMatch: [aiChatGuard], canActivate: [i18nAppTierGuard, authGuard], loadComponent: () => import('./app/pages/onboarding/onboarding-page').then(m => m.OnboardingPage) },
 
     // Main app with layout (protected routes)
     {
         path: ':lang',
         loadComponent: () => import('./app/layout/component/app.layout').then(m => m.AppLayout),
-        canActivate: [authGuard],
+        canActivate: [i18nAppTierGuard, authGuard],
         providers: [
             {
                 provide: LOCALE_ID,
@@ -144,6 +147,6 @@ export const appRoutes: Routes = [
 
     // Other standalone routes
     { path: ':lang/notfound', loadComponent: () => import('./app/pages/notfound/notfound').then(m => m.Notfound) },
-    { path: ':lang/auth', loadChildren: () => import('./app/pages/auth/auth.routes') },
+    { path: ':lang/auth', loadChildren: () => import('./app/pages/auth/auth.routes'), canActivate: [i18nAppTierGuard], data: { preload: 'public' } },
     { path: '**', redirectTo: '' }
 ];

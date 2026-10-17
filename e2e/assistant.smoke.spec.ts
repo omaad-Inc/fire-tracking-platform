@@ -19,6 +19,9 @@ async function login(page: Page) {
     await page.locator('#password input').fill(PASSWORD);
     await page.locator('button[type=submit]').first().click();
     await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
+    // The session is persisted a beat after the redirect; a full reload before
+    // that lands on the login page (same wait as a11y.smoke and the capture tool).
+    await page.waitForFunction(() => !!localStorage.getItem('omaad_user'), null, { timeout: 15_000 });
 }
 
 async function openAssistant(page: Page, scenario?: string) {

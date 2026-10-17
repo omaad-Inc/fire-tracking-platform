@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
 import { I18nService } from '../../i18n/i18n.service';
+import { stashRegisterIntent, takeRegisterIntentUrl } from '../../core/util/register-intent';
 
 /** Length-only password rule — MUST stay in lock-step with the backend
  *  UserCreate validator (MIN_PASSWORD_LEN). Shown live so the CTA is never
@@ -351,6 +352,10 @@ export class Register {
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.currentLang = '/' + (match ? match[1] : 'fr');
+        // A landing feature CTA says what the visitor came for (?intent=brvm|
+        // budget|goal|assistant). Keep it for the tab now: the Google link
+        // leaves the SPA and the code screen replaces the URL (F8).
+        stashRegisterIntent(this.route.snapshot.queryParams['intent']);
 
         // Returning-from-login handoff (S10-SEC-1): login sends an unverified
         // user here with their email in navigation state. Land straight on the
@@ -394,7 +399,8 @@ export class Register {
                 // Legacy backend (pre S10-SEC-1): a session is minted at register.
                 if (res?.access_token) {
                     // Full URL, possibly with a query string (PSP return): navigateByUrl.
-                    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.currentLang;
+                    const returnUrl = this.route.snapshot.queryParams['returnUrl']
+                        || takeRegisterIntentUrl(this.currentLang.replace('/', '') || 'fr', this.currentLang);
                     this.router.navigateByUrl(returnUrl, { replaceUrl: true });
                     this.authService.getCurrentUser().subscribe({ next: () => {}, error: () => {} });
                     return;

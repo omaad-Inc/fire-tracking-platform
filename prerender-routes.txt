@@ -33,6 +33,10 @@
 /en/blog/dca-brvm
 /fr/blog/trading-vs-dca
 /en/blog/trading-vs-dca
+/fr/blog/special-dakar-immo
+/en/blog/special-dakar-immo
+/fr/blog/regle-4-pourcent
+/en/blog/regle-4-pourcent
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm

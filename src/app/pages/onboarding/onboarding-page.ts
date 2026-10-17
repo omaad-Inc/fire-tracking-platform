@@ -14,6 +14,7 @@ import { CurrencyService } from '../../core/services/currency.service';
 import { DashboardService } from '../service/dashboard.service';
 import { AssetsStateService } from '../service/assets-state.service';
 import { ApiService } from '../../core/services/api.service';
+import { takeRegisterIntentUrl } from '../../core/util/register-intent';
 
 /**
  * The first-run concierge (S12 Phase 6, tasks 2.7/2.8). Auto-launched full-screen
@@ -586,7 +587,17 @@ export class OnboardingPage implements OnDestroy {
         // here. Setting one would wrongly block a legitimate re-onboard after a
         // reset (sessionStorage survives a refresh). Skip() is the only path that
         // needs the per-session suppression.
-        this.router.navigate(['/', this.lang()], { replaceUrl: true });
+        this.leave();
+    }
+
+    /**
+     * The first in-app screen: the landing CTA's intent when the user signed
+     * up from one ("Ajouter mes actions BRVM" lands on the BRVM picker, F8),
+     * else the Synthese. navigateByUrl: the target may carry a query string.
+     */
+    private leave(): void {
+        const lang = this.lang();
+        this.router.navigateByUrl(takeRegisterIntentUrl(lang, `/${lang}`), { replaceUrl: true });
     }
 
     skip(): void {
@@ -595,7 +606,7 @@ export class OnboardingPage implements OnDestroy {
         // guard would bounce the user straight back here. Suppress it for this
         // session only; next login re-prompts (resume, ratified decision 9).
         try { sessionStorage.setItem('omaad_onb_skipped', '1'); } catch { /* no storage */ }
-        this.router.navigate(['/', this.lang()], { replaceUrl: true });
+        this.leave();
     }
 
     /** Replay the last gated write (the asset) after an inline error. */

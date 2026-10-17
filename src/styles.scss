@@ -14,6 +14,14 @@
     display: none;
 }
 
+/* Native feel without locking zoom (landing redesign 2026-10): interactive
+   elements opt out of double-tap zoom and the 300 ms tap delay, while pinch
+   zoom stays available everywhere (WCAG 1.4.4). Replaces the former
+   `user-scalable=no` viewport lock. */
+a, button, input, select, textarea, summary, [role='button'], [role='tab'], [role='menuitem'] {
+    touch-action: manipulation;
+}
+
 /* Respect users who ask for less motion (P2-A11Y-2): near-instant animations,
    transitions and smooth-scroll so nothing spins, slides, or auto-scrolls. */
 @media (prefers-reduced-motion: reduce) {

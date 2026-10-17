@@ -100,18 +100,32 @@
   ],
   "screenshots": [
     {
+      "src": "screenshots/synthese.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Synthèse : patrimoine net, mois en cours, objectif"
+    },
+    {
+      "src": "screenshots/patrimoine.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Patrimoine : actifs, passifs, exposition par devise"
+    },
+    {
+      "src": "screenshots/objectifs.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Objectifs : progression vers l'indépendance financière"
+    },
+    {
       "src": "og/omaad-og-1200x630.png",
       "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Omaad Wealth Dashboard"
-    },
-    {
-      "src": "icons/omaad-app-icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Omaad Wealth Mobile"
+      "label": "Omaad"
     }
   ],
   "related_applications": [],

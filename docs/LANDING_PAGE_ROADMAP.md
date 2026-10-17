@@ -1,5 +1,11 @@
 # Omaad Wealth — Landing Page Roadmap
 
+> **Superseded (2026-10-16).** The landing was rebuilt (nine sections, light only, real product screenshots).
+> The audit, benchmark, blueprint and task roadmap now live in `../../docs/planning/LANDING_PAGE_REDESIGN_PLAN.md`
+> (monorepo root). Screens are captured with `tools/capture-marketing-shots.mjs`; copy lives under `landing.*`
+> in `src/app/i18n/`; styles in `src/assets/layout/_landing.scss`. The sections below describe the PREVIOUS page
+> and are kept only as history.
+
 This document tracks all landing page enhancement items, their current status, impact assessment, and implementation details for items that are built but not yet active.
 
 ---

@@ -1,76 +1,49 @@
-import { Component, inject } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
-import { RippleModule } from 'primeng/ripple';
-import { StyleClassModule } from 'primeng/styleclass';
-import { ButtonModule } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { TopbarWidget } from './components/topbarwidget.component';
 import { HeroWidget } from './components/herowidget';
-import { FeaturesWidget } from './components/featureswidget';
-import { HighlightsWidget } from './components/highlightswidget';
-import { PricingWidget } from './components/pricingwidget';
-import { FooterWidget } from './components/footerwidget';
+import { ProductTourWidget } from './components/producttourwidget';
+import { BenefitsWidget } from './components/benefitswidget';
+import { ShowcaseWidget } from './components/showcasewidget';
 import { FireProjectionWidget } from './components/fireprojectionwidget';
-import { PainCalculatorWidget } from './components/paincalculatorwidget';
-import { HowItWorksWidget } from './components/howitworkswidget';
-import { WealthScoreWidget } from './components/wealthscorewidget';
-import { SocialProofWidget } from './components/socialproofwidget';
-import { WaitlistWidget } from './components/waitlistwidget';
+import { TrustWidget } from './components/trustwidget';
+import { PricingWidget, LANDING_FAQ_KEYS } from './components/pricingwidget';
+import { ClosingBandWidget } from './components/closingbandwidget';
+import { ReadsWidget } from './components/readswidget';
+import { FooterWidget } from './components/footerwidget';
 import { I18nService, Lang } from '../../i18n/i18n.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { SEO_PAGES } from '../../core/services/seo-content';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { OnDestroy } from '@angular/core';
 
+/**
+ * Public landing (redesign 2026-10). Nine sections, light only, the real
+ * product in the first screen:
+ *   header, hero, product tour, benefits, showcases, projection tool,
+ *   trust, pricing + FAQ, closing band, footer.
+ * Copy: i18n `landing.*`. Styles: assets/layout/_landing.scss (`.lp-*`).
+ */
 @Component({
     selector: 'app-landing',
     standalone: true,
-    imports: [RouterModule, TopbarWidget, HeroWidget, FeaturesWidget, HighlightsWidget, PricingWidget, FooterWidget, FireProjectionWidget, PainCalculatorWidget, HowItWorksWidget, WealthScoreWidget, SocialProofWidget, WaitlistWidget, RippleModule, StyleClassModule, ButtonModule, DividerModule],
+    imports: [TopbarWidget, HeroWidget, ProductTourWidget, BenefitsWidget, ShowcaseWidget, FireProjectionWidget, TrustWidget, PricingWidget, ClosingBandWidget, ReadsWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-900 min-h-screen">
-            <div id="home" class="landing-wrapper overflow-hidden">
-                <!-- Topbar with glass effect -->
-                <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
-                     style="padding-top: env(safe-area-inset-top, 0px)">
-                    <topbar-widget class="py-4 px-6 lg:px-10 max-w-[1600px] mx-auto flex items-center justify-between gap-x-4 lg:gap-x-10 relative lg:static" />
-                </div>
-
-                <!-- Spacer for fixed topbar -->
-                <div class="h-20"></div>
-
-                <!-- Main content -->
+        <div class="lp min-h-screen">
+            <topbar-widget />
+            <main id="home">
                 <hero-widget />
-                <!-- Early-access credibility strip (by the numbers) -->
-                <social-proof-widget />
-                <how-it-works-widget />
-                <!-- Aspirational hook: "where could this take me?" -->
+                <product-tour-widget />
+                <benefits-widget />
+                <showcase-widget />
                 <fire-projection-widget />
-                <features-widget />
-                <wealth-score-widget />
-                <highlights-widget />
-                <!-- Urgency close: "what does waiting cost me?", right before pricing -->
-                <pain-calculator-widget />
-
-                <!-- Lead capture right after the calculators (P4-ANALYTICS-1) -->
-                <div class="max-w-[1600px] mx-auto px-6 lg:px-10 py-12 sm:py-16">
-                    <app-waitlist source="landing" />
-                </div>
-
+                <trust-widget />
                 <pricing-widget />
-
-                <footer-widget />
-            </div>
+                <closing-band-widget />
+                <reads-widget />
+            </main>
+            <footer-widget />
         </div>
     `,
-    styles: [`
-        :host {
-            display: block;
-        }
-        
-        .landing-wrapper {
-            scroll-behavior: smooth;
-        }
-    `]
 })
 export class Landing implements OnDestroy {
     private i18n = inject(I18nService);
@@ -78,42 +51,47 @@ export class Landing implements OnDestroy {
     private seo = inject(SeoService);
     private analytics = inject(AnalyticsService);
 
-    currentLang = '/fr';
-
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
-        const lang  = (match ? match[1] : 'fr') as Lang;
-        this.currentLang = '/' + lang;
-        // Sync i18n service with the URL language on every navigation to this page
+        const lang = (match ? match[1] : 'fr') as Lang;
         this.i18n.setLang(lang);
 
-        // Per-route SEO (prerendered into the initial HTML for crawlers).
         this.seo.applyLocalized({ lang, ...SEO_PAGES.landing });
         this.analytics.trackPublic('landing_view', { lang });
 
-        // Site-wide structured data lives on the home page.
         this.seo.setJsonLd('jsonld-organization', {
             '@context': 'https://schema.org',
             '@type': 'Organization',
             name: 'Omaad',
+            legalName: 'OMAAD SASU',
             url: SITE_ORIGIN,
             logo: `${SITE_ORIGIN}/icons/omaad-app-icon-512.png`,
+            sameAs: ['https://www.linkedin.com/company/omaad/', 'https://www.youtube.com/@fire_africa'],
         });
+        // operatingSystem is "Web" until a store listing exists (no iOS/Android claim).
         this.seo.setJsonLd('jsonld-software', {
             '@context': 'https://schema.org',
             '@type': 'SoftwareApplication',
             name: 'Omaad',
             applicationCategory: 'FinanceApplication',
-            operatingSystem: 'Web, iOS, Android',
+            operatingSystem: 'Web',
             description: SEO_PAGES.landing[lang].description,
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'XOF' },
+        });
+        this.seo.setJsonLd('jsonld-faq', {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: LANDING_FAQ_KEYS.map((n) => ({
+                '@type': 'Question',
+                name: this.i18n.t(`landing.pricing.faq${n}Q`),
+                acceptedAnswer: { '@type': 'Answer', text: this.i18n.t(`landing.pricing.faq${n}A`) },
+            })),
         });
     }
 
     ngOnDestroy(): void {
         this.seo.removeJsonLd('jsonld-organization');
         this.seo.removeJsonLd('jsonld-software');
+        this.seo.removeJsonLd('jsonld-faq');
     }
-
-    t(key: string): string { return this.i18n.t(key); }
 }

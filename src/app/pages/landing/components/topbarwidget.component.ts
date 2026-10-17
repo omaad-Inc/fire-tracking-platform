@@ -1,423 +1,269 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { AnalyticsService } from '../../../core/services/analytics.service';
-import { StyleClassModule } from 'primeng/styleclass';
+import { Component, DestroyRef, ElementRef, HostListener, PLATFORM_ID, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { RippleModule } from 'primeng/ripple';
-import { ButtonModule } from 'primeng/button';
-import { CommonModule } from '@angular/common';
-import { LayoutService } from '../../../layout/service/layout.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { I18nService, Lang } from '../../../i18n/i18n.service';
+import { trackLandingCta } from './landing-shared';
 
+/**
+ * Public header (landing redesign 2026-10). Shared by the landing, FAQ,
+ * legal, support and about pages.
+ *
+ * Desktop: logo, three links + an Outils disclosure, FR/EN, Se connecter and
+ * the ONE primary action (S'inscrire). Phone: logo, S'inscrire stays visible
+ * outside the menu, and a 44 px menu button opens a bottom sheet that is
+ * focus-trapped, closes on Escape, backdrop tap and link tap, and locks the
+ * page scroll. No theme toggle: public pages are light only.
+ */
 @Component({
     selector: 'topbar-widget',
     standalone: true,
-    imports: [RouterModule, StyleClassModule, ButtonModule, RippleModule, CommonModule],
+    imports: [RouterModule],
+    host: { class: 'block' },
     template: `
-        <!-- Logo (pulled flush-left, Finary-style) -->
-        <a class="flex items-center gap-2 cursor-pointer group shrink-0" [routerLink]="[currentLang, 'landing']" fragment="home">
-            <img src="assets/brand/omaad-icon.svg" alt="Omaad Logo"
-                     class="w-10 h-10 md:w-12 md:h-12" width="48" height="48">
-            <span class="font-bold text-xl md:text-2xl text-surface-900 dark:text-surface-0 tracking-tight whitespace-nowrap">Omaad</span>
-        </a>
+        <header class="lp-header" [class.is-scrolled]="scrolled()">
+            <div class="lp-container lp-header-row">
+                <a class="flex items-center gap-2 shrink-0 no-underline rounded-full focus-visible:outline-2 focus-visible:outline-ochre-500"
+                   [routerLink]="homeLink" [attr.aria-label]="t('landing.nav.homeAria')">
+                    <img src="assets/brand/omaad-icon.svg" alt="" class="w-9 h-9 md:w-10 md:h-10" width="40" height="40">
+                    <span class="font-bold text-[20px] md:text-[22px] tracking-tight text-[color:var(--lp-ink)]">Omaad</span>
+                </a>
 
-        <!-- Desktop Navigation -->
-        <nav class="hidden lg:flex items-center gap-2 mx-auto" [attr.aria-label]="_('Navigation principale', 'Main navigation')">
-            <a [routerLink]="[currentLang, 'landing']" fragment="home" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline whitespace-nowrap
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                      transition-all duration-200 cursor-pointer">
-                {{ t('landing.nav.home') }}
-            </a>
-            <a [routerLink]="[currentLang, 'landing']" fragment="features" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline whitespace-nowrap
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                      transition-all duration-200 cursor-pointer">
-                {{ t('landing.nav.features') }}
-            </a>
-            <a [routerLink]="[currentLang, 'landing']" fragment="pricing" pRipple
-               class="flex items-center px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline whitespace-nowrap
-                      hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                      transition-all duration-200 cursor-pointer">
-                {{ t('landing.nav.pricing') }}
-            </a>
-            <!-- Resources disclosure (click-toggle; hover for mouse) -->
-            <div class="relative" (mouseenter)="toolsOpen.set(true)" (mouseleave)="toolsOpen.set(false)"
-                 (keydown.escape)="toolsOpen.set(false)">
-                <button type="button" pRipple
-                   (click)="toolsOpen.set(!toolsOpen()); aboutOpen.set(false)"
-                   aria-haspopup="true" [attr.aria-expanded]="toolsOpen()"
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0 whitespace-nowrap
-                          hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                          transition-all duration-200 cursor-pointer">
-                    {{ _('Ressources', 'Resources') }}
-                    <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
-                       [class.rotate-180]="toolsOpen()"></i>
-                </button>
-                <div [class.hidden]="!toolsOpen()"
-                     class="absolute top-full left-0 mt-1 w-72 rounded-xl
-                            bg-surface-0 dark:bg-surface-800
-                            shadow-lg border border-surface-200 dark:border-surface-700
-                            p-2 z-30">
-                    <a [routerLink]="[currentLang, 'blog']" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-book text-brand-700 dark:text-brand-300 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">Blog</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Toutes les éditions FIRE Africa', 'All FIRE Africa editions') }}</div>
-                        </div>
-                    </a>
-                    <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
-                            <span class="text-base">🔥</span>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Simulateur FIRE', 'FIRE Simulator') }}</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Calcule ton objectif d\u2019indépendance financière', 'Calculate your financial independence goal') }}</div>
-                        </div>
-                    </a>
-                    <a [routerLink]="[currentLang, 'tools', 'compound-interest']" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <i class="pi pi-chart-bar text-brand-700 dark:text-brand-300 text-sm"></i>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Intérêts composés', 'Compound Interest') }}</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Visualise la puissance des intérêts composés', 'Visualize the power of compound interest') }}</div>
-                        </div>
-                    </a>
-                    <a routerLink="/outils/comparateur-sgi-brvm" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-ochre-100 dark:bg-ochre-700/20 flex items-center justify-center shrink-0">
-                            <span class="text-base">🏦</span>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Compare les frais des 41 SGI de la BRVM', 'Compare fees of all 41 BRVM brokers') }}</div>
-                        </div>
-                    </a>
-                    <a routerLink="/outils/strategie-brvm" pRipple
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg
-                              hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                        <div class="w-9 h-9 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                            <span class="text-base">🧭</span>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</div>
-                            <div class="text-xs text-surface-500 dark:text-surface-400">{{ _('Construis ton plan Core / Satellite et suis les détachements', 'Build your Core / Satellite plan and track ex-dividend dates') }}</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <!-- About disclosure (click-toggle; hover for mouse) -->
-            <div class="relative" (mouseenter)="aboutOpen.set(true)" (mouseleave)="aboutOpen.set(false)"
-                 (keydown.escape)="aboutOpen.set(false)">
-                <button type="button" pRipple
-                   (click)="aboutOpen.set(!aboutOpen()); toolsOpen.set(false)"
-                   aria-haspopup="true" [attr.aria-expanded]="aboutOpen()"
-                   class="flex items-center gap-1 px-4 py-2 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base bg-transparent border-0 whitespace-nowrap
-                          hover:bg-surface-100 dark:hover:bg-surface-800 hover:text-brand-700 dark:hover:text-brand-200
-                          transition-all duration-200 cursor-pointer">
-                    {{ t('landing.nav.about') }}
-                    <i class="pi pi-chevron-down text-[10px] ml-0.5 transition-transform duration-200"
-                       [class.rotate-180]="aboutOpen()"></i>
-                </button>
-                <div [class.hidden]="!aboutOpen()"
-                     class="absolute top-full left-0 mt-1 w-[36rem] rounded-2xl
-                            bg-surface-0 dark:bg-surface-800
-                            shadow-lg border border-surface-200 dark:border-surface-700
-                            p-3 z-30">
-                    <div class="grid grid-cols-2 gap-3">
-                        <!-- PART 1, featured team card (generic placeholder, swap for real team photo later) -->
-                        <a [routerLink]="[currentLang, aboutSlug]" (click)="aboutOpen.set(false)" pRipple
-                           class="group block rounded-xl overflow-hidden border border-surface-200 dark:border-surface-700
-                                  hover:border-brand-500/50 dark:hover:border-ochre-500/50 transition-all duration-200">
-                            <div class="relative h-36 flex items-center justify-center bg-brand-50 dark:bg-surface-900 overflow-hidden">
-                                <div class="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-brand-500/10 blur-2xl"></div>
-                                <i class="pi pi-users text-5xl text-brand-700/60 dark:text-ochre-300/60 relative"></i>
+                <nav class="lp-desktop-only flex items-center gap-0.5 mx-auto" [attr.aria-label]="t('landing.nav.mainAria')">
+                    <a class="lp-nav-link" [routerLink]="homeLink" fragment="features">{{ t('landing.nav.features') }}</a>
+                    <a class="lp-nav-link" [routerLink]="[currentLang, 'tarifs']">{{ t('landing.nav.pricing') }}</a>
+                    <div class="relative" (mouseenter)="hoverTools(true)" (mouseleave)="hoverTools(false)"
+                         (keydown.escape)="closeTools()" (focusout)="onToolsFocusOut($event)">
+                        <button type="button" class="lp-nav-link gap-1" aria-haspopup="true" aria-controls="lp-mega-tools"
+                                [attr.aria-expanded]="toolsOpen()" (click)="toggleTools()">
+                            {{ t('landing.nav.tools') }}
+                            <i class="pi pi-chevron-down text-[10px] transition-transform" [class.rotate-180]="toolsOpen()" aria-hidden="true"></i>
+                        </button>
+                        @if (toolsOpen()) {
+                            <div id="lp-mega-tools" class="lp-mega">
+                                <div class="lp-mega-card">
+                                    <div>
+                                        <span class="lp-mega-group">{{ t('landing.nav.toolsHighlights') }}</span>
+                                        @for (h of highlights; track h.key) {
+                                            <a class="lp-mega-highlight" [routerLink]="h.link" (click)="closeTools()">
+                                                <span><img [src]="h.image" alt="" width="96" height="72" loading="lazy"></span>
+                                                <span class="flex flex-col min-w-0">
+                                                    <span class="text-[15px] font-semibold leading-tight">{{ t('landing.nav.' + h.key) }}</span>
+                                                    <span class="mt-1 text-[13px] leading-snug lp-muted">{{ t('landing.nav.' + h.key + 'Teaser') }}</span>
+                                                </span>
+                                            </a>
+                                        }
+                                    </div>
+                                    <div>
+                                        <span class="lp-mega-group">{{ t('landing.nav.toolsAll') }}</span>
+                                        @for (item of tools; track item.key) {
+                                            <a class="lp-menu-item !min-h-[44px] !py-1.5" [routerLink]="item.link" (click)="closeTools()">
+                                                <span class="lp-icon-tile !w-8 !h-8 !rounded-[9px] text-[14px]"><i class="pi" [class]="item.icon" aria-hidden="true"></i></span>
+                                                <span class="flex flex-col min-w-0">
+                                                    <span class="text-[14px] font-semibold leading-tight">{{ t('landing.nav.' + item.key) }}</span>
+                                                    <span class="text-[12px] leading-snug lp-muted">{{ t('landing.nav.' + item.key + 'Desc') }}</span>
+                                                </span>
+                                            </a>
+                                        }
+                                    </div>
+                                    <div class="lp-mega-foot">
+                                        <span>{{ t('landing.nav.toolsFoot') }}</span>
+                                        <a class="lp-link !min-h-0 text-[14px]" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('nav_tools_register'); closeTools()">
+                                            {{ t('landing.nav.toolsFootCta') }}
+                                            <i class="pi pi-arrow-right text-[11px]" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="p-3">
-                                <div class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutTeam') }}</div>
-                                <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 leading-snug">{{ t('landing.nav.aboutTeamDesc') }}</div>
-                            </div>
-                        </a>
-
-                        <!-- PART 2, links list -->
-                        <div class="flex flex-col">
-                            <span class="px-3 pt-1.5 pb-1 text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
-                                {{ _('Découvrir', 'Discover') }}
-                            </span>
-                            <a [routerLink]="[currentLang, aboutSlug]" fragment="securite" (click)="aboutOpen.set(false)" pRipple
-                               class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                                <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                                    <i class="pi pi-shield text-brand-700 dark:text-brand-300 text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutSecurity') }}</div>
-                                    <div class="text-xs text-surface-500 dark:text-surface-400 leading-snug">{{ t('landing.nav.aboutSecurityDesc') }}</div>
-                                </div>
-                            </a>
-                            <a [routerLink]="[currentLang, aboutSlug]" fragment="principes" (click)="aboutOpen.set(false)" pRipple
-                               class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                                <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                                    <i class="pi pi-compass text-brand-700 dark:text-brand-300 text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutPrinciples') }}</div>
-                                    <div class="text-xs text-surface-500 dark:text-surface-400 leading-snug">{{ _('Ce qui guide nos décisions produit.', 'What guides our product decisions.') }}</div>
-                                </div>
-                            </a>
-                            <a [routerLink]="[currentLang, aboutSlug]" fragment="contact" (click)="aboutOpen.set(false)" pRipple
-                               class="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-all cursor-pointer">
-                                <div class="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-700/20 flex items-center justify-center shrink-0">
-                                    <i class="pi pi-envelope text-brand-700 dark:text-brand-300 text-sm"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-surface-900 dark:text-surface-0">{{ t('landing.nav.aboutContact') }}</div>
-                                    <div class="text-xs text-surface-500 dark:text-surface-400 leading-snug">{{ _('Une question, une idée ? Écrivez-nous.', 'A question or idea? Reach out.') }}</div>
-                                </div>
-                            </a>
-                        </div>
+                        }
                     </div>
+                    <a class="lp-nav-link" [routerLink]="[currentLang, aboutSlug]">{{ t('landing.nav.about') }}</a>
+                </nav>
+
+                <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <button type="button" class="lp-nav-link lp-desktop-only" (click)="switchLang()" [attr.aria-label]="t('landing.lang.switchLabel')">
+                        {{ t('landing.lang.switchTo') }}
+                    </button>
+                    <a class="lp-nav-link lp-desktop-only" [routerLink]="[currentLang, 'auth', 'login']" (click)="trackCta('nav_login')">{{ t('landing.nav.login') }}</a>
+                    <a class="lp-btn lp-btn-primary lp-btn-sm" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('nav_register')">{{ t('landing.nav.register') }}</a>
+                    <button #menuBtn type="button" class="lp-icon-btn lp-mobile-only" aria-controls="lp-sheet"
+                            [attr.aria-expanded]="sheetOpen()" [attr.aria-label]="t('landing.nav.menu')" (click)="openSheet()">
+                        <i class="pi pi-bars text-[20px]" aria-hidden="true"></i>
+                    </button>
                 </div>
             </div>
-        </nav>
+        </header>
+        <!-- Spacer for the fixed header -->
+        <div class="h-[60px] lg:h-[68px]" style="margin-top: env(safe-area-inset-top, 0px)"></div>
 
-        <!-- Desktop CTA -->
-        <div class="hidden lg:flex items-center gap-3 shrink-0">
-            <!-- Theme toggle -->
-            <button (click)="toggleDarkMode()" pRipple
-                    class="flex items-center justify-center w-9 h-9 rounded-full border border-surface-300 dark:border-surface-600
-                           text-surface-700 dark:text-surface-200
-                           hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200"
-                    [title]="isDark() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode')">
-                <i class="pi text-sm" [ngClass]="isDark() ? 'pi-sun' : 'pi-moon'"></i>
-            </button>
-            <!-- Language toggle -->
-            <button (click)="switchLang()" pRipple
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-surface-300 dark:border-surface-600
-                           text-sm font-semibold text-surface-700 dark:text-surface-200
-                           hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200"
-                    [title]="t('landing.lang.switchLabel')">
-                <i class="pi pi-globe text-xs"></i>
-                <span>{{ t('landing.lang.current') }}</span>
-            </button>
-            <button pButton pRipple [label]="t('landing.nav.login')"
-                    [routerLink]="[currentLang, 'auth', 'login']"
-                    [rounded]="true" [text]="true"
-                    class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:hover:!text-surface-0">
-            </button>
-            <button pButton pRipple [label]="t('landing.nav.register')"
-                    [routerLink]="[currentLang, 'auth', 'register']"
-                    (click)="trackCta('topbar_register')"
-                    [rounded]="true"
-                    class="!bg-ochre-500 hover:!bg-ochre-400 !text-warm-900 !border-0 !font-semibold
-                           hover:!shadow-lg transition-all duration-300">
-            </button>
-        </div>
-
-        <!-- Mobile Menu Toggle -->
-        <button type="button" pButton [text]="true" severity="secondary" [rounded]="true" pRipple
-           class="lg:!hidden !p-2 shrink-0"
-           aria-haspopup="true" [attr.aria-expanded]="mobileMenuOpen()"
-           [attr.aria-label]="_('Menu', 'Menu')"
-           (click)="mobileMenuOpen.set(!mobileMenuOpen())">
-            <i class="pi !text-xl" [ngClass]="mobileMenuOpen() ? 'pi-times' : 'pi-bars'"></i>
-        </button>
-
-        <!-- Mobile Dropdown -->
-        <div [class.hidden]="!mobileMenuOpen()"
-             class="lg:!hidden absolute left-0 right-0 top-full mx-4 mt-2 z-20 rounded-xl
-                    bg-surface-0/95 dark:bg-surface-900/95 backdrop-blur-lg
-                    shadow-lg border border-surface-200/50 dark:border-surface-700/50 p-4">
-            <ul class="list-none p-0 m-0 flex flex-col gap-1">
-                <li>
-                    <a [routerLink]="[currentLang, 'landing']" fragment="home" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-home mr-2"></i><span>{{ t('landing.nav.home') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, 'landing']" fragment="features" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-th-large mr-2"></i><span>{{ t('landing.nav.features') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, 'landing']" fragment="pricing" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base no-underline
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-tag mr-2"></i><span>{{ t('landing.nav.pricing') }}</span>
-                    </a>
-                </li>
-                <!-- About (mobile) -->
-                <li class="border-t border-surface-200 dark:border-surface-700 pt-2 mt-1">
-                    <span class="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
-                        {{ t('landing.nav.about') }}
-                    </span>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, aboutSlug]" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-users mr-2"></i><span>{{ t('landing.nav.aboutTeam') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, aboutSlug]" fragment="securite" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-shield mr-2"></i><span>{{ t('landing.nav.aboutSecurity') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, aboutSlug]" fragment="principes" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-compass mr-2"></i><span>{{ t('landing.nav.aboutPrinciples') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, aboutSlug]" fragment="contact" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-envelope mr-2"></i><span>{{ t('landing.nav.aboutContact') }}</span>
-                    </a>
-                </li>
-                <!-- Resources (mobile) -->
-                <li class="border-t border-surface-200 dark:border-surface-700 pt-2 mt-1">
-                    <span class="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500">
-                        {{ _('Ressources', 'Resources') }}
-                    </span>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, 'blog']" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-book mr-2"></i><span>Blog</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, 'tools', 'fire-simulator']" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <span class="mr-2">🔥</span><span>{{ _('Simulateur FIRE', 'FIRE Simulator') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a [routerLink]="[currentLang, 'tools', 'compound-interest']" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <i class="pi pi-chart-bar mr-2"></i><span>{{ _('Intérêts composés', 'Compound Interest') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a routerLink="/outils/comparateur-sgi-brvm" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <span class="mr-2">🏦</span><span>{{ _('Comparateur SGI BRVM', 'BRVM Broker Comparator') }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a routerLink="/outils/strategie-brvm" (click)="mobileMenuOpen.set(false)" pRipple
-                       class="flex items-center px-4 py-3 rounded-lg text-surface-700 dark:text-surface-200 font-medium text-base
-                              hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                        <span class="mr-2">🧭</span><span>{{ _('Stratégie BRVM', 'BRVM Strategy Planner') }}</span>
-                    </a>
-                </li>
-            </ul>
-            <div class="flex flex-col gap-2 border-t border-surface-200 dark:border-surface-700 pt-4 mt-4">
-                <!-- Language toggle (mobile) -->
-                <button (click)="toggleDarkMode()" pRipple
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
-                               text-surface-700 dark:text-surface-200
-                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                    <i class="pi" [ngClass]="isDark() ? 'pi-sun' : 'pi-moon'"></i>
-                    <span class="font-medium text-base">{{ isDark() ? _('Mode clair', 'Light mode') : _('Mode sombre', 'Dark mode') }}</span>
-                </button>
-                <button (click)="switchLang()" pRipple
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg w-full
-                               text-surface-700 dark:text-surface-200
-                               hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 cursor-pointer">
-                    <i class="pi pi-globe"></i>
-                    <span class="font-medium text-base">{{ t('landing.lang.switchLabel') }}</span>
-                </button>
-                <button pButton pRipple [label]="t('landing.nav.login')"
-                        [routerLink]="[currentLang, 'auth', 'login']"
-                        [rounded]="true" [text]="true"
-                        class="!font-medium !text-surface-700 dark:!text-surface-200 hover:!text-brand-700 dark:hover:!text-surface-0 w-full justify-center">
-                </button>
-                <button pButton pRipple [label]="t('landing.nav.register')"
-                        [routerLink]="[currentLang, 'auth', 'register']"
-                        (click)="trackCta('topbar_register_mobile')"
-                        [rounded]="true"
-                        class="!bg-ochre-500 hover:!bg-ochre-400 !text-warm-900 !border-0 !font-semibold
-                               hover:!shadow-lg transition-all duration-300 w-full justify-center">
-                </button>
+        @if (sheetOpen()) {
+            <div class="lp-sheet-scrim lp-mobile-only" (click)="closeSheet()" aria-hidden="true"></div>
+            <div #sheet id="lp-sheet" class="lp-sheet lp-mobile-only" role="dialog" aria-modal="true" [attr.aria-label]="t('landing.nav.menu')" (keydown)="onSheetKeydown($event)">
+                <div class="lp-sheet-handle" aria-hidden="true"></div>
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-[18px]">Omaad</span>
+                    <button #closeBtn type="button" class="lp-icon-btn" (click)="closeSheet()" [attr.aria-label]="t('landing.nav.close')">
+                        <i class="pi pi-times text-[18px]" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <nav class="mt-2" [attr.aria-label]="t('landing.nav.mainAria')">
+                    <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="homeLink" fragment="features" (click)="closeSheet()">{{ t('landing.nav.features') }}</a>
+                    <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="[currentLang, 'tarifs']" (click)="closeSheet()">{{ t('landing.nav.pricing') }}</a>
+                    <a class="lp-menu-item text-[17px] font-semibold" [routerLink]="[currentLang, aboutSlug]" (click)="closeSheet()">{{ t('landing.nav.about') }}</a>
+                    <span class="lp-sheet-group">{{ t('landing.nav.tools') }}</span>
+                    @for (item of tools; track item.key) {
+                        <a class="lp-menu-item" [routerLink]="item.link" (click)="closeSheet()">
+                            <span class="lp-icon-tile !w-9 !h-9 !rounded-[10px] text-[15px]"><i class="pi" [class]="item.icon" aria-hidden="true"></i></span>
+                            <span class="text-[16px] font-medium">{{ t('landing.nav.' + item.key) }}</span>
+                        </a>
+                    }
+                </nav>
+                <div class="mt-4 pt-4 border-t border-[color:var(--lp-line)] flex items-center justify-between gap-3">
+                    <div class="lp-segment" role="group" [attr.aria-label]="t('landing.lang.groupAria')">
+                        <button type="button" [attr.aria-pressed]="lang === 'fr'" (click)="setLang('fr')">FR</button>
+                        <button type="button" [attr.aria-pressed]="lang === 'en'" (click)="setLang('en')">EN</button>
+                    </div>
+                    <a class="lp-link" [routerLink]="[currentLang, 'auth', 'login']" (click)="trackCta('sheet_login'); closeSheet()">{{ t('landing.nav.login') }}</a>
+                </div>
+                <a class="lp-btn lp-btn-primary lp-btn-block mt-4" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('sheet_register'); closeSheet()">{{ t('landing.nav.registerLong') }}</a>
             </div>
-        </div>
-    `
+        }
+    `,
 })
 export class TopbarWidget {
     private analytics = inject(AnalyticsService);
+    private i18n = inject(I18nService);
+    private platformId = inject(PLATFORM_ID);
+    private router = inject(Router);
 
-    /** Public-funnel step between landing_view and the signup itself. */
-    trackCta(cta: string): void {
-        // currentLang is a router segment ('/fr'); the event wants the bare code.
-        this.analytics.trackPublic('cta_click', { cta, lang: this.currentLang.replace(/^\//, '') });
-    }
-    layoutService = inject(LayoutService);
-    private i18n  = inject(I18nService);
+    private sheet = viewChild<ElementRef<HTMLElement>>('sheet');
+    private closeBtn = viewChild<ElementRef<HTMLButtonElement>>('closeBtn');
+    private menuBtn = viewChild<ElementRef<HTMLButtonElement>>('menuBtn');
 
     currentLang = '/fr';
-    private lang: Lang = 'fr';
-    mobileMenuOpen = signal(false);
+    lang: Lang = 'fr';
+    sheetOpen = signal(false);
     toolsOpen = signal(false);
-    aboutOpen = signal(false);
-    isDark = computed(() => this.layoutService.layoutConfig()?.darkTheme ?? false);
+    scrolled = signal(false);
 
-    constructor(public router: Router) {
+    readonly tools = [
+        { key: 'toolFire', icon: 'pi-bolt', link: ['/fr', 'tools', 'fire-simulator'] as (string | string[])[] },
+        { key: 'toolCompound', icon: 'pi-chart-bar', link: ['/fr', 'tools', 'compound-interest'] },
+        { key: 'toolSgi', icon: 'pi-building', link: ['/outils/comparateur-sgi-brvm'] },
+        { key: 'toolStrategy', icon: 'pi-compass', link: ['/outils/strategie-brvm'] },
+        { key: 'toolBlog', icon: 'pi-book', link: ['/fr', 'blog'] },
+    ];
+    /** Mega-panel highlights: the two tools that convert best, each with a dedicated 96x72 visual (tools/render-highlight-visuals.mjs). */
+    readonly highlights = [
+        { key: 'toolFire', image: 'assets/marketing/highlight-fire.webp', link: ['/fr', 'tools', 'fire-simulator'] as (string | string[])[] },
+        { key: 'toolSgi', image: 'assets/marketing/highlight-sgi.webp', link: ['/outils/comparateur-sgi-brvm'] },
+    ];
+    private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+    private openedByHoverAt = 0;
+
+    constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
         this.lang = (match ? match[1] : 'fr') as Lang;
         this.currentLang = '/' + this.lang;
-        // Ensure service lang matches URL (in case localStorage differs)
         this.i18n.setLang(this.lang);
-        // Theme is no longer forced here, the navbar light/dark toggle controls it,
-        // and the saved preference (localStorage via LayoutService) applies on load.
+        for (const item of [...this.tools, ...this.highlights]) if (item.link[0] === '/fr') item.link[0] = this.currentLang;
+        afterNextRender(() => { this.scrolled.set(window.scrollY > 8); });
+        // The sheet may be open when a navigation destroys the header (back
+        // button, auth redirect): never leave the page scroll locked behind.
+        inject(DestroyRef).onDestroy(() => { if (isPlatformBrowser(this.platformId)) document.body.classList.remove('lp-scroll-lock'); });
     }
+
+    /** Anchors stay on the current route when it IS the landing (so "/" never jumps to /fr/landing). */
+    get homeLink(): string[] {
+        const path = this.router.url.split(/[?#]/)[0];
+        return /^\/(?:(?:fr|en)\/landing\/?)?$/.test(path) ? ['.'] : [this.currentLang, 'landing'];
+    }
+
+    get aboutSlug(): string { return this.lang === 'fr' ? 'qui-sommes-nous' : 'about'; }
 
     t(key: string): string { return this.i18n.t(key); }
-    _(fr: string, en: string): string { return this.i18n.lang() === 'fr' ? fr : en; }
-    get aboutSlug(): string { return this.i18n.lang() === 'fr' ? 'qui-sommes-nous' : 'about'; }
 
-    toggleDarkMode() {
-        const next = !this.layoutService.layoutConfig().darkTheme;
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            darkTheme: next,
-            themeMode: next ? 'dark' : 'light',
-        }));
+    trackCta(placement: string): void { trackLandingCta(this.analytics, this.router, placement); }
+
+    @HostListener('window:scroll')
+    onScroll(): void { if (isPlatformBrowser(this.platformId)) this.scrolled.set(window.scrollY > 8); }
+
+    // ── Outils mega panel: hover intent + click, never "hover opens, click closes" ──
+    hoverTools(enter: boolean): void {
+        if (this.hoverTimer) clearTimeout(this.hoverTimer);
+        this.hoverTimer = setTimeout(() => {
+            if (enter && !this.toolsOpen()) { this.toolsOpen.set(true); this.openedByHoverAt = Date.now(); }
+            if (!enter) this.toolsOpen.set(false);
+        }, enter ? 80 : 180);
     }
 
-    switchLang() {
-        this.mobileMenuOpen.set(false);
-        const newLang: Lang = this.lang === 'fr' ? 'en' : 'fr';
-        // Update the service signal FIRST so all components re-render immediately
-        this.i18n.setLang(newLang);
-        this.lang = newLang;
-        this.currentLang = '/' + newLang;
-        // Stay on the current page, just swap the language prefix in the URL
-        const currentUrl = this.router.url;
-        const newUrl = currentUrl.replace(/^\/(fr|en)/, '/' + newLang);
-        this.router.navigateByUrl(newUrl);
+    toggleTools(): void {
+        if (this.hoverTimer) clearTimeout(this.hoverTimer);
+        // A click right after a hover-open is the same intent as the hover: keep it open.
+        if (this.toolsOpen() && Date.now() - this.openedByHoverAt < 600) return;
+        this.toolsOpen.set(!this.toolsOpen());
     }
 
+    closeTools(): void {
+        if (this.hoverTimer) clearTimeout(this.hoverTimer);
+        this.toolsOpen.set(false);
+    }
+
+    /** Keyboard users tabbing out of the panel close it (no stale open panel behind the page). */
+    onToolsFocusOut(ev: FocusEvent): void {
+        const root = ev.currentTarget as HTMLElement;
+        const next = ev.relatedTarget as Node | null;
+        if (!next || !root.contains(next)) this.closeTools();
+    }
+
+    openSheet(): void {
+        this.sheetOpen.set(true);
+        document.body.classList.add('lp-scroll-lock');
+        setTimeout(() => this.closeBtn()?.nativeElement.focus(), 0);
+    }
+
+    closeSheet(): void {
+        if (!this.sheetOpen()) return;
+        this.sheetOpen.set(false);
+        document.body.classList.remove('lp-scroll-lock');
+        this.menuBtn()?.nativeElement.focus();
+    }
+
+    /** Escape closes; Tab cycles inside the sheet (a11y: focus trap for role=dialog). */
+    onSheetKeydown(ev: KeyboardEvent): void {
+        if (ev.key === 'Escape') { ev.preventDefault(); this.closeSheet(); return; }
+        if (ev.key !== 'Tab') return;
+        const root = this.sheet()?.nativeElement;
+        if (!root) return;
+        const focusable = Array.from(root.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+            .filter((el) => el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+        else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+
+    setLang(next: Lang): void {
+        if (next === this.lang) return;
+        this.switchLang();
+    }
+
+    switchLang(): void {
+        const next: Lang = this.lang === 'fr' ? 'en' : 'fr';
+        this.i18n.setLang(next);
+        this.lang = next;
+        this.currentLang = '/' + next;
+        for (const item of [...this.tools, ...this.highlights]) if (/^\/(fr|en)$/.test(item.link[0] as string)) item.link[0] = this.currentLang;
+        this.closeSheet();
+        const url = this.router.url;
+        const path = url.split(/[?#]/)[0];
+        if (/^\/(fr|en)(\/|$)/.test(url)) {
+            this.router.navigateByUrl(url.replace(/^\/(fr|en)/, '/' + next));
+        } else if (path === '/' || path === '') {
+            // "/" has no prefix: the other language lives at /<lang>/landing.
+            this.router.navigateByUrl(`/${next}/landing`);
+        }
+        // Other prefix-less public pages (/support, /confidentialite, /paiement/retour...)
+        // stay where they are: only the copy switches.
+    }
 }

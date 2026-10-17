@@ -20,6 +20,8 @@ const PAGES: Array<[string, string]> = [
     ['login', '/fr/auth/login'],
     ['fire-simulator', '/fr/tools/fire-simulator'],
     ['faq', '/fr/faq'],
+    ['about', '/fr/qui-sommes-nous'],
+    ['tarifs', '/fr/tarifs'],
     ['legal-privacy', '/fr/legal/privacy'],
 ];
 

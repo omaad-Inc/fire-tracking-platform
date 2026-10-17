@@ -24,22 +24,19 @@ const PAGE_DESC =
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CommonModule, RouterModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
-                 style="padding-top: env(safe-area-inset-top, 0px)">
-                <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
-            </div>
+        <div class="lp min-h-screen">
+            <topbar-widget />
 
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
-                <header class="mb-10">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
+                <header class="mb-10 text-center md:text-left">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <i class="pi pi-headphones text-[10px]"></i>
                         Support
                     </span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         Besoin d'aide ?
                     </h1>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                    <p class="lp-lead">
                         Une question sur l'application, votre compte ou vos données ? Nous sommes une petite
                         équipe et nous lisons chaque message.
                     </p>
@@ -48,13 +45,13 @@ const PAGE_DESC =
                 <article class="space-y-10">
                     <!-- Contact direct -->
                     <section>
-                        <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-6">
+                        <div class="lp-card p-6">
                             <div class="flex items-start gap-4">
                                 <span class="w-11 h-11 shrink-0 rounded-2xl bg-ochre-100 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 flex items-center justify-center">
                                     <i class="pi pi-envelope"></i>
                                 </span>
                                 <div class="min-w-0">
-                                    <h2 class="text-lg font-bold text-surface-900 dark:text-white mb-1">Écrivez-nous</h2>
+                                    <h2 class="lp-h3 text-[19px] mb-1">Écrivez-nous</h2>
                                     <p class="text-[13px] text-surface-600 dark:text-surface-400 leading-relaxed mb-4">
                                         Pour toute demande : aide sur l'application, question sur une fonctionnalité,
                                         signalement d'un problème, ou exercice de vos droits sur vos données.
@@ -72,11 +69,11 @@ const PAGE_DESC =
 
                     <!-- Réponses immédiates -->
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Réponses immédiates</h2>
+                        <h2 class="lp-h3 mb-4">Réponses immédiates</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             @for (link of quickLinks; track link.title) {
                                 <a [routerLink]="link.route"
-                                   class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-4 flex items-start gap-3 no-underline hover:border-ochre-400 dark:hover:border-ochre-500/50 transition-colors omaad-press">
+                                   class="lp-card p-4 flex items-start gap-3 no-underline hover:border-ochre-400 dark:hover:border-ochre-500/50 transition-colors omaad-press">
                                     <span class="w-9 h-9 shrink-0 rounded-xl bg-ochre-100 dark:bg-ochre-500/15 text-ochre-700 dark:text-ochre-400 flex items-center justify-center">
                                         <i [class]="'pi ' + link.icon + ' text-sm'"></i>
                                     </span>
@@ -91,7 +88,7 @@ const PAGE_DESC =
 
                     <!-- Bien nous écrire -->
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">Pour un signalement efficace</h2>
+                        <h2 class="lp-h3 mb-3">Pour un signalement efficace</h2>
                         <p class="text-surface-700 dark:text-surface-300 leading-relaxed mb-3">
                             Si vous signalez un problème dans l'application, ces trois détails nous font gagner
                             un aller-retour :
@@ -99,20 +96,20 @@ const PAGE_DESC =
                         <ul class="space-y-2">
                             <li class="flex items-start gap-3">
                                 <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                <p class="text-surface-700 dark:text-surface-300 leading-relaxed">L'écran concerné et ce que vous tentiez de faire.</p>
+                                <p class="lp-body">L'écran concerné et ce que vous tentiez de faire.</p>
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                <p class="text-surface-700 dark:text-surface-300 leading-relaxed">Votre appareil (iPhone, Android, navigateur) et, si possible, une capture d'écran.</p>
+                                <p class="lp-body">Votre appareil (iPhone, Android, navigateur) et, si possible, une capture d'écran.</p>
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="pi pi-check text-ochre-600 dark:text-ochre-400 text-xs mt-1.5 shrink-0"></i>
-                                <p class="text-surface-700 dark:text-surface-300 leading-relaxed">L'email de votre compte Omaad (jamais votre mot de passe : nous ne le demandons jamais).</p>
+                                <p class="lp-body">L'email de votre compte Omaad (jamais votre mot de passe : nous ne le demandons jamais).</p>
                             </li>
                         </ul>
                     </section>
 
-                    <div class="rounded-2xl border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900 p-5 text-sm leading-relaxed">
+                    <div class="lp-card p-5 text-sm leading-relaxed">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-500 mb-2">Éditeur</p>
                         <p class="text-surface-600 dark:text-surface-400">
                             OMAAD, SASU · VDN, Cité Sipres 2, Villa 271, Dakar, Sénégal ·

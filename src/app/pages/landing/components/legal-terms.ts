@@ -12,22 +12,19 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
     standalone: true,
     imports: [CommonModule, RouterModule, TopbarWidget, FooterWidget],
     template: `
-        <div class="bg-surface-0 dark:bg-surface-950 min-h-screen">
-            <div class="fixed top-0 left-0 right-0 z-50 bg-surface-0/80 dark:bg-surface-950/80 backdrop-blur-lg border-b border-surface-200/50 dark:border-surface-700/50"
-                 style="padding-top: env(safe-area-inset-top, 0px)">
-                <topbar-widget class="py-4 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static" />
-            </div>
+        <div class="lp min-h-screen">
+            <topbar-widget />
 
-            <main class="pt-32 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
-                <header class="mb-10">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 text-xs font-semibold uppercase tracking-wider mb-4">
+            <main class="pt-8 md:pt-12 pb-24 px-6 md:px-12 lg:px-20 max-w-3xl mx-auto">
+                <header class="mb-10 text-center md:text-left">
+                    <span class="lp-eyebrow inline-flex items-center gap-2">
                         <i class="pi pi-file text-[10px]"></i>
                         {{ isFr() ? 'Conditions contractuelles' : 'Contractual terms' }}
                     </span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-surface-900 dark:text-white mb-3 tracking-tight">
+                    <h1 class="lp-h1 mt-3 mb-4">
                         {{ isFr() ? 'Conditions générales d\\'utilisation' : 'Terms of service' }}
                     </h1>
-                    <p class="text-surface-500 dark:text-surface-400 text-sm">
+                    <p class="lp-lead">
                         {{ isFr() ? 'Dernière mise à jour : ' : 'Last updated: ' }}{{ updated }}
                     </p>
                 </header>
@@ -35,22 +32,22 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                 <article class="space-y-8">
                     @for (section of sections(); track section.id) {
                         <section>
-                            <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">{{ section.title }}</h2>
-                            <p class="text-surface-700 dark:text-surface-300 leading-relaxed whitespace-pre-line">{{ section.body }}</p>
+                            <h2 class="lp-h3 mb-3">{{ section.title }}</h2>
+                            <p class="lp-body whitespace-pre-line">{{ section.body }}</p>
                         </section>
                     }
 
                     <section>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-white mb-3">
+                        <h2 class="lp-h3 mb-3">
                             {{ isFr() ? 'Contact' : 'Contact' }}
                         </h2>
-                        <p class="text-surface-700 dark:text-surface-300 leading-relaxed">
+                        <p class="lp-body">
                             {{ isFr() ? 'Pour toute question relative à ces conditions, écrivez à' : 'For any question about these terms, write to' }}
                             <a href="mailto:contact@omaad.africa" class="text-brand-700 dark:text-ochre-400 font-semibold hover:underline">contact&#64;omaad.africa</a>.
                         </p>
                     </section>
 
-                    <div class="mt-10 p-4 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
+                    <div class="mt-10 p-4 lp-card text-surface-500 dark:text-surface-400 text-sm leading-relaxed">
                         {{ isFr() ? 'Dernière mise à jour : 19 juillet 2026.' : 'Last updated: 19 July 2026.' }}
                     </div>
                 </article>
