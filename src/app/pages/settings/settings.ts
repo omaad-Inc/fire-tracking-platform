@@ -37,7 +37,7 @@ import { environment } from '../../../environments/environment';
                         @if (avatarUrl()) {
                             <img [src]="avatarUrl()" alt="" class="w-full h-full object-cover" width="40" height="40">
                         } @else {
-                            <span class="text-xl font-bold text-surface-500">{{ userInitials() }}</span>
+                            <span class="text-xl font-bold text-surface-700 dark:text-surface-200">{{ userInitials() }}</span>
                         }
                     </div>
                     <div class="min-w-0">
