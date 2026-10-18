@@ -39,20 +39,37 @@ export default async (req) => {
   const headers = { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' };
 
   // 1. Contact → segment newsletter + topic opt-in
-  const c = await fetch(`${API}/contacts`, {
-    method: 'POST', headers,
-    body: JSON.stringify({
-      email, ...(firstName && { first_name: firstName }), unsubscribed: false,
-      properties: { source, subscribed_at: new Date().toISOString() },
-      segments: [{ id: process.env.RESEND_SEGMENT_ID }],
-      ...(process.env.RESEND_TOPIC_ID && { topics: [{ id: process.env.RESEND_TOPIC_ID, subscription: 'opt_in' }] }),
-    }),
-  });
+  const contactBody = {
+    email, ...(firstName && { first_name: firstName }), unsubscribed: false,
+    segments: [{ id: process.env.RESEND_SEGMENT_ID }],
+    ...(process.env.RESEND_TOPIC_ID && { topics: [{ id: process.env.RESEND_TOPIC_ID, subscription: 'opt_in' }] }),
+  };
+  const createContact = (extra) => fetch(`${API}/contacts`, { method: 'POST', headers, body: JSON.stringify({ ...contactBody, ...extra }) });
+  // « Déjà inscrit » : 409, ou un message du type "already exists" / "duplicate".
+  // Jamais quand Resend parle d'une propriété ou dit "does not exist" (c'est
+  // un refus de payload, pas un doublon : il ne faut surtout pas répondre OK).
+  const alreadyExists = (status, err) => {
+    const m = err.message || '';
+    if (/propert|not exist/i.test(m)) return false;
+    return status === 409 || /exist|already|duplicate/i.test(m);
+  };
+
+  // Les propriétés custom (`source`, `subscribed_at`) doivent exister au préalable
+  // dans Resend (Contacts → Properties), sinon l'appel ENTIER échoue. On tente
+  // avec, et si Resend refuse pour une autre raison que « déjà inscrit », on
+  // réessaie sans : l'inscription ne doit jamais dépendre d'un champ de suivi.
+  let c = await createContact({ properties: { source, subscribed_at: new Date().toISOString() } });
   if (!c.ok) {
     const err = await c.json().catch(() => ({}));
-    if (c.status === 409 || /exist/i.test(err.message || '')) return json(200, { ok: true, already: true });
-    console.error('resend contacts', c.status, err);
-    return json(502, { ok: false, error: 'resend_contact_failed' });
+    if (alreadyExists(c.status, err)) return json(200, { ok: true, already: true });
+    console.warn('resend contacts (with properties)', c.status, err, '→ retry without properties');
+    c = await createContact({});
+    if (!c.ok) {
+      const err2 = await c.json().catch(() => ({}));
+      if (alreadyExists(c.status, err2)) return json(200, { ok: true, already: true });
+      console.error('resend contacts', c.status, err2);
+      return json(502, { ok: false, error: 'resend_contact_failed', resend_status: c.status });
+    }
   }
 
   // 2. Email de bienvenue + 2 guides (transactionnel)
