@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError, from, firstValueFrom } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ShareContextService, PublicPortfolioBundle } from './share-context.service';
 import { User, NOTIF_PREFS_CACHE_KEY } from './token.service';
 import { FeedbackRating, FeedbackReason } from '../ai/chat-events';
+import { SKIP_AUTH } from '../interceptors/http-context.tokens';
 
 // ============================================
 // ASSET INTERFACES
@@ -1468,6 +1469,28 @@ export class ApiService {
     }): Observable<{ ok: boolean; forwarded: boolean }> {
         return this.http.post<{ ok: boolean; forwarded: boolean }>(
             `${this.apiUrl}/newsletter/subscribe`, payload,
+        );
+    }
+
+    /**
+     * FIRE Africa newsletter signup via the Netlify Function served next to the
+     * static site at /api/newsletter-subscribe (netlify/functions/
+     * newsletter-subscribe.mjs): it creates the Resend contact in the newsletter
+     * segment and sends the welcome email with the 2 guides. Same-origin on
+     * purpose (NOT `apiUrl`), so it only answers behind Netlify or `netlify dev`,
+     * not behind a bare `ng serve`. SKIP_AUTH: a logged-in visitor must not
+     * send their bearer token to it. `website` is the honeypot (empty for
+     * humans). 200 { ok, already? } · 400 invalid_email · 502 Resend failure.
+     */
+    subscribeFireAfricaNewsletter(payload: {
+        email: string;
+        firstName: string;
+        website: string;
+        source: 'omaad.africa';
+    }): Observable<{ ok: boolean; already?: boolean; welcomeSent?: boolean }> {
+        return this.http.post<{ ok: boolean; already?: boolean; welcomeSent?: boolean }>(
+            '/api/newsletter-subscribe', payload,
+            { context: new HttpContext().set(SKIP_AUTH, true) },
         );
     }
 

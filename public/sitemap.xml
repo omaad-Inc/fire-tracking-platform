@@ -14,6 +14,18 @@
         <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/landing/"/>
     </url>
     <url>
+        <loc>https://omaad.africa/fr/tarifs/</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/tarifs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/tarifs/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/tarifs/"/>
+    </url>
+    <url>
+        <loc>https://omaad.africa/en/tarifs/</loc>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/tarifs/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/tarifs/"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://omaad.africa/fr/tarifs/"/>
+    </url>
+    <url>
         <loc>https://omaad.africa/fr/blog/</loc>
         <xhtml:link rel="alternate" hreflang="fr" href="https://omaad.africa/fr/blog/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://omaad.africa/en/blog/"/>
@@ -268,4 +280,5 @@
     <url><loc>https://omaad.africa/confidentialite/</loc></url>
     <url><loc>https://omaad.africa/supprimer-mon-compte/</loc></url>
     <url><loc>https://omaad.africa/support/</loc></url>
+    <url><loc>https://omaad.africa/fr/fire-africa/newsletter/</loc></url>
 </urlset>

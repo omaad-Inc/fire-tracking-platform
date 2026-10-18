@@ -54,6 +54,12 @@ export const appRoutes: Routes = [
     { path: ':lang/landing', loadComponent: () => import('./app/pages/landing/landing').then(m => m.Landing) },
     { path: ':lang/fire-africa/welcome', loadComponent: () => import('./app/pages/landing/components/fire-africa-welcome').then(m => m.FireAfricaWelcome) },
     { path: ':lang/fire-africa/guides', loadComponent: () => import('./app/pages/landing/components/fire-africa-guides').then(m => m.FireAfricaGuides) },
+    // Inscription newsletter FIRE Africa (FR uniquement, prérendue ; alias court
+    // /newsletter en 301 dans public/_redirects). Le formulaire POSTe vers la
+    // Netlify Function /api/newsletter-subscribe (Resend). La bascule EN du
+    // header retombe sur la page FR au lieu d'un 404.
+    { path: 'fr/fire-africa/newsletter', loadComponent: () => import('./app/pages/landing/components/fire-africa-newsletter').then(m => m.FireAfricaNewsletterPage) },
+    { path: 'en/fire-africa/newsletter', redirectTo: '/fr/fire-africa/newsletter' },
     { path: ':lang/tools/fire-simulator', loadComponent: () => import('./app/pages/landing/components/fire-simulator').then(m => m.FireSimulator) },
     { path: ':lang/tools/compound-interest', loadComponent: () => import('./app/pages/landing/components/compound-calculator').then(m => m.CompoundCalculator) },
 

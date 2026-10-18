@@ -47,6 +47,11 @@ const strategieRoutes = [
 // /support est la Support URL exigée par App Store Connect.
 const legalRoutes = ['/confidentialite', '/supprimer-mon-compte', '/support'];
 
+// ── Inscription newsletter FIRE Africa (FR uniquement, déjà préfixée /fr, pas
+// de jumelle EN) : prérendue et listée dans le sitemap comme une page simple.
+// L'alias court /newsletter est un 301 Netlify (public/_redirects).
+const newsletterRoutes = ['/fr/fire-africa/newsletter'];
+
 // ── Blog article slugs (parsed from the static posts metadata) ──
 // Only editions whose newsletter has already been SENT (send `date` today or
 // earlier) are prerendered/sitemapped; unsent future editions must not leak to
@@ -90,7 +95,7 @@ const langRoutes = [...LANG_PATHS, ...NOINDEX_LANG_PATHS].flatMap((p) => LANGS.m
 
 // ── prerender-routes.txt ──
 // '/' (home) renders the landing too; keep it so the bare origin is prerendered.
-const prerenderRoutes = ['/', ...langRoutes, ...comparateurRoutes, ...strategieRoutes, ...legalRoutes];
+const prerenderRoutes = ['/', ...langRoutes, ...comparateurRoutes, ...strategieRoutes, ...legalRoutes, ...newsletterRoutes];
 writeFileSync(
     new URL('../prerender-routes.txt', import.meta.url),
     prerenderRoutes.join('\n') + '\n'
@@ -112,7 +117,7 @@ const xml = (path) => {
 };
 
 const langEntries = LANG_PATHS.map(xml).join('\n');
-const sgiEntries = [...comparateurSitemapRoutes, ...strategieRoutes, ...legalRoutes]
+const sgiEntries = [...comparateurSitemapRoutes, ...strategieRoutes, ...legalRoutes, ...newsletterRoutes]
     .map((r) => `    <url><loc>${ORIGIN}${slash(r)}</loc></url>`)
     .join('\n');
 
@@ -124,4 +129,4 @@ ${sgiEntries}
 </urlset>
 `;
 writeFileSync(new URL('../public/sitemap.xml', import.meta.url), sitemap);
-console.log(`sitemap.xml généré : ${LANG_PATHS.length * LANGS.length + comparateurSitemapRoutes.length + strategieRoutes.length + legalRoutes.length} URLs indexables (dont ${blogSlugs.length} articles × ${LANGS.length} ; ${sgiDetailAll.length - sgiDetailIndexable.length} fiches SGI thin exclues → noindex)`);
+console.log(`sitemap.xml généré : ${LANG_PATHS.length * LANGS.length + comparateurSitemapRoutes.length + strategieRoutes.length + legalRoutes.length + newsletterRoutes.length} URLs indexables (dont ${blogSlugs.length} articles × ${LANGS.length} ; ${sgiDetailAll.length - sgiDetailIndexable.length} fiches SGI thin exclues → noindex)`);
