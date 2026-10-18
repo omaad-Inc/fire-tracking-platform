@@ -1,6 +1,8 @@
 /
 /fr/landing
 /en/landing
+/fr/tarifs
+/en/tarifs
 /fr/blog
 /en/blog
 /fr/faq
@@ -87,3 +89,4 @@
 /confidentialite
 /supprimer-mon-compte
 /support
+/fr/fire-africa/newsletter

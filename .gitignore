@@ -52,3 +52,9 @@ CLAUDE.md
 
 # Playwright screenshot output from the smoke specs (local artifacts).
 e2e-out/
+
+# Local env for `netlify dev` (Resend keys read by netlify/functions). Never commit.
+.env
+.env.*
+# Netlify CLI local state
+.netlify/

@@ -8,4 +8,16 @@
 /fr/legal/privacy /confidentialite/ 301
 /en/legal/privacy /confidentialite/ 301
 
+# L'édition #008 « Spécial Dakar immo » a été retirée du blog le 16/10/2026 et
+# remplacée par « Ton revenu de retraite × 171 ». 301 vers la liste du blog
+# pour les URLs déjà indexées (contenu différent, pas de remplacement 1:1).
+/fr/blog/special-dakar-immo /fr/blog/ 301
+/en/blog/special-dakar-immo /en/blog/ 301
+
+# Alias court de la page d'inscription à la newsletter FIRE Africa (dit à
+# l'oral, en vidéo, sur les réseaux). Cible avec slash final comme les autres
+# 301 : Netlify sert la page prérendue à /fr/fire-africa/newsletter/ et
+# redirigerait sinon une seconde fois. Doit rester AVANT le catch-all SPA.
+/newsletter /fr/fire-africa/newsletter/ 301
+
 /* /index.csr.html 200
