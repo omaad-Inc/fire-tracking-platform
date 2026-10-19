@@ -10,7 +10,7 @@ import { NewsletterSignup } from '../../pages/landing/components/newsletter-sign
             <span class="font-semibold">Omaad</span>
             <span class="text-muted-color ml-1">© {{ year }}</span>
         </div>
-        <!-- Newsletter capture for logged-in users (first-party -> Beehiiv) -->
+        <!-- Newsletter capture for logged-in users (Resend via the Netlify Function) -->
         <app-newsletter-signup source="omaad-app-footer" [compact]="true" tone="surface" />
     </div>`
 })

@@ -1,5 +1,6 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { I18nService } from '../../../i18n/i18n.service';
@@ -7,14 +8,17 @@ import { ApiService } from '../../../core/services/api.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 
 /**
- * First-party FIRE Africa newsletter capture. On submit it POSTs the email to
- * /newsletter/subscribe (stored first-party, then best-effort forwarded to
- * Beehiiv) and fires a cookieless `newsletter_signup` public event.
+ * FIRE Africa newsletter capture. On submit it POSTs the email to the Netlify
+ * Function /api/newsletter-subscribe (Resend contact in the newsletter
+ * segment + welcome email with the 2 guides, same pipeline as the
+ * /fr/fire-africa/newsletter page) and fires a cookieless `newsletter_signup`
+ * public event. Beehiiv is retired.
  *
  * Drop it anywhere with a `source` (which surface captured the email:
- * site-footer | omaad-app-footer | blog-article | lead-magnet). `compact` gives
- * the single-row footer layout; the default is the boxed CTA. Bilingual copy is
- * inline (like footer-widget) so the widget stays self-contained.
+ * site-footer | omaad-app-footer | blog-article | lead-magnet); it lands as the
+ * contact's `source` property in Resend. `compact` gives the single-row footer
+ * layout; the default is the boxed CTA. Bilingual copy is inline (like
+ * footer-widget) so the widget stays self-contained.
  */
 @Component({
     selector: 'app-newsletter-signup',
@@ -84,10 +88,8 @@ export class NewsletterSignup {
     private api = inject(ApiService);
     private analytics = inject(AnalyticsService);
 
-    /** Capture surface (backend NEWSLETTER_SOURCES). */
+    /** Capture surface, stored as the Resend contact `source` property (40 chars max). */
     source = input<string>('site-footer');
-    /** Optional Beehiiv utm_campaign (e.g. a blog slug or landing block). */
-    campaign = input<string | undefined>(undefined);
     /** Footer (single-row) vs boxed CTA. */
     compact = input<boolean>(false);
     /** Input skin for compact mode: 'dark' (site footer) | 'surface' (in-app footer). */
@@ -110,24 +112,23 @@ export class NewsletterSignup {
             return;
         }
         this.submitting.set(true);
-        this.api.subscribeNewsletter({
-            email,
-            source: this.source(),
-            locale: this.i18n.lang(),
-            // On-site captures share one utm_source; the surface rides in
-            // utm_medium so Beehiiv attribution separates web from YouTube.
-            utm_source: 'omaad-site',
-            utm_medium: this.source(),
-            utm_campaign: this.campaign(),
-        }).subscribe({
-            next: () => {
+        this.api.subscribeFireAfricaNewsletter({ email, firstName: '', website: '', source: this.source() }).subscribe({
+            next: (res) => {
                 this.submitting.set(false);
-                this.done.set(true);
-                this.analytics.trackPublic('newsletter_signup', { source: this.source() });
+                // `already: true` is the same success: never reveal that an address is known.
+                if (res?.ok) {
+                    this.done.set(true);
+                    this.analytics.trackPublic('newsletter_signup', { source: this.source() });
+                } else {
+                    this.errorMsg.set(this._('Une erreur est survenue. Réessaie.', 'Something went wrong. Please try again.'));
+                }
             },
-            error: () => {
+            error: (err: unknown) => {
                 this.submitting.set(false);
-                this.errorMsg.set(this._('Une erreur est survenue. Réessaie.', 'Something went wrong. Please try again.'));
+                const invalid = err instanceof HttpErrorResponse && err.status === 400;
+                this.errorMsg.set(invalid
+                    ? this._('Adresse email invalide.', 'Invalid email address.')
+                    : this._('Une erreur est survenue. Réessaie.', 'Something went wrong. Please try again.'));
             },
         });
     }

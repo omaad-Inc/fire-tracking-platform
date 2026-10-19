@@ -275,9 +275,9 @@ interface RBlock {
                                 : 'Educational and informational content only. Not investment advice. Past performance does not guarantee future results.' }}
                         </div>
 
-                        <!-- Newsletter CTA (first-party capture -> Beehiiv) -->
+                        <!-- Newsletter CTA (Resend via the Netlify Function) -->
                         <div class="mt-10">
-                            <app-newsletter-signup source="blog-article" [campaign]="p.slug" />
+                            <app-newsletter-signup source="blog-article" />
                         </div>
 
                         <!-- Topics -->

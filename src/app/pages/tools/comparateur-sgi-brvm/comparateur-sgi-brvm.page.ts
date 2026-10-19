@@ -28,7 +28,8 @@ const CANONICAL = 'https://omaad.africa/outils/comparateur-sgi-brvm';
 const CANONICAL_SLASH = `${CANONICAL}/`;
 const OG_IMAGE = 'https://omaad.africa/og/comparateur-sgi-og-1200x630.png';
 
-const NEWSLETTER_URL = 'https://fireafrica.beehiiv.com/subscribe?utm_source=omaad&utm_medium=outil&utm_campaign=comparateur-sgi';
+// Page d'inscription FIRE Africa du site (Resend) ; Beehiiv est retiré.
+const NEWSLETTER_URL = '/fr/fire-africa/newsletter';
 const YOUTUBE_URL = 'https://www.youtube.com/@fire_africa';
 
 const FAQ: { q: string; a: string }[] = [
@@ -317,7 +318,7 @@ const CRITERIA: { t: string; d: string }[] = [
                         complet) vit dans la newsletter FIRE Africa.
                     </p>
                     <div class="mt-5 flex flex-wrap gap-3">
-                        <a [href]="newsletterUrl" target="_blank" rel="noopener"
+                        <a [routerLink]="newsletterUrl"
                            class="inline-flex items-center gap-2 rounded-xl bg-ochre-500 px-5 py-3 text-sm font-semibold text-warm-900 transition-colors hover:bg-ochre-400">
                             S'abonner à la newsletter <span aria-hidden="true">→</span>
                         </a>
