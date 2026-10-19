@@ -1,100 +1,182 @@
-import { Component, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
+import { TopbarWidget } from './topbarwidget.component';
+import { FooterWidget } from './footerwidget';
+import { RevealDirective } from './reveal.directive';
 import { I18nService, type Lang } from '../../../i18n/i18n.service';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { SEO_PAGES } from '../../../core/services/seo-content';
 
+interface Guide {
+    id: 1 | 2;
+    kicker: string;
+    title: string;
+    desc: string;
+    meta: string;
+    points: string[];
+    cta: string;
+    coverAlt: string;
+    pdf: string;
+    cover: string;
+}
+
+/**
+ * Page des 2 guides FIRE Africa (lead magnet, bilingue, prérendue, noindex).
+ * Le welcome email de la newsletter pointe ici, et la page sert ensuite de
+ * bibliothèque permanente : les deux PDF restent téléchargeables.
+ *
+ * Mise en page (design system landing, light only) : héros, puis une carte
+ * par tome avec sa couverture réelle (public/guides/*-cover.webp, exportée
+ * depuis la page 1 du PDF), ce que le tome contient, et le bouton de
+ * téléchargement. Ensuite « nouveau dans l'édition 2026 », les liens vers
+ * les outils, et la bande sombre de fermeture commune aux pages FIRE Africa.
+ */
 @Component({
     selector: 'app-fire-africa-guides',
     standalone: true,
-    imports: [RouterModule, ButtonModule, RippleModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [RouterModule, TopbarWidget, FooterWidget, RevealDirective],
     template: `
-        <div class="min-h-screen flex items-center justify-center bg-brand-900 px-6 py-12 relative overflow-hidden">
+        <div class="lp min-h-screen">
+            <topbar-widget />
 
-            <!-- Background glow -->
-            <div class="absolute inset-0 pointer-events-none overflow-hidden">
-                <div class="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-ochre-500/10 blur-3xl"></div>
-            </div>
-
-            <div class="relative max-w-lg w-full text-center">
-
-                <!-- Fire icon -->
-                <div class="mb-6">
-                    <div class="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center bg-ochre-500">
-                        <span class="text-4xl">🔥</span>
+            <main>
+                <!-- Héros -->
+                <section class="relative pt-8 pb-8 lg:pt-16 lg:pb-12" aria-labelledby="fg-title">
+                    <div class="lp-container text-center lg:text-left">
+                        <span class="lp-eyebrow inline-flex items-center gap-2">
+                            <i class="pi pi-book text-[11px]" aria-hidden="true"></i>
+                            {{ t('fireGuides.eyebrow') }}
+                        </span>
+                        <h1 id="fg-title" class="lp-h1 mt-4">
+                            {{ t('fireGuides.titleLine1') }}
+                            <span class="text-[var(--lp-ochre-ink)]">{{ t('fireGuides.titleLine2') }}</span>
+                        </h1>
+                        <p class="lp-lead mt-5 max-w-[40rem] mx-auto lg:mx-0">{{ t('fireGuides.intro') }}</p>
+                        <div class="mt-5 flex flex-col sm:flex-row items-center lg:items-start sm:justify-center lg:justify-start gap-3 sm:gap-5">
+                            <span class="inline-flex items-center gap-2 rounded-full border border-ochre-200/70 bg-ochre-50 px-3.5 py-2 text-[12px] font-semibold tracking-[0.04em] uppercase text-[var(--lp-ochre-ink)]">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[var(--lp-ochre)]" aria-hidden="true"></span>
+                                {{ t('fireGuides.editionBadge') }}
+                            </span>
+                            <p class="m-0 text-[14px] lp-muted inline-flex items-center gap-2">
+                                <i class="pi pi-info-circle text-[12px]" aria-hidden="true"></i>
+                                {{ t('fireGuides.startTip') }}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Heading -->
-                <h1 class="text-3xl sm:text-4xl font-bold mb-4 leading-tight text-white">
-                    {{ t('fireGuides.titleLine1') }}<br>
-                    <span class="text-ochre-400">{{ t('fireGuides.titleLine2') }}</span>
-                </h1>
+                <!-- Les deux tomes -->
+                <section class="pb-14 lg:pb-20" [attr.aria-label]="t('fireGuides.titleLine1')">
+                    <div class="lp-container grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-8 items-stretch">
+                        @for (g of guides; track g.id) {
+                            <article class="lp-card relative overflow-hidden p-5 sm:p-7 flex flex-col" lpReveal>
+                                <div class="lp-glow !inset-auto !-top-28 !-right-28 w-80 h-80 opacity-70" aria-hidden="true"></div>
 
-                <p class="text-lg mb-8 leading-relaxed text-brand-200">
-                    {{ t('fireGuides.intro') }}
-                </p>
+                                <div class="relative grid grid-cols-[108px_1fr] sm:grid-cols-[160px_1fr] gap-5 sm:gap-7 items-start">
+                                    <a [href]="g.pdf" download class="lp-read block" (click)="track(g.id)" [attr.aria-label]="t(g.cta)">
+                                        <span class="block rounded-xl overflow-hidden ring-1 ring-black/10 shadow-[0_18px_40px_-18px_rgba(15,26,46,0.55)] transition-transform duration-300 motion-safe:hover:-translate-y-1">
+                                            <img [src]="g.cover" width="640" height="905" decoding="async"
+                                                 class="block w-full h-auto" [alt]="t(g.coverAlt)">
+                                        </span>
+                                    </a>
+                                    <div class="min-w-0">
+                                        <span class="lp-eyebrow">{{ t(g.kicker) }}</span>
+                                        <h2 class="lp-h3 mt-2 !text-[clamp(20px,2.4vw,26px)]">{{ t(g.title) }}</h2>
+                                        <p class="lp-body mt-2 text-[15px]">{{ t(g.desc) }}</p>
+                                        <p class="mt-3 text-[13px] lp-muted lp-num inline-flex items-center gap-2">
+                                            <i class="pi pi-file-pdf text-[12px]" aria-hidden="true"></i>
+                                            {{ t(g.meta) }}
+                                        </p>
+                                    </div>
+                                </div>
 
-                <!-- Ochre accent line -->
-                <div class="flex justify-center mb-8">
-                    <div class="w-16 h-0.5 rounded-full bg-ochre-500"></div>
-                </div>
+                                <ul class="relative mt-6 grid gap-2.5 list-none p-0 m-0">
+                                    @for (p of g.points; track p) {
+                                        <li class="flex items-start gap-3">
+                                            <span class="lp-check mt-0.5"><i class="pi pi-check" aria-hidden="true"></i></span>
+                                            <span class="lp-body text-[15px]">{{ t(p) }}</span>
+                                        </li>
+                                    }
+                                </ul>
 
-                <!-- Tome 1 -->
-                <div id="tome-1" class="rounded-2xl px-8 py-6 mb-5 text-left bg-brand-800/60 border border-brand-700/40">
-                    <h2 class="text-lg font-semibold mb-1 text-white">{{ t('fireGuides.tome1Title') }}</h2>
-                    <p class="text-base leading-relaxed mb-4 text-surface-300">{{ t('fireGuides.tome1Desc') }}</p>
-                    <a href="/guides/fire-africa-tome1-core-satellite.pdf" download pButton pRipple
-                       class="!font-semibold !rounded-xl !px-6 !py-3 !text-base !border-0 !bg-ochre-500 hover:!bg-ochre-400 !text-warm-900
-                              inline-flex items-center justify-center gap-2 w-full sm:w-auto">
-                        <i class="pi pi-download text-sm"></i>
-                        {{ t('fireGuides.tome1Cta') }}
-                    </a>
-                </div>
+                                <a [href]="g.pdf" download class="lp-btn lp-btn-primary lp-btn-block relative mt-6" (click)="track(g.id)">
+                                    <i class="pi pi-download text-[14px]" aria-hidden="true"></i>
+                                    {{ t(g.cta) }}
+                                </a>
+                            </article>
+                        }
+                    </div>
+                </section>
 
-                <!-- Tome 2 -->
-                <div id="tome-2" class="rounded-2xl px-8 py-6 mb-8 text-left bg-brand-800/60 border border-brand-700/40">
-                    <h2 class="text-lg font-semibold mb-1 text-white">{{ t('fireGuides.tome2Title') }}</h2>
-                    <p class="text-base leading-relaxed mb-4 text-surface-300">{{ t('fireGuides.tome2Desc') }}</p>
-                    <a href="/guides/fire-africa-tome2-mode-emploi-brvm.pdf" download pButton pRipple
-                       class="!font-semibold !rounded-xl !px-6 !py-3 !text-base !border-0 !bg-ochre-500 hover:!bg-ochre-400 !text-warm-900
-                              inline-flex items-center justify-center gap-2 w-full sm:w-auto">
-                        <i class="pi pi-download text-sm"></i>
-                        {{ t('fireGuides.tome2Cta') }}
-                    </a>
-                </div>
+                <!-- Nouveau dans l'édition 2026 -->
+                <section class="pb-14 lg:pb-20" aria-labelledby="fg-new-title">
+                    <div class="lp-container" lpReveal>
+                        <div class="text-center lg:text-left">
+                            <h2 id="fg-new-title" class="lp-h2 !text-[clamp(24px,4.2vw,36px)]">{{ t('fireGuides.newTitle') }}</h2>
+                            <p class="lp-body mt-3 max-w-[40rem] mx-auto lg:mx-0">{{ t('fireGuides.newIntro') }}</p>
+                        </div>
+                        <ul class="mt-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 list-none p-0 m-0">
+                            @for (n of news; track n.icon) {
+                                <li class="lp-card !shadow-none p-5 flex flex-col gap-3">
+                                    <span class="lp-icon-tile !w-10 !h-10 !rounded-xl text-[15px]"><i class="pi" [class]="n.icon" aria-hidden="true"></i></span>
+                                    <span class="text-[16px] font-bold leading-snug text-[var(--lp-ink)]">{{ t(n.title) }}</span>
+                                    <span class="text-[14px] leading-relaxed lp-muted">{{ t(n.desc) }}</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </section>
 
-                <p class="text-sm mb-10 text-brand-200">
-                    👉 {{ t('fireGuides.startTip') }}
-                </p>
+                <!-- Pour aller plus loin -->
+                <section class="pb-16 lg:pb-24" aria-labelledby="fg-more-title">
+                    <div class="lp-container" lpReveal>
+                        <h2 id="fg-more-title" class="lp-h3 text-center lg:text-left">{{ t('fireGuides.moreTitle') }}</h2>
+                        <ul class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 list-none p-0 m-0">
+                            <li>
+                                <a routerLink="/outils/comparateur-sgi-brvm" class="lp-card !shadow-none p-5 h-full flex flex-col gap-2 no-underline hover:border-[var(--lp-line-strong)] focus-visible:outline-2 focus-visible:outline-[var(--lp-ochre)] focus-visible:outline-offset-4">
+                                    <span class="lp-icon-tile !w-10 !h-10 !rounded-xl text-[15px]"><i class="pi pi-table" aria-hidden="true"></i></span>
+                                    <span class="mt-1 text-[16px] font-bold text-[var(--lp-ink)]">{{ t('fireGuides.sgiLink') }}<i class="pi pi-arrow-right text-[11px] text-[var(--lp-ochre-ink)] ml-1.5" aria-hidden="true"></i></span>
+                                    <span class="text-[14px] leading-relaxed lp-muted">{{ t('fireGuides.sgiDesc') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a routerLink="/outils/strategie-brvm" class="lp-card !shadow-none p-5 h-full flex flex-col gap-2 no-underline hover:border-[var(--lp-line-strong)] focus-visible:outline-2 focus-visible:outline-[var(--lp-ochre)] focus-visible:outline-offset-4">
+                                    <span class="lp-icon-tile !w-10 !h-10 !rounded-xl text-[15px]"><i class="pi pi-compass" aria-hidden="true"></i></span>
+                                    <span class="mt-1 text-[16px] font-bold text-[var(--lp-ink)]">{{ t('fireGuides.strategyLink') }}<i class="pi pi-arrow-right text-[11px] text-[var(--lp-ochre-ink)] ml-1.5" aria-hidden="true"></i></span>
+                                    <span class="text-[14px] leading-relaxed lp-muted">{{ t('fireGuides.strategyDesc') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="[currentLang, 'blog']" class="lp-card !shadow-none p-5 h-full flex flex-col gap-2 no-underline hover:border-[var(--lp-line-strong)] focus-visible:outline-2 focus-visible:outline-[var(--lp-ochre)] focus-visible:outline-offset-4">
+                                    <span class="lp-icon-tile !w-10 !h-10 !rounded-xl text-[15px]"><i class="pi pi-bookmark" aria-hidden="true"></i></span>
+                                    <span class="mt-1 text-[16px] font-bold text-[var(--lp-ink)]">{{ t('fireGuides.blogLink') }}<i class="pi pi-arrow-right text-[11px] text-[var(--lp-ochre-ink)] ml-1.5" aria-hidden="true"></i></span>
+                                    <span class="text-[14px] leading-relaxed lp-muted">{{ t('fireGuides.blogDesc') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="[currentLang, 'auth', 'register']" class="lp-card !shadow-none p-5 h-full flex flex-col gap-2 no-underline hover:border-[var(--lp-line-strong)] focus-visible:outline-2 focus-visible:outline-[var(--lp-ochre)] focus-visible:outline-offset-4">
+                                    <span class="lp-icon-tile !w-10 !h-10 !rounded-xl text-[15px]"><i class="pi pi-user-plus" aria-hidden="true"></i></span>
+                                    <span class="mt-1 text-[16px] font-bold text-[var(--lp-ink)]">{{ t('fireGuides.appLink') }}<i class="pi pi-arrow-right text-[11px] text-[var(--lp-ochre-ink)] ml-1.5" aria-hidden="true"></i></span>
+                                    <span class="text-[14px] leading-relaxed lp-muted">{{ t('fireGuides.appDesc') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
 
-                <!-- Cross-sell -->
-                <div class="rounded-2xl px-8 py-6 mb-10 text-left bg-brand-800/60 border border-brand-700/40">
-                    <h2 class="text-base font-semibold mb-3 text-white">{{ t('fireGuides.moreTitle') }}</h2>
-                    <ul class="space-y-2 text-base text-surface-300">
-                        <li>
-                            <a routerLink="/outils/comparateur-sgi-brvm" class="text-ochre-400 hover:text-ochre-300 font-medium">{{ t('fireGuides.sgiLink') }}</a>{{ t('fireGuides.sgiDesc') }}
-                        </li>
-                        <li>
-                            <a [routerLink]="[currentLang, 'blog']" class="text-ochre-400 hover:text-ochre-300 font-medium">{{ t('fireGuides.blogLink') }}</a>{{ t('fireGuides.blogDesc') }}
-                        </li>
-                        <li>
-                            <a [routerLink]="[currentLang, 'auth', 'register']" class="text-ochre-400 hover:text-ochre-300 font-medium">{{ t('fireGuides.appLink') }}</a>{{ t('fireGuides.appDesc') }}
-                        </li>
-                    </ul>
-                </div>
+                <!-- Bande de fermeture -->
+                <section class="lp-dark py-14 lg:py-20" [attr.aria-label]="t('fireGuides.closingBrand')">
+                    <div class="lp-container text-center" lpReveal>
+                        <p class="lp-h2 !text-white !text-[clamp(24px,4.2vw,36px)]">{{ t('fireGuides.closingTitle') }}</p>
+                        <p class="mt-4 text-[12px] font-semibold tracking-[0.2em] uppercase text-[#DFB78A]">{{ t('fireGuides.closingBrand') }}</p>
+                        <p class="mt-8 text-[13px] text-white/60 max-w-[48ch] mx-auto leading-relaxed">{{ t('fireGuides.disclaimer') }}</p>
+                    </div>
+                </section>
+            </main>
 
-                <!-- Brand footer -->
-                <div class="flex flex-col items-center gap-3 opacity-60">
-                    <img src="assets/brand/omaad-icon-inverse.svg" alt="Omaad" class="w-10 h-10" width="40" height="40" loading="lazy">
-                    <span class="text-sm font-semibold tracking-wide text-ochre-400">
-                        Construis. Protège. Règne.
-                    </span>
-                </div>
-
-            </div>
+            <footer-widget />
         </div>
     `
 })
@@ -102,8 +184,43 @@ export class FireAfricaGuides implements OnDestroy {
     private router = inject(Router);
     private seo = inject(SeoService);
     private i18n = inject(I18nService);
+    private analytics = inject(AnalyticsService);
 
     currentLang = '/fr';
+
+    readonly guides: Guide[] = [
+        {
+            id: 1,
+            kicker: 'fireGuides.tome1Kicker',
+            title: 'fireGuides.tome1Title',
+            desc: 'fireGuides.tome1Desc',
+            meta: 'fireGuides.tome1Meta',
+            points: ['fireGuides.tome1Point1', 'fireGuides.tome1Point2', 'fireGuides.tome1Point3'],
+            cta: 'fireGuides.tome1Cta',
+            coverAlt: 'fireGuides.coverAlt1',
+            pdf: '/guides/fire-africa-tome1-core-satellite.pdf',
+            cover: '/guides/fire-africa-tome1-cover.webp',
+        },
+        {
+            id: 2,
+            kicker: 'fireGuides.tome2Kicker',
+            title: 'fireGuides.tome2Title',
+            desc: 'fireGuides.tome2Desc',
+            meta: 'fireGuides.tome2Meta',
+            points: ['fireGuides.tome2Point1', 'fireGuides.tome2Point2', 'fireGuides.tome2Point3'],
+            cta: 'fireGuides.tome2Cta',
+            coverAlt: 'fireGuides.coverAlt2',
+            pdf: '/guides/fire-africa-tome2-mode-emploi-brvm.pdf',
+            cover: '/guides/fire-africa-tome2-cover.webp',
+        },
+    ];
+
+    readonly news = [
+        { icon: 'pi-chart-line', title: 'fireGuides.new1Title', desc: 'fireGuides.new1Desc' },
+        { icon: 'pi-table', title: 'fireGuides.new2Title', desc: 'fireGuides.new2Desc' },
+        { icon: 'pi-bolt', title: 'fireGuides.new3Title', desc: 'fireGuides.new3Desc' },
+        { icon: 'pi-users', title: 'fireGuides.new4Title', desc: 'fireGuides.new4Desc' },
+    ];
 
     constructor() {
         const match = this.router.url.match(/^\/(fr|en)(?:\/|$)/);
@@ -124,5 +241,9 @@ export class FireAfricaGuides implements OnDestroy {
 
     t(key: string): string {
         return this.i18n.t(key);
+    }
+
+    track(tome: 1 | 2): void {
+        this.analytics.trackPublic('cta_click', { cta: 'guide_download', tome, source: 'fire-africa-guides' });
     }
 }
