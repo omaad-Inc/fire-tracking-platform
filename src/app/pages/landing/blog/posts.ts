@@ -187,7 +187,7 @@ export const BLOG_POSTS: BlogPost[] = [
         slug: 'fcp-vs-actions-directes',
         title: 'FCP ou actions en direct : l\'enjeu des frais sur le long terme',
         subtitle: 'Édition #011 · FIRE Africa par Omaad',
-        date: '2026-11-15',
+        date: '2026-10-19',
         tags: ['FCP', 'actions en direct', 'frais', 'DCA', 'BRVM', 'long terme'],
         excerpt: 'Dans l\'édition précédente, on a ouvert le DICI d\'un FCP : 2,58 % par an déjà retirés de la valeur des parts. La question logique qui suit : ne vaut-il pas…',
         readingMinutes: 6,
