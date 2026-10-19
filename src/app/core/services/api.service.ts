@@ -1455,38 +1455,22 @@ export class ApiService {
 
     // ========== NEWSLETTER (FIRE Africa, public, no auth) ==========
     /**
-     * Subscribe an email to the FIRE Africa newsletter. Stored first-party, then
-     * best-effort forwarded to Beehiiv. Idempotent server-side. `forwarded` says
-     * whether Beehiiv accepted it (false when Beehiiv is not configured yet).
-     */
-    subscribeNewsletter(payload: {
-        email: string;
-        source?: string;
-        locale?: string;
-        utm_source?: string;
-        utm_medium?: string;
-        utm_campaign?: string;
-    }): Observable<{ ok: boolean; forwarded: boolean }> {
-        return this.http.post<{ ok: boolean; forwarded: boolean }>(
-            `${this.apiUrl}/newsletter/subscribe`, payload,
-        );
-    }
-
-    /**
      * FIRE Africa newsletter signup via the Netlify Function served next to the
      * static site at /api/newsletter-subscribe (netlify/functions/
      * newsletter-subscribe.mjs): it creates the Resend contact in the newsletter
-     * segment and sends the welcome email with the 2 guides. Same-origin on
-     * purpose (NOT `apiUrl`), so it only answers behind Netlify or `netlify dev`,
-     * not behind a bare `ng serve`. SKIP_AUTH: a logged-in visitor must not
-     * send their bearer token to it. `website` is the honeypot (empty for
-     * humans). 200 { ok, already? } · 400 invalid_email · 502 Resend failure.
+     * segment and sends the welcome email with the 2 guides. The ONE newsletter
+     * pipeline (the backend /newsletter/subscribe -> Beehiiv path is retired).
+     * Same-origin on purpose (NOT `apiUrl`), so it only answers behind Netlify
+     * or `netlify dev`, not behind a bare `ng serve`. SKIP_AUTH: a logged-in
+     * visitor must not send their bearer token to it. `website` is the honeypot
+     * (empty for humans); `source` is the capture surface, stored on the
+     * contact. 200 { ok, already? } · 400 invalid_email · 502 Resend failure.
      */
     subscribeFireAfricaNewsletter(payload: {
         email: string;
         firstName: string;
         website: string;
-        source: 'omaad.africa';
+        source: string;
     }): Observable<{ ok: boolean; already?: boolean; welcomeSent?: boolean }> {
         return this.http.post<{ ok: boolean; already?: boolean; welcomeSent?: boolean }>(
             '/api/newsletter-subscribe', payload,

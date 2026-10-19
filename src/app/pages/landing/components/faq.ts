@@ -233,10 +233,10 @@ export class FaqPage implements OnDestroy {
                     },
                     {
                         id: 'f3',
-                        question: fr ? 'Quand FIRE Africa sera-t-il lancé publiquement ?' : 'When will FIRE Africa launch publicly?',
+                        question: fr ? 'Comment recevoir la newsletter FIRE Africa ?' : 'How do I get the FIRE Africa newsletter?',
                         answer: fr
-                            ? 'La newsletter FIRE Africa sera lancée publiquement le 1er juin 2026 sur Beehiiv. 17 éditions sont déjà rédigées en draft. Tu peux t\'inscrire dès maintenant sur fireafrica.beehiiv.com pour être notifié au lancement.'
-                            : 'The FIRE Africa newsletter will launch publicly on June 1, 2026 on Beehiiv. 17 editions are already drafted. You can subscribe now at fireafrica.beehiiv.com to be notified at launch.',
+                            ? 'FIRE Africa paraît deux fois par mois, le 1er et le 15 : une analyse patrimoniale concrète, un chiffre africain, une ressource, un résumé en anglais. Tu t\'inscris sur omaad.africa/newsletter et tu reçois tout de suite les 2 guides gratuits : la méthode Core / Satellite et le mode d\'emploi BRVM. Désinscription en un clic à chaque email.'
+                            : 'FIRE Africa comes out twice a month, on the 1st and the 15th: one concrete wealth analysis, one African figure, one resource, one summary in English. Sign up at omaad.africa/newsletter and you immediately get the 2 free guides: the Core / Satellite method and the BRVM playbook. One-click unsubscribe in every email.',
                     },
                 ],
             },

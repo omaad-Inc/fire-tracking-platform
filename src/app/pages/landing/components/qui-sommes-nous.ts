@@ -209,9 +209,9 @@ import { SEO_PAGES } from '../../../core/services/seo-content';
                         <h2 id="about-cta-title" class="lp-h2 !text-white">{{ t('landing.about.ctaTitle') }}</h2>
                         <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                             <a class="lp-btn lp-btn-primary lp-btn-block sm:w-auto" [routerLink]="[currentLang, 'auth', 'register']" (click)="trackCta('about_register')">{{ t('landing.about.ctaPrimary') }}</a>
-                            <a class="lp-btn lp-btn-secondary lp-btn-block sm:w-auto !text-white !border-white/30 hover:!bg-white/10" href="https://fireafrica.beehiiv.com/subscribe" target="_blank" rel="noopener noreferrer" (click)="trackCta('about_newsletter')">
+                            <a class="lp-btn lp-btn-secondary lp-btn-block sm:w-auto !text-white !border-white/30 hover:!bg-white/10" routerLink="/fr/fire-africa/newsletter" (click)="trackCta('about_newsletter')">
                                 {{ t('landing.about.ctaSecondary') }}
-                                <i class="pi pi-arrow-up-right text-[12px]" aria-hidden="true"></i>
+                                <i class="pi pi-arrow-right text-[12px]" aria-hidden="true"></i>
                             </a>
                         </div>
                         <p class="mt-6 text-[12px] font-semibold tracking-[0.2em] uppercase text-[#DFB78A]">{{ t('landing.about.ctaTagline') }}</p>
