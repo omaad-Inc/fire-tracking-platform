@@ -136,11 +136,13 @@ export class BlogList implements OnDestroy {
     private seo    = inject(SeoService);
     private analytics = inject(AnalyticsService);
 
-    // Ascending by edition number (#000 first, then #001, …): the editions read
-    // as a series, so the newsletter is meant to be followed from the start.
+    // Most recent first (send date, then edition number as a tie-break): the
+    // edition just sent is what a visitor coming from a social post expects at
+    // the top. The series order (#000 first) stays available in the reader's
+    // previous / next navigation.
     // Only editions whose newsletter has been sent (date <= today) are listed;
     // a future edition surfaces itself automatically on its send date.
-    posts: BlogPost[] = publishedPosts().sort((a, b) => a.edition.localeCompare(b.edition));
+    posts: BlogPost[] = publishedPosts().sort((a, b) => b.date.localeCompare(a.date) || b.edition.localeCompare(a.edition));
     selectedTag = signal<string | null>(null);
 
     lang = '/fr';

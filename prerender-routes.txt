@@ -39,6 +39,8 @@
 /en/blog/special-dakar-immo
 /fr/blog/regle-4-pourcent
 /en/blog/regle-4-pourcent
+/fr/blog/fcp-vs-actions-directes
+/en/blog/fcp-vs-actions-directes
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm
