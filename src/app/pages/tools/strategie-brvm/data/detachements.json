@@ -1,6 +1,6 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-10-19",
+  "updated_at": "2026-10-21",
   "entries": [
     {
       "emetteur": "BOLLORE TRANSPORT & LOGISTICS",
@@ -584,17 +584,6 @@
       "ticker": "SLBC",
       "nom": "Solibra CI",
       "secteur": "Industrie"
-    },
-    {
-      "emetteur": "ONATEL BF",
-      "exercice": 2024,
-      "date_paiement": "2025-07-21",
-      "date_ex_dividende": "2025-07-17",
-      "montant_net_fcfa": 189.5299,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250625_-_avis_ndeg143_brvmdg_-_paiement_de_dividendes_-_onatel_bf.pdf",
-      "ticker": "ONTBF",
-      "nom": "Onatel BF",
-      "secteur": "Télécoms"
     }
   ]
 }
