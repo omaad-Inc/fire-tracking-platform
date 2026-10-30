@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, tap } from 'rxjs';
 import { ApiService, Asset, AssetCreate, AssetUpdate, Debt } from '../../core/services/api.service';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { AssetsStateService } from './assets-state.service';
@@ -32,9 +32,13 @@ export class PatrimoineService {
     /** Single source of truth for the asset list (shared cachedResource, P2-FE-1). */
     private assetsResource = cachedResource<PatrimoineAssetItemDto[]>(
         () => firstValueFrom(this.api.getAssets().pipe(
+            tap(assets => { this.rawAssets = assets; }),
             map(assets => assets.map(a => this.mapAssetToDto(a))),
         )),
     );
+    /** The last raw API list behind the cache: lets the detail page paint the
+     *  asset it was navigated to synchronously, before its own request lands. */
+    private rawAssets: Asset[] = [];
 
     /** Debt list for the net-worth view (raw API shape). Its own cachedResource
      *  so revisiting Patrimoine renders instantly instead of reflashing (P2-FE-1). */
@@ -182,6 +186,12 @@ export class PatrimoineService {
         return this.assetsResource.peek() ?? [];
     }
 
+    /** The raw cached asset with this id, or null (cold load / unknown id). */
+    peekRawAsset(id: number): Asset | null {
+        if (!this.assetsResource.peek()) return null;
+        return this.rawAssets.find(a => a.id === id) ?? null;
+    }
+
     /** Debts (cached: TTL + stale-while-revalidate + dedup). */
     getDebts(): Promise<Debt[]> {
         return this.debtsResource.load();
@@ -200,6 +210,7 @@ export class PatrimoineService {
 
     /** Clear all caches on logout/login (prevents cross-user cache bleed, P1-10). */
     clearCache(): void {
+        this.rawAssets = [];
         this.assetsResource.reset();
         this.debtsResource.reset();
     }

@@ -14,6 +14,7 @@ import { ShareContextService } from '../../../core/services/share-context.servic
 import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 import { I18nService } from '../../../i18n/i18n.service';
 import { AssetsStateService } from '../../service/assets-state.service';
+import { PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { TontineCyclesComponent } from './tontine-cycles';
 import { AssetFormShape, getAssetFormShape, TontineStatus } from '../asset-form-shape';
@@ -774,6 +775,7 @@ export class AssetDetailPage implements OnInit {
     share = inject(ShareContextService);
     flags = inject(FeatureFlagsService);
     private apiService = inject(ApiService);
+    private patrimoineService = inject(PatrimoineService);
     private stateService = inject(AssetsStateService);
     private feedback = inject(FeedbackService);
     readonly cs = inject(CurrencyService);
@@ -1088,7 +1090,11 @@ export class AssetDetailPage implements OnInit {
         if (!a) return [];
         const t = (k: string) => this.t(k);
         const rows: { label: string; value: string; icon: string; valueClass?: string }[] = [];
-        const gain = this.gainLoss();
+        // NATIVE gain: this row prints the asset's own currency via nativeMoney,
+        // so it must not take the EUR-base gainLoss() (it printed "+9 498 XOF"
+        // for a 6 230 000 FCFA gain: the EUR figure under an XOF label).
+        const gain = a.purchase_value === null || a.purchase_value === undefined
+            ? null : a.current_value - a.purchase_value;
         const pct = this.gainLossPct();
 
         if (gain !== null) {
@@ -1150,27 +1156,41 @@ export class AssetDetailPage implements OnInit {
     async ngOnInit() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         if (!id) { this.loading.set(false); return; }
+
+        // Share mode: the frozen public bundle carries the assets only (no
+        // series), resolved synchronously by ApiService.getAsset.
+        if (this.share.active()) {
+            try {
+                this.asset.set(await firstValueFrom(this.apiService.getAsset(id)));
+            } catch {
+                this.asset.set(null);
+            } finally {
+                this.loading.set(false);
+            }
+            return;
+        }
+
+        // Instant first paint: when we arrive from the Patrimoine list, that
+        // list already holds this asset, so the header and the figures render
+        // before any request lands (the charts follow with the bundle).
+        const cached = this.patrimoineService.peekRawAsset(id);
+        if (cached) {
+            this.asset.set(cached);
+            this.loading.set(false);
+        }
+
+        // ONE round trip for the asset, its value series and the BRVM panel.
+        // This used to be three sequential requests (asset → history →
+        // brvm-history), each paying connection setup and transit for ~15 ms
+        // of server work. `brvm_history` is null whenever the panel must stay
+        // hidden (free user, non-market asset): no 403 to swallow any more.
         try {
-            const a = await firstValueFrom(this.apiService.getAsset(id));
-            this.asset.set(a);
-            // The real value series, for EVERY asset kind. Skip in share mode
-            // (unauthenticated bundle); a failure just leaves the chart hidden,
-            // which is the honest state when there is nothing to draw.
-            if (!this.share.active()) {
-                try {
-                    this.history.set(await firstValueFrom(this.apiService.getAssetHistory(a.id)));
-                } catch { /* no series: the hero chart stays hidden */ }
-            }
-            // PRO-3: pull the price series for catalog-keyed BRVM stocks and
-            // FCP. Skip in share mode (unauthenticated bundle); tolerate the
-            // Pro gate/no-data.
-            if ((a.category === 'stocks_brvm' || a.category === 'fcp') && a.ticker && !this.share.active()) {
-                try {
-                    this.brvmHistory.set(await firstValueFrom(this.apiService.getAssetBrvmHistory(a.id)));
-                } catch { /* Pro gate closed or no history yet: panel stays hidden */ }
-            }
+            const bundle = await firstValueFrom(this.apiService.getAssetDetail(id));
+            this.asset.set(bundle.asset);
+            this.history.set(bundle.history);
+            this.brvmHistory.set(bundle.brvm_history);
         } catch {
-            this.asset.set(null);
+            if (!cached) this.asset.set(null);
         } finally {
             this.loading.set(false);
         }
