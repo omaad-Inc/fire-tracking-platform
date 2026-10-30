@@ -373,7 +373,7 @@ const CANONICAL = 'https://omaad.africa/outils/strategie-brvm';
 
                 @if (plan().months.length === 0) {
                     <p class="mt-4 rounded-xl border border-dashed border-surface-300 bg-surface-0 p-5 text-center text-[13px] text-surface-500 dark:border-surface-600 dark:bg-surface-900 dark:text-surface-400">
-                        Aucun mois planifié. Ajoute ton premier mois et note tes achats prévus (ex. : SNTS 1 × 29 500).
+                        Aucun mois planifié. Ajoute ton premier mois et note tes achats prévus (ex. : SNTS 10 × 2 950).
                     </p>
                 } @else {
                     <div class="mt-4 space-y-3">

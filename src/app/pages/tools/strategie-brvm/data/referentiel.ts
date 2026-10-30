@@ -37,7 +37,9 @@ export interface TitreRef {
 
 /** Univers de titres de la méthode (données marché datées, factuelles). */
 export const TITRES: TitreRef[] = [
-    { ticker: 'SNTS', nom: 'Sonatel',      secteur: 'Télécoms',  pays: 'Sénégal',       prixRef: 32000, yieldRef: 5.44 },
+    // Sonatel a fractionné son action 1 → 10 le 2026-10-26 : cours de référence
+    // du 2026-07-20 (32 000 F) ramené à la nouvelle base. Le yield est un ratio, inchangé.
+    { ticker: 'SNTS', nom: 'Sonatel',      secteur: 'Télécoms',  pays: 'Sénégal',       prixRef: 3200,  yieldRef: 5.44 },
     { ticker: 'ORAC', nom: 'Orange CI',    secteur: 'Télécoms',  pays: "Côte d'Ivoire", prixRef: 16160, yieldRef: 4.36 },
     { ticker: 'CIEC', nom: 'CIE',          secteur: 'Utilities', pays: "Côte d'Ivoire", prixRef: 5195,  yieldRef: 3.96 },
     { ticker: 'SDCC', nom: 'Sodeci',       secteur: 'Utilities', pays: "Côte d'Ivoire", prixRef: 11900, yieldRef: 3.88 },
