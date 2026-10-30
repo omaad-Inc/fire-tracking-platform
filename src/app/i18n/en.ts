@@ -409,6 +409,7 @@ export const EN: Dict = {
       quotaWarning: 'You have few AI messages left in your current period.',
       quotaReached: 'You have used all your AI messages for this period.',
       turnTimeout: 'This response took too long, so I stopped here. You can continue with a new message.',
+      noWritePerformed: "No write was performed in this exchange: nothing was recorded.",
     },
     stalled: {
       message: 'The assistant is taking longer than expected…',
@@ -417,6 +418,7 @@ export const EN: Dict = {
     errorState: {
       retry: 'Retry',
       upgrade: 'Go Pro',
+      upgradePremium: 'Go Premium',
       offline: 'You are offline. Check your connection and try again.',
       quotaReached: 'You have used all your AI messages for this period. Upgrade your plan to keep going.',
       unavailable: 'The assistant is temporarily unavailable. Try again in a moment.',

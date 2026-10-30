@@ -38,7 +38,7 @@ import { NavService } from '../../../core/services/nav.service';
                                class="omaad-press inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full
                                       bg-ochre-500 hover:bg-ochre-400 text-warm-900 transition-colors">
                                 <i class="pi pi-crown" style="font-size: 10px" aria-hidden="true"></i>
-                                {{ t('assistant.errorState.upgrade') }}
+                                {{ t(tier === 'premium' ? 'assistant.errorState.upgradePremium' : 'assistant.errorState.upgrade') }}
                             </a>
                         </div>
                     </div>
@@ -90,11 +90,13 @@ export class NoticeStripComponent {
             case 'quota_warning': return this.i18n.t('assistant.notice.quotaWarning');
             case 'quota_reached': return this.i18n.t('assistant.notice.quotaReached');
             case 'turn_timeout': return this.i18n.t('assistant.notice.turnTimeout');
+            case 'no_write_performed': return this.i18n.t('assistant.notice.noWritePerformed');
         }
     }
 
     icon(): string {
         if (this.notice.kind === 'turn_timeout') return 'pi-clock';
+        if (this.notice.kind === 'no_write_performed') return 'pi-exclamation-circle';
         return this.notice.kind === 'disclaimer_cima' ? 'pi-info-circle' : 'pi-gauge';
     }
 

@@ -415,6 +415,7 @@ export const FR = {
       quotaWarning: 'Il te reste peu de messages IA sur ta période en cours.',
       quotaReached: 'Tu as utilisé tous tes messages IA pour cette période.',
       turnTimeout: 'Cette réponse a pris trop de temps, je m\'arrête ici. Tu peux continuer avec un nouveau message.',
+      noWritePerformed: "Aucune écriture n'a été effectuée dans cet échange : rien n'a été enregistré.",
     },
     stalled: {
       message: 'L\'assistant met plus de temps que prévu…',
@@ -423,6 +424,7 @@ export const FR = {
     errorState: {
       retry: 'Réessayer',
       upgrade: 'Passer Pro',
+      upgradePremium: 'Passer Premium',
       offline: 'Tu es hors ligne. Vérifie ta connexion puis réessaie.',
       quotaReached: 'Tu as utilisé tous tes messages IA pour cette période. Passe au plan supérieur pour continuer sans attendre.',
       unavailable: 'L\'assistant est momentanément indisponible. Réessaie dans un instant.',

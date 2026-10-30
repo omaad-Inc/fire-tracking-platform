@@ -12,7 +12,9 @@
 
 export type ChatAgent = 'config' | 'assistant' | 'onboarding';
 
-export type NoticeKind = 'disclaimer_cima' | 'quota_warning' | 'quota_reached' | 'turn_timeout';
+/** `no_write_performed` (TRUST-8): the config agent claimed a write but called no
+ *  tool; the server says so in the same turn. Message is server-provided. */
+export type NoticeKind = 'disclaimer_cima' | 'quota_warning' | 'quota_reached' | 'turn_timeout' | 'no_write_performed';
 
 /** PREM-4: which AI quota bucket a quota notice refers to. `config` = the
  *  everyday setup/write allowance (upsell target: Pro); `advisor` = the paid
