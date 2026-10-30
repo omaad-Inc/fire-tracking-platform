@@ -149,6 +149,13 @@ export interface BrvmHistory {
     points: BrvmHistoryPoint[];
 }
 
+/** GET /assets/{id}/detail: the three detail-page payloads in one response. */
+export interface AssetDetailBundle {
+    asset: Asset;
+    history: AssetHistory;
+    brvm_history: BrvmHistory | null;
+}
+
 /** One session of the whole BRVM sleeve (stocks at close + FCP at VL), XOF. */
 export interface BrvmPortfolioPoint {
     as_of: string;
@@ -1520,6 +1527,16 @@ export class ApiService {
     /** An asset's real value series + per-month variation, for ANY asset kind.
      *  Free (unlike the BRVM panel below): it replaces the decorative chart
      *  every asset used to show. */
+    /** The asset detail page in ONE round trip (asset + value series + BRVM
+     *  panel when applicable and entitled). Replaces the three sequential
+     *  calls the page used to make; `brvm_history` is null when the panel
+     *  must stay hidden (free user, non-market asset). Not available in share
+     *  mode: the frozen bundle carries assets only. */
+    getAssetDetail(id: number, months = 12): Observable<AssetDetailBundle> {
+        const params = new HttpParams().set('months', months.toString());
+        return this.http.get<AssetDetailBundle>(`${this.apiUrl}/assets/${id}/detail`, { params });
+    }
+
     getAssetHistory(id: number, months = 12): Observable<AssetHistory> {
         const params = new HttpParams().set('months', months.toString());
         return this.http.get<AssetHistory>(`${this.apiUrl}/assets/${id}/history`, { params });
