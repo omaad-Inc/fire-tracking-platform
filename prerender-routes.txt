@@ -39,8 +39,12 @@
 /en/blog/special-dakar-immo
 /fr/blog/regle-4-pourcent
 /en/blog/regle-4-pourcent
+/fr/blog/frais-fcp-brvm
+/en/blog/frais-fcp-brvm
 /fr/blog/fcp-vs-actions-directes
 /en/blog/fcp-vs-actions-directes
+/fr/blog/gestion-mandat-vs-libre
+/en/blog/gestion-mandat-vs-libre
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm
