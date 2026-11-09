@@ -1584,6 +1584,52 @@ export const FR = {
       startDate: 'Date de début',
     },
   },
+  // "Découvrir" : le carrousel de cartes de la page d'accueil (motif Revolut).
+  // Voix "vous", comme le reste de l'accueil. Les paramètres viennent du
+  // serveur (dashboard_cards_service) : n, title, quota, price, date, month.
+  discover: {
+    label: 'Découvrir',
+    close: 'Fermer',
+    tier: { free: 'Inclus', pro: 'Pro', premium: 'Premium' },
+    action: { upgrade: 'Garder Pro' },
+    cards: {
+      keep_pro: {
+        title: 'Gardez Pro : {{price}} par mois',
+        sub: 'Vos fonctionnalités Pro offertes s\'arrêtent le {{date}}. Gardez l\'analyse BRVM, l\'assistant et le rapport PDF.',
+        cta: 'Garder Pro',
+      },
+      weekly_recap: {
+        title: 'Votre bilan hebdo arrive lundi',
+        sub: 'Épargne, dépenses, patrimoine et cap FIRE, chaque lundi par email. Inclus pour tous les membres.',
+        cta: 'Voir le dernier bilan',
+      },
+      brvm_performance: {
+        title: 'Vos {{n_titles}} titres BRVM, performance depuis l\'achat',
+        sub: 'Plus-value latente, poids de chaque ligne et historique par titre.',
+        cta: 'Voir l\'analyse BRVM',
+      },
+      brvm_alert: {
+        title: 'Une alerte sur {{title}}',
+        sub: 'Un push ou un email quand un seuil que vous fixez est franchi.',
+        cta: 'Créer une alerte',
+      },
+      monthly_pdf: {
+        title: 'Votre rapport PDF de {{month}}',
+        sub: 'Patrimoine, flux, objectifs et dettes en un document à garder ou à partager.',
+        cta: 'Télécharger le rapport',
+      },
+      ai_assistant: {
+        title: '{{quota}} messages IA par mois',
+        sub: 'Ajoutez un compte, classez une dépense ou posez une question, en français.',
+        cta: 'Ouvrir l\'assistant',
+      },
+      premium_advisor: {
+        title: 'Le conseiller IA complet',
+        sub: '{{quota}} messages par mois et des analyses avancées sur l\'ensemble de votre patrimoine.',
+        cta: 'Découvrir Premium',
+      },
+    },
+  },
   home: {
     thisMonth: 'Ce mois-ci',
     allClear: 'Rien à surveiller ce mois-ci',

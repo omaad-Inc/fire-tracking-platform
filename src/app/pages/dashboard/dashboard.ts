@@ -8,6 +8,7 @@ import { UpcomingCommitmentsWidget } from './components/upcomingcommitmentswidge
 import { WealthScoreDashboardWidget } from './components/wealthscorewidget';
 import { OnboardingComponent } from './components/onboarding';
 import { MarketGlanceWidget } from './components/marketglancewidget';
+import { DiscoverWidget } from './components/discoverwidget';
 import { SectionHeaderComponent } from '../../core/ui/section-header.component';
 import { Router } from '@angular/router';
 import { PatrimoineService } from '../service/patrimoine.service';
@@ -22,7 +23,7 @@ import { I18nService } from '../../i18n/i18n.service';
     imports: [
         CommonModule, HomeHero, SavingsProgress, DebtsOverview, UpcomingCommitmentsWidget,
         RecentTransactionsWidget, WealthScoreDashboardWidget, OnboardingComponent,
-        MarketGlanceWidget, SectionHeaderComponent
+        MarketGlanceWidget, DiscoverWidget, SectionHeaderComponent
     ],
     template: `
         <!-- One <h1> per page for a correct heading hierarchy; visually hidden
@@ -53,6 +54,15 @@ import { I18nService } from '../../i18n/i18n.service';
                  reference data, so it shows for a brand-new account as well and
                  sits between the hero and the personal story bands. -->
             <div class="omaad-enter omaad-d1 pb-6 md:pb-8 order-2"><app-market-glance-widget /></div>
+
+            <!-- Discover cards (2026-11-09): the Revolut-style card carousel that
+                 teaches, then sells, Pro. Under the markets card, above the
+                 personal bands; never beside the onboarding guide, which owns
+                 a brand-new member's attention. Renders nothing until the
+                 server answers with at least one card. -->
+            @if (!showOnboarding()) {
+                <div class="omaad-enter omaad-d1 pb-6 md:pb-8 order-3" data-testid="home-discover"><app-discover-widget /></div>
+            }
 
             <!-- Onboarding: shown only to a brand-new user; hidden once ANY step is done, or dismissed -->
             @if (showOnboarding()) {

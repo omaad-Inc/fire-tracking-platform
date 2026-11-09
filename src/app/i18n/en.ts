@@ -1578,6 +1578,51 @@ export const EN: Dict = {
       startDate: 'Start date',
     },
   },
+  // "Discover": the home-page card carousel (Revolut pattern). Params come
+  // from the server (dashboard_cards_service): n, title, quota, price, date, month.
+  discover: {
+    label: 'Discover',
+    close: 'Close',
+    tier: { free: 'Included', pro: 'Pro', premium: 'Premium' },
+    action: { upgrade: 'Keep Pro' },
+    cards: {
+      keep_pro: {
+        title: 'Keep Pro: {{price}} a month',
+        sub: 'Your free Pro features end on {{date}}. Keep the BRVM analysis, the assistant and the PDF report.',
+        cta: 'Keep Pro',
+      },
+      weekly_recap: {
+        title: 'Your weekly recap arrives Monday',
+        sub: 'Savings, spending, net worth and FIRE progress, every Monday by email. Included for every member.',
+        cta: 'See the latest recap',
+      },
+      brvm_performance: {
+        title: 'Your {{n_titles}} BRVM holdings, performance since purchase',
+        sub: 'Unrealised gain, weight of each line and history per holding.',
+        cta: 'Open the BRVM analysis',
+      },
+      brvm_alert: {
+        title: 'An alert on {{title}}',
+        sub: 'A push or an email when a threshold you set is crossed.',
+        cta: 'Create an alert',
+      },
+      monthly_pdf: {
+        title: 'Your {{month}} PDF report',
+        sub: 'Net worth, cash flow, goals and debts in one document to keep or share.',
+        cta: 'Download the report',
+      },
+      ai_assistant: {
+        title: '{{quota}} AI messages a month',
+        sub: 'Add an account, classify an expense or ask a question, in plain language.',
+        cta: 'Open the assistant',
+      },
+      premium_advisor: {
+        title: 'The full AI advisor',
+        sub: '{{quota}} messages a month and advanced analyses across your whole wealth.',
+        cta: 'Discover Premium',
+      },
+    },
+  },
   home: {
     thisMonth: 'This month',
     allClear: 'Nothing to watch this month',

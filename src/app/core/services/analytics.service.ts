@@ -20,7 +20,12 @@ export type AnalyticsEventName =
     | 'subscribe_completed'
     | 'subscription_cancelled'
     | 'holdings_import_parsed'
-    | 'holdings_import_committed';
+    | 'holdings_import_committed'
+    // Home "Découvrir" carousel + the plans page view it leads to.
+    | 'discover_card_shown'
+    | 'discover_card_clicked'
+    | 'discover_card_dismissed'
+    | 'plans_viewed';
 
 // Anonymous public-funnel events (POST /events/public, no auth). Mirrors the
 // backend KNOWN_PUBLIC_EVENT_NAMES allowlist.

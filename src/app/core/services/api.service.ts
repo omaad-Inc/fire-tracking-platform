@@ -1332,6 +1332,23 @@ export interface PaymentStatusResponse {
 /** Current entitlement + the paid-subscription row when one exists.
  *  `effective_plan` is FREE until a paid pass is active (it does NOT fold in the
  *  beta courtesy); read `beta_courtesy` for the "Pro offert (beta)" state. */
+/** One card of the home carousel (GET /dashboard/cards). `params` feeds the
+ *  i18n copy under `discover.cards.<key>`; `route`/`query` are the segments
+ *  the action row navigates to (already mode-resolved by the server). */
+export interface DiscoverCard {
+    key: 'keep_pro' | 'weekly_recap' | 'brvm_performance' | 'brvm_alert' | 'monthly_pdf' | 'ai_assistant' | 'premium_advisor';
+    tier: 'free' | 'pro' | 'premium';
+    action: 'open' | 'upgrade';
+    route: string[];
+    query: Record<string, string> | null;
+    params: Record<string, string | number>;
+}
+
+export interface DiscoverCardsResponse {
+    mode: 'discover' | 'convert' | null;
+    cards: DiscoverCard[];
+}
+
 export interface SubscriptionStatus {
     effective_plan: PlanTierName;
     beta_courtesy: boolean;
@@ -2307,6 +2324,18 @@ export class ApiService {
     /** AI message quota for the usage meter. */
     getUsage(): Observable<UsageStatus> {
         return this.http.get<UsageStatus>(`${this.apiUrl}/billing/usage`);
+    }
+
+    /** Home "Découvrir" carousel: eligibility, mode and dismissals are decided
+     *  server-side (dashboard_cards_service), the client only renders. */
+    getDiscoverCards(): Observable<DiscoverCardsResponse> {
+        return this.http.get<DiscoverCardsResponse>(`${this.apiUrl}/dashboard/cards`);
+    }
+
+    /** Close one card for this member on every device (14-day resurfacing,
+     *  three closes hide it for good). */
+    dismissDiscoverCard(key: string): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/dashboard/cards/${encodeURIComponent(key)}/dismiss`, {});
     }
 
     /** The owner's payment history (newest first). Empty until a payment exists. */

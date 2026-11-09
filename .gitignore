@@ -58,3 +58,6 @@ e2e-out/
 .env.*
 # Netlify CLI local state
 .netlify/
+
+# Discover card photo sources (licensed originals, renditions are committed)
+/tools/discover-src/
