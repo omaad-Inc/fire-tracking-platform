@@ -134,7 +134,7 @@ export const EN_PUBLIC: PublicDict = {
         b1: '200 AI setup messages / month',
         b2: 'Custom push & email alerts',
         b3: 'BRVM history & performance per stock',
-        b4: 'Weekly email report + monthly PDF',
+        b4: 'Detailed monthly PDF report',
         b5: 'Unlimited portfolio shares',
       },
       premium: {
@@ -147,7 +147,7 @@ export const EN_PUBLIC: PublicDict = {
     cta: {
       join: 'Upgrade to {{plan}}',
       current: 'Your plan',
-      currentBeta: 'Your plan (free during beta)',
+      currentBeta: 'Your plan (included free)',
       downgradeFree: 'Return to the Free plan',
       renew: 'Renew',
     },
@@ -193,7 +193,7 @@ export const EN_PUBLIC: PublicDict = {
     proFeatures: {
       f1: 'Setup AI assistant (200 messages / month)',
       f2: 'Custom alerts (push & email)',
-      f3: 'Automated weekly email report',
+      f3: 'Full Saturday BRVM digest',
       f4: 'BRVM history & per-stock performance',
       f5: 'Advanced PDF reports & unlimited shares',
       f6: 'Custom categories & priority support',
@@ -225,7 +225,7 @@ export const EN_PUBLIC: PublicDict = {
       aiSetupGrant: '20 messages',
       aiMonthly: '200 / mo',
       aiMonthlyPremium: '300 / mo',
-      automatedReports: 'Automated weekly report',
+      automatedReports: 'Weekly email recap',
       customAlerts: 'Custom alerts',
       brvmHistory: 'Per-stock BRVM performance',
       advancedReports: 'Advanced PDF reports',

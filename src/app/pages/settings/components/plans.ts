@@ -664,7 +664,7 @@ export class PlansSettings {
             { group: 'tracking',   label: t('plans.compare.notifications'),      free: true,  pro: true,  premium: true  },
             { group: 'tracking',   label: t('plans.compare.dataExport'),         free: true,  pro: true,  premium: true  },
             { group: 'tracking',   label: t('plans.compare.shareLinks'),         free: '1',   pro: unlimited, premium: unlimited },
-            { group: 'automation', label: t('plans.compare.automatedReports'),   free: false, pro: true,  premium: true  },
+            { group: 'automation', label: t('plans.compare.automatedReports'),   free: true,  pro: true,  premium: true  },
             { group: 'automation', label: t('plans.compare.customAlerts'),       free: false, pro: true,  premium: true  },
             { group: 'automation', label: t('plans.compare.brvmHistory'),        free: false, pro: true,  premium: true  },
             { group: 'automation', label: t('plans.compare.advancedReports'),    free: false, pro: true,  premium: true  },

@@ -141,7 +141,7 @@ export const FR_PUBLIC = {
         b1: '200 messages IA de configuration / mois',
         b2: 'Alertes personnalisées push & email',
         b3: 'Historique & performance BRVM par titre',
-        b4: 'Rapport hebdo email + PDF mensuel',
+        b4: 'Rapport mensuel PDF détaillé',
         b5: 'Partages de portefeuille illimités',
       },
       premium: {
@@ -154,7 +154,7 @@ export const FR_PUBLIC = {
     cta: {
       join: 'Passer à {{plan}}',
       current: 'Votre plan',
-      currentBeta: 'Votre plan (offert bêta)',
+      currentBeta: 'Votre plan (offert)',
       downgradeFree: 'Revenir au plan Gratuit',
       renew: 'Renouveler',
     },
@@ -200,7 +200,7 @@ export const FR_PUBLIC = {
     proFeatures: {
       f1: 'Assistant IA de configuration (200 messages / mois)',
       f2: 'Alertes personnalisées (push & email)',
-      f3: 'Rapport hebdomadaire automatique par email',
+      f3: 'Digest BRVM du samedi en version complète',
       f4: 'Historique & performance BRVM par titre',
       f5: 'Rapports PDF avancés & partages illimités',
       f6: 'Catégories personnalisées & support prioritaire',
@@ -232,7 +232,7 @@ export const FR_PUBLIC = {
       aiSetupGrant: '20 messages',
       aiMonthly: '200 / mois',
       aiMonthlyPremium: '300 / mois',
-      automatedReports: 'Rapport hebdomadaire automatique',
+      automatedReports: 'Bilan hebdomadaire par email',
       customAlerts: 'Alertes personnalisées',
       brvmHistory: 'Performance BRVM par titre',
       advancedReports: 'Rapports PDF avancés',
