@@ -1,4 +1,5 @@
 import { Component, inject, computed, effect, signal } from '@angular/core';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -397,6 +398,7 @@ export class PlansSettings {
     private route  = inject(ActivatedRoute);
     private cs      = inject(CurrencyService);
     private billing = inject(BillingService);
+    private analytics = inject(AnalyticsService);
 
     /** Mobile: which tier screen is shown. Desktop shows all three. */
     viewedTier = signal<TierKey>('pro');
@@ -410,6 +412,9 @@ export class PlansSettings {
         // the subscription state feeds the contextual CTA matrix.
         this.billing.loadPlans();
         this.billing.load();
+        // The funnel step between a home card (discover_card_clicked) and a
+        // checkout (subscribe_started): without it the carousel is unmeasurable.
+        this.analytics.track('plans_viewed', { tier: this.route.snapshot.queryParamMap.get('tier') ?? null });
 
         // Deep links: ?tier= selects the tab (mobile) / highlights the card
         // (desktop); &checkout=1 additionally opens the sheet (quota-exceeded
