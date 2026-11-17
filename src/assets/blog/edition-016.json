@@ -1,7 +1,7 @@
 {
   "edition": "016",
   "slug": "brvm-securisee-mythe",
-  "title": "« La BRVM plus sécurisée que l'immo et Wall Street » : vraiment ?",
+  "title": "La BRVM est-elle vraiment plus sûre que l'immobilier et la Bourse des États-Unis (Wall Street) ?",
   "subtitle": "Édition #016 · FIRE Africa par Omaad",
   "tags": [
     "risque",
@@ -11,7 +11,7 @@
     "immobilier",
     "S&P 500"
   ],
-  "readingMinutes": 6,
+  "readingMinutes": 7,
   "blocks": [
     {
       "kind": "section",
@@ -44,15 +44,15 @@
     },
     {
       "kind": "paragraph",
-      "text": "**Disséquons la BRVM.** Elle a des caractéristiques qui peuvent donner une impression de sécurité. **La volatilité est plus faible** que sur les marchés occidentaux. Mais faible volatilité ne veut pas dire absence de risque : ça veut dire que le marché est **moins liquide**. Le jour où tu veux vendre en urgence, cette faible liquidité devient un piège. **Les dividendes sont généreux** (5 à 8 %) : vrai, et c'est un avantage réel, mais un dividende n'est jamais garanti. **Le marché est régulé** par l'AMF-UMOA : vrai aussi, mais la régulation ne protège pas contre la baisse des cours. Le S&P 500 est l'un des marchés les plus régulés au monde, et il a perdu 34 % en un mois."
+      "text": "**Disséquons la BRVM.** Elle a des caractéristiques qui peuvent donner une impression de sécurité. **La volatilité est plus faible** que sur les marchés occidentaux. Mais faible volatilité ne veut pas dire absence de risque : ça veut dire que le marché est **moins liquide**. Le jour où tu veux vendre en urgence, cette faible liquidité devient un piège. **Les dividendes sont généreux** (6 à 8 %) : vrai, et c'est un avantage réel, mais un dividende n'est jamais garanti. **Le marché est régulé** par l'AMF-UMOA, et il a même un garde-fou que beaucoup ignorent : sur une séance, le cours d'une action ne peut pas s'écarter de plus de 7,5 %, à la hausse ou à la baisse, de son cours de référence ; au-delà, la cotation est réservée (Instruction I-A de la BRVM relative aux écarts maximaux ; en cotation continue s'ajoute un seuil dynamique de réservation de ±2 %). Vrai, et c'est rassurant un jour de panique : pas de chute de 34 % en une séance comme à New York en mars 2020. Mais ce coussin ne protège pas contre la baisse des cours : cinq séances à −7,5 % font déjà −32 %, et le même plafond ralentit aussi ta sortie le jour où tout le monde veut vendre. La régulation encadre la vitesse de la baisse, pas la baisse."
     },
     {
       "kind": "paragraph",
-      "text": "**Disséquons l'immobilier.** Souvent perçu comme « le placement le plus sûr ». En Afrique de l'Ouest, c'est presque une religion. Mais l'immobilier est **illiquide** (des mois, voire des années pour vendre), ses **frais cachés sont énormes** (notaire, entretien, taxes, gestion, impayés : un brut de 8 % devient vite 3 à 4 % net), et **il peut perdre de la valeur**. En revanche, il offre un **effet de levier** unique : tu peux emprunter pour acheter, ce qui n'est pas possible à la BRVM."
+      "text": "**Disséquons l'immobilier.** Souvent perçu comme « le placement le plus sûr ». En Afrique de l'Ouest, c'est presque une religion, et disons-le honnêtement : il rapporte. En location classique, les estimations de marché 2025-2026 donnent **5 à 8 % brut à Dakar** (Knight Frank cite environ 6 %) et **8 à 12 % brut à Abidjan**, davantage en meublé, et les prix de Dakar ont nettement monté sur dix ans. Mais ce brut n'est pas ce que tu touches : impôts (la contribution foncière seule prend 5 % de la valeur locative), gestion, entretien, vacance et impayés te laissent en pratique **60 à 80 % du brut**. Il faut **7 à 10 % de frais rien que pour entrer**, hors agence. Et il est **illiquide** : des mois, voire des années pour vendre, avec une décote si tu es pressé. En revanche, il offre un **effet de levier** unique : tu peux emprunter pour acheter, ce qui n'est pas possible à la BRVM."
     },
     {
       "kind": "paragraph",
-      "text": "**Disséquons Wall Street.** Le S&P 500 est le marché le plus profond, le plus liquide, le plus diversifié au monde. Sur 30 ans, environ 10 % annualisé (source : S&P Dow Jones Indices (https://www.spglobal.com/spdji)). Mais la volatilité est réelle, chaque décennie apporte son krach, sur certaines périodes de 10 ans le rendement réel a été proche de zéro, et pour un investisseur en zone FCFA, le **risque de change** s'ajoute."
+      "text": "**Disséquons la Bourse des États-Unis (Wall Street).** Le S&P 500 est le marché le plus profond, le plus liquide, le plus diversifié au monde. Sur 30 ans, environ 10 % annualisé (source : S&P Dow Jones Indices (https://www.spglobal.com/spdji)). Mais la volatilité est réelle, chaque décennie apporte son krach, sur certaines périodes de 10 ans le rendement réel a été proche de zéro, et pour un investisseur en zone FCFA, le **risque de change** s'ajoute."
     },
     {
       "kind": "paragraph",
@@ -61,8 +61,8 @@
     {
       "kind": "list",
       "items": [
-        "**BRVM :** 6 à 8 % dividendes inclus, volatilité faible mais liquidité limitée, 47 titres seulement.",
-        "**Immobilier Afrique de l'Ouest :** 3 à 5 % net après frais, très illiquide, effet de levier possible.",
+        "**BRVM :** 6 à 8 % dividendes inclus, volatilité faible mais liquidité limitée, 48 titres seulement.",
+        "**Immobilier Afrique de l'Ouest :** 5 à 8 % brut à Dakar, 8 à 12 % à Abidjan en location classique (estimations 2025-2026), 60 à 80 % du brut une fois impôts, gestion et vacance déduits, 7 à 10 % de frais à l'entrée, très illiquide, effet de levier possible.",
         "**S&P 500 :** environ 10 % annualisé, volatilité élevée, liquidité maximale, risque de change."
       ]
     },
@@ -88,13 +88,37 @@
     },
     {
       "kind": "paragraph",
-      "text": "**Omaad** a vocation à te montrer ton patrimoine dans sa globalité : actions BRVM, immobilier, épargne, tontine, mobile money, en FCFA. L'objectif, c'est que tu voies d'un coup d'œil comment ton patrimoine est réparti, et que tu identifies si tu es trop concentré sur un seul type d'actif. Le second agent IA répond déjà à la question « est-ce que je suis bien diversifié ? » à partir de ta répartition réelle. Parce que la diversification ne se décrète pas, elle se mesure."
+      "text": "**La diversification ne se décrète pas, elle se mesure. Omaad la mesure pour toi.** Transparence : Omaad, c'est mon produit. Tout ce qui suit existe dans l'application aujourd'hui, et tout se lit en FCFA."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**1. Ta répartition, en un coup d'œil.** Actions BRVM, FCP, immobilier, épargne, tontine, mobile money, PEA : le graphique « Répartition du patrimoine » te montre le poids de chaque classe d'actifs et de chaque devise. C'est la première réponse à « suis-je trop concentré ? »."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**2. Le Score Patrimoine.** Un score sur 100, en cinq axes, dont un axe « Diversification » : nombre de classes d'actifs, concentration, devises. Si plus de 75 % de ton patrimoine repose sur une seule classe, le score te le dit noir sur blanc."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**3. Les Conseils.** À partir de tes données réelles, l'onglet Conseils signale les déséquilibres (« tel actif représente X % de ton patrimoine », « diversifie tes classes d'actifs ») et renvoie à l'écran où agir. Des constats chiffrés, jamais une recommandation d'achat."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**4. L'Analyse BRVM et l'assistant.** La page Analyse BRVM suit ton portefeuille d'actions et de FCP : performance globale, plus-value latente, répartition par titre. Et tu peux poser la question en clair à l'assistant : « Est-ce que je suis bien diversifié ? ». Il répond à partir de ta répartition réelle, avec un avis, pas de la donnée brute."
+    },
+    {
+      "kind": "paragraph",
+      "text": "Pour construire le côté BRVM de cette diversification sans te tromper de compte : l'outil Stratégie BRVM (https://omaad.africa/outils/strategie-brvm/) transforme ton versement mensuel en plan d'exécution, et le comparateur des 41 SGI (https://omaad.africa/outils/comparateur-sgi-brvm) te montre les frais, grille par grille. Les deux sont gratuits et sans inscription."
     },
     {
       "kind": "ctas",
       "items": [
         {
-          "label": "Créer mon compte Omaad",
+          "label": "Planifier mon DCA (gratuit)",
+          "url": "https://omaad.africa/outils/strategie-brvm/"
+        },
+        {
+          "label": "Mesurer ma diversification dans Omaad",
           "url": "https://omaad.africa"
         }
       ]
@@ -127,7 +151,7 @@
     },
     {
       "kind": "callout",
-      "text": "Fais la liste de tes actifs et le pourcentage de chacun dans ton patrimoine total : BRVM, immobilier, épargne, tontine, mobile money. Si un seul dépasse 70 %, tu sais où est ton vrai risque, quel que soit le nom qu'on lui donne."
+      "text": "Fais la liste de tes actifs et le pourcentage de chacun dans ton patrimoine total : BRVM, immobilier, épargne, tontine, mobile money. Si une seule classe dépasse 75 %, tu sais où est ton vrai risque, quel que soit le nom qu'on lui donne. C'est exactement le seuil que le Score Patrimoine d'Omaad surveille pour toi."
     },
     {
       "kind": "section",
@@ -162,9 +186,9 @@
     {
       "kind": "summary",
       "items": [
-        "A viral claim says the BRVM is \"more secure than real estate and Wall Street\". The BRVM does have lower volatility than Western markets and pays generous dividends (5-8%), but low volatility is not low risk: it often means low liquidity. When you need to sell urgently, that \"stability\" becomes a trap.",
-        "The fundamental rule of finance: return is compensation for risk. A savings account (3-4%) barely beats inflation. BRVM blue chips yield 6-8% but can drop 10-20% in a year. The S&P 500 averages 10% but fell 34% in March 2020. Real estate feels tangible but is illiquid with hidden costs. No asset is both highly secure and highly profitable.",
-        "True security is diversification: BRVM stocks for dividends, real estate for tangibility, cash for liquidity. Omaad shows your whole allocation in FCFA and its AI agent answers \"am I diversified?\" from your real data. Join the WhatsApp channel and Facebook page for sourced, hype-free updates."
+        "A viral claim says the BRVM is \"more secure than real estate and Wall Street\". The BRVM does have lower volatility than Western markets and pays generous dividends (6-8%), but low volatility is not low risk: it often means low liquidity. The BRVM's 7.5% daily limit per session caps the speed of a fall, not the fall itself. When you need to sell urgently, that \"stability\" becomes a trap.",
+        "The fundamental rule of finance: return is compensation for risk. A savings account (3-4%) barely beats inflation. BRVM blue chips yield 6-8% but can drop 10-20% in a year. The S&P 500 averages 10% but fell 34% in March 2020. Real estate does pay (roughly 5-8% gross in Dakar, 8-12% in Abidjan on long-term lets), but you keep about 60-80% of it after taxes, management and vacancy, entry costs run 7-10%, and it is illiquid. No asset is both highly secure and highly profitable.",
+        "True security is diversification: BRVM stocks for dividends, real estate for tangibility, cash for liquidity. Omaad measures it: a wealth allocation chart by asset class and currency, a Wealth Score with a Diversification axis (it flags any class above 75% of your net worth), a Conseils tab with data-driven alerts, a BRVM portfolio analysis, and an assistant that answers \"am I diversified?\" from your real allocation. Join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]

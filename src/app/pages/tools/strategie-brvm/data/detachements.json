@@ -1,7 +1,29 @@
 {
   "source": "https://www.brvm.org/fr/esv/paiement-de-dividendes",
-  "updated_at": "2026-07-25",
+  "updated_at": "2026-11-05",
   "entries": [
+    {
+      "emetteur": "BOLLORE TRANSPORT & LOGISTICS",
+      "exercice": 2025,
+      "date_paiement": "2026-10-27",
+      "date_ex_dividende": "2026-10-26",
+      "montant_net_fcfa": 92.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20261009_-_avis_ndeg297_brvmdg_-_paiement_de_dividendes_exo_2025_-_agl_ci.pdf",
+      "ticker": "SDSC",
+      "nom": "Bolloré Transport & Logistics CI",
+      "secteur": "Transport"
+    },
+    {
+      "emetteur": "TRACTAFRIC CI",
+      "exercice": 2025,
+      "date_paiement": "2026-10-23",
+      "date_ex_dividende": "2026-10-22",
+      "montant_net_fcfa": 209.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20261006_-_avis_ndeg294_brvmdg_-_paiement_de_dividendes_exo_2025_-_tractafric_motors_ci.pdf",
+      "ticker": "TMCI",
+      "nom": "Tractafric Motors CI",
+      "secteur": "Distribution"
+    },
     {
       "emetteur": "SERVAIR ABIDJAN CI",
       "exercice": 2025,
@@ -12,6 +34,116 @@
       "ticker": "SVAC",
       "nom": "Servair Abidjan",
       "secteur": "Services"
+    },
+    {
+      "emetteur": "VIVO ENERGY CI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-25",
+      "date_ex_dividende": "2026-09-24",
+      "montant_net_fcfa": 96.67,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260821_-_avis_ndeg249_brvmdg_-_paiement_de_dividendes_-_exercice_2025_-_vivo_energy_ci.pdf",
+      "ticker": "SHEC",
+      "nom": "Vivo Energy CI",
+      "secteur": "Distribution"
+    },
+    {
+      "emetteur": "SMB",
+      "exercice": 2025,
+      "date_paiement": "2026-09-18",
+      "date_ex_dividende": "2026-09-17",
+      "montant_net_fcfa": 800.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260904_-_avis_ndeg261_brvmdg_-_paiement_de_dividendes_exercice_2025_-_smb_ci.pdf",
+      "ticker": "SMBC",
+      "nom": "SMB CI",
+      "secteur": "Industrie"
+    },
+    {
+      "emetteur": "SODECI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-16",
+      "date_ex_dividende": "2026-09-15",
+      "montant_net_fcfa": 525.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260902_-_avis_ndeg259_brvmdg_-_paiement_de_dividendes_exercice_2025_-_sode_ci.pdf",
+      "ticker": "SDCC",
+      "nom": "Sodeci",
+      "secteur": "Utilities"
+    },
+    {
+      "emetteur": "NEI-CEDA CI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-10",
+      "date_ex_dividende": "2026-09-09",
+      "montant_net_fcfa": 159.54,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260827_-_avis_ndeg252_brvmdg_-_paiement_de_dividendes_exo_2025_-_nei-ceda_ci.pdf",
+      "ticker": "NEIC",
+      "nom": "NEI-CEDA CI",
+      "secteur": "Distribution"
+    },
+    {
+      "emetteur": "NESTLE CI",
+      "exercice": 2025,
+      "date_paiement": "2026-09-07",
+      "date_ex_dividende": "2026-09-04",
+      "montant_net_fcfa": 420.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260730_-_avis_ndeg228_brvmdg_-_paiement_de_dividendes_exo_2025_-_nestle_ci.pdf",
+      "ticker": "NTLC",
+      "nom": "Nestlé CI",
+      "secteur": "Agro-industrie"
+    },
+    {
+      "emetteur": "TOTAL",
+      "exercice": 2025,
+      "date_paiement": "2026-08-31",
+      "date_ex_dividende": "2026-08-28",
+      "montant_net_fcfa": 158.827,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260814_-_avis_ndeg245_brvmdg_-_paiement_de_dividendes_exo_2025_-_totalenergies_marketing_ci.pdf",
+      "ticker": "TTLC",
+      "nom": "TotalEnergies Marketing CI",
+      "secteur": "Distribution"
+    },
+    {
+      "emetteur": "SAPH CI",
+      "exercice": 2025,
+      "date_paiement": "2026-08-28",
+      "date_ex_dividende": "2026-08-27",
+      "montant_net_fcfa": 489.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260812_-_avis_ndeg238_brvmdg_-_paiement_de_dividendes_exo_2025_-_saph_ci.pdf",
+      "ticker": "SPHC",
+      "nom": "SAPH",
+      "secteur": "Agro-industrie"
+    },
+    {
+      "emetteur": "SGCI",
+      "exercice": 2025,
+      "date_paiement": "2026-08-24",
+      "date_ex_dividende": "2026-08-21",
+      "montant_net_fcfa": 2606.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260806_-_avis_ndeg231_brvmdg_-_paiement_de_dividendes_exercice_2025_-_societe_generale_ci.pdf",
+      "ticker": "SGBC",
+      "nom": "Société Générale CI",
+      "secteur": "Banque"
+    },
+    {
+      "emetteur": "CFAO MOTORS CI",
+      "exercice": 2025,
+      "date_paiement": "2026-08-14",
+      "date_ex_dividende": "2026-08-13",
+      "montant_net_fcfa": 63.0,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260730_-_avis_ndeg227_brvmdg_-_paiement_de_dividendes_exo_2025_-_cfao_motors_ci.pdf",
+      "ticker": "CFAC",
+      "nom": "CFAO Motors CI",
+      "secteur": "Distribution"
+    },
+    {
+      "emetteur": "SITAB",
+      "exercice": 2025,
+      "date_paiement": "2026-08-13",
+      "date_ex_dividende": "2026-08-12",
+      "montant_net_fcfa": 1707.2,
+      "avis_url": "https://www.brvm.org/sites/default/files/20260729_-_avis_ndeg226_brvmdg_-_paiement_de_dividendes_exercice_2025_-_sitab_ci.pdf",
+      "ticker": "STBC",
+      "nom": "Sitab CI",
+      "secteur": "Industrie"
     },
     {
       "emetteur": "NSBC",
@@ -397,248 +529,6 @@
       "ticker": "NTLC",
       "nom": "Nestlé CI",
       "secteur": "Agro-industrie"
-    },
-    {
-      "emetteur": "SGCI",
-      "exercice": 2024,
-      "date_paiement": "2025-08-05",
-      "date_ex_dividende": "2025-08-01",
-      "montant_net_fcfa": 1863.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250702_-_avis_ndeg149_brvmdg_-_paiement_de_dividendes_exercice_2024_-_societe_generale_ci.pdf",
-      "ticker": "SGBC",
-      "nom": "Société Générale CI",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "SIB",
-      "exercice": 2024,
-      "date_paiement": "2025-07-31",
-      "date_ex_dividende": "2025-07-29",
-      "montant_net_fcfa": 375.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250711_-_avis_ndeg161_brvmdg_-_paiement_de_dividendes_exercice_2024_-_sib_ci.pdf",
-      "ticker": "SIBC",
-      "nom": "Société Ivoirienne de Banque",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "LNB",
-      "exercice": 2024,
-      "date_paiement": "2025-07-31",
-      "date_ex_dividende": "2025-07-29",
-      "montant_net_fcfa": 275.5,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250714_-_avis_ndeg165_brvmdg_-_paiement_de_dividendes_exo_2024_-_loterie_nationale_du_benin_-_lnbb_-_rectificatif.pdf",
-      "ticker": "LNBJ",
-      "nom": "Loterie Nationale du Bénin",
-      "secteur": "Services"
-    },
-    {
-      "emetteur": "CIE CI",
-      "exercice": 2024,
-      "date_paiement": "2025-07-31",
-      "date_ex_dividende": "2025-07-29",
-      "montant_net_fcfa": 180.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250711_-_avis_ndeg163_brvmdg_-_paiement_de_dividendes_exercice_2024_-_cie_ci.pdf",
-      "ticker": "CIEC",
-      "nom": "CIE",
-      "secteur": "Utilities"
-    },
-    {
-      "emetteur": "SOLIBRA",
-      "exercice": 2024,
-      "date_paiement": "2025-07-29",
-      "date_ex_dividende": "2025-07-25",
-      "montant_net_fcfa": 1220.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250715_-_avis_ndeg167_brvmdg_-_paiement_de_dividendes_exo_2024_-_solibra_ci.pdf",
-      "ticker": "SLBC",
-      "nom": "Solibra CI",
-      "secteur": "Industrie"
-    },
-    {
-      "emetteur": "ONATEL BF",
-      "exercice": 2024,
-      "date_paiement": "2025-07-21",
-      "date_ex_dividende": "2025-07-17",
-      "montant_net_fcfa": 189.5299,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250625_-_avis_ndeg143_brvmdg_-_paiement_de_dividendes_-_onatel_bf.pdf",
-      "ticker": "ONTBF",
-      "nom": "Onatel BF",
-      "secteur": "Télécoms"
-    },
-    {
-      "emetteur": "SAPH CI",
-      "exercice": 2024,
-      "date_paiement": "2025-07-17",
-      "date_ex_dividende": "2025-07-15",
-      "montant_net_fcfa": 368.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250703_-_avis_ndeg150_brvmdg_-_paiement_de_dividendes_exo_2024_-_saph_ci.pdf",
-      "ticker": "SPHC",
-      "nom": "SAPH",
-      "secteur": "Agro-industrie"
-    },
-    {
-      "emetteur": "SOGB",
-      "exercice": 2024,
-      "date_paiement": "2025-07-15",
-      "date_ex_dividende": "2025-07-11",
-      "montant_net_fcfa": 600.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250701_-_avis_ndeg146_brvmdg_-_paiement_de_dividendes_exercice_2024_-_sogb_ci.pdf",
-      "ticker": "SOGC",
-      "nom": "SOGB CI",
-      "secteur": "Agro-industrie"
-    },
-    {
-      "emetteur": "TOTAL SENEGAL S.A.",
-      "exercice": 2024,
-      "date_paiement": "2025-07-11",
-      "date_ex_dividende": "2025-07-09",
-      "montant_net_fcfa": 222.4,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250618_-_avis_ndeg138_brvmdg_-_paiement_de_dividendes_exercice_2024_-_total_sn.pdf",
-      "ticker": "TTLS",
-      "nom": "TotalEnergies Marketing Sénégal",
-      "secteur": "Distribution"
-    },
-    {
-      "emetteur": "NSBC",
-      "exercice": 2024,
-      "date_paiement": "2025-07-09",
-      "date_ex_dividende": "2025-07-07",
-      "montant_net_fcfa": 759.2612,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250624_-_avis_ndeg141_brvmdg_-_paiement_de_dividendes_exercice_2024_-_nsia_banque_ci.pdf",
-      "ticker": "NSBC",
-      "nom": "NSIA Banque CI",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "CORIS BANK INTERNATIONAL",
-      "exercice": 2024,
-      "date_paiement": "2025-07-07",
-      "date_ex_dividende": "2025-07-03",
-      "montant_net_fcfa": 555.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250619_-_avis_ndeg140_brvmdg_-_paiement_de_dividendes_exo_2024_-_cbibf.pdf",
-      "ticker": "CBIBF",
-      "nom": "Coris Bank International",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "ORANGE CI",
-      "exercice": 2024,
-      "date_paiement": "2025-06-11",
-      "date_ex_dividende": "2025-06-05",
-      "montant_net_fcfa": 750.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250522_-_avis_ndeg118_brvmdg_-_paiement_de_dividendes_-_exercice_2024_-_orange_ci.pdf",
-      "ticker": "ORAC",
-      "nom": "Orange CI",
-      "secteur": "Télécoms"
-    },
-    {
-      "emetteur": "ECOBANK CI",
-      "exercice": 2024,
-      "date_paiement": "2025-05-30",
-      "date_ex_dividende": "2025-05-31",
-      "montant_net_fcfa": 804.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20240515_-_avis_ndeg107_brvmdg_-_paiement_de_dividendes_-_exercice_2024_-_ecobank_ci.pdf",
-      "ticker": "ECEC",
-      "nom": "Ecobank CI",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA NG",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 209.25,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg112_brvmdg_-_paiement_de_dividendes_exo_2024_-_boan.pdf",
-      "ticker": "BOAN",
-      "nom": "BOA Niger",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA ML",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 237.15,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250617_-_avis_ndeg137_brvmdg_-_paiement_de_dividendes_exo_2024_-_boam_modification_du_montant_du_dividence.pdf",
-      "ticker": "BOAM",
-      "nom": "BOA Mali",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA ML",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 237.5,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg111_brvmdg_-_paiement_de_dividendes_exo_2024_-_boam.pdf",
-      "ticker": "BOAM",
-      "nom": "BOA Mali",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BANK OF AFRICA BN",
-      "exercice": 2024,
-      "date_paiement": "2025-06-03",
-      "date_ex_dividende": "2025-05-30",
-      "montant_net_fcfa": 468.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250519_-_avis_ndeg113_brvmdg_-_paiement_de_dividendes_exo_2024_-_boab.pdf",
-      "ticker": "BOAB",
-      "nom": "BOA Bénin",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "SICABLE",
-      "exercice": 2024,
-      "date_paiement": "2025-06-02",
-      "date_ex_dividende": "2025-05-28",
-      "montant_net_fcfa": 128.1,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250516_-_avis_ndeg109_brvmdg_-_paiement_de_dividendes_exercice_2024_-_sicable_ci.pdf",
-      "ticker": "SCBC",
-      "nom": "Sicable CI",
-      "secteur": "Industrie"
-    },
-    {
-      "emetteur": "BANK OF AFRICA SN",
-      "exercice": 2024,
-      "date_paiement": "2025-06-02",
-      "date_ex_dividende": "2025-05-28",
-      "montant_net_fcfa": 350.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250515_-_avis_ndeg108_brvmdg_-_paiement_de_dividendes_exo_2024_-_boa_sn.pdf",
-      "ticker": "BOAS",
-      "nom": "BOA Sénégal",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "BICI CI",
-      "exercice": 2024,
-      "date_paiement": "2025-05-23",
-      "date_ex_dividende": "2025-05-21",
-      "montant_net_fcfa": 944.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250502_-_avis_ndeg090_brvmdg_-_paiement_de_dividendes_exercice_2024_-_bicici.pdf",
-      "ticker": "BICC",
-      "nom": "BICICI",
-      "secteur": "Banque"
-    },
-    {
-      "emetteur": "SONATEL",
-      "exercice": 2024,
-      "date_paiement": "2025-05-22",
-      "date_ex_dividende": "2025-05-20",
-      "montant_net_fcfa": 1655.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250418_-_avis_ndeg082_brvmdg_-_paiement_de_dividendes_exo_2024_-_sonatel.pdf",
-      "ticker": "SNTS",
-      "nom": "Sonatel",
-      "secteur": "Télécoms"
-    },
-    {
-      "emetteur": "BANK OF AFRICA CI",
-      "exercice": 2024,
-      "date_paiement": "2025-05-20",
-      "date_ex_dividende": "2025-05-16",
-      "montant_net_fcfa": 469.0,
-      "avis_url": "https://www.brvm.org/sites/default/files/20250505_-_avis_ndeg092_brvmdg_-_paiement_de_dividendes_exo_2024_-_boa_ci.pdf",
-      "ticker": "BOAC",
-      "nom": "BOA Côte d'Ivoire",
-      "secteur": "Banque"
     }
   ]
 }
