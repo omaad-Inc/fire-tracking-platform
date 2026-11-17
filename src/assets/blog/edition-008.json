@@ -1,17 +1,17 @@
 {
   "edition": "008",
-  "slug": "special-dakar-immo",
-  "title": "Spécial Dakar : investir dans l'immobilier depuis l'Europe",
+  "slug": "retraite-calcul-171",
+  "title": "Ton revenu de retraite × 171 : le seul calcul qui compte",
   "subtitle": "Édition #008 · FIRE Africa par Omaad",
   "tags": [
-    "immobilier",
-    "Dakar",
-    "Sénégal",
-    "diaspora",
-    "titre foncier",
-    "FIRE"
+    "retraite",
+    "×171",
+    "dividendes",
+    "BRVM",
+    "FIRE",
+    "règle des 25"
   ],
-  "readingMinutes": 4,
+  "readingMinutes": 5,
   "blocks": [
     {
       "kind": "section",
@@ -19,36 +19,57 @@
     },
     {
       "kind": "h2",
-      "text": "L'immobilier au Sénégal, c'est le pilier FIRE que la diaspora connaît le mieux, et maîtrise le moins."
+      "text": "10 millions en bourse = 33 000 F par mois. Le calcul que personne ne fait."
     },
     {
       "kind": "paragraph",
-      "text": "Acheter un terrain au pays. C'est le rêve numéro un de la diaspora sénégalaise. Avant le PEA, avant la crypto, avant tout, il y a le terrain. À Mboro, Diamniadio, Thiès, Saly. Le foncier est culturellement sacré : c'est la preuve tangible que tu as réussi."
+      "text": "« Avec 10 millions en bourse, je suis tranquille. » Tu l'as déjà entendue, celle-là. Faisons le calcul que personne ne fait."
     },
     {
       "kind": "paragraph",
-      "text": "Mais entre le rêve et l'investissement rationnel, il y a un gouffre. La plupart des achats de la diaspora se font sur la confiance : un cousin qui connaît un terrain, un démarcheur sur WhatsApp, des papiers qu'on ne vérifie pas assez. Le résultat ? Des litiges fonciers qui traînent des années, des terrains « vendus » à trois personnes différentes, des titres de propriété fantômes."
+      "text": "10 millions FCFA placés à 10 % par an, avec un retrait prudent de 4 % : ça donne 400 000 FCFA par an. Soit 33 000 FCFA par mois. Ton capital survivra pour toujours, mais pas toi. 10 millions, ce n'est pas une retraite, c'est un début."
     },
     {
       "kind": "paragraph",
-      "text": "Investir dans l'immobilier sénégalais depuis l'Europe, c'est possible, et potentiellement rentable. Les prix ont fortement augmenté dans certains quartiers de Dakar et de sa périphérie sur la dernière décennie. Mais il faut traiter ça comme un investissement, pas comme un acte de foi."
+      "text": "**D'où vient la règle des 25 fois (et pourquoi elle ne te concerne qu'à moitié).** Sur les marchés où l'on vend ses parts pour vivre (États-Unis, Europe), la règle dit : capital cible = dépenses annuelles × 25. Mais la BRVM est un marché de dividendes : les grandes capitalisations versent 6 à 8 % par an. Avec des actions à dividendes, tu ne vends rien, le revenu tombe chaque année."
     },
     {
       "kind": "paragraph",
-      "text": "**Les règles d'or :**"
+      "text": "**La formule devient : revenu mensuel visé × 171.** (Hypothèse : rendement dividende net de 7 %, affichée, assumée, jamais garantie. En annuel : revenu annuel × 14,3.)"
+    },
+    {
+      "kind": "paragraph",
+      "text": "**La grille, trouve ta ligne :**"
     },
     {
       "kind": "list",
       "items": [
-        "Ne jamais acheter sans titre foncier (TF) ou bail emphytéotique vérifié auprès de la Conservation foncière.",
-        "Toujours passer par un notaire sénégalais pour l'acte de vente.",
-        "Calculer le coût réel : prix d'achat + frais de notaire et d'enregistrement + clôture + viabilisation. Le terrain nu n'est que le début.",
-        "Penser rendement locatif si tu construis : loyers réels du quartier, charges, vacance, impayés. Le brut n'est jamais le net."
+        "50 000 F/mois visés → capital cible ≈ 8,6 M FCFA",
+        "100 000 F/mois → ≈ 17,1 M FCFA",
+        "150 000 F/mois → ≈ 25,7 M FCFA",
+        "200 000 F/mois → ≈ 34,3 M FCFA",
+        "300 000 F/mois → ≈ 51,4 M FCFA"
       ]
     },
     {
       "kind": "paragraph",
-      "text": "**Dans la stratégie FIRE**, l'immobilier sénégalais est ton actif « revenu en FCFA » : celui qui couvre tes dépenses locales quand tu atteins l'indépendance financière. Le PEA couvre la partie européenne. L'immobilier au pays couvre la partie africaine. Les deux ensemble, c'est la souveraineté financière bi-continentale."
+      "text": "**Comment on y arrive :** en investissant chaque mois et en réinvestissant les dividendes (l'effet boule de neige). Pour atteindre ≈ 17,1 M (la ligne 100 000 F/mois), sous hypothèse de 10 % par an de rendement total et versements réguliers : environ 15 ans à 50 000 F/mois, 12 ans à 75 000 F/mois, 10 ans et demi à 100 000 F/mois. Ce sont des ordres de grandeur sous hypothèse constante, jamais des promesses. Le rendement ne se contrôle pas ; le versement mensuel, si. C'est la seule variable qui t'appartient."
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Les 3 pièges à connaître avant de te lancer :**"
+    },
+    {
+      "kind": "list",
+      "items": [
+        "Les dividendes ne sont pas garantis, ils varient d'une année à l'autre. D'où un coussin de 12 à 18 mois de revenu à côté.",
+        "La concentration : jamais 1 ou 2 actions ; vise 6 à 8 lignes minimum.",
+        "Les frais : 2 % de frais par an, c'est environ un quart du rendement confisqué sur 20 ans. Lis toujours le DICI avant de souscrire à un fonds."
+      ]
+    },
+    {
+      "kind": "paragraph",
+      "text": "**Ton calcul, en une phrase :** prends le revenu mensuel que tu veux à la retraite, multiplie par 171, c'est ton chiffre. Ce revenu s'ajoute à tes autres revenus (commerce, immobilier, salaire, pension) : un revenu de plus, pas un revenu de remplacement."
     },
     {
       "kind": "section",
@@ -56,11 +77,11 @@
     },
     {
       "kind": "video",
-      "title": "BRVM, mobile money, tontine, immobilier : tout ton patrimoine dans une seule app",
-      "episode": "Ép. 07",
-      "url": "https://youtu.be/Z4XowpnLJCo",
-      "videoId": "Z4XowpnLJCo",
-      "text": "Un terrain à Diamniadio, une tontine, des actions BRVM, du Wave : la démo en direct sur mon téléphone de l'app qui met tout ça au même endroit, en FCFA, avec le module immobilier à l'écran (06:44). Deux agents IA en beta, aucun montage qui triche."
+      "title": "Ton complément de retraite avec la BRVM : le calcul que personne ne fait (×171)",
+      "episode": "",
+      "url": "https://www.youtube.com/@fire_africa",
+      "videoId": null,
+      "text": "La courbe du paradoxe (ton capital survit, pas toi), la grille × 171 animée ligne par ligne, et les 3 scénarios d'accumulation chiffrés. Hypothèses affichées, jamais une promesse."
     },
     {
       "kind": "section",
@@ -68,17 +89,17 @@
     },
     {
       "kind": "paragraph",
-      "text": "En octobre, je suis à **Dakar** pour un voyage terrain. On va documenter le processus d'achat immobilier étape par étape, de la visite du terrain jusqu'à la signature chez le notaire. L'objectif : un guide pratique « Acheter au Sénégal depuis l'Europe » basé sur une expérience réelle, pas sur de la théorie."
-    },
-    {
-      "kind": "paragraph",
-      "text": "Dans Omaad (https://omaad.africa), le module **immobilier** permet déjà de suivre la valeur de tes biens au Sénégal en FCFA, à côté de tes actions BRVM, de ta tontine et de ton mobile money. On travaille sur l'ajout du **suivi locatif** : loyers perçus, charges, rendement net automatique."
+      "text": "Le calcul prend deux minutes. Le tenir prend quinze ans : c'est là que l'outillage compte. L'outil Stratégie BRVM (https://omaad.africa/outils/strategie-brvm/), gratuit et sans inscription, transforme ton versement mensuel en plan d'exécution et en calendrier de dividendes. Le comparateur des 41 SGI (https://omaad.africa/outils/comparateur-sgi-brvm) te trouve le compte qui portera le plan sans frais de tenue de compte. Et dans l'application Omaad (https://omaad.africa), tu crées ton objectif × 171 et tu suis l'écart mois après mois, avec tes dividendes encaissés et ton patrimoine complet en FCFA."
     },
     {
       "kind": "ctas",
       "items": [
         {
-          "label": "Suivre mon patrimoine dans Omaad",
+          "label": "Planifier mon DCA (gratuit)",
+          "url": "https://omaad.africa/outils/strategie-brvm/"
+        },
+        {
+          "label": "Créer mon compte Omaad",
           "url": "https://omaad.africa"
         }
       ]
@@ -89,9 +110,9 @@
     },
     {
       "kind": "stat",
-      "value": "+18 %",
-      "label": "Hausse moyenne des prix du foncier à Diamniadio sur 12 mois",
-      "source": "Observatoire du foncier sénégalais, T1 2026 (à confirmer)"
+      "value": "× 171",
+      "label": "Revenu mensuel visé × 171 = ton capital cible en actions à dividendes.",
+      "source": "calcul : 1 ÷ 7 % = 14,29 en annuel, soit 171,4 en mensuel · hypothèse 7 % net, non garantie"
     },
     {
       "kind": "section",
@@ -100,9 +121,9 @@
     {
       "kind": "resource",
       "emoji": "📖",
-      "title": "L'investissement immobilier locatif intelligent",
-      "meta": "Julien Delagrandanne",
-      "text": "Écrit pour le marché français, mais les principes de calcul de rendement locatif sont universels. Applique ses grilles d'analyse à un bien à Dakar et tu verras ton projet immobilier sous un angle complètement différent. Disponible en français.",
+      "title": "The Little Book of Common Sense Investing",
+      "meta": "John C. Bogle",
+      "text": "Le fondateur de Vanguard sur l'ennemi numéro un du plan × 171 : les frais. Chaque point de frais en moins, c'est un point de rendement en plus, et des années de retraite en avance.",
       "url": null
     },
     {
@@ -111,7 +132,7 @@
     },
     {
       "kind": "callout",
-      "text": "Avant de verser le moindre franc pour un terrain, demande le numéro du titre foncier et fais-le vérifier à la Conservation foncière, ou par un notaire. Pas de TF vérifié, pas de versement. C'est la seule règle qui n'a pas d'exception."
+      "text": "Prends 2 minutes : écris le revenu mensuel que tu veux à la retraite, multiplie par 171. Ce chiffre, c'est ton objectif. Affiche-le quelque part où tu le verras chaque mois."
     },
     {
       "kind": "section",
@@ -146,9 +167,9 @@
     {
       "kind": "summary",
       "items": [
-        "Senegalese real estate is the diaspora's most popular asset class, but most purchases lack proper due diligence. Always verify the titre foncier, use a notary, and compute the true cost (land + notary and registration fees + fencing + utilities). Gross rental yield is never net yield.",
-        "In October I am in Dakar to document a real estate purchase step by step, from land visit to notary signing. A practical guide for diaspora investors follows. Omaad already tracks your Senegalese property in FCFA next to your BRVM shares, tontine and mobile money; rental tracking is in the works.",
-        "Real estate is your FCFA-income pillar in a FIRE plan; a PEA covers the European side. Watch Ep. 07 for the live demo of the app, and join the WhatsApp channel and Facebook page for sourced, hype-free updates between editions."
+        "10 million FCFA invested at 10% a year with a prudent 4% withdrawal yields only 33,000 FCFA a month. Your capital survives forever, you do not. 10 million is a start, not a retirement.",
+        "The 25× rule comes from markets where you sell shares to live. The BRVM is a dividend market (6-8% yields on large caps): with dividend stocks you sell nothing. The formula becomes target monthly income × 171 (assumption: 7% net dividend yield, displayed and never guaranteed). Aiming for 100,000 FCFA a month? Target about 17.1 million FCFA.",
+        "Three traps: dividends vary (keep a 12-18 month income cushion), never hold just 1-2 stocks (aim for 6-8 lines minimum), and fees (2% a year confiscates about a quarter of your returns over 20 years). The only variable you control is your monthly contribution. Omaad's free planner and app help you track the gap to your × 171 target; join the WhatsApp channel and Facebook page for sourced, hype-free updates."
       ]
     }
   ]
