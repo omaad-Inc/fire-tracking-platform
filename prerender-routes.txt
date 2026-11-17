@@ -35,8 +35,8 @@
 /en/blog/dca-brvm
 /fr/blog/trading-vs-dca
 /en/blog/trading-vs-dca
-/fr/blog/special-dakar-immo
-/en/blog/special-dakar-immo
+/fr/blog/retraite-calcul-171
+/en/blog/retraite-calcul-171
 /fr/blog/regle-4-pourcent
 /en/blog/regle-4-pourcent
 /fr/blog/frais-fcp-brvm
@@ -45,6 +45,8 @@
 /en/blog/fcp-vs-actions-directes
 /fr/blog/gestion-mandat-vs-libre
 /en/blog/gestion-mandat-vs-libre
+/fr/blog/brvm-securisee-mythe
+/en/blog/brvm-securisee-mythe
 /fr/fire-africa/guides
 /en/fire-africa/guides
 /outils/comparateur-sgi-brvm
