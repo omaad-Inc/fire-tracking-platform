@@ -16,6 +16,7 @@ export type AnalyticsEventName =
     | 'export'
     | 'share'
     | 'sync_interest'
+    | 'asset_position_merged'
     | 'subscribe_started'
     | 'subscribe_completed'
     | 'subscription_cancelled'

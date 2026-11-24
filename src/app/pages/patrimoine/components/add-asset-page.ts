@@ -12,7 +12,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ApiService, AssetCreate, AssetCategory, BrvmInstrument, FcpInstrument } from '../../../core/services/api.service';
 import { CanComponentDeactivate } from '../../../core/guards/unsaved-changes.guard';
-import { PatrimoineService } from '../../service/patrimoine.service';
+import { PatrimoineAssetItemDto, PatrimoineService } from '../../service/patrimoine.service';
 import { AppAmountComponent } from '../../../core/components/app-amount.component';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -397,6 +397,14 @@ interface CategoryCard {
                                             <label for="aa-name" class="text-surface-500 dark:text-surface-400 text-sm font-medium">{{ t('addAssets.fields.name') }} <span class="text-negative">*</span></label>
                                             <input pInputText id="aa-name" [(ngModel)]="assetForm.name" [placeholder]="namePlaceholder()"
                                                    class="w-full" />
+                                            <!-- One row per security: a title already in the portfolio is
+                                                 merged server-side, never duplicated. Say so before submit. -->
+                                            @if (existingPosition(); as held) {
+                                                <p class="flex items-start gap-2 text-sm text-brand-700 dark:text-ochre-400 mt-1" aria-live="polite">
+                                                    <i class="pi pi-info-circle mt-0.5 shrink-0" aria-hidden="true"></i>
+                                                    <span>{{ t('addAssets.wizard.existingHint', { name: held }) }}</span>
+                                                </p>
+                                            }
                                         </div>
                                         }
 
@@ -948,10 +956,18 @@ interface CategoryCard {
                                     animate-[omaad-pop_.35s_ease-out] motion-reduce:animate-none">
                             <i class="pi pi-check text-3xl text-positive" aria-hidden="true"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t('addAssets.wizard.successTitle') }}</h2>
-                        <p class="text-surface-500 dark:text-surface-400 mb-2">{{ assetForm.name }}</p>
+                        <h2 class="text-2xl font-bold text-surface-900 dark:text-surface-0 mb-1">{{ t(lastSave()?.merged ? 'addAssets.wizard.mergedTitle' : 'addAssets.wizard.successTitle') }}</h2>
+                        <p class="text-surface-500 dark:text-surface-400 mb-2">{{ lastSave()?.name || assetForm.name }}</p>
+                        @if (lastSave()?.merged) {
+                            <!-- The purchase joined the position already held: show the
+                                 whole position, not the lot, so the number matches Patrimoine. -->
+                            <p class="text-sm text-surface-600 dark:text-surface-300 mb-2">{{ t('addAssets.wizard.mergedBody') }}</p>
+                            @if (lastSave()?.quantity; as qty) {
+                                <p class="text-sm font-medium text-brand-700 dark:text-ochre-400 mb-2">{{ t('addAssets.wizard.mergedCount', { count: (qty | number:'1.0-2') ?? qty }) }}</p>
+                            }
+                        }
                         <p class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-8">
-                            <app-amount [value]="toEur(totalValue())" />
+                            <app-amount [value]="lastSave()?.merged ? (lastSave()?.valueEur ?? 0) : toEur(totalValue())" />
                         </p>
                         <div class="flex flex-col gap-3">
                             <button pButton type="button" [label]="t('addAssets.wizard.viewPatrimoine')"
@@ -1191,11 +1207,19 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
     private api = inject(ApiService);
     cs = inject(CurrencyService);
 
-    t(key: string): string { return this.i18n.t(key); }
+    t(key: string, params?: Record<string, string | number>): string { return this.i18n.t(key, params); }
 
     lang = 'fr';
     currentStep = signal(0);
     isSubmitting = signal(false);
+    /** What the last submit produced: merged into an existing position or a
+     *  fresh row, with the position's total so the success screen shows the
+     *  same number Patrimoine will. */
+    lastSave = signal<{ merged: boolean; name: string; quantity: number | null; valueEur: number } | null>(null);
+    /** The user's current holdings, for the "already held" hint under the
+     *  name field (securities only; loaded once, cached by the service). */
+    private heldAssets = signal<PatrimoineAssetItemDto[]>([]);
+    private static readonly SECURITY_CATS: readonly string[] = ['stocks_brvm', 'stocks_intl', 'fcp', 'bonds'];
     /** PA-2 progressive disclosure: optional detail fields, collapsed by default. */
     detailsOpen = signal(false);
     /** Set true right before the post-save navigation so the guard stays silent. */
@@ -1441,6 +1465,7 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         const match = this.router.url.match(/^\/(fr|en)(\/|$)/);
         this.lang = match ? match[1] : 'fr';
         this.resetForm();
+        this.patrimoineService.getAssets().then(a => this.heldAssets.set(a)).catch(() => {});
 
         const cat = this.route.snapshot.queryParamMap.get('category');
         // Marchés hand-off (P2-3): `ticker` names the BRVM ticker or the fund
@@ -1816,6 +1841,39 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
         return AddAssetPage.INST_PH_CATS.includes(cat) ? this.i18n.t(`addAssets.wizard.instPh.${cat}`) : '';
     }
 
+    /** The holding this submit will be merged into, if the typed name designates
+     *  exactly one security the user already holds in that class (mirror of the
+     *  backend's match_unique_name: exact → unique containment → unique token
+     *  subset, accent/case-insensitive). Null when unknown or ambiguous. */
+    existingPosition(): string | null {
+        const f = this.assetForm;
+        if (!AddAssetPage.SECURITY_CATS.includes(f.category) || f.ticker) return null;
+        const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+        const q = norm(f.name || '');
+        if (!q) return null;
+        const rows = this.heldAssets().filter(a => a.category === f.category);
+        const names = rows.map(a => norm(a.name));
+        const unique = (idx: number[]) => idx.length === 1 ? rows[idx[0]].name : null;
+        const attempt = (query: string): string | null => {
+            const exact = unique(names.flatMap((n, i) => n === query ? [i] : []));
+            if (exact) return exact;
+            if (query.length >= 3) {
+                const contained = unique(names.flatMap((n, i) => n.includes(query) || query.includes(n) ? [i] : []));
+                if (contained) return contained;
+            }
+            const tokens = query.split(' ');
+            return unique(names.flatMap((n, i) => {
+                const have = new Set(n.split(' '));
+                return tokens.every(t => have.has(t)) ? [i] : [];
+            }));
+        };
+        const hit = attempt(q);
+        if (hit) return hit;
+        const stripped = q.replace(/^(?:actions?|titres?|parts?|fonds|fcp|opcvm|etf)\s+/, '').trim();
+        return stripped && stripped !== q ? attempt(stripped) : null;
+    }
+
     totalValue(): number {
         if (this.assetForm.category === 'tontine') return this.tontineCurrentValue();
         return this.assetForm.currentPrice * (this.isQuantityBased() ? this.assetForm.quantity : 1);
@@ -1981,7 +2039,14 @@ export class AddAssetPage implements OnInit, CanComponentDeactivate {
                 };
             }
 
-            await this.patrimoineService.createAsset(assetData);
+            const saved = await this.patrimoineService.createAsset(assetData);
+            this.lastSave.set({
+                merged: saved?.merged === true,
+                name: saved?.name || assetData.name,
+                quantity: saved?.quantity ?? null,
+                valueEur: saved?.value ?? this.toEur(this.totalValue()),
+            });
+            if (saved?.merged) this.analytics.track('asset_position_merged', { category: assetData.category });
             this.justSaved = true; // the guard stays silent from here on
             // PA-2: a rewarding success screen (what was added + next moves)
             // instead of toast-and-vanish.
