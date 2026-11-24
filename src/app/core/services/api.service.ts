@@ -51,6 +51,10 @@ export interface Asset {
     gain_loss_percent: number | null;
     // Date of the BRVM close behind current_value (tickered BRVM stocks only)
     quote_as_of: string | null;
+    // Create response only: the purchase was folded into the position the
+    // user already held (one row per security), so the success screen says
+    // "position mise à jour" instead of "actif ajouté".
+    merged?: boolean;
     // Real estate specific
     surface_m2: number | null;
     price_per_m2_purchase: number | null;

@@ -20,6 +20,10 @@ export interface PatrimoineAssetItemDto {
     institution?: string;
     isLiquid?: boolean;
     notes?: string;
+    /** Unit count of a security position (undefined when never stated). */
+    quantity?: number;
+    /** Create response only: the purchase was merged into an existing position. */
+    merged?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -88,6 +92,7 @@ export class PatrimoineService {
             const previousCount = this.assetsResource.peek()?.length ?? 0;
             const asset = await firstValueFrom(this.api.createAsset(data));
             const newAsset = this.mapAssetToDto(asset);
+            newAsset.merged = asset.merged === true;
             this.markAssetsChanged();
             if (previousCount === 0) {
                 this.analytics.track('first_asset_added', { category: asset.category });
@@ -172,7 +177,8 @@ export class PatrimoineService {
             deltaPct: Math.round(deltaPct * 100) / 100,
             institution: asset.institution ?? undefined,
             isLiquid: asset.is_liquid,
-            notes: asset.notes ?? undefined
+            notes: asset.notes ?? undefined,
+            quantity: asset.quantity ?? undefined,
         };
     }
 
