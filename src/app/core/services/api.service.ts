@@ -2336,8 +2336,9 @@ export class ApiService {
         return this.http.get<DiscoverCardsResponse>(`${this.apiUrl}/dashboard/cards`);
     }
 
-    /** Close one card for this member on every device (14-day resurfacing,
-     *  three closes hide it for good). */
+    /** Record a close. Closing is session-only on the client (DiscoverService
+     *  hides the card until the next load); the server uses the count to push
+     *  closed cards to the back and to rest a card closed five times for 30 days. */
     dismissDiscoverCard(key: string): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/dashboard/cards/${encodeURIComponent(key)}/dismiss`, {});
     }

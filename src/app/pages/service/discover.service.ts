@@ -8,7 +8,9 @@ import { cachedResource } from '../../core/util/cached-resource';
  * Home "Découvrir" carousel state. The server owns who sees which card and in
  * which mode (dashboard_cards_service); this store only caches the answer for
  * the usual 5 minutes and applies a close optimistically, so the card leaves
- * the screen on the tap and not on the round trip.
+ * the screen on the tap and not on the round trip. A close is SESSION-ONLY
+ * (owner 2026-11-26): the server keeps offering the card, reordered to the
+ * back, and this store hides it until the next page load.
  */
 @Injectable({ providedIn: 'root' })
 export class DiscoverService {
